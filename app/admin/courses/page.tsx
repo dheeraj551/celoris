@@ -1,0 +1,1117 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase-client"
+import { adminApi } from "@/lib/admin-api"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { 
+  Plus,
+  Edit3,
+  Trash2,
+  BookOpen,
+  GraduationCap,
+  FileText,
+  Eye,
+  EyeOff,
+  Filter,
+  Search,
+  CheckCircle,
+  XCircle,
+  Clock,
+  User,
+  Building,
+  MapPin,
+  Globe,
+  Calendar,
+  Award,
+  ArrowUp,
+  ArrowDown,
+  ChevronDown,
+  ChevronRight,
+  Play,
+  DollarSign,
+  Users,
+  Star,
+  Settings
+} from "lucide-react"
+
+interface Course {
+  id: string
+  title: string
+  subject: string
+  grade_level: string
+  description: string
+  target_audience: string
+  instructor_name: string | null
+  course_duration: string | null
+  price: number
+  course_image_url: string | null
+  is_published: boolean
+  is_featured: boolean
+  created_at: string
+  updated_at: string
+  course_modules?: CourseModule[]
+}
+
+interface CourseModule {
+  id: string
+  module_number: number
+  title: string
+  description: string | null
+  estimated_duration: number | null
+  is_published: boolean
+  course_topics?: CourseTopic[]
+}
+
+interface CourseTopic {
+  id: string
+  order_in_module: number
+  title: string
+  short_description: string
+  full_content: string | null
+  content_type: string
+  estimated_duration: number | null
+  status: 'draft' | 'content_generated' | 'published' | 'archived'
+  is_free_preview: boolean
+}
+
+export default function CoursesPage() {
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showCourseForm, setShowCourseForm] = useState(false)
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null)
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set())
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
+  const [showModuleForm, setShowModuleForm] = useState(false)
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null)
+  const [editingModule, setEditingModule] = useState<CourseModule | null>(null)
+  const [showTopicForm, setShowTopicForm] = useState(false)
+  const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null)
+  const [editingTopic, setEditingTopic] = useState<CourseTopic | null>(null)
+  const [filters, setFilters] = useState({
+    subject: 'all',
+    published: 'all',
+    featured: 'all',
+    search: ''
+  })
+  const [message, setMessage] = useState({ type: '', text: '' })
+
+  const [courseFormData, setCourseFormData] = useState({
+    title: '',
+    subject: '',
+    grade_level: '',
+    description: '',
+    target_audience: '',
+    instructor_name: '',
+    instructor_bio: '',
+    course_duration: '',
+    price: 0,
+    course_image_url: '',
+    is_published: false,
+    is_featured: false
+  })
+
+  const [moduleFormData, setModuleFormData] = useState({
+    module_number: 1,
+    title: '',
+    description: '',
+    estimated_duration: 60,
+    is_published: false
+  })
+
+  const [topicFormData, setTopicFormData] = useState({
+    order_in_module: 1,
+    title: '',
+    short_description: '',
+    full_content: '',
+    content_type: 'text',
+    estimated_duration: 30,
+    status: 'draft',
+    is_free_preview: false
+  })
+
+  useEffect(() => {
+    loadCourses()
+  }, [filters])
+
+  const loadCourses = async () => {
+    try {
+      setLoading(true)
+      
+      const params: Record<string, string> = {}
+      if (filters.subject !== 'all') params.subject = filters.subject
+      if (filters.published !== 'all') params.published = filters.published
+      if (filters.featured !== 'all') params.featured = filters.featured
+      if (filters.search) params.search = filters.search
+
+      const data = await adminApi.getCourses(params)
+      setCourses(data.courses || [])
+    } catch (error) {
+      console.error('Error loading courses:', error)
+      setMessage({ type: 'error', text: 'Failed to load courses' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resetCourseForm = () => {
+    setCourseFormData({
+      title: '',
+      subject: '',
+      grade_level: '',
+      description: '',
+      target_audience: '',
+      instructor_name: '',
+      instructor_bio: '',
+      course_duration: '',
+      price: 0,
+      course_image_url: '',
+      is_published: false,
+      is_featured: false
+    })
+    setEditingCourse(null)
+    setShowCourseForm(false)
+  }
+
+  const resetModuleForm = () => {
+    setModuleFormData({
+      module_number: 1,
+      title: '',
+      description: '',
+      estimated_duration: 60,
+      is_published: false
+    })
+    setEditingModule(null)
+    setShowModuleForm(false)
+    setSelectedCourseId(null)
+  }
+
+  const resetTopicForm = () => {
+    setTopicFormData({
+      order_in_module: 1,
+      title: '',
+      short_description: '',
+      full_content: '',
+      content_type: 'text',
+      estimated_duration: 30,
+      status: 'draft',
+      is_free_preview: false
+    })
+    setEditingTopic(null)
+    setShowTopicForm(false)
+    setSelectedModuleId(null)
+  }
+
+  const handleEditCourse = (course: Course) => {
+    setCourseFormData({
+      title: course.title,
+      subject: course.subject,
+      grade_level: course.grade_level,
+      description: course.description,
+      target_audience: course.target_audience,
+      instructor_name: course.instructor_name || '',
+      instructor_bio: '',
+      course_duration: course.course_duration || '',
+      price: course.price,
+      course_image_url: course.course_image_url || '',
+      is_published: course.is_published,
+      is_featured: course.is_featured
+    })
+    setEditingCourse(course)
+    setShowCourseForm(true)
+  }
+
+  const handleEditModule = (module: CourseModule, courseId: string) => {
+    setModuleFormData({
+      module_number: module.module_number,
+      title: module.title,
+      description: module.description || '',
+      estimated_duration: module.estimated_duration || 60,
+      is_published: module.is_published
+    })
+    setEditingModule(module)
+    setSelectedCourseId(courseId)
+    setShowModuleForm(true)
+  }
+
+  const handleEditTopic = (topic: CourseTopic, moduleId: string) => {
+    setTopicFormData({
+      order_in_module: topic.order_in_module,
+      title: topic.title,
+      short_description: topic.short_description,
+      full_content: topic.full_content || '',
+      content_type: topic.content_type,
+      estimated_duration: topic.estimated_duration || 30,
+      status: topic.status,
+      is_free_preview: topic.is_free_preview
+    })
+    setEditingTopic(topic)
+    setSelectedModuleId(moduleId)
+    setShowTopicForm(true)
+  }
+
+  const handleCourseSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      if (editingCourse) {
+        await adminApi.updateCourse(editingCourse.id, courseFormData)
+        setMessage({ type: 'success', text: 'Course updated successfully' })
+      } else {
+        await adminApi.createCourse(courseFormData)
+        setMessage({ type: 'success', text: 'Course created successfully' })
+      }
+
+      resetCourseForm()
+      loadCourses()
+    } catch (error) {
+      console.error('Error saving course:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      setMessage({ type: 'error', text: `Failed to save course: ${errorMessage}` })
+    }
+  }
+
+  const handleModuleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedCourseId) return
+
+    try {
+      const endpoint = editingModule 
+        ? `/api/admin/courses/${selectedCourseId}/modules/${editingModule.id}`
+        : `/api/admin/courses/${selectedCourseId}/modules`
+
+      const response = await fetch(endpoint, {
+        method: editingModule ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moduleFormData)
+      })
+      
+      if (!response.ok) throw new Error('Failed to save module')
+      setMessage({ type: 'success', text: `Module ${editingModule ? 'updated' : 'created'} successfully` })
+
+      resetModuleForm()
+      loadCourses()
+    } catch (error) {
+      console.error('Error saving module:', error)
+      setMessage({ type: 'error', text: 'Failed to save module' })
+    }
+  }
+
+  const handleTopicSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedModuleId || !selectedCourseId) return
+
+    try {
+      const endpoint = editingTopic 
+        ? `/api/admin/courses/${selectedCourseId}/modules/${selectedModuleId}/topics/${editingTopic.id}`
+        : `/api/admin/courses/${selectedCourseId}/modules/${selectedModuleId}/topics`
+
+      const response = await fetch(endpoint, {
+        method: editingTopic ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(topicFormData)
+      })
+      
+      if (!response.ok) throw new Error('Failed to save topic')
+      setMessage({ type: 'success', text: `Topic ${editingTopic ? 'updated' : 'created'} successfully` })
+
+      resetTopicForm()
+      loadCourses()
+    } catch (error) {
+      console.error('Error saving topic:', error)
+      setMessage({ type: 'error', text: 'Failed to save topic' })
+    }
+  }
+
+  const handleDeleteCourse = async (courseId: string) => {
+    if (!confirm('Are you sure you want to delete this course? This will also delete all its modules and topics.')) return
+
+    try {
+      await adminApi.deleteCourse(courseId)
+      setMessage({ type: 'success', text: 'Course deleted successfully' })
+      loadCourses()
+    } catch (error) {
+      console.error('Error deleting course:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      setMessage({ type: 'error', text: `Failed to delete course: ${errorMessage}` })
+    }
+  }
+
+  const handleDeleteModule = async (moduleId: string, courseId: string) => {
+    if (!confirm('Are you sure you want to delete this module? This will also delete all its topics.')) return
+
+    try {
+      const response = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, {
+        method: 'DELETE'
+      })
+      
+      if (!response.ok) throw new Error('Failed to delete module')
+      setMessage({ type: 'success', text: 'Module deleted successfully' })
+      loadCourses()
+    } catch (error) {
+      console.error('Error deleting module:', error)
+      setMessage({ type: 'error', text: 'Failed to delete module' })
+    }
+  }
+
+  const handleDeleteTopic = async (topicId: string, courseId: string, moduleId: string) => {
+    if (!confirm('Are you sure you want to delete this topic?')) return
+
+    try {
+      const response = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}/topics/${topicId}`, {
+        method: 'DELETE'
+      })
+      
+      if (!response.ok) throw new Error('Failed to delete topic')
+      setMessage({ type: 'success', text: 'Topic deleted successfully' })
+      loadCourses()
+    } catch (error) {
+      console.error('Error deleting topic:', error)
+      setMessage({ type: 'error', text: 'Failed to delete topic' })
+    }
+  }
+
+  const toggleCourseExpansion = (courseId: string) => {
+    const newExpanded = new Set(expandedCourses)
+    if (newExpanded.has(courseId)) {
+      newExpanded.delete(courseId)
+    } else {
+      newExpanded.add(courseId)
+    }
+    setExpandedCourses(newExpanded)
+  }
+
+  const toggleModuleExpansion = (moduleId: string) => {
+    const newExpanded = new Set(expandedModules)
+    if (newExpanded.has(moduleId)) {
+      newExpanded.delete(moduleId)
+    } else {
+      newExpanded.add(moduleId)
+    }
+    setExpandedModules(newExpanded)
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'published':
+        return <CheckCircle className="w-4 h-4 text-green-500" />
+      case 'draft':
+        return <Clock className="w-4 h-4 text-yellow-500" />
+      case 'archived':
+        return <XCircle className="w-4 h-4 text-gray-500" />
+      default:
+        return <Clock className="w-4 h-4 text-yellow-500" />
+    }
+  }
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'published':
+        return 'Published'
+      case 'draft':
+        return 'Draft'
+      case 'archived':
+        return 'Archived'
+      default:
+        return 'Unknown'
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <GraduationCap className="w-8 h-8 text-purple-600" />
+                Course Management
+              </h1>
+              <p className="text-gray-600 mt-2">Manage courses, modules, and topics</p>
+            </div>
+            <Button onClick={() => setShowCourseForm(true)} className="bg-purple-600 hover:bg-purple-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Course
+            </Button>
+          </div>
+
+          {/* Message */}
+          {message.text && (
+            <div className={`mb-6 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+              {message.text}
+            </div>
+          )}
+
+          {/* Filters */}
+          <Card className="mb-6">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search courses..."
+                      value={filters.search}
+                      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                  <select
+                    value={filters.subject}
+                    onChange={(e) => setFilters(prev => ({ ...prev, subject: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="all">All Subjects</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                    <option value="English">English</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Published</label>
+                  <select
+                    value={filters.published}
+                    onChange={(e) => setFilters(prev => ({ ...prev, published: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="all">All</option>
+                    <option value="true">Published</option>
+                    <option value="false">Draft</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Featured</label>
+                  <select
+                    value={filters.featured}
+                    onChange={(e) => setFilters(prev => ({ ...prev, featured: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="all">All</option>
+                    <option value="true">Featured</option>
+                    <option value="false">Regular</option>
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <Button 
+                    onClick={loadCourses} 
+                    variant="outline" 
+                    className="w-full"
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Courses List */}
+        <div className="space-y-6">
+          {courses?.map((course) => (
+            <Card key={course.id} className="overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleCourseExpansion(course.id)}
+                      className="p-1"
+                    >
+                      {expandedCourses.has(course.id) ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      )}
+                    </Button>
+                    <div>
+                      <CardTitle className="flex items-center gap-2 text-xl">
+                        <BookOpen className="w-5 h-5 text-purple-600" />
+                        {course.title}
+                        {course.is_featured && <Star className="w-4 h-4 text-yellow-500" />}
+                      </CardTitle>
+                      <CardDescription className="mt-1">
+                        {course.subject} • {course.grade_level} • {course.course_duration}
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right mr-4">
+                      <div className="text-lg font-bold text-purple-600">₹{course.price}</div>
+                      <div className="text-sm text-gray-500">{course.instructor_name}</div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditCourse(course)}
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteCourse(course.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 mt-3">
+                  <div className="flex items-center gap-1">
+                    {course.is_published ? (
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Clock className="w-4 h-4 text-yellow-500" />
+                    )}
+                    <span className="text-sm">
+                      {course.is_published ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {course.course_modules?.length || 0} modules
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {course.course_modules?.reduce((acc, mod) => acc + (mod.course_topics?.length || 0), 0) || 0} topics
+                  </div>
+                </div>
+              </CardHeader>
+
+              {/* Course Description */}
+              <CardContent className="p-4">
+                <p className="text-gray-600 mb-3">{course.description}</p>
+                <p className="text-sm text-gray-500">
+                  <strong>Target Audience:</strong> {course.target_audience}
+                </p>
+              </CardContent>
+
+              {/* Modules (Expandable) */}
+              {expandedCourses.has(course.id) && course.course_modules && (
+                <CardContent className="p-0 border-t">
+                  <div className="p-4 bg-gray-50">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        Modules
+                      </h3>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCourseId(course.id)
+                          setShowModuleForm(true)
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Module
+                      </Button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {course.course_modules?.map((module) => (
+                        <Card key={module.id} className="border border-blue-200">
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => toggleModuleExpansion(module.id)}
+                                  className="p-1"
+                                >
+                                  {expandedModules.has(module.id) ? (
+                                    <ChevronDown className="w-4 h-4" />
+                                  ) : (
+                                    <ChevronRight className="w-4 h-4" />
+                                  )}
+                                </Button>
+                                <div>
+                                  <CardTitle className="text-lg">
+                                    Module {module.module_number}: {module.title}
+                                  </CardTitle>
+                                  <CardDescription>
+                                    {module.description} • {module.estimated_duration}min
+                                  </CardDescription>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1 mr-2">
+                                  {module.is_published ? (
+                                    <CheckCircle className="w-4 h-4 text-green-500" />
+                                  ) : (
+                                    <Clock className="w-4 h-4 text-yellow-500" />
+                                  )}
+                                  <span className="text-sm">
+                                    {module.is_published ? 'Published' : 'Draft'}
+                                  </span>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEditModule(module, course.id)}
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteModule(module.id, course.id)}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardHeader>
+
+                          {/* Topics (Expandable) */}
+                          {expandedModules.has(module.id) && module.course_topics && (
+                            <CardContent className="pt-0 border-t">
+                              <div className="flex justify-between items-center mb-3">
+                                <h4 className="font-semibold flex items-center gap-2">
+                                  <Play className="w-4 h-4 text-green-600" />
+                                  Topics
+                                </h4>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedModuleId(module.id)
+                                    setSelectedCourseId(course.id)
+                                    setShowTopicForm(true)
+                                  }}
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  Add Topic
+                                </Button>
+                              </div>
+
+                              <div className="grid gap-3">
+                                {module.course_topics?.map((topic) => (
+                                  <div key={topic.id} className="p-3 border border-gray-200 rounded-lg">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <h5 className="font-medium text-sm">
+                                          Topic {topic.order_in_module}: {topic.title}
+                                        </h5>
+                                        <p className="text-xs text-gray-600 mt-1">
+                                          {topic.short_description}
+                                        </p>
+                                        <div className="flex items-center gap-4 mt-2">
+                                          <div className="flex items-center gap-1">
+                                            {getStatusIcon(topic.status)}
+                                            <span className="text-xs">
+                                              {getStatusText(topic.status)}
+                                            </span>
+                                          </div>
+                                          <div className="flex items-center gap-1">
+                                            <Clock className="w-3 h-3 text-gray-400" />
+                                            <span className="text-xs text-gray-500">
+                                              {topic.estimated_duration}min
+                                            </span>
+                                          </div>
+                                          {topic.is_free_preview && (
+                                            <div className="flex items-center gap-1">
+                                              <Eye className="w-3 h-3 text-blue-500" />
+                                              <span className="text-xs text-blue-600">Free Preview</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1 ml-3">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleEditTopic(topic, module.id)}
+                                        >
+                                          <Edit3 className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleDeleteTopic(topic.id, course.id, module.id)}
+                                          className="text-red-600 hover:text-red-700"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </CardContent>
+                          )}
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          ))}
+        </div>
+
+        {courses.length === 0 && (
+          <Card className="text-center py-12">
+            <CardContent>
+              <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No courses found</h3>
+              <p className="text-gray-600 mb-4">Get started by creating your first course.</p>
+              <Button onClick={() => setShowCourseForm(true)} className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Course
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Course Form Modal */}
+        {showCourseForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <CardHeader>
+                <CardTitle>
+                  {editingCourse ? 'Edit Course' : 'Create New Course'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCourseSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                      <Input
+                        value={courseFormData.title}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, title: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
+                      <select
+                        value={courseFormData.subject}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, subject: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      >
+                        <option value="">Select Subject</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="English">English</option>
+                        <option value="Computer Science">Computer Science</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Grade Level *</label>
+                      <Input
+                        value={courseFormData.grade_level}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, grade_level: e.target.value }))}
+                        placeholder="e.g., Class 12th CBSE"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Instructor Name</label>
+                      <Input
+                        value={courseFormData.instructor_name}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, instructor_name: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Course Duration</label>
+                      <Input
+                        value={courseFormData.course_duration}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, course_duration: e.target.value }))}
+                        placeholder="e.g., 6 months"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                      <Input
+                        type="number"
+                        value={courseFormData.price}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                      <textarea
+                        value={courseFormData.description}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, description: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        rows={3}
+                        required
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience *</label>
+                      <textarea
+                        value={courseFormData.target_audience}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, target_audience: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        rows={2}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Course Image URL</label>
+                      <Input
+                        value={courseFormData.course_image_url}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, course_image_url: e.target.value }))}
+                        placeholder="https://example.com/course-image.jpg"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={courseFormData.is_published}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, is_published: e.target.checked }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Published</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={courseFormData.is_featured}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Featured</span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="outline" onClick={resetCourseForm}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                      {editingCourse ? 'Update Course' : 'Create Course'}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Module Form Modal */}
+        {showModuleForm && selectedCourseId && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-2xl">
+              <CardHeader>
+                <CardTitle>
+                  {editingModule ? 'Edit Module' : 'Create New Module'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleModuleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Module Number</label>
+                      <Input
+                        type="number"
+                        value={moduleFormData.module_number}
+                        onChange={(e) => setModuleFormData(prev => ({ ...prev, module_number: parseInt(e.target.value) || 1 }))}
+                        min="1"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                      <Input
+                        type="number"
+                        value={moduleFormData.estimated_duration}
+                        onChange={(e) => setModuleFormData(prev => ({ ...prev, estimated_duration: parseInt(e.target.value) || 60 }))}
+                        min="1"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                      <Input
+                        value={moduleFormData.title}
+                        onChange={(e) => setModuleFormData(prev => ({ ...prev, title: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                      <textarea
+                        value={moduleFormData.description}
+                        onChange={(e) => setModuleFormData(prev => ({ ...prev, description: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={moduleFormData.is_published}
+                        onChange={(e) => setModuleFormData(prev => ({ ...prev, is_published: e.target.checked }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Published</span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="outline" onClick={resetModuleForm}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+                      {editingModule ? 'Update Module' : 'Create Module'}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Topic Form Modal */}
+        {showTopicForm && selectedModuleId && selectedCourseId && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <CardHeader>
+                <CardTitle>
+                  {editingTopic ? 'Edit Topic' : 'Create New Topic'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleTopicSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Order in Module</label>
+                      <Input
+                        type="number"
+                        value={topicFormData.order_in_module}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, order_in_module: parseInt(e.target.value) || 1 }))}
+                        min="1"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                      <Input
+                        type="number"
+                        value={topicFormData.estimated_duration}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, estimated_duration: parseInt(e.target.value) || 30 }))}
+                        min="1"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Content Type</label>
+                      <select
+                        value={topicFormData.content_type}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, content_type: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="text">Text</option>
+                        <option value="video">Video</option>
+                        <option value="quiz">Quiz</option>
+                        <option value="assignment">Assignment</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                      <select
+                        value={topicFormData.status}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, status: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="content_generated">Content Generated</option>
+                        <option value="published">Published</option>
+                        <option value="archived">Archived</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                      <Input
+                        value={topicFormData.title}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, title: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Short Description *</label>
+                      <textarea
+                        value={topicFormData.short_description}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, short_description: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        rows={2}
+                        required
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Content</label>
+                      <textarea
+                        value={topicFormData.full_content}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, full_content: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        rows={6}
+                        placeholder="Detailed content, examples, exercises..."
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={topicFormData.is_free_preview}
+                        onChange={(e) => setTopicFormData(prev => ({ ...prev, is_free_preview: e.target.checked }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Free Preview</span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="outline" onClick={resetTopicForm}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                      {editingTopic ? 'Update Topic' : 'Create Topic'}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

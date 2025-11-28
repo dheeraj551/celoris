@@ -1,0 +1,78 @@
+/* Instagram Posts Responsive Styles */
+.instagram-posts-section {
+  width: 100%;
+}
+
+.instagram-embed-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.instagram-post-container {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* Let Instagram handle its own styling - only add responsive adjustments */
+.instagram-media {
+  /* Let Instagram's own styles work */
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .instagram-embed-wrapper {
+    padding: 0;
+  }
+  
+  .instagram-post-container {
+    max-width: 100vw;
+  }
+  
+  .instagram-media {
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* Tablet responsiveness */
+@media (max-width: 768px) and (min-width: 641px) {
+  .instagram-post-container {
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* Ensure Instagram embeds can be clicked and interactive */
+.instagram-media iframe,
+.instagram-media .instagram-media {
+  pointer-events: auto !important;
+}
+
+/* Loading state */
+.instagram-media[data-instgrm-loading="true"] {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Error state handling */
+.instagram-media-error {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Container wrapper */
+.instagram-post-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
