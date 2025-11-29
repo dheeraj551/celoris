@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { 
+import {
   Briefcase,
   MapPin,
   Clock,
@@ -43,8 +43,8 @@ interface JobsDisplayProps {
   className?: string
 }
 
-export default function JobsDisplay({ 
-  featured = false, 
+export default function JobsDisplay({
+  featured = false,
   limit = 6,
   layout = 'grid',
   className = ""
@@ -64,7 +64,7 @@ export default function JobsDisplay({
       params.append('limit', limit.toString())
       if (featured) params.append('featured', 'true')
 
-      const response = await fetch('/api/jobs')
+      const response = await fetch(`/api/jobs?${params.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch jobs')
 
       const data = await response.json()
@@ -136,14 +136,14 @@ export default function JobsDisplay({
                 </div>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <MapPin className="w-4 h-4" />
               {job.location}
               {job.is_remote && <span className="text-green-600">(Remote)</span>}
             </div>
           </CardHeader>
-          
+
           <CardContent className="pt-0">
             <div className="flex items-center gap-2 mb-3">
               <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getEmploymentTypeColor(job.employment_type)}`}>
@@ -221,7 +221,7 @@ export default function JobsDisplay({
                     {job.is_remote && <span className="text-green-600">(Remote)</span>}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2 mb-3">
                   <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getEmploymentTypeColor(job.employment_type)}`}>
                     {job.employment_type.replace('-', ' ')}

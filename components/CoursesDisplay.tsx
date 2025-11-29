@@ -5,7 +5,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { 
+import {
   BookOpen,
   GraduationCap,
   Clock,
@@ -65,10 +65,10 @@ interface CoursesDisplayProps {
   className?: string
 }
 
-export default function CoursesDisplay({ 
-  subject, 
-  grade_level, 
-  featured = false, 
+export default function CoursesDisplay({
+  subject,
+  grade_level,
+  featured = false,
   limit = 6,
   layout = 'grid',
   showStats = true,
@@ -93,7 +93,7 @@ export default function CoursesDisplay({
       if (grade_level) params.append('grade_level', grade_level)
       if (featured) params.append('featured', 'true')
 
-      const response = await fetch('/api/courses')
+      const response = await fetch(`/api/courses?${params.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch courses')
 
       const data = await response.json()
@@ -159,7 +159,7 @@ export default function CoursesDisplay({
             <p className="text-gray-600 text-sm mb-4 line-clamp-3">
               {course.description}
             </p>
-            
+
             {showStats && (
               <div className="grid grid-cols-3 gap-4 mb-4 text-center">
                 <div>

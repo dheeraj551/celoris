@@ -34,6 +34,9 @@ export async function GET(request: NextRequest) {
     const publicPosts = posts?.map(post => ({
       id: post.id,
       instagram_url: post.instagram_url,
+      media_url: post.media_url,
+      caption: post.caption,
+      post_type: post.post_type,
       embed_html: post.embed_html,
       created_at: post.created_at
     })) || [];

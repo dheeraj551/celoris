@@ -5,10 +5,11 @@ import { useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  User, 
-  Instagram, 
-  MapPin, 
+import InstagramPosts from "@/components/InstagramPosts"
+import {
+  User,
+  Instagram,
+  MapPin,
   Mail,
   Heart,
   Shield,
@@ -33,9 +34,9 @@ export default function ProfilePreviewPage() {
     try {
       const supabase = createClient()
       const username = params.username as string
-      
+
       console.log('Loading profile for:', username)
-      
+
       // Try to find by username first
       let { data: profileData, error: profileError } = await supabase
         .from('users')
@@ -52,9 +53,9 @@ export default function ProfilePreviewPage() {
           .select('*')
           .eq('id', username)
           .maybeSingle()
-        
+
         console.log('ID query result:', { data, idError })
-        
+
         if (idError && idError.code !== 'PGRST116') {
           console.error('Error loading profile by ID:', idError)
           setError('Failed to load profile')
@@ -156,25 +157,23 @@ export default function ProfilePreviewPage() {
                 </div>
                 <CardTitle className="text-xl">{profile.full_name}</CardTitle>
                 <CardDescription>@{profile.username}</CardDescription>
-                
+
                 {/* Account Status */}
                 <div className="flex items-center justify-center gap-2 mt-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    profile.subscription_status === 'premium' 
-                      ? 'bg-yellow-100 text-yellow-800' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${profile.subscription_status === 'premium'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-gray-100 text-gray-800'
+                    }`}>
                     {profile.subscription_status === 'premium' ? (
                       <><Crown className="h-3 w-3 inline mr-1" /> Premium</>
                     ) : (
                       'Free'
                     )}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    profile.verification_status === 'verified' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${profile.verification_status === 'verified'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                    }`}>
                     <Shield className="h-3 w-3 inline mr-1" />
                     {profile.verification_status || 'Pending'}
                   </span>
@@ -241,7 +240,23 @@ export default function ProfilePreviewPage() {
               </CardContent>
             </Card>
 
-
+            {/* Social Posts */}
+            {profile.id && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Instagram className="h-5 w-5 text-pink-500" />
+                    Social Posts
+                  </CardTitle>
+                  <CardDescription>
+                    Posts shared by {profile.full_name || profile.username}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <InstagramPosts userId={profile.id} showHeader={false} />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Action Buttons */}
             <div className="flex gap-4">

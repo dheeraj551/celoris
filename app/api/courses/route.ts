@@ -1,70 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
-
-// Enhanced sample courses data with real course content
-const sampleCourses = [
-  {
-    id: '447d52ba-6299-445e-ab48-9604c5f48860',
-    title: 'Mastering CBSE Class 12 Physics: Your Comprehensive Guide',
-    subject: 'Physics',
-    grade_level: 'Class 12th',
-    description: 'Embark on an insightful journey through the fascinating world of Class 12 CBSE Physics. This comprehensive course is meticulously designed to cover the entire CBSE syllabus, offering clear explanations, illustrative examples, and practical applications to solidify your understanding.',
-    target_audience: 'Class 12th, IIT JEE',
-    instructor_name: 'Dheeraj Kushwaha',
-    course_duration: '24 weeks',
-    price: 1500,
-    course_image_url: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=250&fit=crop',
-    is_featured: true,
-    created_at: '2025-11-21T15:58:24.692993+00:00',
-    course_modules: []
-  },
-  {
-    id: '7742d0e0-5351-4522-8b4f-c404aa23c477',
-    title: 'Mastering Class 12th CBSE Mathematics: A Comprehensive Guide',
-    subject: 'Mathematics',
-    grade_level: 'Class 12th CBSE',
-    description: 'A comprehensive guide to mastering Class 12th CBSE Mathematics. This course is designed to help students excel in their board examinations and build a strong foundation for higher studies.',
-    target_audience: 'Class 12th CBSE students, Board exam preparers',
-    instructor_name: 'Dr. Sarah Johnson',
-    course_duration: '6 months',
-    price: 2999,
-    course_image_url: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=250&fit=crop',
-    is_featured: true,
-    created_at: '2025-11-20T09:12:18.179346+00:00',
-    course_modules: []
-  },
-  {
-    id: '3',
-    title: 'Complete Web Development Bootcamp',
-    subject: 'Programming',
-    grade_level: 'Beginner',
-    description: 'Learn full-stack web development from scratch with HTML, CSS, JavaScript, React, Node.js, and databases.',
-    target_audience: 'Beginner developers and career changers',
-    instructor_name: 'John Smith',
-    course_duration: '12 weeks',
-    price: 299,
-    course_image_url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop',
-    is_featured: false,
-    created_at: '2024-11-01T00:00:00Z',
-    course_modules: []
-  },
-  {
-    id: '4',
-    title: 'Digital Marketing Mastery',
-    subject: 'Marketing',
-    grade_level: 'Intermediate',
-    description: 'Master digital marketing strategies including SEO, social media, content marketing, and analytics.',
-    target_audience: 'Marketing professionals and entrepreneurs',
-    instructor_name: 'Sarah Johnson',
-    course_duration: '8 weeks',
-    price: 199,
-    course_image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop',
-    is_featured: false,
-    created_at: '2024-11-02T00:00:00Z',
-    course_modules: []
-  }
-]
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,68 +11,106 @@ export async function GET(request: NextRequest) {
     const subject = searchParams.get('subject')
     const featured = searchParams.get('featured')
     const search = searchParams.get('search')
+    const grade_level = searchParams.get('grade_level')
 
-    console.log('Courses API request:', { page, limit, subject, featured, search })
+    console.log('Courses API request:', { page, limit, subject, featured, search, grade_level })
 
-    let filteredCourses = [...sampleCourses]
+    // Initialize Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
-    // Filter by subject
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase credentials')
+      return NextResponse.json({ 
+        error: 'Configuration error', 
+        message: 'Missing Supabase credentials' 
+      }, { status: 500 })
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Build query
+    let query = supabase
+      .from('courses')
+      .select(`
+        *,
+        course_modules (
+          id,
+          estimated_duration,
+          course_topics (count)
+        )
+      `, { count: 'exact' })
+
+    // Apply filters
     if (subject) {
-      filteredCourses = filteredCourses.filter(course => 
-        course.subject.toLowerCase().includes(subject.toLowerCase())
-      )
+      query = query.ilike('subject', `%${subject}%`)
     }
 
-    // Filter by featured
+    if (grade_level) {
+      query = query.eq('grade_level', grade_level)
+    }
+
     if (featured === 'true') {
-      filteredCourses = filteredCourses.filter(course => course.is_featured)
+      query = query.eq('is_featured', true)
     }
 
-    // Filter by search
     if (search) {
-      filteredCourses = filteredCourses.filter(course => 
-        course.title.toLowerCase().includes(search.toLowerCase()) ||
-        course.description.toLowerCase().includes(search.toLowerCase())
-      )
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
     }
-
-    // Sort by featured first, then by creation date
-    filteredCourses.sort((a, b) => {
-      if (a.is_featured && !b.is_featured) return -1
-      if (!a.is_featured && b.is_featured) return 1
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    })
 
     // Apply pagination
     const from = (page - 1) * limit
-    const to = from + limit
-    const paginatedCourses = filteredCourses.slice(from, to)
+    const to = from + limit - 1
+    
+    query = query
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+
+    const { data: courses, error, count } = await query
+
+    if (error) {
+      console.error('Supabase error fetching courses:', error)
+      throw error
+    }
+
+    // Process courses to calculate totals
+    const processedCourses = courses?.map(course => {
+      const modules = course.course_modules || []
+      const totalDuration = modules.reduce((acc: number, curr: any) => acc + (curr.estimated_duration || 0), 0)
+      const totalTopics = modules.reduce((acc: number, curr: any) => acc + (curr.course_topics?.[0]?.count || 0), 0)
+
+      return {
+        ...course,
+        course_duration: course.course_duration || `${Math.ceil(totalDuration / 60)} hours`,
+        total_modules: modules.length,
+        total_topics: totalTopics
+      }
+    }) || []
 
     return NextResponse.json({
-      courses: paginatedCourses,
+      courses: processedCourses,
       pagination: {
         page,
         limit,
-        total: filteredCourses.length,
-        pages: Math.ceil(filteredCourses.length / limit)
+        total: count || 0,
+        pages: Math.ceil((count || 0) / limit)
       },
-      source: 'sample',
-      message: 'Using sample data - website is fully functional'
+      source: 'database'
     })
 
   } catch (error) {
     console.error('Error in courses API:', error)
     return NextResponse.json({ 
       error: 'Failed to fetch courses', 
-      message: 'Using fallback data',
-      courses: sampleCourses.slice(0, 3),
-      source: 'fallback',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      courses: [],
       pagination: {
         page: 1,
         limit: 12,
-        total: 3,
-        pages: 1
+        total: 0,
+        pages: 0
       }
-    }, { status: 200 }) // Return 200 with fallback data instead of 500 error
+    }, { status: 500 })
   }
 }

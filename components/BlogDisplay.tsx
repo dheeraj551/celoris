@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Calendar, 
-  User, 
-  Clock, 
-  Tag, 
-  Eye, 
+import {
+  Calendar,
+  User,
+  Clock,
+  Tag,
+  Eye,
   ArrowRight,
   Search,
   Filter,
@@ -45,7 +45,7 @@ const categories = [
   'Marketing', 'Productivity', 'Tutorial', 'News', 'Platform'
 ];
 
-export function BlogDisplay({ 
+export function BlogDisplay({
   showFeatured = true,
   showFilters = true,
   layout = 'grid',
@@ -106,7 +106,7 @@ export function BlogDisplay({
     try {
       const response = await fetch('/api/blog/featured');
       const data = await response.json();
-      
+
       if (response.ok) {
         setFeaturedPosts(data.posts);
       }
@@ -303,7 +303,7 @@ export function BlogDisplay({
                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                       {post.excerpt}
                     </p>
-                    
+
                     {post.tags && Array.isArray(post.tags) && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-4">
                         {post.tags.slice(0, 3).map((tag, index) => (
@@ -317,7 +317,7 @@ export function BlogDisplay({
                         ))}
                       </div>
                     )}
-                    
+
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
@@ -340,14 +340,14 @@ export function BlogDisplay({
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="mt-4 pt-4 border-t border-gray-100">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-500">
                           {formatDate(post.published_at)}
                         </span>
-                        <Link 
-                          href={`/blog/${post.slug}`}
+                        <Link
+                          href={`/blog/${post.id}`}
                           className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1"
                         >
                           Read More
@@ -388,7 +388,7 @@ export function BlogDisplay({
                       <p className="text-gray-600 mb-4 line-clamp-2">
                         {post.excerpt}
                       </p>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span className="flex items-center gap-1">
@@ -404,8 +404,8 @@ export function BlogDisplay({
                             {formatDate(post.published_at)}
                           </span>
                         </div>
-                        <Link 
-                          href={`/blog/${post.slug}`}
+                        <Link
+                          href={`/blog/${post.id}`}
                           className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1"
                         >
                           Read More
