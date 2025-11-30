@@ -1,7 +1,6 @@
 {
-  "name": "celoris-platform",
+  "name": "celoris-app",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -56,5 +55,21 @@
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
-  }
+  },
+  "description": "A comprehensive digital ecosystem that brings Learn, Earn, and Fun into a single cohesive platform built with Next.js 14 and Supabase.",
+  "main": "admin_fix_verification.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dheeraj551/celoris.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dheeraj551/celoris/issues"
+  },
+  "homepage": "https://github.com/dheeraj551/celoris#readme"
 }
