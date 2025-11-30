@@ -8,14 +8,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Heart, X, Instagram, MapPin, User, MessageCircle, Phone, Video, Shield } from "lucide-react"
 
 interface UserProfile {
-  id: string
+  user_id: string
   username: string
   full_name: string
   bio: string
   instagram_handle: string
   profile_pic_url: string
   location: string
-  subscription_status: string
+  is_creator: boolean
+  is_premium: boolean
 }
 
 export default function SwipePage() {
@@ -46,9 +47,9 @@ export default function SwipePage() {
 
       // Load potential matches (random profiles excluding current user and already swiped)
       const { data: availableProfiles } = await supabase
-        .from('users')
-        .select('id, username, full_name, bio, instagram_handle, profile_pic_url, location, subscription_status')
-        .neq('id', user.id)
+        .from('social_profiles')
+        .select('user_id, username, full_name, bio, instagram_handle, profile_pic_url, location, is_creator, is_premium')
+        .neq('user_id', user.id)
         .limit(20)
 
       if (availableProfiles) {
@@ -76,7 +77,7 @@ export default function SwipePage() {
       // Record the swipe
       await supabase.from('swipes').insert({
         swiper_id: user.id,
-        swiped_id: currentProfile.id,
+        swiped_id: currentProfile.user_id,
         direction: direction === 'super_like' ? 'super_like' : direction
       } as any)
 
@@ -85,7 +86,7 @@ export default function SwipePage() {
         const { data: oppositeSwipe } = await supabase
           .from('swipes')
           .select('*')
-          .eq('swiper_id', currentProfile.id)
+          .eq('swiper_id', currentProfile.user_id)
           .eq('swiped_id', user.id)
           .eq('direction', 'right')
           .single()
@@ -94,7 +95,7 @@ export default function SwipePage() {
           // Create match
           await supabase.from('matches').insert({
             user1_id: user.id,
-            user2_id: currentProfile.id
+            user2_id: currentProfile.user_id
           } as any)
 
           // Show match notification
@@ -266,13 +267,13 @@ export default function SwipePage() {
 
           <button
             onClick={() => handleSwipe('super_like')}
-            disabled={swipeLoading || user?.subscription_status !== 'premium'}
+            disabled={swipeLoading || user?.is_premium !== true}
             className={`w-16 h-16 rounded-full shadow-lg flex items-center justify-center transition-all disabled:opacity-50 ${
-              user?.subscription_status === 'premium' 
+              user?.is_premium === true
                 ? 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-xl' 
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
-            title={user?.subscription_status !== 'premium' ? 'Premium feature' : 'Super Like'}
+            title={user?.is_premium !== true ? 'Premium feature' : 'Super Like'}
           >
             <Heart className="h-6 w-6" />
           </button>
@@ -318,7 +319,7 @@ export default function SwipePage() {
         </div>
 
         {/* Premium Call-to-Action */}
-        {user?.subscription_status === 'free' && (
+        {user?.is_premium !== true && (
           <div className="mt-8 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg">
             <div className="flex items-center space-x-3 mb-3">
               <Shield className="h-5 w-5 text-yellow-600" />

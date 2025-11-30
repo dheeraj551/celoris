@@ -74,10 +74,14 @@ export default function MatchesPage() {
 
       setUser(user)
 
-      // 1. Load raw matches first (without joins)
+      // Load matches with user data using proper joins
       const { data: matchesData, error: matchesError } = await supabase
         .from('matches')
-        .select('*')
+        .select(`
+          *,
+          user1:social_profiles!matches_user1_id_fkey(*),
+          user2:social_profiles!matches_user2_id_fkey(*)
+        `)
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .order('created_at', { ascending: false })
 
@@ -91,49 +95,27 @@ export default function MatchesPage() {
         return
       }
 
-      // 2. Collect all unique user IDs to fetch
-      const userIdsToFetch = new Set<string>()
-      matchesData.forEach((match: any) => {
-        if (match.user1_id !== user.id) userIdsToFetch.add(match.user1_id)
-        if (match.user2_id !== user.id) userIdsToFetch.add(match.user2_id)
-      })
-
-      // 3. Fetch user details
-      const { data: usersData, error: usersError } = await supabase
-        .from('users')
-        .select('id, username, full_name, bio, profile_pic_url, location, instagram_handle')
-        .in('id', Array.from(userIdsToFetch))
-
-      if (usersError) {
-        console.error('Error loading user details:', usersError)
-      }
-
-      // Create a map for easy lookup
-      const usersMap = new Map()
-      usersData?.forEach((u: any) => usersMap.set(u.id, u))
-
-      // 4. Process matches and attach user data
+      // Process matches and attach user data
       const allMatches = matchesData
         .map((match: any) => {
-          const otherUserId = match.user1_id === user.id ? match.user2_id : match.user1_id
-          const otherUser = usersMap.get(otherUserId)
+          const otherUser = match.user1_id === user.id ? match.user2 : match.user1
 
           if (!otherUser) return null // Skip if user data not found
 
           return {
             ...match,
             user: {
-              id: otherUser.id,
+              id: otherUser.user_id,
               username: otherUser.username || '',
               full_name: otherUser.full_name || '',
               bio: otherUser.bio || '',
-              avatar_url: otherUser.profile_pic_url || '',
+              avatar_url: otherUser.profile_pic_url || otherUser.avatar_url || '',
               location: otherUser.location || '',
               instagram_handle: otherUser.instagram_handle || '',
-              is_verified: false,
-              is_premium: false,
-              is_creator: false,
-              profession: ''
+              is_verified: otherUser.is_verified || false,
+              is_premium: otherUser.is_premium || false,
+              is_creator: otherUser.is_creator || false,
+              profession: otherUser.profession || ''
             }
           }
         })
