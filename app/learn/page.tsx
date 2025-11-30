@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import CoursesDisplay from "@/components/CoursesDisplay"
+import NoticeBoard from "@/components/NoticeBoard"
 
 export const metadata: Metadata = {
   title: "Learn - Celoris Platform", 
@@ -134,7 +135,7 @@ export default function LearnPage() {
         </div>
       </section>
 
-      {/* Notice Board Section - Home Tutors Required in Delhi NCR */}
+      {/* Notice Board Section */}
       <section className="py-16 bg-background">
         <div className="container">
           <div className="text-center mb-12">
@@ -142,81 +143,11 @@ export default function LearnPage() {
               Notice Board
             </h2>
             <p className="text-lg text-text-secondary">
-              Urgent Requirements for Home Tutors in Delhi NCR
+              Current tutoring opportunities and requirements
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Sample Notice Board Entries */}
-            <Card className="card-hover border-l-4 border-l-red-500">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                    <MapPin className="w-4 h-4 text-red-600" />
-                  </div>
-                  <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-medium">
-                    URGENT
-                  </span>
-                </div>
-                <CardTitle className="text-lg text-gray-900">Student Requirement</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Student Name:</strong> Akhil</div>
-                  <div><strong>Subject:</strong> Yoga</div>
-                  <div><strong>Location:</strong> Sector 83, Gurgaon</div>
-                  <div><strong>Contact:</strong> 9876543210</div>
-                  <div className="text-xs text-gray-500 mt-3">Posted: 2 hours ago</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover border-l-4 border-l-orange-500">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                    <BookOpen className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium">
-                    IMMEDIATE
-                  </span>
-                </div>
-                <CardTitle className="text-lg text-gray-900">Home Tutor Needed</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Student Name:</strong> Priya</div>
-                  <div><strong>Subject:</strong> Mathematics (Class 12)</div>
-                  <div><strong>Location:</strong> DLF Phase 3, Gurugram</div>
-                  <div><strong>Contact:</strong> 9876543211</div>
-                  <div className="text-xs text-gray-500 mt-3">Posted: 5 hours ago</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover border-l-4 border-l-blue-500">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Users className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
-                    AVAILABLE
-                  </span>
-                </div>
-                <CardTitle className="text-lg text-gray-900">Group Classes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Student Names:</strong> Rahul & Kiran</div>
-                  <div><strong>Subject:</strong> Science (Class 9-10)</div>
-                  <div><strong>Location:</strong> Sector 45, Gurgaon</div>
-                  <div><strong>Contact:</strong> 9876543212</div>
-                  <div className="text-xs text-gray-500 mt-3">Posted: 1 day ago</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <NoticeBoard limit={6} />
 
           <div className="text-center mt-8">
             <Button size="lg" asChild className="bg-green-600 hover:bg-green-700">
