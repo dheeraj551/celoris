@@ -15,19 +15,8 @@ export async function GET(request: NextRequest) {
 
     console.log('Courses API request:', { page, limit, subject, featured, search, grade_level })
 
-    // Initialize Supabase client
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase credentials')
-      return NextResponse.json({ 
-        error: 'Configuration error', 
-        message: 'Missing Supabase credentials' 
-      }, { status: 500 })
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    // Initialize Supabase client (automatically reads from environment variables)
+    const supabase = createClient()
 
     // Build query
     let query = supabase
@@ -61,7 +50,7 @@ export async function GET(request: NextRequest) {
     // Apply pagination
     const from = (page - 1) * limit
     const to = from + limit - 1
-    
+
     query = query
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false })
@@ -101,8 +90,8 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error in courses API:', error)
-    return NextResponse.json({ 
-      error: 'Failed to fetch courses', 
+    return NextResponse.json({
+      error: 'Failed to fetch courses',
       message: error instanceof Error ? error.message : 'Unknown error',
       courses: [],
       pagination: {

@@ -3,7 +3,7 @@
 // ===========================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase-client'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,19 +21,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = (page - 1) * limit
 
-    // Initialize Supabase client
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase credentials')
-      return NextResponse.json({
-        error: 'Configuration error',
-        message: 'Missing Supabase credentials'
-      }, { status: 500 })
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    // Initialize Supabase client (automatically reads from environment variables)
+    const supabase = createClient()
 
     let query = supabase
       .from('jobs')
