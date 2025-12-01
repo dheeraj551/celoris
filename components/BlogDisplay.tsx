@@ -347,7 +347,7 @@ export function BlogDisplay({
                           {formatDate(post.published_at)}
                         </span>
                         <Link
-                          href={`/blog/${post.slug}`}
+                          href={`/blog/${post.slug.replace(/\/$/, '')}`}
                           className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1"
                         >
                           Read More
@@ -405,7 +405,7 @@ export function BlogDisplay({
                           </span>
                         </div>
                         <Link
-                          href={`/blog/${post.slug}`}
+                          href={`/blog/${post.slug.replace(/\/$/, '')}`}
                           className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1"
                         >
                           Read More

@@ -5,9 +5,18 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User, LogOut } from "lucide-react"
+import { Menu, User, LogOut, Heart, Users, User as UserIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase-client"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const publicNavigation = [
   { name: "Home", href: "/" },
@@ -29,20 +38,6 @@ const authenticatedNavigation = [
   { name: "Apps", href: "/apps" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
-]
-
-// Simplified navigation for social section (removes Social, About, Apps, Contact)
-const socialSectionNavigation = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Learn", href: "/learn" },
-  { name: "Earn", href: "/earn" },
-]
-
-// Social-specific navigation that shows when on social pages
-const socialNavigation = [
-  { name: "Discover", href: "/social/swipe", icon: "Heart" },
-  { name: "Matches", href: "/social/matches", icon: "Users" },
-  { name: "Profile", href: "/social/profile", icon: "User" },
 ]
 
 export default function Header() {
@@ -108,80 +103,70 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          {pathname.startsWith('/social') && user ? (
-            // Simplified navigation for social section
-            socialSectionNavigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary-500",
-                  pathname === item.href
-                    ? "text-primary-500"
-                    : "text-text-secondary"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))
-          ) : (
-            // Full navigation for other sections
-            (user ? authenticatedNavigation : publicNavigation).map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary-500",
-                  pathname === item.href
-                    ? "text-primary-500"
-                    : "text-text-secondary"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))
-          )}
+          {(user ? authenticatedNavigation : publicNavigation).map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary-500",
+                pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                  ? "text-primary-500"
+                  : "text-text-secondary"
+              )}
+            >
+              {item.name}
+            </Link>
+          ))}
         </nav>
 
-        {/* Social-specific navigation - shown when in social section */}
-        {pathname.startsWith('/social') && user && (
-          <nav className="hidden md:flex items-center space-x-4 ml-6 pl-6 border-l border-border">
-            {socialNavigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary-500 flex items-center space-x-1",
-                  pathname === item.href
-                    ? "text-primary-500 bg-primary-50 px-3 py-1 rounded-md"
-                    : "text-text-secondary hover:text-primary-500 px-3 py-1 rounded-md hover:bg-gray-50"
-                )}
-              >
-                <span className="text-xs">{item.icon}</span>
-                <span>{item.name}</span>
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        {/* CTA Buttons */}
+        {/* CTA Buttons / User Menu */}
         <div className="hidden md:flex items-center space-x-4">
           {loading ? (
             <div className="flex items-center space-x-2">
-              <div className="animate-pulse bg-gray-200 h-8 w-16 rounded"></div>
-              <div className="animate-pulse bg-gray-200 h-8 w-20 rounded"></div>
+              <div className="animate-pulse bg-gray-200 h-8 w-8 rounded-full"></div>
             </div>
           ) : user ? (
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 text-sm text-text-secondary">
-                <User className="h-4 w-4" />
-                <span>Welcome, {profile?.full_name || user.email}</span>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 p-0 overflow-hidden">
+                  <span className="text-white font-bold text-sm">Me</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">ConnectHub</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {profile?.full_name || user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/social/swipe" className="cursor-pointer">
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Discover</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/social/matches" className="cursor-pointer">
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>Matches</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/social/profile" className="cursor-pointer">
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Button variant="ghost" asChild>
@@ -211,55 +196,57 @@ export default function Header() {
                 />
               </Link>
               <div className="flex flex-col space-y-4">
-                {pathname.startsWith('/social') && user ? (
-                  // Simplified navigation for social section on mobile
-                  socialSectionNavigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={cn(
-                        "text-lg font-medium transition-colors hover:text-primary-500",
-                        pathname === item.href
-                          ? "text-primary-500"
-                          : "text-text-secondary"
-                      )}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))
-                ) : (
-                  // Full navigation for other sections on mobile
-                  (user ? authenticatedNavigation : publicNavigation).map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={cn(
-                        "text-lg font-medium transition-colors hover:text-primary-500",
-                        pathname === item.href
-                          ? "text-primary-500"
-                          : "text-text-secondary"
-                      )}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))
-                )}
+                {(user ? authenticatedNavigation : publicNavigation).map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={cn(
+                      "text-lg font-medium transition-colors hover:text-primary-500",
+                      pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                        ? "text-primary-500"
+                        : "text-text-secondary"
+                    )}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
               </div>
+
+              {/* Mobile User Menu */}
               <div className="flex flex-col space-y-2 pt-4 border-t">
                 {loading ? (
                   <div className="flex flex-col space-y-2">
                     <div className="animate-pulse bg-gray-200 h-10 w-full rounded"></div>
-                    <div className="animate-pulse bg-gray-200 h-10 w-full rounded"></div>
                   </div>
                 ) : user ? (
                   <>
-                    <div className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary">
-                      <User className="h-4 w-4" />
-                      <span>Welcome, {profile?.full_name || user.email}</span>
-                    </div>
-                    <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false); }}>
+                    <div className="px-2 py-2 text-sm font-semibold text-gray-500">ConnectHub</div>
+                    <Link
+                      href="/social/swipe"
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Heart className="h-4 w-4" />
+                      <span>Discover</span>
+                    </Link>
+                    <Link
+                      href="/social/matches"
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Users className="h-4 w-4" />
+                      <span>Matches</span>
+                    </Link>
+                    <Link
+                      href="/social/profile"
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <UserIcon className="h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                    <Button variant="outline" className="mt-4" onClick={() => { handleSignOut(); setIsOpen(false); }}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </Button>

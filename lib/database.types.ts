@@ -196,6 +196,26 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['blog_comments']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['blog_comments']['Insert']>
       }
+      notice_board: {
+        Row: {
+          id: string
+          title: string
+          student_name: string
+          subject: string
+          location: string
+          contact_number: string
+          description: string | null
+          priority: 'low' | 'normal' | 'high' | 'urgent'
+          category: string
+          requirements: string | null
+          duration: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['notice_board']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['notice_board']['Insert']>
+      }
     }
     Views: {
       [_ in never]: never

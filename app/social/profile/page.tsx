@@ -8,15 +8,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import InstagramManager from "@/components/InstagramManager"
 import InstagramPosts from "@/components/InstagramPosts"
-import { 
-  User, 
-  Instagram, 
-  MapPin, 
-  Mail, 
-  Camera, 
-  Settings, 
-  Heart, 
-  Shield, 
+import {
+  User,
+  Instagram,
+  MapPin,
+  Mail,
+  Camera,
+  Settings,
+  Heart,
+  Shield,
   Crown,
   Save,
   Eye,
@@ -63,13 +63,13 @@ export default function SocialProfilePage() {
         setMessage({ type: 'error', text: 'Image size should be less than 5MB' })
         return
       }
-      
+
       // Check file type
       if (!file.type.startsWith('image/')) {
         setMessage({ type: 'error', text: 'Please select an image file' })
         return
       }
-      
+
       setSelectedFile(file)
       uploadProfilePhoto(file)
     }
@@ -79,7 +79,7 @@ export default function SocialProfilePage() {
     try {
       setUploadingPhoto(true)
       const supabase = createClient()
-      
+
       // Get current user
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -118,7 +118,7 @@ export default function SocialProfilePage() {
 
       // Refresh profile data
       await checkAuthAndLoadProfile()
-      
+
       setMessage({ type: 'success', text: 'Profile photo updated successfully!' })
       console.log('Profile photo uploaded successfully. New URL:', publicUrl)
     } catch (error) {
@@ -148,7 +148,7 @@ export default function SocialProfilePage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/login')
         return
@@ -181,7 +181,7 @@ export default function SocialProfilePage() {
         })
       } else {
         console.log('No profile data found for user, creating profile...')
-        
+
         // Create profile for user if it doesn't exist (only include fields that exist)
         const { data: newProfile, error: createError } = await (supabase as any)
           .from('users')
@@ -311,7 +311,7 @@ export default function SocialProfilePage() {
       }
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' })
-      
+
       // Refresh data
       setTimeout(() => {
         checkAuthAndLoadProfile()
@@ -326,9 +326,9 @@ export default function SocialProfilePage() {
   }
 
   const availableInterests = [
-    'art', 'design', 'photography', 'music', 'travel', 'food', 'fitness', 
-    'technology', 'startups', 'business', 'entrepreneurship', 'marketing', 
-    'writing', 'reading', 'gaming', 'movies', 'sports', 'cooking', 
+    'art', 'design', 'photography', 'music', 'travel', 'food', 'fitness',
+    'technology', 'startups', 'business', 'entrepreneurship', 'marketing',
+    'writing', 'reading', 'gaming', 'movies', 'sports', 'cooking',
     'fashion', 'beauty', 'education', 'health', 'wellness', 'nature',
     'pets', 'cars', 'architecture', 'culture', 'history', 'science'
   ]
@@ -356,8 +356,8 @@ export default function SocialProfilePage() {
             <p className="text-text-secondary">Manage your InstaLinkr profile and preferences</p>
           </div>
           <div className="flex gap-3">
-            <Button 
-              onClick={() => window.open(`/social/profile/preview/${profile?.username || user?.id}`, '_blank')} 
+            <Button
+              onClick={() => window.open(`/social/profile/preview/${profile?.username || user?.id}`, '_blank')}
               variant="outline"
               disabled={!profile && !user}
             >
@@ -373,10 +373,9 @@ export default function SocialProfilePage() {
 
         {/* Message */}
         {message.text && (
-          <div className={`p-4 rounded-lg mb-6 ${
-            message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 
-            'bg-red-50 text-red-700 border border-red-200'
-          }`}>
+          <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' :
+              'bg-red-50 text-red-700 border border-red-200'
+            }`}>
             {message.text}
           </div>
         )}
@@ -395,8 +394,8 @@ export default function SocialProfilePage() {
                 <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 relative group cursor-pointer" onClick={triggerFileUpload}>
                   {/* Profile image with enhanced error handling */}
                   <img
-                    src={profile?.profile_pic_url && profile.profile_pic_url.trim() !== '' 
-                      ? `${profile.profile_pic_url}?t=${Date.now()}` 
+                    src={profile?.profile_pic_url && profile.profile_pic_url.trim() !== ''
+                      ? `${profile.profile_pic_url}?t=${Date.now()}`
                       : `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.full_name || user?.email?.split('@')[0] || 'User')}&background=6366f1&color=fff&size=128&format=png`
                     }
                     alt="Profile"
@@ -423,8 +422,8 @@ export default function SocialProfilePage() {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <Button 
-                  onClick={triggerFileUpload} 
+                <Button
+                  onClick={triggerFileUpload}
                   disabled={uploadingPhoto}
                   className="w-full mt-3 bg-primary-500 hover:bg-primary-600 text-white border-0 shadow-lg"
                   size="default"
@@ -447,11 +446,10 @@ export default function SocialProfilePage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-text-secondary">Subscription</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      profile?.subscription_status === 'premium' 
-                        ? 'bg-yellow-100 text-yellow-800' 
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${profile?.subscription_status === 'premium'
+                        ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-gray-100 text-gray-800'
-                    }`}>
+                      }`}>
                       {profile?.subscription_status === 'premium' ? (
                         <><Crown className="h-3 w-3 inline mr-1" /> Premium</>
                       ) : (
@@ -461,11 +459,10 @@ export default function SocialProfilePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-text-secondary">Verification</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      profile?.verification_status === 'verified' 
-                        ? 'bg-green-100 text-green-800' 
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${profile?.verification_status === 'verified'
+                        ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                      }`}>
                       {profile?.verification_status || 'Pending'}
                     </span>
                   </div>
@@ -682,11 +679,10 @@ export default function SocialProfilePage() {
                         <button
                           key={interest}
                           onClick={() => handleInterestToggle(interest)}
-                          className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                            preferencesData.interests.includes(interest)
+                          className={`px-3 py-1 rounded-full text-sm border transition-colors ${preferencesData.interests.includes(interest)
                               ? 'bg-purple-500 text-white border-purple-500'
                               : 'bg-white text-text-secondary border-border hover:border-purple-300'
-                          }`}
+                            }`}
                         >
                           {interest}
                         </button>
@@ -700,25 +696,7 @@ export default function SocialProfilePage() {
             {/* Instagram Posts Management - Always visible for Instagram integration */}
             <InstagramManager user={user} />
 
-            {/* Instagram Posts Display - Always visible */}
-            {user?.id && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                    My Instagram Posts
-                  </CardTitle>
-                  <CardDescription>
-                    Instagram posts embedded on your profile
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <InstagramPosts userId={user.id} showHeader={false} />
-                </CardContent>
-              </Card>
-            )}
+            {/* Instagram Posts Display - Removed as it is already in InstagramManager */}
 
             {/* Save Button */}
             <div className="flex justify-end space-x-4">

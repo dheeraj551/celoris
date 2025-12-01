@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
-    
-    const supabase = createSupabaseClientForServer()
-    
+
+    // Use the browser client (Anon key) for public read access
+    // This avoids potential issues with the Service Role client on the server
+    // and aligns with the RLS policy "Public can view active notices"
+    const supabase = createClientForBrowser()
+
     const { data, error, count } = await supabase
       .from('notice_board')
       .select('*', { count: 'exact' })
@@ -17,9 +20,9 @@ export async function GET(request: NextRequest) {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('Error fetching notice board data:', error)
+      console.error('Supabase Error fetching notice board data:', JSON.stringify(error, null, 2))
       return NextResponse.json(
-        { error: 'Failed to fetch notice board data' },
+        { error: error.message || 'Failed to fetch notice board data' },
         { status: 500 }
       )
     }
@@ -33,10 +36,10 @@ export async function GET(request: NextRequest) {
         hasMore: (count || 0) > offset + limit
       }
     })
-  } catch (error) {
-    console.error('Server error:', error)
+  } catch (error: any) {
+    console.error('Server error in GET /api/notice-board:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     )
   }
@@ -46,7 +49,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const supabase = createSupabaseClientForServer()
-    
+
     const {
       title,
       student_name,

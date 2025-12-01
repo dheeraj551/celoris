@@ -1,187 +1,115 @@
-'use client';
+"use client"
 
-import React, { useState, useEffect } from 'react';
-import './InstagramPosts.css';
-import { Video, Image as ImageIcon, Instagram } from 'lucide-react';
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase-client"
+import { Instagram, Video, Image as ImageIcon, X } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 
-// TypeScript declarations for Instagram global object
-declare global {
-  interface Window {
-    instgrm?: {
-      Embeds: {
-        process(): void;
-      };
-    };
-  }
-}
-
-interface InstagramPost {
-  id: string;
-  media_url: string;
-  post_type: 'instagram' | 'video' | 'image';
-  embed_html?: string;
-  thumbnail_url?: string;
-  caption?: string;
-  created_at: string;
+interface SocialPost {
+  id: string
+  user_id: string
+  media_url: string
+  post_type: 'instagram' | 'video' | 'image'
+  caption: string | null
+  created_at: string
 }
 
 interface InstagramPostsProps {
-  userId?: string;
-  showHeader?: boolean;
+  userId: string
+  showHeader?: boolean
 }
 
 export default function InstagramPosts({ userId, showHeader = true }: InstagramPostsProps) {
-  const [posts, setPosts] = useState<InstagramPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [posts, setPosts] = useState<SocialPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedPost, setSelectedPost] = useState<SocialPost | null>(null)
 
-  // Load posts
+  useEffect(() => {
+    if (userId) {
+      loadPosts()
+    }
+  }, [userId])
+
   const loadPosts = async () => {
     try {
-      setLoading(true);
-      setError('');
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('instagram_posts')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
 
-      let url = '/api/instagram-posts';
-      if (userId) {
-        url = `/api/public/instagram-posts?user_id=${userId}`;
-      }
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        if (response.status === 401 && !userId) {
-          setPosts([]);
-          return;
-        }
-        throw new Error('Failed to fetch posts');
-      }
-
-      const data = await response.json();
-      setPosts(data.posts || []);
+      if (error) throw error
+      setPosts(data || [])
     } catch (error) {
-      console.error('Error loading posts:', error);
-      if (!userId) {
-        setError('Failed to load posts');
-      }
-      setPosts([]);
+      console.error('Error loading posts:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  // Instagram script loading removed
-  useEffect(() => {
-    // No-op
-  }, [userId, posts]);
-
-  useEffect(() => {
-    loadPosts();
-  }, [userId]);
-
-  const renderPost = (post: InstagramPost) => {
-    // Default to instagram if type is missing (backward compatibility)
-    const type = post.post_type || 'instagram';
-
-    if (type === 'image') {
+  const renderPost = (post: SocialPost) => {
+    // For images and videos, we render a preview card
+    if (post.post_type === 'image' || post.post_type === 'video') {
       return (
-        <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-          <img
-            src={post.media_url}
-            alt={post.caption || 'Post'}
-            className="w-full h-auto object-cover"
-            loading="lazy"
-          />
+        <Card
+          className="overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={() => setSelectedPost(post)}
+        >
+          <CardContent className="p-0 relative aspect-square group">
+            {post.post_type === 'image' ? (
+              <img
+                src={post.media_url}
+                alt={post.caption || 'Post'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <video
+                src={post.media_url}
+                className="w-full h-full object-cover"
+              />
+            )}
+            {post.caption && (
+              <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <p className="text-white text-xs truncate">{post.caption}</p>
+              </div>
+            )}
+            <div className="absolute top-2 right-2 bg-black/50 p-1 rounded-full">
+              {post.post_type === 'video' ? <Video className="w-3 h-3 text-white" /> : <ImageIcon className="w-3 h-3 text-white" />}
+            </div>
+          </CardContent>
           {post.caption && (
-            <div className="p-3">
-              <p className="text-sm text-gray-800">{post.caption}</p>
+            <div className="p-3 border-t">
+              <p className="text-sm text-gray-600 line-clamp-2">{post.caption}</p>
             </div>
           )}
-        </div>
-      );
+        </Card>
+      )
     }
 
-    if (type === 'video') {
-      return (
-        <div className="w-full max-w-md mx-auto bg-black rounded-lg shadow-sm overflow-hidden">
-          <video
-            src={post.media_url}
-            controls
-            className="w-full h-auto max-h-[600px]"
-            poster={post.thumbnail_url}
-          >
-            Your browser does not support the video tag.
-          </video>
-          {post.caption && (
-            <div className="p-3 bg-white">
-              <p className="text-sm text-gray-800">{post.caption}</p>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // Instagram support removed - hide Instagram posts
-    const instagramUrlPattern = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/.+/;
-    if (type === 'instagram' || instagramUrlPattern.test(post.media_url)) {
-      return null;
-    }
-
-    return null;
-  };
+    return null
+  }
 
   if (loading) {
-    return (
-      <div className="instagram-posts-section">
-        {showHeader && (
-          <h3 className="text-lg font-semibold mb-4">Social Feed</h3>
-        )}
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="instagram-posts-section">
-        {showHeader && (
-          <h3 className="text-lg font-semibold mb-4">Social Feed</h3>
-        )}
-        <p className="text-red-500 text-center py-4">{error}</p>
-      </div>
-    );
-  }
-
-  if (posts.length === 0) {
-    return (
-      <div className="instagram-posts-section">
-        {showHeader && (
-          <h3 className="text-lg font-semibold mb-4">Social Feed</h3>
-        )}
-        <p className="text-gray-500 text-center py-8">
-          No posts to display.
-        </p>
-      </div>
-    );
+    return <div className="text-center py-4">Loading posts...</div>
   }
 
   return (
-    <div className="instagram-posts-section">
+    <div className="w-full">
       {showHeader && (
         <div className="flex items-center gap-2 mb-4">
-          <Instagram className="w-6 h-6 text-pink-500" />
-          <h3 className="text-lg font-semibold">Social Feed</h3>
+          <Instagram className="w-6 h-6 text-pink-600" />
+          <h3 className="text-xl font-bold">My Instagram Posts</h3>
         </div>
       )}
 
-      <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {posts.filter(post => {
           const type = post.post_type || 'instagram';
           const instagramUrlPattern = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/.+/;
           return !(type === 'instagram' || instagramUrlPattern.test(post.media_url));
         }).length === 0 ? (
-          <p className="text-gray-500 text-center py-8">
+          <p className="text-gray-500 text-center py-8 col-span-full">
             No posts to display.
           </p>
         ) : (
@@ -196,6 +124,49 @@ export default function InstagramPosts({ userId, showHeader = true }: InstagramP
           })
         )}
       </div>
+
+      {/* Zoom Modal */}
+      {selectedPost && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedPost(null)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white hover:text-gray-300 p-2"
+            onClick={() => setSelectedPost(null)}
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          <div
+            className="max-w-4xl w-full max-h-[90vh] flex flex-col items-center"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="relative w-full h-full flex items-center justify-center bg-black rounded-lg overflow-hidden">
+              {selectedPost.post_type === 'image' ? (
+                <img
+                  src={selectedPost.media_url}
+                  alt={selectedPost.caption || 'Full size post'}
+                  className="max-w-full max-h-[80vh] object-contain"
+                />
+              ) : (
+                <video
+                  src={selectedPost.media_url}
+                  controls
+                  autoPlay
+                  className="max-w-full max-h-[80vh]"
+                />
+              )}
+            </div>
+
+            {selectedPost.caption && (
+              <div className="mt-4 bg-white/10 backdrop-blur-sm p-4 rounded-lg w-full max-w-2xl">
+                <p className="text-white text-center">{selectedPost.caption}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }

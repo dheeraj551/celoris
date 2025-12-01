@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-client';
+import { createClientForBrowser } from '@/lib/supabase-client';
 
 // GET /api/blog/[slug] - Get single published blog post by slug
 export async function GET(
@@ -7,19 +7,49 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const supabase = createClient()
-    const { slug } = params;
+    const supabase = createClientForBrowser()
+    let { slug } = params;
 
-    // First try to get the post by slug
-    const { data: post, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', slug)
-      .eq('is_published', true)
-      .eq('status', 'published')
-      .single();
+    console.log('Blog API - Requested slug:', slug);
 
-    if (error) {
+    // Normalize slug: create variants with and without trailing slash
+    const slugWithoutSlash = slug.replace(/\/$/, '');
+    const slugWithSlash = slugWithoutSlash + '/';
+
+    const slugVariants = [slugWithoutSlash, slugWithSlash];
+
+    console.log('Blog API - Trying slug variants:', slugVariants);
+
+    // First try to get the post by slug (try all variants)
+    let post = null;
+    let error = null;
+
+    for (const slugVariant of slugVariants) {
+      console.log('Blog API - Trying slug variant:', slugVariant);
+      const { data, error: queryError } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('slug', slugVariant)
+        .eq('is_published', true)
+        .eq('status', 'published')
+        .limit(1)
+        .maybeSingle();
+
+      console.log('Blog API - Result for', slugVariant, '- data:', data ? 'FOUND' : 'null', 'error:', queryError?.message || 'none');
+
+      if (data && !queryError) {
+        console.log('Blog API - Found post with slug:', slugVariant);
+        post = data;
+        error = null;
+        break;
+      }
+      if (queryError) {
+        console.log('Blog API - Error for slug variant:', slugVariant, queryError.message);
+      }
+      error = queryError;
+    }
+
+    if (error || !post) {
       // If not found by slug, try by ID
       const { data: postById, error: idError } = await supabase
         .from('blog_posts')
@@ -60,7 +90,7 @@ export async function GET(
         likes_count: postData.likes_count || 0,
         is_featured: postData.is_featured || false
       };
-      
+
       return NextResponse.json({ post: processedPost });
     }
 
