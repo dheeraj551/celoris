@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Process courses to calculate totals
-    const processedCourses = courses?.map(course => {
+    const processedCourses = (courses as any[])?.map(course => {
       const modules = course.course_modules || []
       const totalDuration = modules.reduce((acc: number, curr: any) => acc + (curr.estimated_duration || 0), 0)
       const totalTopics = modules.reduce((acc: number, curr: any) => acc + (curr.course_topics?.[0]?.count || 0), 0)

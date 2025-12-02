@@ -83,11 +83,12 @@ export default function ProfilePreviewPage() {
 
       // Check if friend request already sent (swipe right)
       if (user && profileData) {
+        const profileAny = profileData as any
         const { data: swipe } = await supabase
           .from('swipes')
           .select('*')
           .eq('swiper_id', user.id)
-          .eq('swiped_id', profileData.id)
+          .eq('swiped_id', profileAny.id)
           .eq('direction', 'right')
           .maybeSingle()
 

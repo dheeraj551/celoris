@@ -66,17 +66,20 @@ export default function Header() {
           .eq("id", user.id)
           .single()
 
-        if (profile && profile.profile_pic_url) {
-          // Check if profile_pic_url is already a full URL
-          if (profile.profile_pic_url.startsWith('http://') || profile.profile_pic_url.startsWith('https://')) {
-            profile.avatar_url = profile.profile_pic_url
-          } else {
-            // Get profile image URL from avatars bucket if it's a storage path
-            const { data: publicUrlData } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(profile.profile_pic_url)
+        if (profile) {
+          const profileAny = profile as any
+          if (profileAny.profile_pic_url) {
+            // Check if profile_pic_url is already a full URL
+            if (profileAny.profile_pic_url.startsWith('http://') || profileAny.profile_pic_url.startsWith('https://')) {
+              profileAny.avatar_url = profileAny.profile_pic_url
+            } else {
+              // Get profile image URL from avatars bucket if it's a storage path
+              const { data: publicUrlData } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(profileAny.profile_pic_url)
 
-            profile.avatar_url = publicUrlData.publicUrl
+              profileAny.avatar_url = publicUrlData.publicUrl
+            }
           }
         }
 

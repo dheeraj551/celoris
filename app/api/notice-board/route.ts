@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         requirements,
         duration,
         is_active
-      })
+      } as any)
       .select()
       .single()
 

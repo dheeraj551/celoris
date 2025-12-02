@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data for frontend - maintain original field names
-    const transformedJobs = (dbJobs || []).map(job => ({
+    const transformedJobs = ((dbJobs || []) as any[]).map(job => ({
       id: job.id,
       title: job.title,
       company_name: job.company_name,

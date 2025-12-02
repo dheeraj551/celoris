@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 
 // Simple UUID generator
 function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = Math.random() * 16 | 0;
     const v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
@@ -56,18 +56,18 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const fileExtension = path.extname(videoFile.name);
     const uniqueFilename = `${generateUUID()}${fileExtension}`;
-    
+
     // In a real implementation, you would:
     // 1. Upload to your VPS storage (AWS S3, Google Cloud, etc.)
     // 2. For demo, we'll simulate the upload
-    
+
     // Simulate VPS storage upload
     const buffer = Buffer.from(await videoFile.arrayBuffer());
-    
+
     // Create directories if they don't exist
     const uploadDir = path.join(process.cwd(), 'uploads', 'videos');
     const thumbnailDir = path.join(process.cwd(), 'uploads', 'thumbnails');
-    
+
     try {
       await fs.mkdir(uploadDir, { recursive: true });
       await fs.mkdir(thumbnailDir, { recursive: true });
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Create VPS URL (in real implementation, this would be your VPS domain)
     const vpsUrl = `/uploads/videos/${uniqueFilename}`;
-    
+
     // Save metadata to Supabase for reference
     const supabase = createClient();
     const { error: dbError } = await (supabase
@@ -121,8 +121,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('VPS upload error:', error);
     return NextResponse.json(
-      { 
-        error: 'Upload failed', 
+      {
+        error: 'Upload failed',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
@@ -152,11 +152,11 @@ export async function GET(request: NextRequest) {
     }
 
     const fullPath = path.join(process.cwd(), filePath);
-    
+
     try {
       const fileBuffer = await fs.readFile(fullPath);
-      
-      return new NextResponse(fileBuffer, {
+
+      return new NextResponse(new Uint8Array(fileBuffer), {
         headers: {
           'Content-Type': 'video/mp4', // You might want to detect this dynamically
           'Content-Length': fileBuffer.length.toString(),

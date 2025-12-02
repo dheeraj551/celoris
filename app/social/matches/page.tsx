@@ -124,13 +124,14 @@ export default function MatchesPage() {
           if (otherUser) {
             // Get avatar URL if exists
             let avatar_url = undefined
-            if (otherUser.profile_pic_url) {
-              if (otherUser.profile_pic_url.startsWith('http://') || otherUser.profile_pic_url.startsWith('https://')) {
-                avatar_url = otherUser.profile_pic_url
+            const userAny = otherUser as any
+            if (userAny.profile_pic_url) {
+              if (userAny.profile_pic_url.startsWith('http://') || userAny.profile_pic_url.startsWith('https://')) {
+                avatar_url = userAny.profile_pic_url
               } else {
                 const { data: publicUrlData } = supabase.storage
                   .from('avatars')
-                  .getPublicUrl(otherUser.profile_pic_url)
+                  .getPublicUrl(userAny.profile_pic_url)
                 avatar_url = publicUrlData.publicUrl
               }
             }
@@ -138,17 +139,17 @@ export default function MatchesPage() {
             allMatches.push({
               ...match,
               user: {
-                id: otherUser.id,
-                username: otherUser.username || '',
-                full_name: otherUser.full_name || '',
-                bio: otherUser.bio || '',
+                id: userAny.id,
+                username: userAny.username || '',
+                full_name: userAny.full_name || '',
+                bio: userAny.bio || '',
                 avatar_url: avatar_url,
-                location: otherUser.location || '',
-                instagram_handle: otherUser.instagram_handle || '',
-                is_verified: otherUser.verification_status === 'verified',
-                is_premium: otherUser.subscription_status === 'premium',
-                is_creator: otherUser.verification_status === 'verified',
-                profession: otherUser.profession || ''
+                location: userAny.location || '',
+                instagram_handle: userAny.instagram_handle || '',
+                is_verified: userAny.verification_status === 'verified',
+                is_premium: userAny.subscription_status === 'premium',
+                is_creator: userAny.verification_status === 'verified',
+                profession: userAny.profession || ''
               }
             })
           }
@@ -195,13 +196,14 @@ export default function MatchesPage() {
           if (swiper) {
             // Get avatar URL if exists
             let avatar_url = undefined
-            if (swiper.profile_pic_url) {
-              if (swiper.profile_pic_url.startsWith('http')) {
-                avatar_url = swiper.profile_pic_url
+            const swiperAny = swiper as any
+            if (swiperAny.profile_pic_url) {
+              if (swiperAny.profile_pic_url.startsWith('http')) {
+                avatar_url = swiperAny.profile_pic_url
               } else {
                 const { data: publicUrlData } = supabase.storage
                   .from('avatars')
-                  .getPublicUrl(swiper.profile_pic_url)
+                  .getPublicUrl(swiperAny.profile_pic_url)
                 avatar_url = publicUrlData.publicUrl
               }
             }
@@ -210,13 +212,13 @@ export default function MatchesPage() {
               swiper_id: swipe.swiper_id,
               created_at: swipe.created_at,
               user: {
-                id: swiper.id,
-                username: swiper.username,
-                full_name: swiper.full_name,
-                bio: swiper.bio,
+                id: swiperAny.id,
+                username: swiperAny.username,
+                full_name: swiperAny.full_name,
+                bio: swiperAny.bio,
                 avatar_url: avatar_url,
-                location: swiper.location,
-                is_verified: swiper.verification_status === 'verified'
+                location: swiperAny.location,
+                is_verified: swiperAny.verification_status === 'verified'
               }
             })
           }
