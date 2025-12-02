@@ -64,6 +64,23 @@ export function BlogDisplay({
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
 
+  // Static blog post definition
+  const STATIC_POST: BlogPost = {
+    id: 'static-multimodal-agentic-ai',
+    title: 'Beyond the Chatbot: The Rise of Multimodal and Agentic AI in Enterprise Workflows 🚀',
+    slug: 'multimodal-agentic-ai',
+    excerpt: 'Until recently, AI models were often siloed: Large Language Models (LLMs) handled text, while separate models handled images or audio. Multimodal AI breaks down these barriers.',
+    featured_image_url: 'https://anyslive.in/wp-content/uploads/2025/12/Gemini_Generated_Image_rdi845rdi845rdi8.png',
+    author_name: 'Celoris',
+    category: 'Technology',
+    tags: ['AI', 'Enterprise', 'Multimodal', 'Agentic AI'],
+    reading_time: 5,
+    published_at: '2025-12-01T12:00:00Z',
+    views_count: 120,
+    likes_count: 45,
+    is_featured: true
+  };
+
   // Load blog posts
   const loadPosts = async (page = 1, overrideFilters = filters) => {
     try {
@@ -89,13 +106,31 @@ export function BlogDisplay({
       const data = await response.json();
 
       if (response.ok) {
-        setPosts(data.posts);
+        let fetchedPosts = data.posts || [];
+
+        // Add static post if on page 1 and filters match
+        const matchesCategory = overrideFilters.category === 'All' || overrideFilters.category === STATIC_POST.category;
+        const matchesSearch = !overrideFilters.search || STATIC_POST.title.toLowerCase().includes(overrideFilters.search.toLowerCase());
+        const matchesFeatured = featured === undefined || featured === STATIC_POST.is_featured;
+
+        if (page === 1 && matchesCategory && matchesSearch && matchesFeatured) {
+          // Check if already exists to avoid duplicates if API returns it later
+          if (!fetchedPosts.some((p: BlogPost) => p.slug === STATIC_POST.slug)) {
+            fetchedPosts = [STATIC_POST, ...fetchedPosts];
+          }
+        }
+
+        setPosts(fetchedPosts);
         setCurrentPage(page);
-        setTotalPages(data.pagination.totalPages);
-        setTotalPosts(data.pagination.total);
+        setTotalPages(data.pagination?.totalPages || 1);
+        setTotalPosts((data.pagination?.total || 0) + 1); // Increment total count
       }
     } catch (error) {
       console.error('Error loading posts:', error);
+      // Fallback to show static post if API fails
+      if (page === 1) {
+        setPosts([STATIC_POST]);
+      }
     } finally {
       setLoading(false);
     }
@@ -108,10 +143,15 @@ export function BlogDisplay({
       const data = await response.json();
 
       if (response.ok) {
-        setFeaturedPosts(data.posts);
+        let fetchedFeatured = data.posts || [];
+        if (!fetchedFeatured.some((p: BlogPost) => p.slug === STATIC_POST.slug)) {
+          fetchedFeatured = [STATIC_POST, ...fetchedFeatured];
+        }
+        setFeaturedPosts(fetchedFeatured);
       }
     } catch (error) {
       console.error('Error loading featured posts:', error);
+      setFeaturedPosts([STATIC_POST]);
     }
   };
 

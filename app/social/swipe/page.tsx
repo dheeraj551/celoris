@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, UserPlus, MapPin, Search, UserCheck } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { Heart, Mail, ChevronLeft, ChevronRight, Crown, ShieldCheck, MapPin, Instagram } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface UserProfile {
   user_id: string
@@ -18,20 +18,36 @@ interface UserProfile {
   location: string
   is_creator: boolean
   is_premium: boolean
+  avatar_url?: string
+}
+
+interface SocialPost {
+  id: string
+  media_url: string
+  caption: string
 }
 
 export default function DiscoverPage() {
   const [user, setUser] = useState<any>(null)
   const [profiles, setProfiles] = useState<UserProfile[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [sendingRequest, setSendingRequest] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sentRequests, setSentRequests] = useState<Set<string>>(new Set())
+  const [sendingRequest, setSendingRequest] = useState(false)
+  const [liking, setLiking] = useState(false)
+  const [socialPosts, setSocialPosts] = useState<SocialPost[]>([])
   const router = useRouter()
+
+  const currentProfile = profiles[currentIndex]
 
   useEffect(() => {
     checkAuthAndLoadProfiles()
   }, [])
+
+  useEffect(() => {
+    if (currentProfile) {
+      loadSocialPosts(currentProfile.user_id)
+    }
+  }, [currentIndex, currentProfile])
 
   const checkAuthAndLoadProfiles = async () => {
     try {
@@ -39,40 +55,86 @@ export default function DiscoverPage() {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user) {
+        console.log('No authenticated user found')
         router.push('/login')
         return
       }
 
       setUser(user)
+      console.log('Current user:', user.id)
 
       // Get IDs of users already swiped on
-      const { data: swipedData } = await supabase
+      const { data: swipedData, error: swipeError } = await supabase
         .from('swipes')
-        .select('swiped_id')
+        .select('target_user_id')
         .eq('swiper_id', user.id)
 
-      const swipedIds = swipedData?.map(s => s.swiped_id) || []
+      if (swipeError) {
+        console.error('Error fetching swipes:', swipeError)
+      }
+
+      // Explicitly type swipedData as any[] to avoid 'never' inference if types are missing
+      const swipedIds = (swipedData as any[])?.map((s: any) => s.target_user_id) || []
       swipedIds.push(user.id) // Exclude self
+      console.log('Swiped IDs:', swipedIds)
 
-      // Load potential matches (random profiles excluding current user and already swiped)
-      // Note: In a real app with many users, we'd want server-side filtering or pagination
+      // Load potential matches from users table
       let query = supabase
-        .from('social_profiles')
-        .select('user_id, username, full_name, bio, instagram_handle, profile_pic_url, location, is_creator, is_premium')
+        .from('users')
+        .select('id, username, full_name, bio, instagram_handle, profile_pic_url, location, subscription_status, verification_status')
 
+      // Only filter if we have IDs to filter
       if (swipedIds.length > 0) {
-        // If too many IDs, this might fail, but for now it's fine
-        query = query.not('user_id', 'in', `(${swipedIds.join(',')})`)
+        // Use a filter that doesn't break with large lists, though for now 'not.in' is fine
+        query = query.not('id', 'in', `(${swipedIds.join(',')})`)
       }
 
       const { data: availableProfiles, error } = await query.limit(50)
 
       if (error) {
         console.error('Error fetching profiles:', error)
+      } else {
+        console.log('Fetched profiles:', availableProfiles?.length)
       }
 
       if (availableProfiles) {
-        setProfiles(availableProfiles)
+        // Get avatar URLs from storage and map to expected format
+        const profilesWithAvatars = await Promise.all(
+          (availableProfiles as any[]).map(async (profile: any) => {
+            let avatar_url = undefined
+            if (profile.profile_pic_url) {
+              console.log('Processing profile pic:', profile.profile_pic_url)
+              // Check if it's already a full URL
+              if (profile.profile_pic_url.startsWith('http')) {
+                avatar_url = profile.profile_pic_url
+              } else {
+                const { data: publicUrlData } = supabase.storage
+                  .from('avatars')
+                  .getPublicUrl(profile.profile_pic_url)
+
+                avatar_url = publicUrlData.publicUrl
+                console.log('Generated public URL:', avatar_url)
+              }
+            } else {
+              console.log('No profile pic for user:', profile.username)
+            }
+
+            // Map users table fields to expected profile format
+            return {
+              user_id: profile.id,
+              username: profile.username,
+              full_name: profile.full_name,
+              bio: profile.bio,
+              instagram_handle: profile.instagram_handle,
+              profile_pic_url: profile.profile_pic_url,
+              location: profile.location,
+              is_creator: profile.verification_status === 'verified',
+              is_premium: profile.subscription_status === 'premium',
+              avatar_url
+            }
+          })
+        )
+        setProfiles(profilesWithAvatars)
       }
     } catch (error) {
       console.error('Error loading profiles:', error)
@@ -81,27 +143,50 @@ export default function DiscoverPage() {
     }
   }
 
-  const handleSendRequest = async (targetUserId: string) => {
-    if (!user) return
+  const loadSocialPosts = async (userId: string) => {
+    try {
+      const supabase = createClient()
+      const { data: posts } = await supabase
+        .from('social_posts')
+        .select('id, media_url, caption')
+        .eq('user_id', userId)
+        .limit(3)
 
-    setSendingRequest(targetUserId)
+      if (posts) {
+        setSocialPosts(posts)
+      }
+    } catch (error) {
+      console.error('Error loading social posts:', error)
+      setSocialPosts([])
+    }
+  }
+
+  const handleLikeProfile = async () => {
+    if (!user || !currentProfile) return
+
+    setLiking(true)
 
     try {
       const supabase = createClient()
 
-      // Record the swipe (Right swipe = Friend Request)
-      await supabase.from('swipes').insert({
+      // Record the like (right swipe)
+      const { error: insertError } = await supabase.from('swipes').insert({
         swiper_id: user.id,
-        swiped_id: targetUserId,
-        direction: 'right'
+        target_user_id: currentProfile.user_id,
+        direction: 'like'
       } as any)
+
+      if (insertError) {
+        console.error('Error inserting like:', insertError)
+        return
+      }
 
       // Check for immediate match
       const { data: oppositeSwipe } = await supabase
         .from('swipes')
         .select('*')
-        .eq('swiper_id', targetUserId)
-        .eq('swiped_id', user.id)
+        .eq('swiper_id', currentProfile.user_id)
+        .eq('target_user_id', user.id)
         .eq('direction', 'right')
         .single()
 
@@ -109,149 +194,265 @@ export default function DiscoverPage() {
         // Create match
         await supabase.from('matches').insert({
           user1_id: user.id,
-          user2_id: targetUserId
+          user2_id: currentProfile.user_id
         } as any)
 
-        alert("It's a match! You are now friends.")
+        alert("It's a match! 🎉")
       }
 
-      // Update local state
-      setSentRequests(prev => new Set(prev).add(targetUserId))
-
-      // Optional: Remove from list or keep as "Requested"
-      // setProfiles(prev => prev.filter(p => p.user_id !== targetUserId))
-
+      // Move to next profile
+      handleNext()
     } catch (error) {
-      console.error('Error sending request:', error)
+      console.error('Error liking profile:', error)
     } finally {
-      setSendingRequest(null)
+      setLiking(false)
     }
   }
 
-  const filteredProfiles = profiles.filter(profile => {
-    if (!searchTerm) return true
-    const term = searchTerm.toLowerCase()
-    return (
-      profile.full_name?.toLowerCase().includes(term) ||
-      profile.username?.toLowerCase().includes(term) ||
-      profile.location?.toLowerCase().includes(term)
-    )
-  })
+  const handleSendMessage = async () => {
+    if (!user || !currentProfile) return
+
+    setSendingRequest(true)
+
+    try {
+      const supabase = createClient()
+
+      // Record the friend request
+      const { error: insertError } = await supabase.from('swipes').insert({
+        swiper_id: user.id,
+        target_user_id: currentProfile.user_id,
+        direction: 'like'
+      } as any)
+
+      if (insertError) {
+        console.error('Error inserting swipe:', insertError)
+        alert('Failed to send request: ' + insertError.message)
+        return
+      }
+
+      // Check for immediate match
+      const { data: oppositeSwipe } = await supabase
+        .from('swipes')
+        .select('*')
+        .eq('swiper_id', currentProfile.user_id)
+        .eq('target_user_id', user.id)
+        .eq('direction', 'right')
+        .single()
+
+      if (oppositeSwipe) {
+        // Create match
+        await supabase.from('matches').insert({
+          user1_id: user.id,
+          user2_id: currentProfile.user_id
+        } as any)
+
+        alert("It's a match! You can now message each other. 🎉")
+        router.push('/social/chat')
+      } else {
+        alert("Friend request sent! ✓")
+        handleNext()
+      }
+    } catch (error) {
+      console.error('Error sending request:', error)
+    } finally {
+      setSendingRequest(false)
+    }
+  }
+
+  const handleNext = () => {
+    if (currentIndex < profiles.length - 1) {
+      setCurrentIndex(currentIndex + 1)
+    }
+  }
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1)
+    }
+  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-text-secondary">Loading people...</p>
+          <p className="text-gray-300">Loading profiles...</p>
         </div>
       </div>
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Discover People</h1>
-            <p className="text-gray-600">Find friends and connect with people</p>
-          </div>
-
-          <div className="flex gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search people..."
-                className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Button variant="outline" onClick={() => router.push('/social/matches')}>
-              <Heart className="h-4 w-4 mr-2" />
-              Matches
+  if (!currentProfile) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full bg-gray-800 border-gray-700">
+          <CardContent className="p-8 text-center">
+            <Heart className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">No More Profiles</h2>
+            <p className="text-gray-400 mb-6">
+              You've seen all available profiles. Check back later for new people!
+            </p>
+            <Button onClick={() => router.push('/social')} className="bg-purple-600 hover:bg-purple-700">
+              Back to Social
             </Button>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-8 px-4">
+      <div className="container mx-auto max-w-2xl">
+        {/* Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+            className="text-white hover:bg-white/10"
+          >
+            <ChevronLeft className="h-5 w-5 mr-1" />
+            Previous
+          </Button>
+          <span className="text-white text-sm">
+            {currentIndex + 1} / {profiles.length}
+          </span>
+          <Button
+            variant="ghost"
+            onClick={handleNext}
+            disabled={currentIndex === profiles.length - 1}
+            className="text-white hover:bg-white/10"
+          >
+            Next
+            <ChevronRight className="h-5 w-5 ml-1" />
+          </Button>
         </div>
 
-        {/* Grid */}
-        {filteredProfiles.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="h-8 w-8 text-gray-400" />
+        {/* Profile Card */}
+        <Card className="bg-gradient-to-b from-amber-50 to-amber-100 border-none shadow-2xl overflow-hidden">
+          <CardContent className="p-8">
+            {/* Profile Image */}
+            <div className="flex justify-center mb-6">
+              <Avatar className="h-48 w-48 border-4 border-white shadow-xl">
+                <AvatarImage
+                  src={currentProfile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentProfile.full_name)}&background=6366f1&color=fff&size=400`}
+                  alt={currentProfile.full_name}
+                />
+                <AvatarFallback className="text-4xl bg-purple-500 text-white">
+                  {currentProfile.full_name?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No profiles found</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              {searchTerm ? "Try adjusting your search terms." : "We couldn't find any new people to show you right now. Check back later!"}
-            </p>
-            {searchTerm && (
-              <Button variant="link" onClick={() => setSearchTerm('')} className="mt-2">
-                Clear search
-              </Button>
+
+            {/* Name and Username */}
+            <div className="text-center mb-4">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {currentProfile.full_name}
+              </h1>
+              <p className="text-gray-600 text-lg">
+                @{currentProfile.username || currentProfile.user_id.slice(0, 8)}
+              </p>
+            </div>
+
+            {/* Badges */}
+            <div className="flex justify-center gap-2 mb-6">
+              {currentProfile.is_premium && (
+                <span className="inline-flex items-center gap-1 bg-amber-200 text-amber-900 px-3 py-1 rounded-full text-sm font-medium">
+                  <Crown className="h-4 w-4" />
+                  Premium
+                </span>
+              )}
+              {currentProfile.is_creator && (
+                <span className="inline-flex items-center gap-1 bg-green-200 text-green-900 px-3 py-1 rounded-full text-sm font-medium">
+                  <ShieldCheck className="h-4 w-4" />
+                  verified
+                </span>
+              )}
+            </div>
+
+            {/* About Section */}
+            {currentProfile.bio && (
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">
+                  About {currentProfile.full_name.split(' ')[0]}:
+                </h2>
+                <p className="text-gray-700 leading-relaxed">
+                  {currentProfile.bio}
+                </p>
+              </div>
             )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProfiles.map((profile) => (
-              <Card key={profile.user_id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
-                <div className="aspect-square relative bg-gray-200">
-                  <img
-                    src={profile.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name)}&background=6366f1&color=fff&size=400`}
-                    alt={profile.full_name}
-                    className="w-full h-full object-cover cursor-pointer"
-                    onClick={() => window.open(`/social/profile/preview/${profile.username || profile.user_id}`, '_blank')}
-                  />
-                  {profile.is_creator && (
-                    <div className="absolute top-3 right-3 bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-                      CREATOR
-                    </div>
-                  )}
+
+            {/* Location */}
+            {currentProfile.location && (
+              <div className="flex items-center justify-center text-gray-600 mb-6">
+                <MapPin className="h-4 w-4 mr-2" />
+                <span>{currentProfile.location}</span>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <Button
+                onClick={handleLikeProfile}
+                disabled={liking}
+                className="bg-rose-400 hover:bg-rose-500 text-white py-6 text-lg font-medium"
+              >
+                {liking ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    <Heart className="h-5 w-5 mr-2" />
+                    Like Profile
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={handleSendMessage}
+                disabled={sendingRequest}
+                className="bg-gray-800 hover:bg-gray-900 text-white py-6 text-lg font-medium"
+              >
+                {sendingRequest ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    <Mail className="h-5 w-5 mr-2" />
+                    Add Friend
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Social Highlights */}
+            {socialPosts.length > 0 && (
+              <div className="bg-white rounded-xl p-6 shadow-inner">
+                <div className="flex items-center gap-2 mb-4">
+                  <Instagram className="h-5 w-5 text-gray-700" />
+                  <h3 className="text-lg font-bold text-gray-900">Social Highlights</h3>
                 </div>
-                <CardContent className="p-4">
-                  <div className="mb-3">
-                    <h3 className="font-bold text-lg text-gray-900 truncate">{profile.full_name}</h3>
-                    {profile.location && (
-                      <div className="flex items-center text-gray-500 text-sm mt-1">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        <span className="truncate">{profile.location}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {profile.bio && (
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-4 h-10">
-                      {profile.bio}
-                    </p>
-                  )}
-
-                  {sentRequests.has(profile.user_id) ? (
-                    <Button className="w-full bg-gray-100 text-gray-600 hover:bg-gray-200" disabled>
-                      <UserCheck className="h-4 w-4 mr-2" />
-                      Request Sent
-                    </Button>
-                  ) : (
-                    <Button
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={() => handleSendRequest(profile.user_id)}
-                      disabled={sendingRequest === profile.user_id}
-                    >
-                      {sendingRequest === profile.user_id ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      ) : (
-                        <>
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Add Friend
-                        </>
+                <p className="text-sm text-gray-600 mb-4">
+                  Posts shared by {currentProfile.full_name.split(' ')[0]}
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {socialPosts.map((post) => (
+                    <div key={post.id} className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                      <img
+                        src={post.media_url}
+                        alt={post.caption || 'Social post'}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      {post.caption && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-2 truncate">
+                          {post.caption}
+                        </div>
                       )}
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { 
+import {
   Send,
   Phone,
   Video,
@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   Paperclip
 } from "lucide-react"
+import { usePresence } from "@/components/providers/PresenceProvider"
 
 interface Message {
   id: string
@@ -59,6 +60,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const { onlineUsers } = usePresence()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const params = useParams()
   const router = useRouter()
@@ -84,7 +86,7 @@ export default function ChatPage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/login')
         return
@@ -93,26 +95,57 @@ export default function ChatPage() {
       setUser(user)
 
       // Load match data
-      const { data: matchData } = await supabase
+      const { data: matchData, error: matchError } = await supabase
         .from('matches')
-        .select(`
-          *,
-          user1:social_profiles!matches_user1_id_fkey(*),
-          user2:social_profiles!matches_user2_id_fkey(*)
-        `)
+        .select('*')
         .eq('id', matchId)
         .single()
 
+      if (matchError) throw matchError
+
       if (matchData) {
-        // Type assertion to handle Supabase query result structure
-        const matchWithUsers = matchData as Match & {
-          user1_id: string
-          user2_id: string
-          user1: Match['user']
-          user2: Match['user']
+        const match = matchData as any
+        const otherUserId = match.user1_id === user.id ? match.user2_id : match.user1_id
+
+        // Fetch other user details
+        const { data: otherUser } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', otherUserId)
+          .single()
+
+        if (otherUser) {
+          const userData = otherUser as any
+          // Get avatar URL if exists
+          let avatar_url = undefined
+          if (userData.profile_pic_url) {
+            if (userData.profile_pic_url.startsWith('http')) {
+              avatar_url = userData.profile_pic_url
+            } else {
+              const { data: publicUrlData } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(userData.profile_pic_url)
+              avatar_url = publicUrlData.publicUrl
+            }
+          }
+
+          setMatch({
+            ...match,
+            user: {
+              id: userData.id,
+              username: userData.username || '',
+              full_name: userData.full_name || '',
+              bio: userData.bio || '',
+              avatar_url: avatar_url,
+              location: userData.location || '',
+              instagram_handle: userData.instagram_handle || '',
+              is_verified: userData.verification_status === 'verified',
+              is_premium: userData.subscription_status === 'premium',
+              is_creator: userData.verification_status === 'verified',
+              profession: userData.profession || ''
+            }
+          })
         }
-        const otherUser = matchWithUsers.user1_id === user.id ? matchWithUsers.user2 : matchWithUsers.user1
-        setMatch({ ...matchWithUsers, user: otherUser })
       }
     } catch (error) {
       console.error('Error loading match:', error)
@@ -124,7 +157,7 @@ export default function ChatPage() {
   const loadMessages = async () => {
     try {
       const supabase = createClient()
-      
+
       const { data } = await supabase
         .from('messages')
         .select('*')
@@ -132,7 +165,7 @@ export default function ChatPage() {
         .order('created_at', { ascending: true })
 
       setMessages(data || [])
-      
+
       // Mark messages as read
       await (supabase
         .from('messages') as any)
@@ -146,7 +179,8 @@ export default function ChatPage() {
 
   const setupRealTimeSubscription = () => {
     const supabase = createClient()
-    
+    console.log(`Setting up realtime subscription for match: ${matchId}`)
+
     const subscription = supabase
       .channel(`messages:${matchId}`)
       .on('postgres_changes', {
@@ -155,11 +189,22 @@ export default function ChatPage() {
         table: 'messages',
         filter: `match_id=eq.${matchId}`
       }, (payload) => {
-        setMessages(prev => [...prev, payload.new as Message])
+        console.log('Realtime message received:', payload)
+        setMessages(prev => {
+          // Prevent duplicates
+          if (prev.some(m => m.id === payload.new.id)) return prev
+          return [...prev, payload.new as Message]
+        })
       })
-      .subscribe()
+      .subscribe((status, err) => {
+        console.log(`Subscription status for ${matchId}:`, status)
+        if (err) {
+          console.error('Subscription error:', err)
+        }
+      })
 
     return () => {
+      console.log('Unsubscribing from channel')
       subscription.unsubscribe()
     }
   }
@@ -252,13 +297,13 @@ export default function ChatPage() {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        
+
         <img
           src={match.user.avatar_url || `/api/placeholder/40/40`}
           alt={match.user.full_name}
           className="w-10 h-10 rounded-full object-cover"
         />
-        
+
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-gray-900">{match.user.full_name}</h3>
@@ -273,9 +318,16 @@ export default function ChatPage() {
               </div>
             )}
           </div>
-          {match.user.profession && (
-            <p className="text-sm text-gray-600">{match.user.profession}</p>
-          )}
+          <div className="flex items-center gap-2">
+            {onlineUsers.has(match.user.id) ? (
+              <>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <p className="text-xs text-green-600 font-medium">Online</p>
+              </>
+            ) : (
+              <p className="text-xs text-gray-500">Offline</p>
+            )}
+          </div>
         </div>
 
         <div className="flex gap-2">
@@ -304,7 +356,7 @@ export default function ChatPage() {
             <p className="text-gray-600 mb-6">
               Say hello to {match.user.full_name} and start a conversation!
             </p>
-            
+
             {/* Quick Actions */}
             <div className="flex gap-3 justify-center">
               {match.user.instagram_handle && (
@@ -316,7 +368,7 @@ export default function ChatPage() {
                   View Instagram
                 </Button>
               )}
-              
+
               {match.user.location && (
                 <Button
                   variant="outline"
@@ -338,17 +390,15 @@ export default function ChatPage() {
               className={`flex ${isOwnMessage(message) ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                  isOwnMessage(message)
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-gray-100 text-gray-900'
-                }`}
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${isOwnMessage(message)
+                  ? 'bg-purple-500 text-white'
+                  : 'bg-gray-100 text-gray-900'
+                  }`}
               >
                 <p className="text-sm">{message.content}</p>
                 <p
-                  className={`text-xs mt-1 ${
-                    isOwnMessage(message) ? 'text-purple-200' : 'text-gray-500'
-                  }`}
+                  className={`text-xs mt-1 ${isOwnMessage(message) ? 'text-purple-200' : 'text-gray-500'
+                    }`}
                 >
                   {formatMessageTime(message.created_at)}
                 </p>
@@ -365,7 +415,7 @@ export default function ChatPage() {
           <button className="p-2 text-gray-400 hover:text-gray-600">
             <Paperclip className="w-5 h-5" />
           </button>
-          
+
           <div className="flex-1 relative">
             <input
               type="text"

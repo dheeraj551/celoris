@@ -179,23 +179,6 @@ export default function ProfilePreviewPage() {
 
   return (
     <div className="min-h-screen bg-[#FDF8F3] font-sans pt-8">
-      {/* Top Navigation Bar (Mockup based on design) */}
-      <div className="bg-[#FDF8F3] px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          {/* Logo placeholder */}
-          <div className="w-8 h-8 rounded-full border-2 border-brown-400 flex items-center justify-center">
-            <span className="font-bold text-brown-800">C</span>
-          </div>
-          <span className="font-bold text-xl text-gray-800">ConnectHub</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden">
-            {/* Current user avatar placeholder */}
-            <img src={`https://ui-avatars.com/api/?name=Me&background=random`} alt="Me" />
-          </div>
-        </div>
-      </div>
-
       <div className="container max-w-6xl mx-auto px-4 pb-24">
         {/* Cover Image & Profile Picture Wrapper */}
         <div className="relative mb-20">
@@ -246,8 +229,8 @@ export default function ProfilePreviewPage() {
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
               className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === tab.toLowerCase()
-                  ? 'text-gray-900 border-b-2 border-gray-900'
-                  : 'text-gray-500 hover:text-gray-700'
+                ? 'text-gray-900 border-b-2 border-gray-900'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
               {tab}

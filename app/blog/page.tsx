@@ -26,20 +26,42 @@ export default function BlogPage() {
     loadBlogPosts();
   }, []);
 
+  // Static blog post definition
+  const STATIC_POST: BlogPost = {
+    id: 'static-multimodal-agentic-ai',
+    title: 'Beyond the Chatbot: The Rise of Multimodal and Agentic AI in Enterprise Workflows 🚀',
+    slug: 'multimodal-agentic-ai',
+    excerpt: 'Until recently, AI models were often siloed: Large Language Models (LLMs) handled text, while separate models handled images or audio. Multimodal AI breaks down these barriers.',
+    featured_image_url: 'https://anyslive.in/wp-content/uploads/2025/12/Gemini_Generated_Image_rdi845rdi845rdi8.png',
+    author_name: 'Celoris',
+    category: 'Technology',
+    reading_time: 5,
+    published_at: '2025-12-01T12:00:00Z',
+  };
+
   const loadBlogPosts = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/blog?page=1&limit=10');
 
-      if (!response.ok) {
-        throw new Error('Failed to load blog posts');
+      let fetchedPosts: BlogPost[] = [];
+      if (response.ok) {
+        const data = await response.json();
+        fetchedPosts = data.posts || [];
       }
 
-      const data = await response.json();
-      setBlogPosts(data.posts || []);
+      // Add static post if not present
+      if (!fetchedPosts.some(p => p.slug === STATIC_POST.slug)) {
+        fetchedPosts = [STATIC_POST, ...fetchedPosts];
+      }
+
+      setBlogPosts(fetchedPosts);
     } catch (error) {
       console.error('Error loading blog posts:', error);
-      setError('Failed to load blog posts');
+      // Fallback to show static post
+      setBlogPosts([STATIC_POST]);
+      // Don't show error if we have at least the static post
+      setError(null);
     } finally {
       setLoading(false);
     }

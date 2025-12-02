@@ -24,6 +24,7 @@ import {
   Check,
   UserX
 } from "lucide-react"
+import { usePresence } from "@/components/providers/PresenceProvider"
 
 interface Match {
   id: string
@@ -75,6 +76,7 @@ export default function MatchesPage() {
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends')
   const [processingRequest, setProcessingRequest] = useState<string | null>(null)
+  const { onlineUsers } = usePresence()
   const router = useRouter()
 
   useEffect(() => {
@@ -92,84 +94,136 @@ export default function MatchesPage() {
       }
 
       setUser(user)
+      console.log('Matches Page - Current User:', user.id)
 
-      // 1. Load Matches (Friends)
+      // 1. Load Matches (Friends) from users table
       const { data: matchesData, error: matchesError } = await supabase
         .from('matches')
-        .select(`
-          *,
-          user1:social_profiles!matches_user1_id_fkey(*),
-          user2:social_profiles!matches_user2_id_fkey(*)
-        `)
+        .select('*')
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .order('created_at', { ascending: false })
 
       if (matchesError) {
         console.error('Error loading matches:', matchesError)
-      } else if (matchesData) {
-        const allMatches = matchesData
-          .map((match: any) => {
-            const otherUser = match.user1_id === user.id ? match.user2 : match.user1
-            if (!otherUser) return null
-            return {
+      } else {
+        console.log('Loaded matches:', matchesData?.length)
+      }
+
+      // Get user details for each match
+      const allMatches: Match[] = []
+      if (matchesData) {
+        for (const match of (matchesData as any[])) {
+          const otherUserId = match.user1_id === user.id ? match.user2_id : match.user1_id
+
+          const { data: otherUser } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', otherUserId)
+            .single()
+
+          if (otherUser) {
+            // Get avatar URL if exists
+            let avatar_url = undefined
+            if (otherUser.profile_pic_url) {
+              if (otherUser.profile_pic_url.startsWith('http://') || otherUser.profile_pic_url.startsWith('https://')) {
+                avatar_url = otherUser.profile_pic_url
+              } else {
+                const { data: publicUrlData } = supabase.storage
+                  .from('avatars')
+                  .getPublicUrl(otherUser.profile_pic_url)
+                avatar_url = publicUrlData.publicUrl
+              }
+            }
+
+            allMatches.push({
               ...match,
               user: {
-                id: otherUser.user_id,
+                id: otherUser.id,
                 username: otherUser.username || '',
                 full_name: otherUser.full_name || '',
                 bio: otherUser.bio || '',
-                avatar_url: otherUser.profile_pic_url || otherUser.avatar_url || '',
+                avatar_url: avatar_url,
                 location: otherUser.location || '',
                 instagram_handle: otherUser.instagram_handle || '',
-                is_verified: otherUser.is_verified || false,
-                is_premium: otherUser.is_premium || false,
-                is_creator: otherUser.is_creator || false,
+                is_verified: otherUser.verification_status === 'verified',
+                is_premium: otherUser.subscription_status === 'premium',
+                is_creator: otherUser.verification_status === 'verified',
                 profession: otherUser.profession || ''
               }
-            }
-          })
-          .filter(Boolean) as Match[]
+            })
+          }
+        }
         setMatches(allMatches)
       }
 
       // 2. Load Requests (Incoming Swipes that are not matches)
-      // First get all people who swiped right on me
-      const { data: incomingSwipes } = await supabase
+      const { data: incomingSwipes, error: swipesError } = await supabase
         .from('swipes')
-        .select(`
-          swiper_id,
-          created_at,
-          swiper:social_profiles!swipes_swiper_id_fkey(*)
-        `)
-        .eq('swiped_id', user.id)
-        .eq('direction', 'right')
+        .select('swiper_id, created_at')
+        .eq('target_user_id', user.id)
+        .eq('direction', 'like')
 
-      // Then filter out those who are already matched
-      // (This is a simplified approach; ideally we'd do a left join or "not in" query)
+      if (swipesError) {
+        console.error('Error loading swipes:', swipesError)
+      } else {
+        console.log('Raw incoming swipes:', incomingSwipes)
+      }
+
       if (incomingSwipes) {
-        const matchedUserIds = new Set(matchesData?.map((m: any) =>
+        const matchedUserIds = new Set((matchesData as any[])?.map((m: any) =>
           m.user1_id === user.id ? m.user2_id : m.user1_id
         ) || [])
 
-        const pendingRequests = incomingSwipes
-          .filter((s: any) => !matchedUserIds.has(s.swiper_id))
-          .map((s: any) => ({
-            swiper_id: s.swiper_id,
-            created_at: s.created_at,
-            user: {
-              id: s.swiper.user_id,
-              username: s.swiper.username,
-              full_name: s.swiper.full_name,
-              bio: s.swiper.bio,
-              avatar_url: s.swiper.profile_pic_url,
-              location: s.swiper.location,
-              is_verified: s.swiper.is_verified
-            }
-          }))
+        // Filter out swipes that are already matches
+        const pendingSwipes = (incomingSwipes as any[])?.filter(s => {
+          const isMatch = matchedUserIds.has(s.swiper_id)
+          console.log(`Checking swipe from ${s.swiper_id}: isMatch=${isMatch}`)
+          return !isMatch
+        }) || []
 
+        console.log('Pending swipes after filtering:', pendingSwipes.length)
+
+        const pendingRequests: Request[] = []
+
+        for (const swipe of pendingSwipes) {
+          const { data: swiper } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', swipe.swiper_id)
+            .single()
+
+          if (swiper) {
+            // Get avatar URL if exists
+            let avatar_url = undefined
+            if (swiper.profile_pic_url) {
+              if (swiper.profile_pic_url.startsWith('http')) {
+                avatar_url = swiper.profile_pic_url
+              } else {
+                const { data: publicUrlData } = supabase.storage
+                  .from('avatars')
+                  .getPublicUrl(swiper.profile_pic_url)
+                avatar_url = publicUrlData.publicUrl
+              }
+            }
+
+            pendingRequests.push({
+              swiper_id: swipe.swiper_id,
+              created_at: swipe.created_at,
+              user: {
+                id: swiper.id,
+                username: swiper.username,
+                full_name: swiper.full_name,
+                bio: swiper.bio,
+                avatar_url: avatar_url,
+                location: swiper.location,
+                is_verified: swiper.verification_status === 'verified'
+              }
+            })
+          }
+        }
+        console.log('Pending requests after filtering matches:', pendingRequests.length)
         setRequests(pendingRequests)
       }
-
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
@@ -187,34 +241,35 @@ export default function MatchesPage() {
       // 1. Swipe right back
       await supabase.from('swipes').insert({
         swiper_id: user.id,
-        swiped_id: request.swiper_id,
-        direction: 'right'
+        target_user_id: request.swiper_id,
+        direction: 'like'
       } as any)
 
       // 2. Create match
-      await supabase.from('matches').insert({
+      const { data: matchData, error: matchError } = await supabase.from('matches').insert({
         user1_id: user.id,
         user2_id: request.swiper_id
-      } as any)
+      } as any).select().single()
+
+      if (matchError) throw matchError
 
       // 3. Update UI
       setRequests(prev => prev.filter(r => r.swiper_id !== request.swiper_id))
 
-      // Add to matches list (optimistic update)
-      const newMatch: Match = {
-        id: 'temp-' + Date.now(),
-        user1_id: user.id,
-        user2_id: request.swiper_id,
-        is_mutual: true,
-        created_at: new Date().toISOString(),
-        user: {
-          ...request.user,
-          is_premium: false,
-          is_creator: false,
-          profession: ''
+      // Add to matches list
+      if (matchData) {
+        const newMatch: Match = {
+          ...(matchData as any),
+          is_mutual: true,
+          user: {
+            ...request.user,
+            is_premium: false,
+            is_creator: false,
+            profession: ''
+          }
         }
+        setMatches(prev => [newMatch, ...prev])
       }
-      setMatches(prev => [newMatch, ...prev])
 
       alert(`You are now friends with ${request.user.full_name}!`)
 
@@ -235,7 +290,7 @@ export default function MatchesPage() {
       // Swipe left
       await supabase.from('swipes').insert({
         swiper_id: user.id,
-        swiped_id: request.swiper_id,
+        target_user_id: request.swiper_id,
         direction: 'left'
       } as any)
 
@@ -431,6 +486,9 @@ export default function MatchesPage() {
                           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                             <Crown className="w-3 h-3 text-white" />
                           </div>
+                        )}
+                        {onlineUsers.has(match.user.id) && (
+                          <div className="absolute top-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                         )}
                       </button>
 

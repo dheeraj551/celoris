@@ -66,6 +66,20 @@ export default function Header() {
           .eq("id", user.id)
           .single()
 
+        if (profile && profile.profile_pic_url) {
+          // Check if profile_pic_url is already a full URL
+          if (profile.profile_pic_url.startsWith('http://') || profile.profile_pic_url.startsWith('https://')) {
+            profile.avatar_url = profile.profile_pic_url
+          } else {
+            // Get profile image URL from avatars bucket if it's a storage path
+            const { data: publicUrlData } = supabase.storage
+              .from('avatars')
+              .getPublicUrl(profile.profile_pic_url)
+
+            profile.avatar_url = publicUrlData.publicUrl
+          }
+        }
+
         setProfile(profile)
       }
     } catch (error) {
@@ -128,17 +142,29 @@ export default function Header() {
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 p-0 overflow-hidden">
-                  <span className="text-white font-bold text-sm">Me</span>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                  <Avatar className="h-10 w-10" key={profile?.avatar_url || 'default'}>
+                    <AvatarImage
+                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=6366f1&color=fff`}
+                      alt={profile?.full_name || 'User'}
+                    />
+                    <AvatarFallback className="bg-blue-500 text-white">
+                      {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">ConnectHub</p>
-                    <p className="text-xs leading-none text-muted-foreground">
+                    <p className="text-sm font-medium leading-none">
                       {profile?.full_name || user.email}
                     </p>
+                    {profile?.full_name && (
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -221,7 +247,6 @@ export default function Header() {
                   </div>
                 ) : user ? (
                   <>
-                    <div className="px-2 py-2 text-sm font-semibold text-gray-500">ConnectHub</div>
                     <Link
                       href="/social/swipe"
                       className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
