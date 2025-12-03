@@ -1,6 +1,7 @@
 import { type Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import "@livekit/components-styles";
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { PresenceProvider } from "@/components/providers/PresenceProvider"

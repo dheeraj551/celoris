@@ -3,8 +3,8 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-// Dynamically import the ClassroomApp to avoid SSR issues with browser-only APIs if any
-const ClassroomApp = dynamic(() => import('@/components/classroom/ClassroomApp'), {
+// Dynamically import the LiveClassroom to avoid SSR issues
+const LiveClassroom = dynamic(() => import('@/components/classroom/views/LiveClassroom'), {
     ssr: false,
     loading: () => (
         <div className="flex items-center justify-center min-h-screen bg-slate-50">
@@ -15,8 +15,8 @@ const ClassroomApp = dynamic(() => import('@/components/classroom/ClassroomApp')
 
 export default function ClassroomPage() {
     return (
-        <div className="min-h-screen bg-slate-50">
-            <ClassroomApp />
+        <div className="h-[calc(100vh-4rem)] bg-slate-50">
+            <LiveClassroom />
         </div>
     );
 }
