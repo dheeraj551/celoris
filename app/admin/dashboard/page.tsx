@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  BookOpen, 
-  DollarSign, 
-  Users, 
-  Smartphone, 
-  Settings, 
-  BarChart3, 
+import {
+  BookOpen,
+  DollarSign,
+  Users,
+  Smartphone,
+  Settings,
+  BarChart3,
   Shield,
   LogOut,
   Activity,
@@ -48,18 +48,18 @@ export default function AdminDashboard() {
   const checkAdminAuth = async () => {
     try {
       const adminSession = localStorage.getItem("admin_session")
-      
+
       if (!adminSession) {
         router.push("/admin/login")
         return
       }
 
       const session = JSON.parse(adminSession)
-      
+
       // Check if session is valid (not older than 24 hours)
       const sessionAge = Date.now() - session.timestamp
       const maxAge = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
-      
+
       if (sessionAge > maxAge) {
         localStorage.removeItem("admin_session")
         router.push("/admin/login")
@@ -128,7 +128,7 @@ export default function AdminDashboard() {
       features: ["Add/Edit Courses", "Student Progress", "Content Management", "Analytics"]
     },
     {
-      title: "Earn Management", 
+      title: "Earn Management",
       description: "Manage job postings and freelance opportunities",
       icon: DollarSign,
       href: "/admin/earn",
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
     },
     {
       title: "Social Management",
-      description: "Oversee user profiles and social interactions", 
+      description: "Oversee user profiles and social interactions",
       icon: Users,
       href: "/admin/social",
       color: "from-purple-500 to-purple-600",
@@ -149,10 +149,19 @@ export default function AdminDashboard() {
       title: "Apps Management",
       description: "Control productivity tools and utilities",
       icon: Smartphone,
-      href: "/admin/apps", 
+      href: "/admin/apps",
       color: "from-orange-500 to-orange-600",
       stats: "8 active apps",
       features: ["App Configurations", "User Access", "Performance Metrics", "Integration Status"]
+    },
+    {
+      title: "Notice Board",
+      description: "Manage notices and view user interests",
+      icon: FileText,
+      href: "/admin/notice-board",
+      color: "from-pink-500 to-pink-600",
+      stats: "View Interests",
+      features: ["Create Notices", "Track Interests", "Manage Listings", "Student Requests"]
     }
   ]
 
@@ -250,16 +259,16 @@ export default function AdminDashboard() {
                 <p className="text-sm text-slate-400">Celoris Designs - Platform Management</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-green-400">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium">System Online</span>
               </div>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleSignOut}
                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
               >
@@ -436,7 +445,7 @@ export default function AdminDashboard() {
                     )
                   })}
                 </div>
-                
+
                 <div className="mt-6 pt-4 border-t border-slate-700">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">N8N Workflows</span>

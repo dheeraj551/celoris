@@ -74,7 +74,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (match) {
       loadMessages()
-      setupRealTimeSubscription()
+      return setupRealTimeSubscription()
     }
   }, [match])
 

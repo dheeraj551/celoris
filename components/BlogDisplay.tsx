@@ -108,6 +108,9 @@ export function BlogDisplay({
       if (response.ok) {
         let fetchedPosts = data.posts || [];
 
+        // Filter out the deleted post if it's still coming from API/Cache
+        fetchedPosts = fetchedPosts.filter((p: BlogPost) => !p.title.includes('Sobhita'));
+
         // Add static post if on page 1 and filters match
         const matchesCategory = overrideFilters.category === 'All' || overrideFilters.category === STATIC_POST.category;
         const matchesSearch = !overrideFilters.search || STATIC_POST.title.toLowerCase().includes(overrideFilters.search.toLowerCase());
@@ -144,6 +147,7 @@ export function BlogDisplay({
 
       if (response.ok) {
         let fetchedFeatured = data.posts || [];
+        fetchedFeatured = fetchedFeatured.filter((p: BlogPost) => !p.title.includes('Sobhita'));
         if (!fetchedFeatured.some((p: BlogPost) => p.slug === STATIC_POST.slug)) {
           fetchedFeatured = [STATIC_POST, ...fetchedFeatured];
         }
