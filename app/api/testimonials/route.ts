@@ -54,93 +54,52 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const featured = searchParams.get('featured')
 
-    try {
-      // Try to fetch from database first
-      const { createClient } = await import('@supabase/supabase-js')
-      const supabase = createClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!
-      )
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!
+    )
 
-      let query = supabase
-        .from('testimonials')
-        .select('*')
+    let query = supabase
+      .from('testimonials')
+      .select('*')
 
-      // Apply filters
-      // Filter by visibility (this is enforced by RLS but we include it explicitly)
-      // Note: is_visible=true is enforced by RLS policy, so we don't need to filter
-      
-      // Filter by type if specified
-      if (type && type !== 'all') {
-        query = query.eq('testimonial_type', type)
-      }
+    if (type && type !== 'all') {
+      query = query.eq('testimonial_type', type)
+    }
 
-      // Filter by featured if specified
-      if (featured === 'true') {
-        query = query.eq('is_featured', true)
-      }
+    if (featured === 'true') {
+      query = query.eq('is_featured', true)
+    }
 
-      // Order by featured first, then by display_order, then by created_at
-      query = query
-        .order('is_featured', { ascending: false, nullsFirst: false })
-        .order('display_order', { ascending: true })
-        .order('created_at', { ascending: false })
-        .limit(limit)
+    query = query
+      .order('is_featured', { ascending: false, nullsFirst: false })
+      .order('display_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .limit(limit)
 
-      const { data: dbTestimonials, error } = await query
+    const { data: dbTestimonials, error } = await query
 
-      if (!error && dbTestimonials && dbTestimonials.length > 0) {
-        // Remove duplicates based on client_name and testimonial_text
-        const uniqueTestimonials = dbTestimonials.filter((testimonial, index, self) =>
+    if (error) {
+      console.error('Database error:', error)
+      throw new Error('Failed to fetch testimonials from the database.')
+    }
+
+    const uniqueTestimonials = dbTestimonials
+      ? dbTestimonials.filter((testimonial, index, self) =>
           index === self.findIndex(t => 
             t.client_name === testimonial.client_name && 
             t.testimonial_text === testimonial.testimonial_text
           )
         )
-
-        // Return unique testimonials
-        return NextResponse.json({
-          success: true,
-          data: uniqueTestimonials,
-          count: uniqueTestimonials.length,
-          source: 'database'
-        })
-      }
-    } catch (dbError) {
-      console.log('Database not available, using sample data:', dbError)
-    }
-
-    // Fallback to sample data (for demo or when database is empty)
-    let filteredTestimonials = sampleTestimonials
-
-    // Filter by type
-    if (type && type !== 'all') {
-      filteredTestimonials = filteredTestimonials.filter(t => t.testimonial_type === type)
-    }
-
-    // Filter by featured
-    if (featured === 'true') {
-      filteredTestimonials = filteredTestimonials.filter(t => t.is_featured)
-    }
-
-    // Order by featured first, then by date
-    filteredTestimonials = filteredTestimonials
-      .sort((a, b) => {
-        if (a.is_featured && !b.is_featured) return -1
-        if (!a.is_featured && b.is_featured) return 1
-        return 0
-      })
-
-    // Apply limit
-    const limitedTestimonials = filteredTestimonials.slice(0, limit)
+      : []
 
     return NextResponse.json({
       success: true,
-      data: limitedTestimonials,
-      count: limitedTestimonials.length,
-      source: 'sample' // Indicate this is sample data
+      data: uniqueTestimonials,
+      count: uniqueTestimonials.length,
+      source: 'database'
     })
-
   } catch (error) {
     console.error('Error fetching testimonials:', error)
     return NextResponse.json(
