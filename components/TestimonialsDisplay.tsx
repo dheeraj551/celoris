@@ -59,21 +59,21 @@ export default function TestimonialsDisplay({
         params.append('featured', 'true')
       }
 
-      const response = await fetch('/api/testimonials')
+      const response = await fetch(`/api/testimonials?${params.toString()}`)
       const data = await response.json()
 
       if (data.success) {
         let filteredData = data.data || []
-        
+
         // Apply basic filtering
         if (type && type !== 'all') {
           filteredData = filteredData.filter((t: Testimonial) => t.testimonial_type === type)
         }
-        
+
         if (showFeatured) {
           filteredData = filteredData.filter((t: Testimonial) => t.is_featured)
         }
-        
+
         setTestimonials(filteredData.slice(0, limit))
       }
     } catch (error) {
@@ -148,12 +148,12 @@ export default function TestimonialsDisplay({
                 </div>
               )}
             </div>
-            
+
             <div className="space-y-1 text-xs text-gray-600">
               {testimonial.client_title && (
                 <div className="truncate">{testimonial.client_title}</div>
               )}
-              
+
               <div className="flex items-center space-x-3">
                 {testimonial.client_company && (
                   <span className="flex items-center truncate">
@@ -161,7 +161,7 @@ export default function TestimonialsDisplay({
                     {testimonial.client_company}
                   </span>
                 )}
-                
+
                 {testimonial.client_location && (
                   <span className="flex items-center truncate">
                     <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
@@ -235,7 +235,7 @@ export default function TestimonialsDisplay({
     return (
       <div className={`relative ${className}`}>
         <div className="overflow-hidden">
-          <div 
+          <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
@@ -248,7 +248,7 @@ export default function TestimonialsDisplay({
             ))}
           </div>
         </div>
-        
+
         {testimonials.length > 1 && (
           <>
             <button
@@ -263,15 +263,14 @@ export default function TestimonialsDisplay({
             >
               <ChevronRight className="h-5 w-5 text-gray-600" />
             </button>
-            
+
             <div className="flex justify-center mt-6 space-x-2">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentIndex ? 'bg-purple-600' : 'bg-gray-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-colors ${index === currentIndex ? 'bg-purple-600' : 'bg-gray-300'
+                    }`}
                 />
               ))}
             </div>
@@ -326,8 +325,8 @@ export default function TestimonialsDisplay({
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
       {testimonials.map((testimonial) => (
-        <TestimonialCard 
-          key={testimonial.id} 
+        <TestimonialCard
+          key={testimonial.id}
           testimonial={testimonial}
           featured={testimonial.is_featured}
         />

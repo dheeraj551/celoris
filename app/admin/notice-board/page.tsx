@@ -19,7 +19,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Trash2, Users, Eye, ArrowLeft } from "lucide-react"
+import { Plus, Trash2, Users, Eye, ArrowLeft, Pencil } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -57,7 +57,7 @@ export default function AdminNoticeBoard() {
 
     const fetchNotices = async () => {
         try {
-            const response = await fetch('/api/notice-board?all=true&limit=100')
+            const response = await fetch('/api/notice-board?all=true&limit=100', { cache: 'no-store' })
             const data = await response.json()
             setNotices(data.data)
         } catch (error) {
@@ -85,13 +85,24 @@ export default function AdminNoticeBoard() {
         if (!confirm('Are you sure you want to delete this notice?')) return
 
         try {
-            // Note: You might need to implement DELETE endpoint in /api/notice-board/route.ts
-            // For now assuming it exists or we just hide it
-            // actually I haven't implemented DELETE yet.
-            alert('Delete functionality not implemented yet')
-        } catch (error) {
+            const response = await fetch(`/api/notice-board?id=${id}`, {
+                method: 'DELETE',
+            })
+
+            if (!response.ok) {
+                const data = await response.json()
+                throw new Error(data.error || 'Failed to delete notice')
+            }
+
+            setNotices(prev => prev.filter(n => n.id !== id))
+        } catch (error: any) {
             console.error('Error deleting notice:', error)
+            alert(`Error deleting notice: ${error.message}`)
         }
+    }
+
+    const handleEdit = (id: string) => {
+        router.push(`/admin/notice-board/create?id=${id}`)
     }
 
     return (
@@ -202,6 +213,15 @@ export default function AdminNoticeBoard() {
                                                             </div>
                                                         </DialogContent>
                                                     </Dialog>
+
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleEdit(notice.id)}
+                                                        className="border-slate-600 text-slate-300 hover:bg-slate-700 mr-2"
+                                                    >
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Button>
 
                                                     <Button
                                                         variant="destructive"

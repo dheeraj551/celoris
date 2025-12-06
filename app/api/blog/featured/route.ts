@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
     // Try to fetch featured posts from database first
     try {
       const { createClient } = await import('@supabase/supabase-js')
-      const supabase = createClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!
-      )
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+
+      const supabase = createClient(supabaseUrl!, supabaseKey!)
 
       const { data: dbFeaturedPosts, error } = await supabase
         .from('blog_posts')
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       if (!error && dbFeaturedPosts && dbFeaturedPosts.length > 0) {
         // Database has featured content - return it
         return NextResponse.json({
-          posts: dbFeaturedPosts.map(post => ({
+          posts: dbFeaturedPosts.map((post: any) => ({
             id: post.id,
             title: post.title,
             slug: post.slug,

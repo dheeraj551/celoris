@@ -11,24 +11,24 @@ export const simpleAdminApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(courseData)
     })
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+      throw new Error(errorData.details || errorData.error || `HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     return await response.json()
   },
-  
+
   getCourses: async (params?: Record<string, string>) => {
     const queryString = params ? '?' + new URLSearchParams(params).toString() : ''
     const response = await fetch(`/api/admin/courses${queryString}`)
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
       throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     return await response.json()
   },
 
@@ -38,12 +38,12 @@ export const simpleAdminApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(courseData)
     })
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
       throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     return await response.json()
   },
 
@@ -51,12 +51,12 @@ export const simpleAdminApi = {
     const response = await fetch(`/api/admin/courses/${courseId}`, {
       method: 'DELETE'
     })
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
       throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     return await response.json()
   }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-client'
+
 
 export const dynamic = 'force-dynamic'
 
@@ -7,8 +7,16 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // Initialize Supabase client (automatically reads from environment variables)
-    const supabase = createClient()
+    // Initialize Supabase client with Anon Key (since Service Key appears invalid)
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     // Check if this is a request for featured posts
     if (request.nextUrl.pathname.endsWith('/featured')) {
@@ -53,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('blog_posts')
-      .select('*', { count: 'exact' })
+      .select('id, title, slug, excerpt, featured_image_url, author_name, category, tags, reading_time, published_at, views_count, likes_count, is_featured, created_at', { count: 'exact' })
 
     // Apply filters
     if (category && category !== 'all' && category !== 'All') {

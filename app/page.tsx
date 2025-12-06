@@ -6,13 +6,13 @@ import JobsDisplay from "@/components/JobsDisplay"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { 
-  BookOpen, 
-  Briefcase, 
-  Gamepad2, 
-  Wrench, 
-  Users, 
-  TrendingUp, 
+import {
+  BookOpen,
+  Briefcase,
+  Gamepad2,
+  Wrench,
+  Users,
+  TrendingUp,
   Star,
   ArrowRight,
   Play,
@@ -69,7 +69,7 @@ export default function HomePage() {
               Everything You Need in One Platform
             </h2>
             <p className="text-lg text-text-secondary max-w-3xl mx-auto">
-              Discover a comprehensive ecosystem designed to help you learn, earn, 
+              Discover a comprehensive ecosystem designed to help you learn, earn,
               and have fun while building your digital future.
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-text-primary mb-4">1. Learn</h3>
               <p className="text-text-secondary">
-                Start with our comprehensive courses designed by industry experts. 
+                Start with our comprehensive courses designed by industry experts.
                 Track your progress and earn certificates.
               </p>
             </div>
@@ -137,7 +137,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-text-primary mb-4">2. Apply</h3>
               <p className="text-text-secondary">
-                Use your new skills to apply for jobs or freelance projects 
+                Use your new skills to apply for jobs or freelance projects
                 in our curated marketplace.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-text-primary mb-4">3. Succeed</h3>
               <p className="text-text-secondary">
-                Advance your career while having fun with games, 
+                Advance your career while having fun with games,
                 community features, and productivity tools.
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <BlogDisplay 
+          <BlogDisplay
             layout="grid"
             limit={3}
             showFeatured={false}
@@ -198,7 +198,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <CoursesDisplay 
+          <CoursesDisplay
             layout="grid"
             limit={3}
             featured={true}
@@ -229,7 +229,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <JobsDisplay 
+          <JobsDisplay
             layout="grid"
             limit={3}
             featured={true}
@@ -260,7 +260,7 @@ export default function HomePage() {
           </div>
 
           <TestimonialsDisplay
-            type="general"
+            type="all"
             page="homepage"
             limit={6}
             layout="grid"

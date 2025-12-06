@@ -48,7 +48,7 @@ const sampleTestimonials = [
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    
+
     const type = searchParams.get('type') || 'general'
     const page = searchParams.get('page') || 'homepage'
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -69,10 +69,15 @@ export async function GET(request: NextRequest) {
       // Apply filters
       // Filter by visibility (this is enforced by RLS but we include it explicitly)
       // Note: is_visible=true is enforced by RLS policy, so we don't need to filter
-      
+
       // Filter by type if specified
       if (type && type !== 'all') {
         query = query.eq('testimonial_type', type)
+      }
+
+      // Filter by page if specified
+      if (page) {
+        query = query.contains('target_pages', [page])
       }
 
       // Filter by featured if specified
@@ -92,8 +97,8 @@ export async function GET(request: NextRequest) {
       if (!error && dbTestimonials && dbTestimonials.length > 0) {
         // Remove duplicates based on client_name and testimonial_text
         const uniqueTestimonials = dbTestimonials.filter((testimonial, index, self) =>
-          index === self.findIndex(t => 
-            t.client_name === testimonial.client_name && 
+          index === self.findIndex(t =>
+            t.client_name === testimonial.client_name &&
             t.testimonial_text === testimonial.testimonial_text
           )
         )

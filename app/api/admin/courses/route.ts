@@ -1,33 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
 // COURSE API - Admin course creation with proper authentication
 export async function POST(request: NextRequest) {
   try {
     console.log('ADMIN: Processing course creation request')
-    
-    // Verify environment variables exist
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY
-    
-    if (!supabaseUrl) {
-      throw new Error('SUPABASE_URL environment variable is missing')
-    }
-    
-    if (!serviceRoleKey) {
-      throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is missing')
+
+    // Create service client using centralized helper (handles trimming of keys)
+    const serviceClient = createSupabaseClientForServer()
+    console.log('ADMIN: Service client created successfully')
+
+    // Attempt to get the authenticated user
+    let userId = null
+    try {
+      const cookieStore = cookies()
+      const authClient = createRouteHandlerClient({ cookies: () => cookieStore })
+      const { data: { user } } = await authClient.auth.getUser()
+      if (user) {
+        userId = user.id
+        console.log('ADMIN: Authenticated user found:', userId)
+      } else {
+        console.log('ADMIN: No authenticated user found')
+      }
+    } catch (authError) {
+      console.warn('ADMIN: Failed to get authenticated user:', authError)
     }
 
-    console.log('ADMIN: Environment variables verified', {
-      urlExists: !!supabaseUrl,
-      keyExists: !!serviceRoleKey,
-      url: supabaseUrl.substring(0, 20) + '...'
-    })
-    
-    // Create service client
-    const serviceClient = createClient(supabaseUrl, serviceRoleKey)
-    console.log('ADMIN: Service client created successfully')
-    
     const body = await request.json()
     console.log('Course data received:', {
       title: body.title,
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
       hasDescription: !!body.description,
       hasPrice: !!body.price
     })
-    
+
     // Map frontend field names to database column names
     const courseData = {
       title: body.title,
@@ -50,33 +51,33 @@ export async function POST(request: NextRequest) {
       course_image_url: body.course_image_url,
       is_published: body.is_published ?? false,
       is_featured: body.is_featured ?? false,
-      created_by: body.created_by || 'admin', // Required field - default to 'admin'
+      created_by: userId || body.created_by || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
-    
+
     console.log('ADMIN: Inserting course data:', courseData)
-    
+
     // Direct database insert using service role
     const { data, error } = await serviceClient
       .from('courses')
-      .insert(courseData)
+      .insert(courseData as any)
       .select()
       .single()
-    
+
     if (error) {
       console.error('ADMIN: Database error:', error)
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Failed to create course',
         details: error.message,
         code: error.code || 'DATABASE_ERROR',
         hint: error.hint || 'No hint available'
       }, { status: 500 })
     }
-    
+
     console.log('ADMIN: Course created successfully:', data)
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       course: data,
       message: 'Course created successfully (ADMIN FIX)',
       status: 'bulletproof_fix_active',
@@ -86,8 +87,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('ADMIN: Course creation error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       error: 'Failed to create course',
       details: errorMessage,
       status: 'bulletproof_fix_failed',
@@ -100,15 +101,15 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     console.log('ADMIN: Processing course list request')
-    
+
     // Verify environment variables
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY
-    
+
     if (!supabaseUrl || !serviceRoleKey) {
       throw new Error('Missing environment variables')
     }
-    
+
     const serviceClient = createClient(supabaseUrl, serviceRoleKey)
 
     const { searchParams } = new URL(request.url)
@@ -151,7 +152,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('ADMIN: Database error:', error)
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Failed to fetch courses',
         details: error.message,
         status: 'bulletproof_error'
@@ -174,7 +175,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('ADMIN: Course fetch error:', error)
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Failed to fetch courses',
       details: error instanceof Error ? error.message : 'Unknown error',
       status: 'bulletproof_error'

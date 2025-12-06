@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
-  Star, 
-  Search, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
+  Star,
+  Search,
   Filter,
   Calendar,
   User,
@@ -97,6 +97,22 @@ export default function BlogManagementPage() {
     totalPages: 0
   });
 
+  // Get auth headers
+  const getAuthHeaders = (): Record<string, string> => {
+    const session = localStorage.getItem('admin_session');
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+
+    // Also support checking for session in checking for null string just in case
+    if (session && session !== 'null' && session !== 'undefined') {
+      headers['x-admin-session'] = session;
+    }
+
+    return headers;
+  };
+
   // Load blog posts
   const loadPosts = async () => {
     try {
@@ -109,7 +125,9 @@ export default function BlogManagementPage() {
         )
       });
 
-      const response = await fetch(`/api/admin/blog?${params}`);
+      const response = await fetch(`/api/admin/blog?${params}`, {
+        headers: getAuthHeaders()
+      });
       const data = await response.json();
 
       if (response.ok) {
@@ -198,9 +216,10 @@ export default function BlogManagementPage() {
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           ...formData,
+          slug: formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
         })
       });
@@ -227,7 +246,8 @@ export default function BlogManagementPage() {
 
     try {
       const response = await fetch(`/api/admin/blog/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: getAuthHeaders()
       });
 
       if (response.ok) {
@@ -249,7 +269,7 @@ export default function BlogManagementPage() {
       const action = post.is_published ? 'unpublish' : 'publish';
       const response = await fetch(`/api/admin/blog/${post.id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ action })
       });
 
@@ -497,11 +517,10 @@ export default function BlogManagementPage() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => handleTogglePublish(post)}
-                              className={`p-2 rounded-lg transition-colors ${
-                                post.is_published
-                                  ? 'text-green-600 hover:bg-green-50'
-                                  : 'text-gray-400 hover:bg-gray-50'
-                              }`}
+                              className={`p-2 rounded-lg transition-colors ${post.is_published
+                                ? 'text-green-600 hover:bg-green-50'
+                                : 'text-gray-400 hover:bg-gray-50'
+                                }`}
                               title={post.is_published ? 'Unpublish' : 'Publish'}
                             >
                               {post.is_published ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
