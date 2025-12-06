@@ -155,7 +155,22 @@ export default function CoursesDisplay({
               )}
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          {
+            course.course_image_url && (
+              <div className="w-full h-48 overflow-hidden bg-gray-100">
+                <img
+                  src={course.course_image_url}
+                  alt={course.title}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  onError={(e: any) => {
+                    e.currentTarget.src = "https://placehold.co/600x400?text=Course+Image";
+                    e.currentTarget.onerror = null;
+                  }}
+                />
+              </div>
+            )
+          }
+          < CardContent className="pt-0" >
             <p className="text-gray-600 text-sm mb-4 line-clamp-3">
               {course.description}
             </p>
@@ -195,9 +210,10 @@ export default function CoursesDisplay({
               </Link>
             </div>
           </CardContent>
-        </Card>
-      ))}
-    </div>
+        </Card >
+      ))
+      }
+    </div >
   )
 
   const renderList = () => (

@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
@@ -62,7 +62,7 @@ export async function PUT(
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
@@ -76,6 +76,8 @@ export async function PUT(
       .from('courses')
       .update({
         ...body,
+        learning_outcomes: typeof body.learning_outcomes === 'string' ? body.learning_outcomes.split('\n').filter((s: string) => s.trim()) : body.learning_outcomes,
+        requirements: typeof body.requirements === 'string' ? body.requirements.split('\n').filter((s: string) => s.trim()) : body.requirements,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
@@ -99,7 +101,7 @@ export async function DELETE(
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {

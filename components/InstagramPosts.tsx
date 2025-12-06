@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase-client"
 import { Instagram, Video, Image as ImageIcon, X } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -17,12 +17,42 @@ interface SocialPost {
 interface InstagramPostsProps {
   userId: string
   showHeader?: boolean
+  displayMode?: 'grid' | 'horizontal'
+  autoScroll?: boolean
 }
 
-export default function InstagramPosts({ userId, showHeader = true }: InstagramPostsProps) {
+export default function InstagramPosts({ userId, showHeader = true, displayMode = 'grid', autoScroll = false }: InstagramPostsProps) {
   const [posts, setPosts] = useState<SocialPost[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedPost, setSelectedPost] = useState<SocialPost | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [isHovered, setIsHovered] = useState(false)
+
+  useEffect(() => {
+    if (displayMode === 'horizontal' && autoScroll && !isHovered && posts.length > 0) {
+      const scrollContainer = scrollContainerRef.current
+      if (!scrollContainer) return
+
+      let animationFrameId: number;
+
+      const scroll = () => {
+        if (scrollContainer) {
+          if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
+            scrollContainer.scrollLeft = 0;
+          } else {
+            scrollContainer.scrollLeft += 1;
+          }
+          animationFrameId = requestAnimationFrame(scroll);
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(scroll);
+
+      return () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      }
+    }
+  }, [displayMode, autoScroll, isHovered, posts.length])
 
   useEffect(() => {
     if (userId) {
@@ -103,13 +133,20 @@ export default function InstagramPosts({ userId, showHeader = true }: InstagramP
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        ref={scrollContainerRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={displayMode === 'grid'
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          : "flex overflow-x-auto gap-4 pb-4 snap-x scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+        }>
         {posts.filter(post => {
           const type = post.post_type || 'instagram';
           const instagramUrlPattern = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/.+/;
           return !(type === 'instagram' || instagramUrlPattern.test(post.media_url));
         }).length === 0 ? (
-          <p className="text-gray-500 text-center py-8 col-span-full">
+          <p className="text-gray-500 text-center py-8 col-span-full w-full">
             No posts to display.
           </p>
         ) : (
@@ -117,7 +154,10 @@ export default function InstagramPosts({ userId, showHeader = true }: InstagramP
             const content = renderPost(post);
             if (!content) return null;
             return (
-              <div key={post.id} className="instagram-post-wrapper w-full">
+              <div key={post.id} className={displayMode === 'grid'
+                ? "instagram-post-wrapper w-full"
+                : "instagram-post-wrapper w-64 flex-shrink-0 snap-center"
+              }>
                 {content}
               </div>
             );

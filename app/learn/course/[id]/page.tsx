@@ -24,6 +24,11 @@ interface Course {
   course_modules?: CourseModule[]
   students_count?: number
   rating?: number
+  instructor_bio?: string | null
+  learning_outcomes?: string[] | null
+  requirements?: string[] | null
+  preview_video_url?: string | null
+  syllabus_url?: string | null
 }
 
 interface CourseModule {
@@ -81,21 +86,17 @@ export default function CourseDetailPage() {
     }
   }
 
-  const whatYouWillLearn = [
-    "Build responsive websites using modern web technologies",
-    "Create interactive user interfaces and user experiences",
-    "Implement marketing strategies to grow your business",
-    "Develop professional skills for career advancement",
-    "Master industry best practices and tools",
-    "Complete hands-on projects for your portfolio"
-  ]
+  const whatYouWillLearn = course?.learning_outcomes && course.learning_outcomes.length > 0
+    ? course.learning_outcomes
+    : [
+      "No learning outcomes specified yet.",
+    ]
 
-  const requirements = [
-    "No prior experience required - we'll teach you from scratch",
-    "Computer with internet connection",
-    "Willingness to learn and practice consistently",
-    "Basic computer literacy"
-  ]
+  const requirements = course?.requirements && course.requirements.length > 0
+    ? course.requirements
+    : [
+      "No specific requirements listed.",
+    ]
 
   if (loading) {
     return (
@@ -195,9 +196,9 @@ export default function CourseDetailPage() {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                  <Button size="lg" className="bg-white text-black hover:bg-gray-100">
+                  <Button size="lg" className="bg-white text-black hover:bg-gray-100" onClick={() => course.preview_video_url && window.open(course.preview_video_url, '_blank')}>
                     <Play className="mr-2 h-5 w-5" />
-                    Preview Course
+                    {course.preview_video_url ? "Watch Preview" : "Preview Unavailable"}
                   </Button>
                 </div>
               </div>
@@ -256,7 +257,7 @@ export default function CourseDetailPage() {
                   <Button className="w-full mb-4" size="lg">
                     Enroll Now
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" disabled={!course.syllabus_url} onClick={() => course.syllabus_url && window.open(course.syllabus_url, '_blank')}>
                     <Download className="mr-2 h-4 w-4" />
                     Download Syllabus
                   </Button>
@@ -291,7 +292,7 @@ export default function CourseDetailPage() {
                     </div>
                   </div>
                   <p className="text-sm text-text-secondary mb-4">
-                    Passionate about teaching and helping others break into tech.
+                    {course.instructor_bio || "Passionate about teaching and helping others break into tech."}
                   </p>
                   <div className="space-y-2 text-sm text-text-secondary">
                     <div className="flex items-center space-x-2">

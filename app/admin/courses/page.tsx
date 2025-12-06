@@ -6,7 +6,7 @@ import { adminApi } from "@/lib/admin-api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { 
+import {
   Plus,
   Edit3,
   Trash2,
@@ -53,6 +53,11 @@ interface Course {
   created_at: string
   updated_at: string
   course_modules?: CourseModule[]
+  instructor_bio?: string | null
+  learning_outcomes?: string[] | null
+  requirements?: string[] | null
+  preview_video_url?: string | null
+  syllabus_url?: string | null
 }
 
 interface CourseModule {
@@ -106,6 +111,10 @@ export default function CoursesPage() {
     target_audience: '',
     instructor_name: '',
     instructor_bio: '',
+    learning_outcomes: '',
+    requirements: '',
+    preview_video_url: '',
+    syllabus_url: '',
     course_duration: '',
     price: 0,
     course_image_url: '',
@@ -139,7 +148,7 @@ export default function CoursesPage() {
   const loadCourses = async () => {
     try {
       setLoading(true)
-      
+
       const params: Record<string, string> = {}
       if (filters.subject !== 'all') params.subject = filters.subject
       if (filters.published !== 'all') params.published = filters.published
@@ -165,6 +174,10 @@ export default function CoursesPage() {
       target_audience: '',
       instructor_name: '',
       instructor_bio: '',
+      learning_outcomes: '',
+      requirements: '',
+      preview_video_url: '',
+      syllabus_url: '',
       course_duration: '',
       price: 0,
       course_image_url: '',
@@ -212,7 +225,11 @@ export default function CoursesPage() {
       description: course.description,
       target_audience: course.target_audience,
       instructor_name: course.instructor_name || '',
-      instructor_bio: '',
+      instructor_bio: course.instructor_bio || '',
+      learning_outcomes: Array.isArray(course.learning_outcomes) ? course.learning_outcomes.join('\n') : '',
+      requirements: Array.isArray(course.requirements) ? course.requirements.join('\n') : '',
+      preview_video_url: course.preview_video_url || '',
+      syllabus_url: course.syllabus_url || '',
       course_duration: course.course_duration || '',
       price: course.price,
       course_image_url: course.course_image_url || '',
@@ -278,7 +295,7 @@ export default function CoursesPage() {
     if (!selectedCourseId) return
 
     try {
-      const endpoint = editingModule 
+      const endpoint = editingModule
         ? `/api/admin/courses/${selectedCourseId}/modules/${editingModule.id}`
         : `/api/admin/courses/${selectedCourseId}/modules`
 
@@ -287,7 +304,7 @@ export default function CoursesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(moduleFormData)
       })
-      
+
       if (!response.ok) throw new Error('Failed to save module')
       setMessage({ type: 'success', text: `Module ${editingModule ? 'updated' : 'created'} successfully` })
 
@@ -304,7 +321,7 @@ export default function CoursesPage() {
     if (!selectedModuleId || !selectedCourseId) return
 
     try {
-      const endpoint = editingTopic 
+      const endpoint = editingTopic
         ? `/api/admin/courses/${selectedCourseId}/modules/${selectedModuleId}/topics/${editingTopic.id}`
         : `/api/admin/courses/${selectedCourseId}/modules/${selectedModuleId}/topics`
 
@@ -313,7 +330,7 @@ export default function CoursesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(topicFormData)
       })
-      
+
       if (!response.ok) throw new Error('Failed to save topic')
       setMessage({ type: 'success', text: `Topic ${editingTopic ? 'updated' : 'created'} successfully` })
 
@@ -346,7 +363,7 @@ export default function CoursesPage() {
       const response = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, {
         method: 'DELETE'
       })
-      
+
       if (!response.ok) throw new Error('Failed to delete module')
       setMessage({ type: 'success', text: 'Module deleted successfully' })
       loadCourses()
@@ -363,7 +380,7 @@ export default function CoursesPage() {
       const response = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}/topics/${topicId}`, {
         method: 'DELETE'
       })
-      
+
       if (!response.ok) throw new Error('Failed to delete topic')
       setMessage({ type: 'success', text: 'Topic deleted successfully' })
       loadCourses()
@@ -513,9 +530,9 @@ export default function CoursesPage() {
                   </select>
                 </div>
                 <div className="flex items-end">
-                  <Button 
-                    onClick={loadCourses} 
-                    variant="outline" 
+                  <Button
+                    onClick={loadCourses}
+                    variant="outline"
                     className="w-full"
                   >
                     <Filter className="w-4 h-4 mr-2" />
@@ -878,6 +895,52 @@ export default function CoursesPage() {
                         required
                       />
                     </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Instructor Bio</label>
+                      <textarea
+                        value={courseFormData.instructor_bio}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, instructor_bio: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        rows={2}
+                        placeholder="Brief biography of the instructor..."
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">What You Will Learn (one per line)</label>
+                      <textarea
+                        value={courseFormData.learning_outcomes}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, learning_outcomes: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        rows={4}
+                        placeholder="Build responsive websites&#10;Create interactive UIs..."
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Requirements (one per line)</label>
+                      <textarea
+                        value={courseFormData.requirements}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, requirements: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        rows={3}
+                        placeholder="No prior experience needed&#10;Laptop with internet..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Preview Video URL</label>
+                      <Input
+                        value={courseFormData.preview_video_url}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, preview_video_url: e.target.value }))}
+                        placeholder="https://youtube.com/..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Syllabus URL (PDF)</label>
+                      <Input
+                        value={courseFormData.syllabus_url}
+                        onChange={(e) => setCourseFormData(prev => ({ ...prev, syllabus_url: e.target.value }))}
+                        placeholder="https://example.com/syllabus.pdf"
+                      />
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Course Image URL</label>
                       <Input
@@ -887,7 +950,7 @@ export default function CoursesPage() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     <label className="flex items-center">
                       <input
@@ -972,7 +1035,7 @@ export default function CoursesPage() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <label className="flex items-center">
                       <input
@@ -1085,7 +1148,7 @@ export default function CoursesPage() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <label className="flex items-center">
                       <input

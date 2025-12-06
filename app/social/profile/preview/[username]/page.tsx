@@ -28,7 +28,7 @@ export default function ProfilePreviewPage() {
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [activeTab, setActiveTab] = useState('posts')
+
   const [requestSent, setRequestSent] = useState(false)
   const [sendingRequest, setSendingRequest] = useState(false)
 
@@ -224,20 +224,7 @@ export default function ProfilePreviewPage() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm mb-8 px-4 py-2 flex justify-between md:justify-center md:gap-12 overflow-x-auto">
-          {['About', 'Photos', 'Posts', 'Contact'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab.toLowerCase())}
-              className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === tab.toLowerCase()
-                ? 'text-gray-900 border-b-2 border-gray-900'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -312,7 +299,7 @@ export default function ProfilePreviewPage() {
                 <p className="text-sm text-gray-500">Posts shared by {profile.full_name}</p>
               </CardHeader>
               <CardContent>
-                <InstagramPosts userId={profile.id} showHeader={false} />
+                <InstagramPosts userId={profile.id} showHeader={false} displayMode="horizontal" autoScroll={true} />
               </CardContent>
             </Card>
           </div>

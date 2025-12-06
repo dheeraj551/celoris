@@ -168,6 +168,11 @@ export function BlogDisplay({
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
+  const handleImageError = (e: any) => {
+    e.currentTarget.src = "https://placehold.co/600x400?text=No+Image";
+    e.currentTarget.onerror = null; // Prevent infinite loop
+  };
+
   if (loading && posts.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -194,6 +199,7 @@ export function BlogDisplay({
                       src={post.featured_image_url}
                       alt={post.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={handleImageError}
                     />
                   </div>
                 )}
@@ -288,6 +294,7 @@ export function BlogDisplay({
                         src={post.featured_image_url}
                         alt={post.title}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        onError={handleImageError}
                       />
                     ) : (
                       <div className="text-center text-gray-400">
@@ -382,6 +389,7 @@ export function BlogDisplay({
                           src={post.featured_image_url}
                           alt={post.title}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          onError={handleImageError}
                         />
                       </div>
                     )}
