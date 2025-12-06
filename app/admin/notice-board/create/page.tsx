@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-export default function CreateNotice() {
+function CreateNoticeContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
@@ -294,5 +294,13 @@ export default function CreateNotice() {
                 </Card>
             </div>
         </div>
+    )
+}
+
+export default function CreateNotice() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-900 p-8 text-white flex justify-center items-center">Loading...</div>}>
+            <CreateNoticeContent />
+        </Suspense>
     )
 }
