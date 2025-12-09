@@ -216,6 +216,22 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['notice_board']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['notice_board']['Insert']>
       }
+      admin_notifications: {
+        Row: {
+          id: string
+          type: string
+          severity: string
+          read: boolean
+          read_at: string | null
+          title: string | null
+          message: string | null
+          details: any | null
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: Omit<Database['public']['Tables']['admin_notifications']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['admin_notifications']['Insert']>
+      }
     }
     Views: {
       [_ in never]: never
