@@ -232,6 +232,23 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['admin_notifications']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['admin_notifications']['Insert']>
       }
+      featured_videos: {
+        Row: {
+          id: string
+          title: string
+          youtube_url: string
+          thumbnail_url: string | null
+          category: string
+          duration: string
+          author: string
+          views_count: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['featured_videos']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['featured_videos']['Insert']>
+      }
     }
     Views: {
       [_ in never]: never

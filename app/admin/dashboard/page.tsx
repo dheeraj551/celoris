@@ -25,7 +25,8 @@ import {
   Zap,
   Eye,
   MessageCircle,
-  GraduationCap
+  GraduationCap,
+  Video
 } from "lucide-react"
 
 export default function AdminDashboard() {
@@ -214,6 +215,13 @@ export default function AdminDashboard() {
       icon: Settings,
       href: "/admin/settings",
       color: "bg-gray-600 hover:bg-gray-700"
+    },
+    {
+      title: "Featured Videos",
+      description: "Manage home page videos",
+      icon: Video,
+      href: "/admin/featured-videos",
+      color: "bg-red-600 hover:bg-red-700"
     }
   ]
 
