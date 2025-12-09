@@ -25,7 +25,7 @@ interface BlogPost {
 export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
-  
+
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +40,7 @@ export default function BlogPostPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/blog/${slug}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           setError('Blog post not found');
@@ -103,7 +103,7 @@ export default function BlogPostPage() {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
           <p className="text-xl text-gray-600 mb-8">{error || 'Blog post not found'}</p>
-          <Link 
+          <Link
             href="/blog"
             className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
           >
@@ -119,7 +119,7 @@ export default function BlogPostPage() {
     <div className="min-h-screen bg-gray-50">
       <article className="max-w-4xl mx-auto px-4 py-8">
         {/* Back Button */}
-        <Link 
+        <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 mb-8 font-medium"
         >
@@ -140,11 +140,11 @@ export default function BlogPostPage() {
               </span>
             )}
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             {post.title}
           </h1>
-          
+
           <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-6">
             <div className="flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -185,20 +185,40 @@ export default function BlogPostPage() {
           )}
         </header>
 
-        {/* Featured Image */}
-        {post.featured_image_url && (
-          <div className="mb-8">
-            <img
-              src={post.featured_image_url}
-              alt={post.title}
-              className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
-            />
-          </div>
-        )}
+        {/* Featured Video */}
+        {(() => {
+          // Helper to extract YouTube ID
+          const getVideoId = (url: string) => {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+          };
+
+          const videoId = post.featured_image_url ? getVideoId(post.featured_image_url) : null;
+
+          if (videoId) {
+            return (
+              <div className="mb-8 aspect-video w-full rounded-lg shadow-lg overflow-hidden">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={post.title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full"
+                ></iframe>
+              </div>
+            );
+          }
+          return null;
+        })()}
 
         {/* Article Content */}
         <div className="prose prose-lg max-w-none">
-          <div 
+          <div
             className="text-gray-800 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: post.content || 'Content not available' }}
           />
@@ -217,8 +237,8 @@ export default function BlogPostPage() {
                 <span>{post.likes_count} likes</span>
               </div>
             </div>
-            
-            <Link 
+
+            <Link
               href="/blog"
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
             >

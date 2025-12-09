@@ -12,7 +12,18 @@ import {
   Search,
   Filter,
   Star,
-  TrendingUp
+  TrendingUp,
+  Cpu,
+  Briefcase,
+  Palette,
+  Code,
+  Megaphone,
+  Zap,
+  BookOpen,
+  Newspaper,
+  Layers,
+  Globe,
+  PlayCircle
 } from 'lucide-react';
 
 interface BlogPost {
@@ -67,7 +78,6 @@ export function BlogDisplay({
   // Load blog posts
   const loadPosts = async (page = 1, overrideFilters = filters) => {
     try {
-      console.log('BlogDisplay: Loading posts...', { page, overrideFilters, limit, showFeatured, featured });
       setLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
@@ -86,23 +96,18 @@ export function BlogDisplay({
         params.append('search', overrideFilters.search);
       }
 
-      console.log('BlogDisplay: Fetching from', `/api/blog?${params}`);
       const response = await fetch(`/api/blog?${params}`);
       const data = await response.json();
-      console.log('BlogDisplay: API Response', data);
 
       if (response.ok) {
         let fetchedPosts = data.posts || [];
-        console.log('BlogDisplay: Fetched posts count (raw)', fetchedPosts.length);
-
-        // Filter out the deleted post if it's still coming from API/Cache
+        // Filter out specific test post if needed, or keep generic
         fetchedPosts = fetchedPosts.filter((p: BlogPost) => !p.title.includes('Sobhita'));
 
-        console.log('BlogDisplay: Final posts count', fetchedPosts.length);
         setPosts(fetchedPosts);
         setCurrentPage(page);
         setTotalPages(data.pagination?.totalPages || 1);
-        setTotalPosts((data.pagination?.total || 0) + 1); // Increment total count
+        setTotalPosts((data.pagination?.total || 0) + 1);
       }
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -168,9 +173,74 @@ export function BlogDisplay({
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleImageError = (e: any) => {
-    e.currentTarget.src = "https://placehold.co/600x400?text=No+Image";
-    e.currentTarget.onerror = null; // Prevent infinite loop
+  // Get category icon
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Technology': return <Cpu className="h-12 w-12 text-blue-500" />;
+      case 'Business': return <Briefcase className="h-12 w-12 text-green-500" />;
+      case 'Design': return <Palette className="h-12 w-12 text-purple-500" />;
+      case 'Development': return <Code className="h-12 w-12 text-orange-500" />;
+      case 'Marketing': return <Megaphone className="h-12 w-12 text-pink-500" />;
+      case 'Productivity': return <Zap className="h-12 w-12 text-yellow-500" />;
+      case 'Tutorial': return <BookOpen className="h-12 w-12 text-indigo-500" />;
+      case 'News': return <Newspaper className="h-12 w-12 text-red-500" />;
+      case 'Platform': return <Layers className="h-12 w-12 text-gray-500" />;
+      default: return <Globe className="h-12 w-12 text-gray-500" />;
+    }
+  };
+
+  // Get category background
+  const getCategoryBg = (category: string) => {
+    const bgs: Record<string, string> = {
+      'Technology': 'bg-blue-50',
+      'Business': 'bg-green-50',
+      'Design': 'bg-purple-50',
+      'Development': 'bg-orange-50',
+      'Marketing': 'bg-pink-50',
+      'Productivity': 'bg-yellow-50',
+      'Tutorial': 'bg-indigo-50',
+      'News': 'bg-red-50',
+      'Platform': 'bg-gray-50',
+      'General': 'bg-gray-50'
+    };
+    return bgs[category] || 'bg-gray-50';
+  }
+
+  // Helper to extract YouTube ID
+  const getVideoId = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Helper to render media (Thumbnail or Icon)
+  const renderPostMedia = (post: BlogPost) => {
+    const videoId = post.featured_image_url ? getVideoId(post.featured_image_url) : null;
+
+    if (videoId) {
+      return (
+        <div className="relative w-full h-full bg-black">
+          <img
+            src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+            alt={post.title}
+            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <PlayCircle className="w-8 h-8 text-white fill-white/20" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Fallback to Icon
+    return (
+      <div className={`w-full h-full flex items-center justify-center ${getCategoryBg(post.category)}`}>
+        {getCategoryIcon(post.category)}
+      </div>
+    );
   };
 
   if (loading && posts.length === 0) {
@@ -192,18 +262,11 @@ export function BlogDisplay({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredPosts.slice(0, 3).map((post) => (
-              <article key={post.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                {post.featured_image_url && (
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={post.featured_image_url}
-                      alt={post.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      onError={handleImageError}
-                    />
-                  </div>
-                )}
-                <div className="p-6">
+              <article key={post.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full group">
+                <Link href={`/blog/${post.slug.replace(/\/$/, '')}`} className="aspect-video">
+                  {renderPostMedia(post)}
+                </Link>
+                <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-center gap-2 mb-3">
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(post.category)}`}>
                       {post.category}
@@ -211,12 +274,14 @@ export function BlogDisplay({
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {post.title}
+                    <Link href={`/blog/${post.slug.replace(/\/$/, '')}`} className="hover:text-green-600 transition-colors">
+                      {post.title}
+                    </Link>
                   </h3>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="mt-auto flex items-center justify-between text-sm text-gray-500">
                     <div className="flex items-center gap-4">
                       <span className="flex items-center gap-1">
                         <User className="h-4 w-4" />
@@ -227,7 +292,6 @@ export function BlogDisplay({
                         {post.reading_time} min
                       </span>
                     </div>
-                    <span>{formatDate(post.published_at)}</span>
                   </div>
                 </div>
               </article>
@@ -287,27 +351,11 @@ export function BlogDisplay({
           {layout === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (
-                <article key={post.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                  <div className="aspect-video overflow-hidden bg-gray-100 flex items-center justify-center">
-                    {post.featured_image_url ? (
-                      <img
-                        src={post.featured_image_url}
-                        alt={post.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        onError={handleImageError}
-                      />
-                    ) : (
-                      <div className="text-center text-gray-400">
-                        <div className="w-16 h-16 mx-auto mb-2 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <p className="text-sm">No image</p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-6">
+                <article key={post.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group">
+                  <Link href={`/blog/${post.slug.replace(/\/$/, '')}`} className="aspect-video">
+                    {renderPostMedia(post)}
+                  </Link>
+                  <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-center justify-between mb-3">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(post.category)}`}>
                         {post.category}
@@ -317,7 +365,9 @@ export function BlogDisplay({
                       )}
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {post.title}
+                      <Link href={`/blog/${post.slug.replace(/\/$/, '')}`} className="hover:text-green-600 transition-colors">
+                        {post.title}
+                      </Link>
                     </h3>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                       {post.excerpt}
@@ -337,41 +387,43 @@ export function BlogDisplay({
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <User className="h-4 w-4" />
-                          {post.author_name}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {post.reading_time} min
-                        </span>
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            {post.author_name}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {post.reading_time} min
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" />
+                            {post.views_count}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <TrendingUp className="h-4 w-4" />
+                            {post.likes_count}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {post.views_count}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <TrendingUp className="h-4 w-4" />
-                          {post.likes_count}
-                        </span>
-                      </div>
-                    </div>
 
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">
-                          {formatDate(post.published_at)}
-                        </span>
-                        <Link
-                          href={`/blog/${post.slug.replace(/\/$/, '')}`}
-                          className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1"
-                        >
-                          Read More
-                          <ArrowRight className="h-4 w-4" />
-                        </Link>
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-500">
+                            {formatDate(post.published_at)}
+                          </span>
+                          <Link
+                            href={`/blog/${post.slug.replace(/\/$/, '')}`}
+                            className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1"
+                          >
+                            Read More
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -381,19 +433,12 @@ export function BlogDisplay({
           ) : (
             <div className="space-y-6">
               {posts.map((post) => (
-                <article key={post.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <article key={post.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
                   <div className="flex flex-col md:flex-row">
-                    {post.featured_image_url && (
-                      <div className="md:w-1/3 aspect-video md:aspect-square overflow-hidden">
-                        <img
-                          src={post.featured_image_url}
-                          alt={post.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          onError={handleImageError}
-                        />
-                      </div>
-                    )}
-                    <div className={`p-6 ${post.featured_image_url ? 'md:w-2/3' : 'w-full'}`}>
+                    <Link href={`/blog/${post.slug.replace(/\/$/, '')}`} className="md:w-1/3 aspect-video md:aspect-auto">
+                      {renderPostMedia(post)}
+                    </Link>
+                    <div className="p-6 md:w-2/3">
                       <div className="flex items-center gap-2 mb-3">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(post.category)}`}>
                           {post.category}
@@ -403,7 +448,9 @@ export function BlogDisplay({
                         )}
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {post.title}
+                        <Link href={`/blog/${post.slug.replace(/\/$/, '')}`} className="hover:text-green-600 transition-colors">
+                          {post.title}
+                        </Link>
                       </h3>
                       <p className="text-gray-600 mb-4 line-clamp-2">
                         {post.excerpt}
