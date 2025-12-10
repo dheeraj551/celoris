@@ -31,4 +31,6 @@ export interface CourseCardProps {
     duration: string;
     price: string;
     tag?: string;
+    image?: string;
+    id?: string;
 }

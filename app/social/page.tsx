@@ -5,13 +5,13 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  Heart, 
-  MessageCircle, 
-  Users, 
-  Smartphone, 
-  Video, 
-  Phone, 
+import {
+  Heart,
+  MessageCircle,
+  Users,
+  Smartphone,
+  Video,
+  Phone,
   Instagram,
   Zap,
   Crown,
@@ -36,17 +36,17 @@ export default function SocialPage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (user) {
         setUser(user)
-        
+
         // Get user profile from our custom users table
         const { data: profile } = await supabase
           .from("users")
           .select("*")
           .eq("id", user.id)
           .single()
-          
+
         setProfile(profile)
       }
     } catch (error) {
@@ -135,7 +135,7 @@ export default function SocialPage() {
       role: "Digital Artist",
       location: "New York",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      story: "Found three amazing collaborators for my art projects through InstaLinkr!",
+      story: "Found three amazing collaborators for my art projects through Celoris Social!",
       matches: 24,
       connection: "Creative Partnerships"
     },
@@ -171,7 +171,7 @@ export default function SocialPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500 mx-auto"></div>
-          <p className="mt-4 text-text-secondary">Loading InstaLinkr...</p>
+          <p className="mt-4 text-text-secondary">Loading Celoris Social...</p>
         </div>
       </div>
     )
@@ -184,16 +184,16 @@ export default function SocialPage() {
         <div className="container text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              InstaLinkr
+              Celoris Social
             </h1>
             <p className="text-xl md:text-2xl mb-4 font-medium">
               "Swipe. Connect. Grow."
             </p>
             <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto text-purple-50">
-              The social growth and connection platform that blends Tinder-style discovery 
+              The social growth and connection platform that blends Tinder-style discovery
               with Instagram influence building and professional networking.
             </p>
-            
+
             {user ? (
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="bg-white text-primary-500 hover:bg-gray-100" asChild>
@@ -211,39 +211,14 @@ export default function SocialPage() {
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-primary-500 hover:bg-gray-100" asChild>
-                  <Link href="/register">
-                    <Heart className="mr-2 h-5 w-5" />
-                    Join InstaLinkr
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary-500" asChild>
-                  <Link href="/login">
-                    Sign In
-                  </Link>
-                </Button>
+                {/* Buttons removed as requested */}
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-surface">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {stats.map((stat, index) => (
-              <div key={index}>
-                <div className="flex justify-center mb-3">
-                  <stat.icon className="h-8 w-8 text-purple-500" />
-                </div>
-                <div className="text-3xl font-bold text-primary-500 mb-2">{stat.value}</div>
-                <div className="text-text-secondary">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Main Features */}
       <section className="py-20 bg-background">
@@ -253,7 +228,7 @@ export default function SocialPage() {
               Connect Like Never Before
             </h2>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Our innovative platform combines the excitement of discovery with professional networking, 
+              Our innovative platform combines the excitement of discovery with professional networking,
               helping you build meaningful connections and grow your influence.
             </p>
           </div>
@@ -278,8 +253,8 @@ export default function SocialPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant={feature.premium ? "outline" : "default"}
                     asChild
                   >
@@ -303,7 +278,7 @@ export default function SocialPage() {
               Unlock Premium Features
             </h2>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Take your social networking to the next level with our premium features 
+              Take your social networking to the next level with our premium features
               designed for serious creators and professionals.
             </p>
           </div>
@@ -347,8 +322,8 @@ export default function SocialPage() {
               Success Stories
             </h2>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              See how our community members have grown their networks, 
-              found collaborators, and achieved their goals through InstaLinkr.
+              See how our community members have grown their networks,
+              found collaborators, and achieved their goals through Celoris Social.
             </p>
           </div>
 
@@ -396,7 +371,7 @@ export default function SocialPage() {
         <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              How InstaLinkr Works
+              How Celoris Social Works
             </h2>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto">
               Get started in minutes and begin building meaningful connections today.
@@ -411,7 +386,7 @@ export default function SocialPage() {
                 </div>
                 <h3 className="text-xl font-semibold text-text-primary mb-3">Create Your Profile</h3>
                 <p className="text-text-secondary">
-                  Set up your profile with your Instagram handle, bio, and professional details 
+                  Set up your profile with your Instagram handle, bio, and professional details
                   to showcase who you are.
                 </p>
               </div>
@@ -421,7 +396,7 @@ export default function SocialPage() {
                 </div>
                 <h3 className="text-xl font-semibold text-text-primary mb-3">Start Swiping</h3>
                 <p className="text-text-secondary">
-                  Discover creators, influencers, and professionals who align with your interests 
+                  Discover creators, influencers, and professionals who align with your interests
                   and goals.
                 </p>
               </div>
@@ -431,7 +406,7 @@ export default function SocialPage() {
                 </div>
                 <h3 className="text-xl font-semibold text-text-primary mb-3">Connect & Grow</h3>
                 <p className="text-text-secondary">
-                  Chat with matches, collaborate on projects, and build lasting relationships 
+                  Chat with matches, collaborate on projects, and build lasting relationships
                   that help you grow.
                 </p>
               </div>
@@ -448,7 +423,7 @@ export default function SocialPage() {
               Safe & Secure Platform
             </h2>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Your safety and privacy are our top priorities. Connect with confidence 
+              Your safety and privacy are our top priorities. Connect with confidence
               knowing you're protected by industry-leading security measures.
             </p>
           </div>
@@ -480,16 +455,16 @@ export default function SocialPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
         <div className="container text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Connect & Grow?
           </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-purple-100">
-            Join thousands of creators, influencers, and professionals who are building 
-            meaningful connections and growing their networks with InstaLinkr.
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-green-100">
+            Join thousands of creators, influencers, and professionals who are building
+            meaningful connections and growing their networks with Celoris Social.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {user ? (
               <>
@@ -508,17 +483,7 @@ export default function SocialPage() {
               </>
             ) : (
               <>
-                <Button size="lg" className="bg-white text-primary-500 hover:bg-gray-100" asChild>
-                  <Link href="/register">
-                    <Users className="mr-2 h-5 w-5" />
-                    Sign Up Free
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary-500" asChild>
-                  <Link href="/login">
-                    Sign In
-                  </Link>
-                </Button>
+                {/* Buttons removed as requested */}
               </>
             )}
           </div>

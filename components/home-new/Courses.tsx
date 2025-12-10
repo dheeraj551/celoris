@@ -1,11 +1,18 @@
-import React from 'react';
+"use client";
+import React, { useEffect, useState } from 'react';
 import { PlayCircle, Clock, Star } from 'lucide-react';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase-client';
 import { CourseCardProps } from './types';
 
-const CourseCard: React.FC<CourseCardProps> = ({ title, category, instructor, duration, price, tag }) => (
+export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, instructor, duration, price, tag, image }) => (
     <div className="flex flex-col sm:flex-row bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        <div className="w-full sm:w-48 bg-slate-200 relative">
-            <img src={`https://picsum.photos/200/200?random=${Math.random()}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Course" />
+        <div className="w-full sm:w-48 bg-slate-200 relative h-48 sm:h-auto">
+            <img
+                src={image || `https://picsum.photos/200/200?random=${Math.random()}`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                alt={title}
+            />
             {tag && <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-950 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">{tag}</span>}
         </div>
         <div className="p-5 flex-1 flex flex-col justify-between">
@@ -17,57 +24,108 @@ const CourseCard: React.FC<CourseCardProps> = ({ title, category, instructor, du
                         <span className="text-[10px] font-medium text-slate-500">4.9</span>
                     </div>
                 </div>
-                <h3 className="text-base font-bold text-slate-900 leading-tight mb-2">{title}</h3>
+                <h3 className="text-base font-bold text-slate-900 leading-tight mb-2 line-clamp-2">{title}</h3>
                 <p className="text-xs text-slate-500 mb-3 line-clamp-2">This comprehensive course is designed to transform you...</p>
 
                 <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
-                    <div className="flex items-center gap-1"><PlayCircle size={12} /> {instructor}</div>
-                    <div className="flex items-center gap-1"><Clock size={12} /> {duration}</div>
+                    <div className="flex items-center gap-1"><PlayCircle size={12} /> {instructor || 'Instructor'}</div>
+                    <div className="flex items-center gap-1"><Clock size={12} /> {duration || 'N/A'}</div>
                 </div>
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-slate-50">
                 <span className="text-lg font-bold text-slate-900">₹{price}</span>
-                <button className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200">
-                    View Course
-                </button>
+                {id ? (
+                    <Link href={`/learn/course/${id}`} className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center">
+                        View Course
+                    </Link>
+                ) : (
+                    <button className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200">
+                        View Course
+                    </button>
+                )}
             </div>
         </div>
     </div>
 );
 
-export const Courses: React.FC = () => {
+interface CoursesProps {
+    title?: string;
+    description?: string;
+    limit?: number;
+    showBrowseAll?: boolean;
+    featured?: boolean;
+}
+
+export const Courses: React.FC<CoursesProps> = ({
+    title = "Latest Courses",
+    description = "Explore our newest courses and start your learning journey.",
+    limit = 4,
+    showBrowseAll = true,
+    featured = false
+}) => {
+    const [courses, setCourses] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            const supabase = createClient();
+            let query = supabase
+                .from('courses')
+                .select('*')
+                .eq('is_published', true);
+
+            if (featured) {
+                query = query.eq('is_featured', true);
+            }
+
+            const { data, error } = await query
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+            if (data) {
+                setCourses(data);
+            }
+            setLoading(false);
+        };
+
+        fetchCourses();
+    }, [limit, featured]);
+
     return (
         <div className="mt-16 mb-16">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-slate-900">Latest Courses</h2>
-                <p className="text-slate-500 text-sm mt-1">Explore our newest courses and start your learning journey.</p>
+                <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
+                {description && <p className="text-slate-500 text-sm mt-1">{description}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <CourseCard
-                    title="Mastering Nano Banana Pro"
-                    category="Computer Science"
-                    instructor="Coreste T."
-                    duration="12 hours"
-                    price="590"
-                    tag="Bestseller"
-                />
-                <CourseCard
-                    title="My New AI Course will be table"
-                    category="General"
-                    instructor="Prof. Smith"
-                    duration="8 hours"
-                    price="590"
-                    tag="New"
-                />
+                {courses.length > 0 ? (
+                    courses.map((course) => (
+                        <CourseCard
+                            key={course.id}
+                            id={course.id}
+                            title={course.title}
+                            category={course.subject}
+                            instructor={course.instructor_name}
+                            duration={course.course_duration}
+                            price={course.price}
+                            tag={course.is_featured ? 'Featured' : undefined}
+                            image={course.course_image_url}
+                        />
+                    ))
+                ) : (
+                    !loading && <div className="text-center col-span-2 text-slate-500">No courses available at the moment.</div>
+                )}
             </div>
 
-            <div className="mt-8 text-center">
-                <button className="px-6 py-2 bg-slate-800 text-slate-200 text-sm font-medium rounded-full hover:bg-slate-900 hover:text-white transition-colors">
-                    Browse All Courses
-                </button>
-            </div>
+            {showBrowseAll && (
+                <div className="mt-8 text-center">
+                    <Link href="/learn/courses" className="px-6 py-2 bg-slate-800 text-slate-200 text-sm font-medium rounded-full hover:bg-slate-900 hover:text-white transition-colors inline-block">
+                        Browse All Courses
+                    </Link>
+                </div>
+            )}
         </div>
     );
 };

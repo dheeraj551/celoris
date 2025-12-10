@@ -23,7 +23,7 @@ export default function EarnPage() {
     try {
       const response = await fetch('/api/jobs?limit=6')
       const result = await response.json()
-      
+
       if (result.success) {
         setJobs(result.data)
       }
@@ -54,47 +54,14 @@ export default function EarnPage() {
             Find Your Dream Career
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-primary-50">
-            Connect with top companies and discover opportunities that match your skills 
+            Connect with top companies and discover opportunities that match your skills
             and career aspirations. Your next big breakthrough is just a click away.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-primary-500 hover:bg-gray-100" asChild>
-              <Link href="/earn/jobs">
-                Browse Jobs
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary-500" asChild>
-              <Link href="/earn/companies">
-                View Companies
-              </Link>
-            </Button>
-          </div>
+
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-surface">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-primary-500 mb-2">{jobs.length}+</div>
-              <div className="text-text-secondary">Active Job Listings</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary-500 mb-2">500+</div>
-              <div className="text-text-secondary">Partner Companies</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary-500 mb-2">95%</div>
-              <div className="text-text-secondary">Success Rate</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary-500 mb-2">$85K</div>
-              <div className="text-text-secondary">Average Salary</div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Search and Filter Section */}
       <section className="py-12 bg-background">

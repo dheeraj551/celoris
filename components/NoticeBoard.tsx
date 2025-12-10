@@ -169,9 +169,9 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="flex overflow-x-auto pb-6 gap-6 px-4 snap-x snap-mandatory scrollbar-hide">
         {[...Array(3)].map((_, index) => (
-          <Card key={index} className="card-hover">
+          <Card key={index} className="card-hover min-w-[300px] w-[350px]">
             <CardContent className="p-6">
               <div className="animate-pulse">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -208,9 +208,9 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="flex overflow-x-auto pb-6 gap-6 px-4 snap-x snap-mandatory scrollbar-hide">
         {notices.length === 0 ? (
-          <div className="col-span-full text-center py-8">
+          <div className="w-full text-center py-8">
             <div className="text-gray-500">
               <BookOpen className="h-8 w-8 mx-auto mb-2" />
               <p>No notice board entries available at the moment.</p>
@@ -223,7 +223,7 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
             const CategoryIcon = categoryIcons[notice.category] || BookOpen
 
             return (
-              <Card key={notice.id} className={`card-hover border-l-4 ${config.borderColor} flex flex-col`}>
+              <Card key={notice.id} className={`card-hover border-l-4 ${config.borderColor} flex flex-col min-w-[300px] w-[350px] snap-center`}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2 mb-2">
                     <div className={`w-8 h-8 ${config.bgColor} rounded-full flex items-center justify-center`}>
@@ -245,7 +245,6 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
                       <MapPin className="w-3 h-3 text-gray-500" />
                       <span>{notice.location}</span>
                     </div>
-                    {/* Contact number removed as per requirement */}
 
                     {notice.duration && (
                       <div><strong>Duration:</strong> {notice.duration}</div>
