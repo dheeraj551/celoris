@@ -196,18 +196,7 @@ export default function SocialPage() {
 
             {user ? (
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-primary-500 hover:bg-gray-100" asChild>
-                  <Link href="/social/swipe">
-                    <Heart className="mr-2 h-5 w-5" />
-                    Start Swiping
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary-500" asChild>
-                  <Link href="/social/profile">
-                    <UserPlus className="mr-2 h-5 w-5" />
-                    Update Profile
-                  </Link>
-                </Button>
+                {/* Buttons removed as requested */}
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -468,18 +457,7 @@ export default function SocialPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {user ? (
               <>
-                <Button size="lg" className="bg-white text-primary-500 hover:bg-gray-100" asChild>
-                  <Link href="/social/swipe">
-                    <Heart className="mr-2 h-5 w-5" />
-                    Start Swiping
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary-500" asChild>
-                  <Link href="/social/profile">
-                    Update Profile
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
+                {/* Buttons removed as requested */}
               </>
             ) : (
               <>

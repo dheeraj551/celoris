@@ -263,7 +263,7 @@ export default function CourseDetailPage() {
                   </Button>
                   <div className="mt-6 text-center text-sm text-text-secondary">
                     <div className="flex items-center justify-center space-x-4">
-                      <span>• 30-day money-back guarantee</span>
+                      <span>• Opportunity to work with us</span>
                     </div>
                     <div className="flex items-center justify-center space-x-4 mt-2">
                       <span>• Lifetime access</span>
@@ -282,9 +282,8 @@ export default function CourseDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                      {/* Placeholder for instructor image as it's not in the DB schema explicitly as a URL usually, or use a default */}
-                      <Users className="h-8 w-8 text-gray-400" />
+                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-gray-200">
+                      <img src="/celoris-logo.png" alt="Celoris" className="w-12 h-12 object-contain" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-text-primary">{course.instructor_name || "Expert Instructor"}</h3>

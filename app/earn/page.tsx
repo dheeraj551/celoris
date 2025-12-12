@@ -63,42 +63,6 @@ export default function EarnPage() {
 
 
 
-      {/* Search and Filter Section */}
-      <section className="py-12 bg-background">
-        <div className="container">
-          <div className="bg-surface rounded-lg p-6 shadow-sm border">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              <div className="lg:col-span-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
-                  <Input
-                    placeholder="Search jobs, companies, or skills..."
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div>
-                <select className="w-full h-10 px-3 border border-input rounded-md bg-background">
-                  <option>All Locations</option>
-                  <option>Remote</option>
-                  <option>San Francisco, CA</option>
-                  <option>New York, NY</option>
-                  <option>Austin, TX</option>
-                </select>
-              </div>
-              <div>
-                <Button className="w-full">
-                  <Filter className="mr-2 h-4 w-4" />
-                  More Filters
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Job Categories */}
       <section className="py-16 bg-background">
         <div className="container">
@@ -156,14 +120,9 @@ export default function EarnPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4 mb-4">
-                          <img
-                            src={job.companyLogo || "/api/placeholder/48/48"}
-                            alt={job.company}
-                            className="w-12 h-12 rounded-lg object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                            }}
-                          />
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-sm">
+                            <Briefcase className="h-6 w-6 text-white" />
+                          </div>
                           <div>
                             <h3 className="text-xl font-semibold text-text-primary">{job.title}</h3>
                             <p className="text-text-secondary">{job.company}</p>
@@ -236,14 +195,6 @@ export default function EarnPage() {
             </div>
           )}
 
-          <div className="text-center mt-12">
-            <Button size="lg" asChild>
-              <Link href="/earn/jobs">
-                View All Opportunities
-                <TrendingUp className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
 
