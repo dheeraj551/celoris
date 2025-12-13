@@ -150,7 +150,8 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to submit interest')
+        const result = await response.json()
+        throw new Error(result.error || 'Failed to submit interest')
       }
 
       setSubmitSuccess(true)
@@ -159,9 +160,9 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
         setSelectedNotice(null)
         setInterestForm({ name: '', email: '', phone: '', message: '' })
       }, 2000)
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      // Handle error (maybe show a toast)
+      alert(err.message || 'An error occurred')
     } finally {
       setSubmitting(false)
     }
@@ -298,6 +299,13 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
               </div>
             ) : (
               <form onSubmit={handleInterestSubmit} className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex items-start gap-2 text-sm text-blue-700">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <p>
+                    Note: <span className="font-bold">₹25</span> will be deducted from your wallet when you show interest.
+                  </p>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium mb-1">Name</label>
                   <input

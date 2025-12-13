@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClientForBrowser } from '@/lib/supabase-client'
+import { createClientForBrowser, createSupabaseClientForServer } from '@/lib/supabase-client'
+import { createRouteClient } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
     try {
@@ -13,29 +14,104 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const supabase = createClientForBrowser()
+        const supabase = createRouteClient()
+        const { data: { user } } = await supabase.auth.getUser()
 
-        const { data, error } = await supabase
+        if (!user) {
+            return NextResponse.json(
+                { error: 'You must be logged in to show interest' },
+                { status: 401 }
+            )
+        }
+
+        const adminSupabase = createSupabaseClientForServer()
+
+        // Check wallet balance
+        const { data: userProfile, error: profileError } = await adminSupabase
+            .from('users')
+            .select('wallet_balance')
+            .eq('id', user.id)
+            .single()
+
+        if (profileError || !userProfile) {
+            console.error('Error fetching user profile:', profileError)
+            return NextResponse.json(
+                { error: 'Failed to fetch user profile' },
+                { status: 500 }
+            )
+        }
+
+        const currentBalance = userProfile.wallet_balance || 0
+        const DEDUCTION_AMOUNT = 25
+
+        if (currentBalance < DEDUCTION_AMOUNT) {
+            return NextResponse.json(
+                { error: `Insufficient wallet balance. You need ₹${DEDUCTION_AMOUNT} to show interest.` },
+                { status: 400 }
+            )
+        }
+
+        // Perform transaction (Deduct balance, Log transaction, Create interest)
+        // Ideally this should be a Postgres function/transaction, but we'll do it sequentially here for now.
+
+        // 1. Deduct balance
+        const { error: updateError } = await adminSupabase
+            .from('users')
+            .update({ wallet_balance: currentBalance - DEDUCTION_AMOUNT })
+            .eq('id', user.id)
+
+        if (updateError) {
+            console.error('Error deducting balance:', updateError)
+            return NextResponse.json(
+                { error: 'Failed to process payment' },
+                { status: 500 }
+            )
+        }
+
+        // 2. Log transaction
+        const { error: transactionError } = await adminSupabase
+            .from('wallet_transactions')
+            .insert({
+                user_id: user.id,
+                amount: DEDUCTION_AMOUNT,
+                type: 'debit',
+                description: `Shown interest for notice ID: ${notice_id}`
+            })
+
+        if (transactionError) {
+            console.error('Error logging transaction:', transactionError)
+            // Non-critical, but good to know
+        }
+
+        // 3. Create interest entry
+        const { data, error } = await adminSupabase
             .from('notice_interests')
             .insert({
                 notice_id,
                 user_name: name,
                 user_email: email,
                 user_phone: phone,
-                message
+                message,
+                user_id: user.id
             })
             .select()
             .single()
 
         if (error) {
             console.error('Error submitting interest:', error)
+            // Refund the user? Ideally yes.
+            await adminSupabase
+                .from('users')
+                .update({ wallet_balance: currentBalance }) // Restore balance
+                .eq('id', user.id)
+
             return NextResponse.json(
                 { error: 'Failed to submit interest' },
                 { status: 500 }
             )
         }
 
-        return NextResponse.json({ data }, { status: 201 })
+        return NextResponse.json({ data, newBalance: currentBalance - DEDUCTION_AMOUNT }, { status: 201 })
     } catch (error) {
         console.error('Server error:', error)
         return NextResponse.json(

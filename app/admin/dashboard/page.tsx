@@ -222,6 +222,13 @@ export default function AdminDashboard() {
       icon: Video,
       href: "/admin/featured-videos",
       color: "bg-red-600 hover:bg-red-700"
+    },
+    {
+      title: "Wallet Transactions",
+      description: "View user wallet history",
+      icon: DollarSign,
+      href: "/admin/transactions",
+      color: "bg-emerald-600 hover:bg-emerald-700"
     }
   ]
 

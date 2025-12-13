@@ -265,6 +265,32 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['users']['Insert']>
       }
+      notice_interests: {
+        Row: {
+          id: string
+          notice_id: string
+          user_name: string
+          user_email: string
+          user_phone: string
+          message: string | null
+          user_id: string | null
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['notice_interests']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['notice_interests']['Insert']>
+      }
+      wallet_transactions: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          type: 'credit' | 'debit'
+          description: string | null
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['wallet_transactions']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['wallet_transactions']['Insert']>
+      }
     }
     Views: {
       [_ in never]: never
