@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const adminSupabase = createSupabaseClientForServer()
+        const adminSupabase = createSupabaseClientForServer() as any
 
         // Check wallet balance
         const { data: userProfile, error: profileError } = await adminSupabase
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const currentBalance = userProfile.wallet_balance || 0
+        const currentBalance = (userProfile as any).wallet_balance || 0
         const DEDUCTION_AMOUNT = 25
 
         if (currentBalance < DEDUCTION_AMOUNT) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         // 1. Deduct balance
         const { error: updateError } = await adminSupabase
             .from('users')
-            .update({ wallet_balance: currentBalance - DEDUCTION_AMOUNT })
+            .update({ wallet_balance: currentBalance - DEDUCTION_AMOUNT } as any)
             .eq('id', user.id)
 
         if (updateError) {
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
                 amount: DEDUCTION_AMOUNT,
                 type: 'debit',
                 description: `Shown interest for notice ID: ${notice_id}`
-            })
+            } as any)
 
         if (transactionError) {
             console.error('Error logging transaction:', transactionError)
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
                 user_phone: phone,
                 message,
                 user_id: user.id
-            })
+            } as any)
             .select()
             .single()
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
             // Refund the user? Ideally yes.
             await adminSupabase
                 .from('users')
-                .update({ wallet_balance: currentBalance }) // Restore balance
+                .update({ wallet_balance: currentBalance } as any) // Restore balance
                 .eq('id', user.id)
 
             return NextResponse.json(

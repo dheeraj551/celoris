@@ -59,7 +59,7 @@ export const Features: React.FC = () => {
         <div className="mt-8">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-slate-900">Platform Overview</h2>
-                <a href="#" className="text-sm font-medium text-brand-600 hover:text-brand-700">View detailed map</a>
+
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {features.map((feature, idx) => (

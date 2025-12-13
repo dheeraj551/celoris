@@ -23,7 +23,7 @@ interface Testimonial {
 
 interface TestimonialsDisplayProps {
   type?: 'general' | 'service' | 'product' | 'feature' | 'support' | 'all'
-  page?: 'homepage' | 'about' | 'services' | 'contact' | 'blog' | 'portfolio' | 'pricing' | 'features'
+  page?: 'homepage' | 'about' | 'services' | 'contact' | 'blog' | 'portfolio' | 'pricing' | 'features' | 'all'
   limit?: number
   layout?: 'grid' | 'carousel' | 'list'
   showFeatured?: boolean

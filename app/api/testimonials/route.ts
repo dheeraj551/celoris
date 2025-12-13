@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Filter by page if specified
-      if (page) {
+      if (page && page !== 'all') {
         query = query.contains('target_pages', [page])
       }
 

@@ -91,14 +91,16 @@ export default function SocialPage() {
       title: "WhatsApp Notifications",
       description: "Get instant WhatsApp alerts for new matches, messages, and important updates",
       color: "bg-emerald-500",
-      action: "Enable Notifications"
+      action: "Enable Notifications",
+      premium: true
     },
     {
       icon: Users,
       title: "Creator Network",
       description: "Connect with influencers, content creators, and professionals to expand your network",
       color: "bg-indigo-500",
-      action: "Join Network"
+      action: "Join Network",
+      premium: true
     }
   ]
 
@@ -303,57 +305,7 @@ export default function SocialPage() {
         </div>
       </section>
 
-      {/* Success Stories */}
-      <section className="py-20 bg-surface">
-        <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              Success Stories
-            </h2>
-            <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              See how our community members have grown their networks,
-              found collaborators, and achieved their goals through Celoris Social.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {successStories.map((story, index) => (
-              <Card key={index} className="card-hover">
-                <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={story.avatar}
-                      alt={story.name}
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                    <div>
-                      <CardTitle className="text-lg">{story.name}</CardTitle>
-                      <CardDescription>{story.role}</CardDescription>
-                      <div className="flex items-center text-sm text-text-secondary mt-1">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {story.location}
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-text-secondary mb-4 italic">"{story.story}"</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Heart className="h-4 w-4 text-pink-500" />
-                      <span className="text-text-secondary">{story.matches} matches</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Award className="h-4 w-4 text-green-500" />
-                      <span className="text-text-secondary">{story.connection}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Success Stories section removed */}
 
       {/* How It Works */}
       <section className="py-20 bg-background">

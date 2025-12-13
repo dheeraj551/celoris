@@ -23,14 +23,7 @@ export const Hero: React.FC = () => {
                         delivering cutting-edge solutions for individuals to thrive.
                     </p>
 
-                    <div className="flex gap-4">
-                        <button className="px-6 py-3 bg-white text-brand-900 font-bold rounded-xl hover:bg-brand-50 transition-colors shadow-lg shadow-brand-900/20">
-                            Get Started
-                        </button>
-                        <button className="px-6 py-3 bg-brand-800/50 text-white font-semibold rounded-xl border border-brand-700 hover:bg-brand-800 transition-colors backdrop-blur-sm">
-                            View Demo
-                        </button>
-                    </div>
+                    {/* Buttons removed as requested */}
                 </div>
 
                 <div className="hidden md:flex flex-col items-center justify-center relative">
