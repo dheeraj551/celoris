@@ -21,7 +21,7 @@ export async function POST(req: Request) {
             )
         }
 
-        const supabase = createSupabaseClientForServer()
+        const supabase: any = createSupabaseClientForServer()
 
         // First, get the current balance
         const { data: user, error: fetchError } = await supabase
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
             )
         }
 
-        const currentBalance = user?.wallet_balance || 0
+        const currentBalance = (user as { wallet_balance: number | null } | null)?.wallet_balance || 0
         const newBalance = currentBalance + rechargeAmount
 
         // Update the balance
