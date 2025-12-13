@@ -23,8 +23,19 @@ import {
     CheckCircle,
     XCircle,
     User as UserIcon,
-    Trash2
+
+    Trash2,
+    Wallet
 } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import { usePresence } from "@/components/providers/PresenceProvider"
 
 interface User {
@@ -37,6 +48,7 @@ interface User {
     verification_status?: string
     subscription_status?: string
     role?: string
+    wallet_balance?: number
 }
 
 export default function UserManagementPage() {
@@ -44,7 +56,12 @@ export default function UserManagementPage() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
+
     const [deletingId, setDeletingId] = useState<string | null>(null)
+    const [rechargeModalOpen, setRechargeModalOpen] = useState(false)
+    const [rechargeAmount, setRechargeAmount] = useState("")
+    const [selectedUser, setSelectedUser] = useState<User | null>(null)
+    const [recharging, setRecharging] = useState(false)
     const router = useRouter()
     const { onlineUsers } = usePresence()
 
@@ -144,6 +161,46 @@ export default function UserManagementPage() {
         }
     }
 
+    const openRechargeModal = (user: User) => {
+        setSelectedUser(user)
+        setRechargeAmount("")
+        setRechargeModalOpen(true)
+    }
+
+    const handleRecharge = async () => {
+        if (!selectedUser || !rechargeAmount || isNaN(parseFloat(rechargeAmount))) return;
+
+        setRecharging(true)
+        try {
+            const response = await fetch('/api/admin/recharge-wallet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: selectedUser.id,
+                    amount: parseFloat(rechargeAmount)
+                })
+            })
+
+            if (!response.ok) throw new Error('Failed to recharge')
+
+            const data = await response.json()
+
+            setUsers(users.map(u =>
+                u.id === selectedUser?.id
+                    ? { ...u, wallet_balance: data.newBalance }
+                    : u
+            ))
+
+            setRechargeModalOpen(false)
+            alert('Wallet recharged successfully')
+        } catch (error) {
+            console.error('Error recharging wallet:', error)
+            alert('Failed to recharge wallet')
+        } finally {
+            setRecharging(false)
+        }
+    }
+
     const filteredUsers = users.filter(user =>
         user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -224,6 +281,7 @@ export default function UserManagementPage() {
                                         <TableHead className="text-slate-400">User</TableHead>
                                         <TableHead className="text-slate-400">Status</TableHead>
                                         <TableHead className="text-slate-400">Role</TableHead>
+                                        <TableHead className="text-slate-400">Wallet</TableHead>
                                         <TableHead className="text-slate-400">Joined</TableHead>
                                         <TableHead className="text-slate-400 text-right">Actions</TableHead>
                                     </TableRow>
@@ -287,12 +345,25 @@ export default function UserManagementPage() {
                                                         </span>
                                                     </TableCell>
                                                     <TableCell>
+                                                        <span className="text-emerald-400 font-medium">
+                                                            ₹{user.wallet_balance?.toFixed(2) || '0.00'}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
                                                         <span className="text-slate-400">
                                                             {new Date(user.created_at).toLocaleDateString()}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/20"
+                                                                onClick={() => openRechargeModal(user)}
+                                                            >
+                                                                <Wallet className="w-4 h-4" />
+                                                            </Button>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
@@ -318,6 +389,42 @@ export default function UserManagementPage() {
                     </CardContent>
                 </Card>
             </div>
-        </div>
+
+
+            <Dialog open={rechargeModalOpen} onOpenChange={setRechargeModalOpen}>
+                <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                    <DialogHeader>
+                        <DialogTitle>Recharge Wallet</DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                            Add funds to {selectedUser?.full_name}'s wallet.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="amount" className="text-right">
+                                Amount (₹)
+                            </Label>
+                            <Input
+                                id="amount"
+                                type="number"
+                                value={rechargeAmount}
+                                onChange={(e) => setRechargeAmount(e.target.value)}
+                                className="col-span-3 bg-slate-900 border-slate-700 text-white"
+                                placeholder="Enter amount..."
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            onClick={handleRecharge}
+                            disabled={recharging}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                            {recharging ? "Processing..." : "Recharge"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div >
     )
 }

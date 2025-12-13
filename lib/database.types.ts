@@ -249,6 +249,22 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['featured_videos']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['featured_videos']['Insert']>
       }
+      users: {
+        Row: {
+          id: string
+          username: string | null
+          full_name: string | null
+          profile_pic_url: string | null
+          wallet_balance: number | null
+          verification_status: string | null
+          subscription_status: string | null
+          role: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['users']['Insert']>
+      }
     }
     Views: {
       [_ in never]: never

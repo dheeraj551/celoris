@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User, LogOut, Heart, Users, User as UserIcon } from "lucide-react"
+import { Menu, User, LogOut, Heart, Users, User as UserIcon, Wallet } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase-client"
 import {
@@ -186,6 +186,11 @@ export default function Header() {
                     <UserIcon className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-default focus:bg-transparent">
+                  <Wallet className="mr-2 h-4 w-4" />
+                  <span>Wallet: ₹{profile?.wallet_balance?.toFixed(2) || '0.00'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
