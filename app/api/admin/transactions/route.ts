@@ -3,7 +3,7 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
 export async function GET(request: NextRequest) {
     try {
-        const supabase = createSupabaseClientForServer()
+        const supabase = createSupabaseClientForServer() as any
         const { searchParams } = new URL(request.url)
         const limit = parseInt(searchParams.get('limit') || '50')
         const offset = parseInt(searchParams.get('offset') || '0')
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
                 *,
                 users (
                     full_name,
-                    email
+                    username
                 )
             `, { count: 'exact' })
             .order('created_at', { ascending: false })

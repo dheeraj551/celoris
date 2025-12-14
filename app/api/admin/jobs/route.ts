@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createClient()
     const { searchParams } = new URL(request.url)
-    
+
     const type = searchParams.get('type')
     const level = searchParams.get('level')
     const remote = searchParams.get('remote')
@@ -83,11 +83,11 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
     const body = await request.json()
-    
+
     // Validate required fields
     const requiredFields = ['title', 'company_name', 'location', 'description']
     const missingFields = requiredFields.filter(field => !body[field])
-    
+
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(', ')}` },
@@ -100,6 +100,9 @@ export async function POST(request: NextRequest) {
       title: body.title.trim(),
       company_name: body.company_name.trim(),
       company_logo_url: body.company_logo_url || null,
+      company_icon: body.company_icon || null,
+      company_description: body.company_description || null,
+      company_website: body.company_website || null,
       location: body.location.trim(),
       is_remote: body.is_remote || false,
       employment_type: body.employment_type || 'full-time',
@@ -186,13 +189,13 @@ export async function PUT(request: NextRequest) {
 
     // Prepare update data (similar to POST but with all optional fields)
     const allowedFields = [
-      'title', 'company_name', 'company_logo_url', 'location', 'is_remote',
+      'title', 'company_name', 'company_logo_url', 'company_icon', 'location', 'is_remote',
       'employment_type', 'experience_level', 'salary_min', 'salary_max',
       'salary_currency', 'salary_period', 'description', 'requirements',
       'skills', 'responsibilities', 'benefits', 'application_deadline',
       'contact_email', 'application_url', 'application_instructions',
       'is_featured', 'is_active', 'is_published', 'category', 'industry',
-      'company_size', 'remote_policy', 'visa_sponsorship', 'years_required',
+      'company_size', 'company_description', 'company_website', 'remote_policy', 'visa_sponsorship', 'years_required',
       'education_required', 'language_requirements', 'travel_required',
       'department', 'seniority', 'reporting_to', 'team_size',
       'job_posting_source', 'meta_title', 'meta_description', 'tags',

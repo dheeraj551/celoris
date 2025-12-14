@@ -1,44 +1,72 @@
 import { Metadata } from "next"
-import { ArrowLeft, MapPin, Clock, DollarSign, Users, Building, Heart, Send, User, Award, Briefcase } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ArrowLeft, MapPin, Clock, DollarSign, Users, Building, Heart, Send, Briefcase, Award } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase-client"
+import { IconRenderer } from "@/components/ui/icon-renderer"
 
 export const metadata: Metadata = {
   title: "Job Details - Celoris Earn",
   description: "Detailed job information and application.",
 }
 
-const getJob = (id: string) => {
-  const jobs = [
-    {
-      id: 1,
-      title: "Senior Frontend Developer",
-      company: "TechCorp Solutions",
-      location: "San Francisco, CA",
-      isRemote: true,
-      salary: "$120,000 - $150,000",
-      employmentType: "Full-time",
-      experienceLevel: "Senior",
-      posted: "2 days ago",
-      applicants: 45,
-      description: "We are looking for an experienced Frontend Developer to join our growing team. You'll be responsible for building user-facing features and collaborating with designers and backend developers.",
-      longDescription: "TechCorp Solutions is a leading technology company that specializes in building innovative web applications for enterprise clients. We're looking for a Senior Frontend Developer who is passionate about creating exceptional user experiences and has a proven track record of building scalable web applications. In this role, you'll work closely with our product team, designers, and backend developers to build features that millions of users interact with daily.",
-      requirements: ["5+ years React experience", "TypeScript proficiency", "Experience with modern CSS frameworks", "Strong knowledge of JavaScript ES6+", "Experience with state management libraries (Redux, Zustand)", "Familiarity with testing frameworks", "Experience with build tools and CI/CD pipelines"],
-      responsibilities: ["Build and maintain React-based web applications", "Collaborate with designers to implement pixel-perfect UIs", "Write clean, maintainable, and well-tested code", "Mentor junior developers and provide technical guidance", "Participate in code reviews and architectural discussions", "Optimize applications for performance and accessibility", "Stay updated with the latest frontend technologies and best practices"],
-      skills: ["React", "TypeScript", "Next.js", "CSS", "JavaScript", "Redux", "Jest", "Webpack"],
-      companyLogo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      companySize: "500-1000 employees",
-      industry: "Technology",
-      website: "https://techcorp.com",
-      companyDescription: "TechCorp Solutions is a leading technology company that builds innovative web applications for enterprise clients. We're passionate about creating exceptional user experiences and helping businesses transform digitally."
-    }
-  ]
-  return jobs.find(j => j.id.toString() === id)
+const getTimeAgo = (dateString: string) => {
+  const now = new Date()
+  const date = new Date(dateString)
+  const diffTime = Math.abs(now.getTime() - date.getTime())
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 1) return '1 day ago'
+  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`
+  return `${Math.floor(diffDays / 365)} years ago`
 }
 
-export default function JobDetailPage({ params }: { params: { id: string } }) {
-  const job = getJob(params.id)
+async function getJob(id: string) {
+  const supabase = createClient()
+
+  try {
+    const { data: job, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error || !job) return null
+
+    return {
+      ...job,
+      companyLogo: job.company_logo_url,
+      company: job.company_name,
+      isRemote: job.is_remote,
+      salary: job.salary_min && job.salary_max
+        ? `${job.salary_currency === 'USD' ? '$' : job.salary_currency}${(job.salary_min || 0).toLocaleString()} - ${job.salary_currency === 'USD' ? '$' : job.salary_currency}${(job.salary_max || 0).toLocaleString()}`
+        : 'Competitive Salary',
+      employmentType: job.employment_type,
+      experienceLevel: job.experience_level,
+      applicants: job.applicants_count || 0,
+      posted: getTimeAgo(job.created_at),
+      longDescription: job.description,
+      description: job.description,
+      requirements: job.requirements || [],
+      responsibilities: job.responsibilities || [],
+      skills: job.skills || [],
+      companySize: job.company_size || 'Not specified',
+      companyDescription: job.company_description,
+      website: job.company_website,
+      industry: job.industry || job.category || 'Technology',
+      companyIcon: job.company_icon
+    }
+  } catch (e) {
+    console.error("Error fetching job:", e)
+    return null
+  }
+}
+
+export default async function JobDetailPage({ params }: { params: { id: string } }) {
+  const job = await getJob(params.id)
 
   if (!job) {
     return (
@@ -107,7 +135,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                   <span>{job.location}</span>
                 </div>
               </div>
-              
+
               {/* Job Stats */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-text-secondary mb-6">
                 <div className="flex items-center space-x-1">
@@ -135,67 +163,70 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                 <CardTitle>Job Description</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-text-secondary leading-relaxed mb-4">
+                <p className="text-text-secondary leading-relaxed mb-4 whitespace-pre-wrap">
                   {job.longDescription}
-                </p>
-                <p className="text-text-secondary leading-relaxed">
-                  {job.description}
                 </p>
               </CardContent>
             </Card>
 
             {/* Responsibilities */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Responsibilities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {job.responsibilities.map((responsibility, index) => (
-                    <li key={index} className="flex items-start space-x-3">
-                      <Briefcase className="h-5 w-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-text-secondary">{responsibility}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            {job.responsibilities && job.responsibilities.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Responsibilities</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {job.responsibilities.map((responsibility: string, index: number) => (
+                      <li key={index} className="flex items-start space-x-3">
+                        <Briefcase className="h-5 w-5 text-primary-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-text-secondary">{responsibility}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Requirements */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Requirements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {job.requirements.map((requirement, index) => (
-                    <li key={index} className="flex items-start space-x-3">
-                      <Award className="h-5 w-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-text-secondary">{requirement}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            {job.requirements && job.requirements.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Requirements</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {job.requirements.map((requirement: string, index: number) => (
+                      <li key={index} className="flex items-start space-x-3">
+                        <Award className="h-5 w-5 text-primary-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-text-secondary">{requirement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Skills */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Required Skills</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-3">
-                  {job.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-medium"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {job.skills && job.skills.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Required Skills</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-3">
+                    {job.skills.map((skill: string) => (
+                      <span
+                        key={skill}
+                        className="bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-medium"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -232,66 +263,47 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center space-x-4 mb-4">
-                    <img
-                      src={job.companyLogo}
-                      alt={job.company}
-                      className="w-16 h-16 rounded-lg object-cover"
-                    />
+                    {job.companyLogo ? (
+                      <img
+                        src={job.companyLogo}
+                        alt={job.company}
+                        className="w-16 h-16 rounded-lg object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600">
+                        <IconRenderer name={job.companyIcon} className="h-8 w-8" />
+                      </div>
+                    )}
                     <div>
                       <h3 className="font-semibold text-text-primary">{job.company}</h3>
                       <p className="text-sm text-text-secondary">{job.industry}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-text-secondary mb-4">
-                    {job.companyDescription}
-                  </p>
+                  {job.companyDescription && (
+                    <p className="text-sm text-text-secondary mb-4">
+                      {job.companyDescription}
+                    </p>
+                  )}
                   <div className="space-y-2 text-sm text-text-secondary">
                     <div className="flex items-center space-x-2">
                       <Building className="h-4 w-4" />
                       <span>{job.companySize}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4" />
-                      <span>Founded 2015</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
                       <MapPin className="h-4 w-4" />
                       <span>{job.location}</span>
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full mt-4" asChild>
-                    <a href={job.website} target="_blank" rel="noopener noreferrer">
-                      Visit Company Website
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Similar Jobs */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Similar Jobs</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="border border-border rounded-lg p-4">
-                    <h4 className="font-medium text-text-primary mb-2">Frontend Developer</h4>
-                    <p className="text-sm text-text-secondary mb-2">StartupCorp</p>
-                    <div className="flex items-center space-x-4 text-xs text-text-secondary">
-                      <span>$100k - $130k</span>
-                      <span>Remote</span>
-                    </div>
-                  </div>
-                  <div className="border border-border rounded-lg p-4">
-                    <h4 className="font-medium text-text-primary mb-2">React Developer</h4>
-                    <p className="text-sm text-text-secondary mb-2">WebTech Inc</p>
-                    <div className="flex items-center space-x-4 text-xs text-text-secondary">
-                      <span>$110k - $140k</span>
-                      <span>San Francisco, CA</span>
-                    </div>
-                  </div>
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/earn/jobs">View All Similar Jobs</Link>
-                  </Button>
+                  {job.website && (
+                    <Button variant="outline" className="w-full mt-4" asChild>
+                      <a href={job.website} target="_blank" rel="noopener noreferrer">
+                        Visit Company Website
+                      </a>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>

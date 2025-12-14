@@ -69,24 +69,40 @@ export async function GET(request: NextRequest) {
     const transformedJobs = ((dbJobs || []) as any[]).map(job => ({
       id: job.id,
       title: job.title,
-      company_name: job.company_name,
+      company: job.company_name, // Mapping for frontend compatibility
+      company_name: job.company_name, // Keeping original for clarity
       company_logo_url: job.company_logo_url,
+      company_icon: job.company_icon,
       location: job.location,
+      isRemote: job.is_remote, // Frontend uses camelCase
       is_remote: job.is_remote,
+      salary: job.salary_min && job.salary_max
+        ? `${job.salary_currency === 'USD' ? '$' : job.salary_currency}${job.salary_min.toLocaleString()} - ${job.salary_currency === 'USD' ? '$' : job.salary_currency}${job.salary_max.toLocaleString()}`
+        : 'Competitive Salary',
       salary_min: job.salary_min,
       salary_max: job.salary_max,
       salary_currency: job.salary_currency,
+      employmentType: job.employment_type, // Frontend uses camelCase
       employment_type: job.employment_type,
+      experienceLevel: job.experience_level, // Frontend uses camelCase
       experience_level: job.experience_level,
       description: job.description,
       requirements: job.requirements || [],
       skills: job.skills || [],
       category: job.category,
-      industry: job.category,
+      industry: job.industry || job.category,
+      posted: getTimeAgo(job.created_at),
+      applicants: job.applicants_count || 0,
       application_deadline: job.application_deadline || null,
+      isFeatured: job.is_featured,
       is_featured: job.is_featured,
       created_at: job.created_at,
-      application_count: job.application_count || 0
+      application_count: job.application_count || 0,
+      company_description: job.company_description,
+      company_website: job.company_website,
+      company_size: job.company_size,
+      benefits: job.benefits,
+      responsibilities: job.responsibilities
     }))
 
     return NextResponse.json({

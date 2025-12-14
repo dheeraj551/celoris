@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { IconRenderer } from "@/components/ui/icon-renderer"
 
 
 
@@ -176,7 +177,7 @@ export default function AllJobsPage() {
 
       const response = await fetch(`/api/jobs?${params}`)
       const result = await response.json()
-      
+
       if (result.success) {
         setJobs(result.data)
       }
@@ -260,7 +261,7 @@ export default function AllJobsPage() {
                 </div>
               </div>
               <div>
-                <select 
+                <select
                   className="w-full h-10 px-3 border border-input rounded-md bg-background"
                   value={filters.location}
                   onChange={(e) => handleFilterChange('location', e.target.value)}
@@ -412,14 +413,20 @@ export default function AllJobsPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-4 mb-4">
-                            <img
-                              src={job.companyLogo || "/api/placeholder/48/48"}
-                              alt={job.company}
-                              className="w-12 h-12 rounded-lg object-cover"
-                              onError={(e) => {
-                                e.currentTarget.src = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                              }}
-                            />
+                            {job.company_logo_url ? (
+                              <img
+                                src={job.company_logo_url}
+                                alt={job.company}
+                                className="w-12 h-12 rounded-lg object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none'
+                                }}
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600">
+                                <IconRenderer name={job.company_icon} className="h-6 w-6" />
+                              </div>
+                            )}
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-1">
                                 <h3 className="text-xl font-semibold text-text-primary">{job.title}</h3>

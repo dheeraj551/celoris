@@ -265,6 +265,47 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['users']['Insert']>
       }
+      jobs: {
+        Row: {
+          id: string
+          title: string
+          company_name: string
+          company_logo_url: string | null
+          company_icon: string | null
+          location: string
+          is_remote: boolean
+          employment_type: string
+          experience_level: string
+          salary_min: number | null
+          salary_max: number | null
+          salary_currency: string
+          salary_period: string
+          description: string
+          requirements: string[]
+          responsibilities: string[]
+          benefits: string[]
+          skills: string[]
+          category: string | null
+          industry: string | null
+          company_description: string | null
+          company_website: string | null
+          company_size: string | null
+          application_deadline: string | null
+          contact_email: string | null
+          application_url: string | null
+          application_instructions: string | null
+          is_featured: boolean
+          is_active: boolean
+          is_published: boolean
+          views_count: number
+          applicants_count: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['jobs']['Row'], 'id' | 'created_at' | 'updated_at' | 'views_count' | 'applicants_count'>
+        Update: Partial<Database['public']['Tables']['jobs']['Insert']>
+      }
       notice_interests: {
         Row: {
           id: string
