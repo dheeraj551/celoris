@@ -232,13 +232,13 @@ export default function AdminEarnPage() {
 
   const getJobTypeColor = (type: string) => {
     switch (type) {
-      case 'Full-time': return 'text-green-400 bg-green-400/20'
-      case 'Part-time': return 'text-blue-400 bg-blue-400/20'
-      case 'Contract': return 'text-orange-400 bg-orange-400/20'
-      case 'Freelance': return 'text-purple-400 bg-purple-400/20'
-      default: return 'text-slate-400 bg-slate-400/20'
+      case 'Full-time': return 'text-green-400 bg-green-400/20';
+      case 'Part-time': return 'text-blue-400 bg-blue-400/20';
+      case 'Contract': return 'text-orange-400 bg-orange-400/20';
+      case 'Freelance': return 'text-purple-400 bg-purple-400/20';
+      default: return 'text-slate-400 bg-slate-400/20';
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -248,7 +248,7 @@ export default function AdminEarnPage() {
           <p className="mt-4 text-slate-300">Loading Earn Management...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -483,140 +483,141 @@ export default function AdminEarnPage() {
                     </div>
                   </div>
 
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Category</label>
-                    <Input
-                      value={newJob.category}
-                      onChange={(e) => setNewJob({ ...newJob, category: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      placeholder="e.g. Technology"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Industry</label>
-                    <Input
-                      value={newJob.industry}
-                      onChange={(e) => setNewJob({ ...newJob, industry: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      placeholder="e.g. Software Development"
-                    />
-                  </div>
-                </div>
-
-                {/* Company Details */}
-                <div className="space-y-4 border-t border-slate-700 pt-4 mt-4">
-                  <h3 className="text-lg font-medium text-white">Company Details</h3>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-slate-300">Company Website</label>
+                      <label className="text-sm font-medium text-slate-300">Category</label>
                       <Input
-                        value={newJob.company_website}
-                        onChange={(e) => setNewJob({ ...newJob, company_website: e.target.value })}
+                        value={newJob.category}
+                        onChange={(e) => setNewJob({ ...newJob, category: e.target.value })}
                         className="bg-slate-700 border-slate-600 text-white"
-                        placeholder="https://example.com"
+                        placeholder="e.g. Technology"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-300">Company Size</label>
+                      <label className="text-sm font-medium text-slate-300">Industry</label>
                       <Input
-                        value={newJob.company_size}
-                        onChange={(e) => setNewJob({ ...newJob, company_size: e.target.value })}
+                        value={newJob.industry}
+                        onChange={(e) => setNewJob({ ...newJob, industry: e.target.value })}
                         className="bg-slate-700 border-slate-600 text-white"
-                        placeholder="e.g. 50-100 employees"
+                        placeholder="e.g. Software Development"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Company Description</label>
-                    <Textarea
-                      value={newJob.company_description}
-                      onChange={(e) => setNewJob({ ...newJob, company_description: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      rows={3}
-                      placeholder="Brief description about the company..."
-                    />
+                  {/* Company Details */}
+                  <div className="space-y-4 border-t border-slate-700 pt-4 mt-4">
+                    <h3 className="text-lg font-medium text-white">Company Details</h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-slate-300">Company Website</label>
+                        <Input
+                          value={newJob.company_website}
+                          onChange={(e) => setNewJob({ ...newJob, company_website: e.target.value })}
+                          className="bg-slate-700 border-slate-600 text-white"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-300">Company Size</label>
+                        <Input
+                          value={newJob.company_size}
+                          onChange={(e) => setNewJob({ ...newJob, company_size: e.target.value })}
+                          className="bg-slate-700 border-slate-600 text-white"
+                          placeholder="e.g. 50-100 employees"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Company Description</label>
+                      <Textarea
+                        value={newJob.company_description}
+                        onChange={(e) => setNewJob({ ...newJob, company_description: e.target.value })}
+                        className="bg-slate-700 border-slate-600 text-white"
+                        rows={3}
+                        placeholder="Brief description about the company..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Company Icon</label>
+                      <select
+                        value={newJob.company_icon}
+                        onChange={(e) => setNewJob({ ...newJob, company_icon: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
+                      >
+                        <option value="Building">Building (Default)</option>
+                        <option value="Code">Code</option>
+                        <option value="Globe">Globe</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Briefcase">Briefcase</option>
+                        <option value="Users">Users</option>
+                        <option value="Shield">Shield</option>
+                        <option value="Cloud">Cloud</option>
+                        <option value="Database">Database</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Company Icon</label>
-                    <select
-                      value={newJob.company_icon}
-                      onChange={(e) => setNewJob({ ...newJob, company_icon: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
-                    >
-                      <option value="Building">Building (Default)</option>
-                      <option value="Code">Code</option>
-                      <option value="Globe">Globe</option>
-                      <option value="Laptop">Laptop</option>
-                      <option value="Briefcase">Briefcase</option>
-                      <option value="Users">Users</option>
-                      <option value="Shield">Shield</option>
-                      <option value="Cloud">Cloud</option>
-                      <option value="Database">Database</option>
-                    </select>
-                  </div>
-                </div>
+                  <div className="space-y-4 border-t border-slate-700 pt-4 mt-4">
+                    <h3 className="text-lg font-medium text-white">Job Details</h3>
 
-                <div className="space-y-4 border-t border-slate-700 pt-4 mt-4">
-                  <h3 className="text-lg font-medium text-white">Job Details</h3>
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Job Description *</label>
+                      <Textarea
+                        value={newJob.description}
+                        onChange={(e) => setNewJob({ ...newJob, description: e.target.value })}
+                        className="bg-slate-700 border-slate-600 text-white"
+                        rows={4}
+                        placeholder="Detailed job description..."
+                      />
+                    </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Job Description *</label>
-                    <Textarea
-                      value={newJob.description}
-                      onChange={(e) => setNewJob({ ...newJob, description: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      rows={4}
-                      placeholder="Detailed job description..."
-                    />
-                  </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Requirements (one per line)</label>
+                      <Textarea
+                        value={newJob.requirements}
+                        onChange={(e) => setNewJob({ ...newJob, requirements: e.target.value })}
+                        className="bg-slate-700 border-slate-600 text-white"
+                        rows={3}
+                        placeholder="- Requirement 1&#10;- Requirement 2"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Requirements (one per line)</label>
-                    <Textarea
-                      value={newJob.requirements}
-                      onChange={(e) => setNewJob({ ...newJob, requirements: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      rows={3}
-                      placeholder="- Requirement 1&#10;- Requirement 2"
-                    />
-                  </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Responsibilities (one per line)</label>
+                      <Textarea
+                        value={newJob.responsibilities}
+                        onChange={(e) => setNewJob({ ...newJob, responsibilities: e.target.value })}
+                        className="bg-slate-700 border-slate-600 text-white"
+                        rows={3}
+                        placeholder="- Responsibility 1&#10;- Responsibility 2"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Responsibilities (one per line)</label>
-                    <Textarea
-                      value={newJob.responsibilities}
-                      onChange={(e) => setNewJob({ ...newJob, responsibilities: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      rows={3}
-                      placeholder="- Responsibility 1&#10;- Responsibility 2"
-                    />
-                  </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Benefits (one per line)</label>
+                      <Textarea
+                        value={newJob.benefits}
+                        onChange={(e) => setNewJob({ ...newJob, benefits: e.target.value })}
+                        className="bg-slate-700 border-slate-600 text-white"
+                        rows={3}
+                        placeholder="- Benefit 1&#10;- Benefit 2"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Benefits (one per line)</label>
-                    <Textarea
-                      value={newJob.benefits}
-                      onChange={(e) => setNewJob({ ...newJob, benefits: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      rows={3}
-                      placeholder="- Benefit 1&#10;- Benefit 2"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-slate-300">Skills (comma separated)</label>
-                    <Input
-                      value={newJob.skills}
-                      onChange={(e) => setNewJob({ ...newJob, skills: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      placeholder="React, TypeScript, Next.js, CSS, JavaScript"
-                    />
+                    <div>
+                      <label className="text-sm font-medium text-slate-300">Skills (comma separated)</label>
+                      <Input
+                        value={newJob.skills}
+                        onChange={(e) => setNewJob({ ...newJob, skills: e.target.value })}
+                        className="bg-slate-700 border-slate-600 text-white"
+                        placeholder="React, TypeScript, Next.js, CSS, JavaScript"
+                      />
+                    </div>
                   </div>
                 </div>
                 <DialogFooter>
@@ -844,7 +845,7 @@ export default function AdminEarnPage() {
               </CardContent>
             </Card>
           </div>
-      </main>
-    </div>
+      </main >
+    </div >
   )
 }
