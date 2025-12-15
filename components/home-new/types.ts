@@ -12,6 +12,7 @@ export interface FeatureCardProps {
     tag: string;
     icon: LucideIcon;
     actionText: string;
+    link?: string;
 }
 
 export interface BlogPostProps {

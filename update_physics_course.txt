@@ -1,0 +1,18 @@
+UPDATE courses
+SET
+  title = 'CBSE Class 9 Physics Mastery Course (2025-2026)',
+  description = 'This comprehensive, CBSE-aligned Class 9 Physics course is your essential guide to building a strong conceptual foundation and achieving high exam scores. We cover the entire official curriculum, focusing on conceptual clarity, problem-solving skills, and CBSE examination patterns. Master the core concepts with clear explanations, diagrams, and extensive solved numerical examples.',
+  learning_outcomes = ARRAY[
+    'Motion (Kinematics): Understand distance, displacement, speed, velocity, and acceleration. In-depth analysis of motion graphs. Derivation and application of the three Equations of Motion Class 9 ($v = u + at$, $s = ut + \frac{1}{2}at^2$, $v^2 = u^2 + 2as$).',
+    'Force and Laws of Motion: Detailed explanation of Newton’s Three Laws of Motion and their real-life applications. Core concepts of Inertia and Momentum. Thorough coverage of the Law of Conservation of Momentum.',
+    'Gravitation and Flotation: Study the Universal Law of Gravitation and Free Fall. Calculate Acceleration due to Gravity ($g$). Differentiate between Mass and Weight. Thrust and Pressure, Buoyancy, and the critical principles of Archimedes’ Principle and Flotation.',
+    'Work, Energy, and Power: Definitions and derivations of Kinetic Energy ($KE = \frac{1}{2}mv^2$) and Potential Energy ($PE = mgh$). Work done by forces and the Law of Conservation of Energy. Practice high-level Work Energy Power Class 9 numericals.',
+    'Sound: Nature and propagation of Sound Waves and characteristics (pitch, loudness). Speed of sound in different media. Reflection of sound (Echo) and the human hearing range.'
+  ],
+  requirements = ARRAY[
+    'CBSE Exam-Oriented Content',
+    'Derivations and Formulas Made Simple',
+    'Extensive Solved Numericals for every chapter',
+    'Conceptual Clarity guaranteed'
+  ]
+WHERE id = 'b65a0bc8-2e86-4170-9a3c-91c4050de31f';

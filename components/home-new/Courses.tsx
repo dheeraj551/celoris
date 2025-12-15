@@ -36,7 +36,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
             <div className="flex items-center justify-between pt-3 border-t border-slate-50">
                 <span className="text-lg font-bold text-slate-900">₹{price}</span>
                 {id ? (
-                    <Link href={`/learn/course/${id}`} className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center">
+                    <Link
+                        href={id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f' ? '/courses/cbse-class-9-physics-motion-force-energy-sound' : `/learn/course/${id}`}
+                        className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
+                    >
                         View Course
                     </Link>
                 ) : (

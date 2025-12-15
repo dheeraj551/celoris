@@ -143,6 +143,39 @@ export default function CourseDetailPage() {
           Back to Courses
         </Link>
 
+        {/* JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Course",
+              "name": course.title,
+              "description": course.description,
+              "provider": {
+                "@type": "Organization",
+                "name": "Celoris Designs",
+                "sameAs": "https://celorisdesigns.com"
+              },
+              "hasCourseInstance": {
+                "@type": "CourseInstance",
+                "courseMode": "online",
+                "location": {
+                  "@type": "VirtualLocation",
+                  "url": typeof window !== 'undefined' ? window.location.href : `https://celorisdesigns.com/learn/course/${course.id}`
+                },
+                "offers": {
+                  "@type": "Offer",
+                  "price": course.price.toString(),
+                  "priceCurrency": "INR",
+                  "availability": "https://schema.org/InStock",
+                }
+              },
+              "educationalLevel": course.grade_level
+            })
+          }}
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -163,22 +196,7 @@ export default function CourseDetailPage() {
                 {course.description}
               </p>
 
-              {/* Course Stats */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-text-secondary">
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium">{course.rating || 4.8}</span>
-                  <span>({(course.students_count || 120).toLocaleString()} students)</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{durationDisplay}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Users className="h-4 w-4" />
-                  <span>{(course.students_count || 120).toLocaleString()} enrolled</span>
-                </div>
-              </div>
+              {/* Course Stats Removed (Moved to Instructor Profile) */}
             </div>
 
             {/* Course Image */}
@@ -293,15 +311,21 @@ export default function CourseDetailPage() {
                   <p className="text-sm text-text-secondary mb-4">
                     {course.instructor_bio || "Passionate about teaching and helping others break into tech."}
                   </p>
-                  <div className="space-y-2 text-sm text-text-secondary">
+                  <div className="space-y-3 text-sm text-text-secondary">
                     <div className="flex items-center space-x-2">
-                      <Award className="h-4 w-4" />
-                      <span>Expert instructor</span>
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-medium text-text-primary">{course.rating || 4.8}</span>
+                      <span>({(course.students_count || 120).toLocaleString()} ratings)</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>{durationDisplay}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Users className="h-4 w-4" />
-                      <span>{(course.students_count || 120).toLocaleString()}+ students</span>
+                      <span>{(course.students_count || 120).toLocaleString()} enrolled</span>
                     </div>
+                    {/* kept existing badges if any, slightly modified to match request */}
                   </div>
                 </CardContent>
               </Card>
