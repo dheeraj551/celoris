@@ -2,47 +2,87 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { name, email, subject, message } = body;
+  try {
+    const body = await request.json();
+    const { name, email, subject, message, recaptchaToken } = body;
 
-        // Validate required fields
-        if (!name || !email || !subject || !message) {
-            return NextResponse.json(
-                { error: 'All fields are required' },
-                { status: 400 }
-            );
-        }
+    // Validate required fields
+    if (!name || !email || !subject || !message) {
+      return NextResponse.json(
+        { error: 'All fields are required' },
+        { status: 400 }
+      );
+    }
 
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return NextResponse.json(
-                { error: 'Invalid email format' },
-                { status: 400 }
-            );
-        }
+    // Validate reCAPTCHA token
+    if (!recaptchaToken) {
+      return NextResponse.json(
+        { error: 'reCAPTCHA verification failed. Please try again.' },
+        { status: 400 }
+      );
+    }
 
-        // Create nodemailer transporter
-        const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.MAIL_PORT || '587'),
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: process.env.MAIL_USERNAME,
-                pass: process.env.MAIL_PASSWORD,
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
+    // Verify reCAPTCHA token with Google
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+    if (!recaptchaSecret) {
+      console.error('RECAPTCHA_SECRET_KEY is not configured');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
 
-        // Email content to send to support
-        const mailOptions = {
-            from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
-            to: 'support@celorisdesigns.com',
-            subject: `Contact Form: ${subject}`,
-            html: `
+    const recaptchaResponse = await fetch(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `secret=${recaptchaSecret}&response=${recaptchaToken}`,
+      }
+    );
+
+    const recaptchaData = await recaptchaResponse.json();
+
+    // Check if reCAPTCHA verification was successful
+    if (!recaptchaData.success || recaptchaData.score < 0.5) {
+      console.log('reCAPTCHA verification failed:', recaptchaData);
+      return NextResponse.json(
+        { error: 'reCAPTCHA verification failed. You might be a bot. Please try again.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+
+    // Create nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.MAIL_PORT || '587'),
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.MAIL_USERNAME,
+        pass: process.env.MAIL_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // Email content to send to support
+    const mailOptions = {
+      from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
+      to: 'support@celorisdesigns.com',
+      subject: `Contact Form: ${subject}`,
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -139,7 +179,7 @@ export async function POST(request: NextRequest) {
         </body>
         </html>
       `,
-            text: `
+      text: `
 New Contact Form Submission
 
 From: ${name}
@@ -153,18 +193,18 @@ ${message}
 This email was sent from the Celoris contact form
 Received on ${new Date().toLocaleString()}
       `,
-            replyTo: email, // Allow direct reply to the sender
-        };
+      replyTo: email, // Allow direct reply to the sender
+    };
 
-        // Send email
-        await transporter.sendMail(mailOptions);
+    // Send email
+    await transporter.sendMail(mailOptions);
 
-        // Optional: Send confirmation email to the user
-        const confirmationMailOptions = {
-            from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
-            to: email,
-            subject: 'Thank you for contacting Celoris',
-            html: `
+    // Optional: Send confirmation email to the user
+    const confirmationMailOptions = {
+      from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
+      to: email,
+      subject: 'Thank you for contacting Celoris',
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -228,7 +268,7 @@ Received on ${new Date().toLocaleString()}
         </body>
         </html>
       `,
-            text: `
+      text: `
 Hi ${name},
 
 Thank you for reaching out to Celoris. We have received your message and our team will get back to you as soon as possible.
@@ -241,19 +281,19 @@ We typically respond within 24-48 hours during business days.
 Best regards,
 The Celoris Team
       `,
-        };
+    };
 
-        await transporter.sendMail(confirmationMailOptions);
+    await transporter.sendMail(confirmationMailOptions);
 
-        return NextResponse.json(
-            { message: 'Email sent successfully' },
-            { status: 200 }
-        );
-    } catch (error) {
-        console.error('Error sending email:', error);
-        return NextResponse.json(
-            { error: 'Failed to send email. Please try again later.' },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(
+      { message: 'Email sent successfully' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return NextResponse.json(
+      { error: 'Failed to send email. Please try again later.' },
+      { status: 500 }
+    );
+  }
 }

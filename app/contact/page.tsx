@@ -5,9 +5,11 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Mail, Phone, Clock, CheckCircle2, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useReCaptcha } from "@/components/ReCaptchaProvider"
 
 export default function ContactPage() {
   const { toast } = useToast()
+  const { executeRecaptcha, isReady } = useReCaptcha()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -71,15 +73,30 @@ export default function ContactPage() {
       return
     }
 
+    if (!isReady) {
+      toast({
+        title: "Please Wait",
+        description: "Security verification is loading...",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
+      // Execute reCAPTCHA
+      const recaptchaToken = await executeRecaptcha('contact_form')
+
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
       })
 
       const data = await response.json()
@@ -266,6 +283,18 @@ export default function ContactPage() {
                     'Send Message'
                   )}
                 </Button>
+
+                <p className="text-xs text-text-secondary text-center mt-4">
+                  This site is protected by reCAPTCHA and the Google{' '}
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline">
+                    Privacy Policy
+                  </a>{' '}
+                  and{' '}
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline">
+                    Terms of Service
+                  </a>{' '}
+                  apply.
+                </p>
               </form>
             </div>
           </div>
