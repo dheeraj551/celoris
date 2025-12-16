@@ -37,7 +37,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                 <span className="text-lg font-bold text-slate-900">₹{price}</span>
                 {id ? (
                     <Link
-                        href={id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f' ? '/courses/cbse-class-9-physics-motion-force-energy-sound' : `/learn/course/${id}`}
+                        href={
+                            id === 'class-10-physics-static'
+                                ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+                                : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
+                                    ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
+                                    : `/learn/course/${id}`
+                        }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
                         View Course
@@ -70,6 +76,22 @@ export const Courses: React.FC<CoursesProps> = ({
     const [courses, setCourses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Static featured courses
+    const staticCourses = [
+        {
+            id: 'class-10-physics-static',
+            title: 'Class 10 Physics Master Course: Light, Electricity, Magnetism & Energy',
+            subject: 'Physics',
+            instructor_name: 'Celoris Academy',
+            course_duration: '4 months',
+            price: 1500,
+            is_featured: true,
+            course_image_url: '/class-10-physics-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+        }
+    ];
+
     useEffect(() => {
         const fetchCourses = async () => {
             const supabase = createClient();
@@ -84,10 +106,14 @@ export const Courses: React.FC<CoursesProps> = ({
 
             const { data, error } = await query
                 .order('created_at', { ascending: false })
-                .limit(limit);
+                .limit(limit - staticCourses.length); // Reduce limit to make room for static courses
 
             if (data) {
-                setCourses(data);
+                // Combine static courses with database courses
+                setCourses([...staticCourses, ...data]);
+            } else {
+                // If no database courses, just show static courses
+                setCourses(staticCourses);
             }
             setLoading(false);
         };

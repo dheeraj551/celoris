@@ -142,9 +142,13 @@ export default function CBSEClass9PhysicsCourse() {
 
                         {/* Course Image */}
                         <Card>
-                            <div className="aspect-video relative overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
-                                <Play className="h-16 w-16 opacity-50 text-gray-400" />
-                                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                            <div className="aspect-video relative overflow-hidden rounded-lg">
+                                <img
+                                    src="/class-9-physics-cover.jpg"
+                                    alt="CBSE Class 9 Physics Mastery Course - Motion, Force, Energy, Sound"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                                     <Button size="lg" className="bg-white text-black hover:bg-gray-100">
                                         <Play className="mr-2 h-5 w-5" />
                                         Preview Unavailable

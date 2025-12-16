@@ -87,7 +87,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/community',
         '/help',
         '/newsletter',
-        '/courses/cbse-class-9-physics-motion-force-energy-sound'
+        '/courses/cbse-class-9-physics-motion-force-energy-sound',
+        '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
