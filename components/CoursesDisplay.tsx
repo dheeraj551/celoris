@@ -82,6 +82,106 @@ export default function CoursesDisplay({
     loadCourses()
   }, [subject, grade_level, featured, limit])
 
+  // Static courses definition
+  const staticCourses: Course[] = [
+    {
+      id: 'class-11-physics-static',
+      title: 'Class 11 Physics: Comprehensive Course Syllabus (2025-26)',
+      subject: 'Physics',
+      grade_level: 'Class 11',
+      description: 'Comprehensive annual course covering Mechanics, Thermodynamics, and Oscillations for CBSE, JEE, and NEET.',
+      target_audience: 'Class 11 Science Students',
+      instructor_name: 'Celoris Designs',
+      course_duration: 'Full Year',
+      price: 2499,
+      course_image_url: '/class-11-physics-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(10).fill(null).map((_, i) => ({
+        id: `c11-m${i}`,
+        module_number: i + 1,
+        title: `Unit ${i + 1}`,
+        description: '',
+        estimated_duration: 600, // 10 hours per unit -> 6000 mins total
+        is_published: true,
+        course_topics: Array(3).fill(null).map((_, j) => ({
+          id: `c11-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
+      id: 'class-10-physics-static',
+      title: 'Class 10 Physics Master Course: Light, Electricity, Magnetism & Energy',
+      subject: 'Physics',
+      grade_level: 'Class 10',
+      description: 'Master Class 10 Physics with this comprehensive course covering Light, Electricity, Magnetic Effects, and Sources of Energy.',
+      target_audience: 'Class 10 Students',
+      instructor_name: 'Celoris Academy',
+      course_duration: '4 months',
+      price: 1500,
+      course_image_url: '/class-10-physics-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `c10-m${i}`,
+        module_number: i + 1,
+        title: `Chapter ${i + 1}`,
+        description: '',
+        estimated_duration: 480, // ~2400 mins total
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `c10-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
+      id: 'b65a0bc8-2e86-4170-9a3c-91c4050de31f', // Using the ID from the previous code snippet for the redirect to work
+      title: 'Class 9 Physics Made Simple: Motion, Forces, Energy & Sound',
+      subject: 'Physics',
+      grade_level: 'Class 9',
+      description: 'Build a strong foundation in Physics with clear concepts, solved numericals, and real-life examples.',
+      target_audience: 'Class 9 Students',
+      instructor_name: 'Celoris Designs',
+      course_duration: '3 months',
+      price: 1500,
+      course_image_url: '/class-9-physics-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `c9-m${i}`,
+        module_number: i + 1,
+        title: `Chapter ${i + 1}`,
+        description: '',
+        estimated_duration: 360, // ~1800 mins total
+        is_published: true,
+        course_topics: Array(3).fill(null).map((_, j) => ({
+          id: `c9-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    }
+  ]
+
   const loadCourses = async () => {
     try {
       setLoading(true)
@@ -94,16 +194,30 @@ export default function CoursesDisplay({
       if (featured) params.append('featured', 'true')
 
       const response = await fetch(`/api/courses?${params.toString()}`)
-      if (!response.ok) throw new Error('Failed to fetch courses')
+      const data = response.ok ? await response.json() : { courses: [] }
+      const dbCourses = data.courses || []
 
-      const data = await response.json()
-      setCourses(data.courses || [])
+      // Combine static and DB courses
+      // If filtering by subject/grade, we should also filter static courses
+      let filteredStatic = staticCourses
+      if (subject) filteredStatic = filteredStatic.filter(c => c.subject === subject)
+      if (grade_level) filteredStatic = filteredStatic.filter(c => c.grade_level === grade_level)
+      if (featured) filteredStatic = filteredStatic.filter(c => c.is_featured)
+
+      setCourses([...filteredStatic, ...dbCourses])
     } catch (error) {
       console.error('Error loading courses:', error)
       setError('Failed to load courses')
     } finally {
       setLoading(false)
     }
+  }
+
+  const getCourseUrl = (id: string) => {
+    if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'
+    if (id === 'class-10-physics-static') return '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+    if (id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f') return '/courses/cbse-class-9-physics-motion-force-energy-sound'
+    return `/learn/course/${id}`
   }
 
   const getTotalTopics = (course: Course) => {
@@ -116,6 +230,15 @@ export default function CoursesDisplay({
     return course.course_modules?.reduce((total, module) => {
       return total + (module.estimated_duration || 0)
     }, 0) || 0
+  }
+
+  const formatDuration = (totalMinutes: number) => {
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    const seconds = 0
+
+    const pad = (num: number) => num.toString().padStart(2, '0')
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
   }
 
   const renderGrid = () => (
@@ -191,7 +314,7 @@ export default function CoursesDisplay({
                 </div>
                 <div>
                   <div className="text-lg font-bold text-green-600">
-                    {getTotalDuration(course)}min
+                    {formatDuration(getTotalDuration(course))}
                   </div>
                   <div className="text-xs text-gray-500">Duration</div>
                 </div>
@@ -202,7 +325,7 @@ export default function CoursesDisplay({
               <div className="text-2xl font-bold text-green-600">
                 {course.price > 0 ? `₹${course.price}` : 'Free'}
               </div>
-              <Link href={`/learn/course/${course.id}`}>
+              <Link href={getCourseUrl(course.id)}>
                 <Button className="bg-green-600 hover:bg-green-700" size="sm">
                   <Play className="w-4 h-4 mr-2" />
                   View Course
@@ -268,7 +391,7 @@ export default function CoursesDisplay({
                 <div className="text-2xl font-bold text-green-600 mb-2">
                   {course.price > 0 ? `₹${course.price}` : 'Free'}
                 </div>
-                <Link href={`/learn/course/${course.id}`}>
+                <Link href={getCourseUrl(course.id)}>
                   <Button className="bg-green-600 hover:bg-green-700" size="sm">
                     View Course
                     <ChevronRight className="w-4 h-4 ml-1" />

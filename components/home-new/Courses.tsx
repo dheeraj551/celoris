@@ -38,11 +38,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                 {id ? (
                     <Link
                         href={
-                            id === 'class-10-physics-static'
-                                ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
-                                : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
-                                    ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
-                                    : `/learn/course/${id}`
+                            id === 'class-11-physics-static'
+                                ? '/courses/cbse-class-11-physics-comprehensive-course'
+                                : id === 'class-10-physics-static'
+                                    ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+                                    : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
+                                        ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
+                                        : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -79,6 +81,18 @@ export const Courses: React.FC<CoursesProps> = ({
     // Static featured courses
     const staticCourses = [
         {
+            id: 'class-11-physics-static',
+            title: 'Class 11 Physics: Comprehensive Course Syllabus (2025-26)',
+            subject: 'Physics',
+            instructor_name: 'Celoris Designs',
+            course_duration: 'Full Year',
+            price: 2499,
+            is_featured: true,
+            course_image_url: '/class-11-physics-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-11-physics-comprehensive-course'
+        },
+        {
             id: 'class-10-physics-static',
             title: 'Class 10 Physics Master Course: Light, Electricity, Magnetism & Energy',
             subject: 'Physics',
@@ -86,7 +100,7 @@ export const Courses: React.FC<CoursesProps> = ({
             course_duration: '4 months',
             price: 1500,
             is_featured: true,
-            course_image_url: 'https://www.celoris.in/class-10-physics-cover.jpg',
+            course_image_url: '/class-10-physics-cover.jpg',
             is_static: true,
             static_url: '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
         }
@@ -106,13 +120,15 @@ export const Courses: React.FC<CoursesProps> = ({
 
             const { data, error } = await query
                 .order('created_at', { ascending: false })
-                .limit(limit - staticCourses.length); // Reduce limit to make room for static courses
+                .limit(limit);
 
             if (data) {
-                // Combine static courses with database courses
-                setCourses([...staticCourses, ...data]);
+                // Filter out any DB courses that might duplicate our static ones if we were checking by ID, 
+                // but static IDs are custom.
+                // We combine static + dynamic
+                const combined = [...staticCourses, ...data].slice(0, limit);
+                setCourses(combined);
             } else {
-                // If no database courses, just show static courses
                 setCourses(staticCourses);
             }
             setLoading(false);
@@ -150,7 +166,7 @@ export const Courses: React.FC<CoursesProps> = ({
 
             {showBrowseAll && (
                 <div className="mt-8 text-center">
-                    <Link href="/learn/courses" className="px-6 py-2 bg-slate-800 text-slate-200 text-sm font-medium rounded-full hover:bg-slate-900 hover:text-white transition-colors inline-block">
+                    <Link href="/learn/courses" className="px-6 py-2 bg-brand-600 text-white text-sm font-medium rounded-full hover:bg-brand-700 transition-colors inline-block shadow-sm shadow-brand-200">
                         Browse All Courses
                     </Link>
                 </div>

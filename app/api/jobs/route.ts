@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
       isRemote: job.is_remote, // Frontend uses camelCase
       is_remote: job.is_remote,
       salary: job.salary_min && job.salary_max
-        ? `${job.salary_currency === 'USD' ? '$' : job.salary_currency}${job.salary_min.toLocaleString()} - ${job.salary_currency === 'USD' ? '$' : job.salary_currency}${job.salary_max.toLocaleString()}`
+        ? `₹${job.salary_min.toLocaleString()} - ₹${job.salary_max.toLocaleString()}`
         : 'Competitive Salary',
       salary_min: job.salary_min,
       salary_max: job.salary_max,

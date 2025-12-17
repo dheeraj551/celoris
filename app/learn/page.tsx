@@ -46,7 +46,7 @@ export default function LearnPage() {
           <Courses
             title="Featured Courses"
             description="Start your learning journey with our most popular courses"
-            limit={6}
+            limit={4}
             featured={true}
           />
         </div>

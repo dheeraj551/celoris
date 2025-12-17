@@ -17,7 +17,7 @@ const getJob = (id: string) => {
       company: "TechCorp Solutions",
       location: "San Francisco, CA",
       isRemote: true,
-      salary: "$120,000 - $150,000",
+      salary: "₹120,000 - ₹150,000",
       employmentType: "Full-time",
       experienceLevel: "Senior",
       posted: "2 days ago",
@@ -31,9 +31,9 @@ const getJob = (id: string) => {
     "2": {
       title: "UX/UI Designer",
       company: "DesignStudio Inc",
-      location: "New York, NY", 
+      location: "New York, NY",
       isRemote: false,
-      salary: "$80,000 - $100,000",
+      salary: "₹80,000 - ₹100,000",
       employmentType: "Full-time",
       experienceLevel: "Mid-level",
       posted: "1 day ago",
@@ -49,7 +49,7 @@ const getJob = (id: string) => {
       company: "DataFlow Analytics",
       location: "Austin, TX",
       isRemote: true,
-      salary: "$110,000 - $140,000",
+      salary: "₹110,000 - ₹140,000",
       employmentType: "Full-time",
       experienceLevel: "Senior",
       posted: "3 days ago",
@@ -139,21 +139,17 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                   <span>{job.location}</span>
                 </div>
               </div>
-              
+
               {/* Job Stats */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-text-secondary mb-6">
                 <div className="flex items-center space-x-1">
-                  <DollarSign className="h-4 w-4" />
                   <span className="font-medium">{job.salary}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
                   <span>{job.employmentType}</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <Users className="h-4 w-4" />
-                  <span>{job.applicants} applicants</span>
-                </div>
+
                 <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
                   <span>Posted {job.posted}</span>
