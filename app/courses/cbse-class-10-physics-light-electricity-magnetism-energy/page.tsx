@@ -286,7 +286,7 @@ export default function CBSEClass10PhysicsCourse() {
                         <Card>
                             <div className="aspect-video relative overflow-hidden rounded-lg">
                                 <img
-                                    src="/class-10-physics-cover.jpg"
+                                    src="https://www.celoris.in/class-10-physics-cover.jpg"
                                     alt="Class 10 Physics Master Course - Light, Electricity, Magnetism & Energy"
                                     className="w-full h-full object-cover"
                                 />

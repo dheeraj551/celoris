@@ -86,7 +86,7 @@ export const Courses: React.FC<CoursesProps> = ({
             course_duration: '4 months',
             price: 1500,
             is_featured: true,
-            course_image_url: '/class-10-physics-cover.jpg',
+            course_image_url: 'https://www.celoris.in/class-10-physics-cover.jpg',
             is_static: true,
             static_url: '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
         }
