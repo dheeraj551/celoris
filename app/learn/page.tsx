@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Courses } from "@/components/home-new/Courses"
 import NoticeBoard from "@/components/NoticeBoard"
+import StudentInquiries from "@/components/StudentInquiries"
 
 export const metadata: Metadata = {
   title: "Learn - Celoris Platform",
@@ -70,75 +71,7 @@ export default function LearnPage() {
         </div>
       </section>
 
-      {/* Students Inquiries Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-text-primary mb-4">
-              Students Inquiries
-            </h2>
-            <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Have questions about our courses? Our student support team is here to help you succeed in your learning journey.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {/* General Inquiry */}
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
-                  <BookOpen className="h-6 w-6 text-green-600" />
-                </div>
-                <CardTitle>Course Information</CardTitle>
-                <CardDescription>
-                  Get detailed information about course content, prerequisites, and learning outcomes.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  Contact Now
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Technical Support */}
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle>Technical Support</CardTitle>
-                <CardDescription>
-                  Need help with platform navigation, video playback, or assignment submissions?
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Contact Now
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Learning Support */}
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
-                </div>
-                <CardTitle>Learning Support</CardTitle>
-                <CardDescription>
-                  Struggling with course material? Get personalized help from our instructors.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                  Contact Now
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      <StudentInquiries />
     </div>
   )
 }

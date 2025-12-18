@@ -65,12 +65,21 @@ const VideoCard: React.FC<VideoPostProps> = ({ category, title, views, date, ima
 
 export const Blog = async () => {
     const supabase = createServerClient();
-    const { data: videos } = await supabase
-        .from('featured_videos')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
+    let videos = null;
+
+    try {
+        const { data } = await supabase
+            .from('featured_videos')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(6);
+
+        videos = data;
+    } catch (error) {
+        console.error("Error fetching featured videos:", error);
+        // Continue with null videos to trigger fallback
+    }
 
     // If no videos in DB, show fallback static data
     const posts = videos && videos.length > 0 ? videos.map(v => ({

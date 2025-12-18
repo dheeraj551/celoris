@@ -85,6 +85,38 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'class-12-physics-static',
+      title: 'Class 12th Physics Complete Course',
+      subject: 'Physics',
+      grade_level: 'Class 12',
+      description: 'Comprehensive Physics course for Class 12 students covering Electrostatics, Optics, Magnetism, and Modern Physics.',
+      target_audience: 'Grade 12 Students, JEE/NEET Aspirants',
+      instructor_name: 'Celoris Designs',
+      course_duration: 'Full Year',
+      price: 2499,
+      course_image_url: '/class-12-physics-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(9).fill(null).map((_, i) => ({
+        id: `c12-m${i}`,
+        module_number: i + 1,
+        title: `Unit ${i + 1}`,
+        description: '',
+        estimated_duration: 600,
+        is_published: true,
+        course_topics: Array(2).fill(null).map((_, j) => ({
+          id: `c12-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'class-11-physics-static',
       title: 'Class 11 Physics: Comprehensive Course Syllabus (2025-26)',
       subject: 'Physics',
@@ -214,6 +246,7 @@ export default function CoursesDisplay({
   }
 
   const getCourseUrl = (id: string) => {
+    if (id === 'class-12-physics-static') return '/courses/cbse-class-12-physics-complete-course'
     if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'
     if (id === 'class-10-physics-static') return '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
     if (id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f') return '/courses/cbse-class-9-physics-motion-force-energy-sound'

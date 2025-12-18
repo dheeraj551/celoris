@@ -40,11 +40,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                         href={
                             id === 'class-11-physics-static'
                                 ? '/courses/cbse-class-11-physics-comprehensive-course'
-                                : id === 'class-10-physics-static'
-                                    ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
-                                    : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
-                                        ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
-                                        : `/learn/course/${id}`
+                                : id === 'class-12-physics-static'
+                                    ? '/courses/cbse-class-12-physics-complete-course'
+                                    : id === 'class-10-physics-static'
+                                        ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+                                        : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
+                                            ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
+                                            : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -80,6 +82,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'class-12-physics-static',
+            title: 'Class 12th Physics Complete Course',
+            subject: 'Physics',
+            instructor_name: 'Celoris Designs',
+            course_duration: 'Full Year',
+            price: 2499,
+            is_featured: true,
+            course_image_url: '/class-12-physics-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-12-physics-complete-course'
+        },
         {
             id: 'class-11-physics-static',
             title: 'Class 11 Physics: Comprehensive Course Syllabus (2025-26)',
