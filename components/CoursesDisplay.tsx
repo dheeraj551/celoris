@@ -85,6 +85,38 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'class-9-chemistry-static',
+      title: 'Class 9 Chemistry: Complete Course Overview',
+      subject: 'Chemistry',
+      grade_level: 'Class 9',
+      description: 'This curriculum is designed to build a foundational understanding of matter, atoms, and chemical reactions, preparing students for advanced sciences.',
+      target_audience: 'Class 9 Students',
+      instructor_name: 'Celoris Designs',
+      course_duration: 'Full Year',
+      price: 1999,
+      course_image_url: '/class-9-chemistry-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `c9chem-m${i}`,
+        module_number: i + 1,
+        title: `Unit ${i + 1}`,
+        description: '',
+        estimated_duration: 300,
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `c9chem-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'class-12-physics-static',
       title: 'Class 12th Physics Complete Course',
       subject: 'Physics',
@@ -250,6 +282,7 @@ export default function CoursesDisplay({
     if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'
     if (id === 'class-10-physics-static') return '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
     if (id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f') return '/courses/cbse-class-9-physics-motion-force-energy-sound'
+    if (id === 'class-9-chemistry-static') return '/courses/cbse-class-9-chemistry-complete-course'
     return `/learn/course/${id}`
   }
 

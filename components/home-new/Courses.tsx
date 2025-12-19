@@ -44,9 +44,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     ? '/courses/cbse-class-12-physics-complete-course'
                                     : id === 'class-10-physics-static'
                                         ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
-                                        : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
-                                            ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
-                                            : `/learn/course/${id}`
+                                        : id === 'class-9-chemistry-static'
+                                            ? '/courses/cbse-class-9-chemistry-complete-course'
+                                            : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
+                                                ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
+                                                : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -82,6 +84,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'class-9-chemistry-static',
+            title: 'Class 9 Chemistry: Complete Course Overview',
+            subject: 'Chemistry',
+            instructor_name: 'Celoris Designs',
+            course_duration: 'Full Year',
+            price: 1999,
+            is_featured: true,
+            course_image_url: '/class-9-chemistry-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-9-chemistry-complete-course'
+        },
         {
             id: 'class-12-physics-static',
             title: 'Class 12th Physics Complete Course',
