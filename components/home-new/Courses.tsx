@@ -48,7 +48,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                             ? '/courses/cbse-class-9-chemistry-complete-course'
                                             : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
                                                 ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
-                                                : `/learn/course/${id}`
+                                                : id === 'class-10-chemistry-static'
+                                                    ? '/courses/cbse-class-10-chemistry-complete-course'
+                                                    : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -75,7 +77,7 @@ interface CoursesProps {
 export const Courses: React.FC<CoursesProps> = ({
     title = "Latest Courses",
     description = "Explore our newest courses and start your learning journey.",
-    limit = 4,
+    limit = 6,
     showBrowseAll = true,
     featured = false
 }) => {
@@ -84,6 +86,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'class-10-chemistry-static',
+            title: 'Class 10 Chemistry Full Course',
+            subject: 'Chemistry',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: 'Full Year',
+            price: 1999,
+            is_featured: true,
+            course_image_url: '/class-10-chemistry-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-10-chemistry-complete-course'
+        },
         {
             id: 'class-9-chemistry-static',
             title: 'Class 9 Chemistry: Complete Course Overview',
@@ -151,10 +165,16 @@ export const Courses: React.FC<CoursesProps> = ({
                 .limit(limit);
 
             if (data) {
-                // Filter out any DB courses that might duplicate our static ones if we were checking by ID, 
-                // but static IDs are custom.
-                // We combine static + dynamic
-                const combined = [...staticCourses, ...data].slice(0, limit);
+                // Exclude test courses
+                const testCourseTitles = [
+                    'Agentic AI for Beginners: From Prompts to Action',
+                    'Mastering Nano Banana Pro',
+                    'My new ai course will be here'
+                ];
+                const filteredDbCourses = data.filter(c => !testCourseTitles.includes(c.title));
+
+                // Combine static + dynamic
+                const combined = [...staticCourses, ...filteredDbCourses].slice(0, limit);
                 setCourses(combined);
             } else {
                 setCourses(staticCourses);

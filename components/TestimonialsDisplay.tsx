@@ -44,7 +44,7 @@ export default function TestimonialsDisplay({
 
   useEffect(() => {
     loadTestimonials()
-  }, [type, page, limit])
+  }, [type, page, limit, showFeatured])
 
   const loadTestimonials = async () => {
     try {

@@ -56,11 +56,15 @@ export async function GET(request: NextRequest) {
 
     try {
       // Try to fetch from database first
+      const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+      if (!supabaseUrl || !supabaseKey) {
+        throw new Error('Supabase environment variables are missing')
+      }
+
       const { createClient } = await import('@supabase/supabase-js')
-      const supabase = createClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!
-      )
+      const supabase = createClient(supabaseUrl, supabaseKey)
 
       let query = supabase
         .from('testimonials')
@@ -85,11 +89,11 @@ export async function GET(request: NextRequest) {
         query = query.eq('is_featured', true)
       }
 
-      // Order by featured first, then by display_order, then by created_at
+      // Order by created_at (latest first), then featured, then display_order
       query = query
+        .order('created_at', { ascending: false })
         .order('is_featured', { ascending: false, nullsFirst: false })
         .order('display_order', { ascending: true })
-        .order('created_at', { ascending: false })
         .limit(limit)
 
       const { data: dbTestimonials, error } = await query
@@ -106,7 +110,7 @@ export async function GET(request: NextRequest) {
         // Return unique testimonials
         return NextResponse.json({
           success: true,
-          data: uniqueTestimonials,
+          data: uniqueTestimonials.slice(0, limit),
           count: uniqueTestimonials.length,
           source: 'database'
         })

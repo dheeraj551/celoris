@@ -84,7 +84,7 @@ export default function AboutPage() {
               page="all"
               limit={3}
               layout="grid"
-              showFeatured={true}
+              showFeatured={false}
               className="mb-12"
             />
 

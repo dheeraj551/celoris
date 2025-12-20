@@ -117,6 +117,38 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'class-10-chemistry-static',
+      title: 'Class 10 Chemistry Full Course',
+      subject: 'Chemistry',
+      grade_level: 'Class 10',
+      description: 'A comprehensive guide to Class 10 Chemistry covering chemical reactions, acids/bases, metals, carbon compounds, and periodic trends.',
+      target_audience: 'Class 10 Students',
+      instructor_name: 'Celoris Designs llp',
+      course_duration: 'Full Year',
+      price: 1999,
+      course_image_url: '/class-10-chemistry-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `c10chem-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 300,
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `c10chem-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'class-12-physics-static',
       title: 'Class 12th Physics Complete Course',
       subject: 'Physics',
@@ -268,7 +300,7 @@ export default function CoursesDisplay({
       if (grade_level) filteredStatic = filteredStatic.filter(c => c.grade_level === grade_level)
       if (featured) filteredStatic = filteredStatic.filter(c => c.is_featured)
 
-      setCourses([...filteredStatic, ...dbCourses])
+      setCourses([...filteredStatic, ...dbCourses].slice(0, limit))
     } catch (error) {
       console.error('Error loading courses:', error)
       setError('Failed to load courses')
@@ -283,6 +315,7 @@ export default function CoursesDisplay({
     if (id === 'class-10-physics-static') return '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
     if (id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f') return '/courses/cbse-class-9-physics-motion-force-energy-sound'
     if (id === 'class-9-chemistry-static') return '/courses/cbse-class-9-chemistry-complete-course'
+    if (id === 'class-10-chemistry-static') return '/courses/cbse-class-10-chemistry-complete-course'
     return `/learn/course/${id}`
   }
 

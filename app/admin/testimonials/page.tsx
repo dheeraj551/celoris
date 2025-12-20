@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { 
+import {
   Plus,
   Edit3,
   Trash2,
@@ -71,7 +71,7 @@ export default function TestimonialsPage() {
     testimonial_text: '',
     rating: 5,
     testimonial_type: 'general',
-    target_pages: ['homepage'],
+    target_pages: ['homepage', 'about'],
     display_order: 0,
     is_featured: false,
     is_visible: true,
@@ -89,16 +89,16 @@ export default function TestimonialsPage() {
   const loadTestimonials = async () => {
     try {
       setLoading(true)
-      
+
       const params = new URLSearchParams()
       if (filters.type !== 'all') params.set('type', filters.type)
       if (filters.visible !== 'all') params.set('visible', filters.visible)
       if (filters.featured !== 'all') params.set('featured', filters.featured)
       if (filters.search) params.set('search', filters.search)
-      
+
       const response = await fetch(`/api/admin/testimonials?${params.toString()}`)
       const result = await response.json()
-      
+
       if (!response.ok || !result.success) {
         throw new Error(result.error || 'Failed to load testimonials')
       }
@@ -121,7 +121,7 @@ export default function TestimonialsPage() {
       testimonial_text: '',
       rating: 5,
       testimonial_type: 'general',
-      target_pages: ['homepage'],
+      target_pages: ['homepage', 'about'],
       display_order: 0,
       is_featured: false,
       is_visible: true,
@@ -169,7 +169,7 @@ export default function TestimonialsPage() {
       })
 
       const result = await response.json()
-      
+
       if (!response.ok || !result.success) {
         throw new Error(result.error || 'Failed to delete testimonial')
       }
@@ -191,7 +191,7 @@ export default function TestimonialsPage() {
       }
 
       let response
-      
+
       if (editingTestimonial) {
         // Update existing testimonial
         response = await fetch('/api/admin/testimonials', {
@@ -200,8 +200,8 @@ export default function TestimonialsPage() {
           body: JSON.stringify({
             id: editingTestimonial.id,
             ...formData,
-            target_pages: Array.isArray(formData.target_pages) 
-              ? formData.target_pages 
+            target_pages: Array.isArray(formData.target_pages)
+              ? formData.target_pages
               : String(formData.target_pages).split(',').map(p => p.trim())
           })
         })
@@ -212,14 +212,14 @@ export default function TestimonialsPage() {
           headers,
           body: JSON.stringify({
             ...formData,
-            target_pages: Array.isArray(formData.target_pages) 
-              ? formData.target_pages 
+            target_pages: Array.isArray(formData.target_pages)
+              ? formData.target_pages
               : String(formData.target_pages).split(',').map(p => p.trim())
           })
         })
 
         const result = await response.json()
-        
+
         if (!response.ok || !result.success) {
           throw new Error(result.error || 'Failed to save testimonial')
         }
@@ -285,7 +285,7 @@ export default function TestimonialsPage() {
             <h1 className="text-3xl font-bold text-gray-900">Testimonials Management</h1>
             <p className="text-gray-600">Manage customer testimonials for your website</p>
           </div>
-          <Button 
+          <Button
             onClick={() => setShowForm(true)}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
@@ -296,10 +296,9 @@ export default function TestimonialsPage() {
 
         {/* Message */}
         {message.text && (
-          <div className={`p-4 rounded-lg mb-6 ${
-            message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 
+          <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' :
             'bg-red-50 text-red-700 border border-red-200'
-          }`}>
+            }`}>
             {message.text}
           </div>
         )}
@@ -326,7 +325,7 @@ export default function TestimonialsPage() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
                 <select
@@ -370,7 +369,7 @@ export default function TestimonialsPage() {
               </div>
 
               <div className="flex items-end">
-                <Button 
+                <Button
                   onClick={loadTestimonials}
                   variant="outline"
                   className="w-full"
@@ -433,13 +432,12 @@ export default function TestimonialsPage() {
                       <div className="flex items-center space-x-2 mb-2">
                         {renderStars(testimonial.rating)}
                         <span className="text-sm text-gray-500">({testimonial.rating}/5)</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          testimonial.testimonial_type === 'service' ? 'bg-blue-100 text-blue-800' :
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${testimonial.testimonial_type === 'service' ? 'bg-blue-100 text-blue-800' :
                           testimonial.testimonial_type === 'product' ? 'bg-green-100 text-green-800' :
-                          testimonial.testimonial_type === 'feature' ? 'bg-purple-100 text-purple-800' :
-                          testimonial.testimonial_type === 'support' ? 'bg-orange-100 text-orange-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                            testimonial.testimonial_type === 'feature' ? 'bg-purple-100 text-purple-800' :
+                              testimonial.testimonial_type === 'support' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                          }`}>
                           {testimonial.testimonial_type}
                         </span>
                         {!testimonial.is_visible && (
@@ -685,9 +683,9 @@ export default function TestimonialsPage() {
                     </label>
                     <Input
                       value={Array.isArray(formData.target_pages) ? formData.target_pages.join(', ') : formData.target_pages}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        target_pages: e.target.value.split(',').map(p => p.trim()).filter(p => p) 
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        target_pages: e.target.value.split(',').map(p => p.trim()).filter(p => p)
                       }))}
                       placeholder="homepage, about, services"
                     />

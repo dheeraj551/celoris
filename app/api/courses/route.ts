@@ -47,6 +47,14 @@ export async function GET(request: NextRequest) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
     }
 
+    // Exclude test courses
+    const testCourseTitles = [
+      'Agentic AI for Beginners: From Prompts to Action',
+      'Mastering Nano Banana Pro',
+      'My new ai course will be here'
+    ]
+    query = query.not('title', 'in', `(${testCourseTitles.map(t => `"${t}"`).join(',')})`)
+
     // Apply pagination
     const from = (page - 1) * limit
     const to = from + limit - 1

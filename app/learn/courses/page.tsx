@@ -154,7 +154,7 @@ export default function AllCoursesPage() {
           <div className="lg:col-span-3">
             <CoursesDisplay
               layout="grid"
-              limit={12}
+              limit={9}
               showStats={true}
               className=""
             />

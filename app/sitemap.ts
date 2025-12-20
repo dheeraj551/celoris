@@ -91,7 +91,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/cbse-class-10-physics-light-electricity-magnetism-energy',
         '/courses/cbse-class-11-physics-comprehensive-course',
         '/courses/cbse-class-12-physics-complete-course',
-        '/courses/cbse-class-9-chemistry-complete-course'
+        '/courses/cbse-class-9-chemistry-complete-course',
+        '/courses/cbse-class-10-chemistry-complete-course'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
