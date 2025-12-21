@@ -50,7 +50,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                 ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
                                                 : id === 'class-10-chemistry-static'
                                                     ? '/courses/cbse-class-10-chemistry-complete-course'
-                                                    : `/learn/course/${id}`
+                                                    : id === 'yoga-mastery-2025-static'
+                                                        ? '/courses/complete-2025-yoga-mastery-course'
+                                                        : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -145,6 +147,18 @@ export const Courses: React.FC<CoursesProps> = ({
             course_image_url: '/class-10-physics-cover.jpg',
             is_static: true,
             static_url: '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+        },
+        {
+            id: 'yoga-mastery-2025-static',
+            title: 'The Complete 2025 Yoga Mastery Course: From Beginner Poses to Advanced Mindfulness',
+            subject: 'Yoga',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '12 Weeks',
+            price: 6000,
+            is_featured: true,
+            course_image_url: '/yoga-mastery-2025-cover.jpg',
+            is_static: true,
+            static_url: '/courses/complete-2025-yoga-mastery-course'
         }
     ];
 

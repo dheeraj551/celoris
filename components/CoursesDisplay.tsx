@@ -275,6 +275,38 @@ export default function CoursesDisplay({
           is_free_preview: false
         }))
       }))
+    },
+    {
+      id: 'yoga-mastery-2025-static',
+      title: 'The Complete 2025 Yoga Mastery Course: From Beginner Poses to Advanced Mindfulness',
+      subject: 'Yoga',
+      grade_level: 'All Levels',
+      description: 'This comprehensive yoga program bridges traditional Vedic wisdom with modern functional movement. Designed for all levels, it covers physical asanas, breathwork (Pranayama), and restorative techniques for stress relief.',
+      target_audience: 'Yoga Practitioners',
+      instructor_name: 'Celoris Designs llp',
+      course_duration: '12 Weeks',
+      price: 6000,
+      course_image_url: '/yoga-mastery-2025-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `yoga-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: Array(3).fill(null).map((_, j) => ({
+          id: `yoga-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
     }
   ]
 
@@ -316,6 +348,7 @@ export default function CoursesDisplay({
     if (id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f') return '/courses/cbse-class-9-physics-motion-force-energy-sound'
     if (id === 'class-9-chemistry-static') return '/courses/cbse-class-9-chemistry-complete-course'
     if (id === 'class-10-chemistry-static') return '/courses/cbse-class-10-chemistry-complete-course'
+    if (id === 'yoga-mastery-2025-static') return '/courses/complete-2025-yoga-mastery-course'
     return `/learn/course/${id}`
   }
 
