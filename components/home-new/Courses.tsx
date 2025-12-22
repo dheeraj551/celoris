@@ -52,7 +52,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                     ? '/courses/cbse-class-10-chemistry-complete-course'
                                                     : id === 'yoga-mastery-2025-static'
                                                         ? '/courses/complete-2025-yoga-mastery-course'
-                                                        : `/learn/course/${id}`
+                                                        : id === '28-day-reset-static'
+                                                            ? '/courses/the-28-day-reset-foundation-strength-mobility'
+                                                            : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -89,6 +91,18 @@ export const Courses: React.FC<CoursesProps> = ({
     // Static featured courses
     const staticCourses = [
         {
+            id: '28-day-reset-static',
+            title: 'The 28-Day Reset: Foundation Strength & Mobility',
+            subject: 'Fitness',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '4 Weeks',
+            price: 3999,
+            is_featured: true,
+            course_image_url: '/28-day-reset-cover.jpg',
+            is_static: true,
+            static_url: '/courses/the-28-day-reset-foundation-strength-mobility'
+        },
+        {
             id: 'class-10-chemistry-static',
             title: 'Class 10 Chemistry Full Course',
             subject: 'Chemistry',
@@ -104,7 +118,7 @@ export const Courses: React.FC<CoursesProps> = ({
             id: 'class-9-chemistry-static',
             title: 'Class 9 Chemistry: Complete Course Overview',
             subject: 'Chemistry',
-            instructor_name: 'Celoris Designs',
+            instructor_name: 'Celoris Designs llp',
             course_duration: 'Full Year',
             price: 1999,
             is_featured: true,
@@ -116,7 +130,7 @@ export const Courses: React.FC<CoursesProps> = ({
             id: 'class-12-physics-static',
             title: 'Class 12th Physics Complete Course',
             subject: 'Physics',
-            instructor_name: 'Celoris Designs',
+            instructor_name: 'Celoris Designs llp',
             course_duration: 'Full Year',
             price: 2499,
             is_featured: true,
@@ -128,7 +142,7 @@ export const Courses: React.FC<CoursesProps> = ({
             id: 'class-11-physics-static',
             title: 'Class 11 Physics: Comprehensive Course Syllabus (2025-26)',
             subject: 'Physics',
-            instructor_name: 'Celoris Designs',
+            instructor_name: 'Celoris Designs llp',
             course_duration: 'Full Year',
             price: 2499,
             is_featured: true,
@@ -140,7 +154,7 @@ export const Courses: React.FC<CoursesProps> = ({
             id: 'class-10-physics-static',
             title: 'Class 10 Physics Master Course: Light, Electricity, Magnetism & Energy',
             subject: 'Physics',
-            instructor_name: 'Celoris Academy',
+            instructor_name: 'Celoris Designs llp',
             course_duration: '4 months',
             price: 1500,
             is_featured: true,

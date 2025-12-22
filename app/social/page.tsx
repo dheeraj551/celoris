@@ -20,7 +20,8 @@ import {
   ArrowRight,
   UserPlus,
   Shield,
-  Award
+  Award,
+  MessageSquare
 } from "lucide-react"
 
 export default function SocialPage() {
@@ -224,8 +225,181 @@ export default function SocialPage() {
             </p>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {platformFeatures.slice(0, 3).map((feature, index) => (
+              <Card key={index} className="card-hover">
+                <CardHeader>
+                  <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-4`}>
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    {feature.premium && (
+                      <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">
+                        Premium
+                      </span>
+                    )}
+                  </div>
+                  <CardDescription className="text-text-secondary">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    className="w-full"
+                    variant={feature.premium ? "outline" : "default"}
+                    asChild
+                  >
+                    <Link href={feature.premium ? "/social/upgrade" : feature.action.toLowerCase().replace(" ", "-")}>
+                      {feature.action}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Join Public Chat Rooms Section - Positioned between feature grids */}
+          <div className="bg-slate-50/50 rounded-[2.5rem] p-8 md:p-12 border border-slate-100 flex flex-col lg:flex-row items-center gap-12 overflow-hidden relative mb-16">
+            {/* Left Content */}
+            <div className="flex-1 space-y-8 relative z-10 text-left">
+              <div className="w-16 h-16 bg-[#22c55e] rounded-2xl flex items-center justify-center shadow-lg shadow-green-200">
+                <MessageSquare className="h-8 w-8 text-white" />
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+                  Join Public Chat Rooms
+                </h2>
+                <p className="text-xl text-slate-600 leading-relaxed max-w-md">
+                  Join casual open chat rooms for real-time conversations with new people, creators, and professionals.
+                </p>
+              </div>
+              <Button
+                className="bg-[#1e4d3a] hover:bg-[#1a4332] text-white px-8 py-7 rounded-2xl text-lg font-semibold flex items-center gap-3 transition-all hover:gap-4 shadow-xl shadow-green-900/10"
+                asChild
+              >
+                <Link href="/social/chat">
+                  Browse Chat Rooms <ArrowRight className="h-6 w-6" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Right Content - Visual Display */}
+            <div className="flex-1 w-full max-w-2xl relative">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
+                {/* Room 1 */}
+                <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4 transform hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex -space-x-3 overflow-hidden">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden">
+                        <img
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm leading-tight">Socialize & Hangout</h4>
+                  <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
+                    <div className="flex items-center gap-1.5 text-green-600">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Active
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      342
+                    </div>
+                  </div>
+                </div>
+
+                {/* Room 2 */}
+                <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4 transform hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex -space-x-3 overflow-hidden">
+                    {[5, 6, 7, 8].map((i) => (
+                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden">
+                        <img
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 20}`}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm leading-tight">Networking & Growth</h4>
+                  <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
+                    <div className="flex items-center gap-1.5 text-blue-600">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      Active
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      1.2k
+                    </div>
+                  </div>
+                </div>
+
+                {/* Room 3 */}
+                <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4 transform hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex -space-x-3 overflow-hidden">
+                    {[9, 10, 11, 12].map((i) => (
+                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden">
+                        <img
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 30}`}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm leading-tight">Tech Trends Chat</h4>
+                  <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
+                    <div className="flex items-center gap-1.5 text-orange-600">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      Hot
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      892
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom status bar */}
+              <div className="bg-white p-4 rounded-[1.5rem] border border-slate-100 shadow-lg shadow-slate-200/50 flex items-center justify-between">
+                <div className="flex -space-x-2.5 overflow-hidden">
+                  {[13, 14, 15, 16, 17, 18, 19, 20].map((i) => (
+                    <div key={i} className="inline-block h-9 w-9 rounded-full ring-2 ring-white overflow-hidden">
+                      <img
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 40}`}
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  <div className="h-9 w-9 rounded-full bg-slate-100 ring-2 ring-white flex items-center justify-center text-[10px] font-bold text-slate-500">
+                    +99
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                    </span>
+                    <span className="bg-orange-50 text-orange-600 text-[10px] font-bold px-4 py-1.5 rounded-full border border-orange-100 uppercase tracking-widest whitespace-nowrap">
+                      Always On
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {platformFeatures.map((feature, index) => (
+            {platformFeatures.slice(3).map((feature, index) => (
               <Card key={index} className="card-hover">
                 <CardHeader>
                   <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-4`}>

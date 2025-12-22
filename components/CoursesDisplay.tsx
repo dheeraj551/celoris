@@ -91,7 +91,7 @@ export default function CoursesDisplay({
       grade_level: 'Class 9',
       description: 'This curriculum is designed to build a foundational understanding of matter, atoms, and chemical reactions, preparing students for advanced sciences.',
       target_audience: 'Class 9 Students',
-      instructor_name: 'Celoris Designs',
+      instructor_name: 'Celoris Designs llp',
       course_duration: 'Full Year',
       price: 1999,
       course_image_url: '/class-9-chemistry-cover.jpg',
@@ -155,7 +155,7 @@ export default function CoursesDisplay({
       grade_level: 'Class 12',
       description: 'Comprehensive Physics course for Class 12 students covering Electrostatics, Optics, Magnetism, and Modern Physics.',
       target_audience: 'Grade 12 Students, JEE/NEET Aspirants',
-      instructor_name: 'Celoris Designs',
+      instructor_name: 'Celoris Designs llp',
       course_duration: 'Full Year',
       price: 2499,
       course_image_url: '/class-12-physics-cover.jpg',
@@ -187,7 +187,7 @@ export default function CoursesDisplay({
       grade_level: 'Class 11',
       description: 'Comprehensive annual course covering Mechanics, Thermodynamics, and Oscillations for CBSE, JEE, and NEET.',
       target_audience: 'Class 11 Science Students',
-      instructor_name: 'Celoris Designs',
+      instructor_name: 'Celoris Designs llp',
       course_duration: 'Full Year',
       price: 2499,
       course_image_url: '/class-11-physics-cover.jpg',
@@ -219,7 +219,7 @@ export default function CoursesDisplay({
       grade_level: 'Class 10',
       description: 'Master Class 10 Physics with this comprehensive course covering Light, Electricity, Magnetic Effects, and Sources of Energy.',
       target_audience: 'Class 10 Students',
-      instructor_name: 'Celoris Academy',
+      instructor_name: 'Celoris Designs llp',
       course_duration: '4 months',
       price: 1500,
       course_image_url: '/class-10-physics-cover.jpg',
@@ -251,7 +251,7 @@ export default function CoursesDisplay({
       grade_level: 'Class 9',
       description: 'Build a strong foundation in Physics with clear concepts, solved numericals, and real-life examples.',
       target_audience: 'Class 9 Students',
-      instructor_name: 'Celoris Designs',
+      instructor_name: 'Celoris Designs llp',
       course_duration: '3 months',
       price: 1500,
       course_image_url: '/class-9-physics-cover.jpg',
@@ -307,6 +307,38 @@ export default function CoursesDisplay({
           is_free_preview: false
         }))
       }))
+    },
+    {
+      id: '28-day-reset-static',
+      title: 'The 28-Day Reset: Foundation Strength & Mobility',
+      subject: 'Fitness',
+      grade_level: 'Beginner',
+      description: 'A 4-week functional strength and mobility program for beginners. Master the Big Five movements to build muscle and improve posture.',
+      target_audience: 'Fitness Beginners',
+      instructor_name: 'Celoris Designs llp',
+      course_duration: '4 Weeks',
+      price: 3999,
+      course_image_url: '/28-day-reset-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(2).fill(null).map((_, i) => ({
+        id: `reset-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 120,
+        is_published: true,
+        course_topics: Array(3).fill(null).map((_, j) => ({
+          id: `reset-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 40,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
     }
   ]
 
@@ -349,6 +381,7 @@ export default function CoursesDisplay({
     if (id === 'class-9-chemistry-static') return '/courses/cbse-class-9-chemistry-complete-course'
     if (id === 'class-10-chemistry-static') return '/courses/cbse-class-10-chemistry-complete-course'
     if (id === 'yoga-mastery-2025-static') return '/courses/complete-2025-yoga-mastery-course'
+    if (id === '28-day-reset-static') return '/courses/the-28-day-reset-foundation-strength-mobility'
     return `/learn/course/${id}`
   }
 

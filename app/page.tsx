@@ -16,7 +16,7 @@ export default function HomePage() {
         <Features />
         <Process />
         <Blog />
-        <Courses limit={6} />
+        <Courses limit={8} />
       </div>
     </div>
   )

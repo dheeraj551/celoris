@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { Metadata } from "next"
-import { Briefcase, MapPin, Clock, DollarSign, Users, TrendingUp, Filter, Search, CheckCircle, AlertCircle, X } from "lucide-react"
+import { Briefcase, MapPin, Clock, DollarSign, Users, TrendingUp, Filter, Search, CheckCircle, AlertCircle, X, Laptop, Palette, LineChart, BarChart, Heart, Rocket, Settings } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import InterviewRooms from "@/components/InterviewRooms"
 
 
 
@@ -80,21 +81,24 @@ export default function EarnPage() {
   }
 
   const jobCategories = [
-    { name: "Technology", count: 156, icon: "💻" },
-    { name: "Design", count: 89, icon: "🎨" },
-    { name: "Marketing", count: 124, icon: "📈" },
-    { name: "Data Science", count: 67, icon: "📊" },
-    { name: "Sales", count: 98, icon: "💼" },
-    { name: "Customer Success", count: 45, icon: "🤝" },
-    { name: "Product", count: 78, icon: "🚀" },
-    { name: "Operations", count: 56, icon: "⚙️" }
+    { name: "Technology", count: 159, icon: <Laptop className="w-8 h-8 text-blue-500" /> },
+    { name: "Design", count: 83, icon: <Palette className="w-8 h-8 text-rose-500" /> },
+    { name: "Marketing", count: 124, icon: <LineChart className="w-8 h-8 text-indigo-500" /> },
+    { name: "Data Science", count: 67, icon: <BarChart className="w-8 h-8 text-teal-500" /> },
+    { name: "Sales", count: 98, icon: <Briefcase className="w-8 h-8 text-amber-600" /> },
+    { name: "Customer Success", count: 45, icon: <Heart className="w-8 h-8 text-red-500" /> },
+    { name: "Product", count: 78, icon: <Rocket className="w-8 h-8 text-purple-500" /> },
+    { name: "Operations", count: 30, icon: <Settings className="w-8 h-8 text-slate-500" /> }
   ]
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-500 to-primary-700 text-white py-20">
-        <div className="container text-center">
+      <section className="bg-[#2C7A4F] text-white py-24 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        </div>
+        <div className="container relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
             Find Your Dream Career
           </h1>
@@ -121,17 +125,21 @@ export default function EarnPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {jobCategories.map((category) => (
-              <Card key={category.name} className="card-hover cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <div className="text-3xl mb-3">{category.icon}</div>
-                  <h3 className="font-semibold text-text-primary mb-2">{category.name}</h3>
-                  <p className="text-sm text-text-secondary">{category.count} jobs</p>
+              <Card key={category.name} className="border border-slate-100 hover:border-emerald-200 transition-all hover:shadow-xl hover:shadow-emerald-50/50 cursor-pointer group bg-white rounded-2xl">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-emerald-50 transition-colors">
+                    {category.icon}
+                  </div>
+                  <h3 className="font-bold text-slate-800 mb-1 group-hover:text-[#2C7A4F] transition-colors">{category.name}</h3>
+                  <p className="text-xs font-medium text-slate-400">{category.count} jobs</p>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
       </section>
+
+      <InterviewRooms />
 
       {/* Recent Job Listings */}
       <section className="py-16 bg-surface">
@@ -233,78 +241,7 @@ export default function EarnPage() {
         </div>
       </section>
 
-      {/* Career Resources */}
-      <section className="py-16 bg-background">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              Career Resources
-            </h2>
-            <p className="text-lg text-text-secondary">
-              Tools and resources to accelerate your career growth
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
-                  <Briefcase className="h-6 w-6 text-primary-500" />
-                </div>
-                <CardTitle>Resume Builder</CardTitle>
-                <CardDescription>
-                  Create a professional resume that stands out to employers.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" asChild>
-                  <Link href="/earn/resume-builder">
-                    Build Resume
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-primary-500" />
-                </div>
-                <CardTitle>Salary Insights</CardTitle>
-                <CardDescription>
-                  Research salary ranges for your role and location.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" asChild>
-                  <Link href="/earn/salary-insights">
-                    View Salaries
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-primary-500" />
-                </div>
-                <CardTitle>Interview Prep</CardTitle>
-                <CardDescription>
-                  Practice interviews and get feedback from industry experts.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" asChild>
-                  <Link href="/earn/interview-prep">
-                    Start Practicing
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      {/* Career Resources Removed to match screenshot */}
 
       {/* Application Modal */}
       {selectedJob && (
