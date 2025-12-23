@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User, LogOut, Heart, Users, User as UserIcon, Wallet } from "lucide-react"
+import { Menu, User, LogOut, Heart, Users, User as UserIcon, Wallet, ThumbsUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase-client"
 import {
@@ -182,6 +182,12 @@ export default function Header() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link href="/social/likes" className="cursor-pointer">
+                    <ThumbsUp className="mr-2 h-4 w-4" />
+                    <span>Likes</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/social/profile" className="cursor-pointer">
                     <UserIcon className="mr-2 h-4 w-4" />
                     <span>Profile</span>
@@ -268,6 +274,14 @@ export default function Header() {
                     >
                       <Users className="h-4 w-4" />
                       <span>Matches</span>
+                    </Link>
+                    <Link
+                      href="/social/likes"
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>Likes</span>
                     </Link>
                     <Link
                       href="/social/profile"
