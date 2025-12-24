@@ -52,11 +52,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                     ? '/courses/cbse-class-10-chemistry-complete-course'
                                                     : id === 'class-11-chemistry-static'
                                                         ? '/courses/cbse-class-11-chemistry-complete-course'
-                                                        : id === 'yoga-mastery-2025-static'
-                                                            ? '/courses/complete-2025-yoga-mastery-course'
-                                                            : id === '28-day-reset-static'
-                                                                ? '/courses/the-28-day-reset-foundation-strength-mobility'
-                                                                : `/learn/course/${id}`
+                                                        : id === 'class-12-chemistry-static'
+                                                            ? '/courses/cbse-class-12-chemistry-complete-course'
+                                                            : id === 'yoga-mastery-2025-static'
+                                                                ? '/courses/complete-2025-yoga-mastery-course'
+                                                                : id === '28-day-reset-static'
+                                                                    ? '/courses/the-28-day-reset-foundation-strength-mobility'
+                                                                    : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -127,6 +129,18 @@ export const Courses: React.FC<CoursesProps> = ({
             course_image_url: '/class-11-chemistry-cover.jpg',
             is_static: true,
             static_url: '/courses/cbse-class-11-chemistry-complete-course'
+        },
+        {
+            id: 'class-12-chemistry-static',
+            title: 'Class 12 Chemistry: Advanced Mastery & Organic Synthesis',
+            subject: 'Chemistry',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: 'Full Year',
+            price: 2999,
+            is_featured: true,
+            course_image_url: '/class-12-chemistry-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-12-chemistry-complete-course'
         },
         {
             id: 'class-9-chemistry-static',

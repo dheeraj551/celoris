@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import InterviewRooms from "@/components/InterviewRooms"
-
+import { AdUnit } from "@/components/AdUnit"
 
 
 export default function EarnPage() {
@@ -140,6 +140,8 @@ export default function EarnPage() {
       </section>
 
       <InterviewRooms />
+
+      <AdUnit slot="9266909448" />
 
       {/* Recent Job Listings */}
       <section className="py-16 bg-surface">

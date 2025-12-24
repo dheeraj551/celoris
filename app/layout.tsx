@@ -6,6 +6,7 @@ import Footer from "@/components/footer"
 import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
+import { AdUnit } from "@/components/AdUnit"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -85,8 +86,10 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Google AdSense - Managed via Dashboard and AdUnit component */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2389622666573829"
           crossOrigin="anonymous"></script>
+        {/* Note: To stop scattered ads, disable "Auto ads" (Anchor, Vignette, Side rails) in your Google AdSense Dashboard */}
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -101,6 +104,7 @@ export default function RootLayout({
               <main className="flex-1">
                 {children}
               </main>
+              <AdUnit slot="6910734069" format="horizontal" className="mb-4" />
               <Footer />
             </div>
           </PresenceProvider>

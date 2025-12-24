@@ -94,6 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/cbse-class-9-chemistry-complete-course',
         '/courses/cbse-class-10-chemistry-complete-course',
         '/courses/cbse-class-11-chemistry-complete-course',
+        '/courses/cbse-class-12-chemistry-complete-course',
         '/courses/complete-2025-yoga-mastery-course',
         '/courses/the-28-day-reset-foundation-strength-mobility'
     ].map((route) => ({
