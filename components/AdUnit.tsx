@@ -57,11 +57,17 @@ export function AdUnit({
     }, [])
 
     return (
-        <div className={`ad-container my-8 flex justify-center w-full overflow-hidden ${className}`}>
+        <div
+            className={`ad-container my-8 flex flex-col items-center justify-center w-full overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50/50 ${className}`}
+            style={{ minHeight: '120px', position: 'relative' }}
+        >
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-widest text-slate-400 font-semibold pointer-events-none">
+                Advertisement
+            </div>
             <ins
                 ref={adRef}
                 className="adsbygoogle"
-                style={style}
+                style={{ ...style, minWidth: '250px', minHeight: '90px' }}
                 data-ad-client="ca-pub-2389622666573829"
                 data-ad-slot={slot || "9266909448"}
                 data-ad-format={format}

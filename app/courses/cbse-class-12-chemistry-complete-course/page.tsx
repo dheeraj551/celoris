@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { AdUnit } from "@/components/AdUnit"
 
 export default function Class12ChemistryCourse() {
     const courseData = {
@@ -165,6 +166,8 @@ export default function Class12ChemistryCourse() {
                                 />
                             </div>
                         </Card>
+
+                        <AdUnit slot="9266909448" />
 
                         {/* Core Focus Areas */}
                         <Card>
