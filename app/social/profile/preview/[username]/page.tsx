@@ -21,6 +21,7 @@ import {
   Check
 } from "lucide-react"
 import Link from "next/link"
+import { AdUnit } from "@/components/AdUnit"
 
 export default function ProfilePreviewPage() {
   const params = useParams()
@@ -183,13 +184,9 @@ export default function ProfilePreviewPage() {
       <div className="container max-w-6xl mx-auto px-4 pb-24">
         {/* Cover Image & Profile Picture Wrapper */}
         <div className="relative mb-20">
-          {/* Cover Image Container */}
-          <div className="w-full h-64 md:h-80 rounded-3xl overflow-hidden shadow-lg">
-            <img
-              src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-              alt="Cover"
-              className="w-full h-full object-cover"
-            />
+          {/* Ad Banner Area */}
+          <div className="w-full h-auto min-h-[250px] rounded-3xl overflow-hidden shadow-lg bg-white flex items-center justify-center">
+            <AdUnit format="horizontal" className="my-0" />
           </div>
 
           {/* Profile Picture (Absolute to wrapper, NOT inside overflow-hidden container) */}
@@ -266,26 +263,6 @@ export default function ProfilePreviewPage() {
               </CardContent>
             </Card>
 
-            {/* Personal Details Card */}
-            <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Personal Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profile.gender && (
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <User className="h-5 w-5" />
-                    <span className="capitalize">Gender: {profile.gender}</span>
-                  </div>
-                )}
-                {profile.date_of_birth && (
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Calendar className="h-5 w-5" />
-                    <span>DOB: {new Date(profile.date_of_birth).toLocaleDateString()}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
 
           {/* Right Column: Social Highlights */}

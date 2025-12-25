@@ -11,8 +11,8 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20">
         <Hero />
         <Features />
-        <AdUnit slot="9266909448" />
         <Process />
+        <AdUnit slot="9266909448" />
 
         <Blog />
         <Courses limit={6} />

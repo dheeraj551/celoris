@@ -58,7 +58,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                 ? '/courses/complete-2025-yoga-mastery-course'
                                                                 : id === '28-day-reset-static'
                                                                     ? '/courses/the-28-day-reset-foundation-strength-mobility'
-                                                                    : `/learn/course/${id}`
+                                                                    : id === 'class-9-maths-static'
+                                                                        ? '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
+                                                                        : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -94,6 +96,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'class-9-maths-static',
+            title: 'Class 9th Mathematics: Complete Syllabus & Mastery Guide',
+            subject: 'Mathematics',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: 'Full Year',
+            price: 1999,
+            is_featured: true,
+            course_image_url: '/class-9-maths-cover.jpg',
+            is_static: true,
+            static_url: '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
+        },
         {
             id: '28-day-reset-static',
             title: 'The 28-Day Reset: Foundation Strength & Mobility',

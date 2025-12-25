@@ -26,6 +26,7 @@ import {
     Info
 } from "lucide-react"
 import { UserProfileDialog } from "@/components/social/UserProfileDialog"
+import { AdUnit } from "@/components/AdUnit"
 
 interface UserProfile {
     id: string
@@ -318,6 +319,9 @@ export default function PublicRoomPage() {
                             </span>
                         </p>
                     </div>
+
+                    {/* Sponsored Content / Ad */}
+                    <AdUnit slot="9266909448" className="mb-4" />
 
                     {/* Messages List */}
                     {messages.map((msg, index) => {

@@ -79,6 +79,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/learn/courses',
         '/blog',
         '/social',
+        '/social/chat',
+        '/social/chat/room/socialize',
+        '/social/chat/room/networking',
+        '/social/chat/room/tech-trends',
         '/apps',
         '/register',
         '/login',
@@ -95,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/cbse-class-10-chemistry-complete-course',
         '/courses/cbse-class-11-chemistry-complete-course',
         '/courses/cbse-class-12-chemistry-complete-course',
+        '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
         '/courses/complete-2025-yoga-mastery-course',
         '/courses/the-28-day-reset-foundation-strength-mobility'
     ].map((route) => ({

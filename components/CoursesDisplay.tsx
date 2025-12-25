@@ -85,6 +85,38 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'class-9-maths-static',
+      title: 'Class 9th Mathematics: Complete Syllabus & Mastery Guide',
+      subject: 'Mathematics',
+      grade_level: 'Class 9',
+      description: 'A comprehensive guide to Class 9 Maths covering Number Systems, Polynomials, Geometry, and Mensuration as per NCERT guidelines.',
+      target_audience: 'Class 9 Students, NTSE Aspirants, Educators',
+      instructor_name: 'Celoris Designs llp',
+      course_duration: 'Full Year',
+      price: 1999,
+      course_image_url: '/class-9-maths-cover.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(6).fill(null).map((_, i) => ({
+        id: `c9math-m${i}`,
+        module_number: i + 1,
+        title: `Unit ${i + 1}`,
+        description: '',
+        estimated_duration: 360,
+        is_published: true,
+        course_topics: Array(2).fill(null).map((_, j) => ({
+          id: `c9math-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'class-9-chemistry-static',
       title: 'Class 9 Chemistry: Complete Course Overview',
       subject: 'Chemistry',
@@ -448,6 +480,7 @@ export default function CoursesDisplay({
     if (id === 'class-12-chemistry-static') return '/courses/cbse-class-12-chemistry-complete-course'
     if (id === 'yoga-mastery-2025-static') return '/courses/complete-2025-yoga-mastery-course'
     if (id === '28-day-reset-static') return '/courses/the-28-day-reset-foundation-strength-mobility'
+    if (id === 'class-9-maths-static') return '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
     return `/learn/course/${id}`
   }
 

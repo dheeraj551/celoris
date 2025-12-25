@@ -58,16 +58,16 @@ export function AdUnit({
 
     return (
         <div
-            className={`ad-container my-8 flex flex-col items-center justify-center w-full overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50/50 ${className}`}
-            style={{ minHeight: '120px', position: 'relative' }}
+            className={`ad-unit-wrapper my-6 flex flex-col items-center w-full overflow-hidden ${className}`}
+            style={{ minHeight: '90px' }}
         >
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-widest text-slate-400 font-semibold pointer-events-none">
-                Advertisement
+            <div className="w-full text-[9px] text-center uppercase tracking-widest text-slate-300 mb-2 pointer-events-none">
+                Sponsored Content
             </div>
             <ins
                 ref={adRef}
                 className="adsbygoogle"
-                style={{ ...style, minWidth: '250px', minHeight: '90px' }}
+                style={{ ...style, display: 'block', width: '100%', textAlign: 'center' }}
                 data-ad-client="ca-pub-2389622666573829"
                 data-ad-slot={slot || "9266909448"}
                 data-ad-format={format}

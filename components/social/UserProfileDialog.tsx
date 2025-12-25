@@ -21,6 +21,7 @@ import {
     MessageCircle
 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { AdUnit } from "@/components/AdUnit"
 
 interface UserProfileDialogProps {
     userId: string | null
@@ -243,12 +244,9 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
                         {/* Cover Image & Profile Picture Wrapper */}
                         <div className="relative mb-20">
-                            <div className="w-full h-48 md:h-64 overflow-hidden">
-                                <img
-                                    src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                                    alt="Cover"
-                                    className="w-full h-full object-cover"
-                                />
+                            {/* Ad Banner Area */}
+                            <div className="w-full h-auto min-h-[200px] overflow-hidden bg-white flex items-center justify-center">
+                                <AdUnit format="horizontal" className="my-0" />
                             </div>
 
                             <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-10">
@@ -322,26 +320,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                         </CardContent>
                                     </Card>
 
-                                    {/* Personal Details Card */}
-                                    <Card className="border-none shadow-sm bg-white rounded-xl overflow-hidden">
-                                        <CardHeader className="pb-2 pt-4 px-4">
-                                            <CardTitle className="text-base">Personal Details</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="px-4 pb-4 space-y-3">
-                                            {profile.gender && (
-                                                <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                    <User className="h-4 w-4" />
-                                                    <span className="capitalize">{profile.gender}</span>
-                                                </div>
-                                            )}
-                                            {profile.date_of_birth && (
-                                                <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                    <Calendar className="h-4 w-4" />
-                                                    <span>{new Date(profile.date_of_birth).toLocaleDateString()}</span>
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
                                 </div>
 
                                 {/* Right Column: Social Highlights */}

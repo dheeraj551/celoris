@@ -18,6 +18,8 @@ import {
     ArrowLeft
 } from "lucide-react"
 
+import { AdUnit } from "@/components/AdUnit"
+
 export default function ChatLobbyPage() {
     const rooms = [
         {
@@ -128,6 +130,9 @@ export default function ChatLobbyPage() {
                         </p>
                     </Card>
                 </div>
+
+                {/* Sponsored Content / Ad */}
+                <AdUnit slot="9266909448" className="mt-12" />
             </div>
         </div>
     )
