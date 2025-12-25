@@ -254,6 +254,12 @@ export interface Database {
           id: string
           username: string | null
           full_name: string | null
+          bio: string | null
+          instagram_handle: string | null
+          facebook_handle: string | null
+          location: string | null
+          gender: string | null
+          date_of_birth: string | null
           profile_pic_url: string | null
           wallet_balance: number | null
           verification_status: string | null

@@ -10,6 +10,7 @@ import InstagramPosts from "@/components/InstagramPosts"
 import {
     User,
     Instagram,
+    Facebook,
     MapPin,
     Calendar,
     Heart,
@@ -299,10 +300,26 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                         </CardHeader>
                                         <CardContent className="px-4 pb-4 space-y-3">
                                             {profile.instagram_handle && (
-                                                <div className="flex items-center gap-2 text-sm text-gray-700">
+                                                <a
+                                                    href={profile.instagram_handle.startsWith('http') ? profile.instagram_handle : `https://instagram.com/${profile.instagram_handle.replace('@', '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-pink-600 transition-colors"
+                                                >
                                                     <Instagram className="h-4 w-4" />
-                                                    <span>@{profile.instagram_handle}</span>
-                                                </div>
+                                                    <span>{profile.instagram_handle.startsWith('http') ? 'Instagram Profile' : `@${profile.instagram_handle}`}</span>
+                                                </a>
+                                            )}
+                                            {profile.facebook_handle && (
+                                                <a
+                                                    href={profile.facebook_handle.startsWith('http') ? profile.facebook_handle : `https://facebook.com/${profile.facebook_handle.replace('@', '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 transition-colors"
+                                                >
+                                                    <Facebook className="h-4 w-4" />
+                                                    <span>{profile.facebook_handle.startsWith('http') ? 'Facebook Profile' : `@${profile.facebook_handle}`}</span>
+                                                </a>
                                             )}
                                             {profile.location && (
                                                 <div className="flex items-center gap-2 text-sm text-gray-700">

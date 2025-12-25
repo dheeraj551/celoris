@@ -11,6 +11,7 @@ import InstagramPosts from "@/components/InstagramPosts"
 import {
   User,
   Instagram,
+  Facebook,
   MapPin,
   Mail,
   Camera,
@@ -41,6 +42,7 @@ export default function SocialProfilePage() {
     full_name: '',
     bio: '',
     instagram_handle: '',
+    facebook_handle: '',
     location: '',
     gender: '',
     date_of_birth: '',
@@ -175,6 +177,7 @@ export default function SocialProfilePage() {
           full_name: (profile as any).full_name || '',
           bio: (profile as any).bio || '',
           instagram_handle: (profile as any).instagram_handle || '',
+          facebook_handle: (profile as any).facebook_handle || '',
           location: (profile as any).location || '',
           gender: (profile as any).gender || '',
           date_of_birth: (profile as any).date_of_birth || '',
@@ -201,6 +204,7 @@ export default function SocialProfilePage() {
             full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
             bio: '',
             instagram_handle: '',
+            facebook_handle: '',
             location: '',
             gender: '',
             date_of_birth: '',
@@ -213,6 +217,7 @@ export default function SocialProfilePage() {
             full_name: newProfile.full_name || '',
             bio: newProfile.bio || '',
             instagram_handle: newProfile.instagram_handle || '',
+            facebook_handle: newProfile.facebook_handle || '',
             location: newProfile.location || '',
             gender: newProfile.gender || '',
             date_of_birth: newProfile.date_of_birth || '',
@@ -285,6 +290,7 @@ export default function SocialProfilePage() {
           full_name: formData.full_name,
           bio: formData.bio,
           instagram_handle: formData.instagram_handle,
+          facebook_handle: formData.facebook_handle,
           location: formData.location,
           gender: formData.gender,
           date_of_birth: formData.date_of_birth,
@@ -374,7 +380,7 @@ export default function SocialProfilePage() {
         {/* Message */}
         {message.text && (
           <div className={`p-4 rounded-lg mb-6 ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' :
-              'bg-red-50 text-red-700 border border-red-200'
+            'bg-red-50 text-red-700 border border-red-200'
             }`}>
             {message.text}
           </div>
@@ -447,8 +453,8 @@ export default function SocialProfilePage() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-text-secondary">Subscription</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${profile?.subscription_status === 'premium'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-gray-100 text-gray-800'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-gray-100 text-gray-800'
                       }`}>
                       {profile?.subscription_status === 'premium' ? (
                         <><Crown className="h-3 w-3 inline mr-1" /> Premium</>
@@ -460,8 +466,8 @@ export default function SocialProfilePage() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-text-secondary">Verification</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${profile?.verification_status === 'verified'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
                       }`}>
                       {profile?.verification_status || 'Pending'}
                     </span>
@@ -538,9 +544,23 @@ export default function SocialProfilePage() {
                     <Input
                       value={formData.instagram_handle}
                       onChange={(e) => handleInputChange('instagram_handle', e.target.value.replace('@', ''))}
-                      placeholder="your_handle"
+                      placeholder="Username or Profile Link"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      <Facebook className="h-4 w-4 inline mr-1" />
+                      Facebook Handle
+                    </label>
+                    <Input
+                      value={formData.facebook_handle}
+                      onChange={(e) => handleInputChange('facebook_handle', e.target.value)}
+                      placeholder="Username or Full Profile Link"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-text-primary mb-2">
                       <MapPin className="h-4 w-4 inline mr-1" />
@@ -680,8 +700,8 @@ export default function SocialProfilePage() {
                           key={interest}
                           onClick={() => handleInterestToggle(interest)}
                           className={`px-3 py-1 rounded-full text-sm border transition-colors ${preferencesData.interests.includes(interest)
-                              ? 'bg-purple-500 text-white border-purple-500'
-                              : 'bg-white text-text-secondary border-border hover:border-purple-300'
+                            ? 'bg-purple-500 text-white border-purple-500'
+                            : 'bg-white text-text-secondary border-border hover:border-purple-300'
                             }`}
                         >
                           {interest}
