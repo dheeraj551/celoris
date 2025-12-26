@@ -101,7 +101,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/cbse-class-12-chemistry-complete-course',
         '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
         '/courses/complete-2025-yoga-mastery-course',
-        '/courses/the-28-day-reset-foundation-strength-mobility'
+        '/courses/the-28-day-reset-foundation-strength-mobility',
+        '/courses/build-real-time-ai-agents-with-livekit'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),

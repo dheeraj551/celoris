@@ -435,6 +435,58 @@ export default function CoursesDisplay({
           is_free_preview: false
         }))
       }))
+    },
+    {
+      id: 'livekit-ai-agents-static',
+      title: 'Build Real-Time AI Agents with LiveKit',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Professional',
+      description: 'Learn how to build low-latency voice AI agents using LiveKit, OpenAI GPT-4o-Realtime, and WebRTC. Master STT/TTS integration and scalable deployment.',
+      target_audience: 'Developers, AI Engineers',
+      instructor_name: 'Celoris Designs llp',
+      course_duration: '10 hours',
+      price: 14999,
+      course_image_url: '/livekit-ai-agents-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: [
+        {
+          id: 'lk-m1',
+          module_number: 1,
+          title: 'LiveKit Ecosystem & Real-Time Fundamentals',
+          description: 'Architecture and SFU basics',
+          estimated_duration: 150,
+          is_published: true,
+          course_topics: []
+        },
+        {
+          id: 'lk-m2',
+          module_number: 2,
+          title: 'The Multi-Modal AI Pipeline',
+          description: 'STT, LLM, and TTS integration',
+          estimated_duration: 150,
+          is_published: true,
+          course_topics: []
+        },
+        {
+          id: 'lk-m3',
+          module_number: 3,
+          title: 'Building the Brain',
+          description: 'Logic and State Management',
+          estimated_duration: 150,
+          is_published: true,
+          course_topics: []
+        },
+        {
+          id: 'lk-m4',
+          module_number: 4,
+          title: 'Scaling & Deployment',
+          description: 'Production strategies',
+          estimated_duration: 150,
+          is_published: true,
+          course_topics: []
+        }
+      ]
     }
   ]
 
@@ -481,6 +533,7 @@ export default function CoursesDisplay({
     if (id === 'yoga-mastery-2025-static') return '/courses/complete-2025-yoga-mastery-course'
     if (id === '28-day-reset-static') return '/courses/the-28-day-reset-foundation-strength-mobility'
     if (id === 'class-9-maths-static') return '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
+    if (id === 'livekit-ai-agents-static') return '/courses/build-real-time-ai-agents-with-livekit'
     return `/learn/course/${id}`
   }
 

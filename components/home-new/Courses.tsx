@@ -60,7 +60,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                     ? '/courses/the-28-day-reset-foundation-strength-mobility'
                                                                     : id === 'class-9-maths-static'
                                                                         ? '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
-                                                                        : `/learn/course/${id}`
+                                                                        : id === 'livekit-ai-agents-static'
+                                                                            ? '/courses/build-real-time-ai-agents-with-livekit'
+                                                                            : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -96,6 +98,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'livekit-ai-agents-static',
+            title: 'Build Real-Time AI Agents with LiveKit',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '10 hours',
+            price: 14999,
+            is_featured: true,
+            course_image_url: '/livekit-ai-agents-cover.png',
+            is_static: true,
+            static_url: '/courses/build-real-time-ai-agents-with-livekit'
+        },
         {
             id: 'class-9-maths-static',
             title: 'Class 9th Mathematics: Complete Syllabus & Mastery Guide',
