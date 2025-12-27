@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
                     </div>
                 </div>
                 <div className="mt-8 text-center text-xs text-slate-400">
-                    © 2024 Celoris Designs AI. All rights reserved.
+                    © 2026 Celoris Designs AI. All rights reserved.
                 </div>
             </div>
         </footer>

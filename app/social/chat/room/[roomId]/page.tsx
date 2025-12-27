@@ -23,8 +23,21 @@ import {
     Image as ImageIcon,
     Paperclip,
     LogOut,
-    Info
+    Info,
+    Check,
+    X,
+    MessageCircle,
+    ArrowRight
 } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { useToast } from "@/components/ui/use-toast"
 import { UserProfileDialog } from "@/components/social/UserProfileDialog"
 import { AdUnit } from "@/components/AdUnit"
 
@@ -79,6 +92,14 @@ export default function PublicRoomPage() {
     const [isLoaded, setIsLoaded] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
+    // Invite & Private Room State
+    const [incomingInvite, setIncomingInvite] = useState<any>(null)
+    const [sentInvite, setSentInvite] = useState<any>(null)
+    const [privateRoomsCount, setPrivateRoomsCount] = useState(0)
+    const { toast } = useToast()
+
+    const isPrivate = roomId.startsWith('private-')
+
     useEffect(() => {
         // 1. Check Auth and Get User Profile
         const initUser = async () => {
@@ -108,7 +129,43 @@ export default function PublicRoomPage() {
         }
 
         initUser()
-    }, [])
+    }, [router])
+
+    useEffect(() => {
+        // Tracker for Global Rooms
+        if (!isLoaded || !user) return
+
+        const supabase = createClient()
+        const trackerChannel = supabase.channel('global-rooms-tracker', {
+            config: {
+                presence: { key: user.id }
+            }
+        })
+
+        trackerChannel
+            .on('presence', { event: 'sync' }, () => {
+                const state = trackerChannel.presenceState()
+                let busyCount = 0
+                Object.values(state).forEach((presences: any) => {
+                    if (presences[0]?.status === 'busy') {
+                        busyCount++
+                    }
+                })
+                setPrivateRoomsCount(Math.floor(busyCount / 2))
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await trackerChannel.track({
+                        user,
+                        status: isPrivate ? 'busy' : 'available'
+                    })
+                }
+            })
+
+        return () => {
+            trackerChannel.unsubscribe()
+        }
+    }, [isLoaded, user, isPrivate])
 
     useEffect(() => {
         // 2. Join Room only after User is loaded
@@ -129,7 +186,7 @@ export default function PublicRoomPage() {
         })
 
         channel
-            .on('broadcast', { event: 'message' }, ({ payload }) => {
+            .on('broadcast', { event: 'message' }, ({ payload }: { payload: any }) => {
                 console.log("Received message:", payload)
                 setMessages((prev) => {
                     // Avoid duplicates if any
@@ -145,19 +202,41 @@ export default function PublicRoomPage() {
                 let count = 0
 
                 Object.values(state).forEach((presences: any) => {
-                    // presences is an array of objects for a specific key (userId)
-                    // We only need one profile per user key, but let's just grab the first one
                     const userPresence = presences[0]
                     if (userPresence && userPresence.user) {
                         users.push(userPresence.user)
                     }
-                    count += 1 // Count unique keys (users)
+                    count += 1
                 })
 
-                setOnlineCount(users.length) // Use users.length to be accurate to profiles
+                setOnlineCount(users.length)
                 setOnlineUsers(users)
             })
-            .subscribe(async (status) => {
+            .on('broadcast', { event: 'chat-invite' }, ({ payload }: { payload: any }) => {
+                if (payload.targetUserId === user.id) {
+                    setIncomingInvite(payload)
+                }
+            })
+            .on('broadcast', { event: 'chat-invite-accepted' }, ({ payload }: { payload: any }) => {
+                if (payload.senderUserId === user.id) {
+                    toast({
+                        title: "Invite Accepted!",
+                        description: "Joining private room...",
+                    })
+                    router.push(`/social/chat/room/${payload.roomId}`)
+                }
+            })
+            .on('broadcast', { event: 'chat-invite-rejected' }, ({ payload }: { payload: any }) => {
+                if (payload.senderUserId === user.id) {
+                    setSentInvite(null)
+                    toast({
+                        title: "Invite Declined",
+                        description: `${payload.targetName} declined your invite.`,
+                        variant: "destructive"
+                    })
+                }
+            })
+            .subscribe(async (status: string) => {
                 console.log(`Channel status: ${status}`)
                 if (status === 'SUBSCRIBED') {
                     await channel.track({
@@ -174,7 +253,7 @@ export default function PublicRoomPage() {
             channel.unsubscribe()
             channelRef.current = null
         }
-    }, [isLoaded, user, roomId])
+    }, [isLoaded, user, roomId, isPrivate, router, toast])
 
     useEffect(() => {
         scrollToBottom()
@@ -201,6 +280,71 @@ export default function PublicRoomPage() {
         setNewMessage("")
     }
 
+    const sendInvite = async (targetUser: UserProfile) => {
+        if (privateRoomsCount >= 5) {
+            toast({
+                title: "Rooms Full",
+                description: "All private rooms are currently occupied. Please wait.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        if (!channelRef.current) return
+
+        const invitePayload = {
+            sender: user,
+            targetUserId: targetUser.id,
+            inviteId: crypto.randomUUID()
+        }
+
+        await channelRef.current.send({
+            type: 'broadcast',
+            event: 'chat-invite',
+            payload: invitePayload
+        })
+
+        setSentInvite(targetUser)
+        toast({
+            title: "Invite Sent",
+            description: `Waiting for ${targetUser.name} to accept...`,
+        })
+    }
+
+    const acceptInvite = async () => {
+        if (!incomingInvite || !channelRef.current) return
+
+        const newRoomId = `private-${incomingInvite.inviteId}`
+
+        await channelRef.current.send({
+            type: 'broadcast',
+            event: 'chat-invite-accepted',
+            payload: {
+                senderUserId: incomingInvite.sender.id,
+                targetUserId: user.id,
+                roomId: newRoomId
+            }
+        })
+
+        router.push(`/social/chat/room/${newRoomId}`)
+    }
+
+    const rejectInvite = async () => {
+        if (!incomingInvite || !channelRef.current) return
+
+        await channelRef.current.send({
+            type: 'broadcast',
+            event: 'chat-invite-rejected',
+            payload: {
+                senderUserId: incomingInvite.sender.id,
+                targetUserId: user.id,
+                targetName: user.name
+            }
+        })
+
+        setIncomingInvite(null)
+    }
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
@@ -221,36 +365,43 @@ export default function PublicRoomPage() {
         <div className="fixed top-16 left-0 right-0 bottom-0 flex flex-col bg-white z-30">
             {/* Header */}
             <header className="flex-none border-b border-slate-200 bg-white px-4 py-3 shadow-sm z-10">
-                <div className="container mx-auto max-w-4xl flex items-center justify-between">
+                <div className="container mx-auto max-w-6xl flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => router.push('/social/chat')}>
-                            <ArrowLeft className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="hidden md:flex" onClick={() => router.push('/social/chat')}>
+                        <Button variant="ghost" size="icon" onClick={() => router.push('/social/chat')}>
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
 
-                        <div className={`h-10 w-10 rounded-full ${room.color} flex items-center justify-center text-white font-bold shadow-sm`}>
-                            {room.title.charAt(0)}
+                        <div className={`h-10 w-10 rounded-full ${isPrivate ? 'bg-purple-500' : room.color} flex items-center justify-center text-white font-bold shadow-sm`}>
+                            {isPrivate ? 'P' : room.title.charAt(0)}
                         </div>
 
                         <div>
-                            <h1 className="font-bold text-slate-900 leading-tight">{room.title}</h1>
+                            <h1 className="font-bold text-slate-900 leading-tight">
+                                {isPrivate ? 'Private Chat' : room.title}
+                            </h1>
                             <div className="flex items-center gap-2 text-xs text-slate-500">
                                 <span className="flex items-center gap-1">
                                     <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                    {onlineCount} online
+                                    {isPrivate ? '2 users' : `${onlineCount} online`}
                                 </span>
                                 <span>•</span>
-                                <span>Public Room</span>
+                                <span>{isPrivate ? 'Confidential' : 'Available for Chat'}</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {!isPrivate && (
+                            <div className="hidden sm:flex items-center gap-2 mr-4 px-3 py-1 bg-slate-100 rounded-full text-[10px] font-medium text-slate-600">
+                                <span className="flex items-center gap-1">
+                                    <MessageCircle className="h-3 w-3" />
+                                    {privateRoomsCount}/5 Rooms Used
+                                </span>
+                            </div>
+                        )}
                         <Sheet>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600">
+                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 lg:hidden">
                                     <Users className="h-5 w-5" />
                                 </Button>
                             </SheetTrigger>
@@ -265,25 +416,40 @@ export default function PublicRoomPage() {
                                     {onlineUsers.map((onlineUser) => (
                                         <div
                                             key={onlineUser.id}
-                                            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors"
-                                            onClick={() => setSelectedUserId(onlineUser.id)}
+                                            className="flex items-center justify-between group"
                                         >
-                                            <div className="relative">
-                                                <Avatar>
-                                                    <AvatarImage src={onlineUser.avatar_url} />
-                                                    <AvatarFallback>{onlineUser.name.charAt(0)}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                                            <div
+                                                className="flex items-center gap-3 cursor-pointer flex-1"
+                                                onClick={() => setSelectedUserId(onlineUser.id)}
+                                            >
+                                                <div className="relative">
+                                                    <Avatar>
+                                                        <AvatarImage src={onlineUser.avatar_url} />
+                                                        <AvatarFallback>{onlineUser.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-medium text-slate-900 leading-none">
+                                                        {onlineUser.name}
+                                                        {onlineUser.id === user?.id && " (You)"}
+                                                    </span>
+                                                    {onlineUser.is_verified && (
+                                                        <span className="text-[10px] text-blue-500 font-medium mt-0.5">Verified</span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-slate-900 leading-none">
-                                                    {onlineUser.name}
-                                                    {onlineUser.id === user?.id && " (You)"}
-                                                </span>
-                                                {onlineUser.is_verified && (
-                                                    <span className="text-[10px] text-blue-500 font-medium mt-0.5">Verified</span>
-                                                )}
-                                            </div>
+                                            {onlineUser.id !== user?.id && !isPrivate && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-8 text-xs gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={() => sendInvite(onlineUser)}
+                                                    disabled={privateRoomsCount >= 5}
+                                                >
+                                                    Invite <ArrowRight className="h-3 w-3" />
+                                                </Button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -301,100 +467,239 @@ export default function PublicRoomPage() {
                 </div>
             </header>
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto bg-slate-50 relative px-4">
-                <div className="container mx-auto max-w-4xl py-6 space-y-6">
+            {/* Main Area with Sidebar */}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Messages Area */}
+                <div className="flex-1 overflow-y-auto bg-slate-50 relative px-4">
+                    <div className="container mx-auto max-w-4xl py-6 space-y-6">
 
-                    {/* Welome Message */}
-                    <div className="text-center py-8">
-                        <div className={`inline-flex items-center justify-center h-16 w-16 rounded-full ${room.color} bg-opacity-10 mb-4`}>
-                            <Users className={`h-8 w-8 text-${room.color.replace('bg-', '')}-600`} />
-                        </div>
-                        <h3 className="text-lg font-semibold text-slate-900">Welcome to {room.title}!</h3>
-                        <p className="text-slate-500 max-w-xs mx-auto mt-2 text-sm">
-                            {room.description}
-                            <br />
-                            <span className="text-xs text-slate-400 mt-2 block flex items-center justify-center gap-1">
-                                <Info className="h-3 w-3" /> Messages in this room are ephemeral.
-                            </span>
-                        </p>
-                    </div>
-
-                    {/* Sponsored Content / Ad */}
-                    <AdUnit slot="9266909448" className="mb-4" />
-
-                    {/* Messages List */}
-                    {messages.map((msg, index) => {
-                        const isMe = msg.sender.id === user.id
-                        const showAvatar = index === 0 || messages[index - 1].sender.id !== msg.sender.id
-
-                        return (
-                            <div key={msg.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
-                                {/* Avatar */}
-                                <div className={`flex-none w-8 ${!showAvatar ? 'invisible' : ''}`}>
-                                    <Avatar className="h-8 w-8 ring-2 ring-white">
-                                        <AvatarImage src={msg.sender.avatar_url} />
-                                        <AvatarFallback>{msg.sender.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                </div>
-
-                                {/* Message Content */}
-                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
-                                    {showAvatar && (
-                                        <span className="text-xs text-slate-400 mb-1 ml-1">{msg.sender.name}</span>
-                                    )}
-                                    <div
-                                        className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${isMe
-                                            ? `${room.color} text-white rounded-tr-sm`
-                                            : 'bg-white text-slate-800 border border-slate-100 rounded-tl-sm'
-                                            }`}
-                                    >
-                                        {msg.content}
-                                    </div>
-                                    <span className="text-[10px] text-slate-400 mt-1 px-1">
-                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                </div>
+                        {/* Welcome Message */}
+                        <div className="text-center py-12">
+                            <div className={`inline-flex items-center justify-center h-20 w-20 rounded-full ${isPrivate ? 'bg-purple-500' : room.color} bg-opacity-10 mb-6`}>
+                                <Users className={`h-10 w-10 text-${isPrivate ? 'purple' : room.color.replace('bg-', '')}-600`} />
                             </div>
-                        )
-                    })}
-                    <div ref={messagesEndRef} />
-                </div>
-            </div>
-
-            {/* Input Area */}
-            <div className="flex-none bg-white border-t border-slate-200 p-4">
-                <div className="container mx-auto max-w-4xl">
-                    <form
-                        onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-                        className="flex items-end gap-2"
-                    >
-                        <Button type="button" variant="ghost" size="icon" className="text-slate-400 rounded-full shrink-0">
-                            <Paperclip className="h-5 w-5" />
-                        </Button>
-
-                        <div className="flex-1 bg-slate-100 rounded-2xl flex items-center px-4 py-2 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 transition-all">
-                            <Input
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type a message..."
-                                className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-1 text-slate-900 placeholder:text-slate-400"
-                            />
-                            <Button type="button" variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full h-8 w-8 -mr-1">
-                                <Smile className="h-5 w-5" />
-                            </Button>
+                            <h3 className="text-2xl font-bold text-slate-900">
+                                {isPrivate ? 'Private Conversation' : `${room.title} Lobby`}
+                            </h3>
+                            <p className="text-slate-500 max-w-md mx-auto mt-4 text-base leading-relaxed">
+                                {isPrivate
+                                    ? 'This chat is private and temporary. Messages will vanish when you leave.'
+                                    : 'You are now visible in the lobby. Other users can see you and invite you to a private 1-on-1 chat.'}
+                            </p>
+                            {!isPrivate && (
+                                <div className="mt-8 flex flex-col items-center gap-4">
+                                    <div className="flex -space-x-3 overflow-hidden p-2">
+                                        {onlineUsers.slice(0, 5).map((u, i) => (
+                                            <Avatar key={i} className="inline-block h-10 w-10 ring-2 ring-white">
+                                                <AvatarImage src={u.avatar_url} />
+                                                <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                        ))}
+                                        {onlineCount > 5 && (
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-600 ring-2 ring-white">
+                                                +{onlineCount - 5}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="text-sm font-medium text-green-600 animate-pulse bg-green-50 px-4 py-1.5 rounded-full border border-green-100">
+                                        {onlineCount} users are currently ready to chat
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-4 max-w-xs">
+                                        To start a conversation, click on a user in the <strong>Online Lobby</strong> sidebar and send an invite.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
-                        <Button
-                            type="submit"
-                            disabled={!newMessage.trim()}
-                            className={`${room.color} hover:opacity-90 text-white rounded-full h-11 w-11 shrink-0 shadow-sm flex items-center justify-center p-0 transition-transform active:scale-95`}
-                        >
-                            <Send className="h-5 w-5 ml-0.5" />
-                        </Button>
-                    </form>
+                        {/* Sponsored Content / Ad */}
+                        {!isPrivate && <AdUnit slot="9266909448" className="mb-4" />}
+
+                        {/* Messages List - Only visible in Private Rooms */}
+                        {isPrivate ? (
+                            messages.map((msg, index) => {
+                                const isMe = msg.sender.id === user.id
+                                const showAvatar = index === 0 || messages[index - 1].sender.id !== msg.sender.id
+
+                                return (
+                                    <div key={msg.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
+                                        <div className={`flex-none w-8 ${!showAvatar ? 'invisible' : ''}`}>
+                                            <Avatar className="h-8 w-8 ring-2 ring-white">
+                                                <AvatarImage src={msg.sender.avatar_url} />
+                                                <AvatarFallback>{msg.sender.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                        </div>
+
+                                        <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                                            {showAvatar && (
+                                                <span className="text-xs text-slate-400 mb-1 ml-1">{msg.sender.name}</span>
+                                            )}
+                                            <div
+                                                className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${isMe
+                                                    ? 'bg-purple-600 text-white rounded-tr-sm'
+                                                    : 'bg-white text-slate-800 border border-slate-100 rounded-tl-sm'
+                                                    }`}
+                                            >
+                                                {msg.content}
+                                            </div>
+                                            <span className="text-[10px] text-slate-400 mt-1 px-1">
+                                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        ) : (
+                            null
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
                 </div>
+
+                {/* Desktop Sidebar (Lobby) */}
+                {!isPrivate && (
+                    <aside className="hidden lg:flex w-80 border-l border-slate-200 flex-col bg-white">
+                        <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                            <h2 className="font-bold text-slate-900 flex items-center gap-2">
+                                <Users className="h-4 w-4" />
+                                Online Lobby
+                                <span className="ml-auto text-xs font-normal text-slate-500 bg-slate-200 px-2 py-0.5 rounded-full">
+                                    {onlineCount}
+                                </span>
+                            </h2>
+                            <p className="text-[11px] text-slate-500 mt-1">Invite anyone below for a private 1-on-1 chat.</p>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            {onlineUsers.map((onlineUser) => (
+                                <div
+                                    key={onlineUser.id}
+                                    className="flex items-center justify-between group p-2 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100"
+                                >
+                                    <div
+                                        className="flex items-center gap-3 cursor-pointer"
+                                        onClick={() => setSelectedUserId(onlineUser.id)}
+                                    >
+                                        <div className="relative">
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarImage src={onlineUser.avatar_url} />
+                                                <AvatarFallback>{onlineUser.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-semibold text-slate-900">
+                                                {onlineUser.name}
+                                                {onlineUser.id === user?.id && <span className="text-slate-400 font-normal"> (You)</span>}
+                                            </span>
+                                            {onlineUser.is_verified && (
+                                                <span className="text-[10px] text-blue-500 font-medium">Verified User</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {onlineUser.id !== user?.id && (
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-8 w-8 p-0 rounded-full hover:bg-green-100 hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => sendInvite(onlineUser)}
+                                            disabled={privateRoomsCount >= 5}
+                                            title={privateRoomsCount >= 5 ? "Rooms full" : "Invite to chat"}
+                                        >
+                                            <MessageCircle className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        {privateRoomsCount >= 5 && (
+                            <div className="p-4 bg-orange-50 border-t border-orange-100">
+                                <p className="text-xs text-orange-700 flex items-center gap-2">
+                                    <Info className="h-4 w-4" />
+                                    All 5 private rooms are full. Please wait.
+                                </p>
+                            </div>
+                        )}
+                    </aside>
+                )}
             </div>
+
+            {/* Invite Dialog */}
+            <Dialog open={!!incomingInvite} onOpenChange={(open) => !open && setIncomingInvite(null)}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <MessageCircle className="h-5 w-5 text-green-500" />
+                            New Chat Invite
+                        </DialogTitle>
+                        <DialogDescription className="pt-2">
+                            <span className="font-bold text-slate-900">{incomingInvite?.sender.name}</span> wants to start a private chat with you.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center justify-center py-4">
+                        <div className="relative">
+                            <Avatar className="h-20 w-20 ring-4 ring-green-100">
+                                <AvatarImage src={incomingInvite?.sender.avatar_url} />
+                                <AvatarFallback>{incomingInvite?.sender.name?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 p-1.5 rounded-full border-4 border-white">
+                                <Check className="h-4 w-4 text-white" />
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter className="sm:justify-between gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={rejectInvite}
+                            className="flex-1 border-slate-200 hover:bg-slate-50 text-slate-600"
+                        >
+                            <X className="mr-2 h-4 w-4" />
+                            Decline
+                        </Button>
+                        <Button
+                            onClick={acceptInvite}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        >
+                            <Check className="mr-2 h-4 w-4" />
+                            Accept
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Input Area - Only visible in Private Rooms */}
+            {isPrivate && (
+                <div className="flex-none bg-white border-t border-slate-200 p-4">
+                    <div className="container mx-auto max-w-4xl">
+                        <form
+                            onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+                            className="flex items-end gap-2"
+                        >
+                            <Button type="button" variant="ghost" size="icon" className="text-slate-400 rounded-full shrink-0">
+                                <Paperclip className="h-5 w-5" />
+                            </Button>
+
+                            <div className="flex-1 bg-slate-100 rounded-2xl flex items-center px-4 py-2 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 transition-all">
+                                <Input
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    placeholder="Type a message..."
+                                    className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-1 text-slate-900 placeholder:text-slate-400"
+                                />
+                                <Button type="button" variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full h-8 w-8 -mr-1">
+                                    <Smile className="h-5 w-5" />
+                                </Button>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={!newMessage.trim()}
+                                className="bg-purple-600 hover:opacity-90 text-white rounded-full h-11 w-11 shrink-0 shadow-sm flex items-center justify-center p-0 transition-transform active:scale-95"
+                            >
+                                <Send className="h-5 w-5 ml-0.5" />
+                            </Button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div >
     )
 }

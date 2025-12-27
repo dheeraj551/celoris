@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
           isAdmin: true,
           timestamp: Date.now()
         }))
-        
+
         // Redirect to admin dashboard
         router.push("/admin/dashboard")
       } else {
@@ -123,8 +123,8 @@ export default function AdminLoginPage() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3"
                 disabled={isLoading}
               >
@@ -149,7 +149,7 @@ export default function AdminLoginPage() {
                 <span className="text-sm font-medium">Security Notice</span>
               </div>
               <p className="text-xs text-yellow-200 mt-2">
-                This is a restricted area. All activities are logged and monitored. 
+                This is a restricted area. All activities are logged and monitored.
                 Unauthorized access attempts will be reported.
               </p>
             </div>
@@ -158,8 +158,8 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-400">
-          <p>© 2025 Celoris Designs. All rights reserved.</p>
-          <p>System ID: CD-ADMIN-2025</p>
+          <p>© 2026 Celoris Designs. All rights reserved.</p>
+          <p>System ID: CD-ADMIN-2026</p>
         </div>
       </div>
     </div>

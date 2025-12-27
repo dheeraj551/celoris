@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Linkedin, Facebook } from "lucide-react"
+import { Linkedin, Facebook, Youtube } from "lucide-react"
 
 const footerSections = [
   {
@@ -46,6 +46,7 @@ const footerSections = [
 const socialLinks = [
   { icon: Linkedin, href: "https://www.linkedin.com/company/52187956/admin/dashboard/", label: "LinkedIn" },
   { icon: Facebook, href: "https://www.facebook.com/celorisdesigns", label: "Facebook" },
+  { icon: Youtube, href: "https://www.youtube.com/@celorisacademy", label: "YouTube" },
 ]
 
 export default function Footer() {
@@ -71,17 +72,17 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center mb-6">
-              <img 
-                src="/celoris-logo.png" 
-                alt="Celoris Logo" 
+              <img
+                src="/celoris-logo.png"
+                alt="Celoris Logo"
                 className="h-10 w-auto object-contain"
               />
             </Link>
             <p className="text-text-secondary mb-6 max-w-sm">
-              Empowering individuals and businesses through comprehensive learning, 
+              Empowering individuals and businesses through comprehensive learning,
               earning opportunities, and engaging experiences in one unified platform.
             </p>
-            
+
             {/* Social Links */}
             <div className="flex space-x-4">
               {socialLinks.map((social) => (
@@ -137,14 +138,13 @@ export default function Footer() {
                 className="flex-1 px-4 py-2 border border-border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required
               />
-              <button 
+              <button
                 type="submit"
                 disabled={isSubscribed}
-                className={`px-6 py-2 text-white rounded-r-lg transition-colors ${
-                  isSubscribed 
-                    ? "bg-green-500 cursor-not-allowed" 
+                className={`px-6 py-2 text-white rounded-r-lg transition-colors ${isSubscribed
+                    ? "bg-green-500 cursor-not-allowed"
                     : "bg-primary-500 hover:bg-primary-700"
-                }`}
+                  }`}
               >
                 {isSubscribed ? "Subscribed!" : "Subscribe"}
               </button>
@@ -155,7 +155,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-text-secondary text-sm">
-            © 2025 Celoris Designs LLP. All rights reserved.
+            © 2026 Celoris Designs LLP. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm">
             <Link href="/privacy" className="text-text-secondary hover:text-primary-500">

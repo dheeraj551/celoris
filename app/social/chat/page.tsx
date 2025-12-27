@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,12 +16,38 @@ import {
     Coffee,
     Briefcase,
     Code,
-    ArrowLeft
+    ArrowLeft,
+    Lock
 } from "lucide-react"
 
 import { AdUnit } from "@/components/AdUnit"
 
 export default function ChatLobbyPage() {
+    const [socialOnlineCount, setSocialOnlineCount] = useState(0)
+
+    useEffect(() => {
+        const supabase = createClient()
+        const channel = supabase.channel('room:socialize', {
+            config: {
+                presence: {
+                    key: 'lobby-monitor',
+                },
+            },
+        })
+
+        channel
+            .on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState()
+                const count = Object.keys(state).length
+                setSocialOnlineCount(count)
+            })
+            .subscribe()
+
+        return () => {
+            channel.unsubscribe()
+        }
+    }, [])
+
     const rooms = [
         {
             id: "socialize",
@@ -28,9 +55,10 @@ export default function ChatLobbyPage() {
             description: "A casual space to meet new people, share stories, and make friends from around the world.",
             icon: Coffee,
             color: "bg-green-500",
-            activeCount: 342,
+            activeCount: socialOnlineCount,
             tags: ["Casual", "Friends", "Global"],
-            status: "Active"
+            status: "Active",
+            isAvailable: true
         },
         {
             id: "networking",
@@ -38,9 +66,10 @@ export default function ChatLobbyPage() {
             description: "Connect with professionals, find mentors, and discuss career opportunities.",
             icon: Briefcase,
             color: "bg-blue-500",
-            activeCount: 1205,
+            activeCount: 0,
             tags: ["Professional", "Career", "Business"],
-            status: "Active"
+            status: "Coming Soon",
+            isAvailable: false
         },
         {
             id: "tech-trends",
@@ -48,9 +77,10 @@ export default function ChatLobbyPage() {
             description: "Discuss the latest in technology, AI, coding, and future innovations.",
             icon: Code,
             color: "bg-orange-500",
-            activeCount: 892,
+            activeCount: 0,
             tags: ["Tech", "AI", "Innovation"],
-            status: "Hot"
+            status: "Coming Soon",
+            isAvailable: false
         }
     ]
 
@@ -77,18 +107,18 @@ export default function ChatLobbyPage() {
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {rooms.map((room) => (
-                        <Card key={room.id} className="group hover:shadow-lg transition-all duration-300 border-slate-200 overflow-hidden">
-                            <div className={`h-2 ${room.color}`} />
+                        <Card key={room.id} className={`group hover:shadow-lg transition-all duration-300 border-slate-200 overflow-hidden ${!room.isAvailable && 'opacity-75 grayscale-[0.5]'}`}>
+                            <div className={`h-2 ${room.isAvailable ? room.color : 'bg-slate-300'}`} />
                             <CardHeader className="pb-4">
                                 <div className="flex items-start justify-between mb-2">
-                                    <div className={`p-3 rounded-xl ${room.color} bg-opacity-10 text-${room.color.replace('bg-', '')}`}>
-                                        <room.icon className={`h-6 w-6 text-${room.color.replace('bg-', '')}-600`} />
+                                    <div className={`p-3 rounded-xl ${room.isAvailable ? room.color : 'bg-slate-100'} bg-opacity-10`}>
+                                        <room.icon className={`h-6 w-6 ${room.isAvailable ? `text-${room.color.replace('bg-', '')}-600` : 'text-slate-400'}`} />
                                     </div>
-                                    <Badge variant={room.status === "Hot" ? "destructive" : "secondary"} className="uppercase text-[10px] tracking-wider">
+                                    <Badge variant={room.isAvailable ? "secondary" : "outline"} className="uppercase text-[10px] tracking-wider">
                                         {room.status}
                                     </Badge>
                                 </div>
-                                <CardTitle className="text-xl text-slate-900 group-hover:text-primary-600 transition-colors">
+                                <CardTitle className={`text-xl transition-colors ${room.isAvailable ? 'text-slate-900 group-hover:text-primary-600' : 'text-slate-400'}`}>
                                     {room.title}
                                 </CardTitle>
                                 <CardDescription className="text-slate-600 mt-2">
@@ -107,28 +137,23 @@ export default function ChatLobbyPage() {
                                 <div className="flex items-center justify-between mt-auto">
                                     <div className="flex items-center gap-2 text-sm text-slate-500">
                                         <Users className="h-4 w-4" />
-                                        <span>{room.activeCount.toLocaleString()} online</span>
+                                        <span>{room.isAvailable ? `${room.activeCount} online` : 'Offline'}</span>
                                     </div>
-                                    <Button asChild className={`${room.color} hover:opacity-90 text-white shadow-md`}>
-                                        <Link href={`/social/chat/room/${room.id}`}>
-                                            Join Room <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    </Button>
+                                    {room.isAvailable ? (
+                                        <Button asChild className={`${room.color} hover:opacity-90 text-white shadow-md`}>
+                                            <Link href={`/social/chat/room/${room.id}`}>
+                                                Join Room <ArrowRight className="ml-2 h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                    ) : (
+                                        <Button disabled variant="outline" className="gap-2">
+                                            <Lock className="h-4 w-4" /> Locked
+                                        </Button>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
-
-                    {/* Create Room Card (Placeholder for future) */}
-                    <Card className="border-dashed border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center p-8 text-center hover:border-slate-300 transition-colors">
-                        <div className="h-12 w-12 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400">
-                            <Globe className="h-6 w-6" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-slate-900 mb-2">More Rooms Coming Soon</h3>
-                        <p className="text-slate-500 text-sm max-w-xs mx-auto">
-                            We are constantly adding new topics and communities. Stay tuned!
-                        </p>
-                    </Card>
                 </div>
 
                 {/* Sponsored Content / Ad */}

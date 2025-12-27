@@ -62,7 +62,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                         ? '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
                                                                         : id === 'livekit-ai-agents-static'
                                                                             ? '/courses/build-real-time-ai-agents-with-livekit'
-                                                                            : `/learn/course/${id}`
+                                                                            : id === 'agentic-ai-systems-static'
+                                                                                ? '/courses/agentic-ai-systems-design-build-deploy'
+                                                                                : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -98,6 +100,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'agentic-ai-systems-static',
+            title: 'Agentic AI Systems: Design, Build & Deploy',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '15 hours',
+            price: 15000,
+            is_featured: true,
+            course_image_url: '/agentic-ai-systems-cover.png',
+            is_static: true,
+            static_url: '/courses/agentic-ai-systems-design-build-deploy'
+        },
         {
             id: 'livekit-ai-agents-static',
             title: 'Build Real-Time AI Agents with LiveKit',

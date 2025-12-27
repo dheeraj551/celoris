@@ -85,6 +85,38 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'agentic-ai-systems-static',
+      title: 'Agentic AI Systems: Design, Build & Deploy',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Master modern agentic systems and build multi-agent AI workflows using OpenAI, LangChain, and LangGraph.',
+      target_audience: 'Developers, AI Engineers, Product Managers',
+      instructor_name: 'Celoris',
+      course_duration: '15 hours',
+      price: 15000,
+      course_image_url: '/agentic-ai-systems-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `agentic-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 225,
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `agentic-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 60,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'class-9-maths-static',
       title: 'Class 9th Mathematics: Complete Syllabus & Mastery Guide',
       subject: 'Mathematics',
@@ -534,6 +566,7 @@ export default function CoursesDisplay({
     if (id === '28-day-reset-static') return '/courses/the-28-day-reset-foundation-strength-mobility'
     if (id === 'class-9-maths-static') return '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
     if (id === 'livekit-ai-agents-static') return '/courses/build-real-time-ai-agents-with-livekit'
+    if (id === 'agentic-ai-systems-static') return '/courses/agentic-ai-systems-design-build-deploy'
     return `/learn/course/${id}`
   }
 
