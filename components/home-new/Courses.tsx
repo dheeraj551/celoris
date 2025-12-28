@@ -64,7 +64,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                             ? '/courses/build-real-time-ai-agents-with-livekit'
                                                                             : id === 'agentic-ai-systems-static'
                                                                                 ? '/courses/agentic-ai-systems-design-build-deploy'
-                                                                                : `/learn/course/${id}`
+                                                                                : id === 'rag-unlocked-static'
+                                                                                    ? '/courses/rag-unlocked-production-grade-search-answer-systems'
+                                                                                    : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -100,6 +102,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'rag-unlocked-static',
+            title: 'RAG Unlocked: Production-Grade Search & Answer Systems',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '10 hours',
+            price: 15000,
+            is_featured: true,
+            course_image_url: '/rag-unlocked-cover.png',
+            is_static: true,
+            static_url: '/courses/rag-unlocked-production-grade-search-answer-systems'
+        },
         {
             id: 'agentic-ai-systems-static',
             title: 'Agentic AI Systems: Design, Build & Deploy',

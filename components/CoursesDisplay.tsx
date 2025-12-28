@@ -85,6 +85,38 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'rag-unlocked-static',
+      title: 'RAG Unlocked: Production-Grade Search & Answer Systems',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Master the architecture of Enterprise LLM applications. Learn to build and deploy scalable Retrieval-Augmented Generation (RAG) systems using Pinecone, Milvus, and advanced embedding strategies.',
+      target_audience: 'Developers, AI Engineers, Data Scientists',
+      instructor_name: 'Celoris',
+      course_duration: '10 hours',
+      price: 15000,
+      course_image_url: '/rag-unlocked-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `rag-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 120,
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `rag-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 30,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'agentic-ai-systems-static',
       title: 'Agentic AI Systems: Design, Build & Deploy',
       subject: 'Artificial Intelligence',
@@ -567,6 +599,7 @@ export default function CoursesDisplay({
     if (id === 'class-9-maths-static') return '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
     if (id === 'livekit-ai-agents-static') return '/courses/build-real-time-ai-agents-with-livekit'
     if (id === 'agentic-ai-systems-static') return '/courses/agentic-ai-systems-design-build-deploy'
+    if (id === 'rag-unlocked-static') return '/courses/rag-unlocked-production-grade-search-answer-systems'
     return `/learn/course/${id}`
   }
 

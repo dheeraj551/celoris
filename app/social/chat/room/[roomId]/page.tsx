@@ -96,6 +96,7 @@ export default function PublicRoomPage() {
     const [incomingInvite, setIncomingInvite] = useState<any>(null)
     const [sentInvite, setSentInvite] = useState<any>(null)
     const [privateRoomsCount, setPrivateRoomsCount] = useState(0)
+    const [activePrivateRooms, setActivePrivateRooms] = useState<{ id: string, users: UserProfile[] }[]>([])
     const { toast } = useToast()
 
     const isPrivate = roomId.startsWith('private-')
@@ -145,19 +146,32 @@ export default function PublicRoomPage() {
         trackerChannel
             .on('presence', { event: 'sync' }, () => {
                 const state = trackerChannel.presenceState()
-                let busyCount = 0
+                const roomsMap: Record<string, UserProfile[]> = {}
+
                 Object.values(state).forEach((presences: any) => {
-                    if (presences[0]?.status === 'busy') {
-                        busyCount++
+                    const presence = presences[0]
+                    if (presence?.status === 'busy' && presence.roomId) {
+                        if (!roomsMap[presence.roomId]) {
+                            roomsMap[presence.roomId] = []
+                        }
+                        roomsMap[presence.roomId].push(presence.user)
                     }
                 })
-                setPrivateRoomsCount(Math.floor(busyCount / 2))
+
+                const rooms = Object.entries(roomsMap).map(([id, users]) => ({
+                    id,
+                    users
+                })).sort((a, b) => a.id.localeCompare(b.id)) // Consistent order
+
+                setPrivateRoomsCount(rooms.length)
+                setActivePrivateRooms(rooms)
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
                     await trackerChannel.track({
                         user,
-                        status: isPrivate ? 'busy' : 'available'
+                        status: isPrivate ? 'busy' : 'available',
+                        roomId: isPrivate ? roomId : null
                     })
                 }
             })
@@ -507,6 +521,49 @@ export default function PublicRoomPage() {
                                     <p className="text-xs text-slate-400 mt-4 max-w-xs">
                                         To start a conversation, click on a user in the <strong>Online Lobby</strong> sidebar and send an invite.
                                     </p>
+
+                                    {/* symbolic rooms display */}
+                                    <div className="grid grid-cols-5 gap-3 mt-10 w-full max-w-2xl px-4">
+                                        {[1, 2, 3, 4, 5].map((num) => {
+                                            const roomSlot = activePrivateRooms[num - 1];
+                                            const isOccupied = !!roomSlot;
+                                            return (
+                                                <div
+                                                    key={num}
+                                                    className={`relative flex flex-col items-center p-3 rounded-xl border-2 transition-all shadow-sm ${isOccupied
+                                                            ? 'border-purple-200 bg-purple-50 scale-105 ring-4 ring-purple-500/10'
+                                                            : 'border-slate-100 bg-white opacity-60'
+                                                        }`}
+                                                >
+                                                    <span className={`text-[10px] uppercase font-black tracking-widest mb-3 ${isOccupied ? 'text-purple-600' : 'text-slate-400'}`}>
+                                                        Room {num}
+                                                    </span>
+
+                                                    <div className="flex -space-x-2 mb-3">
+                                                        {isOccupied ? (
+                                                            roomSlot.users.map((u, i) => (
+                                                                <Avatar key={i} className="h-8 w-8 ring-2 ring-white shadow-sm">
+                                                                    <AvatarImage src={u.avatar_url} />
+                                                                    <AvatarFallback className="text-[10px] bg-purple-100 text-purple-700 font-bold">
+                                                                        {u.name.charAt(0)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                            ))
+                                                        ) : (
+                                                            <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
+                                                                <Users className="h-4 w-4 text-slate-300" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className={`mt-auto px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${isOccupied ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'
+                                                        }`}>
+                                                        {isOccupied ? `${roomSlot.users.length} Active` : 'Available'}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
                         </div>
