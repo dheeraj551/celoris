@@ -23,10 +23,12 @@ import {
     CheckCircle,
     XCircle,
     User as UserIcon,
-
     Trash2,
-    Wallet
+    Wallet,
+    Eye,
+    EyeOff
 } from "lucide-react"
+
 import {
     Dialog,
     DialogContent,
@@ -49,6 +51,7 @@ interface User {
     subscription_status?: string
     role?: string
     wallet_balance?: number
+    is_social_blocked?: boolean
 }
 
 export default function UserManagementPage() {
@@ -58,6 +61,7 @@ export default function UserManagementPage() {
     const [searchQuery, setSearchQuery] = useState("")
 
     const [deletingId, setDeletingId] = useState<string | null>(null)
+    const [blockingId, setBlockingId] = useState<string | null>(null)
     const [rechargeModalOpen, setRechargeModalOpen] = useState(false)
     const [rechargeAmount, setRechargeAmount] = useState("")
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -161,6 +165,40 @@ export default function UserManagementPage() {
         }
     }
 
+    const handleToggleSocialBlock = async (user: User) => {
+        setBlockingId(user.id)
+        try {
+            const newStatus = !user.is_social_blocked
+
+            const response = await fetch('/api/admin/toggle-social-block', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.id,
+                    isBlocked: newStatus
+                })
+            })
+
+            if (!response.ok) {
+                const data = await response.json()
+                throw new Error(data.error || 'Failed to update user status')
+            }
+
+            // Update local state
+            setUsers(users.map(u =>
+                u.id === user.id
+                    ? { ...u, is_social_blocked: newStatus }
+                    : u
+            ))
+
+        } catch (error) {
+            console.error('Error updating user:', error)
+            alert('Failed to update user social visibility')
+        } finally {
+            setBlockingId(null)
+        }
+    }
+
     const openRechargeModal = (user: User) => {
         setSelectedUser(user)
         setRechargeAmount("")
@@ -236,7 +274,7 @@ export default function UserManagementPage() {
                             <ArrowLeft className="w-6 h-6" />
                         </Button>
                         <div>
-                            <h1 className="text-3xl font-bold text-white">User Management</h1>
+                            <h1 className="text-3xl font-bold text-white">User Management (Social)</h1>
                             <p className="text-slate-400">Manage and monitor platform users</p>
                         </div>
                     </div>
@@ -297,6 +335,7 @@ export default function UserManagementPage() {
                                         filteredUsers.map((user) => {
                                             const isOnline = onlineUsers.has(user.id)
                                             const isDeleting = deletingId === user.id
+                                            const isBlocking = blockingId === user.id
                                             return (
                                                 <TableRow key={user.id} className="border-slate-700 hover:bg-slate-750">
                                                     <TableCell>
@@ -318,6 +357,9 @@ export default function UserManagementPage() {
                                                             <div>
                                                                 <div className="font-medium text-white">{user.full_name}</div>
                                                                 <div className="text-sm text-slate-400">@{user.username}</div>
+                                                                {user.is_social_blocked && (
+                                                                    <div className="text-xs text-red-400 font-medium">Hidden from Social</div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </TableCell>
@@ -359,6 +401,25 @@ export default function UserManagementPage() {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
+                                                                className={`${user.is_social_blocked
+                                                                    ? "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                                                    : "text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+                                                                    }`}
+                                                                onClick={() => handleToggleSocialBlock(user)}
+                                                                disabled={isBlocking}
+                                                                title={user.is_social_blocked ? "Show on Social" : "Hide from Social"}
+                                                            >
+                                                                {isBlocking ? (
+                                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                                                                ) : user.is_social_blocked ? (
+                                                                    <EyeOff className="w-4 h-4" />
+                                                                ) : (
+                                                                    <Eye className="w-4 h-4" />
+                                                                )}
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
                                                                 className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/20"
                                                                 onClick={() => openRechargeModal(user)}
                                                             >
@@ -393,6 +454,7 @@ export default function UserManagementPage() {
 
             <Dialog open={rechargeModalOpen} onOpenChange={setRechargeModalOpen}>
                 <DialogContent className="bg-slate-800 border-slate-700 text-white">
+
                     <DialogHeader>
                         <DialogTitle>Recharge Wallet</DialogTitle>
                         <DialogDescription className="text-slate-400">

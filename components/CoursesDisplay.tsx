@@ -117,6 +117,38 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'llm-prompt-engineering-static',
+      title: 'LLM Prompt Engineering for Real Results',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Master Advanced Prompting & Custom Model Tuning for Production-Ready Applications. Stop "chatting" with AI and start engineering it.',
+      target_audience: 'Developers, AI Engineers, Data Scientists',
+      instructor_name: 'Celoris',
+      course_duration: '12 hours',
+      price: 499,
+      course_image_url: '/llm-prompt-engineering-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `prompt-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `prompt-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 45,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'agentic-ai-systems-static',
       title: 'Agentic AI Systems: Design, Build & Deploy',
       subject: 'Artificial Intelligence',
@@ -600,6 +632,7 @@ export default function CoursesDisplay({
     if (id === 'livekit-ai-agents-static') return '/courses/build-real-time-ai-agents-with-livekit'
     if (id === 'agentic-ai-systems-static') return '/courses/agentic-ai-systems-design-build-deploy'
     if (id === 'rag-unlocked-static') return '/courses/rag-unlocked-production-grade-search-answer-systems'
+    if (id === 'llm-prompt-engineering-static') return '/courses/llm-prompt-engineering-for-real-results'
     return `/learn/course/${id}`
   }
 

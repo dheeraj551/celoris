@@ -34,7 +34,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-                <span className="text-lg font-bold text-slate-900">₹{price}</span>
+                <span className="text-lg font-bold text-slate-900">{price && price.toString().startsWith('$') ? price : `₹${price}`}</span>
                 {id ? (
                     <Link
                         href={
@@ -66,7 +66,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                 ? '/courses/agentic-ai-systems-design-build-deploy'
                                                                                 : id === 'rag-unlocked-static'
                                                                                     ? '/courses/rag-unlocked-production-grade-search-answer-systems'
-                                                                                    : `/learn/course/${id}`
+                                                                                    : id === 'llm-prompt-engineering-static'
+                                                                                        ? '/courses/llm-prompt-engineering-for-real-results'
+                                                                                        : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -113,6 +115,18 @@ export const Courses: React.FC<CoursesProps> = ({
             course_image_url: '/rag-unlocked-cover.png',
             is_static: true,
             static_url: '/courses/rag-unlocked-production-grade-search-answer-systems'
+        },
+        {
+            id: 'llm-prompt-engineering-static',
+            title: 'LLM Prompt Engineering for Real Results',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '12 hours',
+            price: '$499',
+            is_featured: true,
+            course_image_url: '/llm-prompt-engineering-cover.png',
+            is_static: true,
+            static_url: '/courses/llm-prompt-engineering-for-real-results'
         },
         {
             id: 'agentic-ai-systems-static',

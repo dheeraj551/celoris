@@ -6,13 +6,13 @@ import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import InstagramPosts from "@/components/InstagramPosts"
+
 import {
     User,
-    Instagram,
-    Facebook,
     MapPin,
     Calendar,
+    Instagram,
+    Facebook,
     Heart,
     Crown,
     CheckCircle2,
@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdUnit } from "@/components/AdUnit"
+import InstagramPosts from "@/components/InstagramPosts"
 
 interface UserProfileDialogProps {
     userId: string | null
@@ -236,12 +237,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     <div className="relative pb-24">
 
                         {/* Close Button */}
-                        <button
-                            onClick={() => onOpenChange(false)}
-                            className="absolute top-4 right-4 z-50 p-2 bg-white/50 hover:bg-white rounded-full transition-colors"
-                        >
-                            <X className="h-6 w-6 text-gray-800" />
-                        </button>
+
 
                         {/* Cover Image & Profile Picture Wrapper */}
                         <div className="relative mb-20">
@@ -255,7 +251,9 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                     <img
                                         src={profile.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || profile.username)}&background=6366f1&color=fff&size=160`}
                                         alt={profile.full_name}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover select-none"
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        draggable={false}
                                     />
                                 </div>
                             </div>
@@ -299,28 +297,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                             <CardTitle className="text-base">Contact Info</CardTitle>
                                         </CardHeader>
                                         <CardContent className="px-4 pb-4 space-y-3">
-                                            {profile.instagram_handle && (
-                                                <a
-                                                    href={profile.instagram_handle.startsWith('http') ? profile.instagram_handle : `https://instagram.com/${profile.instagram_handle.replace('@', '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-pink-600 transition-colors"
-                                                >
-                                                    <Instagram className="h-4 w-4" />
-                                                    <span>{profile.instagram_handle.startsWith('http') ? 'Instagram Profile' : `@${profile.instagram_handle}`}</span>
-                                                </a>
-                                            )}
-                                            {profile.facebook_handle && (
-                                                <a
-                                                    href={profile.facebook_handle.startsWith('http') ? profile.facebook_handle : `https://facebook.com/${profile.facebook_handle.replace('@', '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 transition-colors"
-                                                >
-                                                    <Facebook className="h-4 w-4" />
-                                                    <span>{profile.facebook_handle.startsWith('http') ? 'Facebook Profile' : `@${profile.facebook_handle}`}</span>
-                                                </a>
-                                            )}
+
                                             {profile.location && (
                                                 <div className="flex items-center gap-2 text-sm text-gray-700">
                                                     <MapPin className="h-4 w-4" />
@@ -353,6 +330,8 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                         </CardContent>
                                     </Card>
                                 </div>
+
+
                             </div>
                         </div>
 

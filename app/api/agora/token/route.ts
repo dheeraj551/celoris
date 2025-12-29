@@ -23,26 +23,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify user is authorized (check if match exists)
-    const { data: match, error: matchError } = await supabase
-      .from('matches')
-      .select('*')
-      .eq('id', channelName)
-      .or(`user1_id.eq.${uid},user2_id.eq.${uid}`)
-      .maybeSingle()
+    // Allow public interview rooms to bypass match verification
+    if (!channelName.startsWith('interview_')) {
+      const { data: match, error: matchError } = await supabase
+        .from('matches')
+        .select('*')
+        .eq('id', channelName)
+        .or(`user1_id.eq.${uid},user2_id.eq.${uid}`)
+        .maybeSingle()
 
-    if (matchError) {
-      console.error('Error verifying match:', matchError)
-      return NextResponse.json(
-        { error: 'Failed to verify authorization' },
-        { status: 500 }
-      )
-    }
+      if (matchError) {
+        console.error('Error verifying match:', matchError)
+        return NextResponse.json(
+          { error: 'Failed to verify authorization' },
+          { status: 500 }
+        )
+      }
 
-    if (!match) {
-      return NextResponse.json(
-        { error: 'Unauthorized: User not part of this match' },
-        { status: 403 }
-      )
+      if (!match) {
+        return NextResponse.json(
+          { error: 'Unauthorized: User not part of this match' },
+          { status: 403 }
+        )
+      }
     }
 
     // For demo purposes, generate a simple token
@@ -52,7 +55,7 @@ export async function POST(request: NextRequest) {
       // In production, use: const token = RtcTokenBuilder.buildTokenWithUid(
       //   AGORA_APP_ID, AGORA_APP_CERTIFICATE, channelName, parseInt(uid), 1, 3600
       // )
-      
+
       const base64Token = Buffer.from(
         JSON.stringify({
           appId: AGORA_APP_ID,
@@ -62,7 +65,7 @@ export async function POST(request: NextRequest) {
           expireTime: Math.floor(Date.now() / 1000) + 3600 // 1 hour
         })
       ).toString('base64')
-      
+
       return base64Token
     }
 

@@ -13,7 +13,6 @@ interface UserProfile {
   username: string
   full_name: string
   bio: string
-  instagram_handle: string
   profile_pic_url: string
   location: string
   is_creator: boolean
@@ -81,7 +80,8 @@ export default function DiscoverPage() {
       // Load potential matches from users table
       let query = supabase
         .from('users')
-        .select('id, username, full_name, bio, instagram_handle, profile_pic_url, location, subscription_status, verification_status')
+        .select('id, username, full_name, bio, profile_pic_url, location, subscription_status, verification_status')
+        .neq('is_social_blocked', true)
 
       // Only filter if we have IDs to filter
       if (swipedIds.length > 0) {
@@ -125,7 +125,6 @@ export default function DiscoverPage() {
               username: profile.username,
               full_name: profile.full_name,
               bio: profile.bio,
-              instagram_handle: profile.instagram_handle,
               profile_pic_url: profile.profile_pic_url,
               location: profile.location,
               is_creator: profile.verification_status === 'verified',
@@ -338,6 +337,9 @@ export default function DiscoverPage() {
                 <AvatarImage
                   src={currentProfile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentProfile.full_name)}&background=6366f1&color=fff&size=400`}
                   alt={currentProfile.full_name}
+                  className="select-none"
+                  onContextMenu={(e: any) => e.preventDefault()}
+                  draggable={false}
                 />
                 <AvatarFallback className="text-4xl bg-purple-500 text-white">
                   {currentProfile.full_name?.charAt(0) || 'U'}
@@ -422,7 +424,6 @@ export default function DiscoverPage() {
                 )}
               </Button>
             </div>
-
             {/* Social Highlights */}
             {socialPosts.length > 0 && (
               <div className="bg-white rounded-xl p-6 shadow-inner">
@@ -439,7 +440,9 @@ export default function DiscoverPage() {
                       <img
                         src={post.media_url}
                         alt={post.caption || 'Social post'}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 select-none"
+                        onContextMenu={(e) => e.preventDefault()}
+                        draggable={false}
                       />
                       {post.caption && (
                         <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-2 truncate">
@@ -451,6 +454,8 @@ export default function DiscoverPage() {
                 </div>
               </div>
             )}
+
+
           </CardContent>
         </Card>
       </div>

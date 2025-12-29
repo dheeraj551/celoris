@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import InstagramManager from "@/components/InstagramManager"
 import InstagramPosts from "@/components/InstagramPosts"
+
 import {
   User,
   Instagram,
@@ -41,8 +42,6 @@ export default function SocialProfilePage() {
     username: '',
     full_name: '',
     bio: '',
-    instagram_handle: '',
-    facebook_handle: '',
     location: '',
     gender: '',
     date_of_birth: '',
@@ -176,8 +175,6 @@ export default function SocialProfilePage() {
           username: (profile as any).username || '',
           full_name: (profile as any).full_name || '',
           bio: (profile as any).bio || '',
-          instagram_handle: (profile as any).instagram_handle || '',
-          facebook_handle: (profile as any).facebook_handle || '',
           location: (profile as any).location || '',
           gender: (profile as any).gender || '',
           date_of_birth: (profile as any).date_of_birth || '',
@@ -203,8 +200,6 @@ export default function SocialProfilePage() {
             username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
             full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
             bio: '',
-            instagram_handle: '',
-            facebook_handle: '',
             location: '',
             gender: '',
             date_of_birth: '',
@@ -216,8 +211,6 @@ export default function SocialProfilePage() {
             username: newProfile.username || '',
             full_name: newProfile.full_name || '',
             bio: newProfile.bio || '',
-            instagram_handle: newProfile.instagram_handle || '',
-            facebook_handle: newProfile.facebook_handle || '',
             location: newProfile.location || '',
             gender: newProfile.gender || '',
             date_of_birth: newProfile.date_of_birth || '',
@@ -289,8 +282,6 @@ export default function SocialProfilePage() {
           username: formData.username,
           full_name: formData.full_name,
           bio: formData.bio,
-          instagram_handle: formData.instagram_handle,
-          facebook_handle: formData.facebook_handle,
           location: formData.location,
           gender: formData.gender,
           date_of_birth: formData.date_of_birth,
@@ -538,31 +529,6 @@ export default function SocialProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-text-primary mb-2">
-                      <Instagram className="h-4 w-4 inline mr-1" />
-                      Instagram Handle
-                    </label>
-                    <Input
-                      value={formData.instagram_handle}
-                      onChange={(e) => handleInputChange('instagram_handle', e.target.value.replace('@', ''))}
-                      placeholder="Username or Profile Link"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      <Facebook className="h-4 w-4 inline mr-1" />
-                      Facebook Handle
-                    </label>
-                    <Input
-                      value={formData.facebook_handle}
-                      onChange={(e) => handleInputChange('facebook_handle', e.target.value)}
-                      placeholder="Username or Full Profile Link"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
                       <MapPin className="h-4 w-4 inline mr-1" />
                       Location
                     </label>
@@ -713,7 +679,10 @@ export default function SocialProfilePage() {
               </Card>
             )}
 
-            {/* Instagram Posts Management - Always visible for Instagram integration */}
+
+
+
+            {/* Instagram Posts Management */}
             <InstagramManager user={user} />
 
             {/* Instagram Posts Display - Removed as it is already in InstagramManager */}

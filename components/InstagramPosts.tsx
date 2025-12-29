@@ -91,12 +91,17 @@ export default function InstagramPosts({ userId, showHeader = true, displayMode 
               <img
                 src={post.media_url}
                 alt={post.caption || 'Post'}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover select-none"
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
               />
             ) : (
               <video
                 src={post.media_url}
                 className="w-full h-full object-cover"
+                onContextMenu={(e) => e.preventDefault()}
+                controlsList="nodownload"
+                disablePictureInPicture
               />
             )}
             {post.caption && (
@@ -187,7 +192,9 @@ export default function InstagramPosts({ userId, showHeader = true, displayMode 
                 <img
                   src={selectedPost.media_url}
                   alt={selectedPost.caption || 'Full size post'}
-                  className="max-w-full max-h-[80vh] object-contain"
+                  className="max-w-full max-h-[80vh] object-contain select-none"
+                  onContextMenu={(e) => e.preventDefault()}
+                  draggable={false}
                 />
               ) : (
                 <video
@@ -195,6 +202,9 @@ export default function InstagramPosts({ userId, showHeader = true, displayMode 
                   controls
                   autoPlay
                   className="max-w-full max-h-[80vh]"
+                  onContextMenu={(e) => e.preventDefault()}
+                  controlsList="nodownload"
+                  disablePictureInPicture
                 />
               )}
             </div>

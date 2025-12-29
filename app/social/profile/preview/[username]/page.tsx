@@ -5,13 +5,13 @@ import { useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import InstagramPosts from "@/components/InstagramPosts"
+
 import {
   User,
-  Instagram,
-  Facebook,
   MapPin,
   Mail,
+  Instagram,
+  Facebook,
   Heart,
   Shield,
   Crown,
@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { AdUnit } from "@/components/AdUnit"
+import InstagramPosts from "@/components/InstagramPosts"
 
 export default function ProfilePreviewPage() {
   const params = useParams()
@@ -33,6 +34,7 @@ export default function ProfilePreviewPage() {
 
   const [requestSent, setRequestSent] = useState(false)
   const [sendingRequest, setSendingRequest] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
 
   useEffect(() => {
     loadProfile()
@@ -76,8 +78,8 @@ export default function ProfilePreviewPage() {
         return
       }
 
-      if (!profileData) {
-        setError('Profile not found')
+      if (!profileData || (profileData as any).is_social_blocked) {
+        setError('Profile unavailable')
         return
       }
 
@@ -90,7 +92,7 @@ export default function ProfilePreviewPage() {
           .from('swipes')
           .select('*')
           .eq('swiper_id', user.id)
-          .eq('swiped_id', profileAny.id)
+          .eq('target_user_id', profileAny.id)
           .eq('direction', 'right')
           .maybeSingle()
 
@@ -99,11 +101,51 @@ export default function ProfilePreviewPage() {
         }
       }
 
+      // Check if already liked
+      if (user && profileData) {
+        const profileAny = profileData as any
+        const { data: like } = await supabase
+          .from('swipes')
+          .select('*')
+          .eq('swiper_id', user.id)
+          .eq('target_user_id', profileAny.id)
+          .eq('direction', 'like')
+          .maybeSingle()
+
+        if (like) {
+          setIsLiked(true)
+        }
+      }
+
     } catch (error) {
       console.error('Error loading profile:', error)
       setError('Failed to load profile')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleLikeProfile = async () => {
+    if (!currentUser || !profile || isLiked) return
+
+    try {
+      const supabase = createClient()
+
+      // Insert like into swipes table (using 'like' as direction)
+      const { error } = await supabase.from('swipes').insert({
+        swiper_id: currentUser.id,
+        target_user_id: profile.id,
+        direction: 'like'
+      } as any)
+
+      if (error) throw error
+
+      setIsLiked(true)
+      alert("Profile Liked!")
+
+    } catch (error) {
+      console.error('Error liking profile:', error)
+      alert("Failed to like profile")
     }
   }
 
@@ -117,7 +159,7 @@ export default function ProfilePreviewPage() {
       // Record the swipe (friend request)
       const { error } = await supabase.from('swipes').insert({
         swiper_id: currentUser.id,
-        swiped_id: profile.id,
+        target_user_id: profile.id,
         direction: 'right'
       } as any)
 
@@ -128,9 +170,10 @@ export default function ProfilePreviewPage() {
         .from('swipes')
         .select('*')
         .eq('swiper_id', profile.id)
-        .eq('swiped_id', currentUser.id)
+        .eq('target_user_id', currentUser.id)
         .eq('direction', 'right')
         .single()
+
 
       if (oppositeSwipe) {
         // Create match
@@ -196,7 +239,9 @@ export default function ProfilePreviewPage() {
               <img
                 src={profile.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || profile.username)}&background=6366f1&color=fff&size=160`}
                 alt={profile.full_name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover select-none"
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
               />
             </div>
           </div>
@@ -242,28 +287,7 @@ export default function ProfilePreviewPage() {
                 <CardTitle className="text-lg">Contact Info</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {profile.instagram_handle && (
-                  <a
-                    href={profile.instagram_handle.startsWith('http') ? profile.instagram_handle : `https://instagram.com/${profile.instagram_handle.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-gray-700 hover:text-pink-600 transition-colors"
-                  >
-                    <Instagram className="h-5 w-5" />
-                    <span>{profile.instagram_handle.startsWith('http') ? 'Instagram Profile' : `@${profile.instagram_handle}`}</span>
-                  </a>
-                )}
-                {profile.facebook_handle && (
-                  <a
-                    href={profile.facebook_handle.startsWith('http') ? profile.facebook_handle : `https://facebook.com/${profile.facebook_handle.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    <Facebook className="h-5 w-5" />
-                    <span>{profile.facebook_handle.startsWith('http') ? 'Facebook Profile' : `@${profile.facebook_handle}`}</span>
-                  </a>
-                )}
+
                 {profile.location && (
                   <div className="flex items-center gap-3 text-gray-700">
                     <MapPin className="h-5 w-5" />
@@ -297,6 +321,8 @@ export default function ProfilePreviewPage() {
               </CardContent>
             </Card>
           </div>
+
+
         </div>
       </div>
 
@@ -304,10 +330,12 @@ export default function ProfilePreviewPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-[#FDF8F3] border-t border-gray-200 p-4 z-40">
         <div className="container max-w-4xl mx-auto flex gap-4">
           <Button
-            className="flex-1 bg-[#4A6755] hover:bg-[#3A5244] text-white rounded-lg h-12 text-lg"
+            className={`flex-1 ${isLiked ? 'bg-pink-600 hover:bg-pink-700' : 'bg-[#4A6755] hover:bg-[#3A5244]'} text-white rounded-lg h-12 text-lg`}
+            onClick={handleLikeProfile}
+            disabled={isLiked}
           >
-            <Heart className="w-5 h-5 mr-2" />
-            Like Profile
+            <Heart className={`w-5 h-5 mr-2 ${isLiked ? 'fill-current' : ''}`} />
+            {isLiked ? 'Liked' : 'Like Profile'}
           </Button>
           <Button
             variant="outline"

@@ -4,9 +4,11 @@ import React from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MessageSquare, Users, Video, ArrowRight, Clock, Share2 } from "lucide-react"
+import Link from "next/link"
 
 const rooms = [
     {
+        id: "interview_marketing",
         title: "Marketing Role Interview",
         participants: "2805 +",
         status: "Always On",
@@ -22,6 +24,7 @@ const rooms = [
         ]
     },
     {
+        id: "interview_tech",
         title: "Tech Role Interview",
         participants: "2128 +",
         status: "Always On",
@@ -37,6 +40,7 @@ const rooms = [
         ]
     },
     {
+        id: "interview_mock",
         title: "Mock Interview Practice",
         participants: "2086 +",
         status: "Always On",
@@ -122,11 +126,14 @@ export default function InterviewRooms() {
 
                                 {/* Button */}
                                 <Button
+                                    asChild
                                     className="w-full bg-[#2C7A4F] hover:bg-[#215B3B] text-white font-bold py-7 rounded-2xl group transition-all transform active:scale-[0.98] shadow-lg shadow-emerald-50"
                                     variant="default"
                                 >
-                                    <span className="flex-1 text-center">{room.cta}</span>
-                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    <Link href={`/earn/interview-room/${room.id}`}>
+                                        <span className="flex-1 text-center">{room.cta}</span>
+                                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </Link>
                                 </Button>
                             </CardContent>
                         </Card>
@@ -145,9 +152,11 @@ export default function InterviewRooms() {
                                 <span className="text-slate-400 font-medium text-base md:text-lg">equipped with audio, video, and screen sharing.</span>
                             </p>
                         </div>
-                        <Button size="lg" className="bg-[#2C7A4F] hover:bg-[#215B3B] text-white px-10 py-8 rounded-[1.8rem] text-xl font-black shadow-2xl shadow-emerald-200/50 group/btn h-auto">
-                            Upgrade & Join
-                            <ArrowRight className="w-6 h-6 ml-3 group-hover/btn:translate-x-2 transition-transform" />
+                        <Button size="lg" className="bg-[#2C7A4F] hover:bg-[#215B3B] text-white px-10 py-8 rounded-[1.8rem] text-xl font-black shadow-2xl shadow-emerald-200/50 group/btn h-auto" asChild>
+                            <Link href="/social/upgrade">
+                                Upgrade & Join
+                                <ArrowRight className="w-6 h-6 ml-3 group-hover/btn:translate-x-2 transition-transform" />
+                            </Link>
                         </Button>
                     </div>
                 </div>

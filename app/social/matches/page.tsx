@@ -119,7 +119,8 @@ export default function MatchesPage() {
             .from('users')
             .select('*')
             .eq('id', otherUserId)
-            .single()
+            .neq('is_social_blocked', true)
+            .maybeSingle()
 
           if (otherUser) {
             // Get avatar URL if exists
@@ -191,7 +192,8 @@ export default function MatchesPage() {
             .from('users')
             .select('*')
             .eq('id', swipe.swiper_id)
-            .single()
+            .neq('is_social_blocked', true)
+            .maybeSingle()
 
           if (swiper) {
             // Get avatar URL if exists
