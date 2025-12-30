@@ -1,142 +1,147 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, Brain, MessageSquare, Layers } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Layers, Filter, RefreshCw, Activity, Globe, ShieldCheck, TrendingDown, Terminal } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
-export default function LLMPromptEngineeringCourse() {
+export default function DeployScaleAICourse() {
     // Set page title and meta tags dynamically
     useEffect(() => {
-        document.title = "LLM Prompt Engineering for Real Results | Master Advanced Prompting";
+        document.title = "Deploy & Scale AI Apps (Serverless + Edge) | Celoris Designs";
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
+        const desc = "Master the transition from local AI prototype to global production. Learn to deploy on Vercel, AWS, and Cloudflare with a focus on cost optimization and edge performance.";
         if (metaDescription) {
-            metaDescription.setAttribute('content', 'Master advanced prompt strategies and custom model fine-tuning. Learn to build production-ready AI apps with a focus on ROI and performance.');
+            metaDescription.setAttribute('content', desc);
         } else {
             const meta = document.createElement('meta');
             meta.name = 'description';
-            meta.content = 'Master advanced prompt strategies and custom model fine-tuning. Learn to build production-ready AI apps with a focus on ROI and performance.';
+            meta.content = desc;
             document.head.appendChild(meta);
         }
     }, []);
 
     const courseData = {
-        title: "LLM Prompt Engineering for Real Results",
-        subtitle: "Master Advanced Prompting & Custom Model Tuning for Production-Ready Applications.",
-        description: "Stop \"chatting\" with AI and start engineering it. This course moves beyond basic instructions to help you build robust, predictable, and scalable LLM implementations. You will learn to bridge the gap between a prompt that \"sometimes works\" and a system that delivers consistent, high-quality output for real-world apps.",
-        students: 850,
+        title: "Deploy & Scale AI Apps (Serverless + Edge)",
+        subtitle: "Bridge the gap from local prototype to global production with high performance and zero-waste scaling.",
+        description: "Stop paying for idle GPUs. Learn to deploy production-grade AI applications using Serverless and Edge architectures to ensure your project is lightning-fast, globally available, and cost-efficient from user #1 to user #1,000,000.",
+        students: 1200,
         rating: 4.9,
-        duration: "12 hours",
+        duration: "10 hours",
         price: 15000,
         currency: "INR",
-        provider: "Celoris Designs",
+        provider: "Celoris Designs llp",
         website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/llm-prompt-engineering-for-real-results",
+        url: "https://www.celorisdesigns.com/courses/deploy-scale-ai-apps-serverless-edge",
         learning_outcomes: [
-            "Move beyond \"Act as a...\" to multi-variable framing.",
-            "Use few-shot & many-shot learning to force model alignment.",
-            "Ensure LLMs return valid JSON/Markdown every single time.",
-            "Manage prompts as code in a production environment.",
-            "Implement Zero-Shot CoT and Self-Consistency strategies.",
-            "Build reflection loops where the AI critiques its own output.",
-            "Optimize RAG (Retrieval-Augmented Generation) context windows.",
-            "Reduce costs and latency with Token Optimization.",
-            "Create high-quality JSONL training pairs for fine-tuning.",
-            "Validate tuned models using BLEU, ROUGE, and \"LLM-as-a-judge\"."
+            "Serverless & Edge Architecture Selection",
+            "Global Deployment with Vercel & Next.js AI SDK",
+            "Edge Computing with Cloudflare Workers (10ms latency)",
+            "AWS Lambda & Fargate for Heavy Inference",
+            "Model Routing (GPT-4o vs Claude 3.5 vs Llama 3)",
+            "Precision Cost Optimization & Token Management",
+            "AI Observability & Tracing (LangSmith/Helicone)",
+            "Secure API Key & Environment Variable Management",
+            "Prompt Injection Defense & Guardrails",
+            "Production-Grade CI/CD for AI Infrastructure"
         ],
         requirements: [
-            "Basic understanding of AI and LLMs",
-            "Familiarity with JSON and data structures",
-            "Basic coding knowledge (Python/JavaScript helper)",
-            "Access to an LLM API (OpenAI, Anthropic, or similar)"
+            "Intermediate proficiency in JavaScript/TypeScript",
+            "Basic understanding of AI/LLM APIs",
+            "Familiarity with Cloud platforms is a plus",
+            "A desire to ship production-ready applications"
         ],
         chapters: [
             {
                 number: 1,
-                title: "Strategic Prompt Architecture",
-                icon: "Layers",
+                title: "The Modern AI Infrastructure Stack",
+                icon: "Server",
                 topics: [
-                    "The Anatomy of a Perfect Prompt: Moving beyond basic instructions.",
-                    "Few-Shot & Many-Shot Learning: Pattern recognition for alignment.",
-                    "Delimiters & Structured Output: Valid JSON/Markdown guarantee.",
-                    "Prompt Versioning: Managing prompts as code."
+                    "Choosing the right home for your models and logic.",
+                    "Vercel & Next.js AI SDK: Deploying \"wrapper\" apps and streaming LLM responses with zero configuration.",
+                    "Cloudflare Workers: Executing AI logic at the Edge (10ms latency) using Wrangler and Vectorize.",
+                    "AWS Lambda & Fargate: When to use serverless containers for heavy-duty inference and long-running tasks.",
+                    "The Architecture Trade-off: Comparing Cold Starts, Regional Latency, and Execution Limits."
                 ],
-                duration: "3 hours"
+                duration: "2.5 hours"
             },
             {
                 number: 2,
-                title: "Reasoning & Chain-of-Thought (CoT)",
-                icon: "Brain",
+                title: "Precision Cost Optimization",
+                icon: "TrendingDown",
                 topics: [
-                    "Zero-Shot CoT: The \"Let’s think step-by-step\" method.",
-                    "Self-Consistency & Tree of Thoughts: Complex logic strategies.",
-                    "Automated Reasoning: Reflection loops for self-critique.",
-                    "Debugging Logic: Identifying hallucinations in reasoning."
+                    "Scaling your impact, not your cloud bill.",
+                    "Model Routing: Strategies for switching between models based on task complexity.",
+                    "Caching Layers: Implementing Redis (Upstash) to save costs on redundant LLM queries.",
+                    "Token Management: Optimizing context windows and prompt engineering to minimize \"token tax.\"",
+                    "Billing Alarms & Hard Limits: Setting up programmatic kill-switches to prevent runaway API costs."
                 ],
-                duration: "3 hours"
+                duration: "2.5 hours"
             },
             {
                 number: 3,
-                title: "Context Engineering & Token Management",
-                icon: "Database",
+                title: "Observability (Monitoring & Logging)",
+                icon: "Activity",
                 topics: [
-                    "The Context Window Challenge: RAG vs. Long-Context models.",
-                    "Token Optimization: Reducing costs without sacrificing quality.",
-                    "Information Density: Semantic compression techniques.",
-                    "Window Sliding: Managing long-form conversations."
+                    "Seeing what your AI is thinking in real-time.",
+                    "Tracing AI Flows: Using tools like LangSmith, Helicone, or Arize Phoenix to debug multi-step chains.",
+                    "Structured Logging: Setting up OpenTelemetry to track latency, token usage, and error rates.",
+                    "Feedback Loops: Capturing user \"thumbs up/down\" data directly into your database for fine-tuning.",
+                    "Semantic Monitoring: Detecting \"hallucinations\" or off-brand responses automatically."
                 ],
-                duration: "3 hours"
+                duration: "2.5 hours"
             },
             {
                 number: 4,
-                title: "Fine-Tuning Essentials",
-                icon: "Cpu",
+                title: "Production Security & Compliance",
+                icon: "ShieldCheck",
                 topics: [
-                    "When to Tune vs. When to Prompt: Cost-benefit analysis.",
-                    "Dataset Curation: Creating high-quality JSONL training pairs.",
-                    "PEFT & LoRA: Parameter-Efficient Fine-Tuning basics.",
-                    "Evaluation Metrics: BLEU, ROUGE, and LLM-as-a-judge."
+                    "Hardening your AI app against prompt injections and data leaks.",
+                    "API Key Management: Securely handling environment variables in Vercel and AWS Secrets Manager.",
+                    "Rate Limiting: Protecting your wallet from bot attacks using middleware and Fingerprinting.",
+                    "Prompt Injection Defense: Implementing guardrails to prevent users from hijacking your system instructions.",
+                    "Data Privacy (PII): Strategies for scrubbing sensitive user data before it hits external LLM providers."
                 ],
-                duration: "3 hours"
+                duration: "2.5 hours"
             }
         ],
         faqs: [
             {
-                question: "Is this course for beginners?",
-                answer: "This course is designed for intermediate to advanced learners. While we cover some foundations, we quickly move to production-grade strategies."
+                question: "Why should I use Serverless for AI instead of a dedicated GPU server?",
+                answer: "Serverless is ideal for high-variability traffic. You only pay for what you use, avoiding the high cost of idle GPUs. It also allows for global scaling without complex infrastructure management."
             },
             {
-                question: "Do I need to know how to code?",
-                answer: "Basic coding knowledge is recommended to implement the concepts in a real application, but the core focus is on the engineering of the prompts and logic."
+                question: "Do I need to be an AWS expert?",
+                answer: "No. We cover the essential AWS services (Lambda/Fargate) needed for AI, but also focus heavily on developer-friendly tools like Vercel and Cloudflare."
             },
             {
-                question: "Which models do you use?",
-                answer: "The principles apply to all major LLMs (GPT-4, Claude 3, Llama 3, Gemini). We focus on universal patterns."
+                question: "Will this help me reduce my OpenAI/Anthropic bills?",
+                answer: "Yes, significantly. Module 2 is dedicated to cost optimization through caching, model routing, and token management."
             },
             {
-                question: "What is the fine-tuning project?",
-                answer: "You will prepare a dataset and walk through the process of fine-tuning a specialized model variant using PEFT/LoRA techniques."
+                question: "Is this course practical or just theory?",
+                answer: "It is 100% practical. You will be building and deploying real infrastructure throughout the course."
             }
         ],
         deliverables: [
             {
-                title: "Master Prompt Library",
-                description: "A plug-and-play collection of production-tested templates for 10+ industries.",
+                title: "The Deployment Guide",
+                description: "A step-by-step PDF checklist for moving from localhost to main.",
+                icon: "Download"
+            },
+            {
+                title: "Automation Scripts",
+                description: "GitHub Actions workflows for CI/CD and automated infrastructure provisioning.",
+                icon: "Terminal"
+            },
+            {
+                title: "Boilerplate Repo",
+                description: "A pre-configured Starter Kit featuring Next.js, Tailwind, and Cloudflare.",
                 icon: "Code"
-            },
-            {
-                title: "Fine-Tuning Capstone",
-                description: "A documented project where you prepare, train, and deploy a specialized model.",
-                icon: "Cpu"
-            },
-            {
-                title: "LLM Performance Dashboard",
-                description: "A framework for tracking accuracy, latency, and cost per request.",
-                icon: "BarChart"
             }
         ]
     }
@@ -144,54 +149,46 @@ export default function LLMPromptEngineeringCourse() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "Course",
-        "name": "LLM Prompt Engineering for Real Results",
-        "description": "Master advanced prompt strategies and custom model fine-tuning. Learn to build production-ready AI apps with a focus on ROI and performance.",
+        "name": "Deploy & Scale AI Apps (Serverless + Edge)",
+        "description": "Master the transition from local AI prototype to global production. Learn to deploy on Vercel, AWS, and Cloudflare with a focus on cost optimization and edge performance.",
         "provider": {
             "@type": "Organization",
-            "name": "Celoris Designs",
+            "name": "Celoris Designs llp",
             "sameAs": "https://www.celorisdesigns.com"
         },
-        "courseCode": "PROMPT-ENG-2024",
-        "educationalLevel": "Intermediate to Advanced",
-        "about": [
-            "Large Language Models",
-            "Prompt Engineering",
-            "Fine-tuning",
-            "Token Management"
-        ],
+        "courseCode": "AI-DEP-01",
+        "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "Online",
+            "courseWorkload": "PT10H",
+            "instructor": {
+                "@type": "Person",
+                "name": "Celoris AI Infrastructure Team",
+                "description": "Specialist in AI Infrastructure and Serverless Architectures."
+            }
+        },
         "syllabusSections": [
             {
                 "@type": "Syllabus",
-                "name": "Prompt Architecture",
-                "description": "Strategic framing and multi-variable prompt engineering."
+                "name": "The Modern AI Stack",
+                "description": "Vercel, AWS, and Cloudflare Edge infrastructure."
             },
             {
                 "@type": "Syllabus",
-                "name": "Chain-of-Thought (CoT)",
-                "description": "Implementing logic loops and automated reasoning."
+                "name": "Cost & Performance",
+                "description": "Model routing, token optimization, and global latency reduction."
             },
             {
                 "@type": "Syllabus",
-                "name": "Fine-Tuning Essentials",
-                "description": "Dataset curation and PEFT/LoRA implementation."
-            },
-            {
-                "@type": "Syllabus",
-                "name": "Token & Context Management",
-                "description": "Optimizing RAG and reducing inference costs."
+                "name": "Observability & Security",
+                "description": "Monitoring AI flows and preventing prompt injections."
             }
         ],
         "offers": {
             "@type": "Offer",
             "category": "Paid",
-            "price": "15000.00",
-            "priceCurrency": "INR",
-            "availability": "https://schema.org/InStock"
-        },
-        "hasCourseInstance": {
-            "@type": "CourseInstance",
-            "courseMode": "Online",
-            "educationalCredentialAwarded": "Certificate of LLM Engineering Mastery"
+            "price": "199.00",
+            "priceCurrency": "USD"
         }
     }
 
@@ -212,7 +209,7 @@ export default function LLMPromptEngineeringCourse() {
                     <span>/</span>
                     <Link href="/learn/courses" className="hover:text-cyan-400 transition-colors">Courses</Link>
                     <span>/</span>
-                    <span className="text-slate-100 line-clamp-1">LLM Prompt Engineering</span>
+                    <span className="text-slate-100 line-clamp-1">Deploy & Scale AI</span>
                 </div>
 
                 {/* Back Button */}
@@ -227,9 +224,9 @@ export default function LLMPromptEngineeringCourse() {
                         {/* Course Header */}
                         <div className="space-y-6">
                             <div className="flex flex-wrap gap-2 mb-4">
-                                <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Prompt Engineering</span>
-                                <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Fine-Tuning</span>
-                                <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Production AI</span>
+                                <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Serverless AI</span>
+                                <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Edge Computing</span>
+                                <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Cost Optimization</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
                                 {courseData.title}
@@ -248,8 +245,8 @@ export default function LLMPromptEngineeringCourse() {
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
                                     <img
-                                        src="/llm-prompt-engineering-cover.png"
-                                        alt="LLM Prompt Engineering"
+                                        src="/deploy-scale-ai-apps-cover.png"
+                                        alt="Deploy & Scale AI Apps Course Cover"
                                         className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
@@ -294,9 +291,13 @@ export default function LLMPromptEngineeringCourse() {
                             </h2>
                             <Accordion type="single" collapsible className="space-y-4">
                                 {courseData.chapters.map((chapter, index) => {
-                                    const Icon = chapter.icon === "Layers" ? Layers :
-                                        chapter.icon === "Brain" ? Brain :
-                                            chapter.icon === "Database" ? Database : Cpu;
+                                    const icons: Record<string, any> = {
+                                        Server,
+                                        TrendingDown,
+                                        Activity,
+                                        ShieldCheck
+                                    };
+                                    const Icon = icons[chapter.icon] || BookOpen;
                                     return (
                                         <AccordionItem key={index} value={`chapter-${index}`} className="border border-slate-700/50 bg-slate-900/40 rounded-xl px-2 overflow-hidden">
                                             <AccordionTrigger className="hover:no-underline py-6">
@@ -339,14 +340,19 @@ export default function LLMPromptEngineeringCourse() {
                                 <div className="p-2 bg-blue-500/20 rounded-lg">
                                     <Bot className="h-6 w-6 text-blue-400" />
                                 </div>
-                                Real Results Guarantee
+                                Deliverables & Outcomes
                             </h2>
                             <p className="text-slate-400 mb-8">
-                                Every module concludes with a &quot;Production Stress Test&quot; to ensure your solutions don&apos;t break in the real world. You will build tangible assets.
+                                By the end of this course, you will have a production-ready toolkit to deploy and scale AI applications with confidence.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {courseData.deliverables.map((item, index) => {
-                                    const Icon = item.icon === "Code" ? Code : item.icon === "Cpu" ? Cpu : BarChart;
+                                    const icons: Record<string, any> = {
+                                        Download,
+                                        Terminal,
+                                        Code
+                                    };
+                                    const Icon = icons[item.icon] || Bot;
                                     return (
                                         <Card key={index} className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50 hover:border-cyan-500/40 transition-all duration-300 group">
                                             <CardContent className="pt-8 text-center">
@@ -393,7 +399,7 @@ export default function LLMPromptEngineeringCourse() {
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
                                             <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
+                                                ₹15,000
                                             </div>
                                             <div className="text-cyan-400 font-bold tracking-widest uppercase text-xs">Full Lifetime Access</div>
                                         </div>
@@ -411,19 +417,19 @@ export default function LLMPromptEngineeringCourse() {
                                         <div className="space-y-4 pt-6 border-t border-slate-800">
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Award className="h-5 w-5 text-cyan-400" />
-                                                <span>Certificate of Mastery</span>
+                                                <span>Professional Certification</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Code className="h-5 w-5 text-purple-400" />
-                                                <span>Prompt Templates</span>
+                                                <span>Production Ready GitHub Templates</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Users className="h-5 w-5 text-blue-400" />
-                                                <span>Private Discord</span>
+                                                <span>Exclusive Discord Community</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Zap className="h-5 w-5 text-orange-400" />
-                                                <span>Production Ready Strategies</span>
+                                                <span>2024-2025 Tech Stack (Edge/Serverless)</span>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -442,12 +448,12 @@ export default function LLMPromptEngineeringCourse() {
                                             <img src="/celoris-logo.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-white">{courseData.provider}</h4>
-                                            <p className="text-xs text-slate-400">Pioneering Agentic Workflows</p>
+                                            <h4 className="font-bold text-white">Celoris Team</h4>
+                                            <p className="text-xs text-slate-400">Pioneering AI Architectures</p>
                                         </div>
                                     </div>
                                     <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                                        Expert engineering team specializing in multi-agent orchestration and autonomous LLM workflows.
+                                        Expert engineering team specializing in AI Infrastructure and Serverless Architectures. We help developers bridge the gap from local prototype to global production.
                                     </p>
                                     <div className="flex items-center justify-between text-sm py-3 border-t border-slate-800">
                                         <div className="flex items-center gap-1.5 text-slate-300">

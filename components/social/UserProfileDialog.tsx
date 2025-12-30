@@ -19,8 +19,14 @@ import {
     Check,
     UserPlus,
     X,
-    MessageCircle
+    MessageCircle,
+    Shield,
+    Flag,
+    AlertTriangle
 } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useRouter } from "next/navigation"
 import { AdUnit } from "@/components/AdUnit"
 import InstagramPosts from "@/components/InstagramPosts"
@@ -41,6 +47,14 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     const [isFriend, setIsFriend] = useState(false)
     const [isLiked, setIsLiked] = useState(false)
+
+    // Safety Features State
+    const [isBlocked, setIsBlocked] = useState(false)
+    const [showReportView, setShowReportView] = useState(false)
+    const [reportReason, setReportReason] = useState('inappropriate_behavior')
+    const [reportDetails, setReportDetails] = useState('')
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false)
+
     const { toast } = useToast()
     const router = useRouter()
 
@@ -54,6 +68,10 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
             setError('')
             setIsFriend(false)
             setIsLiked(false)
+            setIsBlocked(false)
+            setShowReportView(false)
+            setReportReason('inappropriate_behavior')
+            setReportDetails('')
         }
     }, [open, userId])
 
@@ -86,9 +104,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
             if (user && profileData) {
                 // Check if they are already friends (matched)
-                // A match exists if A liked B AND B liked A
-                // We can check the 'matches' table directly if you have one, or check swipes.
-                // Assuming 'matches' table is the source of truth for friendship
                 const { data: match } = await supabase
                     .from('matches')
                     .select('*')
@@ -104,7 +119,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                         .select('*')
                         .eq('swiper_id', user.id)
                         .eq('target_user_id', profileData.id)
-                        .eq('direction', 'right')
+                        .eq('direction', 'like')
                         .maybeSingle()
 
                     if (swipe) {
@@ -124,6 +139,16 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                 if (like) {
                     setIsLiked(true)
                 }
+
+                // Check if blocked
+                const { data: block } = await supabase
+                    .from('blocked_users')
+                    .select('*')
+                    .eq('blocker_id', user.id)
+                    .eq('blocked_id', profileData.id)
+                    .maybeSingle()
+
+                if (block) setIsBlocked(true)
             }
 
         } catch (error) {
@@ -150,6 +175,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
             if (error) throw error
 
             setIsLiked(true)
+            setRequestSent(true)
 
             toast({
                 title: "Profile Liked!",
@@ -169,7 +195,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     const handleSendMessage = () => {
         if (isFriend) {
-            // As requested, redirect to matches page to avoid ID mismatch issues
             router.push('/social/matches')
         }
     }
@@ -185,7 +210,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
             const { error } = await supabase.from('swipes').insert({
                 swiper_id: currentUser.id,
                 target_user_id: profile.id,
-                direction: 'right'
+                direction: 'like'
             } as any)
 
             if (error) throw error
@@ -196,7 +221,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                 .select('*')
                 .eq('swiper_id', profile.id)
                 .eq('target_user_id', currentUser.id)
-                .eq('direction', 'right')
+                .eq('direction', 'like')
                 .single()
 
             if (oppositeSwipe) {
@@ -205,17 +230,82 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     user2_id: profile.id
                 } as any)
                 alert("It's a match! You are now friends.")
-                setIsFriend(true) // Immediately update UI to show "Send Message"
+                setIsFriend(true)
             } else {
                 // alert("Friend request sent!")
             }
 
             setRequestSent(true)
+            setIsLiked(true)
         } catch (error) {
             console.error('Error sending friend request:', error)
             alert('Failed to send friend request')
         } finally {
             setSendingRequest(false)
+        }
+    }
+
+    const handleBlockUser = async () => {
+        if (!currentUser || !profile) return
+
+        if (!confirm("Are you sure you want to block this user? They will not be able to message you.")) return
+
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.from('blocked_users').insert({
+                blocker_id: currentUser.id,
+                blocked_id: profile.id
+            } as any)
+
+            if (error) throw error
+
+            setIsBlocked(true)
+            toast({
+                title: "User Blocked",
+                description: "You have blocked this user.",
+            })
+            onOpenChange(false)
+        } catch (error) {
+            console.error('Error blocking user:', error)
+            toast({
+                title: "Error",
+                description: "Failed to block user.",
+                variant: "destructive"
+            })
+        }
+    }
+
+    const handleReportUser = async () => {
+        if (!currentUser || !profile) return
+        setIsSubmittingReport(true)
+
+        try {
+            const response = await fetch('/api/social/report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUserId: profile.id,
+                    reason: reportReason,
+                    details: reportDetails
+                })
+            })
+
+            if (!response.ok) throw new Error('Failed to report')
+
+            toast({
+                title: "Report Sent",
+                description: "Our support team will review this report.",
+            })
+            setShowReportView(false)
+        } catch (error) {
+            console.error('Error reporting user:', error)
+            toast({
+                title: "Error",
+                description: "Failed to send report.",
+                variant: "destructive"
+            })
+        } finally {
+            setIsSubmittingReport(false)
         }
     }
 
@@ -235,10 +325,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     </div>
                 ) : profile ? (
                     <div className="relative pb-24">
-
-                        {/* Close Button */}
-
-
                         {/* Cover Image & Profile Picture Wrapper */}
                         <div className="relative mb-20">
                             {/* Ad Banner Area */}
@@ -330,10 +416,98 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                         </CardContent>
                                     </Card>
                                 </div>
+                            </div>
 
-
+                            {/* Blocking & Reporting Section */}
+                            <div className="mt-6 border-t border-gray-100 pt-6">
+                                <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <Shield className="h-4 w-4 text-purple-600" />
+                                    Safety & Privacy
+                                </h3>
+                                <div className="flex gap-3">
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                        onClick={handleBlockUser}
+                                        disabled={isBlocked}
+                                    >
+                                        <AlertTriangle className="w-4 h-4 mr-2" />
+                                        {isBlocked ? 'Blocked' : 'Block User'}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 border-gray-200 text-gray-600 hover:bg-gray-50"
+                                        onClick={() => setShowReportView(true)}
+                                    >
+                                        <Flag className="w-4 h-4 mr-2" />
+                                        Report User
+                                    </Button>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Report View Overlay */}
+                        {showReportView && (
+                            <div className="absolute inset-0 bg-white z-50 p-6 flex flex-col">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                        <Flag className="h-5 w-5 text-red-500" />
+                                        Report User
+                                    </h3>
+                                    <Button variant="ghost" size="icon" onClick={() => setShowReportView(false)}>
+                                        <X className="h-5 w-5" />
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-6 flex-1 overflow-y-auto">
+                                    <div className="space-y-4">
+                                        <Label>Why are you reporting this user?</Label>
+                                        <RadioGroup value={reportReason} onValueChange={setReportReason}>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="inappropriate_behavior" id="r1" />
+                                                <Label htmlFor="r1">Inappropriate Behavior</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="spam" id="r2" />
+                                                <Label htmlFor="r2">Spam or Scam</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="harassment" id="r3" />
+                                                <Label htmlFor="r3">Harassment or Bullying</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="fake_profile" id="r4" />
+                                                <Label htmlFor="r4">Fake Profile</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="other" id="r5" />
+                                                <Label htmlFor="r5">Other</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>Additional Details</Label>
+                                        <Textarea
+                                            placeholder="Please provide more details about the issue..."
+                                            value={reportDetails}
+                                            onChange={(e) => setReportDetails(e.target.value)}
+                                            rows={4}
+                                        />
+                                    </div>
+
+                                    <div className="pt-4">
+                                        <Button
+                                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                                            onClick={handleReportUser}
+                                            disabled={isSubmittingReport}
+                                        >
+                                            {isSubmittingReport ? 'Sending Report...' : 'Submit Report'}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Bottom Action Bar (Sticky in Dialog) */}
                         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur border-t border-gray-100 flex justify-center gap-4 z-50 md:absolute md:rounded-b-lg">

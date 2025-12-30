@@ -93,7 +93,7 @@ export default function ProfilePreviewPage() {
           .select('*')
           .eq('swiper_id', user.id)
           .eq('target_user_id', profileAny.id)
-          .eq('direction', 'right')
+          .eq('direction', 'like')
           .maybeSingle()
 
         if (swipe) {
@@ -141,6 +141,7 @@ export default function ProfilePreviewPage() {
       if (error) throw error
 
       setIsLiked(true)
+      setRequestSent(true)
       alert("Profile Liked!")
 
     } catch (error) {
@@ -160,7 +161,7 @@ export default function ProfilePreviewPage() {
       const { error } = await supabase.from('swipes').insert({
         swiper_id: currentUser.id,
         target_user_id: profile.id,
-        direction: 'right'
+        direction: 'like'
       } as any)
 
       if (error) throw error
@@ -171,7 +172,7 @@ export default function ProfilePreviewPage() {
         .select('*')
         .eq('swiper_id', profile.id)
         .eq('target_user_id', currentUser.id)
-        .eq('direction', 'right')
+        .eq('direction', 'like')
         .single()
 
 
@@ -187,6 +188,7 @@ export default function ProfilePreviewPage() {
       }
 
       setRequestSent(true)
+      setIsLiked(true)
     } catch (error) {
       console.error('Error sending friend request:', error)
       alert('Failed to send friend request')

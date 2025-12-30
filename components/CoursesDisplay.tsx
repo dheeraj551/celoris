@@ -85,6 +85,38 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'deploy-scale-ai-static',
+      title: 'Deploy & Scale AI Apps (Serverless + Edge)',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Master the transition from local AI prototype to global production. Learn to deploy on Vercel, AWS, and Cloudflare with a focus on cost optimization and edge performance.',
+      target_audience: 'Developers, AI Engineers, Startup Founders',
+      instructor_name: 'Celoris',
+      course_duration: '10 hours',
+      price: 15000,
+      course_image_url: '/deploy-scale-ai-apps-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `deps-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 150,
+        is_published: true,
+        course_topics: Array(4).fill(null).map((_, j) => ({
+          id: `deps-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 37,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'rag-unlocked-static',
       title: 'RAG Unlocked: Production-Grade Search & Answer Systems',
       subject: 'Artificial Intelligence',
@@ -125,7 +157,7 @@ export default function CoursesDisplay({
       target_audience: 'Developers, AI Engineers, Data Scientists',
       instructor_name: 'Celoris',
       course_duration: '12 hours',
-      price: 499,
+      price: 15000,
       course_image_url: '/llm-prompt-engineering-cover.png',
       is_featured: true,
       created_at: new Date().toISOString(),
@@ -633,6 +665,7 @@ export default function CoursesDisplay({
     if (id === 'agentic-ai-systems-static') return '/courses/agentic-ai-systems-design-build-deploy'
     if (id === 'rag-unlocked-static') return '/courses/rag-unlocked-production-grade-search-answer-systems'
     if (id === 'llm-prompt-engineering-static') return '/courses/llm-prompt-engineering-for-real-results'
+    if (id === 'deploy-scale-ai-static') return '/courses/deploy-scale-ai-apps-serverless-edge'
     return `/learn/course/${id}`
   }
 

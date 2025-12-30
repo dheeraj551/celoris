@@ -40,6 +40,11 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 import { UserProfileDialog } from "@/components/social/UserProfileDialog"
 import { AdUnit } from "@/components/AdUnit"
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
+
+const MSG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"
+const JOIN_SOUND = "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
+const LEAVE_SOUND = "https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3"
 
 interface UserProfile {
     id: string
@@ -88,6 +93,10 @@ export default function PublicRoomPage() {
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const channelRef = useRef<any>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const prevOnlineCount = useRef<number>(0)
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
 
     const [isLoaded, setIsLoaded] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
@@ -205,6 +214,9 @@ export default function PublicRoomPage() {
                 setMessages((prev) => {
                     // Avoid duplicates if any
                     if (prev.some(m => m.id === payload.id)) return prev
+                    if (payload.sender.id !== user.id) {
+                        new Audio(MSG_SOUND).play().catch(() => { })
+                    }
                     return [...prev, payload as ChatMessage]
                 })
             })
@@ -225,6 +237,13 @@ export default function PublicRoomPage() {
 
                 setOnlineCount(users.length)
                 setOnlineUsers(users)
+
+                if (users.length > prevOnlineCount.current) {
+                    new Audio(JOIN_SOUND).play().catch(() => { })
+                } else if (users.length < prevOnlineCount.current) {
+                    new Audio(LEAVE_SOUND).play().catch(() => { })
+                }
+                prevOnlineCount.current = users.length
             })
             .on('broadcast', { event: 'chat-invite' }, ({ payload }: { payload: any }) => {
                 if (payload.targetUserId === user.id) {
@@ -273,15 +292,15 @@ export default function PublicRoomPage() {
         scrollToBottom()
     }, [messages])
 
-    const sendMessage = async () => {
-        if (!newMessage.trim() || !user || !channelRef.current) return
+    const sendMessage = async (content = newMessage, type: 'text' | 'image' = 'text') => {
+        if (!content.trim() || !user || !channelRef.current) return
 
         const message: ChatMessage = {
             id: crypto.randomUUID(),
             sender: user,
-            content: newMessage.trim(),
+            content: content.trim(),
             timestamp: Date.now(),
-            type: 'text'
+            type: type
         }
 
         // Broadcast the message
@@ -291,7 +310,73 @@ export default function PublicRoomPage() {
             payload: message,
         })
 
-        setNewMessage("")
+        if (type === 'text') {
+            setNewMessage("")
+            setShowEmojiPicker(false)
+        }
+    }
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file || !user) return
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast({
+                title: "Invalid file type",
+                description: "Please upload an image file.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        // Validate file size (e.g., 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast({
+                title: "File too large",
+                description: "Max file size is 5MB.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        setIsUploading(true)
+        try {
+            const supabase = createClient()
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`
+            const filePath = `${roomId}/${fileName}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('chat-uploads')
+                .upload(filePath, file)
+
+            if (uploadError) throw uploadError
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('chat-uploads')
+                .getPublicUrl(filePath)
+
+            await sendMessage(publicUrl, 'image')
+
+        } catch (error) {
+            console.error("Upload error:", error)
+            toast({
+                title: "Upload failed",
+                description: "Could not upload image. Please try again.",
+                variant: "destructive"
+            })
+        } finally {
+            setIsUploading(false)
+            // Reset input
+            if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+    }
+
+    const onEmojiClick = (emojiData: EmojiClickData) => {
+        setNewMessage(prev => prev + emojiData.emoji)
+        // Keep picker open or close it? Standard is often to keep open or close. User didn't specify. I'll NOT close it immediately to allow multiple emojis, but maybe better to keep focus.
+        // Actually for simplicity, let's keep it open, but user can close via button.
     }
 
     const sendInvite = async (targetUser: UserProfile) => {
@@ -484,8 +569,18 @@ export default function PublicRoomPage() {
             {/* Main Area with Sidebar */}
             <div className="flex-1 flex overflow-hidden">
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto bg-slate-50 relative px-4">
-                    <div className="container mx-auto max-w-4xl py-6 space-y-6">
+                <div className="flex-1 overflow-y-auto bg-slate-50 relative px-4 text-center">
+                    <div className="container mx-auto max-w-4xl py-6 space-y-6 text-left">
+
+                        {/* Professional Ad Placement for Private Rooms */}
+                        {isPrivate && (
+                            <div className="mb-6 mx-auto max-w-2xl bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
+                                <div className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mb-2 text-center">Sponsored</div>
+                                <div className="min-h-[90px] flex items-center justify-center bg-slate-50 rounded">
+                                    <AdUnit slot="9266909448" className="w-full" />
+                                </div>
+                            </div>
+                        )}
 
                         {/* Welcome Message */}
                         <div className="text-center py-12">
@@ -531,8 +626,8 @@ export default function PublicRoomPage() {
                                                 <div
                                                     key={num}
                                                     className={`relative flex flex-col items-center p-3 rounded-xl border-2 transition-all shadow-sm ${isOccupied
-                                                            ? 'border-purple-200 bg-purple-50 scale-105 ring-4 ring-purple-500/10'
-                                                            : 'border-slate-100 bg-white opacity-60'
+                                                        ? 'border-purple-200 bg-purple-50 scale-105 ring-4 ring-purple-500/10'
+                                                        : 'border-slate-100 bg-white opacity-60'
                                                         }`}
                                                 >
                                                     <span className={`text-[10px] uppercase font-black tracking-widest mb-3 ${isOccupied ? 'text-purple-600' : 'text-slate-400'}`}>
@@ -596,7 +691,16 @@ export default function PublicRoomPage() {
                                                     : 'bg-white text-slate-800 border border-slate-100 rounded-tl-sm'
                                                     }`}
                                             >
-                                                {msg.content}
+                                                {msg.type === 'image' ? (
+                                                    <img
+                                                        src={msg.content}
+                                                        alt="Attachment"
+                                                        className="max-w-full rounded-lg max-h-60 object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                                                        onClick={() => window.open(msg.content, '_blank')}
+                                                    />
+                                                ) : (
+                                                    msg.content
+                                                )}
                                             </div>
                                             <span className="text-[10px] text-slate-400 mt-1 px-1">
                                                 {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -730,8 +834,22 @@ export default function PublicRoomPage() {
                             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
                             className="flex items-end gap-2"
                         >
-                            <Button type="button" variant="ghost" size="icon" className="text-slate-400 rounded-full shrink-0">
-                                <Paperclip className="h-5 w-5" />
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleFileUpload}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="text-slate-400 rounded-full shrink-0"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploading}
+                            >
+                                <Paperclip className={`h-5 w-5 ${isUploading ? 'animate-pulse text-purple-500' : ''}`} />
                             </Button>
 
                             <div className="flex-1 bg-slate-100 rounded-2xl flex items-center px-4 py-2 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 transition-all">
@@ -741,9 +859,14 @@ export default function PublicRoomPage() {
                                     placeholder="Type a message..."
                                     className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-1 text-slate-900 placeholder:text-slate-400"
                                 />
-                                <Button type="button" variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full h-8 w-8 -mr-1">
+                                <Button type="button" variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full h-8 w-8 -mr-1" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                                     <Smile className="h-5 w-5" />
                                 </Button>
+                                {showEmojiPicker && (
+                                    <div className="absolute bottom-16 right-0 z-50">
+                                        <EmojiPicker onEmojiClick={onEmojiClick} />
+                                    </div>
+                                )}
                             </div>
 
                             <Button

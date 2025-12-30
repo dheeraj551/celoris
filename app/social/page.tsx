@@ -63,21 +63,24 @@ export default function SocialPage() {
       title: "Tinder-Style Swiping",
       description: "Swipe right to connect with creators, influencers, and professionals who match your interests",
       color: "bg-pink-500",
-      action: "Start Swiping"
+      action: "Start Swiping",
+      href: "/social/swipe"
     },
     {
       icon: Instagram,
       title: "Instagram Integration",
       description: "Embed your Instagram feed or showcase your handle to gain exposure and grow your following",
       color: "bg-purple-500",
-      action: "Connect Instagram"
+      action: "Connect Instagram",
+      href: "/social/profile"
     },
     {
       icon: MessageCircle,
       title: "Real-time Chat",
       description: "Chat instantly with your matches using text, share photos, and build meaningful connections",
       color: "bg-blue-500",
-      action: "Start Chatting"
+      action: "Start Chatting",
+      href: "/social/chat"
     },
     {
       icon: Video,
@@ -85,7 +88,8 @@ export default function SocialPage() {
       description: "Premium feature for face-to-face conversations, job interviews, or creative collaborations",
       color: "bg-green-500",
       action: "Upgrade for Calls",
-      premium: true
+      premium: true,
+      href: "/social/upgrade"
     },
     {
       icon: Smartphone,
@@ -93,7 +97,8 @@ export default function SocialPage() {
       description: "Get instant WhatsApp alerts for new matches, messages, and important updates",
       color: "bg-emerald-500",
       action: "Enable Notifications",
-      premium: true
+      premium: true,
+      href: "/social/upgrade"
     },
     {
       icon: Users,
@@ -101,7 +106,8 @@ export default function SocialPage() {
       description: "Connect with influencers, content creators, and professionals to expand your network",
       color: "bg-indigo-500",
       action: "Join Network",
-      premium: true
+      premium: true,
+      href: "/social/upgrade"
     }
   ]
 
@@ -250,7 +256,7 @@ export default function SocialPage() {
                     variant={feature.premium ? "outline" : "default"}
                     asChild
                   >
-                    <Link href={feature.premium ? "/social/upgrade" : feature.action.toLowerCase().replace(" ", "-")}>
+                    <Link href={feature.href || "#"}>
                       {feature.action}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -423,7 +429,7 @@ export default function SocialPage() {
                     variant={feature.premium ? "outline" : "default"}
                     asChild
                   >
-                    <Link href={feature.premium ? "/social/upgrade" : feature.action.toLowerCase().replace(" ", "-")}>
+                    <Link href={feature.href || "#"}>
                       {feature.action}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -501,7 +507,7 @@ export default function SocialPage() {
                 </div>
                 <h3 className="text-xl font-semibold text-text-primary mb-3">Create Your Profile</h3>
                 <p className="text-text-secondary">
-                  Set up your profile with your Instagram handle, bio, and professional details
+                  Set up your profile with your bio, and professional details
                   to showcase who you are.
                 </p>
               </div>

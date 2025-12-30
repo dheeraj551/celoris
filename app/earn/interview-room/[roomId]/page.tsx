@@ -100,37 +100,10 @@ export default function InterviewRoomPage() {
 
             if (data.error) throw new Error(data.error)
 
-            // Join
-            // Use the numeric UID for Agora if possible or string if configured. 
-            // The token route generated a numeric UID from string if possible or hashed it.
-            // Let's assume the token route handles it. 
-            // Wait, standard Agora uses Int UIDs for better compatibility, string UIDs are also supported.
-            // The token route used `parseInt(uid)` or similar. 
-            // If `uid` is a UUID, parseInt won't work well.
-            // For simplicity/demo, let's use the UID returned by the token endpoint if it modified it, or use `null` to let Agora assign one.
-            // Actually, let's pass the UUID string to Agora (it supports string UIDs) 
-            // BUT, verify if `agora-rtc-sdk-ng` is in string UID mode. 
-            // Default is usually number. Let's try joining with numeric conversion or fallback.
-            // A simple trick for demo: use a random number if UUID parsing is hard.
-            // Or just pass the UUID string and see (mode: 'rtc' usually supports number, string requires config).
-            // Given the token route logic `uid: parseInt(uid)` which fails for UUIDs, we might need to fix that or use random int.
-            // Let's use a random int for agora UID to avoid issues, map it to Supabase user ID in chat.
+            if (data.error) throw new Error(data.error)
 
-            const agoraUid = Math.floor(Math.random() * 100000)
-
-            // Re-fetch token with numeric UID
-            const tokenResponse = await fetch('/api/agora/token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    channelName: channel,
-                    uid: agoraUid.toString(),
-                    role: 'publisher'
-                })
-            })
-            const tokenData = await tokenResponse.json()
-
-            await client.join(tokenData.appId, channel, tokenData.token, agoraUid)
+            // Join with the UUID string (supported by Agora Web SDK and our new token generator)
+            await client.join(data.appId, channel, data.token, uid)
 
             // Create Tracks
             const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks()
@@ -357,8 +330,8 @@ export default function InterviewRoomPage() {
                                     {msg.profiles?.full_name || 'User'}
                                 </div>
                                 <div className={`px-3 py-2 rounded-lg text-sm max-w-[85%] ${msg.user_id === currentUser?.id
-                                        ? 'bg-emerald-600 text-white rounded-tr-none'
-                                        : 'bg-slate-700 text-slate-200 rounded-tl-none'
+                                    ? 'bg-emerald-600 text-white rounded-tr-none'
+                                    : 'bg-slate-700 text-slate-200 rounded-tl-none'
                                     }`}>
                                     {msg.content}
                                 </div>

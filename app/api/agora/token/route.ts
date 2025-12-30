@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { RtcTokenBuilder, RtcRole } from '@/lib/agora-token'
 
 // Initialize Supabase client for server-side operations
 const supabaseUrl = process.env.SUPABASE_URL!
@@ -48,28 +49,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // For demo purposes, generate a simple token
-    // In production, you would use Agora's token generator
-    const generateToken = (channelName: string, uid: string, role: string) => {
-      // This is a simplified token generation for demonstration
-      // In production, use: const token = RtcTokenBuilder.buildTokenWithUid(
-      //   AGORA_APP_ID, AGORA_APP_CERTIFICATE, channelName, parseInt(uid), 1, 3600
-      // )
+    // Generate Token
+    const roleNum = role === 'publisher' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER
+    const expireTime = 3600 // 1 hour
+    const currentTime = Math.floor(Date.now() / 1000)
+    const privilegeExpiredTs = currentTime + expireTime
 
-      const base64Token = Buffer.from(
-        JSON.stringify({
-          appId: AGORA_APP_ID,
-          channelName: channelName,
-          uid: parseInt(uid),
-          role: role === 'publisher' ? 1 : 2,
-          expireTime: Math.floor(Date.now() / 1000) + 3600 // 1 hour
-        })
-      ).toString('base64')
-
-      return base64Token
-    }
-
-    const token = generateToken(channelName, uid, role)
+    // Use buildTokenWithAccount to support both numeric and string (UUID) UIDs
+    const token = RtcTokenBuilder.buildTokenWithAccount(
+      AGORA_APP_ID,
+      AGORA_APP_CERTIFICATE,
+      channelName,
+      uid.toString(),
+      roleNum,
+      privilegeExpiredTs
+    )
 
     // Log the call initiation
     await supabase

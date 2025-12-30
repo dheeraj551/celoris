@@ -22,6 +22,11 @@ import {
   Paperclip
 } from "lucide-react"
 import { usePresence } from "@/components/providers/PresenceProvider"
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
+
+const MSG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"
+const JOIN_SOUND = "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
+const LEAVE_SOUND = "https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3"
 
 interface Message {
   id: string
@@ -60,8 +65,10 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const { onlineUsers } = usePresence()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const wasOnlineRef = useRef<boolean>(false)
   const params = useParams()
   const router = useRouter()
 
@@ -81,6 +88,24 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    if (!match) return
+    const isOnline = onlineUsers.has(match.user.id)
+    if (wasOnlineRef.current !== isOnline) {
+      if (isOnline) {
+        new Audio(JOIN_SOUND).play().catch(() => { })
+      } else {
+        new Audio(LEAVE_SOUND).play().catch(() => { })
+      }
+      wasOnlineRef.current = isOnline
+    }
+  }, [onlineUsers, match])
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    setNewMessage(prev => prev + emojiData.emoji)
+    setShowEmojiPicker(false)
+  }
 
   const checkAuthAndLoadMatch = async () => {
     try {
@@ -193,6 +218,10 @@ export default function ChatPage() {
         setMessages(prev => {
           // Prevent duplicates
           if (prev.some(m => m.id === payload.new.id)) return prev
+          // Play sound for incoming message
+          if (payload.new.sender_id !== user?.id) {
+            new Audio(MSG_SOUND).play().catch(() => { })
+          }
           return [...prev, payload.new as Message]
         })
       })
@@ -426,9 +455,17 @@ export default function ChatPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               disabled={sending}
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            >
               <Smile className="w-5 h-5" />
             </button>
+            {showEmojiPicker && (
+              <div className="absolute bottom-16 right-0 z-50">
+                <EmojiPicker onEmojiClick={onEmojiClick} />
+              </div>
+            )}
           </div>
 
           {newMessage.trim() ? (

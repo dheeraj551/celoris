@@ -68,7 +68,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                     ? '/courses/rag-unlocked-production-grade-search-answer-systems'
                                                                                     : id === 'llm-prompt-engineering-static'
                                                                                         ? '/courses/llm-prompt-engineering-for-real-results'
-                                                                                        : `/learn/course/${id}`
+                                                                                        : id === 'deploy-scale-ai-static'
+                                                                                            ? '/courses/deploy-scale-ai-apps-serverless-edge'
+                                                                                            : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -117,12 +119,24 @@ export const Courses: React.FC<CoursesProps> = ({
             static_url: '/courses/rag-unlocked-production-grade-search-answer-systems'
         },
         {
+            id: 'deploy-scale-ai-static',
+            title: 'Deploy & Scale AI Apps (Serverless + Edge)',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '10 hours',
+            price: 15000,
+            is_featured: true,
+            course_image_url: '/deploy-scale-ai-apps-cover.png',
+            is_static: true,
+            static_url: '/courses/deploy-scale-ai-apps-serverless-edge'
+        },
+        {
             id: 'llm-prompt-engineering-static',
             title: 'LLM Prompt Engineering for Real Results',
             subject: 'Artificial Intelligence',
             instructor_name: 'Celoris Designs llp',
             course_duration: '12 hours',
-            price: '$499',
+            price: 15000,
             is_featured: true,
             course_image_url: '/llm-prompt-engineering-cover.png',
             is_static: true,

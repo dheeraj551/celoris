@@ -186,7 +186,7 @@ export default function DiscoverPage() {
         .select('*')
         .eq('swiper_id', currentProfile.user_id)
         .eq('target_user_id', user.id)
-        .eq('direction', 'right')
+        .eq('direction', 'like')
         .single()
 
       if (oppositeSwipe) {
@@ -235,7 +235,7 @@ export default function DiscoverPage() {
         .select('*')
         .eq('swiper_id', currentProfile.user_id)
         .eq('target_user_id', user.id)
-        .eq('direction', 'right')
+        .eq('direction', 'like')
         .single()
 
       if (oppositeSwipe) {
