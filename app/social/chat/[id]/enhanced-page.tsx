@@ -108,9 +108,11 @@ export default function EnhancedChatPage() {
   const router = useRouter()
 
   const matchId = params.id as string
+  const { user: currentUser } = useAuth()
 
   useEffect(() => {
     if (currentUser) {
+      setUser(currentUser)
       loadMatch()
     }
   }, [matchId, currentUser])
@@ -151,14 +153,7 @@ export default function EnhancedChatPage() {
     }
   }, [isTyping])
 
-  const { user: currentUser } = useAuth()
 
-  useEffect(() => {
-    if (currentUser) {
-      setUser(currentUser)
-      loadMatch()
-    }
-  }, [matchId, currentUser])
 
   const loadMatch = async () => {
     if (!currentUser) return
