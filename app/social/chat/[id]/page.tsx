@@ -22,6 +22,7 @@ import {
   Paperclip
 } from "lucide-react"
 import { usePresence } from "@/components/providers/PresenceProvider"
+import { useAuth } from "@/components/providers/AuthProvider"
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 
 const MSG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"
@@ -74,9 +75,14 @@ export default function ChatPage() {
 
   const matchId = params.id as string
 
+  const { user: currentUser } = useAuth()
+
   useEffect(() => {
-    checkAuthAndLoadMatch()
-  }, [matchId])
+    if (currentUser) {
+      setUser(currentUser)
+      loadMatch()
+    }
+  }, [matchId, currentUser])
 
   useEffect(() => {
     if (match) {
@@ -107,18 +113,10 @@ export default function ChatPage() {
     setShowEmojiPicker(false)
   }
 
-  const checkAuthAndLoadMatch = async () => {
+  const loadMatch = async () => {
+    if (!currentUser) return
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push('/login')
-        return
-      }
-
-      setUser(user)
-
       // Load match data
       const { data: matchData, error: matchError } = await supabase
         .from('matches')
@@ -130,7 +128,7 @@ export default function ChatPage() {
 
       if (matchData) {
         const match = matchData as any
-        const otherUserId = match.user1_id === user.id ? match.user2_id : match.user1_id
+        const otherUserId = match.user1_id === currentUser.id ? match.user2_id : match.user1_id
 
         // Fetch other user details
         const { data: otherUser } = await supabase

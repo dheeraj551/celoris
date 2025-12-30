@@ -14,6 +14,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import { useMemo } from "react"
 import {
     Send,
     ArrowLeft,
@@ -79,13 +80,28 @@ const ROOM_DETAILS: Record<string, { title: string, description: string, color: 
     }
 }
 
+import { useAuth } from "@/components/providers/AuthProvider"
+
 export default function PublicRoomPage() {
     const params = useParams()
     const router = useRouter()
     const roomId = params.roomId as string
     const room = ROOM_DETAILS[roomId] || { title: "Unknown Room", description: "", color: "bg-slate-500" }
 
-    const [user, setUser] = useState<any>(null)
+    const { user: authUser, profile: userProfileData, loading: authLoading } = useAuth()
+
+    const user = useMemo<UserProfile | null>(() => {
+        if (!authUser || !userProfileData) return null
+        return {
+            id: authUser.id,
+            name: userProfileData.full_name || authUser.email?.split('@')[0] || 'Anonymous',
+            avatar_url: userProfileData.profile_pic_url,
+            is_verified: userProfileData.verification_status === 'verified'
+        }
+    }, [authUser, userProfileData])
+
+    const isLoaded = !authLoading && !!user
+
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [newMessage, setNewMessage] = useState("")
     const [onlineCount, setOnlineCount] = useState(1)
@@ -98,7 +114,6 @@ export default function PublicRoomPage() {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
 
-    const [isLoaded, setIsLoaded] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
     // Invite & Private Room State
@@ -111,35 +126,10 @@ export default function PublicRoomPage() {
     const isPrivate = roomId.startsWith('private-')
 
     useEffect(() => {
-        // 1. Check Auth and Get User Profile
-        const initUser = async () => {
-            const supabase = createClient()
-            const { data: { user: authUser } } = await supabase.auth.getUser()
-
-            if (!authUser) {
-                router.push('/login')
-                return
-            }
-
-            const { data: profile } = await supabase
-                .from('users')
-                .select('full_name, profile_pic_url, verification_status')
-                .eq('id', authUser.id)
-                .single()
-
-            const userProfile: UserProfile = {
-                id: authUser.id,
-                name: profile?.full_name || authUser.email?.split('@')[0] || 'Anonymous',
-                avatar_url: profile?.profile_pic_url,
-                is_verified: profile?.verification_status === 'verified'
-            }
-
-            setUser(userProfile)
-            setIsLoaded(true)
+        if (!authLoading && !authUser) {
+            router.push('/login')
         }
-
-        initUser()
-    }, [router])
+    }, [authUser, authLoading, router])
 
     useEffect(() => {
         // Tracker for Global Rooms
@@ -411,7 +401,7 @@ export default function PublicRoomPage() {
     }
 
     const acceptInvite = async () => {
-        if (!incomingInvite || !channelRef.current) return
+        if (!incomingInvite || !channelRef.current || !user) return
 
         const newRoomId = `private-${incomingInvite.inviteId}`
 
@@ -429,7 +419,7 @@ export default function PublicRoomPage() {
     }
 
     const rejectInvite = async () => {
-        if (!incomingInvite || !channelRef.current) return
+        if (!incomingInvite || !channelRef.current || !user) return
 
         await channelRef.current.send({
             type: 'broadcast',

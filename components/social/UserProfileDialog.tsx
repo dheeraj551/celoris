@@ -37,9 +37,11 @@ interface UserProfileDialogProps {
     onOpenChange: (open: boolean) => void
 }
 
+import { useAuth } from "@/components/providers/AuthProvider"
+
 export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDialogProps) {
+    const { user: currentUser } = useAuth()
     const [profile, setProfile] = useState<any>(null)
-    const [currentUser, setCurrentUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [requestSent, setRequestSent] = useState(false)
@@ -82,10 +84,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
             setLoading(true)
             const supabase = createClient()
 
-            // Get current user
-            const { data: { user } } = await supabase.auth.getUser()
-            setCurrentUser(user)
-
             // Fetch profile by ID
             const { data: profileData, error: profileError } = await supabase
                 .from('users')
@@ -102,12 +100,12 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
             setProfile(profileData)
 
-            if (user && profileData) {
+            if (currentUser && profileData) {
                 // Check if they are already friends (matched)
                 const { data: match } = await supabase
                     .from('matches')
                     .select('*')
-                    .or(`and(user1_id.eq.${user.id},user2_id.eq.${profileData.id}),and(user1_id.eq.${profileData.id},user2_id.eq.${user.id})`)
+                    .or(`and(user1_id.eq.${currentUser.id},user2_id.eq.${profileData.id}),and(user1_id.eq.${profileData.id},user2_id.eq.${currentUser.id})`)
                     .maybeSingle()
 
                 if (match) {
@@ -117,7 +115,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     const { data: swipe } = await supabase
                         .from('swipes')
                         .select('*')
-                        .eq('swiper_id', user.id)
+                        .eq('swiper_id', currentUser.id)
                         .eq('target_user_id', profileData.id)
                         .eq('direction', 'like')
                         .maybeSingle()
@@ -131,7 +129,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                 const { data: like } = await supabase
                     .from('swipes')
                     .select('*')
-                    .eq('swiper_id', user.id)
+                    .eq('swiper_id', currentUser.id)
                     .eq('target_user_id', profileData.id)
                     .eq('direction', 'like')
                     .maybeSingle()
@@ -144,7 +142,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                 const { data: block } = await supabase
                     .from('blocked_users')
                     .select('*')
-                    .eq('blocker_id', user.id)
+                    .eq('blocker_id', currentUser.id)
                     .eq('blocked_id', profileData.id)
                     .maybeSingle()
 

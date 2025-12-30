@@ -26,6 +26,7 @@ import {
   PhoneCall,
   VideoIcon
 } from "lucide-react"
+import { useAuth } from "@/components/providers/AuthProvider"
 
 // Simple toast function
 const toast = {
@@ -109,8 +110,10 @@ export default function EnhancedChatPage() {
   const matchId = params.id as string
 
   useEffect(() => {
-    checkAuthAndLoadMatch()
-  }, [matchId])
+    if (currentUser) {
+      loadMatch()
+    }
+  }, [matchId, currentUser])
 
   useEffect(() => {
     if (match) {
@@ -148,18 +151,19 @@ export default function EnhancedChatPage() {
     }
   }, [isTyping])
 
-  const checkAuthAndLoadMatch = async () => {
+  const { user: currentUser } = useAuth()
+
+  useEffect(() => {
+    if (currentUser) {
+      setUser(currentUser)
+      loadMatch()
+    }
+  }, [matchId, currentUser])
+
+  const loadMatch = async () => {
+    if (!currentUser) return
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push('/login')
-        return
-      }
-
-      setUser(user)
-
       // Load match data
       const { data: matchData } = await supabase
         .from('matches')
@@ -178,7 +182,7 @@ export default function EnhancedChatPage() {
           user1: Match['user']
           user2: Match['user']
         }
-        const otherUser = matchWithUsers.user1_id === user.id ? matchWithUsers.user2 : matchWithUsers.user1
+        const otherUser = matchWithUsers.user1_id === currentUser.id ? matchWithUsers.user2 : matchWithUsers.user1
         setMatch({ ...matchWithUsers, user: otherUser })
       }
     } catch (error) {
@@ -524,8 +528,8 @@ export default function EnhancedChatPage() {
             <div className="flex items-center space-x-2">
               {/* Connection Status */}
               <div className={`w-2 h-2 rounded-full ${onlineStatus === 'connected' ? 'bg-green-500' :
-                  onlineStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
-                    'bg-red-500'
+                onlineStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
+                  'bg-red-500'
                 }`} />
 
               {/* <Button variant="ghost" size="sm" onClick={startVoiceCall}>
@@ -553,8 +557,8 @@ export default function EnhancedChatPage() {
                   <div key={message.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs lg:max-w-md ${isOwn ? 'order-2' : 'order-1'}`}>
                       <div className={`px-4 py-2 rounded-2xl ${isOwn
-                          ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
-                          : 'bg-white text-gray-800 shadow-sm'
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
+                        : 'bg-white text-gray-800 shadow-sm'
                         }`}>
                         <p>{message.content}</p>
                       </div>
