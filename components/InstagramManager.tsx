@@ -82,26 +82,38 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
 
     try {
       setIsUploading(true);
+      const supabase = createClient();
 
-      const formData = new FormData();
-      formData.append('file', file);
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const filePath = fileName;
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      // Upload to Supabase Storage
+      const { data, error: uploadError } = await supabase.storage
+        .from('post-media')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Upload failed');
+      if (uploadError) {
+        if (uploadError.message === 'Bucket not found') {
+          throw new Error('Support bucket "post-media" not found. Please ensure a public bucket named "post-media" exists in your Supabase dashboard.');
+        }
+        throw uploadError;
       }
 
-      const data = await response.json();
-      setMediaUrl(data.url);
-      setPostType('image');
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('post-media')
+        .getPublicUrl(filePath);
+
+      setMediaUrl(publicUrl);
+      setPostType(file.type.startsWith('video/') ? 'video' : 'image');
     } catch (error: any) {
       console.error('Error uploading file:', error);
-      alert(`Failed to upload image: ${error.message}`);
+      alert(`Failed to upload media: ${error.message}`);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -195,7 +207,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
             <CardHeader>
               <CardTitle>Create New Post</CardTitle>
               <CardDescription>
-                Share content by pasting a direct link to an Image or Video URL.
+                Upload an image or video to share on your profile.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -203,90 +215,57 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
                 <Label>Media Content</Label>
 
                 {/* Upload Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="w-full">
                   <div
                     onClick={() => fileInputRef.current?.click()}
                     className={`
                       relative aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all
-                      ${mediaUrl && postType === 'image' ? 'border-primary-500 bg-primary-50/50' : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'}
+                      ${mediaUrl ? 'border-primary-500 bg-primary-50/50' : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'}
                     `}
                   >
                     <input
                       type="file"
                       ref={fileInputRef}
                       onChange={handleFileUpload}
-                      accept="image/*"
+                      accept="image/*,video/*"
                       className="hidden"
                     />
 
                     {isUploading ? (
                       <div className="flex flex-col items-center space-y-2">
                         <Loader2 className="h-8 w-8 text-primary-500 animate-spin" />
-                        <span className="text-sm font-medium text-gray-600">Uploading to folder...</span>
+                        <span className="text-sm font-medium text-gray-600">Uploading to post-media...</span>
                       </div>
-                    ) : mediaUrl && postType === 'image' ? (
+                    ) : mediaUrl ? (
                       <div className="relative w-full h-full p-2">
-                        <img
-                          src={mediaUrl}
-                          alt="Preview"
-                          className="w-full h-full object-contain rounded-lg"
-                        />
-                        <div className="absolute top-2 right-2 bg-primary-500 text-white p-1 rounded-full">
-                          <Plus className="h-4 w-4 rotate-45" onClick={(e) => { e.stopPropagation(); setMediaUrl(''); }} />
+                        {postType === 'video' ? (
+                          <video
+                            src={mediaUrl}
+                            className="w-full h-full object-contain rounded-lg"
+                            controls
+                          />
+                        ) : (
+                          <img
+                            src={mediaUrl}
+                            alt="Preview"
+                            className="w-full h-full object-contain rounded-lg"
+                          />
+                        )}
+                        <div className="absolute top-4 right-4 bg-primary-500 text-white p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform" onClick={(e) => { e.stopPropagation(); setMediaUrl(''); }}>
+                          <Plus className="h-4 w-4 rotate-45" />
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                          <Upload className="h-6 w-6 text-primary-600" />
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+                          <Upload className="h-8 w-8 text-primary-600" />
                         </div>
                         <div className="text-center px-4">
-                          <span className="block text-sm font-semibold text-gray-900">Upload Image</span>
+                          <span className="block text-base font-semibold text-gray-900">Click to upload media</span>
+                          <span className="block text-sm text-gray-500 mt-1">Images or Videos (max 5MB)</span>
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Or use an external URL</Label>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant={postType === 'video' ? 'default' : 'outline'}
-                          onClick={() => setPostType('video')}
-                          className="flex-1"
-                          size="sm"
-                        >
-                          <Video className="h-4 w-4 mr-2" />
-                          Video
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={postType === 'image' ? 'default' : 'outline'}
-                          onClick={() => setPostType('image')}
-                          className="flex-1"
-                          size="sm"
-                        >
-                          <ImageIcon className="h-4 w-4 mr-2" />
-                          Image
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="url" className="text-xs">Direct Link</Label>
-                      <Input
-                        id="url"
-                        placeholder={
-                          postType === 'video' ? 'https://example.com/video.mp4' :
-                            'https://example.com/image.jpg'
-                        }
-                        value={mediaUrl}
-                        onChange={(e) => setMediaUrl(e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -305,7 +284,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
               <Button
                 onClick={handleCreatePost}
                 disabled={!mediaUrl || isSubmitting}
-                className="w-full"
+                className="w-full h-11 text-base font-medium"
               >
                 {isSubmitting ? 'Creating...' : 'Create Post'}
               </Button>
