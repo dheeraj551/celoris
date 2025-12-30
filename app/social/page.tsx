@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase-client"
+import { useAuth } from "@/components/providers/AuthProvider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -25,37 +24,7 @@ import {
 } from "lucide-react"
 
 export default function SocialPage() {
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user) {
-        setUser(user)
-
-        // Get user profile from our custom users table
-        const { data: profile } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", user.id)
-          .single()
-
-        setProfile(profile)
-      }
-    } catch (error) {
-      console.error("Error checking auth:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { user, profile, loading } = useAuth()
 
   const platformFeatures = [
     {

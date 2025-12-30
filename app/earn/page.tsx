@@ -139,7 +139,7 @@ export default function EarnPage() {
         </div>
       </section>
 
-      <InterviewRooms />
+      {/* <InterviewRooms /> */}
 
       <AdUnit slot="9266909448" />
 

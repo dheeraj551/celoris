@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { 
-  MessageCircle, 
-  Video, 
-  Bell, 
+import {
+  MessageCircle,
+  Video,
+  Bell,
   MessageSquare,
   PhoneCall,
   VideoIcon,
@@ -61,9 +61,10 @@ interface RecentActivity {
   }
 }
 
+import { useAuth } from '@/components/providers/AuthProvider'
+
 export default function SocialPlatformDashboard() {
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const { user, profile, loading: authLoading } = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
   const [socialStats, setSocialStats] = useState<SocialStats>({
     totalMatches: 0,
@@ -78,26 +79,10 @@ export default function SocialPlatformDashboard() {
   const [showCallManager, setShowCallManager] = useState(false)
 
   useEffect(() => {
-    // Get current user
-    const supabase = createClientForBrowser()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-      
-      // Load user profile data
-      if (user) {
-        supabase
-          .from('social_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single()
-          .then(({ data: profileData }) => {
-            if (profileData) {
-              setProfile({ ...(profileData as any), id: user.id })
-            }
-          })
-      }
-    })
-  }, [])
+    if (profile) {
+      loadSocialData()
+    }
+  }, [profile])
 
   const loadSocialData = async () => {
     if (!profile) return
@@ -127,7 +112,7 @@ export default function SocialPlatformDashboard() {
 
       // Load social statistics
       await loadSocialStats(supabase)
-      
+
       // Load recent activity
       await loadRecentActivity(supabase)
 
@@ -331,10 +316,9 @@ export default function SocialPlatformDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="calls">Calls</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
           </TabsList>
@@ -406,8 +390,8 @@ export default function SocialPlatformDashboard() {
                     {recentActivity.map((activity) => (
                       <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         {activity.user?.avatar_url ? (
-                          <img 
-                            src={activity.user.avatar_url} 
+                          <img
+                            src={activity.user.avatar_url}
                             alt={activity.user.full_name}
                             className="w-10 h-10 rounded-full object-cover"
                           />
@@ -418,7 +402,7 @@ export default function SocialPlatformDashboard() {
                             </span>
                           </div>
                         )}
-                        
+
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
                             {getActivityIcon(activity.type)}
@@ -450,7 +434,7 @@ export default function SocialPlatformDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button 
+                  <Button
                     onClick={() => window.location.href = '/social/swipe'}
                     className="h-20 flex-col space-y-2"
                     variant="outline"
@@ -458,17 +442,17 @@ export default function SocialPlatformDashboard() {
                     <Heart className="w-6 h-6 text-pink-500" />
                     <span>Start Swiping</span>
                   </Button>
-                  
-                  <Button 
+
+                  {/* <Button 
                     onClick={() => window.location.href = '/social/matches'}
                     className="h-20 flex-col space-y-2"
                     variant="outline"
                   >
                     <Users className="w-6 h-6 text-blue-500" />
                     <span>View Matches</span>
-                  </Button>
-                  
-                  <Button 
+                  </Button> */}
+
+                  <Button
                     onClick={() => window.location.href = '/social/profile'}
                     className="h-20 flex-col space-y-2"
                     variant="outline"
@@ -476,8 +460,8 @@ export default function SocialPlatformDashboard() {
                     <Settings className="w-6 h-6 text-gray-500" />
                     <span>Edit Profile</span>
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={() => setActiveTab('notifications')}
                     className="h-20 flex-col space-y-2"
                     variant="outline"
@@ -508,8 +492,8 @@ export default function SocialPlatformDashboard() {
                           <div className="relative">
                             <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-pink-200 to-purple-200">
                               {match.otherUser.avatar_url ? (
-                                <img 
-                                  src={match.otherUser.avatar_url} 
+                                <img
+                                  src={match.otherUser.avatar_url}
                                   alt={match.otherUser.full_name}
                                   className="w-full h-full object-cover"
                                 />
@@ -523,7 +507,7 @@ export default function SocialPlatformDashboard() {
                             </div>
                             {/* Online indicator would go here */}
                           </div>
-                          
+
                           <div>
                             <h3 className="font-medium text-gray-800 flex items-center space-x-2">
                               <span>{match.otherUser.full_name}</span>
@@ -538,27 +522,34 @@ export default function SocialPlatformDashboard() {
                             )}
                           </div>
                         </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleStartCall(match.id, false)}
-                          >
-                            <Phone className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleStartCall(match.id, true)}
-                          >
-                            <Video className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => window.location.href = `/social/chat/${match.id}`}
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                          </Button>
-                        </div>
+
+                        {/* <div className="flex items-center space-x-2">
+                           <Button
+                             size="sm"
+                             onClick={() => handleStartCall(match.id, false)}
+                           >
+                             <Phone className="w-4 h-4" />
+                           </Button>
+                           <Button
+                             size="sm"
+                             onClick={() => handleStartCall(match.id, true)}
+                           >
+                             <Video className="w-4 h-4" />
+                           </Button>
+                           <Button
+                             size="sm"
+                             onClick={() => window.location.href = `/social/chat/${match.id}`}
+                           >
+                             <MessageCircle className="w-4 h-4" />
+                           </Button>
+                         </div> */}
+                        <Button
+                          size="sm"
+                          onClick={() => window.location.href = `/social/chat/${match.id}`}
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Chat
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -567,7 +558,7 @@ export default function SocialPlatformDashboard() {
                     <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-800 mb-2">No matches yet</h3>
                     <p className="text-gray-600">Start swiping to find your matches!</p>
-                    <Button 
+                    <Button
                       onClick={() => window.location.href = '/social/swipe'}
                       className="mt-4"
                     >
@@ -603,7 +594,7 @@ export default function SocialPlatformDashboard() {
                     <p className="text-gray-600">
                       Start a video or voice call with your matches. All calls are powered by Agora for high-quality communication.
                     </p>
-                    
+
                     {matches.length > 0 && (
                       <div className="space-y-2">
                         <h4 className="font-medium">Available for calls:</h4>
@@ -612,15 +603,15 @@ export default function SocialPlatformDashboard() {
                             <div key={match.id} className="flex items-center justify-between p-3 border rounded-lg">
                               <span>{match.otherUser.full_name}</span>
                               <div className="space-x-2">
-                                <Button 
-                                  size="sm" 
+                                <Button
+                                  size="sm"
                                   variant="outline"
                                   onClick={() => handleStartCall(match.id, false)}
                                 >
                                   <Phone className="w-4 h-4 mr-1" />
                                   Voice
                                 </Button>
-                                <Button 
+                                <Button
                                   size="sm"
                                   onClick={() => handleStartCall(match.id, true)}
                                 >
@@ -633,13 +624,13 @@ export default function SocialPlatformDashboard() {
                         </div>
                       </div>
                     )}
-                    
+
                     {matches.length === 0 && (
                       <div className="text-center py-8">
                         <PhoneCall className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-800 mb-2">No matches to call</h3>
                         <p className="text-gray-600">Match with someone to start calling!</p>
-                        <Button 
+                        <Button
                           onClick={() => window.location.href = '/social/swipe'}
                           className="mt-4"
                         >
@@ -656,14 +647,14 @@ export default function SocialPlatformDashboard() {
           {/* Notifications Tab */}
           <TabsContent value="notifications" className="space-y-6">
             <div className="grid gap-6">
-              <PushNotificationManager 
+              <PushNotificationManager
                 onNotificationReceived={(notification) => {
                   console.log('Notification received:', notification)
                   toast.info('New notification received!')
                 }}
               />
-              
-              <WhatsAppIntegration 
+
+              <WhatsAppIntegration
                 userPhone="+1234567890"
                 onMessageSent={(success, messageId) => {
                   if (success) {

@@ -67,11 +67,13 @@ interface Request {
   }
 }
 
+import { useAuth } from "@/components/providers/AuthProvider"
+
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([])
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
+  const { user, profile } = useAuth()
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends')
@@ -80,20 +82,15 @@ export default function MatchesPage() {
   const router = useRouter()
 
   useEffect(() => {
-    checkAuthAndLoadData()
-  }, [])
+    if (user) {
+      loadData()
+    }
+  }, [user])
 
-  const checkAuthAndLoadData = async () => {
+  const loadData = async () => {
+    if (!user) return
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push('/login')
-        return
-      }
-
-      setUser(user)
       console.log('Matches Page - Current User:', user.id)
 
       // 1. Load Matches (Friends) from users table

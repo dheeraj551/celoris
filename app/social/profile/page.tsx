@@ -26,8 +26,10 @@ import {
 } from "lucide-react"
 
 
+import { useAuth } from "@/components/providers/AuthProvider"
+
 export default function SocialProfilePage() {
-  const [user, setUser] = useState<any>(null)
+  const { user, profile: authProfile, refreshProfile } = useAuth()
   const [profile, setProfile] = useState<any>(null)
   const [preferences, setPreferences] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -37,6 +39,7 @@ export default function SocialProfilePage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     username: '',
@@ -80,9 +83,7 @@ export default function SocialProfilePage() {
     try {
       setUploadingPhoto(true)
       const supabase = createClient()
-
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser()
+      // Use user from context
       if (!user) {
         setMessage({ type: 'error', text: 'User not authenticated' })
         return
@@ -118,13 +119,13 @@ export default function SocialProfilePage() {
       }
 
       // Refresh profile data
-      await checkAuthAndLoadProfile()
+      await loadProfile()
+      if (refreshProfile) refreshProfile()
 
       setMessage({ type: 'success', text: 'Profile photo updated successfully!' })
       console.log('Profile photo uploaded successfully. New URL:', publicUrl)
     } catch (error) {
       console.error('Error uploading photo:', error)
-      console.error('Error details:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       setMessage({ type: 'error', text: `Failed to upload photo: ${errorMessage || 'Please try again.'}` })
     } finally {
@@ -142,20 +143,15 @@ export default function SocialProfilePage() {
   }
 
   useEffect(() => {
-    checkAuthAndLoadProfile()
-  }, [])
+    if (user) {
+      loadProfile()
+    }
+  }, [user])
 
-  const checkAuthAndLoadProfile = async () => {
+  const loadProfile = async () => {
+    if (!user) return
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push('/login')
-        return
-      }
-
-      setUser(user)
 
       // Load user profile - use maybeSingle() to handle cases where profile doesn't exist
       const { data: profile, error: profileError } = await supabase
@@ -269,6 +265,11 @@ export default function SocialProfilePage() {
   }
 
   const handleSave = async () => {
+    if (!user) {
+      setMessage({ type: 'error', text: 'You must be logged in to save your profile.' })
+      return
+    }
+
     setSaving(true)
     setMessage({ type: '', text: '' })
 
@@ -311,7 +312,8 @@ export default function SocialProfilePage() {
 
       // Refresh data
       setTimeout(() => {
-        checkAuthAndLoadProfile()
+        loadProfile()
+        if (refreshProfile) refreshProfile()
       }, 1000)
 
     } catch (error) {
@@ -330,7 +332,7 @@ export default function SocialProfilePage() {
     'pets', 'cars', 'architecture', 'culture', 'history', 'science'
   ]
 
-  const router = useRouter()
+
 
   if (loading) {
     return (

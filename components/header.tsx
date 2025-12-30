@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, User, LogOut, Heart, Users, User as UserIcon, Wallet, ThumbsUp } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase-client"
+// removed createClient import as it is handled in useAuth
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/components/providers/AuthProvider"
 
 const publicNavigation = [
   { name: "Home", href: "/" },
@@ -41,64 +42,11 @@ const authenticatedNavigation = [
 export default function Header() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user) {
-        setUser(user)
-
-        // Get user profile from our custom users table
-        const { data: profile } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", user.id)
-          .single()
-
-        if (profile) {
-          const profileAny = profile as any
-          if (profileAny.profile_pic_url) {
-            // Check if profile_pic_url is already a full URL
-            if (profileAny.profile_pic_url.startsWith('http://') || profileAny.profile_pic_url.startsWith('https://')) {
-              profileAny.avatar_url = profileAny.profile_pic_url
-            } else {
-              // Get profile image URL from avatars bucket if it's a storage path
-              const { data: publicUrlData } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(profileAny.profile_pic_url)
-
-              profileAny.avatar_url = publicUrlData.publicUrl
-            }
-          }
-        }
-
-        setProfile(profile)
-      }
-    } catch (error) {
-      console.error("Error checking auth:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { user, profile, loading, signOut } = useAuth()
 
   const handleSignOut = async () => {
     try {
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      // Clear local state
-      setUser(null)
-      setProfile(null)
-      // Redirect to home page
-      window.location.href = "/"
+      await signOut()
     } catch (error) {
       console.error("Error signing out:", error)
     }

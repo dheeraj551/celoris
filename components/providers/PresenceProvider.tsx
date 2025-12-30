@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase-client'
+import { useAuth } from './AuthProvider'
 
 interface PresenceContextType {
     onlineUsers: Set<string>
@@ -15,27 +16,8 @@ export const usePresence = () => useContext(PresenceContext)
 
 export function PresenceProvider({ children }: { children: React.ReactNode }) {
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set())
-    const [userId, setUserId] = useState<string | null>(null)
-
-    useEffect(() => {
-        const supabase = createClient()
-
-        // Get current user
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            if (user) {
-                setUserId(user.id)
-            }
-        })
-
-        // Listen for auth changes
-        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUserId(session?.user?.id || null)
-        })
-
-        return () => {
-            authSubscription.unsubscribe()
-        }
-    }, [])
+    const { user } = useAuth()
+    const userId = user?.id
 
     useEffect(() => {
         if (!userId) return

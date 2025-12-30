@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { AuthProvider } from "@/components/providers/AuthProvider"
 import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
@@ -98,16 +99,18 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ReCaptchaProvider siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
-          <PresenceProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-              <AdUnit slot="6910734069" format="horizontal" className="mb-4" />
-              <Footer />
-            </div>
-          </PresenceProvider>
+          <AuthProvider>
+            <PresenceProvider>
+              <div className="min-h-screen flex flex-col">
+                <Header />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <AdUnit slot="6910734069" format="horizontal" className="mb-4" />
+                <Footer />
+              </div>
+            </PresenceProvider>
+          </AuthProvider>
           <Toaster />
         </ReCaptchaProvider>
       </body>

@@ -26,8 +26,10 @@ interface SocialPost {
   caption: string
 }
 
+import { useAuth } from "@/components/providers/AuthProvider"
+
 export default function DiscoverPage() {
-  const [user, setUser] = useState<any>(null)
+  const { user, profile } = useAuth()
   const [profiles, setProfiles] = useState<UserProfile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -39,8 +41,10 @@ export default function DiscoverPage() {
   const currentProfile = profiles[currentIndex]
 
   useEffect(() => {
-    checkAuthAndLoadProfiles()
-  }, [])
+    if (user) {
+      loadProfiles()
+    }
+  }, [user])
 
   useEffect(() => {
     if (currentProfile) {
@@ -48,18 +52,10 @@ export default function DiscoverPage() {
     }
   }, [currentIndex, currentProfile])
 
-  const checkAuthAndLoadProfiles = async () => {
+  const loadProfiles = async () => {
+    if (!user) return
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        console.log('No authenticated user found')
-        router.push('/login')
-        return
-      }
-
-      setUser(user)
       console.log('Current user:', user.id)
 
       // Get IDs of users already swiped on

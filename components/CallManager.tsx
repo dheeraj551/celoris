@@ -4,13 +4,13 @@ import { useState, useEffect, useRef } from 'react'
 import { createClientForBrowser } from '@/lib/supabase-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  Phone, 
-  PhoneOff, 
+import {
+  Video,
+  VideoOff,
+  Mic,
+  MicOff,
+  Phone,
+  PhoneOff,
   Monitor,
   Volume2,
   VolumeX
@@ -62,7 +62,7 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [callDuration, setCallDuration] = useState(0)
   const [connectionState, setConnectionState] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected')
-  
+
   const clientRef = useRef<any>(null)
   const localVideoRef = useRef<HTMLDivElement>(null)
   const remoteVideoRef = useRef<HTMLDivElement>(null)
@@ -73,7 +73,7 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
   useEffect(() => {
     const loadAgoraScript = () => {
       if (typeof window === 'undefined') return;
-      
+
       if (window.AgoraRTC) {
         initializeAgora()
         return
@@ -120,13 +120,13 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
 
       // Get Agora app ID from environment or use test ID
       const APP_ID = process.env.NEXT_PUBLIC_AGORA_APP_ID || 'test-app-id'
-      
+
       // Create Agora client instance
       const client = AgoraRTC.createClient({
         mode: 'rtc',
         codec: 'vp8'
       })
-      
+
       clientRef.current = client
 
       // Set up event listeners
@@ -137,8 +137,8 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
       client.on('connection-state-change', (curState: string) => {
         console.log('Agora connection state:', curState)
         if (isMountedRef.current) {
-          setConnectionState(curState === 'CONNECTED' ? 'connected' : 
-                           curState === 'CONNECTING' ? 'connecting' : 'disconnected')
+          setConnectionState(curState === 'CONNECTED' ? 'connected' :
+            curState === 'CONNECTING' ? 'connecting' : 'disconnected')
         }
       })
 
@@ -154,14 +154,14 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
       if (!clientRef.current) return
 
       await clientRef.current.subscribe(user, mediaType)
-      
+
       if (mediaType === 'video') {
         const remoteVideoTrack = user.videoTrack
         if (remoteVideoRef.current && isMountedRef.current) {
           remoteVideoTrack.play(remoteVideoRef.current)
         }
       }
-      
+
       if (mediaType === 'audio') {
         const remoteAudioTrack = user.audioTrack
         remoteAudioTrack.play()
@@ -170,16 +170,16 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
       setRemoteUsers(prev => {
         const existing = prev.find(p => p.uid === user.uid)
         if (existing) {
-          return prev.map(p => 
-            p.uid === user.uid 
+          return prev.map(p =>
+            p.uid === user.uid
               ? { ...p, [mediaType === 'video' ? 'videoTrack' : 'audioTrack']: user[mediaType + 'Track'] }
               : p
           )
         } else {
-          return [...prev, { 
-            uid: user.uid, 
+          return [...prev, {
+            uid: user.uid,
             [mediaType === 'video' ? 'videoTrack' : 'audioTrack']: user[mediaType + 'Track'],
-            user 
+            user
           }]
         }
       })
@@ -241,14 +241,14 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
       if (isVideoCall) {
         const videoTrack = await AgoraRTC.createCameraVideoTrack()
         const audioTrack = await AgoraRTC.createMicrophoneAudioTrack()
-        
+
         setLocalVideoTrack(videoTrack)
         setLocalAudioTrack(audioTrack)
-        
+
         if (localVideoRef.current && isMountedRef.current) {
           videoTrack.play(localVideoRef.current)
         }
-        
+
         // Publish tracks
         await clientRef.current.publish([videoTrack, audioTrack])
       } else {
@@ -259,7 +259,7 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
 
       setIsCallActive(true)
       setConnectionState('connected')
-      
+
       // Start call duration timer
       callTimerRef.current = setInterval(() => {
         if (isMountedRef.current) {
@@ -285,7 +285,7 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
         localVideoTrack.close()
         setLocalVideoTrack(null)
       }
-      
+
       if (localAudioTrack) {
         localAudioTrack.stop()
         localAudioTrack.close()
@@ -294,11 +294,11 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
 
       // Leave channel
       await clientRef.current.leave()
-      
+
       setIsCallActive(false)
       setRemoteUsers([])
       setConnectionState('disconnected')
-      
+
       if (callTimerRef.current) {
         clearInterval(callTimerRef.current)
         callTimerRef.current = null
@@ -355,12 +355,12 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
       if (!isScreenSharing) {
         const AgoraRTC = window.AgoraRTC
         const screenTrack = await AgoraRTC.createScreenVideoTrack()
-        
+
         await clientRef.current.unpublish([localVideoTrack])
         await clientRef.current.publish([screenTrack])
         setLocalVideoTrack(screenTrack)
         setIsScreenSharing(true)
-        
+
         screenTrack.on('track-ended', () => {
           // Screen share ended, revert to camera
           toggleScreenShare()
@@ -368,12 +368,12 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
       } else {
         const AgoraRTC = window.AgoraRTC
         const cameraTrack = await AgoraRTC.createCameraVideoTrack()
-        
+
         await clientRef.current.unpublish([localVideoTrack])
         await clientRef.current.publish([cameraTrack])
         setLocalVideoTrack(cameraTrack)
         setIsScreenSharing(false)
-        
+
         if (localVideoRef.current && isMountedRef.current) {
           cameraTrack.play(localVideoRef.current)
         }
@@ -390,125 +390,13 @@ export default function CallManager({ matchId, otherUserId, onCallEnd }: CallMan
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>
-            {isCallActive ? `Call (${formatDuration(callDuration)})` : 'Start a Call'}
-          </span>
-          <div className={`w-3 h-3 rounded-full ${
-            connectionState === 'connected' ? 'bg-green-500' :
-            connectionState === 'connecting' ? 'bg-yellow-500 animate-pulse' :
-            'bg-red-500'
-          }`} />
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-6">
-        {/* Video Area */}
-        {isCallActive && (
-          <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
-            {/* Remote Video */}
-            <div 
-              ref={remoteVideoRef}
-              className="w-full h-full"
-            />
-            
-            {/* Local Video (Picture-in-Picture) */}
-            {isVideoEnabled && (
-              <div className="absolute top-4 right-4 w-48 h-36 bg-gray-800 rounded-lg overflow-hidden border-2 border-white">
-                <div 
-                  ref={localVideoRef}
-                  className="w-full h-full"
-                />
-              </div>
-            )}
-            
-            {/* No Remote Video Message */}
-            {isCallActive && remoteUsers.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <Volume2 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <p>Waiting for other user to join...</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Call Controls */}
-        <div className="flex justify-center space-x-4">
-          {!isCallActive ? (
-            <>
-              <Button 
-                onClick={() => joinCall(true)}
-                disabled={connectionState === 'connecting'}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-              >
-                <Video className="w-5 h-5 mr-2" />
-                Video Call
-              </Button>
-              <Button 
-                onClick={() => joinCall(false)}
-                disabled={connectionState === 'connecting'}
-                variant="outline"
-              >
-                <Phone className="w-5 h-5 mr-2" />
-                Voice Call
-              </Button>
-            </>
-          ) : (
-            <>
-              {/* Video Toggle */}
-              <Button 
-                onClick={toggleVideo}
-                variant={isVideoEnabled ? "default" : "destructive"}
-                size="lg"
-              >
-                {isVideoEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
-              </Button>
-
-              {/* Audio Toggle */}
-              <Button 
-                onClick={toggleAudio}
-                variant={isAudioEnabled ? "default" : "destructive"}
-                size="lg"
-              >
-                {isAudioEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-              </Button>
-
-              {/* Screen Share */}
-              <Button 
-                onClick={toggleScreenShare}
-                variant={isScreenSharing ? "default" : "outline"}
-                size="lg"
-              >
-                <Monitor className="w-5 h-5" />
-              </Button>
-
-              {/* End Call */}
-              <Button 
-                onClick={endCall}
-                variant="destructive"
-                size="lg"
-              >
-                <PhoneOff className="w-5 h-5" />
-              </Button>
-            </>
-          )}
-        </div>
-
-        {/* Call Status */}
-        {isCallActive && (
-          <div className="text-center text-sm text-gray-600">
-            <p>
-              {connectionState === 'connected' ? 'Connected' : 
-               connectionState === 'connecting' ? 'Connecting...' : 
-               'Disconnected'}
-            </p>
-            <p>{remoteUsers.length} participant(s) in call</p>
-          </div>
-        )}
+    <Card className="w-full max-w-md mx-auto">
+      <CardContent className="p-8 text-center">
+        <VideoOff className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-slate-800 mb-2">Video Service Offline</h3>
+        <p className="text-slate-600">
+          Video and voice calling services are currently disabled.
+        </p>
       </CardContent>
     </Card>
   )

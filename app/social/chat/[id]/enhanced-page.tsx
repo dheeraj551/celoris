@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { 
+import {
   Send,
   Phone,
   Video,
@@ -98,9 +98,9 @@ export default function EnhancedChatPage() {
   const [otherUserTyping, setOtherUserTyping] = useState(false)
   const [typingUsers, setTypingUsers] = useState<TypingIndicator[]>([])
   const [userPresence, setUserPresence] = useState<UserPresence[]>([])
-  const [readReceipts, setReadReceipts] = useState<{[key: string]: string}>({})
+  const [readReceipts, setReadReceipts] = useState<{ [key: string]: string }>({})
   const [onlineStatus, setOnlineStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const params = useParams()
@@ -137,7 +137,7 @@ export default function EnhancedChatPage() {
         setIsTyping(false)
         sendTypingIndicator(false)
       }, 3000)
-      
+
       typingTimeoutRef.current = timeout
     }
 
@@ -152,7 +152,7 @@ export default function EnhancedChatPage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/login')
         return
@@ -191,7 +191,7 @@ export default function EnhancedChatPage() {
   const loadMessages = async () => {
     try {
       const supabase = createClient()
-      
+
       const { data } = await supabase
         .from('messages')
         .select('*')
@@ -200,9 +200,9 @@ export default function EnhancedChatPage() {
 
       if (data) {
         setMessages(data)
-        
+
         // Update read receipts
-        const receipts: {[key: string]: string} = {}
+        const receipts: { [key: string]: string } = {}
         data.forEach((message: Message) => {
           if (message.is_read && message.sender_id === user?.id) {
             receipts[message.id] = message.read_at || message.created_at
@@ -210,7 +210,7 @@ export default function EnhancedChatPage() {
         })
         setReadReceipts(receipts)
       }
-      
+
       // Mark messages as read
       await (supabase
         .from('messages') as any)
@@ -224,7 +224,7 @@ export default function EnhancedChatPage() {
 
   const setupAdvancedRealTimeSubscription = () => {
     const supabase = createClient()
-    
+
     // Messages subscription
     const messageSubscription = supabase
       .channel(`messages:${matchId}`)
@@ -236,7 +236,7 @@ export default function EnhancedChatPage() {
       }, (payload) => {
         const newMessage = payload.new as Message
         setMessages(prev => [...prev, newMessage])
-        
+
         // Mark as read if not our message
         if (newMessage.sender_id !== user?.id) {
           (supabase
@@ -245,7 +245,7 @@ export default function EnhancedChatPage() {
             .eq('id', newMessage.id)
             .single()
         }
-        
+
         // Send push notification
         if (match?.user) {
           sendPushNotification(newMessage)
@@ -266,7 +266,7 @@ export default function EnhancedChatPage() {
         event: 'typing'
       }, (payload) => {
         const { userId, isTyping } = payload.payload as { userId: string, isTyping: boolean }
-        
+
         if (userId !== user?.id) {
           if (isTyping) {
             setOtherUserTyping(true)
@@ -348,7 +348,7 @@ export default function EnhancedChatPage() {
 
   const handleMessageChange = (value: string) => {
     setNewMessage(value)
-    
+
     if (!isTyping && value.trim()) {
       setIsTyping(true)
       sendTypingIndicator(true)
@@ -383,7 +383,7 @@ export default function EnhancedChatPage() {
         .eq('id', matchId)
 
       setNewMessage('')
-      
+
       // Send push notification
       if (match?.user) {
         sendPushNotification({
@@ -392,7 +392,7 @@ export default function EnhancedChatPage() {
           message_type: 'text'
         } as Message)
       }
-      
+
     } catch (error) {
       console.error('Error sending message:', error)
       toast.error('Failed to send message')
@@ -485,7 +485,7 @@ export default function EnhancedChatPage() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-pink-200 to-purple-200">
@@ -503,7 +503,7 @@ export default function EnhancedChatPage() {
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                   )}
                 </div>
-                
+
                 <div>
                   <h2 className="font-bold text-gray-800 flex items-center space-x-2">
                     <span>{match.user.full_name}</span>
@@ -523,18 +523,17 @@ export default function EnhancedChatPage() {
 
             <div className="flex items-center space-x-2">
               {/* Connection Status */}
-              <div className={`w-2 h-2 rounded-full ${
-                onlineStatus === 'connected' ? 'bg-green-500' :
-                onlineStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
-                'bg-red-500'
-              }`} />
-              
-              <Button variant="ghost" size="sm" onClick={startVoiceCall}>
+              <div className={`w-2 h-2 rounded-full ${onlineStatus === 'connected' ? 'bg-green-500' :
+                  onlineStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
+                    'bg-red-500'
+                }`} />
+
+              {/* <Button variant="ghost" size="sm" onClick={startVoiceCall}>
                 <Phone className="w-5 h-5" />
               </Button>
               <Button variant="ghost" size="sm" onClick={startVideoCall}>
                 <VideoIcon className="w-5 h-5" />
-              </Button>
+              </Button> */}
               <Button variant="ghost" size="sm">
                 <MoreVertical className="w-5 h-5" />
               </Button>
@@ -553,17 +552,15 @@ export default function EnhancedChatPage() {
                 return (
                   <div key={message.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs lg:max-w-md ${isOwn ? 'order-2' : 'order-1'}`}>
-                      <div className={`px-4 py-2 rounded-2xl ${
-                        isOwn 
-                          ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white' 
+                      <div className={`px-4 py-2 rounded-2xl ${isOwn
+                          ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
                           : 'bg-white text-gray-800 shadow-sm'
-                      }`}>
+                        }`}>
                         <p>{message.content}</p>
                       </div>
                       <div className="flex items-center justify-between mt-1 px-2">
-                        <p className={`text-xs ${
-                          isOwn ? 'text-gray-200' : 'text-gray-500'
-                        }`}>
+                        <p className={`text-xs ${isOwn ? 'text-gray-200' : 'text-gray-500'
+                          }`}>
                           {formatMessageTime(message.created_at)}
                         </p>
                         {isOwn && (
@@ -571,13 +568,13 @@ export default function EnhancedChatPage() {
                             {readReceipts[message.id] ? (
                               <div className="w-4 h-4 text-gray-200">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                                 </svg>
                               </div>
                             ) : (
                               <div className="w-4 h-4 text-gray-200">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                                 </svg>
                               </div>
                             )}
@@ -620,7 +617,7 @@ export default function EnhancedChatPage() {
             <Button variant="ghost" size="sm">
               <Paperclip className="w-5 h-5" />
             </Button>
-            
+
             <Input
               type="text"
               value={newMessage}
@@ -629,11 +626,11 @@ export default function EnhancedChatPage() {
               placeholder={`Message ${match.user.full_name}...`}
               className="flex-1"
             />
-            
+
             <Button variant="ghost" size="sm">
               <Smile className="w-5 h-5" />
             </Button>
-            
+
             <Button
               onClick={sendMessage}
               disabled={!newMessage.trim() || sending}
