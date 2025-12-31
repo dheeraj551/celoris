@@ -60,6 +60,8 @@ interface CoursesDisplayProps {
   grade_level?: string
   featured?: boolean
   limit?: number
+  page?: number
+  onTotalChange?: (total: number) => void
   layout?: 'grid' | 'list'
   showStats?: boolean
   className?: string
@@ -70,6 +72,8 @@ export default function CoursesDisplay({
   grade_level,
   featured = false,
   limit = 6,
+  page = 1,
+  onTotalChange,
   layout = 'grid',
   showStats = true,
   className = ""
@@ -80,10 +84,33 @@ export default function CoursesDisplay({
 
   useEffect(() => {
     loadCourses()
-  }, [subject, grade_level, featured, limit])
+  }, [subject, grade_level, featured, limit, page])
 
   // Static courses definition
   const staticCourses: Course[] = [
+    {
+      id: 'langchain-real-static',
+      title: 'LangChain in Action: Real Workflows',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Master LLM orchestration by building autonomous AI agents and automation pipelines using LangChain, Tools, and Vector Databases.',
+      target_audience: 'Developers, AI Engineers, Automation Specialists',
+      instructor_name: 'Celoris',
+      course_duration: '12 hours',
+      price: 15000,
+      course_image_url: '/langchain-in-action-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `lc-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
     {
       id: 'deploy-scale-ai-static',
       title: 'Deploy & Scale AI Apps (Serverless + Edge)',
@@ -621,10 +648,15 @@ export default function CoursesDisplay({
   const loadCourses = async () => {
     try {
       setLoading(true)
-      const supabase = createClient()
+
+      // Calculate start and end for static items based on page
+      const start = (page - 1) * limit
+      const end = start + limit
 
       const params = new URLSearchParams()
-      params.append('limit', limit.toString())
+      // Always fetch enough to cover the current range if needed, 
+      // but for simplicity let's fetch more or handle offset
+      params.append('limit', '100')
       if (subject) params.append('subject', subject)
       if (grade_level) params.append('grade_level', grade_level)
       if (featured) params.append('featured', 'true')
@@ -633,14 +665,19 @@ export default function CoursesDisplay({
       const data = response.ok ? await response.json() : { courses: [] }
       const dbCourses = data.courses || []
 
-      // Combine static and DB courses
-      // If filtering by subject/grade, we should also filter static courses
+      // Filter static courses
       let filteredStatic = staticCourses
       if (subject) filteredStatic = filteredStatic.filter(c => c.subject === subject)
       if (grade_level) filteredStatic = filteredStatic.filter(c => c.grade_level === grade_level)
       if (featured) filteredStatic = filteredStatic.filter(c => c.is_featured)
 
-      setCourses([...filteredStatic, ...dbCourses].slice(0, limit))
+      const allItems = [...filteredStatic, ...dbCourses]
+
+      if (onTotalChange) {
+        onTotalChange(allItems.length)
+      }
+
+      setCourses(allItems.slice(start, end))
     } catch (error) {
       console.error('Error loading courses:', error)
       setError('Failed to load courses')
@@ -666,6 +703,7 @@ export default function CoursesDisplay({
     if (id === 'rag-unlocked-static') return '/courses/rag-unlocked-production-grade-search-answer-systems'
     if (id === 'llm-prompt-engineering-static') return '/courses/llm-prompt-engineering-for-real-results'
     if (id === 'deploy-scale-ai-static') return '/courses/deploy-scale-ai-apps-serverless-edge'
+    if (id === 'langchain-real-static') return '/courses/langchain-in-action-real-workflows'
     return `/learn/course/${id}`
   }
 

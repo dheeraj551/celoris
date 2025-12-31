@@ -70,7 +70,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                         ? '/courses/llm-prompt-engineering-for-real-results'
                                                                                         : id === 'deploy-scale-ai-static'
                                                                                             ? '/courses/deploy-scale-ai-apps-serverless-edge'
-                                                                                            : `/learn/course/${id}`
+                                                                                            : id === 'langchain-real-static'
+                                                                                                ? '/courses/langchain-in-action-real-workflows'
+                                                                                                : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -106,6 +108,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'langchain-real-static',
+            title: 'LangChain in Action: Real Workflows',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '12 hours',
+            price: 15000,
+            is_featured: true,
+            course_image_url: '/langchain-in-action-cover.png',
+            is_static: true,
+            static_url: '/courses/langchain-in-action-real-workflows'
+        },
         {
             id: 'rag-unlocked-static',
             title: 'RAG Unlocked: Production-Grade Search & Answer Systems',

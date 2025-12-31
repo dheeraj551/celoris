@@ -131,20 +131,22 @@ export default function PublicRoomPage() {
         }
     }, [authUser, authLoading, router])
 
+    // --- Optimized Realtime Connection Logic ---
+
+    // 1. Join Global Tracker (Optimized)
     useEffect(() => {
-        // Tracker for Global Rooms
         if (!isLoaded || !user) return
 
         const supabase = createClient()
-        const trackerChannel = supabase.channel('global-rooms-tracker', {
+        const tracker = supabase.channel('global-rooms-tracker', {
             config: {
                 presence: { key: user.id }
             }
         })
 
-        trackerChannel
+        tracker
             .on('presence', { event: 'sync' }, () => {
-                const state = trackerChannel.presenceState()
+                const state = tracker.presenceState()
                 const roomsMap: Record<string, UserProfile[]> = {}
 
                 Object.values(state).forEach((presences: any) => {
@@ -160,14 +162,14 @@ export default function PublicRoomPage() {
                 const rooms = Object.entries(roomsMap).map(([id, users]) => ({
                     id,
                     users
-                })).sort((a, b) => a.id.localeCompare(b.id)) // Consistent order
+                })).sort((a, b) => a.id.localeCompare(b.id))
 
                 setPrivateRoomsCount(rooms.length)
                 setActivePrivateRooms(rooms)
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
-                    await trackerChannel.track({
+                    await tracker.track({
                         user,
                         status: isPrivate ? 'busy' : 'available',
                         roomId: isPrivate ? roomId : null
@@ -176,17 +178,22 @@ export default function PublicRoomPage() {
             })
 
         return () => {
-            trackerChannel.unsubscribe()
+            tracker.unsubscribe()
         }
-    }, [isLoaded, user, isPrivate])
+        // Use user.id to avoid reconnecting on every user object reference change
+        // We accept that if other user fields change, we might not update immediately here, 
+        // but id is the critical one for the key. To update presence data, we'd need a separate effect calling track(),
+        // but for this specific tracker, it's mostly about busy/available status.
+        // If we want to be perfect, we split it, but using user.id stabilizes the connection.
+    }, [isLoaded, user?.id, isPrivate, roomId])
 
+
+    // 2. Join Chat Room (Optimized)
     useEffect(() => {
-        // 2. Join Room only after User is loaded
         if (!isLoaded || !user || !roomId) return
 
         const supabase = createClient()
         const channelName = `room:${roomId}`
-
         console.log(`Joining room: ${channelName} as ${user.name}`)
 
         const channel = supabase.channel(channelName, {
@@ -200,9 +207,7 @@ export default function PublicRoomPage() {
 
         channel
             .on('broadcast', { event: 'message' }, ({ payload }: { payload: any }) => {
-                console.log("Received message:", payload)
                 setMessages((prev) => {
-                    // Avoid duplicates if any
                     if (prev.some(m => m.id === payload.id)) return prev
                     if (payload.sender.id !== user.id) {
                         new Audio(MSG_SOUND).play().catch(() => { })
@@ -212,22 +217,19 @@ export default function PublicRoomPage() {
             })
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState()
-                console.log("Presence sync:", state)
-
                 const users: UserProfile[] = []
-                let count = 0
 
                 Object.values(state).forEach((presences: any) => {
                     const userPresence = presences[0]
                     if (userPresence && userPresence.user) {
                         users.push(userPresence.user)
                     }
-                    count += 1
                 })
 
                 setOnlineCount(users.length)
                 setOnlineUsers(users)
 
+                // Sound logic with simple ref check
                 if (users.length > prevOnlineCount.current) {
                     new Audio(JOIN_SOUND).play().catch(() => { })
                 } else if (users.length < prevOnlineCount.current) {
@@ -260,7 +262,6 @@ export default function PublicRoomPage() {
                 }
             })
             .subscribe(async (status: string) => {
-                console.log(`Channel status: ${status}`)
                 if (status === 'SUBSCRIBED') {
                     await channel.track({
                         user: user,
@@ -276,7 +277,8 @@ export default function PublicRoomPage() {
             channel.unsubscribe()
             channelRef.current = null
         }
-    }, [isLoaded, user, roomId, isPrivate, router, toast])
+        // Key fix: Depend on user.id, not full user object, to prevent loops
+    }, [isLoaded, user?.id, roomId, isPrivate, router, toast])
 
     useEffect(() => {
         scrollToBottom()

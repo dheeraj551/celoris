@@ -66,14 +66,17 @@ export async function POST(request: NextRequest) {
     )
 
     // Log the call initiation
-    await supabase
-      .from('call_logs')
-      .insert({
-        match_id: channelName,
-        caller_id: uid,
-        call_type: 'video',
-        status: 'initiated'
-      })
+    // Log the call initiation only for standard matches (where channelName is a UUID match_id)
+    if (!channelName.startsWith('interview_')) {
+      await supabase
+        .from('call_logs')
+        .insert({
+          match_id: channelName,
+          caller_id: uid,
+          call_type: 'video',
+          status: 'initiated'
+        })
+    }
 
     return NextResponse.json({
       token,

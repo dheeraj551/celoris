@@ -1,15 +1,12 @@
-import { Metadata } from "next"
-import { BookOpen, Clock, Users, Star, Filter, Search, ArrowLeft } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+"use client"
+
+import { useState } from "react"
+import { BookOpen, Clock, Users, Star, Filter, Search, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import CoursesDisplay from "@/components/CoursesDisplay"
-
-export const metadata: Metadata = {
-  title: "All Courses - Celoris Learn",
-  description: "Browse all available courses across programming, design, marketing, business and more.",
-}
 
 const categories = [
   { name: "Programming", icon: "💻" },
@@ -30,6 +27,20 @@ const levels = [
 ]
 
 export default function AllCoursesPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All Categories")
+  const [selectedLevel, setSelectedLevel] = useState("All Levels")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const coursesPerPage = 6
+
+  const totalPages = Math.ceil(totalItems / coursesPerPage)
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container max-w-7xl mx-auto px-4">
@@ -59,12 +70,30 @@ export default function AllCoursesPage() {
                 <Input
                   placeholder="Search courses..."
                   className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
                 />
               </div>
             </div>
             <div>
-              <select className="w-full h-10 px-3 border border-input rounded-md bg-background">
+              <select
+                className="w-full h-10 px-3 border border-input rounded-md bg-background"
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
                 <option>All Categories</option>
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>Chemistry</option>
+                <option>Artificial Intelligence</option>
+                <option>Yoga</option>
+                <option>Fitness</option>
                 <option>Programming</option>
                 <option>Design</option>
                 <option>Marketing</option>
@@ -72,9 +101,13 @@ export default function AllCoursesPage() {
               </select>
             </div>
             <div>
-              <Button className="w-full">
-                <Filter className="mr-2 h-4 w-4" />
-                More Filters
+              <Button className="w-full" variant="outline" onClick={() => {
+                setSearchTerm("");
+                setSelectedCategory("All Categories");
+                setSelectedLevel("All Levels");
+                setCurrentPage(1);
+              }}>
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -90,10 +123,26 @@ export default function AllCoursesPage() {
                   <CardTitle className="text-lg">Categories</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
+                  <div
+                    className={`flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors ${selectedCategory === "All Categories" ? "bg-primary-50 text-primary-600 font-semibold" : ""}`}
+                    onClick={() => {
+                      setSelectedCategory("All Categories");
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span>📚</span>
+                      <span className="text-sm">All Categories</span>
+                    </div>
+                  </div>
                   {categories?.map((category) => (
                     <div
                       key={category.name}
-                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors"
+                      className={`flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors ${selectedCategory === category.name ? "bg-primary-50 text-primary-600 font-semibold" : ""}`}
+                      onClick={() => {
+                        setSelectedCategory(category.name);
+                        setCurrentPage(1);
+                      }}
                     >
                       <div className="flex items-center space-x-3">
                         <span>{category.icon}</span>
@@ -113,7 +162,11 @@ export default function AllCoursesPage() {
                   {levels?.map((level) => (
                     <div
                       key={level.name}
-                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors"
+                      className={`flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors ${selectedLevel === level.name ? "bg-primary-50 text-primary-600 font-semibold" : ""}`}
+                      onClick={() => {
+                        setSelectedLevel(level.name);
+                        setCurrentPage(1);
+                      }}
                     >
                       <span className="text-sm">{level.name}</span>
                     </div>
@@ -134,15 +187,7 @@ export default function AllCoursesPage() {
                     </label>
                     <label className="flex items-center space-x-2 cursor-pointer">
                       <input type="checkbox" className="rounded border-input" />
-                      <span className="text-sm">Under $50</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-input" />
-                      <span className="text-sm">$50 - $100</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-input" />
-                      <span className="text-sm">Over $100</span>
+                      <span className="text-sm">Paid</span>
                     </label>
                   </div>
                 </CardContent>
@@ -154,17 +199,57 @@ export default function AllCoursesPage() {
           <div className="lg:col-span-3">
             <CoursesDisplay
               layout="grid"
-              limit={9}
+              limit={coursesPerPage}
+              page={currentPage}
+              onTotalChange={(total) => setTotalItems(total)}
               showStats={true}
+              subject={selectedCategory === "All Categories" ? undefined : selectedCategory}
+              grade_level={selectedLevel === "All Levels" ? undefined : selectedLevel}
               className=""
             />
 
-            {/* Load More */}
-            <div className="text-center mt-12">
-              <Button size="lg" variant="outline">
-                Load More Courses
-              </Button>
-            </div>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center space-x-2 mt-12 pb-12">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="w-10"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            )}
+
+            {totalItems === 0 && (
+              <div className="text-center py-20">
+                <p className="text-gray-500">No courses match your current filters.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
