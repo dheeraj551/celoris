@@ -25,6 +25,10 @@ export default function InterviewRoomPage() {
     const [micOn, setMicOn] = useState(true)
     const [cameraOn, setCameraOn] = useState(true)
 
+    // Debug State
+    const [lastError, setLastError] = useState<string | null>(null)
+    const [debugInfo, setDebugInfo] = useState<{ appId: string, channel: string, uid: string } | null>(null)
+
     // Chat State
     const [messages, setMessages] = useState<any[]>([])
     const [newMessage, setNewMessage] = useState('')
@@ -84,39 +88,80 @@ export default function InterviewRoomPage() {
     }
 
     const joinChannel = async (uid: string, channel: string) => {
+        // Reset error state
+        setLastError(null)
+        setDebugInfo(null)
+
         try {
+            console.log("Fetching token for channel:", channel, "uid:", uid);
             // Get Token
             const response = await fetch('/api/agora/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     channelName: channel,
-                    uid: uid, // Use string UID or convert to int if using int-based tokens
+                    uid: uid,
                     role: 'publisher'
                 })
             })
 
             const data = await response.json()
 
-            if (data.error) throw new Error(data.error)
+            if (data.error) throw new Error(`Token Error: ${data.error}`)
 
-            if (data.error) throw new Error(data.error)
+            if (!data.appId) throw new Error("Server configuration error: Missing App ID")
+
+            // Set debug info
+            setDebugInfo({
+                appId: data.appId,
+                channel: channel,
+                uid: uid
+            })
+
+            console.log("Token received. Joining channel...");
+            console.log("AppID:", data.appId, "Length:", data.appId.length);
 
             // Join with the UUID string (supported by Agora Web SDK and our new token generator)
-            await client.join(data.appId, channel, data.token, uid)
+            try {
+                await client.join(data.appId, channel, data.token, uid)
+                console.log("Joined channel successfully.");
+            } catch (joinError: any) {
+                console.error("Agora join error:", joinError);
+                // Check for common configuration errors
+                if (joinError.code === 'CAN_NOT_GET_GATEWAY_SERVER' || joinError.toString().includes('invalid vendor key')) {
+                    throw new Error(`Invalid Agora App ID (Vendor Key). verification failed. Please check your AGORA_APP_ID in .env.local.`);
+                }
+                throw new Error(`Failed to join channel: ${joinError.message || joinError}`);
+            }
 
             // Create Tracks
-            const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks()
+            try {
+                console.log("Creating microphone and camera tracks...");
+                const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks()
 
-            setLocalAudioTrack(audioTrack)
-            setLocalVideoTrack(videoTrack)
+                setLocalAudioTrack(audioTrack)
+                setLocalVideoTrack(videoTrack)
 
-            await client.publish([audioTrack, videoTrack])
-            setJoined(true)
+                console.log("Publishing tracks...");
+                await client.publish([audioTrack, videoTrack])
+                setJoined(true)
+                console.log("Tracks published and joined set to true.");
 
-        } catch (error) {
+            } catch (mediaError: any) {
+                console.error("Media track error:", mediaError);
+                // If join succeeded but media failed, we should probably leave the channel or warn
+                // For now, let's treat it as a critical failure
+                throw new Error(`Media Error: ${mediaError.message || mediaError}. Check camera/mic permissions.`);
+            }
+
+        } catch (error: any) {
             console.error('Error joining channel:', error)
-            alert('Failed to join room. Please check your camera/mic permissions.')
+            setLastError(error.message)
+            if (error.code === 'CAN_NOT_GET_GATEWAY_SERVER' || error.message?.includes('invalid vendor key')) {
+                alert('Configuration Error: Invalid Agora App ID. Please check AGORA_APP_ID in .env.local')
+            } else {
+                alert(`Connection Failed: ${error.message}`)
+            }
         }
     }
 
@@ -293,23 +338,51 @@ export default function InterviewRoomPage() {
                     </div>
 
                     {/* Controls Bar */}
-                    <div className="mt-auto flex justify-center gap-4 p-4 bg-slate-800 rounded-2xl mx-auto mb-4 w-full max-w-md">
-                        <Button
-                            variant={micOn ? "default" : "destructive"}
-                            size="icon"
-                            onClick={toggleMic}
-                            className="rounded-full h-12 w-12"
-                        >
-                            {micOn ? <Mic /> : <MicOff />}
-                        </Button>
-                        <Button
-                            variant={cameraOn ? "default" : "destructive"}
-                            size="icon"
-                            onClick={toggleCamera}
-                            className="rounded-full h-12 w-12"
-                        >
-                            {cameraOn ? <Video /> : <VideoOff />}
-                        </Button>
+                    <div className="mt-auto flex flex-col items-center gap-4 p-4 mx-auto mb-4 w-full max-w-md">
+                        <div className="flex justify-center gap-4 bg-slate-800 p-4 rounded-2xl w-full">
+                            <Button
+                                variant={micOn ? "default" : "destructive"}
+                                size="icon"
+                                onClick={toggleMic}
+                                className="rounded-full h-12 w-12"
+                            >
+                                {micOn ? <Mic /> : <MicOff />}
+                            </Button>
+                            <Button
+                                variant={cameraOn ? "default" : "destructive"}
+                                size="icon"
+                                onClick={toggleCamera}
+                                className="rounded-full h-12 w-12"
+                            >
+                                {cameraOn ? <Video /> : <VideoOff />}
+                            </Button>
+                        </div>
+
+                        {lastError && (
+                            <div className="w-full bg-red-900/50 border border-red-500 rounded-lg p-3 text-red-200 text-xs">
+                                <strong className="block mb-1 text-red-100">Connection Failed</strong>
+                                <p className="mb-2">{lastError}</p>
+                                {debugInfo && (
+                                    <div className="bg-black/30 p-2 rounded font-mono space-y-1">
+                                        <div className="flex justify-between">
+                                            <span>App ID:</span>
+                                            <span>{debugInfo.appId.substring(0, 6)}...{debugInfo.appId.substring(debugInfo.appId.length - 4)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>Channel:</span>
+                                            <span>{debugInfo.channel}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>UID:</span>
+                                            <span>{debugInfo.uid}</span>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="mt-2 text-red-300 italic">
+                                    Check your .env.local file and restart the server.
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                 </div>

@@ -8,8 +8,17 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // Agora configuration
-const AGORA_APP_ID = process.env.AGORA_APP_ID!
-const AGORA_APP_CERTIFICATE = process.env.AGORA_APP_CERTIFICATE!
+// Trim to ensure no accidental whitespace from copy-paste causes "invalid vendor key"
+const AGORA_APP_ID = (process.env.AGORA_APP_ID || '').trim()
+const AGORA_APP_CERTIFICATE = (process.env.AGORA_APP_CERTIFICATE || '').trim()
+
+console.log('Agora Token Route Init:')
+console.log('AGORA_APP_ID:', AGORA_APP_ID ? `Present (starts with ${AGORA_APP_ID.substring(0, 4)}..., length: ${AGORA_APP_ID.length})` : 'MISSING')
+console.log('AGORA_APP_CERTIFICATE:', AGORA_APP_CERTIFICATE ? 'Present' : 'MISSING')
+
+if (!AGORA_APP_ID || !AGORA_APP_CERTIFICATE) {
+  console.error('CRITICAL: Agora environment variables are missing or empty')
+}
 
 export async function POST(request: NextRequest) {
   try {
