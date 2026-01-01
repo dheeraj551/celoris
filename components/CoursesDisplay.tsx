@@ -89,6 +89,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'build-ai-products-static',
+      title: 'Build AI Products That Make Money (Practical Guide)',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Professional',
+      description: 'A practical guide for entrepreneurs to identify AI ideas, validate market demand, and launch profitable AI SaaS products.',
+      target_audience: 'Entrepreneurs, Developers, AI Founders',
+      instructor_name: 'Celoris Designs llp',
+      course_duration: '12 hours',
+      price: 15000,
+      course_image_url: '/build-ai-products-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `baip-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'langchain-real-static',
       title: 'LangChain in Action: Real Workflows',
       subject: 'Artificial Intelligence',
@@ -704,6 +727,7 @@ export default function CoursesDisplay({
     if (id === 'llm-prompt-engineering-static') return '/courses/llm-prompt-engineering-for-real-results'
     if (id === 'deploy-scale-ai-static') return '/courses/deploy-scale-ai-apps-serverless-edge'
     if (id === 'langchain-real-static') return '/courses/langchain-in-action-real-workflows'
+    if (id === 'build-ai-products-static') return '/courses/build-ai-products-that-make-money-practical-guide'
     return `/learn/course/${id}`
   }
 

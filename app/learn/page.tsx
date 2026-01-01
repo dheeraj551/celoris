@@ -79,7 +79,7 @@ export default function LearnPage() {
                   Open study room for all subjects to discuss and solve problems together.
                 </p>
                 <Button className="w-full bg-[#2D6A4F] hover:bg-[#1B4332] text-white" asChild>
-                  <Link href="/social/chat">
+                  <Link href="/learn/study-room/general-study">
                     Join Study Room <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -99,7 +99,7 @@ export default function LearnPage() {
                   Focused study room for math problems, solutions, and tips.
                 </p>
                 <Button className="w-full bg-[#2D6A4F] hover:bg-[#1B4332] text-white" asChild>
-                  <Link href="/social/chat">
+                  <Link href="/learn/study-room/math-study">
                     Join Math Room <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -119,7 +119,7 @@ export default function LearnPage() {
                   Topic-based study room to explore and discuss physics concepts.
                 </p>
                 <Button className="w-full bg-[#2D6A4F] hover:bg-[#1B4332] text-white" asChild>
-                  <Link href="/social/chat">
+                  <Link href="/learn/study-room/physics-study">
                     Join Physics Room <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -136,7 +136,7 @@ export default function LearnPage() {
               </p>
             </div>
             <Button className="bg-[#2D6A4F] hover:bg-[#1B4332] text-white whitespace-nowrap" asChild>
-              <Link href="/social/chat">
+              <Link href="/learn/study-room/my-study-room">
                 Create a Room
               </Link>
             </Button>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { RtcTokenBuilder, RtcRole } from '@/lib/agora-token'
+import { RtcTokenBuilder, RtcRole } from 'agora-token'
 
 // Initialize Supabase client for server-side operations
 const supabaseUrl = process.env.SUPABASE_URL!
@@ -64,13 +64,18 @@ export async function POST(request: NextRequest) {
     const currentTime = Math.floor(Date.now() / 1000)
     const privilegeExpiredTs = currentTime + expireTime
 
-    // Use buildTokenWithAccount to support both numeric and string (UUID) UIDs
-    const token = RtcTokenBuilder.buildTokenWithAccount(
+    console.log(`Generating token for Channel: ${channelName}, UID: ${uid}, Role: ${roleNum}`)
+
+    // Use buildTokenWithUid for numeric UIDs or buildTokenWithUserAccount for string UIDs
+    // Since we are using Supabase UUIDs, we MUST use buildTokenWithUserAccount (String UID)
+    // Signature: appId, appCertificate, channelName, account, role, tokenExpire, privilegeExpire
+    const token = RtcTokenBuilder.buildTokenWithUserAccount(
       AGORA_APP_ID,
       AGORA_APP_CERTIFICATE,
       channelName,
       uid.toString(),
       roleNum,
+      privilegeExpiredTs,
       privilegeExpiredTs
     )
 

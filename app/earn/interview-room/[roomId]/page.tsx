@@ -121,6 +121,12 @@ export default function InterviewRoomPage() {
             console.log("Token received. Joining channel...");
             console.log("AppID:", data.appId, "Length:", data.appId.length);
 
+            // Prevent race conditions with React Strict Mode (double mount)
+            if (client && (client.connectionState === 'CONNECTED' || client.connectionState === 'CONNECTING')) {
+                console.log("Client already connected/connecting. Skipping join.")
+                return
+            }
+
             // Join with the UUID string (supported by Agora Web SDK and our new token generator)
             try {
                 await client.join(data.appId, channel, data.token, uid)

@@ -72,7 +72,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                             ? '/courses/deploy-scale-ai-apps-serverless-edge'
                                                                                             : id === 'langchain-real-static'
                                                                                                 ? '/courses/langchain-in-action-real-workflows'
-                                                                                                : `/learn/course/${id}`
+                                                                                                : id === 'build-ai-products-static'
+                                                                                                    ? '/courses/build-ai-products-that-make-money-practical-guide'
+                                                                                                    : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -108,6 +110,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'build-ai-products-static',
+            title: 'Build AI Products That Make Money (Practical Guide)',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs llp',
+            course_duration: '12 hours',
+            price: 15000,
+            is_featured: true,
+            course_image_url: '/build-ai-products-cover.png',
+            is_static: true,
+            static_url: '/courses/build-ai-products-that-make-money-practical-guide'
+        },
         {
             id: 'langchain-real-static',
             title: 'LangChain in Action: Real Workflows',
