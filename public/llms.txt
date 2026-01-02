@@ -1,0 +1,11 @@
+# Vibe Coding Mastery
+A curriculum for building apps where AI does the heavy lifting.
+
+## Key Principles
+- Syntax is secondary to intent.
+- Use Cursor/Windsurf for the 'Command Center' workflow.
+- Prioritize Spec-Driven Development.
+
+## Important Links
+- [Syllabus](/courses/vibe-coding-mastery)
+- [Project Templates](https://github.com/celoris-designs)

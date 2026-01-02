@@ -89,6 +89,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'vibe-coding-mastery-static',
+      title: 'Vibe Coding Mastery: Build Apps Using AI-First Development Workflows',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Intermediate',
+      description: 'Learn to 10x your output by mastering the 2026 paradigm of Vibe Coding. Ship production-ready apps with 95% AI-generated code.',
+      target_audience: 'Developers, No-code makers, Bootcamp grads',
+      instructor_name: 'Celoris Designs',
+      course_duration: '4-6 Weeks',
+      price: 19999,
+      course_image_url: '/vibe-coding-mastery-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `vcm-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'build-ai-products-static',
       title: 'Build AI Products That Make Money (Practical Guide)',
       subject: 'Artificial Intelligence',
@@ -710,6 +733,7 @@ export default function CoursesDisplay({
   }
 
   const getCourseUrl = (id: string) => {
+    if (id === 'vibe-coding-mastery-static') return '/courses/vibe-coding-mastery'
     if (id === 'class-12-physics-static') return '/courses/cbse-class-12-physics-complete-course'
     if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'
     if (id === 'class-10-physics-static') return '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'

@@ -254,8 +254,8 @@ export default function SocialPage() {
                 className="bg-[#1e4d3a] hover:bg-[#1a4332] text-white px-8 py-7 rounded-2xl text-lg font-semibold flex items-center gap-3 transition-all hover:gap-4 shadow-xl shadow-green-900/10"
                 asChild
               >
-                <Link href="/social/chat">
-                  Browse Chat Rooms <ArrowRight className="h-6 w-6" />
+                <Link href="/social/lobby">
+                  Join Public Lobby <ArrowRight className="h-6 w-6" />
                 </Link>
               </Button>
             </div>

@@ -38,43 +38,45 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                 {id ? (
                     <Link
                         href={
-                            id === 'class-11-physics-static'
-                                ? '/courses/cbse-class-11-physics-comprehensive-course'
-                                : id === 'class-12-physics-static'
-                                    ? '/courses/cbse-class-12-physics-complete-course'
-                                    : id === 'class-10-physics-static'
-                                        ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
-                                        : id === 'class-9-chemistry-static'
-                                            ? '/courses/cbse-class-9-chemistry-complete-course'
-                                            : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
-                                                ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
-                                                : id === 'class-10-chemistry-static'
-                                                    ? '/courses/cbse-class-10-chemistry-complete-course'
-                                                    : id === 'class-11-chemistry-static'
-                                                        ? '/courses/cbse-class-11-chemistry-complete-course'
-                                                        : id === 'class-12-chemistry-static'
-                                                            ? '/courses/cbse-class-12-chemistry-complete-course'
-                                                            : id === 'yoga-mastery-2025-static'
-                                                                ? '/courses/complete-2025-yoga-mastery-course'
-                                                                : id === '28-day-reset-static'
-                                                                    ? '/courses/the-28-day-reset-foundation-strength-mobility'
-                                                                    : id === 'class-9-maths-static'
-                                                                        ? '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
-                                                                        : id === 'livekit-ai-agents-static'
-                                                                            ? '/courses/build-real-time-ai-agents-with-livekit'
-                                                                            : id === 'agentic-ai-systems-static'
-                                                                                ? '/courses/agentic-ai-systems-design-build-deploy'
-                                                                                : id === 'rag-unlocked-static'
-                                                                                    ? '/courses/rag-unlocked-production-grade-search-answer-systems'
-                                                                                    : id === 'llm-prompt-engineering-static'
-                                                                                        ? '/courses/llm-prompt-engineering-for-real-results'
-                                                                                        : id === 'deploy-scale-ai-static'
-                                                                                            ? '/courses/deploy-scale-ai-apps-serverless-edge'
-                                                                                            : id === 'langchain-real-static'
-                                                                                                ? '/courses/langchain-in-action-real-workflows'
-                                                                                                : id === 'build-ai-products-static'
-                                                                                                    ? '/courses/build-ai-products-that-make-money-practical-guide'
-                                                                                                    : `/learn/course/${id}`
+                            id === 'vibe-coding-mastery-static'
+                                ? '/courses/vibe-coding-mastery'
+                                : id === 'class-11-physics-static'
+                                    ? '/courses/cbse-class-11-physics-comprehensive-course'
+                                    : id === 'class-12-physics-static'
+                                        ? '/courses/cbse-class-12-physics-complete-course'
+                                        : id === 'class-10-physics-static'
+                                            ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
+                                            : id === 'class-9-chemistry-static'
+                                                ? '/courses/cbse-class-9-chemistry-complete-course'
+                                                : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
+                                                    ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
+                                                    : id === 'class-10-chemistry-static'
+                                                        ? '/courses/cbse-class-10-chemistry-complete-course'
+                                                        : id === 'class-11-chemistry-static'
+                                                            ? '/courses/cbse-class-11-chemistry-complete-course'
+                                                            : id === 'class-12-chemistry-static'
+                                                                ? '/courses/cbse-class-12-chemistry-complete-course'
+                                                                : id === 'yoga-mastery-2025-static'
+                                                                    ? '/courses/complete-2025-yoga-mastery-course'
+                                                                    : id === '28-day-reset-static'
+                                                                        ? '/courses/the-28-day-reset-foundation-strength-mobility'
+                                                                        : id === 'class-9-maths-static'
+                                                                            ? '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
+                                                                            : id === 'livekit-ai-agents-static'
+                                                                                ? '/courses/build-real-time-ai-agents-with-livekit'
+                                                                                : id === 'agentic-ai-systems-static'
+                                                                                    ? '/courses/agentic-ai-systems-design-build-deploy'
+                                                                                    : id === 'rag-unlocked-static'
+                                                                                        ? '/courses/rag-unlocked-production-grade-search-answer-systems'
+                                                                                        : id === 'llm-prompt-engineering-static'
+                                                                                            ? '/courses/llm-prompt-engineering-for-real-results'
+                                                                                            : id === 'deploy-scale-ai-static'
+                                                                                                ? '/courses/deploy-scale-ai-apps-serverless-edge'
+                                                                                                : id === 'langchain-real-static'
+                                                                                                    ? '/courses/langchain-in-action-real-workflows'
+                                                                                                    : id === 'build-ai-products-static'
+                                                                                                        ? '/courses/build-ai-products-that-make-money-practical-guide'
+                                                                                                        : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -110,6 +112,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'vibe-coding-mastery-static',
+            title: 'Vibe Coding Mastery: Build Apps Using AI-First Development Workflows',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs',
+            course_duration: '4-6 Weeks',
+            price: 19999,
+            is_featured: true,
+            course_image_url: '/vibe-coding-mastery-cover.png',
+            is_static: true,
+            static_url: '/courses/vibe-coding-mastery'
+        },
         {
             id: 'build-ai-products-static',
             title: 'Build AI Products That Make Money (Practical Guide)',

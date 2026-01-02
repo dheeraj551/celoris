@@ -1,0 +1,18 @@
+{
+    "schema_version": "v1",
+    "name_for_model": "vibe_coding_mastery",
+    "name_for_human": "Vibe Coding Mastery",
+    "description_for_model": "This tool helps users learn Vibe Coding. It provides access to AI-first development patterns, Cursor IDE workflows, and Karpathy-style code iteration loops.",
+    "description_for_human": "The ultimate course for AI-first development.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "openapi",
+        "url": "https://www.celorisdesigns.com/openapi.json",
+        "is_user_authenticated": false
+    },
+    "logo_url": "https://www.celorisdesigns.com/logo.png",
+    "contact_email": "support@celorisdesigns.com",
+    "legal_info_url": "https://www.celorisdesigns.com/legal"
+}

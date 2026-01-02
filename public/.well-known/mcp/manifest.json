@@ -1,0 +1,33 @@
+{
+    "mcp_version": "1.0",
+    "name": "Vibe Coding Mastery API",
+    "description": "An agent-ready interface for managing AI-driven development workflows.",
+    "capabilities": {
+        "tools": [
+            {
+                "name": "generate_boilerplate",
+                "description": "Generates AI-optimized project structures for Vibe Coding.",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "stack": {
+                            "type": "string",
+                            "enum": [
+                                "cursor",
+                                "windsurf",
+                                "replit"
+                            ]
+                        }
+                    }
+                }
+            }
+        ],
+        "resources": [
+            {
+                "uri": "mcp://course/syllabus",
+                "mime_type": "application/json",
+                "description": "The current syllabus for Vibe Coding Mastery."
+            }
+        ]
+    }
+}
