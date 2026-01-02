@@ -22,8 +22,19 @@ import {
     ArrowLeft,
     Sparkles,
     Zap,
-    MessageCircle
+    MessageCircle,
+    Check,
+    Info,
+    ArrowRight
 } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter
+} from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "@/components/providers/AuthProvider"
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
@@ -72,10 +83,15 @@ export default function GlobalLobbyPage() {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [lastActivityAt, setLastActivityAt] = useState<number>(Date.now())
 
+    // Private Room State
+    const [incomingInvite, setIncomingInvite] = useState<any>(null)
+    const [sentInvite, setSentInvite] = useState<any>(null)
+    const [activePrivateRooms, setActivePrivateRooms] = useState<{ id: string, users: UserProfile[] }[]>([])
+    const [privateRoomsCount, setPrivateRoomsCount] = useState(0)
+
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const channelRef = useRef<any>(null)
     const prevOnlineCount = useRef<number>(0)
-    const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
     // --- EFFECT: Connection & Realtime ---
     useEffect(() => {
@@ -86,6 +102,8 @@ export default function GlobalLobbyPage() {
         }
 
         const supabase = createClient()
+
+        // 1. Join Global Lobby & Private Invite System
         const channel = supabase.channel('room:lobby', {
             config: {
                 presence: { key: user.id },
@@ -97,15 +115,38 @@ export default function GlobalLobbyPage() {
             .on('broadcast', { event: 'message' }, ({ payload }: { payload: ChatMessage }) => {
                 setMessages((prev) => {
                     if (prev.some(m => m.id === payload.id)) return prev
-
-                    // Sound checks
                     if (payload.sender.id !== user.id) {
                         new Audio(MSG_SOUND).play().catch(() => { })
                     }
-
                     return [...prev, payload]
                 })
                 setLastActivityAt(Date.now())
+            })
+            // Invite Events
+            .on('broadcast', { event: 'chat-invite' }, ({ payload }: { payload: any }) => {
+                if (payload.targetUserId === user.id) {
+                    setIncomingInvite(payload)
+                    new Audio(JOIN_SOUND).play().catch(() => { })
+                }
+            })
+            .on('broadcast', { event: 'chat-invite-accepted' }, ({ payload }: { payload: any }) => {
+                if (payload.senderUserId === user.id) {
+                    toast({
+                        title: "Invite Accepted!",
+                        description: "Joining private room...",
+                    })
+                    router.push(`/social/chat/room/${payload.roomId}`)
+                }
+            })
+            .on('broadcast', { event: 'chat-invite-rejected' }, ({ payload }: { payload: any }) => {
+                if (payload.senderUserId === user.id) {
+                    setSentInvite(null)
+                    toast({
+                        title: "Invite Declined",
+                        description: `${payload.targetName} declined your invite.`,
+                        variant: "destructive"
+                    })
+                }
             })
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState()
@@ -133,27 +174,49 @@ export default function GlobalLobbyPage() {
 
         channelRef.current = channel
 
+        // 2. Track Private Room Occupancy
+        const tracker = supabase.channel('global-rooms-tracker')
+        tracker
+            .on('presence', { event: 'sync' }, () => {
+                const state = tracker.presenceState()
+                const roomsMap: Record<string, UserProfile[]> = {}
+
+                Object.values(state).forEach((presences: any) => {
+                    const presence = presences[0]
+                    // If user is 'busy' in a private room
+                    if (presence?.roomId && presence.roomId.startsWith('private-')) {
+                        if (!roomsMap[presence.roomId]) roomsMap[presence.roomId] = []
+                        roomsMap[presence.roomId].push(presence.user)
+                    }
+                })
+
+                const rooms = Object.entries(roomsMap).map(([id, users]) => ({
+                    id,
+                    users
+                })).sort((a, b) => a.id.localeCompare(b.id))
+
+                setPrivateRoomsCount(rooms.length)
+                setActivePrivateRooms(rooms)
+            })
+            .subscribe()
+
         return () => {
             channel.unsubscribe()
+            tracker.unsubscribe()
         }
-    }, [user, authLoading, router])
+    }, [user, authLoading, router, toast])
 
     // --- EFFECT: Silence Breaker ---
     useEffect(() => {
-        // Runs periodic check for silence
         const checkSilence = async () => {
             const now = Date.now()
             const silenceDuration = now - lastActivityAt
-
-            // If silent for > 45 seconds AND I am the "chosen one" (simple random election to prevent spam)
-            // Each user has 5% chance per check to break silence if conditions met.
             if (silenceDuration > 45000 && Math.random() < 0.05) {
                 await triggerBot('silence')
-                setLastActivityAt(now) // Reset locally to prevent double firing immediately
+                setLastActivityAt(now)
             }
         }
-
-        const interval = setInterval(checkSilence, 10000) // Check every 10s
+        const interval = setInterval(checkSilence, 10000)
         return () => clearInterval(interval)
     }, [lastActivityAt])
 
@@ -166,9 +229,7 @@ export default function GlobalLobbyPage() {
 
     const triggerBot = async (type: 'response' | 'silence', sentMessage?: string) => {
         try {
-            // 5 recent messages for context
             const history = messages.slice(-5)
-
             await fetch('/api/lobby/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -179,7 +240,6 @@ export default function GlobalLobbyPage() {
                     user: user
                 })
             })
-            // We don't need to handle response here, it comes via websocket
         } catch (e) {
             console.error("Bot trigger failed", e)
         }
@@ -187,9 +247,7 @@ export default function GlobalLobbyPage() {
 
     const sendMessage = async () => {
         if (!newMessage.trim() || !user || !channelRef.current) return
-
         const msgContent = newMessage.trim()
-
         const message: ChatMessage = {
             id: crypto.randomUUID(),
             sender: user,
@@ -197,23 +255,14 @@ export default function GlobalLobbyPage() {
             timestamp: Date.now(),
             type: 'text'
         }
-
-        // 1. Optimistic UI (Wait, if we broadcast 'self: true', we don't need to manually add?)
-        // Actually for optimal responsiveness, we add manually AND ignore self-broadcast?
-        // Or logic above handles duplicate IDs. 
-        // Let's broadcast and let the listener handle it (including self).
-
         await channelRef.current.send({
             type: 'broadcast',
             event: 'message',
             payload: message,
         })
-
         setNewMessage("")
         setShowEmojiPicker(false)
         setLastActivityAt(Date.now())
-
-        // 2. Trigger AI (Fire and Forget)
         triggerBot('response', msgContent)
     }
 
@@ -221,12 +270,76 @@ export default function GlobalLobbyPage() {
         setNewMessage(prev => prev + emojiData.emoji)
     }
 
+    const sendInvite = async (targetUser: UserProfile) => {
+        if (privateRoomsCount >= 5) {
+            toast({
+                title: "Rooms Full",
+                description: "All private rooms are currently occupied. Please wait.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        if (!channelRef.current) return
+
+        const invitePayload = {
+            sender: user,
+            targetUserId: targetUser.id,
+            inviteId: crypto.randomUUID()
+        }
+
+        await channelRef.current.send({
+            type: 'broadcast',
+            event: 'chat-invite',
+            payload: invitePayload
+        })
+
+        setSentInvite(targetUser)
+        toast({
+            title: "Invite Sent",
+            description: `Waiting for ${targetUser.name} to accept...`,
+        })
+    }
+
+    const acceptInvite = async () => {
+        if (!incomingInvite || !channelRef.current || !user) return
+
+        const newRoomId = `private-${incomingInvite.inviteId}`
+
+        await channelRef.current.send({
+            type: 'broadcast',
+            event: 'chat-invite-accepted',
+            payload: {
+                senderUserId: incomingInvite.sender.id,
+                targetUserId: user.id,
+                roomId: newRoomId
+            }
+        })
+
+        router.push(`/social/chat/room/${newRoomId}`)
+    }
+
+    const rejectInvite = async () => {
+        if (!incomingInvite || !channelRef.current || !user) return
+
+        await channelRef.current.send({
+            type: 'broadcast',
+            event: 'chat-invite-rejected',
+            payload: {
+                senderUserId: incomingInvite.sender.id,
+                targetUserId: user.id,
+                targetName: user.name
+            }
+        })
+
+        setIncomingInvite(null)
+    }
+
     if (authLoading || !user) {
         return (
             <div className="h-screen flex items-center justify-center bg-slate-50">
                 <div className="animate-pulse flex flex-col items-center">
                     <div className="h-12 w-12 bg-indigo-200 rounded-full mb-4"></div>
-                    <div className="h-4 w-32 bg-indigo-100 rounded"></div>
                 </div>
             </div>
         )
@@ -260,11 +373,11 @@ export default function GlobalLobbyPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                    {/* Mobile Member List */}
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="sm" className="hidden sm:flex items-center gap-2 border-indigo-100 text-indigo-600 hover:bg-indigo-50">
+                            <Button variant="outline" size="sm" className="lg:hidden flex items-center gap-2 border-indigo-100 text-indigo-600 hover:bg-indigo-50">
                                 <Users className="h-4 w-4" />
-                                <span>Members</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-[300px]">
@@ -273,15 +386,21 @@ export default function GlobalLobbyPage() {
                             </SheetHeader>
                             <div className="mt-6 flex flex-col gap-3">
                                 {onlineUsers.map(u => (
-                                    <div key={u.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage src={u.avatar_url} />
-                                            <AvatarFallback>{u.name[0]}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium truncate">{u.name}</p>
-                                            {u.id === user.id && <p className="text-[10px] text-slate-400">You</p>}
+                                    <div key={u.id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                                        <div className="flex items-center gap-3 overflow-hidden">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={u.avatar_url} />
+                                                <AvatarFallback>{u.name[0]}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium truncate">{u.name}</p>
+                                            </div>
                                         </div>
+                                        {u.id !== user.id && !u.is_bot && (
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-indigo-500" onClick={() => sendInvite(u)}>
+                                                <MessageCircle className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -293,83 +412,144 @@ export default function GlobalLobbyPage() {
                 </div>
             </header>
 
-            {/* --- CHAT AREA --- */}
             <div className="flex-1 flex overflow-hidden relative">
-                {/* Background Decor */}
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl" />
-                    <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-indigo-200/30 rounded-full blur-3xl" />
-                </div>
 
-                <div className="flex-1 overflow-y-auto px-4 py-6 z-10 scroll-smooth">
-                    <div className="max-w-3xl mx-auto space-y-6">
-                        {/* Welcome Banner */}
-                        <div className="text-center py-8 mb-8 backdrop-blur-sm bg-white/50 rounded-2xl border border-white/50 shadow-sm mx-4">
-                            <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-indigo-200 rotate-3">
-                                <MessageCircle className="h-8 w-8 text-white" />
+                {/* --- CHAT AREA --- */}
+                <div className="flex-1 flex flex-col relative overflow-hidden">
+                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                        <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl" />
+                        <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-indigo-200/30 rounded-full blur-3xl" />
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto px-4 py-6 z-10 scroll-smooth">
+                        <div className="max-w-3xl mx-auto space-y-6">
+                            <div className="text-center py-8 mb-8 backdrop-blur-sm bg-white/50 rounded-2xl border border-white/50 shadow-sm mx-4">
+                                <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-indigo-200 rotate-3">
+                                    <MessageCircle className="h-8 w-8 text-white" />
+                                </div>
+                                <h2 className="text-xl font-bold text-slate-800">Welcome to the Lobby!</h2>
+                                <p className="text-slate-500 text-sm max-w-sm mx-auto mt-2">
+                                    Jump into the conversation. Ask questions, share jokes, or just hang out.
+                                    <br /> <span className="text-xs text-indigo-400 font-medium">✨ AI assistants are active to help.</span>
+                                </p>
                             </div>
-                            <h2 className="text-xl font-bold text-slate-800">Welcome to the Lobby!</h2>
-                            <p className="text-slate-500 text-sm max-w-sm mx-auto mt-2">
-                                Jump into the conversation. Ask questions, share jokes, or just hang out.
-                                <br /> <span className="text-xs text-indigo-400 font-medium">✨ AI assistants are active to help.</span>
-                            </p>
-                        </div>
 
-                        {/* Messages */}
-                        <div className="flex flex-col gap-4 pb-4">
-                            {messages.map((msg, idx) => {
-                                const isMe = msg.sender.id === user.id;
-                                const isBot = msg.sender.is_bot;
-                                const showHeader = idx === 0 || messages[idx - 1].sender.id !== msg.sender.id;
+                            <div className="flex flex-col gap-4 pb-4">
+                                {messages.map((msg, idx) => {
+                                    const isMe = msg.sender.id === user.id;
+                                    const isBot = msg.sender.is_bot;
+                                    const showHeader = idx === 0 || messages[idx - 1].sender.id !== msg.sender.id;
 
-                                return (
-                                    <motion.div
-                                        key={msg.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}
-                                    >
-                                        {/* Avatar */}
-                                        <div className={`flex-none w-8 ${!showHeader ? 'invisible h-0' : ''}`}>
-                                            <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                                                <AvatarImage src={msg.sender.avatar_url} />
-                                                <AvatarFallback className={isBot ? "bg-indigo-100 text-indigo-700" : ""}>{msg.sender.name[0]}</AvatarFallback>
-                                            </Avatar>
-                                        </div>
-
-                                        <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
-                                            {showHeader && (
-                                                <div className="flex items-center gap-2 mb-1 px-1">
-                                                    <span className={`text-xs font-semibold ${isBot ? "text-indigo-600 flex items-center gap-1" : "text-slate-600"}`}>
-                                                        {msg.sender.name}
-                                                        {isBot && <Zap className="h-3 w-3 fill-indigo-100" />}
-                                                    </span>
-                                                    <span className="text-[10px] text-slate-400">
-                                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            <div
-                                                className={`px-4 py-2 text-sm shadow-sm
-                                                    ${isMe
-                                                        ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl rounded-tr-none'
-                                                        : isBot
-                                                            ? 'bg-white border-none shadow-indigo-100 text-slate-800 rounded-2xl rounded-tl-none ring-1 ring-indigo-50'
-                                                            : 'bg-white text-slate-800 rounded-2xl rounded-tl-none border border-slate-100'
-                                                    }
-                                                `}
-                                            >
-                                                {msg.content}
+                                    return (
+                                        <motion.div
+                                            key={msg.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}
+                                        >
+                                            <div className={`flex-none w-8 ${!showHeader ? 'invisible h-0' : ''}`}>
+                                                <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
+                                                    <AvatarImage src={msg.sender.avatar_url} />
+                                                    <AvatarFallback className={isBot ? "bg-indigo-100 text-indigo-700" : ""}>{msg.sender.name[0]}</AvatarFallback>
+                                                </Avatar>
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                )
-                            })}
+
+                                            <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
+                                                {showHeader && (
+                                                    <div className="flex items-center gap-2 mb-1 px-1">
+                                                        <span className={`text-xs font-semibold ${isBot ? "text-indigo-600 flex items-center gap-1" : "text-slate-600"}`}>
+                                                            {msg.sender.name}
+                                                            {isBot && <Zap className="h-3 w-3 fill-indigo-100" />}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400">
+                                                            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                <div
+                                                    className={`px-4 py-2 text-sm shadow-sm
+                                                        ${isMe
+                                                            ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl rounded-tr-none'
+                                                            : isBot
+                                                                ? 'bg-white border-none shadow-indigo-100 text-slate-800 rounded-2xl rounded-tl-none ring-1 ring-indigo-50'
+                                                                : 'bg-white text-slate-800 rounded-2xl rounded-tl-none border border-slate-100'
+                                                        }
+                                                    `}
+                                                >
+                                                    {msg.content}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )
+                                })}
+                            </div>
+                            <div ref={messagesEndRef} />
                         </div>
-                        <div ref={messagesEndRef} />
                     </div>
                 </div>
+
+                {/* --- DESKTOP SIDEBAR --- */}
+                <aside className="hidden lg:flex w-80 border-l border-slate-200 bg-white flex-col z-20">
+                    <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2 className="font-bold text-slate-900 flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            Private Rooms
+                            <div className="ml-auto flex gap-1">
+                                {[1, 2, 3, 4, 5].map(n => (
+                                    <div key={n} className={`h-2 w-2 rounded-full ${activePrivateRooms[n - 1] ? 'bg-red-500' : 'bg-green-300'}`} />
+                                ))}
+                            </div>
+                        </h2>
+                        <p className="text-[11px] text-slate-500 mt-1">
+                            Invite users below to a private 1-on-1 room.
+                        </p>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                        {/* Users List */}
+                        {onlineUsers.map((u) => (
+                            <div
+                                key={u.id}
+                                className="flex items-center justify-between group p-2 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="relative">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={u.avatar_url} />
+                                            <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                                    </div>
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="text-sm font-semibold text-slate-900 truncate max-w-[120px]">
+                                            {u.name}
+                                        </span>
+                                        {u.id === user?.id && <span className="text-xs text-slate-400">You</span>}
+                                    </div>
+                                </div>
+
+                                {u.id !== user?.id && !u.is_bot && (
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-8 w-8 p-0 rounded-full hover:bg-green-100 hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={() => sendInvite(u)}
+                                        disabled={privateRoomsCount >= 5}
+                                        title="Invite to Private Room"
+                                    >
+                                        <ArrowRight className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Footer Info */}
+                    <div className="p-4 bg-slate-50 border-t border-slate-100 text-xs text-slate-400 text-center">
+                        {onlineCount} users online • {privateRoomsCount} private rooms busy
+                    </div>
+                </aside>
             </div>
 
             {/* --- INPUT AREA --- */}
@@ -417,6 +597,40 @@ export default function GlobalLobbyPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Invite Dialog */}
+            <Dialog open={!!incomingInvite} onOpenChange={(open) => !open && rejectInvite()}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <MessageCircle className="h-5 w-5 text-green-500" />
+                            New Chat Invite
+                        </DialogTitle>
+                        <DialogDescription className="pt-2">
+                            <span className="font-bold text-slate-900">{incomingInvite?.sender.name}</span> wants to start a private chat with you.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center justify-center py-4">
+                        <div className="relative">
+                            <Avatar className="h-20 w-20 ring-4 ring-green-100">
+                                <AvatarImage src={incomingInvite?.sender.avatar_url} />
+                                <AvatarFallback>{incomingInvite?.sender.name?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 p-1.5 rounded-full border-4 border-white">
+                                <Check className="h-4 w-4 text-white" />
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter className="flex gap-2 sm:justify-center">
+                        <Button variant="outline" onClick={rejectInvite} className="w-full sm:w-auto">
+                            Decline
+                        </Button>
+                        <Button onClick={acceptInvite} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
+                            Accept & Join Room
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

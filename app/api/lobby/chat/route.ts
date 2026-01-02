@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
         // Probability Check (Not every user message needs a reply)
         // If trigger is 'response', maybe 40% chance?
         // If trigger is 'silence', 100% chance (since client decided strictly)
-        if (triggerType === 'response' && Math.random() > 0.6) {
+        if (triggerType === 'response' && Math.random() > 0.9) {
+            console.log("Bot decided to skip response (chance)");
             return NextResponse.json({ skipped: true, reason: "chance" });
         }
 
