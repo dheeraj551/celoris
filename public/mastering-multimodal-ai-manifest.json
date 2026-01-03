@@ -1,0 +1,29 @@
+{
+    "name": "Mastering Multimodal AI",
+    "short_name": "Multimodal AI",
+    "description": "Learn to engineer vision, audio, and language fusion systems with Large Multimodal Models (LMMs).",
+    "start_url": "/courses/mastering-multimodal-ai",
+    "display": "standalone",
+    "background_color": "#020617",
+    "theme_color": "#06b6d4",
+    "icons": [
+        {
+            "src": "/celoris-logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ],
+    "ai_metadata": {
+        "version": "1.0.0",
+        "category": "Education:AI Engineering",
+        "keywords": [
+            "Multimodal AI",
+            "LMM",
+            "LLaVA",
+            "CLIP",
+            "Deep Learning",
+            "Vision Transformers"
+        ],
+        "api_endpoint": "https://www.celorisdesigns.com/api/courses/multimodal-ai"
+    }
+}

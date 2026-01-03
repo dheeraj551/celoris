@@ -8,53 +8,56 @@ import { generateBotResponse, LOBBY_BOTS, selectBotForResponse } from "@/lib/lob
 // Ideally, use Redis or DB. For this scale, we'll rely on client-side cooldowns + reasonable chance.
 const RECENT_BOT_MESSAGES: number[] = [];
 
+
 export async function POST(req: NextRequest) {
+    // 1. Diagnostics & Key Check
+    if (!process.env.GOOGLE_GEMINI_API_KEY && !process.env.GEMINI_API_KEY) {
+        console.error("[LobbyBot] Missing Gemini API Key");
+        return NextResponse.json({ error: "Configuration Error: Missing API Key" }, { status: 500 });
+    }
+
     try {
         const body = await req.json();
-        const { message, history, triggerType, user } = body; // user is the sender
+        const { message, history, triggerType, user } = body;
 
-        // 1. Basic Validation
-        if (!triggerType) return NextResponse.json({ error: "Missing triggerType" }, { status: 400 });
+        console.log(`[LobbyBot] Request: ${triggerType} from ${user?.name}`);
 
-        // 2. Rate Limit / Logic Check
         const now = Date.now();
-        // Clean up old timestamps (> 2 mins)
-        while (RECENT_BOT_MESSAGES.length > 0 && RECENT_BOT_MESSAGES[0] < now - 120000) {
+        // Limit: Max 1 message every 10s roughly
+        // Remove old entries from RECENT_BOT_MESSAGES
+        while (RECENT_BOT_MESSAGES.length > 0 && RECENT_BOT_MESSAGES[0] < now - 10000) {
             RECENT_BOT_MESSAGES.shift();
         }
 
-        // Limit: Max 1 message every 30s roughly
-        if (RECENT_BOT_MESSAGES.length > 0 && RECENT_BOT_MESSAGES[RECENT_BOT_MESSAGES.length - 1] > now - 20000) {
+        if (RECENT_BOT_MESSAGES.length > 0 && RECENT_BOT_MESSAGES[RECENT_BOT_MESSAGES.length - 1] > now - 10000) {
             // Too soon for a bot to speak
             console.log("Bot rate limit hit");
             return NextResponse.json({ skipped: true, reason: "rate_limit" });
         }
 
         // Probability Check (Not every user message needs a reply)
-        // If trigger is 'response', maybe 40% chance?
-        // If trigger is 'silence', 100% chance (since client decided strictly)
-        if (triggerType === 'response' && Math.random() > 0.9) {
+        // Set to 0.7 chance to reply (30% skip)
+        if (triggerType === 'response' && Math.random() > 0.7) {
             console.log("Bot decided to skip response (chance)");
             return NextResponse.json({ skipped: true, reason: "chance" });
         }
 
-        // 3. Select Bot
+        // 2. Select Bot & Generate
         const bot = selectBotForResponse(history || [], triggerType);
 
-        // 4. Generate AI Response
-        // Format history for AI
         const historyText = (history || [])
             .map((m: any) => `${m.sender.name}: ${m.content}`)
             .join("\n");
 
+        console.log(`[LobbyBot] Asking ${bot.name} (Gemini)...`);
         const aiResponse = await generateBotResponse(bot, message || "", historyText, triggerType);
 
         if (!aiResponse) {
+            console.error("[LobbyBot] Gemini returned null/empty");
             return NextResponse.json({ skipped: true, reason: "ai_failed" });
         }
 
-        // 5. Broadcast Message via Supabase Admin
-        const supabase = createSupabaseClientForServer();
+        console.log(`[LobbyBot] Generated: "${aiResponse.substring(0, 50)}..."`);
 
         const botMessage = {
             id: crypto.randomUUID(),
@@ -62,7 +65,7 @@ export async function POST(req: NextRequest) {
                 id: bot.id,
                 name: bot.name,
                 avatar_url: bot.avatar_url,
-                is_verified: true, // Bots look verified
+                is_verified: true,
                 is_bot: true
             },
             content: aiResponse.trim(),
@@ -70,65 +73,59 @@ export async function POST(req: NextRequest) {
             type: 'text'
         };
 
-        const channel = supabase.channel('room:lobby');
-        // Note: In server-side, we can publish directly if we have the channel ref, 
-        // but 'channel.send' requires being subscribed? 
-        // Supabase REST API for Realtime is 'POST /v1/realtime' but the JS SDK handles it if we connect.
-        // However, connecting in a serverless route is slow/flaky.
-        // BETTER WAY: Use the `supabase.realtime` (REST) or just rely on the fact the JS SDK socket might work if we wait.
-        // Actually, the standard way in Supabase Serverless to broadcast:
+        // 3. Attempt Broadcast (Best Effort)
+        // We wrap this in a separate try/catch so it never crashes the response
+        try {
+            const supabase = createSupabaseClientForServer();
+            const channel = supabase.channel('room:lobby');
 
-        await channel.subscribe(async (status) => {
-            if (status === 'SUBSCRIBED') {
-                await channel.send({
-                    type: 'broadcast',
-                    event: 'message',
-                    payload: botMessage
+            console.log("[LobbyBot] Broadcasting via Socket...");
+
+            // Short timeout broadcast attempt
+            await new Promise<void>((resolve) => {
+                let resolved = false;
+
+                channel.subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED' && !resolved) {
+                        await channel.send({
+                            type: 'broadcast',
+                            event: 'message',
+                            payload: botMessage
+                        });
+                        if (!resolved) {
+                            resolved = true;
+                            // Clean up
+                            supabase.removeChannel(channel);
+                            resolve();
+                        }
+                    }
                 });
-                // We need to unsubscribe/disconnect to let the lambda finish?
-                // Usually await send is enough.
-                // channel.unsubscribe(); 
-            }
-        });
 
-        // Wait a tiny bit for the socket to flush? 
-        // The `subscribe` callback might not run fast enough in the lambda lifetime if we don't await properly.
-        // The `subscribe` method is async in v2? No, `subscribe(callback)` returns Subscription.
-        // `subscribe()` (no args) returns channel but async behavior on connection.
-
-        // Alternative: The standard JS SDK might be tricky in pure Edge functions for *sending* if connection takes time.
-        // But let's try this. If it fails, we might need a dedicated "send" helper using fetch.
-        // Re-reading docs: `channel.send` is the way. We assume it connects fast.
-
-        // Actually, to ensure it works, we wrap it:
-        await new Promise<void>((resolve, reject) => {
-            const tempChannel = supabase.channel('room:lobby');
-            tempChannel.subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    await tempChannel.send({
-                        type: 'broadcast',
-                        event: 'message',
-                        payload: botMessage
-                    });
-                    await supabase.removeChannel(tempChannel);
-                    resolve();
-                } else if (status === 'CHANNEL_ERROR') {
-                    reject("Channel Error");
-                }
+                // 3s Timeout - proceed if socket hangs
+                setTimeout(() => {
+                    if (!resolved) {
+                        console.warn("[LobbyBot] Broadcast timed out (proceeding with fallback)");
+                        resolved = true;
+                        resolve();
+                    }
+                }, 3000);
             });
-            // Timeout safety
-            setTimeout(() => {
-                supabase.removeChannel(tempChannel);
-                resolve(); // resolve anyway to not crash caller
-            }, 2000);
+        } catch (broadcastError) {
+            console.error("[LobbyBot] Broadcast failed (harmless):", broadcastError);
+        }
+
+        RECENT_BOT_MESSAGES.push(Date.now());
+
+        // 4. Return Data to Client (Primary Method)
+        return NextResponse.json({
+            success: true,
+            message: botMessage,
+            via: "api_response"
         });
 
-        RECENT_BOT_MESSAGES.push(now);
-
-        return NextResponse.json({ success: true, message: botMessage });
-
-    } catch (e) {
-        console.error(e);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    } catch (e: any) {
+        console.error("[LobbyBot] Fatal Error:", e);
+        return NextResponse.json({ error: "Internal Server Error", details: e.message }, { status: 500 });
     }
 }
+

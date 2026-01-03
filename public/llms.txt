@@ -7,5 +7,6 @@ A curriculum for building apps where AI does the heavy lifting.
 - Prioritize Spec-Driven Development.
 
 ## Important Links
-- [Syllabus](/courses/vibe-coding-mastery)
+- [Vibe Coding Syllabus](/courses/vibe-coding-mastery)
+- [Multimodal AI Syllabus](/courses/mastering-multimodal-ai)
 - [Project Templates](https://github.com/celoris-designs)

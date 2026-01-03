@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useRef, useMemo } from "react"
@@ -150,18 +149,23 @@ export default function GlobalLobbyPage() {
             })
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState()
-                const users: UserProfile[] = []
-                Object.values(state).forEach((presences: any) => {
-                    const p = presences[0]
-                    if (p?.user) users.push(p.user)
-                })
-                setOnlineUsers(users)
-                setOnlineCount(users.length)
+                const newUsers: UserProfile[] = []
 
-                if (users.length > prevOnlineCount.current) {
+                // Add Real Users
+                Object.values(state).forEach((presences: any) => {
+                    presences.forEach((p: any) => {
+                        if (p.user) newUsers.push(p.user)
+                    })
+                })
+
+                setOnlineUsers(newUsers)
+                setOnlineCount(newUsers.length)
+
+                // Play sound for new real users joining
+                if (newUsers.length > prevOnlineCount.current) {
                     new Audio(JOIN_SOUND).play().catch(() => { })
                 }
-                prevOnlineCount.current = users.length
+                prevOnlineCount.current = newUsers.length
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
@@ -206,18 +210,9 @@ export default function GlobalLobbyPage() {
         }
     }, [user, authLoading, router, toast])
 
-    // --- EFFECT: Silence Breaker ---
+    // Silence bot trigger removed
     useEffect(() => {
-        const checkSilence = async () => {
-            const now = Date.now()
-            const silenceDuration = now - lastActivityAt
-            if (silenceDuration > 45000 && Math.random() < 0.05) {
-                await triggerBot('silence')
-                setLastActivityAt(now)
-            }
-        }
-        const interval = setInterval(checkSilence, 10000)
-        return () => clearInterval(interval)
+        return; // Bot silence trigger removed
     }, [lastActivityAt])
 
     // --- AUTO-SCROLL ---
@@ -229,19 +224,10 @@ export default function GlobalLobbyPage() {
 
     const triggerBot = async (type: 'response' | 'silence', sentMessage?: string) => {
         try {
-            const history = messages.slice(-5)
-            await fetch('/api/lobby/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: sentMessage,
-                    history,
-                    triggerType: type,
-                    user: user
-                })
-            })
-        } catch (e) {
-            console.error("Bot trigger failed", e)
+            // Bot logic removed as per user request
+            return;
+        } catch (error) {
+            console.error("Bot trigger error:", error)
         }
     }
 
@@ -263,7 +249,7 @@ export default function GlobalLobbyPage() {
         setNewMessage("")
         setShowEmojiPicker(false)
         setLastActivityAt(Date.now())
-        triggerBot('response', msgContent)
+        // triggerBot('response', msgContent) // Bot response trigger removed
     }
 
     const onEmojiClick = (emojiData: EmojiClickData) => {
@@ -396,7 +382,7 @@ export default function GlobalLobbyPage() {
                                                 <p className="text-sm font-medium truncate">{u.name}</p>
                                             </div>
                                         </div>
-                                        {u.id !== user.id && !u.is_bot && (
+                                        {u.id !== user.id && ( // Removed !u.is_bot check here as onlineUsers is already filtered
                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-indigo-500" onClick={() => sendInvite(u)}>
                                                 <MessageCircle className="h-4 w-4" />
                                             </Button>
@@ -429,8 +415,7 @@ export default function GlobalLobbyPage() {
                                 </div>
                                 <h2 className="text-xl font-bold text-slate-800">Welcome to the Lobby!</h2>
                                 <p className="text-slate-500 text-sm max-w-sm mx-auto mt-2">
-                                    Jump into the conversation. Ask questions, share jokes, or just hang out.
-                                    <br /> <span className="text-xs text-indigo-400 font-medium">✨ AI assistants are active to help.</span>
+                                    Jump into the conversation. Ask questions or just hang out.
                                 </p>
                             </div>
 

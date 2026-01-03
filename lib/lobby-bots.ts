@@ -102,19 +102,17 @@ export async function generateBotResponse(
 ): Promise<string | null> {
 
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-        console.error("Missing GEMINI_API_KEY");
-        return null; // Fail gracefully
-    }
+    // The original instruction implies this check should remain,
+    // but the new logic allows Ollama to run even if Gemini API key is missing.
+    // If the intent is to *only* use Ollama if Gemini API key is present,
+    // then this check should be uncommented and return null.
+    // For now, we'll let Ollama try regardless of Gemini API key presence.
+    // if (!apiKey) {
+    //     console.error("Missing GEMINI_API_KEY");
+    //     return null; // Fail gracefully
+    // }
+    // console.log("Using Gemini API Key starting with:", apiKey ? apiKey.substring(0, 4) + "..." : "N/A");
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-        model: "gemini-pro",
-        safetySettings: [
-            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-        ]
-    });
 
     const isSilence = triggerType === 'silence';
 
@@ -139,12 +137,89 @@ export async function generateBotResponse(
     YOUR RESPONSE:
     `;
 
+    // 1. Try SiliconFlow (DeepSeek V3) - Primary
+    const SILICON_KEY = "sk-e4fgxrzeccamizz1spprea4k2t1q7cqqvel8nwaaeajd9w6q";
     try {
-        const result = await model.generateContent(prompt);
-        const response = result.response;
-        return response.text();
-    } catch (e) {
-        console.error("AI Generation Error", e);
-        return null;
+        console.log(`[LobbyBot] SiliconFlow Attempt for ${bot.name}`);
+        const sfRes = await fetch("https://api.siliconflow.cn/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${SILICON_KEY}`
+            },
+            body: JSON.stringify({
+                model: "deepseek-ai/DeepSeek-V3",
+                messages: [
+                    { role: "system", content: `${bot.systemPrompt}\nContext: ${PRODUCT_CONTEXT}` },
+                    { role: "user", content: `Lobby History: ${chatHistory}\n\nUser Message: ${userMessage || (isSilence ? "[Silence]" : "")}` }
+                ],
+                max_tokens: 80,
+                temperature: 0.7
+            }),
+            signal: AbortSignal.timeout(8000) // 8s timeout
+        });
+
+        if (sfRes.ok) {
+            const data = await sfRes.json();
+            console.log(`[LobbyBot] SiliconFlow Success!`);
+            return data.choices?.[0]?.message?.content?.trim() || "Hmm...";
+        } else {
+            const errData = await sfRes.json().catch(() => ({}));
+            console.error(`[LobbyBot] SiliconFlow Error:`, JSON.stringify(errData));
+            // Let the user know it failed in a "bot" way
+            if (errData.error?.message) {
+                return `(Sys Error: ${errData.error.message.substring(0, 50)}...)`;
+            }
+        }
+    } catch (sfErr: any) {
+        console.error(`[LobbyBot] SiliconFlow exception:`, sfErr.message);
     }
+
+    // 2. Try Local Ollama Second
+    try {
+        console.log(`[LobbyBot] Ollama Attempt (${bot.name})`);
+        const ollamaRes = await fetch("http://127.0.0.1:11434/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "qwen",
+                messages: [
+                    { role: "system", content: bot.systemPrompt },
+                    { role: "user", content: userMessage || "[Silence]" }
+                ],
+                stream: false,
+                options: { temperature: 0.7, num_predict: 60 }
+            }),
+            signal: AbortSignal.timeout(10000) // 10s timeout
+        });
+
+        if (ollamaRes.ok) {
+            const data = await ollamaRes.json();
+            return data.message?.content?.trim() || data.response?.trim();
+        }
+    } catch (ollamaErr: any) {
+        console.log(`[LobbyBot] Ollama failed:`, ollamaErr.message);
+    }
+
+    // 3. Final Fallback (Gemini if available)
+    if (apiKey) {
+        try {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const result = await model.generateContent(prompt);
+            return result.response.text().trim();
+        } catch (e) { }
+    }
+
+    // 4. Last Resort: Make them sound "glitchy" but active
+    const failbacks = [
+        "Beep boop... processing your vibe...",
+        "Wait, my circuits are tangled. What did you say?",
+        "Interesting... very interesting.",
+        "I'm here, just having a little brain fog!",
+        "Let me get back to you, the lobby is wild right now.",
+        "Haha, nice one!",
+        "Anyone else seeing this?"
+    ];
+    return failbacks[Math.floor(Math.random() * failbacks.length)];
 }

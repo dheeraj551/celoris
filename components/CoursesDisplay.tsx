@@ -89,6 +89,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'mastering-multimodal-ai-static',
+      title: 'Mastering Multimodal AI: Engineering Vision, Audio, and Language Fusion Systems',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Transition from LLM-centric thinking to Large Multimodal Model (LMM) engineering. Learn to align pixels, waveforms, and tokens into a shared latent space.',
+      target_audience: 'AI Engineers, Data Scientists, Deep Learning Researchers',
+      instructor_name: 'Celoris Designs',
+      course_duration: '8-10 Weeks',
+      price: 24999,
+      course_image_url: '/mastering-multimodal-ai-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `mmai-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'vibe-coding-mastery-static',
       title: 'Vibe Coding Mastery: Build Apps Using AI-First Development Workflows',
       subject: 'Artificial Intelligence',
@@ -752,6 +775,7 @@ export default function CoursesDisplay({
     if (id === 'deploy-scale-ai-static') return '/courses/deploy-scale-ai-apps-serverless-edge'
     if (id === 'langchain-real-static') return '/courses/langchain-in-action-real-workflows'
     if (id === 'build-ai-products-static') return '/courses/build-ai-products-that-make-money-practical-guide'
+    if (id === 'mastering-multimodal-ai-static') return '/courses/mastering-multimodal-ai'
     return `/learn/course/${id}`
   }
 

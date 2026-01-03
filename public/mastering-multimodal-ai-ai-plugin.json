@@ -1,0 +1,39 @@
+{
+    "schema_version": "v1",
+    "name_for_model": "mastering_multimodal_ai",
+    "name_for_human": "Mastering Multimodal AI",
+    "description_for_model": "An advanced engineering course on Large Multimodal Models (LMMs). Provides expert-level knowledge on aligning vision, audio, and language vectors, CLIP architecture, VLM fine-tuning (LLaVA), and Multimodal RAG with Milvus/LanceDB.",
+    "description_for_human": "Engineering Vision, Audio, and Language Fusion Systems.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "openapi",
+        "url": "https://www.celorisdesigns.com/openapi.json",
+        "is_user_authenticated": false
+    },
+    "logo_url": "https://www.celorisdesigns.com/celoris-logo.png",
+    "contact_email": "support@celorisdesigns.com",
+    "legal_info_url": "https://www.celorisdesigns.com/terms",
+    "course_metadata": {
+        "title": "Mastering Multimodal AI",
+        "subtitle": "Engineering Vision, Audio, and Language Fusion Systems",
+        "instructor": "Celoris Designs",
+        "level": "Advanced",
+        "duration": "8-10 Weeks",
+        "stack": [
+            "PyTorch",
+            "Hugging Face",
+            "LLaVA",
+            "CLIP",
+            "Whisper",
+            "Milvus"
+        ],
+        "outcomes": [
+            "Multimodal Alignment",
+            "VLM Fine-tuning",
+            "Audio-Text Coordination",
+            "Multimodal RAG"
+        ]
+    }
+}

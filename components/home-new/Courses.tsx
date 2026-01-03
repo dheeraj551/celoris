@@ -76,7 +76,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                     ? '/courses/langchain-in-action-real-workflows'
                                                                                                     : id === 'build-ai-products-static'
                                                                                                         ? '/courses/build-ai-products-that-make-money-practical-guide'
-                                                                                                        : `/learn/course/${id}`
+                                                                                                        : id === 'mastering-multimodal-ai-static'
+                                                                                                            ? '/courses/mastering-multimodal-ai'
+                                                                                                            : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -112,6 +114,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'mastering-multimodal-ai-static',
+            title: 'Mastering Multimodal AI: Engineering Vision, Audio, and Language Fusion Systems',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs',
+            course_duration: '8-10 Weeks',
+            price: 24999,
+            is_featured: true,
+            course_image_url: '/mastering-multimodal-ai-cover.png',
+            is_static: true,
+            static_url: '/courses/mastering-multimodal-ai'
+        },
         {
             id: 'vibe-coding-mastery-static',
             title: 'Vibe Coding Mastery: Build Apps Using AI-First Development Workflows',
