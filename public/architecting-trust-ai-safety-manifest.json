@@ -1,0 +1,30 @@
+{
+    "name": "Architecting Trust: AI Safety, Ethics & Compliance",
+    "short_name": "AI Safety & Ethics",
+    "description": "Master the frameworks, tools, and legal requirements necessary to deploy predictable, compliant, and ethical AI systems.",
+    "start_url": "/courses/architecting-trust-ai-safety-ethics-compliance",
+    "display": "standalone",
+    "background_color": "#020617",
+    "theme_color": "#eab308",
+    "icons": [
+        {
+            "src": "/celoris-logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ],
+    "ai_metadata": {
+        "version": "1.0.0",
+        "category": "Education:AI Governance",
+        "keywords": [
+            "AI Safety",
+            "AI Ethics",
+            "Compliance",
+            "EU AI Act",
+            "NIST AI RMF",
+            "Bias Mitigation",
+            "Explainable AI"
+        ],
+        "api_endpoint": "https://www.celorisdesigns.com/api/courses/ai-safety-ethics"
+    }
+}

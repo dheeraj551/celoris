@@ -78,7 +78,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                         ? '/courses/build-ai-products-that-make-money-practical-guide'
                                                                                                         : id === 'mastering-multimodal-ai-static'
                                                                                                             ? '/courses/mastering-multimodal-ai'
-                                                                                                            : `/learn/course/${id}`
+                                                                                                            : id === 'architecting-trust-static'
+                                                                                                                ? '/courses/architecting-trust-ai-safety-ethics-compliance'
+                                                                                                                : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -114,6 +116,18 @@ export const Courses: React.FC<CoursesProps> = ({
 
     // Static featured courses
     const staticCourses = [
+        {
+            id: 'architecting-trust-static',
+            title: 'Architecting Trust: AI Safety, Ethics & Compliance',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs',
+            course_duration: '6-8 Weeks',
+            price: 21999,
+            is_featured: true,
+            course_image_url: '/architecting-trust-ai-safety-cover.png',
+            is_static: true,
+            static_url: '/courses/architecting-trust-ai-safety-ethics-compliance'
+        },
         {
             id: 'mastering-multimodal-ai-static',
             title: 'Mastering Multimodal AI: Engineering Vision, Audio, and Language Fusion Systems',

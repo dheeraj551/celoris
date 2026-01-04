@@ -89,6 +89,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'architecting-trust-static',
+      title: 'Architecting Trust: AI Safety, Ethics & Compliance',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Master the frameworks, tools, and legal requirements necessary to deploy predictable, compliant, and ethical AI systems.',
+      target_audience: 'AI Engineers, Compliance Officers, Managers',
+      instructor_name: 'Celoris Designs',
+      course_duration: '6-8 Weeks',
+      price: 21999,
+      course_image_url: '/architecting-trust-ai-safety-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(6).fill(null).map((_, i) => ({
+        id: `trust-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'mastering-multimodal-ai-static',
       title: 'Mastering Multimodal AI: Engineering Vision, Audio, and Language Fusion Systems',
       subject: 'Artificial Intelligence',
@@ -776,6 +799,7 @@ export default function CoursesDisplay({
     if (id === 'langchain-real-static') return '/courses/langchain-in-action-real-workflows'
     if (id === 'build-ai-products-static') return '/courses/build-ai-products-that-make-money-practical-guide'
     if (id === 'mastering-multimodal-ai-static') return '/courses/mastering-multimodal-ai'
+    if (id === 'architecting-trust-static') return '/courses/architecting-trust-ai-safety-ethics-compliance'
     return `/learn/course/${id}`
   }
 

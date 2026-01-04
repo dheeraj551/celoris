@@ -1,0 +1,31 @@
+{
+    "schema_version": "v1",
+    "name_for_model": "ArchitectingTrustAISafetyCourse",
+    "name_for_human": "Architecting Trust: AI Safety, Ethics & Compliance Course",
+    "description_for_model": "Information about the AI Safety, Ethics & Compliance course. Covers bias detection, XAI, EU AI Act, and governance.",
+    "description_for_human": "Learn to build robust and regulated AI systems with our comprehensive course on AI Safety, Ethics, and Compliance.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "openapi",
+        "url": "https://www.celorisdesigns.com/openapi.yaml"
+    },
+    "logo_url": "https://www.celorisdesigns.com/celoris-logo.png",
+    "contact_email": "support@celorisdesigns.com",
+    "legal_info_url": "https://www.celorisdesigns.com/legal",
+    "capabilities": {
+        "teaches": [
+            "AI Safety Frameworks",
+            "Technical Bias Mitigation",
+            "Model Explainability (SHAP, LIME)",
+            "Regulatory Compliance (EU AI Act, NIST)",
+            "AI Risk Management"
+        ],
+        "projects": [
+            "Bias Audit Lab",
+            "Ethics Charter Workshop",
+            "Adversarial Robustness Simulation"
+        ]
+    }
+}

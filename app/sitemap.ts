@@ -110,7 +110,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/langchain-in-action-real-workflows',
         '/courses/build-ai-products-that-make-money-practical-guide',
         '/courses/vibe-coding-mastery',
-        '/courses/mastering-multimodal-ai'
+        '/courses/mastering-multimodal-ai',
+        '/courses/architecting-trust-ai-safety-ethics-compliance'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),

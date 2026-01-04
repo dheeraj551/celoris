@@ -432,7 +432,7 @@ export default function BuildAIProductsCourse() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 p-2 border border-slate-700 flex items-center justify-center">
+                                        <div className="w-14 h-14 rounded-2xl bg-white p-2.5 shadow-lg shadow-white/10 border border-slate-200 flex items-center justify-center">
                                             <img src="/celoris-logo.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
