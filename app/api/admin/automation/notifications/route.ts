@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const severity = searchParams.get('severity');
 
     const supabase = createRouteClient();
-    
+
     // Build query
     let query = supabase
       .from('admin_notifications')
@@ -76,12 +76,12 @@ export async function POST(request: NextRequest) {
 
     if (mark_all_read) {
       // Mark all notifications as read
-      const { error } = await supabase
+      const { error } = await (supabase
         .from('admin_notifications')
-        .update({ 
-          read: true, 
-          read_at: new Date().toISOString() 
-        })
+        .update({
+          read: true,
+          read_at: new Date().toISOString()
+        } as any) as any)
         .eq('read', false);
 
       if (error) {
@@ -106,12 +106,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Mark specific notification as read
-    const { error } = await supabase
+    const { error } = await (supabase
       .from('admin_notifications')
-      .update({ 
-        read: true, 
-        read_at: new Date().toISOString() 
-      })
+      .update({
+        read: true,
+        read_at: new Date().toISOString()
+      } as any) as any)
       .eq('id', notification_id);
 
     if (error) {

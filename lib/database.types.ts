@@ -226,11 +226,118 @@ export interface Database {
           title: string | null
           message: string | null
           details: any | null
+          data: any | null
           created_at: string
           updated_at: string | null
         }
-        Insert: Omit<Database['public']['Tables']['admin_notifications']['Row'], 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['admin_notifications']['Insert']>
+        Insert: {
+          id?: string
+          type: string
+          severity: string
+          read?: boolean
+          read_at?: string | null
+          title?: string | null
+          message?: string | null
+          details?: any | null
+          data?: any | null
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          type?: string
+          severity?: string
+          read?: boolean
+          read_at?: string | null
+          title?: string | null
+          message?: string | null
+          details?: any | null
+          data?: any | null
+          created_at?: string
+          updated_at?: string | null
+        }
+      }
+      automation_logs: {
+        Row: {
+          id: string
+          automation_type: string
+          automation_source: string
+          status: string
+          input_data: any | null
+          output_data: any | null
+          error_message: string | null
+          execution_time: number | null
+          executed_at: string
+          completed_at: string | null
+          metadata: any | null
+        }
+        Insert: {
+          id?: string
+          automation_type: string
+          automation_source: string
+          status: string
+          input_data?: any | null
+          output_data?: any | null
+          error_message?: string | null
+          execution_time?: number | null
+          executed_at?: string
+          completed_at?: string | null
+          metadata?: any | null
+        }
+        Update: {
+          id?: string
+          automation_type?: string
+          automation_source?: string
+          status?: string
+          input_data?: any | null
+          output_data?: any | null
+          error_message?: string | null
+          execution_time?: number | null
+          executed_at?: string
+          completed_at?: string | null
+          metadata?: any | null
+        }
+      }
+      n8n_automation_settings: {
+        Row: {
+          id: string
+          automation_type: string
+          is_active: boolean
+          schedule: string | null
+          last_execution: string | null
+          last_success: string | null
+          total_executions: number
+          successful_executions: number
+          failed_executions: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          automation_type: string
+          is_active?: boolean
+          schedule?: string | null
+          last_execution?: string | null
+          last_success?: string | null
+          total_executions?: number
+          successful_executions?: number
+          failed_executions?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          automation_type?: string
+          is_active?: boolean
+          schedule?: string | null
+          last_execution?: string | null
+          last_success?: string | null
+          total_executions?: number
+          successful_executions?: number
+          failed_executions?: number
+          created_at?: string
+          updated_at?: string
+        }
       }
       featured_videos: {
         Row: {

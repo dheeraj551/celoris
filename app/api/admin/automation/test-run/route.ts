@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const supabase = createRouteClient();
 
     // Log the test run start
-    const { data: logEntry, error: logError } = await supabase
+    const { data: logEntry, error: logError } = await (supabase
       .from('automation_logs')
       .insert([{
         automation_type: 'blog_generation',
@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
         input_data: { test_mode: true, triggered_at: new Date().toISOString() },
         executed_at: new Date().toISOString(),
         metadata: { test_run: true, manual_trigger: true }
-      }])
+      }] as any)
       .select()
-      .single();
+      .single() as any);
 
     if (logError) {
       console.error('Error creating test log entry:', logError);
@@ -31,24 +31,24 @@ export async function POST(request: NextRequest) {
     try {
       // Simulate N8N workflow execution
       const startTime = Date.now();
-      
+
       // Step 1: Simulate trend analysis (Google Trends, Twitter, etc.)
       await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
-      
+
       // Step 2: Simulate AI content generation
       await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second delay
-      
+
       // Step 3: Simulate image generation
       await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5 second delay
-      
+
       // Step 4: Simulate blog publishing
       await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
-      
+
       const endTime = Date.now();
       const executionTime = endTime - startTime;
 
       // Update log with success
-      await supabase
+      await (supabase
         .from('automation_logs')
         .update({
           status: 'completed',
@@ -64,16 +64,16 @@ export async function POST(request: NextRequest) {
             test_mode: true,
             execution_steps: [
               'Trend Analysis - Completed',
-              'Content Generation - Completed', 
+              'Content Generation - Completed',
               'Image Generation - Completed',
               'Blog Publishing - Completed'
             ]
           }
-        })
+        } as any) as any)
         .eq('id', logEntry.id);
 
       // Create success notification
-      await supabase
+      await (supabase
         .from('admin_notifications')
         .insert([{
           type: 'automation_test',
@@ -85,17 +85,17 @@ export async function POST(request: NextRequest) {
             execution_time: executionTime,
             status: 'success'
           }
-        }]);
+        }] as any) as any);
 
       // Update automation settings last execution time
-      await supabase
+      await (supabase
         .from('n8n_automation_settings')
         .update({
           last_execution: new Date().toISOString(),
           last_success: new Date().toISOString(),
           total_executions: 1,
           successful_executions: 1
-        })
+        } as any) as any)
         .eq('automation_type', 'blog_generation')
         .limit(1);
 
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         }]);
 
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Test automation failed',
           details: testError instanceof Error ? testError.message : 'Unknown error',
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in test automation:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to run test automation',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
