@@ -80,7 +80,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                             ? '/courses/mastering-multimodal-ai'
                                                                                                             : id === 'architecting-trust-static'
                                                                                                                 ? '/courses/architecting-trust-ai-safety-ethics-compliance'
-                                                                                                                : `/learn/course/${id}`
+                                                                                                                : id === 'agentic-ai-cybersecurity-static'
+                                                                                                                    ? '/courses/agentic-ai-for-cybersecurity'
+                                                                                                                    : `/learn/course/${id}`
                         }
                         className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
                     >
@@ -127,6 +129,18 @@ export const Courses: React.FC<CoursesProps> = ({
             course_image_url: '/architecting-trust-ai-safety-cover.png',
             is_static: true,
             static_url: '/courses/architecting-trust-ai-safety-ethics-compliance'
+        },
+        {
+            id: 'agentic-ai-cybersecurity-static',
+            title: 'Agentic AI for Cybersecurity: Building and Scaling Autonomous Defense & Automation Systems',
+            subject: 'Artificial Intelligence',
+            instructor_name: 'Celoris Designs',
+            course_duration: '6-8 Weeks',
+            price: 29999,
+            is_featured: true,
+            course_image_url: '/agentic-ai-cybersecurity-cover.png',
+            is_static: true,
+            static_url: '/courses/agentic-ai-for-cybersecurity'
         },
         {
             id: 'mastering-multimodal-ai-static',

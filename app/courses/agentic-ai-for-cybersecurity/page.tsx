@@ -1,21 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, MousePointer2, Layout } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, MousePointer2, Layout, Music, Video, Mic, Image as ImageIcon, Lock, Activity, Target } from "lucide-react"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
-export default function VibeCodingMasteryCourse() {
+export default function AgenticAICybersecurityCourse() {
     // Set page title and meta tags dynamically
     useEffect(() => {
-        document.title = "Vibe Coding Mastery: Build Apps Using AI-First Development Workflows";
+        document.title = "Agentic AI for Cybersecurity: Building and Scaling Autonomous Defense & Automation Systems";
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Learn to 10x your output by mastering the 2026 paradigm of Vibe Coding. Ship production-ready apps with 95% AI-generated code.";
+        const descriptionText = "Build Agentic Systems for cybersecurity. Learn to reduce Tier 1 burnout by delegating triage, investigation, and remediation to specialized AI agents.";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -27,133 +27,133 @@ export default function VibeCodingMasteryCourse() {
     }, []);
 
     const courseData = {
-        title: "Vibe Coding Mastery",
-        subtitle: "Build Apps Using AI-First Development Workflows",
-        description: "The developer's job in 2026 isn't to write code; it's to manage the agents writing it. This course is your manual for that new reality. Learn the Karpathy Paradigm of 'Abductive' programming and ship three production-ready apps while writing less than 5% of the code manually.",
-        students: 2450,
+        title: "Agentic AI for Cybersecurity",
+        subtitle: "Building and Scaling Autonomous Defense & Automation Systems",
+        description: "Move beyond simple Generative AI prompts to build Agentic Systems—AI that can reason, use security tools, and execute multi-step playbooks autonomously. Focus on reducing 'Tier 1 burnout' by delegating routine triage, investigation, and remediation to specialized AI agents.",
+        students: 1250,
         rating: 4.95,
-        duration: "4-6 Weeks (Self-paced)",
-        price: 19999,
+        duration: "6-8 Weeks (Self-paced)",
+        price: 29999,
         currency: "INR",
         provider: "Celoris Designs",
         website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/vibe-coding-mastery",
+        url: "https://www.celorisdesigns.com/courses/agentic-ai-for-cybersecurity",
         learning_outcomes: [
-            "Master the Karpathy Paradigm: Moving from Deductive to Abductive programming.",
-            "Choose and master your 2026 Command Center (Cursor, Windsurf, or Replit).",
-            "Learn Spec-Driven Development: Architecture before code.",
-            "Deploy Multi-Agent Systems (MAS) using CrewAI and AutoGen.",
-            "Master Agentic Governance and automated testing vibes.",
-            "Implement high-level context injection with Model Context Protocol (MCP).",
-            "Navigate advanced debugging with the 'Error Loop' feedback strategy.",
-            "Secure AI-generated code against hallucinated vulnerabilities.",
-            "Manage technical debt in a vibe-coded environment.",
-            "Ship three production-ready MVPs with minimal manual coding."
+            "Transition from standard automation (SOAR) to Agentic SOC architectures.",
+            "Master frameworks like LangGraph, CrewAI, and AutoGen for security workflows.",
+            "Connect AI agents to SIEMs (Splunk/Sentinel), EDRs (CrowdStrike), and Threat Intel APIs.",
+            "Build 'Swarms' of investigation agents that correlate multi-source data in parallel.",
+            "Implement Human-in-the-Loop (HITL) design patterns for high-stakes remediation.",
+            "Secure your agents against prompt injection and adversarial attacks.",
+            "Deploy Agentic RAG systems for private security knowledge bases.",
+            "Automate dark web searches and OSINT gathering using specialized agents.",
+            "Monitor and measure MTTR and 'Hours Saved' as key ROI metrics.",
+            "Build production-grade bots for leaked secret monitoring and vulnerability patching."
         ],
         requirements: [
-            "Basic understanding of software development concepts",
-            "Familiarity with using AI chat tools (ChatGPT/Claude)",
-            "A desire to 10x development velocity",
-            "An open mind to 'Programming in English'"
+            "Basic understanding of Cybersecurity concepts (SIEM, EDR, TTPs)",
+            "Proficiency in Python programming",
+            "Familiarity with LLM basics (GPT, Claude, or Llama)",
+            "Experience with API integrations is helpful"
         ],
         chapters: [
             {
                 number: 1,
-                title: "The Vibe Coding Mindset & Fundamentals",
+                title: "The Agentic Shift in Defense",
                 icon: "Zap",
                 topics: [
-                    "The Karpathy Paradigm: Deductive vs. Abductive solutions.",
-                    "Taste vs. Syntax: Why 'Programming in English' is the new standard.",
-                    "Pure vs. Responsible Vibe Coding: Prototypes vs. Rigorous Production.",
-                    "2026 Stack Overview: Cursor, Windsurf, Replit, or Copilot."
+                    "The Problem: Why SOAR and traditional automation failed to stop burnout.",
+                    "The Solution: Definition of Agentic AI vs. GenAI vs. Standard Automation.",
+                    "The 'Agentic SOC' Architecture: Moving from human-led triage to agent-led investigation.",
+                    "Market Trends: Analysis of vendor adoption (Google SecOps, Microsoft Copilot, and open-source frameworks)."
                 ],
                 duration: "1 Week"
             },
             {
                 number: 2,
-                title: "The Command Centers (Tools of the Trade)",
-                icon: "Terminal",
+                title: "The Technical Stack for Security Agents",
+                icon: "Cpu",
                 topics: [
-                    "Cursor Deep-Dive: Composer Mode, @codebase indexing, & refactoring.",
-                    "The Windsurf 'Cascade': Agentic IDEs with real-time dependency graphs.",
-                    "Replit Agent 3: Single-prompt full-stack deployments.",
-                    "Context Injection: Connecting IDEs to Docs, Slack, and Jira via MCP."
+                    "LLMs for Reasoning: GPT-4o, Claude 3.5, and local models (Llama 3) for privacy.",
+                    "Frameworks: Hands-on with LangGraph, CrewAI, and AutoGen for security workflows.",
+                    "Memory & State: How agents remember past incidents to improve future responses.",
+                    "Tool Calling: Connecting AI to SIEMs, EDRs, and Threat Intel APIs."
                 ],
-                duration: "1 Week"
+                duration: "1.5 Weeks"
             },
             {
                 number: 3,
-                title: "Spec-Driven Development",
-                icon: "Layout",
+                title: "Building Defensive Agents (The Blue Team)",
+                icon: "Shield",
                 topics: [
-                    "Prompting as a Product Manager: Writing execute-perfect Intent Docs.",
-                    "The /specify and /plan Workflow: Architecting before file creation.",
-                    "Iterative Refinement: The Observe -> Critique -> Prompt -> Verify loop.",
-                    "Voice-First Development: Using SuperWhisper to talk your app into existence."
+                    "The Triage Agent: Automating the 'False Positive vs. True Positive' decision loop.",
+                    "Investigation Agents: Building 'Swarms' that gather logs and correlate identity data.",
+                    "The Remediation Agent: Executing surgical containment based on reasoning.",
+                    "Lab: Build an agent that investigates a Phishing alert from start to finish."
                 ],
-                duration: "1 Week"
+                duration: "1.5 Weeks"
             },
             {
                 number: 4,
-                title: "Agentic Workflows & Multi-Agent Systems",
-                icon: "Workflow",
+                title: "Autonomous Threat Intelligence & Hunting",
+                icon: "Search",
                 topics: [
-                    "CrewAI & AutoGen: Setting up your Virtual Dev Shop (Architect, Coder, QA).",
-                    "Agentic Governance: Managing an army of agents for bugs and refactors.",
-                    "Automated Testing Vibes: Prompting for Playwright/Cypress tests.",
-                    "Scaling with Agentic Workflows: Handling complex features autonomously."
+                    "Agentic RAG: Building a private security knowledge base that agents can query.",
+                    "Dark Web & OSINT Agents: Automating the search for leaked credentials.",
+                    "Continuous Hunting: Deploying agents that look for 'Living off the Land' (LotL) techniques.",
+                    "Hands-on: Engineering a multi-source threat intelligence aggregator."
                 ],
                 duration: "1 Week"
             },
             {
                 number: 5,
-                title: "Advanced Debugging & Security",
-                icon: "Shield",
+                title: "Security of the Agents (Guardrails & Governance)",
+                icon: "Lock",
                 topics: [
-                    "The 'Error Loop' Strategy: Feeding logs back into the LLM.",
-                    "Security for Vibe Coders: Identifying Hallucinated Vulnerabilities.",
-                    "AI-Driven Security scanners (Snyk/DeepCode) integration.",
-                    "Technical Debt Management: Stopping the 'Spaghetti Vibe'."
+                    "Prompt Injection in Security: Preventing attackers from 'hacking' defensive agents.",
+                    "Human-in-the-Loop (HITL): Design patterns for high-stakes actions ('Human disposes').",
+                    "Auditability: Maintaining a transparent 'chain of thought' for compliance.",
+                    "Governance: Managing 'Agent Sprawl' and compute costs."
                 ],
                 duration: "1 Week"
             }
         ],
         faqs: [
             {
-                question: "What exactly is 'Vibe Coding'?",
-                answer: "Vibe Coding is a paradigm shift where the developer focuses on describing the high-level 'vibe' or intent of the software while AI agents handle the low-level implementation, syntax, and boilerplate."
+                question: "Do I need to be a Python expert?",
+                answer: "Intermediate Python is required. We cover the specific libraries (LangChain/LangGraph) used for agents, but you should be comfortable with scripts and APIs."
             },
             {
-                question: "Do I need to be an expert coder?",
-                answer: "No. While understanding logic is helpful, Vibe Coding prioritizes 'Taste' and 'Architecture' over syntax. If you can describe it, you can build it."
+                question: "Is this course relevant for Red Teamers?",
+                answer: "While we focus on defense (Blue Team), the principles of building autonomous agents are directly applicable to offensive security automation and red team operations."
             },
             {
-                question: "Which IDE should I use?",
-                answer: "We cover Cursor, Windsurf, and Replit. You'll learn which one fits your specific workflow best—whether it's agentic IDEs or mobile-first prompt building."
+                question: "Can I run these agents locally?",
+                answer: "Yes, we cover how to use local models like Llama 3 with Ollama or vLLM to ensure data privacy for security logs."
             },
             {
-                question: "Is this practical for production apps?",
-                answer: "Absolutely. We emphasize 'Responsible Vibe Coding'—using AI for speed but keeping humans in the loop for security, performance, and architecture."
+                question: "Will we get access to the code used in labs?",
+                answer: "Absolutely. You get full access to the GitHub repository containing all agents, templates, and orchestration playbooks."
             }
         ],
         projects: [
             {
-                title: "The 'Weekend MVP'",
-                description: "Rapid prototyping from a sketch or voice note.",
-                tools: "Replit Agent + v0",
-                icon: "Zap"
-            },
-            {
-                title: "The Full-Stack SaaS",
-                description: "Auth, Database, and Stripe integration with zero manual SQL.",
-                tools: "Cursor + Windsurf",
-                icon: "Database"
-            },
-            {
-                title: "The Multi-Agent Tool",
-                description: "An app that manages other AI agents to perform complex tasks.",
-                tools: "CrewAI + GitHub Copilot",
+                title: "The 'Silent Guardian' Bot",
+                description: "An agent that monitors GitHub for leaked secrets and automatically rotates them.",
+                tools: "LangGraph + GitHub API + AWS Secrets Manager",
                 icon: "Bot"
+            },
+            {
+                title: "Multi-Agent War Room",
+                description: "Agents (Researcher, Forensic Analyst, Responder) 'chat' to solve a ransom incident.",
+                tools: "CrewAI + ELK Stack + Slack Integration",
+                icon: "Shield"
+            },
+            {
+                title: "Vulnerability Patcher",
+                description: "An agent that reads scan reports, writes patches, and opens PRs for review.",
+                tools: "AutoGen + Snyk + GitHub Actions",
+                icon: "Activity"
             }
         ]
     }
@@ -161,20 +161,21 @@ export default function VibeCodingMasteryCourse() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "Course",
-        "name": "Vibe Coding Mastery",
-        "description": "Learn the 2026 paradigm of AI-First Development. Move from writing rules to steering solutions.",
+        "name": "Agentic AI for Cybersecurity",
+        "description": "Building and Scaling Autonomous Defense & Automation Systems. Reduce SOC burnout with specialized AI agents.",
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
             "sameAs": "https://www.celorisdesigns.com"
         },
-        "educationalLevel": "Intermediate",
+        "educationalLevel": "Advanced",
         "teaches": [
-            "AI-First Architecting",
-            "Agentic Workflows",
-            "Prompt-Driven Development",
-            "Vibe Coding Paradigms",
-            "Model Context Protocol (MCP)"
+            "Agentic SOC Architecture",
+            "LangGraph for Security",
+            "Autonomous Incident Response",
+            "Threat Hunting Agents",
+            "Security Agent Guardrails",
+            "OSINT Automation"
         ]
     }
 
@@ -210,9 +211,9 @@ export default function VibeCodingMasteryCourse() {
                         {/* Course Header */}
                         <div className="space-y-6">
                             <div className="flex flex-wrap gap-2 mb-4">
-                                <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Vibe Coding</span>
-                                <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">AI-First</span>
-                                <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Cursor & Windsurf</span>
+                                <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Agentic AI</span>
+                                <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Cybersecurity</span>
+                                <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Automation</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
                                 {courseData.title}
@@ -231,8 +232,8 @@ export default function VibeCodingMasteryCourse() {
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
                                     <img
-                                        src="/vibe-coding-mastery-cover.png"
-                                        alt="Vibe Coding Mastery"
+                                        src="/agentic-ai-cybersecurity-cover.png"
+                                        alt="Agentic AI for Cybersecurity"
                                         className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
@@ -278,9 +279,9 @@ export default function VibeCodingMasteryCourse() {
                             <Accordion type="single" collapsible className="space-y-4">
                                 {courseData.chapters.map((chapter, index) => {
                                     const Icon = chapter.icon === "Zap" ? Zap :
-                                        chapter.icon === "Terminal" ? Terminal :
-                                            chapter.icon === "Layout" ? Layout :
-                                                chapter.icon === "Workflow" ? Workflow : Shield;
+                                        chapter.icon === "Cpu" ? Cpu :
+                                            chapter.icon === "Shield" ? Shield :
+                                                chapter.icon === "Search" ? Search : Lock;
                                     return (
                                         <AccordionItem key={index} value={`chapter-${index}`} className="border border-slate-700/50 bg-slate-900/40 rounded-xl px-2 overflow-hidden">
                                             <AccordionTrigger className="hover:no-underline py-6">
@@ -317,20 +318,43 @@ export default function VibeCodingMasteryCourse() {
                             </Accordion>
                         </section>
 
+                        {/* Tech Stack Section */}
+                        <section className="space-y-6">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                <div className="p-2 bg-green-500/20 rounded-lg">
+                                    <Cpu className="h-6 w-6 text-green-400" />
+                                </div>
+                                The Autonomous SOC Stack
+                            </h2>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[
+                                    { label: "Frameworks", value: "LangGraph, CrewAI" },
+                                    { label: "LLMs", value: "GPT-4o, Claude 3.5, Llama 3" },
+                                    { label: "Integrations", value: "Splunk, Sentinel, EDR" },
+                                    { label: "Search", value: "Tavily, Firecrawl, Shodan" }
+                                ].map((item, i) => (
+                                    <div key={i} className="p-4 rounded-xl bg-slate-800/20 border border-slate-700/50">
+                                        <div className="text-xs font-bold text-slate-500 uppercase mb-1">{item.label}</div>
+                                        <div className="text-sm text-cyan-400 font-semibold">{item.value}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
                         {/* Projects Section */}
                         <section className="space-y-6">
                             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                                 <div className="p-2 bg-blue-500/20 rounded-lg">
-                                    <Bot className="h-6 w-6 text-blue-400" />
+                                    <Target className="h-6 w-6 text-blue-400" />
                                 </div>
-                                Vibe-to-Production Projects
+                                Practical Lab Projects
                             </h2>
                             <p className="text-slate-400 mb-8">
-                                Ship three production-ready applications without writing more than 5% of the code manually.
+                                Hands-on engineering projects designed to automate the drudgery of Tier 1 analysis and remediation.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {courseData.projects.map((item, index) => {
-                                    const Icon = item.icon === "Zap" ? Zap : item.icon === "Database" ? Database : Bot;
+                                    const Icon = item.icon === "Bot" ? Bot : item.icon === "Shield" ? Shield : Activity;
                                     return (
                                         <Card key={index} className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50 hover:border-cyan-500/40 transition-all duration-300 group">
                                             <CardContent className="pt-8 text-center h-full flex flex-col">
@@ -354,9 +378,9 @@ export default function VibeCodingMasteryCourse() {
                             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
                                 <Zap className="h-24 w-24 text-white" />
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-4 relative z-10">The 2026 Manual</h3>
+                            <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Future-Proofing Your Career</h3>
                             <p className="text-lg text-slate-300 leading-relaxed italic relative z-10">
-                                "In 2026, the developer's job isn't to write the code; it's to manage the agents writing the code. This course is the manual for that new reality."
+                                "The drudgery of Tier 1 analysis is being replaced by AI. This course doesn't just teach you to use AI; it teaches you to build the systems that will define the next decade of cybersecurity defense."
                             </p>
                         </div>
 
@@ -409,16 +433,16 @@ export default function VibeCodingMasteryCourse() {
                                                 <span>Professional Certification</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
-                                                <Code className="h-5 w-5 text-purple-400" />
-                                                <span>Production Ready GitHub Templates</span>
+                                                <Activity className="h-5 w-5 text-purple-400" />
+                                                <span>Real-world SOC Playbooks</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Users className="h-5 w-5 text-blue-400" />
-                                                <span>Exclusive Discord Community</span>
+                                                <span>Intensive AI-Security Community</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Zap className="h-5 w-5 text-orange-400" />
-                                                <span>2026 Tech Stack (Agentic IDEs)</span>
+                                                <span>Practical Hacking Labs</span>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -433,7 +457,7 @@ export default function VibeCodingMasteryCourse() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 p-2 border border-slate-700 flex items-center justify-center">
+                                        <div className="w-14 h-14 rounded-2xl bg-white p-2.5 shadow-lg shadow-white/10 border border-slate-200 flex items-center justify-center">
                                             <img src="/celoris-logo.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
@@ -442,7 +466,7 @@ export default function VibeCodingMasteryCourse() {
                                         </div>
                                     </div>
                                     <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                                        Specializing in Agentic Workflows and Vibe Coding paradigms. We enable developers to build at the speed of thought using the most advanced AI tools available.
+                                        Specializing in advanced Agentic AI Systems and Cybersecurity Automation. We bridge the gap between traditional SOC workflows and autonomous AI-driven defense.
                                     </p>
                                     <div className="flex items-center justify-between text-sm py-3 border-t border-slate-800">
                                         <div className="flex items-center gap-1.5 text-slate-300">

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 export default function ArchitectingTrustCourse() {
     // Set page title and meta tags dynamically
@@ -413,13 +414,10 @@ export default function ArchitectingTrustCourse() {
                                         </div>
 
                                         <div className="space-y-4 mb-8">
-                                            <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-white rounded-2xl shadow-lg shadow-gold-500/25 transition-all active:scale-95" size="lg">
-                                                Enroll Now
-                                            </Button>
-                                            <Button variant="outline" className="w-full h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl">
-                                                <Download className="mr-2 h-4 w-4" />
-                                                Download Syllabus
-                                            </Button>
+                                            <CourseInquiryDialog
+                                                courseTitle={courseData.title}
+                                                buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-white rounded-2xl shadow-lg shadow-gold-500/25 transition-all active:scale-95"
+                                            />
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

@@ -734,6 +734,29 @@ export default function CoursesDisplay({
           course_topics: []
         }
       ]
+    },
+    {
+      id: 'agentic-ai-cybersecurity-static',
+      title: 'Agentic AI for Cybersecurity: Building and Scaling Autonomous Defense & Automation Systems',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Build Agentic Systems for cybersecurity. Learn to reduce Tier 1 burnout by delegating triage, investigation, and remediation to specialized AI agents.',
+      target_audience: 'Security Engineers, SOC Analysts, AI Developers',
+      instructor_name: 'Celoris Designs',
+      course_duration: '6-8 Weeks',
+      price: 29999,
+      course_image_url: '/agentic-ai-cybersecurity-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `acyber-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -800,6 +823,7 @@ export default function CoursesDisplay({
     if (id === 'build-ai-products-static') return '/courses/build-ai-products-that-make-money-practical-guide'
     if (id === 'mastering-multimodal-ai-static') return '/courses/mastering-multimodal-ai'
     if (id === 'architecting-trust-static') return '/courses/architecting-trust-ai-safety-ethics-compliance'
+    if (id === 'agentic-ai-cybersecurity-static') return '/courses/agentic-ai-for-cybersecurity'
     return `/learn/course/${id}`
   }
 

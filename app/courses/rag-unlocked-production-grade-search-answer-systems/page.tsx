@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 export default function RAGUnlockedCourse() {
     // Set page title and meta tags dynamically
@@ -412,13 +413,10 @@ export default function RAGUnlockedCourse() {
                                         </div>
 
                                         <div className="space-y-4 mb-8">
-                                            <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95" size="lg">
-                                                Enroll in Course
-                                            </Button>
-                                            <Button variant="outline" className="w-full h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl">
-                                                <Download className="mr-2 h-4 w-4" />
-                                                Get Syllabus PDF
-                                            </Button>
+                                            <CourseInquiryDialog
+                                                courseTitle={courseData.title}
+                                                buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
+                                            />
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

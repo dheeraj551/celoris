@@ -1,6 +1,8 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase-client"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,6 +27,100 @@ import {
 
 export default function SocialPage() {
   const { user, profile, loading } = useAuth()
+  const [roomData, setRoomData] = useState<any>({
+    social: { count: 0, users: [] },
+    networking: { count: 0, users: [] },
+    tech: { count: 0, users: [] },
+    lobby: { count: 0, users: [] }
+  })
+  const [activePrivateRooms, setActivePrivateRooms] = useState<any[]>([])
+
+  useEffect(() => {
+    // SECURITY/PERFORMANCE: Only run if auth is loaded and user exists.
+    // This prevents guest users from triggering endless auth-refresh/subscription loops.
+    if (loading || !user) return
+
+    const supabase = createClient()
+
+    // 1. Socialize Room Presence
+    const socialChannel = supabase.channel('room:socialize')
+    socialChannel.on('presence', { event: 'sync' }, () => {
+      const state = socialChannel.presenceState()
+      const presences = Object.values(state).flat() as any[]
+      setRoomData((prev: any) => ({
+        ...prev,
+        social: {
+          count: presences.length,
+          users: presences.map(p => p.user).filter(Boolean).slice(0, 4)
+        }
+      }))
+    }).subscribe()
+
+    // 2. Networking Room Presence
+    const networkingChannel = supabase.channel('room:networking')
+    networkingChannel.on('presence', { event: 'sync' }, () => {
+      const state = networkingChannel.presenceState()
+      const presences = Object.values(state).flat() as any[]
+      setRoomData((prev: any) => ({
+        ...prev,
+        networking: {
+          count: presences.length,
+          users: presences.map(p => p.user).filter(Boolean).slice(0, 4)
+        }
+      }))
+    }).subscribe()
+
+    // 3. Tech Trends Room Presence
+    const techChannel = supabase.channel('room:tech-trends')
+    techChannel.on('presence', { event: 'sync' }, () => {
+      const state = techChannel.presenceState()
+      const presences = Object.values(state).flat() as any[]
+      setRoomData((prev: any) => ({
+        ...prev,
+        tech: {
+          count: presences.length,
+          users: presences.map(p => p.user).filter(Boolean).slice(0, 4)
+        }
+      }))
+    }).subscribe()
+
+    // 4. Global Lobby Presence
+    const lobbyChannel = supabase.channel('room:lobby')
+    lobbyChannel.on('presence', { event: 'sync' }, () => {
+      const state = lobbyChannel.presenceState()
+      const presences = Object.values(state).flat() as any[]
+      setRoomData((prev: any) => ({
+        ...prev,
+        lobby: {
+          count: presences.length,
+          users: presences.map(p => p.user).filter(Boolean).slice(0, 10)
+        }
+      }))
+    }).subscribe()
+
+    // 5. Private Rooms Tracker
+    const tracker = supabase.channel('global-rooms-tracker')
+    tracker.on('presence', { event: 'sync' }, () => {
+      const state = tracker.presenceState()
+      const roomsMap: Record<string, any[]> = {}
+      Object.values(state).forEach((presences: any) => {
+        const presence = presences[0]
+        if (presence?.roomId && presence.roomId.startsWith('private-')) {
+          if (!roomsMap[presence.roomId]) roomsMap[presence.roomId] = []
+          roomsMap[presence.roomId].push(presence.user)
+        }
+      })
+      setActivePrivateRooms(Object.values(roomsMap))
+    }).subscribe()
+
+    return () => {
+      socialChannel.unsubscribe()
+      networkingChannel.unsubscribe()
+      techChannel.unsubscribe()
+      lobbyChannel.unsubscribe()
+      tracker.unsubscribe()
+    }
+  }, [user, loading])
 
   const platformFeatures = [
     {
@@ -265,78 +361,90 @@ export default function SocialPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
                 {/* Room 1 */}
                 <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4 transform hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex -space-x-3 overflow-hidden">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden">
-                        <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`}
-                          alt="avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
+                  <div className="flex -space-x-3 overflow-hidden h-10">
+                    {roomData.social.users.length > 0 ? (
+                      roomData.social.users.map((u: any, i: number) => (
+                        <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-slate-100">
+                          <img
+                            src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`}
+                            alt="avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center text-[10px] text-slate-400 font-medium">No one here yet</div>
+                    )}
                   </div>
                   <h4 className="font-bold text-slate-900 text-sm leading-tight">Socialize & Hangout</h4>
                   <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
                     <div className="flex items-center gap-1.5 text-green-600">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      Active
+                      {roomData.social.count > 0 ? "Active" : "Idle"}
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      342
+                      {roomData.social.count}
                     </div>
                   </div>
                 </div>
 
                 {/* Room 2 */}
                 <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4 transform hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex -space-x-3 overflow-hidden">
-                    {[5, 6, 7, 8].map((i) => (
-                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden">
-                        <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 20}`}
-                          alt="avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
+                  <div className="flex -space-x-3 overflow-hidden h-10">
+                    {roomData.networking.users.length > 0 ? (
+                      roomData.networking.users.map((u: any, i: number) => (
+                        <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-slate-100">
+                          <img
+                            src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 20}`}
+                            alt="avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center text-[10px] text-slate-400 font-medium">No one here yet</div>
+                    )}
                   </div>
                   <h4 className="font-bold text-slate-900 text-sm leading-tight">Networking & Growth</h4>
                   <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
                     <div className="flex items-center gap-1.5 text-blue-600">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      Active
+                      {roomData.networking.count > 0 ? "Active" : "Idle"}
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      1.2k
+                      {roomData.networking.count}
                     </div>
                   </div>
                 </div>
 
                 {/* Room 3 */}
                 <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4 transform hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex -space-x-3 overflow-hidden">
-                    {[9, 10, 11, 12].map((i) => (
-                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden">
-                        <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 30}`}
-                          alt="avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
+                  <div className="flex -space-x-3 overflow-hidden h-10">
+                    {roomData.tech.users.length > 0 ? (
+                      roomData.tech.users.map((u: any, i: number) => (
+                        <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-slate-100">
+                          <img
+                            src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 30}`}
+                            alt="avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center text-[10px] text-slate-400 font-medium">No one here yet</div>
+                    )}
                   </div>
                   <h4 className="font-bold text-slate-900 text-sm leading-tight">Tech Trends Chat</h4>
                   <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
                     <div className="flex items-center gap-1.5 text-orange-600">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      Hot
+                      {roomData.tech.count > 0 ? "Hot" : "Idle"}
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      892
+                      {roomData.tech.count}
                     </div>
                   </div>
                 </div>
@@ -344,18 +452,26 @@ export default function SocialPage() {
 
               {/* Bottom status bar */}
               <div className="bg-white p-4 rounded-[1.5rem] border border-slate-100 shadow-lg shadow-slate-200/50 flex items-center justify-between">
-                <div className="flex -space-x-2.5 overflow-hidden">
-                  {[13, 14, 15, 16, 17, 18, 19, 20].map((i) => (
-                    <div key={i} className="inline-block h-9 w-9 rounded-full ring-2 ring-white overflow-hidden">
-                      <img
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 40}`}
-                        alt="avatar"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                  <div className="h-9 w-9 rounded-full bg-slate-100 ring-2 ring-white flex items-center justify-center text-[10px] font-bold text-slate-500">
-                    +99
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2.5 overflow-hidden h-9">
+                    {roomData.lobby.users.length > 0 ? (
+                      roomData.lobby.users.map((u: any, i: number) => (
+                        <div key={i} className="inline-block h-9 w-9 rounded-full ring-2 ring-white overflow-hidden bg-slate-100">
+                          <img
+                            src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 40}`}
+                            alt="avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center h-9 px-2">
+                        <Users className="w-4 h-4 text-slate-300" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-xs font-bold text-slate-500">
+                    {roomData.lobby.count} Members in Lobby
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -365,7 +481,7 @@ export default function SocialPage() {
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                     </span>
                     <span className="bg-orange-50 text-orange-600 text-[10px] font-bold px-4 py-1.5 rounded-full border border-orange-100 uppercase tracking-widest whitespace-nowrap">
-                      Always On
+                      {activePrivateRooms.length > 0 ? `${activePrivateRooms.length} PRIVATE SESSIONS` : 'ALWAYS ON'}
                     </span>
                   </div>
                 </div>

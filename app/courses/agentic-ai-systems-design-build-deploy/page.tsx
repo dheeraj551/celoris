@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 export default function AgenticAISystemsCourse() {
     // Set page title and meta tags dynamically
@@ -138,6 +139,68 @@ export default function AgenticAISystemsCourse() {
                 description: "Formats output into Email, Markdown, or Database entries.",
                 icon: "Bot"
             }
+        ],
+        reviews: [
+            {
+                name: "Aman Verma",
+                role: "Software Engineer",
+                rating: 5,
+                comment: "This is hands down one of the best courses I’ve taken on agentic AI. The way planning, tool calling, and multi-agent systems are explained is very practical. The capstone project alone is worth the price."
+            },
+            {
+                name: "Sarah Mitchell",
+                role: "AI Product Manager",
+                rating: 4,
+                comment: "Loved the architecture patterns and real-world focus. I would have liked a bit more on evaluation metrics, but overall it gave me clarity on how agentic systems are actually built in production."
+            },
+            {
+                name: "Rohit Sharma",
+                role: "Full-Stack Developer",
+                rating: 5,
+                comment: "Clear explanations, modern tooling, and no unnecessary theory. This course helped me move from “prompting” to actually building autonomous AI workflows."
+            },
+            {
+                name: "Daniel Weber",
+                role: "Data Scientist",
+                rating: 4,
+                comment: "Very well structured and up to date with the current agent ecosystem. Some parts assume prior familiarity with LangChain, but if you have basics, this course is excellent."
+            },
+            {
+                name: "Neha Kulkarni",
+                role: "ML Engineer",
+                rating: 5,
+                comment: "The multi-agent orchestration section was 🔥. I finally understood how agents collaborate and recover from failures. This feels like a course built by someone who has done this in real projects."
+            },
+            {
+                name: "Jason Lee",
+                role: "Computer Science Student",
+                rating: 3,
+                comment: "The content is high quality, but it’s not beginner friendly. I struggled initially with the terminology. Once I caught up, it made more sense."
+            },
+            {
+                name: "Priya Singh",
+                role: "Automation Consultant",
+                rating: 4,
+                comment: "Very useful for building client-ready AI systems. The deployment and guardrails section was particularly valuable. Could use more step-by-step walkthroughs in some lessons."
+            },
+            {
+                name: "Mark Thompson",
+                role: "Startup Founder",
+                rating: 5,
+                comment: "This course changed how we think about AI internally. We’re now building agents that plan and execute tasks instead of simple chatbots. Highly recommended for startups."
+            },
+            {
+                name: "Ankit Jain",
+                role: "Python Developer",
+                rating: 3,
+                comment: "Good concepts and solid examples, but pacing felt fast in the middle modules. Might need to rewatch some lessons if you’re new to agent frameworks."
+            },
+            {
+                name: "Emily Carter",
+                role: "Technical Consultant",
+                rating: 4,
+                comment: "Practical, modern, and relevant. I liked the focus on production deployment and safety. A few more real-world debugging examples would make it perfect."
+            }
         ]
     }
 
@@ -248,24 +311,19 @@ export default function AgenticAISystemsCourse() {
                             </p>
                         </div>
 
-                        {/* Course Preview Image with Glassmorphism */}
+                        {/* Course Video with Glassmorphism */}
                         <div className="relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/agentic-ai-systems-cover.png"
-                                        alt="Agentic AI Systems"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        className="w-full h-full"
+                                        src="https://www.youtube.com/embed/Mjt1rh7rgsA"
+                                        title="Agentic AI Systems Course Video"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        referrerPolicy="strict-origin-when-cross-origin"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -397,6 +455,56 @@ export default function AgenticAISystemsCourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Student Reviews Section */}
+                        <section className="space-y-8">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-yellow-500/20 rounded-lg">
+                                        <Star className="h-6 w-6 text-yellow-400" />
+                                    </div>
+                                    Student Reviews
+                                </h2>
+                                <div className="flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
+                                    <span className="text-white font-bold">{courseData.rating}</span>
+                                    <div className="flex">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                        ))}
+                                    </div>
+                                    <span className="text-slate-500 text-sm ml-1">({courseData.students} total)</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.reviews.map((review, index) => (
+                                    <Card key={index} className="bg-slate-900/40 border-slate-800 hover:border-slate-700 transition-all group">
+                                        <CardContent className="p-6">
+                                            <div className="flex gap-0.5 mb-3">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        className={`h-4 w-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-slate-600"}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <p className="text-slate-300 text-sm leading-relaxed mb-6 italic">
+                                                "{review.comment}"
+                                            </p>
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold border border-slate-700 group-hover:border-cyan-500/50 transition-colors">
+                                                    {review.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-white">{review.name}</div>
+                                                    <div className="text-xs text-slate-500">{review.role}</div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -415,13 +523,10 @@ export default function AgenticAISystemsCourse() {
                                         </div>
 
                                         <div className="space-y-4 mb-8">
-                                            <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95" size="lg">
-                                                Enroll in Course
-                                            </Button>
-                                            <Button variant="outline" className="w-full h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl">
-                                                <Download className="mr-2 h-4 w-4" />
-                                                Get Syllabus PDF
-                                            </Button>
+                                            <CourseInquiryDialog
+                                                courseTitle={courseData.title}
+                                                buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
+                                            />
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

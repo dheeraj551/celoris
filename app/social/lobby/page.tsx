@@ -208,7 +208,7 @@ export default function GlobalLobbyPage() {
             channel.unsubscribe()
             tracker.unsubscribe()
         }
-    }, [user, authLoading, router, toast])
+    }, [user?.id, authLoading, router, toast])
 
     // Silence bot trigger removed
     useEffect(() => {

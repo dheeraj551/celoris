@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
 import { useParams } from "next/navigation"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 interface Course {
   id: string
@@ -272,13 +273,11 @@ export default function CourseDetailPage() {
                     </div>
                     <div className="text-text-secondary">One-time payment</div>
                   </div>
-                  <Button className="w-full mb-4" size="lg">
-                    Enroll Now
-                  </Button>
-                  <Button variant="outline" className="w-full" disabled={!course.syllabus_url} onClick={() => course.syllabus_url && window.open(course.syllabus_url, '_blank')}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Syllabus
-                  </Button>
+                  <CourseInquiryDialog
+                    courseTitle={course.title}
+                    buttonClassName="w-full mb-4 h-14 text-lg font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-2xl shadow-lg"
+                  />
+
                   <div className="mt-6 text-center text-sm text-text-secondary">
                     <div className="flex items-center justify-center space-x-4">
                       <span>• Opportunity to work with us</span>

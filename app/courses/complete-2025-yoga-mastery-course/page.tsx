@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 export default function YogaMasteryCourse2025() {
     const courseData = {
@@ -321,13 +322,10 @@ export default function YogaMasteryCourse2025() {
                                         </div>
                                         <div className="text-text-secondary">Full Lifetime Access</div>
                                     </div>
-                                    <Button className="w-full mb-4 bg-primary-600 hover:bg-primary-700 h-12 text-lg" size="lg">
-                                        Join the Mastery Course
-                                    </Button>
-                                    <Button variant="outline" className="w-full">
-                                        <Download className="mr-2 h-4 w-4" />
-                                        Download PDF Syllabus
-                                    </Button>
+                                    <CourseInquiryDialog
+                                        courseTitle={courseData.title}
+                                        buttonClassName="w-full mb-4 bg-primary-600 hover:bg-primary-700 h-12 text-lg"
+                                    />
                                     <div className="mt-6 space-y-3">
                                         <div className="flex items-center text-sm text-text-secondary">
                                             <Activity className="h-4 w-4 mr-2 text-primary-500" />

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 export default function LiveKitAIAgentsCourse() {
     // Set page title and meta tags dynamically
@@ -440,13 +441,10 @@ export default function LiveKitAIAgentsCourse() {
                                         </div>
                                         <div className="text-text-secondary">Professional Certification</div>
                                     </div>
-                                    <Button className="w-full mb-4 bg-primary-600 hover:bg-primary-700 h-12 text-lg" size="lg">
-                                        Enroll Now
-                                    </Button>
-                                    <Button variant="outline" className="w-full h-12">
-                                        <Download className="mr-2 h-4 w-4" />
-                                        Download Syllabus
-                                    </Button>
+                                    <CourseInquiryDialog
+                                        courseTitle={courseData.title}
+                                        buttonClassName="w-full mb-4 bg-primary-600 hover:bg-primary-700 h-12 text-lg"
+                                    />
                                     <div className="mt-6 text-center text-sm text-text-secondary space-y-3">
                                         <div className="flex items-center justify-center space-x-2">
                                             <Award className="h-4 w-4 text-primary-500" />

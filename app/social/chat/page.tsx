@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
+import { useAuth } from "@/components/providers/AuthProvider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -25,7 +26,11 @@ import { AdUnit } from "@/components/AdUnit"
 export default function ChatLobbyPage() {
     const [socialOnlineCount, setSocialOnlineCount] = useState(0)
 
+    const { user, loading } = useAuth()
+
     useEffect(() => {
+        if (loading || !user) return
+
         const supabase = createClient()
         const channel = supabase.channel('room:socialize', {
             config: {
@@ -46,7 +51,7 @@ export default function ChatLobbyPage() {
         return () => {
             channel.unsubscribe()
         }
-    }, [])
+    }, [user, loading])
 
     const rooms = [
         {

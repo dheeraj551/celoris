@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 export default function CBSEClass10PhysicsCourse() {
     // Set page title and meta tags dynamically
@@ -408,13 +409,10 @@ export default function CBSEClass10PhysicsCourse() {
                                         </div>
                                         <div className="text-text-secondary">Full Access</div>
                                     </div>
-                                    <Button className="w-full mb-4" size="lg">
-                                        Enroll Now
-                                    </Button>
-                                    <Button variant="outline" className="w-full">
-                                        <Download className="mr-2 h-4 w-4" />
-                                        Download Syllabus
-                                    </Button>
+                                    <CourseInquiryDialog
+                                        courseTitle={courseData.title}
+                                        buttonClassName="w-full mb-4"
+                                    />
                                     <div className="mt-6 text-center text-sm text-text-secondary space-y-2">
                                         <div className="flex items-center justify-center space-x-2">
                                             <CheckCircle className="h-4 w-4 text-green-500" />
