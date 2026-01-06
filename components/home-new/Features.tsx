@@ -1,76 +1,122 @@
+"use client"
+
 import React from 'react';
 import Link from 'next/link';
-import { BookOpen, Wallet, Users, Layout, ArrowUpRight } from 'lucide-react';
-import { FeatureCardProps } from './types';
+import { BookOpen, Wallet, Users, Layout, ArrowUpRight, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, tag, icon: Icon, actionText, link = "#" }) => (
-    <div className="group bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
-        <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-brand-50 transition-colors text-slate-600 group-hover:text-brand-600">
-                <Icon size={24} />
+interface FeatureCardProps {
+    title: string;
+    description: string;
+    tag: string;
+    icon: any;
+    actionText: string;
+    link?: string;
+    index: number;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, tag, icon: Icon, actionText, link = "#", index }) => (
+    <motion.div
+        variants={{
+            hidden: { opacity: 0, y: 30 },
+            show: { opacity: 1, y: 0 }
+        }}
+        whileHover={{ y: -10, scale: 1.02 }}
+        className="group bg-[#0d1321]/40 p-10 rounded-[2.5rem] border border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl transition-all duration-500 flex flex-col h-full relative overflow-hidden"
+    >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-colors duration-500" />
+
+        <div className="flex justify-between items-start mb-8 relative z-10">
+            <div className="p-4 bg-emerald-500/10 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 text-emerald-400 shadow-3xl shadow-emerald-500/10">
+                <Icon size={28} />
             </div>
-            <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded-md tracking-wide">
+            <span className="px-3 py-1 bg-white/5 text-slate-500 text-[9px] font-black uppercase rounded-lg tracking-widest group-hover:text-emerald-400 transition-colors duration-500 italic">
                 {tag}
             </span>
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
-        <p className="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+
+        <h3 className="text-2xl font-black text-white mb-4 tracking-tighter group-hover:text-emerald-400 transition-colors italic uppercase">{title}</h3>
+        <p className="text-sm text-slate-500 font-bold leading-relaxed mb-8 flex-grow uppercase tracking-tight">
             {description}
         </p>
-        <Link href={link} className="w-full py-2.5 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all flex items-center justify-center gap-2">
+
+        <Link href={link} className="w-full py-4 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all flex items-center justify-center gap-2 group/btn">
             {actionText}
-            <ArrowUpRight size={14} />
+            <ArrowUpRight size={16} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
         </Link>
-    </div>
+    </motion.div>
 );
 
 export const Features: React.FC = () => {
     const features = [
         {
             title: "Learn",
-            description: "Master new skills with comprehensive courses, discussion forums, and progress tracking.",
-            tag: "Live Classes",
+            description: "Master high-demand skills with our legendary courses and real-time expert guidance.",
+            tag: "Academy Node",
             icon: BookOpen,
-            actionText: "Explore Learn",
+            actionText: "Enter Academy",
             link: "/learn"
         },
         {
             title: "Earn",
-            description: "Find your dream job or freelance opportunities in our curated marketplace.",
-            tag: "Jobs",
+            description: "Pivot your career or find elite freelance opportunities in our curated talent ecosystem.",
+            tag: "Capital Grid",
             icon: Wallet,
-            actionText: "Start Earning",
+            actionText: "Launch Career",
             link: "/earn"
         },
         {
             title: "Social",
-            description: "Connect with friends, share experiences, and engage in social functions.",
-            tag: "Community",
+            description: "Collaborate with visionaries and build lasting connections in our premium social hubs.",
+            tag: "Nexus Link",
             icon: Users,
-            actionText: "Connect",
+            actionText: "Join Nexus",
             link: "/social"
         },
         {
             title: "Apps",
-            description: "Boost productivity with our suite of useful tools and AI integrations.",
-            tag: "Productivity",
+            description: "Supercharge your workflow with our master-suite of AI-driven productivity tools.",
+            tag: "Toolbox Access",
             icon: Layout,
-            actionText: "Browse Apps",
+            actionText: "Open Toolbox",
             link: "/apps"
         }
     ];
 
     return (
-        <div className="mt-8">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Platform Overview</h2>
+        <div className="mt-24 md:mt-32">
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="flex items-center justify-between mb-16 px-4"
+            >
+                <div>
+                    <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
+                        <Sparkles size={12} /> Sync Operations
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">Unified Ecosystem</h2>
+                    <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-4 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+                </div>
+            </motion.div>
 
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <motion.div
+                variants={{
+                    show: {
+                        transition: {
+                            staggerChildren: 0.1
+                        }
+                    }
+                }}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
                 {features.map((feature, idx) => (
-                    <FeatureCard key={idx} {...feature} />
+                    <FeatureCard key={idx} index={idx} {...feature} />
                 ))}
-            </div>
+            </motion.div>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BookOpen, Users, TrendingUp, Loader2 } from "lucide-react"
+import { BookOpen, Users, TrendingUp, Loader2, Sparkles } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -61,8 +61,8 @@ export default function StudentInquiries() {
             }
 
             toast({
-                title: "Inquiry Sent",
-                description: "We've received your inquiry and will get back to you shortly.",
+                title: "Information Transmitted",
+                description: "Your uplink request has been synchronized. Support will contact you shortly.",
             })
 
             setOpen(false)
@@ -75,8 +75,8 @@ export default function StudentInquiries() {
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: "Error",
-                description: error.message || "Something went wrong. Please try again.",
+                title: "Transmission Error",
+                description: error.message || "Uplink failed. Please check your signal.",
             })
         } finally {
             setLoading(false)
@@ -84,141 +84,140 @@ export default function StudentInquiries() {
     }
 
     return (
-        <section className="py-16 bg-gray-50">
-            <div className="container max-w-6xl mx-auto px-4">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-text-primary mb-4">
-                        Students Inquiries
+        <section className="py-24 relative z-10">
+            <div className="container max-w-7xl mx-auto px-4">
+                <div className="text-center mb-20">
+                    <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+                        <Users size={14} /> Support Nexus
+                    </div>
+                    <h2 className="text-4xl md:text-6xl font-black text-white italic uppercase tracking-tighter mb-6">
+                        Student Inquiries
                     </h2>
-                    <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-                        Have questions about our courses? Our student support team is here to help you succeed in your learning journey.
+                    <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium italic">
+                        Questions about our curriculum? Our support team is standing by to assist your growth journey.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {/* Course Information */}
-                    <Card className="card-hover">
-                        <CardHeader>
-                            <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
-                                <BookOpen className="h-6 w-6 text-green-600" />
+                    <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 hover:border-emerald-500/30 transition-all duration-500 rounded-[2.5rem] overflow-hidden group shadow-2xl">
+                        <CardHeader className="p-10 pt-12">
+                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-2xl shadow-emerald-500/10">
+                                <BookOpen className="h-8 w-8 text-emerald-400" />
                             </div>
-                            <CardTitle>Course Information</CardTitle>
-                            <CardDescription>
-                                Get detailed information about course content, prerequisites, and learning outcomes.
+                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Curriculum Data</CardTitle>
+                            <CardDescription className="text-slate-400 text-sm font-medium italic leading-relaxed">
+                                Get detailed technical specs on course content, prerequisites, and learning outcomes.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-10 pt-0">
                             <Button
-                                className="w-full bg-green-600 hover:bg-green-700"
+                                className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-500/10 transition-all border-none"
                                 onClick={() => handleOpen("Course Information Inquiry")}
                             >
-                                Contact Now
+                                Initialize Request
                             </Button>
                         </CardContent>
                     </Card>
 
                     {/* Technical Support */}
-                    <Card className="card-hover">
-                        <CardHeader>
-                            <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                                <Users className="h-6 w-6 text-blue-600" />
+                    <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 hover:border-blue-500/30 transition-all duration-500 rounded-[2.5rem] overflow-hidden group shadow-2xl">
+                        <CardHeader className="p-10 pt-12">
+                            <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-2xl shadow-blue-500/10">
+                                <Users className="h-8 w-8 text-blue-400" />
                             </div>
-                            <CardTitle>Technical Support</CardTitle>
-                            <CardDescription>
-                                Need help with platform navigation, video playback, or assignment submissions?
+                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Technical Uplink</CardTitle>
+                            <CardDescription className="text-slate-400 text-sm font-medium italic leading-relaxed">
+                                Support for platform navigation, signal stability, or assignment transmission.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-10 pt-0">
                             <Button
-                                className="w-full bg-blue-600 hover:bg-blue-700"
+                                className="w-full h-14 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-blue-500/10 transition-all border-none"
                                 onClick={() => handleOpen("Technical Support Inquiry")}
                             >
-                                Contact Now
+                                Open Terminal
                             </Button>
                         </CardContent>
                     </Card>
 
                     {/* Learning Support */}
-                    <Card className="card-hover">
-                        <CardHeader>
-                            <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                                <TrendingUp className="h-6 w-6 text-purple-600" />
+                    <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 hover:border-purple-500/30 transition-all duration-500 rounded-[2.5rem] overflow-hidden group shadow-2xl">
+                        <CardHeader className="p-10 pt-12">
+                            <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-2xl shadow-purple-500/10">
+                                <TrendingUp className="h-8 w-8 text-purple-400" />
                             </div>
-                            <CardTitle>Learning Support</CardTitle>
-                            <CardDescription>
-                                Struggling with course material? Get personalized help from our instructors.
+                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Growth Support</CardTitle>
+                            <CardDescription className="text-slate-400 text-sm font-medium italic leading-relaxed">
+                                Strategy planning for complex material. Get personalized direction from instructors.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-10 pt-0">
                             <Button
-                                className="w-full bg-purple-600 hover:bg-purple-700"
+                                className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-purple-500/10 transition-all border-none"
                                 onClick={() => handleOpen("Learning Support Inquiry")}
                             >
-                                Contact Now
+                                Request Mentorship
                             </Button>
                         </CardContent>
                     </Card>
                 </div>
 
                 <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Send Inquiry</DialogTitle>
-                            <DialogDescription>
-                                Fill out the form below to send your inquiry to our support team.
+                    <DialogContent className="sm:max-w-[500px] bg-[#0d1321] border-white/10 rounded-[2.5rem] p-10 overflow-hidden shadow-3xl">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none" />
+                        <DialogHeader className="relative z-10 mb-8">
+                            <div className="h-12 w-12 bg-emerald-500/20 rounded-xl flex items-center justify-center border border-emerald-500/20 mb-6">
+                                <Sparkles className="text-emerald-400" size={24} />
+                            </div>
+                            <DialogTitle className="text-3xl font-black text-white italic uppercase tracking-tighter">Initialize Uplink</DialogTitle>
+                            <DialogDescription className="text-slate-400 font-medium italic">
+                                Transmission protocol: {subject}
                             </DialogDescription>
                         </DialogHeader>
-                        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+                        <form onSubmit={handleSubmit} className="grid gap-6 py-4 relative z-10">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Identifier</Label>
                                 <Input
                                     id="name"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Your name"
+                                    placeholder="Your full name"
+                                    className="h-14 bg-white/5 border-white/10 rounded-2xl px-6 text-white text-sm placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all border"
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Interface (Email)</Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="your.email@example.com"
+                                    placeholder="name@nexus.com"
+                                    className="h-14 bg-white/5 border-white/10 rounded-2xl px-6 text-white text-sm placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all border"
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="subject">Subject</Label>
-                                <Input
-                                    id="subject"
-                                    value={subject}
-                                    onChange={(e) => setSubject(e.target.value)}
-                                    placeholder="Inquiry Subject"
-                                    required
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="message">Message</Label>
+                                <Label htmlFor="message" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Data Payload (Message)</Label>
                                 <Textarea
                                     id="message"
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
-                                    placeholder="How can we help you?"
-                                    className="min-h-[100px]"
+                                    placeholder="Describe your requirement..."
+                                    className="min-h-[120px] bg-white/5 border-white/10 rounded-2xl px-6 py-4 text-white text-sm placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all border"
                                     required
                                 />
                             </div>
-                            <Button type="submit" disabled={loading} className="w-full">
+                            <Button type="submit" disabled={loading} className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-emerald-500/20 border-none mt-4 transition-all">
                                 {loading ? (
                                     <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Sending...
+                                        <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                                        Transmitting...
                                     </>
                                 ) : (
-                                    "Send Inquiry"
+                                    "Establish Uplink"
                                 )}
                             </Button>
                         </form>
@@ -228,3 +227,4 @@ export default function StudentInquiries() {
         </section>
     )
 }
+

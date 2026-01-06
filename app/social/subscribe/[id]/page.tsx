@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
+import {
   ArrowLeft,
   Crown,
   Star,
@@ -54,7 +54,7 @@ const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
       'Early access to new content',
       'Direct messaging support'
     ],
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-emerald-600 to-teal-600'
   },
   {
     id: 'premium',
@@ -68,7 +68,7 @@ const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
       'Discount on digital products'
     ],
     popular: true,
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-teal-500 to-emerald-500'
   },
   {
     id: 'vip',
@@ -106,7 +106,7 @@ export default function SubscribePage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/login')
         return
@@ -153,13 +153,13 @@ export default function SubscribePage() {
 
     setProcessing(true)
     setSelectedTier(tier)
-    
+
     try {
       const supabase = createClient()
 
       // In a real implementation, you'd integrate with Stripe for subscription billing
       // For now, we'll simulate the subscription process
-      
+
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 2000))
 
@@ -180,7 +180,7 @@ export default function SubscribePage() {
       if (error) throw error
 
       setSuccess(true)
-      
+
       // Redirect after success
       setTimeout(() => {
         router.push('/social/matches')
@@ -202,40 +202,40 @@ export default function SubscribePage() {
 
   if (success && selectedTier) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Crown className="w-10 h-10 text-green-500" />
+          <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+            <Crown className="w-12 h-12 text-emerald-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white mb-4">
             Welcome to {selectedTier.name}! 👑
           </h2>
-          <p className="text-gray-600 mb-6">
-            You're now subscribed to {match?.user.full_name}'s exclusive content. 
+          <p className="text-slate-400 mb-8 max-w-sm mx-auto">
+            You're now subscribed to {match?.user.full_name}'s exclusive content.
             You'll receive an email confirmation shortly.
           </p>
-          
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">{selectedTier.name} Subscription</span>
-              <span className="font-bold">{formatCurrency(selectedTier.price)}/month</span>
+
+          <div className="bg-[#0d1321]/40 border border-white/5 backdrop-blur-xl rounded-xl p-6 mb-8">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-bold text-white uppercase tracking-wider text-sm">{selectedTier.name} Subscription</span>
+              <span className="font-black text-emerald-400 text-lg">{formatCurrency(selectedTier.price)}/month</span>
             </div>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">
               Next billing: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}
             </p>
           </div>
 
           <div className="space-y-3">
-            <Button 
-              className="w-full"
+            <Button
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white border-none h-12 rounded-full font-bold uppercase tracking-wider"
               onClick={() => router.push(`/social/chat/${matchId}`)}
             >
-              <MessageCircle className="w-4 h-4 mr-2" />
+              <MessageCircle className="w-5 h-5 mr-2" />
               Say Hello to {match?.user.full_name}
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full"
+            <Button
+              variant="outline"
+              className="w-full border-white/10 text-white hover:bg-white/10 h-12 rounded-full font-bold uppercase tracking-wider"
               onClick={() => router.push('/social/matches')}
             >
               Back to Matches
@@ -248,10 +248,10 @@ export default function SubscribePage() {
 
   if (!match) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Match not found</h2>
-          <Button onClick={() => router.push('/social/matches')}>
+          <h2 className="text-xl font-bold text-white mb-4">Match not found</h2>
+          <Button onClick={() => router.push('/social/matches')} className="bg-emerald-600 hover:bg-emerald-500 text-white border-none rounded-full px-8">
             Back to Matches
           </Button>
         </div>
@@ -261,43 +261,43 @@ export default function SubscribePage() {
 
   if (existingSubscription) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-6 max-w-2xl">
+      <div className="min-h-screen bg-[#050810] text-white">
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
           {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-8">
             <button
               onClick={() => router.back()}
-              className="p-2 hover:bg-gray-100 rounded-full"
+              className="p-2 hover:bg-white/10 rounded-full transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-white" />
             </button>
-            <h1 className="text-xl font-bold">Subscription</h1>
+            <h1 className="text-2xl font-black italic uppercase tracking-tighter text-white">Subscription</h1>
           </div>
 
           {/* Current Subscription */}
-          <Card className="mb-6 bg-green-50 border-green-200">
-            <CardContent className="p-6 text-center">
-              <Crown className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-green-900 mb-2">
+          <Card className="mb-8 bg-emerald-900/20 border-emerald-500/30 backdrop-blur-xl">
+            <CardContent className="p-8 text-center">
+              <Crown className="w-16 h-16 text-emerald-500 mx-auto mb-6 drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
+              <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">
                 You're already subscribed!
               </h3>
-              <p className="text-green-700">
+              <p className="text-emerald-400 font-medium">
                 You're a {existingSubscription.subscription_tier} subscriber to {match.user.full_name}
               </p>
             </CardContent>
           </Card>
 
           {/* Subscription Benefits */}
-          <Card className="mb-6">
+          <Card className="mb-8 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
             <CardHeader>
-              <CardTitle>Your Benefits</CardTitle>
+              <CardTitle className="text-white font-bold uppercase tracking-wide">Your Benefits</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {SUBSCRIPTION_TIERS.find(t => t.id === existingSubscription.subscription_tier)?.benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-500" />
-                    <span>{benefit}</span>
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-slate-300">{benefit}</span>
                   </div>
                 ))}
               </div>
@@ -306,16 +306,16 @@ export default function SubscribePage() {
 
           {/* Actions */}
           <div className="space-y-3">
-            <Button 
-              className="w-full"
+            <Button
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white border-none h-12 rounded-full font-bold uppercase tracking-wider"
               onClick={() => router.push(`/social/chat/${matchId}`)}
             >
-              <MessageCircle className="w-4 h-4 mr-2" />
+              <MessageCircle className="w-5 h-5 mr-2" />
               Message {match.user.full_name}
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full"
+            <Button
+              variant="outline"
+              className="w-full border-white/10 text-white hover:bg-white/10 h-12 rounded-full font-bold uppercase tracking-wider"
               onClick={() => router.push('/social/matches')}
             >
               Back to Matches
@@ -327,42 +327,42 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+    <div className="min-h-screen bg-[#050810] text-white">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="p-2 hover:bg-white/10 rounded-full transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <h1 className="text-xl font-bold">Subscribe to {match.user.full_name}</h1>
+          <h1 className="text-2xl font-black italic uppercase tracking-tighter text-white">Subscribe to {match.user.full_name}</h1>
         </div>
 
         {/* Creator Profile */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
+        <Card className="mb-12 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
+          <CardContent className="p-8">
             <div className="flex items-center gap-6">
               <img
                 src={match.user.avatar_url || `/api/placeholder/80/80`}
                 alt={match.user.full_name}
-                className="w-20 h-20 rounded-full object-cover"
+                className="w-24 h-24 rounded-[1.5rem] object-cover border-2 border-white/10"
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <h2 className="text-2xl font-bold text-gray-900">{match.user.full_name}</h2>
+                  <h2 className="text-3xl font-black italic uppercase tracking-tight text-white">{match.user.full_name}</h2>
                   {match.user.is_creator && (
-                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
                       <Crown className="w-4 h-4 text-white" />
                     </div>
                   )}
                 </div>
                 {match.user.profession && (
-                  <p className="text-gray-600 mb-3">{match.user.profession}</p>
+                  <p className="text-emerald-400 font-bold uppercase tracking-wider text-sm mb-4">{match.user.profession}</p>
                 )}
                 {match.user.bio && (
-                  <p className="text-gray-700">{match.user.bio}</p>
+                  <p className="text-slate-400 font-medium">{match.user.bio}</p>
                 )}
               </div>
             </div>
@@ -370,38 +370,38 @@ export default function SubscribePage() {
         </Card>
 
         {/* Why Subscribe Section */}
-        <Card className="mb-8">
+        <Card className="mb-12 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl shadow-none">
           <CardHeader>
-            <CardTitle>Why Subscribe?</CardTitle>
+            <CardTitle className="text-white font-black italic uppercase tracking-tighter text-xl">Why Subscribe?</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Eye className="w-6 h-6 text-purple-500" />
+              <div className="text-center p-4 rounded-xl bg-white/5 border border-white/5">
+                <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+                  <Eye className="w-6 h-6 text-emerald-500" />
                 </div>
-                <h4 className="font-semibold mb-2">Exclusive Content</h4>
-                <p className="text-sm text-gray-600">
+                <h4 className="font-bold text-white mb-2 uppercase tracking-wide text-sm">Exclusive Content</h4>
+                <p className="text-xs text-slate-400 font-medium leading-relaxed">
                   Get access to content that's only available to subscribers
                 </p>
               </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <MessageCircle className="w-6 h-6 text-blue-500" />
+
+              <div className="text-center p-4 rounded-xl bg-white/5 border border-white/5">
+                <div className="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-teal-500/20">
+                  <MessageCircle className="w-6 h-6 text-teal-400" />
                 </div>
-                <h4 className="font-semibold mb-2">Direct Access</h4>
-                <p className="text-sm text-gray-600">
+                <h4 className="font-bold text-white mb-2 uppercase tracking-wide text-sm">Direct Access</h4>
+                <p className="text-xs text-slate-400 font-medium leading-relaxed">
                   Priority messaging and feedback with the creator
                 </p>
               </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Zap className="w-6 h-6 text-yellow-500" />
+
+              <div className="text-center p-4 rounded-xl bg-white/5 border border-white/5">
+                <div className="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/20">
+                  <Zap className="w-6 h-6 text-yellow-400" />
                 </div>
-                <h4 className="font-semibold mb-2">Special Perks</h4>
-                <p className="text-sm text-gray-600">
+                <h4 className="font-bold text-white mb-2 uppercase tracking-wide text-sm">Special Perks</h4>
+                <p className="text-xs text-slate-400 font-medium leading-relaxed">
                   Early access, discounts, and exclusive events
                 </p>
               </div>
@@ -411,54 +411,52 @@ export default function SubscribePage() {
 
         {/* Subscription Tiers */}
         <div className="space-y-6">
-          <h3 className="text-xl font-bold text-center">Choose Your Tier</h3>
-          
+          <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white text-center mb-8">Choose Your Tier</h3>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {SUBSCRIPTION_TIERS.map((tier) => (
-              <Card 
-                key={tier.id} 
-                className={`relative transition-all duration-300 hover:shadow-lg ${
-                  tier.popular ? 'ring-2 ring-purple-500 scale-105' : ''
-                }`}
+              <Card
+                key={tier.id}
+                className={`relative transition-all duration-300 hover:shadow-2xl border-white/5 bg-[#050810]/50 backdrop-blur-xl group hover:scale-105 ${tier.popular ? 'ring-2 ring-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.15)]' : ''
+                  }`}
               >
                 {tier.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                      <Star className="w-3 h-3" />
+                    <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg">
+                      <Star className="w-3 h-3 fill-white" />
                       Most Popular
                     </div>
                   </div>
                 )}
-                
-                <CardHeader className="text-center pb-4">
-                  <div className={`w-16 h-16 bg-gradient-to-r ${tier.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <Crown className="w-8 h-8 text-white" />
+
+                <CardHeader className="text-center pb-4 pt-8">
+                  <div className={`w-20 h-20 bg-gradient-to-r ${tier.color} rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <Crown className="w-10 h-10 text-white" />
                   </div>
-                  <CardTitle className="text-xl">{tier.name}</CardTitle>
-                  <div className="mt-2">
-                    <span className="text-3xl font-bold">{formatCurrency(tier.price)}</span>
-                    <span className="text-gray-600">/month</span>
+                  <CardTitle className="text-2xl font-black italic uppercase tracking-tight text-white">{tier.name}</CardTitle>
+                  <div className="mt-4">
+                    <span className="text-4xl font-black text-white">{formatCurrency(tier.price)}</span>
+                    <span className="text-slate-400 font-medium">/mo</span>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent>
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-4 mb-8">
                     {tier.benefits.map((benefit, index) => (
                       <li key={index} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{benefit}</span>
+                        <Check className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-slate-300 font-medium">{benefit}</span>
                       </li>
                     ))}
                   </ul>
-                  
+
                   <Button
                     onClick={() => handleSubscribe(tier)}
                     disabled={processing && selectedTier?.id === tier.id}
-                    className={`w-full ${
-                      tier.popular 
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' 
-                        : ''
-                    }`}
+                    className={`w-full h-12 rounded-full font-bold uppercase tracking-wider transition-all duration-300 ${tier.popular
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border-none shadow-lg shadow-emerald-900/20'
+                        : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                      }`}
                   >
                     {processing && selectedTier?.id === tier.id ? (
                       <div className="flex items-center gap-2">
@@ -479,44 +477,44 @@ export default function SubscribePage() {
         </div>
 
         {/* Security & Billing */}
-        <Card className="mt-8">
+        <Card className="mt-12 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
           <CardHeader>
-            <CardTitle>Secure & Flexible</CardTitle>
+            <CardTitle className="text-white font-black italic uppercase tracking-tighter text-xl">Secure & Flexible</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-green-500 mt-0.5" />
+                  <Check className="w-5 h-5 text-emerald-500 mt-0.5" />
                   <div>
-                    <h4 className="font-medium">Cancel Anytime</h4>
-                    <p className="text-sm text-gray-600">No long-term commitments</p>
+                    <h4 className="font-bold text-white uppercase tracking-wide text-sm">Cancel Anytime</h4>
+                    <p className="text-xs text-slate-400 font-medium">No long-term commitments</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-green-500 mt-0.5" />
+                  <Check className="w-5 h-5 text-emerald-500 mt-0.5" />
                   <div>
-                    <h4 className="font-medium">Secure Payments</h4>
-                    <p className="text-sm text-gray-600">Your payment info is encrypted</p>
+                    <h4 className="font-bold text-white uppercase tracking-wide text-sm">Secure Payments</h4>
+                    <p className="text-xs text-slate-400 font-medium">Your payment info is encrypted</p>
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-green-500 mt-0.5" />
+                  <Check className="w-5 h-5 text-emerald-500 mt-0.5" />
                   <div>
-                    <h4 className="font-medium">Instant Access</h4>
-                    <p className="text-sm text-gray-600">Get content immediately after subscribing</p>
+                    <h4 className="font-bold text-white uppercase tracking-wide text-sm">Instant Access</h4>
+                    <p className="text-xs text-slate-400 font-medium">Get content immediately after subscribing</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-green-500 mt-0.5" />
+                  <Check className="w-5 h-5 text-emerald-500 mt-0.5" />
                   <div>
-                    <h4 className="font-medium">Billing Notifications</h4>
-                    <p className="text-sm text-gray-600">Get reminded before each billing cycle</p>
+                    <h4 className="font-bold text-white uppercase tracking-wide text-sm">Billing Notifications</h4>
+                    <p className="text-xs text-slate-400 font-medium">Get reminded before each billing cycle</p>
                   </div>
                 </div>
               </div>

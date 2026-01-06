@@ -18,14 +18,41 @@ import {
     Briefcase,
     Code,
     ArrowLeft,
-    Lock
+    Lock,
+    Sparkles,
+    Signal,
+    MoreHorizontal
 } from "lucide-react"
+import { motion, AnimatePresence, Variants } from "framer-motion"
+import { PageWrapper } from "@/components/PageWrapper"
 
 import { AdUnit } from "@/components/AdUnit"
 
+const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.15
+        }
+    }
+}
+
+const itemVariants: Variants = {
+    hidden: { y: 30, opacity: 0, scale: 0.95 },
+    visible: {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        transition: {
+            duration: 0.8,
+            ease: [0.23, 1, 0.32, 1]
+        }
+    }
+}
+
 export default function ChatLobbyPage() {
     const [socialOnlineCount, setSocialOnlineCount] = useState(0)
-
     const { user, loading } = useAuth()
 
     useEffect(() => {
@@ -56,114 +83,191 @@ export default function ChatLobbyPage() {
     const rooms = [
         {
             id: "socialize",
-            title: "Socialize & Hangout",
-            description: "A casual space to meet new people, share stories, and make friends from around the world.",
+            title: "Hangout",
+            description: "Meet new people, share stories, and grow your global community.",
             icon: Coffee,
-            color: "bg-green-500",
+            color: "from-emerald-500 to-teal-600",
+            accent: "emerald",
             activeCount: socialOnlineCount,
-            tags: ["Casual", "Friends", "Global"],
+            tags: ["Global", "Friends", "Vibe"],
             status: "Active",
             isAvailable: true
         },
         {
             id: "networking",
-            title: "Networking & Growth",
-            description: "Connect with professionals, find mentors, and discuss career opportunities.",
+            title: "Professional",
+            description: "Connect with experts and mentors to help grow your career.",
             icon: Briefcase,
-            color: "bg-blue-500",
+            color: "from-teal-500 to-cyan-600",
+            accent: "teal",
             activeCount: 0,
-            tags: ["Professional", "Career", "Business"],
+            tags: ["Career", "Mentorship", "Pro"],
             status: "Coming Soon",
             isAvailable: false
         },
         {
             id: "tech-trends",
-            title: "Tech Trends Chat",
-            description: "Discuss the latest in technology, AI, coding, and future innovations.",
+            title: "Tech Trends",
+            description: "Discuss the latest tech trends: AI, coding, and digital tools.",
             icon: Code,
-            color: "bg-orange-500",
+            color: "from-emerald-600 to-emerald-900",
+            accent: "emerald",
             activeCount: 0,
-            tags: ["Tech", "AI", "Innovation"],
+            tags: ["AI", "Innovation", "Code"],
             status: "Coming Soon",
             isAvailable: false
         }
     ]
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <PageWrapper className="min-h-screen bg-[#050810] text-slate-200 overflow-x-hidden relative font-sans">
+            {/* Background Decorative Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.1, 0.15, 0.1]
+                    }}
+                    transition={{ duration: 15, repeat: Infinity }}
+                    className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] bg-teal-600/10 rounded-full blur-[150px]"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.05, 0.1, 0.05]
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, delay: 2 }}
+                    className="absolute bottom-[-10%] left-[-5%] w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[150px]"
+                />
+            </div>
+
             {/* Header */}
-            <div className="bg-white border-b border-slate-200">
-                <div className="container mx-auto px-4 py-6">
-                    <div className="flex items-center gap-4 mb-4">
-                        <Link href="/social">
-                            <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100">
-                                <ArrowLeft className="h-6 w-6 text-slate-600" />
-                            </Button>
-                        </Link>
-                        <div>
-                            <h1 className="text-2xl font-bold text-slate-900">Public Chat Rooms</h1>
-                            <p className="text-slate-500">Join the conversation in real-time</p>
+            <header className="relative z-20 border-b border-white/5 bg-[#050810]/40 backdrop-blur-3xl">
+                <div className="container mx-auto px-6 py-10">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                        <div className="flex items-center gap-6">
+                            <Link href="/social">
+                                <motion.div whileHover={{ scale: 1.1, x: -5 }} whileTap={{ scale: 0.9 }}>
+                                    <Button variant="ghost" size="icon" className="rounded-2xl border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 h-14 w-14">
+                                        <ArrowLeft className="h-6 w-6" />
+                                    </Button>
+                                </motion.div>
+                            </Link>
+                            <div className="space-y-1">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase tracking-widest"
+                                >
+                                    <Signal size={12} className="animate-pulse" />
+                                    Social Network Online
+                                </motion.div>
+                                <h1 className="text-4xl md:text-5xl font-black text-white italic uppercase tracking-tighter">Public Chat Rooms</h1>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 md:px-6">
+                            <div className="h-10 w-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                                <Users className="text-emerald-500" size={20} />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Total Online</p>
+                                <p className="text-xl font-black text-white italic leading-none">{socialOnlineCount}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             {/* Main Content */}
-            <div className="container mx-auto px-4 py-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <main className="container mx-auto px-6 py-20 relative z-10">
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20"
+                >
                     {rooms.map((room) => (
-                        <Card key={room.id} className={`group hover:shadow-lg transition-all duration-300 border-slate-200 overflow-hidden ${!room.isAvailable && 'opacity-75 grayscale-[0.5]'}`}>
-                            <div className={`h-2 ${room.isAvailable ? room.color : 'bg-slate-300'}`} />
-                            <CardHeader className="pb-4">
-                                <div className="flex items-start justify-between mb-2">
-                                    <div className={`p-3 rounded-xl ${room.isAvailable ? room.color : 'bg-slate-100'} bg-opacity-10`}>
-                                        <room.icon className={`h-6 w-6 ${room.isAvailable ? `text-${room.color.replace('bg-', '')}-600` : 'text-slate-400'}`} />
+                        <motion.div
+                            key={room.id}
+                            variants={itemVariants}
+                            whileHover={{ y: -10 }}
+                            className="group"
+                        >
+                            <Card className={`h-full flex flex-col bg-[#0d1321]/60 backdrop-blur-3xl border-white/10 hover:border-${room.accent}-500/30 transition-all duration-500 overflow-hidden shadow-2xl rounded-[2.5rem]`}>
+                                <div className={`h-1.5 bg-gradient-to-r ${room.isAvailable ? room.color : 'from-slate-800 to-slate-900 group-hover:from-slate-700'}`} />
+                                <CardHeader className="p-10 pb-6">
+                                    <div className="flex items-start justify-between mb-8">
+                                        <div className={`p-5 rounded-[1.5rem] bg-gradient-to-br ${room.isAvailable ? room.color : 'from-slate-800 to-slate-900'} shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 border border-white/5`}>
+                                            <room.icon className="h-8 w-8 text-white" />
+                                        </div>
+                                        <Badge className={`uppercase text-[9px] font-black tracking-[0.2em] px-4 py-1.5 border-none shadow-sm rounded-full ${room.isAvailable ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500'}`}>
+                                            {room.status}
+                                        </Badge>
                                     </div>
-                                    <Badge variant={room.isAvailable ? "secondary" : "outline"} className="uppercase text-[10px] tracking-wider">
-                                        {room.status}
-                                    </Badge>
-                                </div>
-                                <CardTitle className={`text-xl transition-colors ${room.isAvailable ? 'text-slate-900 group-hover:text-primary-600' : 'text-slate-400'}`}>
-                                    {room.title}
-                                </CardTitle>
-                                <CardDescription className="text-slate-600 mt-2">
-                                    {room.description}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex flex-wrap gap-2 mb-6">
-                                    {room.tags.map((tag) => (
-                                        <span key={tag} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-medium">
-                                            #{tag}
-                                        </span>
-                                    ))}
-                                </div>
+                                    <CardTitle className={`text-3xl font-black tracking-tighter italic uppercase mb-4 transition-colors ${room.isAvailable ? 'text-white' : 'text-slate-600'}`}>
+                                        {room.title}
+                                    </CardTitle>
+                                    <CardDescription className="text-slate-400 font-medium leading-relaxed text-sm min-h-[64px] line-clamp-3 italic">
+                                        "{room.description}"
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-10 pt-4 flex-1 flex flex-col justify-between">
+                                    <div className="flex flex-wrap gap-2 mb-10">
+                                        {room.tags.map((tag) => (
+                                            <span key={tag} className="px-3 py-1 bg-white/5 border border-white/5 text-slate-500 text-[9px] font-black uppercase tracking-widest rounded-lg group-hover:text-slate-300 transition-colors">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
 
-                                <div className="flex items-center justify-between mt-auto">
-                                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                                        <Users className="h-4 w-4" />
-                                        <span>{room.isAvailable ? `${room.activeCount} online` : 'Offline'}</span>
+                                    <div className="flex flex-col gap-6">
+                                        <div className="flex items-center justify-between px-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`h-2 w-2 rounded-full ${room.isAvailable ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse' : 'bg-slate-800'}`} />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{room.isAvailable ? `${room.activeCount} ONLINE` : 'OFFLINE'}</span>
+                                            </div>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-700 hover:text-white rounded-full">
+                                                <MoreHorizontal size={18} />
+                                            </Button>
+                                        </div>
+
+                                        {room.isAvailable ? (
+                                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                                                <Button asChild className={`w-full h-16 bg-gradient-to-r ${room.color} hover:brightness-110 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-[1.25rem] shadow-2xl transition-all duration-300 border-none`}>
+                                                    <Link href={`/social/chat/room/${room.id}`} className="flex items-center justify-center gap-3">
+                                                        Join Chat <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-2" />
+                                                    </Link>
+                                                </Button>
+                                            </motion.div>
+                                        ) : (
+                                            <Button disabled className="w-full h-16 bg-white/5 border border-white/5 text-slate-700 font-black uppercase tracking-[0.2em] text-[11px] rounded-[1.25rem] flex items-center justify-center gap-3">
+                                                <Lock className="h-4 w-4" /> Locked
+                                            </Button>
+                                        )}
                                     </div>
-                                    {room.isAvailable ? (
-                                        <Button asChild className={`${room.color} hover:opacity-90 text-white shadow-md`}>
-                                            <Link href={`/social/chat/room/${room.id}`}>
-                                                Join Room <ArrowRight className="ml-2 h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    ) : (
-                                        <Button disabled variant="outline" className="gap-2">
-                                            <Lock className="h-4 w-4" /> Locked
-                                        </Button>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Sponsored Content / Ad */}
-                <AdUnit slot="9266909448" className="mt-12" />
-            </div>
-        </div>
+                <motion.section
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                    className="max-w-4xl mx-auto"
+                >
+                    <div className="bg-[#0d1321]/40 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl shadow-2xl">
+                        <div className="flex items-center gap-3 mb-8">
+                            <Sparkles size={16} className="text-emerald-500" />
+                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Sponsored Feed</h3>
+                        </div>
+                        <AdUnit slot="9266909448" />
+                    </div>
+                </motion.section>
+            </main>
+        </PageWrapper>
     )
 }

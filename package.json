@@ -44,7 +44,7 @@
     "emoji-picker-react": "^4.16.1",
     "firebase": "^10.7.1",
     "firebase-admin": "^13.6.0",
-    "framer-motion": "^12.23.26",
+    "framer-motion": "^11.11.17",
     "jsonwebtoken": "^9.0.3",
     "livekit-client": "^2.16.1",
     "livekit-server-sdk": "^2.15.0",

@@ -1,464 +1,297 @@
-import { Metadata } from "next"
-import { Smartphone, Download, Star, Users, Zap, Shield, Palette, TrendingUp } from "lucide-react"
+"use client"
+
+import { Smartphone, Download, Star, Users, Zap, Shield, Palette, TrendingUp, Sparkles, ArrowRight, Layout, Globe, Cpu } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import Image from "next/image"
-
-export const metadata: Metadata = {
-  title: "Apps - Celoris Platform",
-  description: "Discover our collection of innovative mobile applications designed to enhance your productivity, creativity, and lifestyle.",
-  openGraph: {
-    title: "Apps - Celoris Platform",
-    description: "Discover our collection of innovative mobile applications.",
-    url: "https://celoris.com/apps",
-  },
-}
+import { PageWrapper } from "@/components/PageWrapper"
+import { motion, AnimatePresence } from "framer-motion"
 
 const mobileApps = [
   {
     id: 1,
     name: "Celoris Learn",
-    description: "Master new skills on the go with our comprehensive mobile learning platform. Access courses, track progress, and learn anywhere.",
+    description: "Architect your cognitive growth with our mobile-first education layer.",
     category: "Education",
-    icon: "📚",
+    icon: Globe,
     rating: 4.8,
     downloads: "50K+",
     isFeatured: true,
     platforms: ["iOS", "Android"],
-    features: ["Offline learning", "Progress tracking", "Interactive quizzes", "Certificate generation"],
-    screenshots: 4
+    features: ["Offline Sync", "Neural Tracking", "Interactive Modules"],
+    color: "from-blue-500 to-cyan-500"
   },
   {
     id: 2,
     name: "Celoris Social",
-    description: "Connect with creators, influencers, and professionals. Swipe, match, and grow your network with our innovative social app.",
+    description: "The definitive social layer for high-impact networking and discovery.",
     category: "Social",
-    icon: "💬",
+    icon: Users,
     rating: 4.7,
     downloads: "100K+",
     isFeatured: true,
     platforms: ["iOS", "Android"],
-    features: ["Tinder-style swiping", "Real-time chat", "Video calls", "Instagram integration"],
-    screenshots: 5
+    features: ["Global Mesh", "Real-time Sync", "Direct Connect"],
+    color: "from-purple-500 to-pink-500"
   },
   {
     id: 3,
-    name: "Celoris Jobs",
-    description: "Find your dream career with our mobile job search app. Browse opportunities, apply instantly, and track applications.",
-    category: "Career",
-    icon: "💼",
+    name: "Celoris Nexus",
+    description: "A centralized hub for enterprise-level task orchestration and goal alignment.",
+    category: "Ops",
+    icon: Cpu,
     rating: 4.6,
     downloads: "75K+",
     isFeatured: true,
     platforms: ["iOS", "Android"],
-    features: ["Job alerts", "One-tap apply", "Salary insights", "Interview prep"],
-    screenshots: 4
-  },
-  {
-    id: 4,
-    name: "Celoris Productivity",
-    description: "Boost your productivity with task management, time tracking, and goal setting all in one powerful mobile app.",
-    category: "Productivity",
-    icon: "⚡",
-    rating: 4.5,
-    downloads: "30K+",
-    isFeatured: false,
-    platforms: ["iOS", "Android"],
-    features: ["Task management", "Time tracking", "Goal setting", "Analytics"],
-    screenshots: 3
-  },
-  {
-    id: 5,
-    name: "Celoris Wellness",
-    description: "Track your health and wellness journey. Monitor fitness, nutrition, mental health, and build healthy habits.",
-    category: "Health",
-    icon: "🏃",
-    rating: 4.7,
-    downloads: "45K+",
-    isFeatured: false,
-    platforms: ["iOS", "Android"],
-    features: ["Fitness tracking", "Meal planning", "Meditation", "Sleep analysis"],
-    screenshots: 5
-  },
-  {
-    id: 6,
-    name: "Celoris Finance",
-    description: "Manage your finances on the go. Track expenses, create budgets, and achieve your financial goals with ease.",
-    category: "Finance",
-    icon: "💰",
-    rating: 4.6,
-    downloads: "60K+",
-    isFeatured: false,
-    platforms: ["iOS", "Android"],
-    features: ["Expense tracking", "Budget planning", "Investment insights", "Bill reminders"],
-    screenshots: 4
+    features: ["Logic Gates", "Priority Sort", "Team Sync"],
+    color: "from-emerald-500 to-teal-500"
   }
 ]
 
 const categories = [
-  { name: "Education", count: 3, icon: "📚", color: "bg-blue-100 text-blue-600" },
-  { name: "Social", count: 2, icon: "💬", color: "bg-purple-100 text-purple-600" },
-  { name: "Productivity", count: 4, icon: "⚡", color: "bg-yellow-100 text-yellow-600" },
-  { name: "Health", count: 2, icon: "🏃", color: "bg-green-100 text-green-600" },
-  { name: "Finance", count: 3, icon: "💰", color: "bg-emerald-100 text-emerald-600" },
-  { name: "Career", count: 2, icon: "💼", color: "bg-indigo-100 text-indigo-600" },
-  { name: "Lifestyle", count: 3, icon: "🎨", color: "bg-pink-100 text-pink-600" },
-  { name: "Entertainment", count: 2, icon: "🎮", color: "bg-orange-100 text-orange-600" }
+  { name: "Education", count: 12, icon: Globe, color: "text-blue-500", bg: "bg-blue-50" },
+  { name: "Social", count: 8, icon: Users, color: "text-purple-500", bg: "bg-purple-50" },
+  { name: "Ops", count: 15, icon: Cpu, color: "text-emerald-500", bg: "bg-emerald-50" },
+  { name: "Creative", count: 6, icon: Palette, color: "text-rose-500", bg: "bg-rose-50" }
 ]
 
 const featuredApps = mobileApps.filter(app => app.isFeatured)
 
 export default function AppsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <PageWrapper className="min-h-screen bg-[#fafbfc]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-500 to-primary-700 text-white py-20">
-        <div className="container text-center">
-          <div className="flex justify-center mb-6">
-            <Smartphone className="h-16 w-16" />
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Our Mobile Apps
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-primary-50">
-            Discover innovative mobile applications designed to enhance your productivity,
-            creativity, and lifestyle. Available on iOS and Android.
-          </p>
+      <section className="bg-[#030712] text-white py-24 relative overflow-hidden">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{ duration: 12, repeat: Infinity }}
+          className="absolute -top-48 -right-48 w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[120px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.05, 0.1, 0.05]
+          }}
+          transition={{ duration: 15, repeat: Infinity, delay: 2 }}
+          className="absolute -bottom-48 -left-48 w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[120px]"
+        />
 
+        <div className="container relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8"
+          >
+            <Sparkles size={12} />
+            Global Software Ecosystem
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-black mb-8 tracking-tighter"
+          >
+            Software for the <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Next Generation.</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-slate-400 font-medium leading-relaxed"
+          >
+            Deploying high-impact mobile solutions across education, social
+            networking, and enterprise operations. Scalable, secure, and beautiful.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center"
+          >
+            <Button size="lg" className="bg-white text-black hover:bg-blue-600 hover:text-white px-10 h-16 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 shadow-xl shadow-white/5" asChild>
+              <Link href="#all-apps">Browse Registry</Link>
+            </Button>
+            <Button variant="outline" size="lg" className="border-white/10 bg-white/5 text-white hover:bg-white/10 px-10 h-16 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300" asChild>
+              <Link href="#">Developer Portal</Link>
+            </Button>
+          </motion.div>
         </div>
       </section>
 
-
-      {/* Categories Section */}
-      <section className="py-16 bg-background">
+      {/* Categories */}
+      <section className="py-24 bg-white">
         <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              Explore Categories
-            </h2>
-            <p className="text-lg text-text-secondary">
-              Find apps that match your needs
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <Card key={category.name} className="card-hover cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <div className={`w-16 h-16 ${category.color} rounded-2xl flex items-center justify-center mx-auto mb-3 text-3xl`}>
-                    {category.icon}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {categories.map((category, index) => (
+              <motion.div
+                key={category.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
+              >
+                <Card className="border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 rounded-[2.5rem] p-8 text-center cursor-pointer group">
+                  <div className={`w-16 h-16 ${category.bg} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500 ${category.color}`}>
+                    <category.icon size={32} />
                   </div>
-                  <h3 className="font-semibold text-text-primary mb-2">{category.name}</h3>
-                  <p className="text-sm text-text-secondary">{category.count} apps</p>
-                </CardContent>
-              </Card>
+                  <h3 className="font-black text-slate-900 text-lg mb-2 uppercase tracking-tight">{category.name}</h3>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{category.count} Deployed</p>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Apps */}
-      <section className="py-16 bg-surface">
+      {/* Featured Apps Section */}
+      <section className="py-24 bg-[#fafbfc]">
         <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              Featured Apps
-            </h2>
-            <p className="text-lg text-text-secondary">
-              Our most popular mobile applications
-            </p>
+          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+            <div className="text-left">
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                className="flex items-center gap-2 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+              >
+                <Zap size={14} className="fill-blue-600" />
+                Priority Flagship Selection
+              </motion.div>
+              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Active Deployments</h2>
+            </div>
+            <Button variant="ghost" className="font-black uppercase tracking-widest text-[10px] text-slate-400 hover:text-blue-600" asChild>
+              <Link href="#all-apps">Full Catalog <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredApps.map((app) => (
-              <Card key={app.id} className="card-hover overflow-hidden">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-3xl shadow-lg">
-                      {app.icon}
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium text-text-secondary">{app.rating}</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl">{app.name}</CardTitle>
-                  <CardDescription>{app.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center space-x-1 text-text-secondary">
-                        <Download className="h-4 w-4" />
-                        <span>{app.downloads} downloads</span>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            {featuredApps.map((app, index) => (
+              <motion.div
+                key={app.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
+              >
+                <Card className="border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 rounded-[3rem] overflow-hidden group h-full">
+                  <CardHeader className="p-10">
+                    <div className="flex items-center justify-between mb-8">
+                      <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${app.color} flex items-center justify-center text-white shadow-xl shadow-blue-500/20 group-hover:scale-110 transition-transform duration-500`}>
+                        <app.icon size={40} />
                       </div>
-                      <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-xs font-medium">
-                        {app.category}
-                      </span>
+                      <div className="flex flex-col items-end">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                          <span className="text-xs font-black text-slate-900">{app.rating}</span>
+                        </div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{app.downloads} Load</span>
+                      </div>
                     </div>
-
-                    <div className="flex gap-2">
-                      {app.platforms.map((platform) => (
-                        <span key={platform} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
-                          {platform}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-text-primary">Key Features:</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {app.features.slice(0, 3).map((feature) => (
-                          <span
-                            key={feature}
-                            className="bg-gray-50 text-text-secondary px-2 py-1 rounded-md text-xs"
-                          >
+                    <CardTitle className="text-2xl font-black text-slate-900 mb-4 tracking-tight uppercase italic">{app.name}</CardTitle>
+                    <CardDescription className="text-slate-500 font-medium text-sm leading-relaxed mb-6">
+                      {app.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="px-10 pb-10">
+                    <div className="space-y-6">
+                      <div className="flex flex-wrap gap-2">
+                        {app.features.map((feature) => (
+                          <span key={feature} className="bg-slate-50 text-slate-400 text-[10px] font-black px-3 py-1.5 rounded-lg border border-slate-100 uppercase tracking-widest">
                             {feature}
                           </span>
                         ))}
-                        {app.features.length > 3 && (
-                          <span className="text-xs text-text-secondary px-2 py-1">
-                            +{app.features.length - 3} more
-                          </span>
-                        )}
                       </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-2">
-                      <Button className="flex-1" asChild>
+                      <Button className="w-full bg-[#0d1321] hover:bg-blue-600 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg shadow-black/5" asChild>
                         <Link href={`/apps/${app.id}`}>
-                          <Smartphone className="mr-2 h-4 w-4" />
-                          View Details
+                          Initialize Node
+                          <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button size="lg" asChild>
-              <Link href="#all-apps">
-                View All Apps
-                <TrendingUp className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* All Apps Grid */}
-      <section id="all-apps" className="py-16 bg-background">
-        <div className="container">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-                All Mobile Apps
-              </h2>
-              <p className="text-lg text-text-secondary">
-                Complete collection of our mobile applications
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <select className="px-3 py-2 border border-input rounded-md bg-background">
-                <option>All Categories</option>
-                <option>Education</option>
-                <option>Social</option>
-                <option>Productivity</option>
-                <option>Health</option>
-              </select>
-              <select className="px-3 py-2 border border-input rounded-md bg-background">
-                <option>Most Popular</option>
-                <option>Recently Added</option>
-                <option>Highest Rated</option>
-                <option>Most Downloaded</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mobileApps.map((app) => (
-              <Card key={app.id} className="card-hover">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-2xl shadow-md">
-                      {app.icon}
-                    </div>
-                    {app.isFeatured && (
-                      <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">
-                        Featured
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="font-semibold text-lg text-text-primary mb-2">{app.name}</h3>
-                  <p className="text-sm text-text-secondary mb-4 line-clamp-2">{app.description}</p>
-
-                  <div className="flex items-center justify-between text-xs text-text-secondary mb-4">
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span>{app.rating}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Download className="h-3 w-3" />
-                      <span>{app.downloads}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs bg-primary-50 text-primary-700 px-2 py-1 rounded-full">
-                      {app.category}
-                    </span>
-                    <Button size="sm" asChild>
-                      <Link href={`/apps/${app.id}`}>
-                        View App
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* App Features Section */}
-      <section className="py-16 bg-surface">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              Why Choose Our Apps?
-            </h2>
-            <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Built with cutting-edge technology and designed for the best user experience
-            </p>
+      {/* Value Prop Section */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="container relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase italic mb-4">Ecosystem Integrity</h2>
+            <p className="text-slate-500 font-medium text-lg">Architected for maximum reliability and user impact.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="card-hover text-center">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-8 w-8 text-blue-600" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              { title: "Peak Efficiency", icon: Zap, color: "text-blue-500", bg: "bg-blue-50", desc: "Optimized for minimal latency and maximum throughput on all mobile hardware." },
+              { title: "Secured Nodes", icon: Shield, color: "text-emerald-500", bg: "bg-emerald-50", desc: "End-to-end encryption protocols ensuring total data sovereignty." },
+              { title: "Visual Precision", icon: Palette, color: "text-purple-500", bg: "bg-purple-50", desc: "Pixel-perfect interfaces designed for high-end digital experiences." }
+            ].map((prop, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <div className="text-center space-y-6 group">
+                  <div className={`w-20 h-20 ${prop.bg} ${prop.color} rounded-[2rem] flex items-center justify-center mx-auto transition-transform duration-500 group-hover:scale-110 shadow-lg shadow-slate-100`}>
+                    <prop.icon size={32} />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight italic">{prop.title}</h3>
+                  <p className="text-slate-500 font-medium text-sm leading-relaxed max-w-xs mx-auto">
+                    {prop.desc}
+                  </p>
                 </div>
-                <CardTitle>Lightning Fast</CardTitle>
-                <CardDescription>
-                  Optimized performance for smooth and responsive user experience on all devices.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="card-hover text-center">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                  <Shield className="h-8 w-8 text-green-600" />
-                </div>
-                <CardTitle>Secure & Private</CardTitle>
-                <CardDescription>
-                  Your data is encrypted and protected with industry-leading security measures.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="card-hover text-center">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                  <Palette className="h-8 w-8 text-purple-600" />
-                </div>
-                <CardTitle>Beautiful Design</CardTitle>
-                <CardDescription>
-                  Intuitive interfaces crafted with attention to detail and modern design principles.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-
+      {/* Global CTA */}
+      <section className="py-24 bg-[#0d1321] text-white relative overflow-hidden">
+        <motion.div
+          animate={{
+            opacity: [0.05, 0.1, 0.05]
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute inset-0 bg-gradient-to-br from-blue-500 via-transparent to-emerald-500 pointer-events-none"
+        />
         <div className="container text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            {/* Icon */}
-            <div className="flex justify-center mb-8">
-              <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center shadow-2xl">
-                <Smartphone className="h-14 w-14 text-white" />
+            <div className="flex justify-center mb-10">
+              <div className="w-24 h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] flex items-center justify-center shadow-2xl">
+                <Smartphone size={48} className="text-white" />
               </div>
             </div>
-
-            {/* Heading */}
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Get Started?
+            <h2 className="text-5xl font-black mb-8 tracking-tighter uppercase italic">
+              Synchronize Now
             </h2>
-
-            {/* Description */}
-            <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-green-50 leading-relaxed">
-              Download our apps today and experience the future of mobile productivity,
-              learning, and social connection.
+            <p className="text-xl mb-12 text-slate-400 font-medium leading-relaxed">
+              Join 500k+ visionaries today. Download the Celoris Unified App for
+              the full ecosystem experience on the go.
             </p>
 
-            {/* Download Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              {/* App Store Button */}
-              <a
-                href="#"
-                className="inline-flex items-center bg-black text-white rounded-xl px-6 py-3 hover:bg-gray-900 transition-all shadow-xl hover:shadow-2xl"
-              >
-                <svg className="w-8 h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                </svg>
-                <div className="text-left">
-                  <div className="text-xs">Available on the</div>
-                  <div className="text-xl font-semibold -mt-1">App Store</div>
-                </div>
-              </a>
-
-              {/* Google Play Button */}
-              <a
-                href="#"
-                className="inline-flex items-center bg-black text-white rounded-xl px-6 py-3 hover:bg-gray-900 transition-all shadow-xl hover:shadow-2xl"
-              >
-                <svg className="w-8 h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" fill="url(#gradient)" />
-                  <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#00D6FF', stopOpacity: 1 }} />
-                      <stop offset="50%" style={{ stopColor: '#FFD500', stopOpacity: 1 }} />
-                      <stop offset="100%" style={{ stopColor: '#FF0080', stopOpacity: 1 }} />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <div className="text-left">
-                  <div className="text-xs">GET IT ON</div>
-                  <div className="text-xl font-semibold -mt-1">Google Play</div>
-                </div>
-              </a>
-            </div>
-
-            {/* Additional info */}
-            <div className="mt-12 flex flex-wrap justify-center gap-8 text-green-50">
-              <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-white text-white" />
-                <span className="text-sm font-medium">4.8 Average Rating</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span className="text-sm font-medium">500K+ Downloads</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                <span className="text-sm font-medium">100% Secure</span>
-              </div>
+              <Button className="bg-white text-black hover:bg-blue-600 hover:text-white h-16 px-12 rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all duration-500" asChild>
+                <Link href="#">App Store Relay</Link>
+              </Button>
+              <Button className="bg-black border border-white/10 text-white hover:bg-emerald-600 h-16 px-12 rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all duration-500" asChild>
+                <Link href="#">Google Play Hub</Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </PageWrapper>
   )
 }

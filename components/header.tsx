@@ -52,15 +52,22 @@ export default function Header() {
     }
   }
 
+  const isDarkPage = pathname === "/" || pathname === "/about" || pathname === "/contact" || pathname?.startsWith("/courses/")
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60">
+    <header className={cn(
+      "sticky top-0 z-50 w-full transition-all duration-300",
+      isDarkPage
+        ? "border-b border-white/5 bg-[#050810]/80 backdrop-blur-xl"
+        : "border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60"
+    )}>
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <img
             src="/celoris-logo.png"
             alt="Celoris Logo"
-            className="h-8 w-auto object-contain"
+            className="h-8 w-auto object-contain transition-all hover:opacity-80"
           />
         </Link>
 
@@ -71,10 +78,10 @@ export default function Header() {
               key={item.name}
               href={item.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary-500",
+                "text-sm font-black uppercase tracking-widest transition-colors italic",
                 pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
-                  ? "text-primary-500"
-                  : "text-text-secondary"
+                  ? "text-emerald-500"
+                  : isDarkPage ? "text-slate-400 hover:text-white" : "text-text-secondary hover:text-primary-500"
               )}
             >
               {item.name}
@@ -86,7 +93,7 @@ export default function Header() {
         <div className="hidden md:flex items-center space-x-4">
           {loading ? (
             <div className="flex items-center space-x-2">
-              <div className="animate-pulse bg-gray-200 h-8 w-8 rounded-full"></div>
+              <div className="animate-pulse bg-emerald-500/20 h-8 w-8 rounded-full"></div>
             </div>
           ) : user ? (
             <DropdownMenu>
@@ -155,10 +162,25 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" asChild>
+              <Button
+                variant="ghost"
+                asChild
+                className={cn(
+                  "font-black uppercase tracking-widest text-[10px] italic",
+                  isDarkPage ? "text-slate-400 hover:text-white hover:bg-white/5" : ""
+                )}
+              >
                 <Link href="/login">Sign In</Link>
               </Button>
-              <Button asChild>
+              <Button
+                asChild
+                className={cn(
+                  "font-black uppercase tracking-widest text-[10px] italic rounded-xl px-6 h-10 transition-all",
+                  isDarkPage
+                    ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-3xl shadow-emerald-500/20 border-none"
+                    : ""
+                )}
+              >
                 <Link href="/register">Get Started</Link>
               </Button>
             </>

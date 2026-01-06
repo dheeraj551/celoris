@@ -24,7 +24,8 @@ import {
     MessageCircle,
     Check,
     Info,
-    ArrowRight
+    ArrowRight,
+    Lock
 } from "lucide-react"
 import {
     Dialog,
@@ -38,6 +39,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "@/components/providers/AuthProvider"
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { motion, AnimatePresence } from "framer-motion"
+import { PageWrapper } from "@/components/PageWrapper"
 
 // --- AUDIO ASSETS ---
 const MSG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"
@@ -210,26 +212,12 @@ export default function GlobalLobbyPage() {
         }
     }, [user?.id, authLoading, router, toast])
 
-    // Silence bot trigger removed
-    useEffect(() => {
-        return; // Bot silence trigger removed
-    }, [lastActivityAt])
-
     // --- AUTO-SCROLL ---
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
 
     // --- FUNCTIONS ---
-
-    const triggerBot = async (type: 'response' | 'silence', sentMessage?: string) => {
-        try {
-            // Bot logic removed as per user request
-            return;
-        } catch (error) {
-            console.error("Bot trigger error:", error)
-        }
-    }
 
     const sendMessage = async () => {
         if (!newMessage.trim() || !user || !channelRef.current) return
@@ -249,7 +237,6 @@ export default function GlobalLobbyPage() {
         setNewMessage("")
         setShowEmojiPicker(false)
         setLastActivityAt(Date.now())
-        // triggerBot('response', msgContent) // Bot response trigger removed
     }
 
     const onEmojiClick = (emojiData: EmojiClickData) => {
@@ -323,151 +310,182 @@ export default function GlobalLobbyPage() {
 
     if (authLoading || !user) {
         return (
-            <div className="h-screen flex items-center justify-center bg-slate-50">
+            <div className="h-screen flex items-center justify-center bg-[#050810]">
                 <div className="animate-pulse flex flex-col items-center">
-                    <div className="h-12 w-12 bg-indigo-200 rounded-full mb-4"></div>
+                    <div className="h-12 w-12 bg-emerald-500/20 rounded-full mb-4"></div>
+                    <div className="text-emerald-400 text-[10px] font-black uppercase tracking-widest">Loading Lobby...</div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="fixed inset-0 flex flex-col bg-slate-50 z-40">
+        <PageWrapper className="fixed inset-0 flex flex-col bg-[#050810] z-40 text-white font-sans">
+            {/* Background Decorative Elements */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.1, 0.2, 0.1]
+                    }}
+                    transition={{ duration: 10, repeat: Infinity }}
+                    className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-emerald-600/20 rounded-full blur-[120px]"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.05, 0.1, 0.05]
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, delay: 2 }}
+                    className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[120px]"
+                />
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+            </div>
+
             {/* --- HEADER --- */}
-            <header className="bg-white/80 backdrop-blur-md border-b border-indigo-100 px-4 py-3 shadow-sm flex items-center justify-between z-20">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => router.push('/social/chat')} className="hover:bg-indigo-50">
-                        <ArrowLeft className="h-5 w-5 text-indigo-600" />
-                    </Button>
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                            <Sparkles className="h-5 w-5" />
+            <header className="bg-[#0d1321]/60 backdrop-blur-2xl border-b border-white/5 px-6 py-4 flex items-center justify-between z-20 relative shadow-2xl">
+                <div className="flex items-center gap-6">
+                    <motion.div whileHover={{ x: -2 }}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push('/social/chat')}
+                            className="bg-white/5 hover:bg-white/10 rounded-xl"
+                        >
+                            <ArrowLeft className="h-5 w-5 text-slate-400" />
+                        </Button>
+                    </motion.div>
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-indigo-600 flex items-center justify-center text-white shadow-xl shadow-emerald-500/20 italic font-black">
+                            <Sparkles size={24} />
                         </div>
                         <div>
-                            <h1 className="font-bold text-slate-800 text-lg leading-tight">Public Main Lobby</h1>
-                            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-                                <span className="flex items-center gap-1.5">
+                            <h1 className="font-black text-xl tracking-tighter uppercase italic">Public Chat Lobby</h1>
+                            <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                                <span className="flex items-center gap-2">
                                     <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                     </span>
-                                    {onlineCount} Online
+                                    {onlineCount} People Online
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    {/* Mobile Member List */}
+                <div className="flex items-center gap-3">
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="sm" className="lg:hidden flex items-center gap-2 border-indigo-100 text-indigo-600 hover:bg-indigo-50">
+                            <Button variant="outline" size="sm" className="lg:hidden flex items-center gap-2 border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 rounded-xl">
                                 <Users className="h-4 w-4" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent className="w-[300px]">
+                        <SheetContent className="w-[300px] bg-[#0d1321] border-white/5 text-white">
                             <SheetHeader>
-                                <SheetTitle>Lobby Members ({onlineCount})</SheetTitle>
+                                <SheetTitle className="text-white font-black uppercase tracking-tight italic">Online Now ({onlineCount})</SheetTitle>
                             </SheetHeader>
-                            <div className="mt-6 flex flex-col gap-3">
+                            <div className="mt-8 space-y-2">
                                 {onlineUsers.map(u => (
-                                    <div key={u.id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                                    <motion.div
+                                        key={u.id}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all group"
+                                    >
                                         <div className="flex items-center gap-3 overflow-hidden">
-                                            <Avatar className="h-8 w-8">
+                                            <Avatar className="h-9 w-9 rounded-xl border border-white/10 shadow-lg">
                                                 <AvatarImage src={u.avatar_url} />
-                                                <AvatarFallback>{u.name[0]}</AvatarFallback>
+                                                <AvatarFallback className="bg-slate-800 font-black">{u.name[0]}</AvatarFallback>
                                             </Avatar>
                                             <div className="min-w-0">
-                                                <p className="text-sm font-medium truncate">{u.name}</p>
+                                                <p className="text-sm font-black uppercase italic truncate">{u.name}</p>
                                             </div>
                                         </div>
-                                        {u.id !== user.id && ( // Removed !u.is_bot check here as onlineUsers is already filtered
-                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-indigo-500" onClick={() => sendInvite(u)}>
+                                        {u.id !== user.id && (
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-emerald-400 hover:text-emerald-300 rounded-lg" onClick={() => sendInvite(u)}>
                                                 <MessageCircle className="h-4 w-4" />
                                             </Button>
                                         )}
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         </SheetContent>
                     </Sheet>
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600">
+                    <Button variant="ghost" size="icon" className="text-slate-500 hover:text-white rounded-xl">
                         <MoreVertical className="h-5 w-5" />
                     </Button>
                 </div>
             </header>
 
             <div className="flex-1 flex overflow-hidden relative">
-
                 {/* --- CHAT AREA --- */}
                 <div className="flex-1 flex flex-col relative overflow-hidden">
-                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                        <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl" />
-                        <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-indigo-200/30 rounded-full blur-3xl" />
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto px-4 py-6 z-10 scroll-smooth">
-                        <div className="max-w-3xl mx-auto space-y-6">
-                            <div className="text-center py-8 mb-8 backdrop-blur-sm bg-white/50 rounded-2xl border border-white/50 shadow-sm mx-4">
-                                <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-indigo-200 rotate-3">
-                                    <MessageCircle className="h-8 w-8 text-white" />
+                    <div className="flex-1 overflow-y-auto px-6 py-10 z-10 scroll-smooth custom-scrollbar">
+                        <div className="max-w-4xl mx-auto">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-center py-12 mb-12 backdrop-blur-3xl bg-white/5 rounded-[3rem] border border-white/10 shadow-2xl relative overflow-hidden group"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-transparent to-emerald-600/5 pointer-events-none" />
+                                <div className="w-20 h-20 bg-gradient-to-tr from-emerald-600 to-indigo-700 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-500 italic font-black">
+                                    <MessageCircle className="h-10 w-10 text-white" />
                                 </div>
-                                <h2 className="text-xl font-bold text-slate-800">Welcome to the Lobby!</h2>
-                                <p className="text-slate-500 text-sm max-w-sm mx-auto mt-2">
-                                    Jump into the conversation. Ask questions or just hang out.
+                                <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">Public Group Chat</h2>
+                                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] max-w-sm mx-auto mt-4 leading-relaxed">
+                                    Chat with creators and professionals from around the world. <br />
+                                    Share ideas and grow your community.
                                 </p>
-                            </div>
+                            </motion.div>
 
-                            <div className="flex flex-col gap-4 pb-4">
-                                {messages.map((msg, idx) => {
-                                    const isMe = msg.sender.id === user.id;
-                                    const isBot = msg.sender.is_bot;
-                                    const showHeader = idx === 0 || messages[idx - 1].sender.id !== msg.sender.id;
+                            <div className="space-y-6 pb-6">
+                                <AnimatePresence initial={false}>
+                                    {messages.map((msg, idx) => {
+                                        const isMe = msg.sender.id === user.id;
+                                        const showHeader = idx === 0 || messages[idx - 1].sender.id !== msg.sender.id;
 
-                                    return (
-                                        <motion.div
-                                            key={msg.id}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}
-                                        >
-                                            <div className={`flex-none w-8 ${!showHeader ? 'invisible h-0' : ''}`}>
-                                                <Avatar className="h-8 w-8 ring-2 ring-white shadow-sm">
-                                                    <AvatarImage src={msg.sender.avatar_url} />
-                                                    <AvatarFallback className={isBot ? "bg-indigo-100 text-indigo-700" : ""}>{msg.sender.name[0]}</AvatarFallback>
-                                                </Avatar>
-                                            </div>
-
-                                            <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
-                                                {showHeader && (
-                                                    <div className="flex items-center gap-2 mb-1 px-1">
-                                                        <span className={`text-xs font-semibold ${isBot ? "text-indigo-600 flex items-center gap-1" : "text-slate-600"}`}>
-                                                            {msg.sender.name}
-                                                            {isBot && <Zap className="h-3 w-3 fill-indigo-100" />}
-                                                        </span>
-                                                        <span className="text-[10px] text-slate-400">
-                                                            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
-                                                    </div>
-                                                )}
-
-                                                <div
-                                                    className={`px-4 py-2 text-sm shadow-sm
-                                                        ${isMe
-                                                            ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl rounded-tr-none'
-                                                            : isBot
-                                                                ? 'bg-white border-none shadow-indigo-100 text-slate-800 rounded-2xl rounded-tl-none ring-1 ring-indigo-50'
-                                                                : 'bg-white text-slate-800 rounded-2xl rounded-tl-none border border-slate-100'
-                                                        }
-                                                    `}
-                                                >
-                                                    {msg.content}
+                                        return (
+                                            <motion.div
+                                                key={msg.id}
+                                                initial={{ opacity: 0, x: isMe ? 20 : -20, scale: 0.95 }}
+                                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                                className={`flex gap-4 ${isMe ? 'flex-row-reverse' : ''}`}
+                                            >
+                                                <div className={`flex-none w-10 ${!showHeader ? 'invisible h-0' : ''}`}>
+                                                    <Avatar className="h-10 w-10 rounded-xl border border-white/10 shadow-2xl ring-4 ring-white/5">
+                                                        <AvatarImage src={msg.sender.avatar_url} />
+                                                        <AvatarFallback className="bg-slate-800 font-black">{msg.sender.name[0]}</AvatarFallback>
+                                                    </Avatar>
                                                 </div>
-                                            </div>
-                                        </motion.div>
-                                    )
-                                })}
+
+                                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                                                    {showHeader && (
+                                                        <div className="flex items-center gap-3 mb-2 px-2">
+                                                            <span className="text-[10px] font-black text-slate-300 uppercase italic tracking-wider">
+                                                                {msg.sender.name}
+                                                            </span>
+                                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest opacity-50">
+                                                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    <div
+                                                        className={`px-6 py-3.5 text-sm shadow-2xl font-medium tracking-tight
+                                                            ${isMe
+                                                                ? 'bg-emerald-600 text-white rounded-[1.5rem] rounded-tr-none'
+                                                                : 'bg-white/5 border border-white/10 backdrop-blur-xl text-slate-200 rounded-[1.5rem] rounded-tl-none'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {msg.content}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })}
+                                </AnimatePresence>
                             </div>
                             <div ref={messagesEndRef} />
                         </div>
@@ -475,109 +493,118 @@ export default function GlobalLobbyPage() {
                 </div>
 
                 {/* --- DESKTOP SIDEBAR --- */}
-                <aside className="hidden lg:flex w-80 border-l border-slate-200 bg-white flex-col z-20">
-                    <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                        <h2 className="font-bold text-slate-900 flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            Private Rooms
-                            <div className="ml-auto flex gap-1">
+                <aside className="hidden lg:flex w-[380px] border-l border-white/5 bg-[#0d1321]/40 backdrop-blur-3xl flex-col z-20 relative">
+                    <div className="p-8 border-b border-white/5 bg-white/5">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="font-black text-sm uppercase italic tracking-tighter flex items-center gap-3">
+                                <Users className="h-5 w-5 text-emerald-500" />
+                                Private Chat Rooms
+                            </h2>
+                            <div className="flex gap-1.5">
                                 {[1, 2, 3, 4, 5].map(n => (
-                                    <div key={n} className={`h-2 w-2 rounded-full ${activePrivateRooms[n - 1] ? 'bg-red-500' : 'bg-green-300'}`} />
+                                    <motion.div
+                                        key={n}
+                                        animate={{ opacity: activePrivateRooms[n - 1] ? [1, 0.5, 1] : 0.3 }}
+                                        transition={{ duration: 2, repeat: Infinity }}
+                                        className={`h-2.5 w-2.5 rounded-full ${activePrivateRooms[n - 1] ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]'}`}
+                                    />
                                 ))}
                             </div>
-                        </h2>
-                        <p className="text-[11px] text-slate-500 mt-1">
-                            Invite users below to a private 1-on-1 room.
+                        </div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] leading-relaxed">
+                            Start a private chat with anyone online. There are 5 private rooms available right now.
                         </p>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {/* Users List */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
                         {onlineUsers.map((u) => (
-                            <div
+                            <motion.div
                                 key={u.id}
-                                className="flex items-center justify-between group p-2 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                whileHover={{ scale: 1.02, x: -4 }}
+                                className="flex items-center justify-between group p-4 bg-white/5 border border-white/5 rounded-3xl transition-all cursor-pointer hover:bg-white/10 hover:border-white/10"
                             >
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-4">
                                     <div className="relative">
-                                        <Avatar className="h-10 w-10">
+                                        <Avatar className="h-12 w-12 rounded-2xl border border-white/10 shadow-xl">
                                             <AvatarImage src={u.avatar_url} />
-                                            <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
+                                            <AvatarFallback className="bg-slate-800 font-black">{u.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
-                                        <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                                        <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-4 border-[#0d1321] shadow-lg shadow-emerald-500/20" />
                                     </div>
                                     <div className="flex flex-col min-w-0">
-                                        <span className="text-sm font-semibold text-slate-900 truncate max-w-[120px]">
+                                        <span className="text-sm font-black text-white uppercase italic truncate max-w-[140px]">
                                             {u.name}
                                         </span>
-                                        {u.id === user?.id && <span className="text-xs text-slate-400">You</span>}
+                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                                            {u.id === user?.id ? 'You' : 'Online'}
+                                        </span>
                                     </div>
                                 </div>
 
-                                {u.id !== user?.id && !u.is_bot && (
+                                {u.id !== user?.id && (
                                     <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-8 w-8 p-0 rounded-full hover:bg-green-100 hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        size="icon"
+                                        variant="outline"
+                                        className="h-10 w-10 rounded-xl border-white/10 bg-white/5 hover:bg-emerald-600 hover:border-emerald-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
                                         onClick={() => sendInvite(u)}
                                         disabled={privateRoomsCount >= 5}
-                                        title="Invite to Private Room"
                                     >
-                                        <ArrowRight className="h-4 w-4" />
+                                        <Lock className="h-4 w-4" />
                                     </Button>
                                 )}
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
 
-                    {/* Footer Info */}
-                    <div className="p-4 bg-slate-50 border-t border-slate-100 text-xs text-slate-400 text-center">
-                        {onlineCount} users online • {privateRoomsCount} private rooms busy
+                    <div className="p-6 bg-white/5 border-t border-white/5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] text-center italic">
+                        {onlineCount} PEOPLE ONLINE • {privateRoomsCount}/5 ROOMS BUSY
                     </div>
                 </aside>
             </div>
 
             {/* --- INPUT AREA --- */}
-            <div className="bg-white px-4 py-3 border-t border-slate-100 z-20">
-                <div className="max-w-3xl mx-auto flex items-center gap-3">
+            <div className="bg-[#0d1321]/80 backdrop-blur-3xl px-8 py-6 border-t border-white/5 z-20 relative">
+                <div className="max-w-4xl mx-auto flex items-center gap-6">
                     <div className="relative">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={`text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors ${showEmojiPicker ? 'text-indigo-500 bg-indigo-50' : ''}`}
+                            className={`text-slate-500 hover:text-emerald-400 hover:bg-white/5 rounded-2xl h-14 w-14 transition-all ${showEmojiPicker ? 'text-emerald-400 bg-white/5' : ''}`}
                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                         >
-                            <Smile className="h-5 w-5" />
+                            <Smile size={28} />
                         </Button>
                         <AnimatePresence>
                             {showEmojiPicker && (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                    className="absolute bottom-12 left-0 shadow-xl rounded-2xl z-50"
+                                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                    className="absolute bottom-20 left-0 shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-3xl z-50 overflow-hidden border border-white/10"
                                 >
-                                    <EmojiPicker onEmojiClick={onEmojiClick} width={300} height={400} />
+                                    <EmojiPicker theme={'dark' as any} onEmojiClick={onEmojiClick} width={320} height={400} />
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
 
-                    <div className="flex-1 relative">
+                    <div className="flex-1 relative group">
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                             placeholder="Type a message..."
-                            className="bg-slate-50 border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-full pl-5 pr-12 h-11"
+                            className="bg-white/5 border-white/10 focus:bg-white/10 focus:border-emerald-500/50 text-white placeholder:text-slate-600 rounded-[2rem] pl-8 pr-16 h-14 font-medium tracking-tight shadow-inner transition-all"
                         />
                         <Button
-                            size="sm"
+                            size="icon"
                             onClick={sendMessage}
                             disabled={!newMessage.trim()}
-                            className="absolute right-1 top-1 h-9 w-9 rounded-full bg-indigo-600 hover:bg-indigo-700 p-0 shadow-sm"
+                            className="absolute right-2 top-2 h-10 w-10 rounded-2xl bg-emerald-600 hover:bg-emerald-500 p-0 shadow-2xl shadow-emerald-500/20 disabled:bg-slate-800 disabled:opacity-50 transition-all active:scale-95"
                         >
-                            <Send className="h-4 w-4 text-white" />
+                            <Send className="h-5 w-5 text-white" />
                         </Button>
                     </div>
                 </div>
@@ -585,37 +612,44 @@ export default function GlobalLobbyPage() {
 
             {/* Invite Dialog */}
             <Dialog open={!!incomingInvite} onOpenChange={(open) => !open && rejectInvite()}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <MessageCircle className="h-5 w-5 text-green-500" />
-                            New Chat Invite
-                        </DialogTitle>
-                        <DialogDescription className="pt-2">
-                            <span className="font-bold text-slate-900">{incomingInvite?.sender.name}</span> wants to start a private chat with you.
+                <DialogContent className="max-w-md bg-[#0d1321] border-white/10 text-white rounded-[3rem] p-10 shadow-[0_32px_120px_rgba(0,0,0,0.8)] overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-transparent to-emerald-600/10 pointer-events-none" />
+                    <DialogHeader className="relative z-10 text-center space-y-4">
+                        <div className="w-20 h-20 bg-emerald-500 rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-emerald-500/20 italic font-black">
+                            <Lock size={36} />
+                        </div>
+                        <DialogTitle className="text-3xl font-black italic uppercase tracking-tighter">Chat Invitation</DialogTitle>
+                        <DialogDescription className="text-slate-400 font-medium pt-2">
+                            <span className="font-black text-emerald-400 uppercase italic">[{incomingInvite?.sender.name}]</span> wants to start a private chat with you.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-center justify-center py-4">
+
+                    <div className="flex items-center justify-center py-10 relative z-10">
                         <div className="relative">
-                            <Avatar className="h-20 w-20 ring-4 ring-green-100">
+                            <Avatar className="h-24 w-24 rounded-[2rem] border-4 border-emerald-500/20 shadow-2xl ring-8 ring-emerald-500/5">
                                 <AvatarImage src={incomingInvite?.sender.avatar_url} />
-                                <AvatarFallback>{incomingInvite?.sender.name?.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="bg-slate-800 font-black text-2xl">{incomingInvite?.sender.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="absolute -bottom-1 -right-1 bg-green-500 p-1.5 rounded-full border-4 border-white">
-                                <Check className="h-4 w-4 text-white" />
-                            </div>
+                            <motion.div
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="absolute -bottom-2 -right-2 bg-emerald-500 p-2 rounded-xl border-4 border-[#0d1321] shadow-xl"
+                            >
+                                <Check className="h-5 w-5 text-white stroke-[3px]" />
+                            </motion.div>
                         </div>
                     </div>
-                    <DialogFooter className="flex gap-2 sm:justify-center">
-                        <Button variant="outline" onClick={rejectInvite} className="w-full sm:w-auto">
+
+                    <DialogFooter className="flex flex-col sm:flex-row gap-4 relative z-10">
+                        <Button variant="outline" onClick={rejectInvite} className="w-full h-14 rounded-2xl border-white/10 bg-white/5 text-slate-300 font-black uppercase tracking-widest text-[10px] hover:bg-white/10">
                             Decline
                         </Button>
-                        <Button onClick={acceptInvite} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
-                            Accept & Join Room
+                        <Button onClick={acceptInvite} className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-500/20">
+                            Accept
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </PageWrapper>
     )
 }

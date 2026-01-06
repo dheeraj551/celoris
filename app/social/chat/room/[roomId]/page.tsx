@@ -28,8 +28,17 @@ import {
     Check,
     X,
     MessageCircle,
-    ArrowRight
+    ArrowRight,
+    Search,
+    Zap,
+    Sparkles,
+    Shield,
+    Lock,
+    Globe,
+    Target,
+    Rocket
 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
     Dialog,
     DialogContent,
@@ -41,7 +50,7 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 import { UserProfileDialog } from "@/components/social/UserProfileDialog"
 import { AdUnit } from "@/components/AdUnit"
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
+import EmojiPicker, { EmojiClickData, Theme } from 'emoji-picker-react'
 
 const MSG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"
 const JOIN_SOUND = "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
@@ -62,21 +71,24 @@ interface ChatMessage {
     type: 'text' | 'image'
 }
 
-const ROOM_DETAILS: Record<string, { title: string, description: string, color: string }> = {
+const ROOM_DETAILS: Record<string, { title: string, description: string, color: string, accent: string }> = {
     "socialize": {
         title: "Socialize & Hangout",
-        description: "Meet new people and make friends.",
-        color: "bg-green-500"
+        description: "Public node for spontaneous connections and social bridging.",
+        color: "bg-emerald-500",
+        accent: "#10b981"
     },
     "networking": {
         title: "Networking & Growth",
-        description: "Professional networking and career discussions.",
-        color: "bg-blue-500"
+        description: "Professional frequency for career advancement and synergy.",
+        color: "bg-emerald-500",
+        accent: "#10b981"
     },
     "tech-trends": {
         title: "Tech Trends Chat",
-        description: "Everything about technology and innovation.",
-        color: "bg-orange-500"
+        description: "Cutting-edge discussions on the latest digital evolution.",
+        color: "bg-orange-500",
+        accent: "#f59e0b"
     }
 }
 
@@ -86,7 +98,7 @@ export default function PublicRoomPage() {
     const params = useParams()
     const router = useRouter()
     const roomId = params.roomId as string
-    const room = ROOM_DETAILS[roomId] || { title: "Unknown Room", description: "", color: "bg-slate-500" }
+    const room = ROOM_DETAILS[roomId] || { title: "Nexus Point", description: "Unknown social coordinate.", color: "bg-slate-500", accent: "#64748b" }
 
     const { user: authUser, profile: userProfileData, loading: authLoading } = useAuth()
 
@@ -130,8 +142,6 @@ export default function PublicRoomPage() {
             router.push('/login')
         }
     }, [authUser, authLoading, router])
-
-    // --- Optimized Realtime Connection Logic ---
 
     // 1. Join Global Tracker (Optimized)
     useEffect(() => {
@@ -180,11 +190,6 @@ export default function PublicRoomPage() {
         return () => {
             tracker.unsubscribe()
         }
-        // Use user.id to avoid reconnecting on every user object reference change
-        // We accept that if other user fields change, we might not update immediately here, 
-        // but id is the critical one for the key. To update presence data, we'd need a separate effect calling track(),
-        // but for this specific tracker, it's mostly about busy/available status.
-        // If we want to be perfect, we split it, but using user.id stabilizes the connection.
     }, [isLoaded, user?.id, isPrivate, roomId])
 
 
@@ -194,7 +199,6 @@ export default function PublicRoomPage() {
 
         const supabase = createClient()
         const channelName = `room:${roomId}`
-        console.log(`Joining room: ${channelName} as ${user.name}`)
 
         const channel = supabase.channel(channelName, {
             config: {
@@ -229,7 +233,6 @@ export default function PublicRoomPage() {
                 setOnlineCount(users.length)
                 setOnlineUsers(users)
 
-                // Sound logic with simple ref check
                 if (users.length > prevOnlineCount.current) {
                     new Audio(JOIN_SOUND).play().catch(() => { })
                 } else if (users.length < prevOnlineCount.current) {
@@ -245,8 +248,8 @@ export default function PublicRoomPage() {
             .on('broadcast', { event: 'chat-invite-accepted' }, ({ payload }: { payload: any }) => {
                 if (payload.senderUserId === user.id) {
                     toast({
-                        title: "Invite Accepted!",
-                        description: "Joining private room...",
+                        title: "Datalink Successful",
+                        description: "Joining private encrypted node...",
                     })
                     router.push(`/social/chat/room/${payload.roomId}`)
                 }
@@ -255,8 +258,8 @@ export default function PublicRoomPage() {
                 if (payload.senderUserId === user.id) {
                     setSentInvite(null)
                     toast({
-                        title: "Invite Declined",
-                        description: `${payload.targetName} declined your invite.`,
+                        title: "Sync Blocked",
+                        description: `${payload.targetName} declined the interface.`,
                         variant: "destructive"
                     })
                 }
@@ -273,11 +276,9 @@ export default function PublicRoomPage() {
         channelRef.current = channel
 
         return () => {
-            console.log(`Leaving room: ${channelName}`)
             channel.unsubscribe()
             channelRef.current = null
         }
-        // Key fix: Depend on user.id, not full user object, to prevent loops
     }, [isLoaded, user?.id, roomId, isPrivate, router, toast])
 
     useEffect(() => {
@@ -295,7 +296,6 @@ export default function PublicRoomPage() {
             type: type
         }
 
-        // Broadcast the message
         await channelRef.current.send({
             type: 'broadcast',
             event: 'message',
@@ -312,23 +312,13 @@ export default function PublicRoomPage() {
         const file = event.target.files?.[0]
         if (!file || !user) return
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
-            toast({
-                title: "Invalid file type",
-                description: "Please upload an image file.",
-                variant: "destructive"
-            })
+            toast({ title: "Incompatible Format", description: "Required: Visual Data Stream.", variant: "destructive" })
             return
         }
 
-        // Validate file size (e.g., 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            toast({
-                title: "File too large",
-                description: "Max file size is 5MB.",
-                variant: "destructive"
-            })
+            toast({ title: "Payload Too Heavy", description: "Max capacity: 5MB.", variant: "destructive" })
             return
         }
 
@@ -353,29 +343,21 @@ export default function PublicRoomPage() {
 
         } catch (error) {
             console.error("Upload error:", error)
-            toast({
-                title: "Upload failed",
-                description: "Could not upload image. Please try again.",
-                variant: "destructive"
-            })
         } finally {
             setIsUploading(false)
-            // Reset input
             if (fileInputRef.current) fileInputRef.current.value = ''
         }
     }
 
     const onEmojiClick = (emojiData: EmojiClickData) => {
         setNewMessage(prev => prev + emojiData.emoji)
-        // Keep picker open or close it? Standard is often to keep open or close. User didn't specify. I'll NOT close it immediately to allow multiple emojis, but maybe better to keep focus.
-        // Actually for simplicity, let's keep it open, but user can close via button.
     }
 
     const sendInvite = async (targetUser: UserProfile) => {
         if (privateRoomsCount >= 5) {
             toast({
-                title: "Rooms Full",
-                description: "All private rooms are currently occupied. Please wait.",
+                title: "Network Overload",
+                description: "All private stations are currently saturated.",
                 variant: "destructive"
             })
             return
@@ -397,16 +379,14 @@ export default function PublicRoomPage() {
 
         setSentInvite(targetUser)
         toast({
-            title: "Invite Sent",
-            description: `Waiting for ${targetUser.name} to accept...`,
+            title: "Sync Initiated",
+            description: `Waiting for ${targetUser.name} to acknowledge...`,
         })
     }
 
     const acceptInvite = async () => {
         if (!incomingInvite || !channelRef.current || !user) return
-
         const newRoomId = `private-${incomingInvite.inviteId}`
-
         await channelRef.current.send({
             type: 'broadcast',
             event: 'chat-invite-accepted',
@@ -416,13 +396,11 @@ export default function PublicRoomPage() {
                 roomId: newRoomId
             }
         })
-
         router.push(`/social/chat/room/${newRoomId}`)
     }
 
     const rejectInvite = async () => {
         if (!incomingInvite || !channelRef.current || !user) return
-
         await channelRef.current.send({
             type: 'broadcast',
             event: 'chat-invite-rejected',
@@ -432,7 +410,6 @@ export default function PublicRoomPage() {
                 targetName: user.name
             }
         })
-
         setIncomingInvite(null)
     }
 
@@ -442,389 +419,517 @@ export default function PublicRoomPage() {
 
     if (!isLoaded) {
         return (
-            <div className="h-screen flex items-center justify-center bg-slate-50">
-                <div className="animate-pulse flex flex-col items-center">
-                    <div className="h-12 w-12 bg-slate-200 rounded-full mb-4"></div>
-                    <div className="h-4 w-32 bg-slate-200 rounded"></div>
-                    <p className="text-slate-400 text-sm mt-2">Connecting to chat...</p>
+            <div className="min-h-screen bg-[#050810] flex items-center justify-center">
+                <div className="text-center">
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full mx-auto mb-6"
+                    />
+                    <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Connecting to Social Plane...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="fixed top-16 left-0 right-0 bottom-0 flex flex-col bg-white z-30">
-            {/* Header */}
-            <header className="flex-none border-b border-slate-200 bg-white px-4 py-3 shadow-sm z-10">
-                <div className="container mx-auto max-w-6xl flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Button variant="ghost" size="icon" onClick={() => router.push('/social/chat')}>
-                            <ArrowLeft className="h-5 w-5" />
-                        </Button>
+        <div className="fixed inset-0 flex flex-col bg-[#050810] z-[60] text-slate-200 selection:bg-blue-500/30 overflow-hidden font-sans">
+            {/* Premium Animated Background Elements */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        x: [0, 50, 0],
+                        y: [0, 30, 0],
+                        opacity: [0.1, 0.15, 0.1]
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-emerald-600/20 rounded-full blur-[120px]"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1.2, 1, 1.2],
+                        x: [0, -50, 0],
+                        y: [0, -30, 0],
+                        opacity: [0.05, 0.1, 0.05]
+                    }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                    className="absolute bottom-[-30%] right-[-10%] w-[120%] h-[120%] bg-emerald-600/10 rounded-full blur-[150px]"
+                />
+            </div>
 
-                        <div className={`h-10 w-10 rounded-full ${isPrivate ? 'bg-purple-500' : room.color} flex items-center justify-center text-white font-bold shadow-sm`}>
-                            {isPrivate ? 'P' : room.title.charAt(0)}
-                        </div>
+            {/* Header - Advanced Glassmorphism */}
+            <header className="flex-none border-b border-white/5 bg-[#050810]/40 backdrop-blur-3xl px-8 py-5 z-20 shadow-2xl">
+                <div className="container mx-auto flex items-center justify-between">
+                    <div className="flex items-center gap-8">
+                        <motion.div whileHover={{ x: -5 }} whileTap={{ scale: 0.95 }}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push('/social/chat')}
+                                className="rounded-2xl border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 h-11 w-11 shadow-lg"
+                            >
+                                <ArrowLeft className="h-5 w-5" />
+                            </Button>
+                        </motion.div>
 
-                        <div>
-                            <h1 className="font-bold text-slate-900 leading-tight">
-                                {isPrivate ? 'Private Chat' : room.title}
-                            </h1>
-                            <div className="flex items-center gap-2 text-xs text-slate-500">
-                                <span className="flex items-center gap-1">
-                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                    {isPrivate ? '2 users' : `${onlineCount} online`}
-                                </span>
-                                <span>•</span>
-                                <span>{isPrivate ? 'Confidential' : 'Available for Chat'}</span>
+                        <div className="flex items-center gap-5">
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className={`h-14 w-14 rounded-3xl ${isPrivate ? 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.3)]' : 'bg-gradient-to-br from-emerald-400 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.3)]'} flex items-center justify-center text-white font-black overflow-hidden relative group`}
+                            >
+                                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                {isPrivate ? <Lock className="h-6 w-6" /> : <Globe className="h-6 w-6" />}
+                            </motion.div>
+
+                            <div>
+                                <h1 className="font-black text-white text-2xl italic uppercase tracking-tighter flex items-center gap-3">
+                                    {isPrivate ? 'Private Sanctum' : room.title}
+                                    <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                                </h1>
+                                <div className="flex items-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                                    <span className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-full border border-white/5">
+                                        {isPrivate ? 'ENCRYPTED' : `${onlineCount} ACTIVE NODES`}
+                                    </span>
+                                    <span className="opacity-30">|</span>
+                                    <span className={`tracking-widest ${isPrivate ? 'text-teal-400' : 'text-emerald-400'}`}>{isPrivate ? 'CONFIDENTIAL CHANNEL' : 'LOBBY BROADCAST'}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                         {!isPrivate && (
-                            <div className="hidden sm:flex items-center gap-2 mr-4 px-3 py-1 bg-slate-100 rounded-full text-[10px] font-medium text-slate-600">
-                                <span className="flex items-center gap-1">
-                                    <MessageCircle className="h-3 w-3" />
-                                    {privateRoomsCount}/5 Rooms Used
-                                </span>
+                            <div className="hidden md:flex items-center gap-3 px-5 py-2.5 bg-teal-600/10 border border-teal-500/20 rounded-full text-[9px] font-black text-teal-400 tracking-widest shadow-2xl">
+                                <Zap className="h-3.5 w-3.5 fill-teal-400" />
+                                {privateRoomsCount}/5 STATIONS OCCUPIED
                             </div>
                         )}
+
                         <Sheet>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 lg:hidden">
+                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white h-11 w-11 rounded-2xl bg-white/5 border border-white/5 shadow-lg lg:hidden">
                                     <Users className="h-5 w-5" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent>
-                                <SheetHeader>
-                                    <SheetTitle>Online Users ({onlineCount})</SheetTitle>
-                                    <SheetDescription>
-                                        Currently active people in this room.
+                            <SheetContent className="bg-[#050810]/95 backdrop-blur-3xl border-white/5 text-white w-full sm:max-w-md p-8">
+                                <SheetHeader className="border-b border-white/5 pb-8 mb-8">
+                                    <SheetTitle className="text-3xl font-black italic uppercase tracking-tighter text-white flex items-center gap-4">
+                                        <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                                            <Users className="h-7 w-7 text-emerald-400" />
+                                        </div>
+                                        Active Nodes
+                                    </SheetTitle>
+                                    <SheetDescription className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">
+                                        {onlineCount} synchronized lifeforms detected.
                                     </SheetDescription>
                                 </SheetHeader>
-                                <div className="mt-6 flex flex-col gap-4">
+                                <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-2 custom-scrollbar">
                                     {onlineUsers.map((onlineUser) => (
-                                        <div
+                                        <motion.div
                                             key={onlineUser.id}
-                                            className="flex items-center justify-between group"
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            className="flex items-center justify-between group p-4 bg-white/5 rounded-3xl border border-white/5 hover:border-emerald-500/30 transition-all shadow-lg"
                                         >
                                             <div
-                                                className="flex items-center gap-3 cursor-pointer flex-1"
+                                                className="flex items-center gap-4 cursor-pointer flex-1"
                                                 onClick={() => setSelectedUserId(onlineUser.id)}
                                             >
                                                 <div className="relative">
-                                                    <Avatar>
+                                                    <Avatar className="h-12 w-12 border-2 border-white/10">
                                                         <AvatarImage src={onlineUser.avatar_url} />
-                                                        <AvatarFallback>{onlineUser.name.charAt(0)}</AvatarFallback>
+                                                        <AvatarFallback className="bg-[#0d1321] text-emerald-400 font-black">{onlineUser.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
-                                                    <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                                                    <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-[#050810] shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-slate-900 leading-none">
+                                                    <span className="text-sm font-black text-white italic truncate max-w-[120px]">
                                                         {onlineUser.name}
-                                                        {onlineUser.id === user?.id && " (You)"}
+                                                        {onlineUser.id === user?.id && <span className="text-emerald-500 font-normal ml-1">(YOU)</span>}
                                                     </span>
-                                                    {onlineUser.is_verified && (
-                                                        <span className="text-[10px] text-blue-500 font-medium mt-0.5">Verified</span>
-                                                    )}
+                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
+                                                        {onlineUser.is_verified ? 'VERIFIED NODE' : 'SYNCED EXPLORER'}
+                                                    </span>
                                                 </div>
                                             </div>
                                             {onlineUser.id !== user?.id && !isPrivate && (
                                                 <Button
                                                     size="sm"
-                                                    variant="outline"
-                                                    className="h-8 text-xs gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    className="h-10 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20"
                                                     onClick={() => sendInvite(onlineUser)}
                                                     disabled={privateRoomsCount >= 5}
                                                 >
-                                                    Invite <ArrowRight className="h-3 w-3" />
+                                                    SYNC <ArrowRight className="h-3 w-3 ml-2" />
                                                 </Button>
                                             )}
-                                        </div>
+                                        </motion.div>
                                     ))}
                                 </div>
                             </SheetContent>
                         </Sheet>
-                        <UserProfileDialog
-                            userId={selectedUserId}
-                            open={!!selectedUserId}
-                            onOpenChange={(open) => !open && setSelectedUserId(null)}
-                        />
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600">
+
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white h-11 w-11 rounded-2xl bg-white/5 border border-white/5 shadow-lg hidden sm:flex">
                             <MoreVertical className="h-5 w-5" />
                         </Button>
                     </div>
                 </div>
             </header>
 
-            {/* Main Area with Sidebar */}
-            <div className="flex-1 flex overflow-hidden">
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto bg-slate-50 relative px-4 text-center">
-                    <div className="container mx-auto max-w-4xl py-6 space-y-6 text-left">
+            {/* Main Content Area */}
+            <div className="flex-1 flex overflow-hidden relative z-10">
+                {/* Messages/Lobby Area */}
+                <div className="flex-1 overflow-y-auto px-6 py-10 flex flex-col items-center custom-scrollbar">
+                    <div className="w-full max-w-5xl space-y-16">
+                        {/* Welcome/Discovery View */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-center py-10"
+                        >
+                            <motion.div
+                                animate={{
+                                    boxShadow: isPrivate ? ["0 0 20px rgba(16,185,129,0.1)", "0 0 50px rgba(16,185,129,0.3)", "0 0 20px rgba(16,185,129,0.1)"] : ["0 0 20px rgba(16,185,129,0.1)", "0 0 50px rgba(16,185,129,0.3)", "0 0 20px rgba(16,185,129,0.1)"]
+                                }}
+                                transition={{ duration: 3, repeat: Infinity }}
+                                className={`inline-flex items-center justify-center h-28 w-28 rounded-[2.5rem] ${isPrivate ? 'bg-teal-500/20 border-teal-500/30' : 'bg-emerald-500/20 border-emerald-500/30'} border backdrop-blur-2xl mb-10 shadow-3xl relative group`}
+                            >
+                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2.5rem]" />
+                                {isPrivate ? <Shield className="h-12 w-12 text-teal-400" /> : <Rocket className="h-12 w-12 text-emerald-400" />}
+                            </motion.div>
 
-                        {/* Professional Ad Placement for Private Rooms */}
-                        {isPrivate && (
-                            <div className="mb-6 mx-auto max-w-2xl bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
-                                <div className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mb-2 text-center">Sponsored</div>
-                                <div className="min-h-[90px] flex items-center justify-center bg-slate-50 rounded">
-                                    <AdUnit slot="9266909448" className="w-full" />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Welcome Message */}
-                        <div className="text-center py-12">
-                            <div className={`inline-flex items-center justify-center h-20 w-20 rounded-full ${isPrivate ? 'bg-purple-500' : room.color} bg-opacity-10 mb-6`}>
-                                <Users className={`h-10 w-10 text-${isPrivate ? 'purple' : room.color.replace('bg-', '')}-600`} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-slate-900">
-                                {isPrivate ? 'Private Conversation' : `${room.title} Lobby`}
-                            </h3>
-                            <p className="text-slate-500 max-w-md mx-auto mt-4 text-base leading-relaxed">
+                            <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-6 leading-none">
+                                {isPrivate ? 'Confidential' : room.title}
+                            </h2>
+                            <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base font-medium leading-relaxed tracking-wide uppercase italic">
                                 {isPrivate
-                                    ? 'This chat is private and temporary. Messages will vanish when you leave.'
-                                    : 'You are now visible in the lobby. Other users can see you and invite you to a private 1-on-1 chat.'}
+                                    ? 'A temporary encrypted sanctuary. Signal termination wipes all records from the social plane.'
+                                    : room.description}
                             </p>
+
                             {!isPrivate && (
-                                <div className="mt-8 flex flex-col items-center gap-4">
-                                    <div className="flex -space-x-3 overflow-hidden p-2">
-                                        {onlineUsers.slice(0, 5).map((u, i) => (
-                                            <Avatar key={i} className="inline-block h-10 w-10 ring-2 ring-white">
-                                                <AvatarImage src={u.avatar_url} />
-                                                <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                        ))}
-                                        {onlineCount > 5 && (
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-600 ring-2 ring-white">
-                                                +{onlineCount - 5}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <p className="text-sm font-medium text-green-600 animate-pulse bg-green-50 px-4 py-1.5 rounded-full border border-green-100">
-                                        {onlineCount} users are currently ready to chat
-                                    </p>
-                                    <p className="text-xs text-slate-400 mt-4 max-w-xs">
-                                        To start a conversation, click on a user in the <strong>Online Lobby</strong> sidebar and send an invite.
-                                    </p>
-
-                                    {/* symbolic rooms display */}
-                                    <div className="grid grid-cols-5 gap-3 mt-10 w-full max-w-2xl px-4">
-                                        {[1, 2, 3, 4, 5].map((num) => {
-                                            const roomSlot = activePrivateRooms[num - 1];
-                                            const isOccupied = !!roomSlot;
-                                            return (
-                                                <div
-                                                    key={num}
-                                                    className={`relative flex flex-col items-center p-3 rounded-xl border-2 transition-all shadow-sm ${isOccupied
-                                                        ? 'border-purple-200 bg-purple-50 scale-105 ring-4 ring-purple-500/10'
-                                                        : 'border-slate-100 bg-white opacity-60'
-                                                        }`}
+                                <div className="mt-16 space-y-20">
+                                    {/* Active User Cluster */}
+                                    <div className="flex flex-col items-center gap-10">
+                                        <div className="flex -space-x-5 p-4 bg-white/5 rounded-[2.5rem] border border-white/5 shadow-2xl backdrop-blur-2xl">
+                                            {onlineUsers.slice(0, 8).map((u, i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    initial={{ opacity: 0, scale: 0.5, x: -30 }}
+                                                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                                                    transition={{ delay: i * 0.08, type: "spring" }}
+                                                    className="relative"
+                                                    onClick={() => setSelectedUserId(u.id)}
                                                 >
-                                                    <span className={`text-[10px] uppercase font-black tracking-widest mb-3 ${isOccupied ? 'text-purple-600' : 'text-slate-400'}`}>
-                                                        Room {num}
-                                                    </span>
-
-                                                    <div className="flex -space-x-2 mb-3">
-                                                        {isOccupied ? (
-                                                            roomSlot.users.map((u, i) => (
-                                                                <Avatar key={i} className="h-8 w-8 ring-2 ring-white shadow-sm">
-                                                                    <AvatarImage src={u.avatar_url} />
-                                                                    <AvatarFallback className="text-[10px] bg-purple-100 text-purple-700 font-bold">
-                                                                        {u.name.charAt(0)}
-                                                                    </AvatarFallback>
-                                                                </Avatar>
-                                                            ))
-                                                        ) : (
-                                                            <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
-                                                                <Users className="h-4 w-4 text-slate-300" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className={`mt-auto px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${isOccupied ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'
-                                                        }`}>
-                                                        {isOccupied ? `${roomSlot.users.length} Active` : 'Available'}
-                                                    </div>
+                                                    <Avatar className="h-14 w-14 ring-4 ring-[#050810] shadow-2xl hover:translate-y-[-8px] transition-transform cursor-pointer border border-white/10">
+                                                        <AvatarImage src={u.avatar_url} />
+                                                        <AvatarFallback className="bg-[#0b121e] text-emerald-400 font-bold">{u.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                </motion.div>
+                                            ))}
+                                            {onlineCount > 8 && (
+                                                <div className="flex h-14 w-20 items-center justify-center rounded-3xl bg-emerald-600/20 text-emerald-400 text-xs font-black ring-4 ring-[#050810] border border-emerald-500/30 shadow-2xl backdrop-blur-xl">
+                                                    +{onlineCount - 8}
                                                 </div>
-                                            );
-                                        })}
+                                            )}
+                                        </div>
+
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="px-8 py-3 bg-white/5 border border-white/10 rounded-full flex items-center gap-3 shadow-2xl backdrop-blur-3xl"
+                                        >
+                                            <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">{onlineCount} NODES PULSING</span>
+                                        </motion.div>
+                                    </div>
+
+                                    {/* Stations Grid - Premium Design */}
+                                    <div className="w-full max-w-4xl mx-auto px-4">
+                                        <div className="flex items-center gap-6 mb-8">
+                                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Encryption Stations</h3>
+                                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
+                                            {[1, 2, 3, 4, 5].map((num) => {
+                                                const roomSlot = activePrivateRooms[num - 1];
+                                                const isOccupied = !!roomSlot;
+                                                return (
+                                                    <motion.div
+                                                        key={num}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: num * 0.1 }}
+                                                        whileHover={{ y: -10, scale: 1.02 }}
+                                                        className={`relative flex flex-col items-center p-6 rounded-[2rem] border transition-all duration-500 group ${isOccupied
+                                                            ? 'border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_30px_rgba(16,185,129,0.15)]'
+                                                            : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.05]'
+                                                            }`}
+                                                    >
+                                                        {isOccupied && (
+                                                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent -translate-y-full animate-[scan_3s_linear_infinite] pointer-events-none" />
+                                                        )}
+
+                                                        <span className={`text-[8px] font-black tracking-widest mb-6 uppercase ${isOccupied ? 'text-emerald-400' : 'text-slate-600'}`}>
+                                                            NODE_{num.toString().padStart(2, '0')}
+                                                        </span>
+
+                                                        <div className="flex -space-x-2.5 mb-6 min-h-[44px] items-center">
+                                                            {isOccupied ? (
+                                                                roomSlot.users.map((u, i) => (
+                                                                    <Avatar key={i} className="h-11 w-11 ring-4 ring-[#050810] shadow-2xl border border-white/10">
+                                                                        <AvatarImage src={u.avatar_url} />
+                                                                        <AvatarFallback className="text-[10px] bg-emerald-900/40 text-emerald-300 font-black">
+                                                                            {u.name.charAt(0)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                ))
+                                                            ) : (
+                                                                <div className="h-11 w-11 rounded-2xl bg-white/[0.02] flex items-center justify-center border border-white/5 group-hover:border-emerald-500/20 transition-all shadow-inner">
+                                                                    <Target className="h-4 w-4 text-slate-800 group-hover:text-emerald-900/40 transition-colors" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className={`px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest italic ${isOccupied
+                                                            ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                                                            : 'bg-white/5 text-slate-600'
+                                                            }`}>
+                                                            {isOccupied ? 'BUSY' : 'READY'}
+                                                        </div>
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
 
-                        {/* Sponsored Content / Ad */}
-                        {!isPrivate && <AdUnit slot="9266909448" className="mb-4" />}
-
-                        {/* Messages List - Only visible in Private Rooms */}
-                        {isPrivate ? (
-                            messages.map((msg, index) => {
-                                const isMe = msg.sender.id === user.id
-                                const showAvatar = index === 0 || messages[index - 1].sender.id !== msg.sender.id
-
-                                return (
-                                    <div key={msg.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
-                                        <div className={`flex-none w-8 ${!showAvatar ? 'invisible' : ''}`}>
-                                            <Avatar className="h-8 w-8 ring-2 ring-white">
-                                                <AvatarImage src={msg.sender.avatar_url} />
-                                                <AvatarFallback>{msg.sender.name.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                        </div>
-
-                                        <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
-                                            {showAvatar && (
-                                                <span className="text-xs text-slate-400 mb-1 ml-1">{msg.sender.name}</span>
-                                            )}
-                                            <div
-                                                className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${isMe
-                                                    ? 'bg-purple-600 text-white rounded-tr-sm'
-                                                    : 'bg-white text-slate-800 border border-slate-100 rounded-tl-sm'
-                                                    }`}
-                                            >
-                                                {msg.type === 'image' ? (
-                                                    <img
-                                                        src={msg.content}
-                                                        alt="Attachment"
-                                                        className="max-w-full rounded-lg max-h-60 object-cover cursor-pointer hover:opacity-95 transition-opacity"
-                                                        onClick={() => window.open(msg.content, '_blank')}
-                                                    />
-                                                ) : (
-                                                    msg.content
-                                                )}
-                                            </div>
-                                            <span className="text-[10px] text-slate-400 mt-1 px-1">
-                                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )
-                            })
-                        ) : (
-                            null
+                        {/* Ad Module */}
+                        {!isPrivate && (
+                            <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-white/10 to-transparent">
+                                <AdUnit slot="9266909448" className="m-0 rounded-[2.4rem] overflow-hidden" />
+                            </div>
                         )}
-                        <div ref={messagesEndRef} />
+
+                        {/* Private Chat Stream */}
+                        {isPrivate && (
+                            <div className="space-y-10 pb-32">
+                                <AnimatePresence initial={false}>
+                                    {messages.map((msg, index) => {
+                                        const isMe = msg.sender.id === user.id
+                                        const showAvatar = index === 0 || messages[index - 1].sender.id !== msg.sender.id
+
+                                        return (
+                                            <motion.div
+                                                key={msg.id}
+                                                initial={{ opacity: 0, scale: 0.9, y: 30, x: isMe ? 20 : -20 }}
+                                                animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+                                                className={`flex gap-6 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}
+                                            >
+                                                <div className={`flex-none ${!showAvatar ? 'w-12' : ''}`}>
+                                                    {showAvatar && (
+                                                        <motion.div whileHover={{ scale: 1.1 }}>
+                                                            <Avatar className="h-12 w-12 border-2 border-white/10 shadow-2xl cursor-pointer" onClick={() => setSelectedUserId(msg.sender.id)}>
+                                                                <AvatarImage src={msg.sender.avatar_url} />
+                                                                <AvatarFallback className="bg-[#0b121e] text-emerald-400 font-black">{msg.sender.name.charAt(0)}</AvatarFallback>
+                                                            </Avatar>
+                                                        </motion.div>
+                                                    )}
+                                                </div>
+
+                                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                                                    {showAvatar && (
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3 px-2 italic">
+                                                            {isMe ? 'SYNC TRANSMITTING' : msg.sender.name}
+                                                        </span>
+                                                    )}
+
+                                                    <div
+                                                        className={`relative overflow-hidden group px-6 py-4 rounded-3xl shadow-3xl transition-all duration-500 ${isMe
+                                                            ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-tr-none border border-white/20'
+                                                            : 'bg-white/5 backdrop-blur-3xl border border-white/10 text-slate-100 rounded-tl-none hover:bg-white/10'
+                                                            }`}
+                                                    >
+                                                        {msg.type === 'image' ? (
+                                                            <div className="relative group/img overflow-hidden rounded-2xl">
+                                                                <img
+                                                                    src={msg.content}
+                                                                    alt="Satellite Data"
+                                                                    className="max-w-full rounded-2xl max-h-[500px] object-cover cursor-pointer transition-transform duration-700 group-hover/img:scale-105"
+                                                                    onClick={() => window.open(msg.content, '_blank')}
+                                                                />
+                                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                                                    <div className="p-3 bg-white/10 backdrop-blur-xl rounded-full border border-white/20">
+                                                                        <Search className="h-6 w-6 text-white" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-sm md:text-base font-medium leading-relaxed tracking-wide italic selection:bg-white/30">
+                                                                {msg.content}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3 mt-3 px-2">
+                                                        <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">
+                                                            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                        {isMe && <Check className="h-2.5 w-2.5 text-emerald-500" />}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })}
+                                </AnimatePresence>
+                                <div ref={messagesEndRef} />
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Desktop Sidebar (Lobby) */}
+                {/* Desktop Lobby Sidebar */}
                 {!isPrivate && (
-                    <aside className="hidden lg:flex w-80 border-l border-slate-200 flex-col bg-white">
-                        <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                            <h2 className="font-bold text-slate-900 flex items-center gap-2">
-                                <Users className="h-4 w-4" />
-                                Online Lobby
-                                <span className="ml-auto text-xs font-normal text-slate-500 bg-slate-200 px-2 py-0.5 rounded-full">
-                                    {onlineCount}
-                                </span>
-                            </h2>
-                            <p className="text-[11px] text-slate-500 mt-1">Invite anyone below for a private 1-on-1 chat.</p>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {onlineUsers.map((onlineUser) => (
-                                <div
-                                    key={onlineUser.id}
-                                    className="flex items-center justify-between group p-2 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100"
-                                >
-                                    <div
-                                        className="flex items-center gap-3 cursor-pointer"
-                                        onClick={() => setSelectedUserId(onlineUser.id)}
-                                    >
-                                        <div className="relative">
-                                            <Avatar className="h-10 w-10">
-                                                <AvatarImage src={onlineUser.avatar_url} />
-                                                <AvatarFallback>{onlineUser.name.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-semibold text-slate-900">
-                                                {onlineUser.name}
-                                                {onlineUser.id === user?.id && <span className="text-slate-400 font-normal"> (You)</span>}
-                                            </span>
-                                            {onlineUser.is_verified && (
-                                                <span className="text-[10px] text-blue-500 font-medium">Verified User</span>
-                                            )}
-                                        </div>
+                    <aside className="hidden lg:flex w-96 border-l border-white/5 flex-col bg-[#050810]/40 backdrop-blur-3xl relative z-20">
+                        <div className="p-10 border-b border-white/5">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="font-black text-white text-2xl italic uppercase tracking-tighter flex items-center gap-4">
+                                    <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                                        <Users className="h-6 w-6 text-blue-400" />
                                     </div>
-                                    {onlineUser.id !== user?.id && (
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            className="h-8 w-8 p-0 rounded-full hover:bg-green-100 hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={() => sendInvite(onlineUser)}
-                                            disabled={privateRoomsCount >= 5}
-                                            title={privateRoomsCount >= 5 ? "Rooms full" : "Invite to chat"}
-                                        >
-                                            <MessageCircle className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                        {privateRoomsCount >= 5 && (
-                            <div className="p-4 bg-orange-50 border-t border-orange-100">
-                                <p className="text-xs text-orange-700 flex items-center gap-2">
-                                    <Info className="h-4 w-4" />
-                                    All 5 private rooms are full. Please wait.
-                                </p>
+                                    Lobby Sync
+                                </h2>
+                                <motion.span
+                                    key={onlineCount}
+                                    initial={{ scale: 1.5, color: '#3b82f6' }}
+                                    animate={{ scale: 1, color: '#94a3b8' }}
+                                    className="text-xs font-black bg-white/5 px-4 py-2 rounded-2xl border border-white/10"
+                                >
+                                    {onlineCount}
+                                </motion.span>
                             </div>
-                        )}
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600 group-focus-within:text-blue-500 transition-colors" />
+                                <input
+                                    placeholder="SCANNING FOR NODES..."
+                                    className="w-full bg-white/5 border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-slate-700 tracking-[0.2em]"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                            <AnimatePresence>
+                                {onlineUsers.map((onlineUser, idx) => (
+                                    <motion.div
+                                        key={onlineUser.id}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        className="flex items-center justify-between group p-4 hover:bg-white/5 rounded-[2rem] transition-all border border-transparent hover:border-white/10 shadow-lg"
+                                    >
+                                        <div
+                                            className="flex items-center gap-5 cursor-pointer"
+                                            onClick={() => setSelectedUserId(onlineUser.id)}
+                                        >
+                                            <div className="relative">
+                                                <Avatar className="h-14 w-14 border-2 border-white/5 group-hover:border-blue-500/50 transition-all">
+                                                    <AvatarImage src={onlineUser.avatar_url} />
+                                                    <AvatarFallback className="bg-[#0b121e] text-blue-400 font-black">{onlineUser.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-[#050810] shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-black text-white italic group-hover:text-blue-400 transition-colors">
+                                                    {onlineUser.name}
+                                                </span>
+                                                <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
+                                                    {onlineUser.is_verified ? 'VERIFIED' : 'SYNCED'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {onlineUser.id !== user?.id && (
+                                            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="h-10 w-10 rounded-xl bg-blue-600/10 text-blue-400 opacity-0 group-hover:opacity-100 transition-all border border-blue-500/20 hover:bg-blue-600 hover:text-white"
+                                                    onClick={() => sendInvite(onlineUser)}
+                                                    disabled={privateRoomsCount >= 5}
+                                                >
+                                                    <Zap className="h-4 w-4 fill-current" />
+                                                </Button>
+                                            </motion.div>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
                     </aside>
                 )}
             </div>
 
-            {/* Invite Dialog */}
+            {/* Inbound Sync Request Dialog */}
             <Dialog open={!!incomingInvite} onOpenChange={(open) => !open && setIncomingInvite(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md bg-[#050810]/95 border-white/10 text-white shadow-3xl backdrop-blur-3xl rounded-[3rem] p-10">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <MessageCircle className="h-5 w-5 text-green-500" />
-                            New Chat Invite
+                        <DialogTitle className="flex items-center gap-5 text-3xl font-black italic uppercase tracking-tighter">
+                            <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                                <Sparkles className="h-8 w-8 text-blue-400" />
+                            </div>
+                            Inbound Sync
                         </DialogTitle>
-                        <DialogDescription className="pt-2">
-                            <span className="font-bold text-slate-900">{incomingInvite?.sender.name}</span> wants to start a private chat with you.
+                        <DialogDescription className="pt-6 text-slate-400 font-bold uppercase tracking-widest text-[10px] italic">
+                            Interface requested by <span className="text-blue-400">{incomingInvite?.sender.name}</span>. Encryption key pending.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-center justify-center py-4">
-                        <div className="relative">
-                            <Avatar className="h-20 w-20 ring-4 ring-green-100">
+
+                    <div className="flex items-center justify-center py-12">
+                        <div className="relative group">
+                            <motion.div
+                                animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+                                transition={{ duration: 3, repeat: Infinity }}
+                                className="absolute inset-0 bg-blue-500/30 blur-3xl rounded-full"
+                            />
+                            <Avatar className="h-32 w-32 border-4 border-white/10 relative z-10 shadow-3xl">
                                 <AvatarImage src={incomingInvite?.sender.avatar_url} />
-                                <AvatarFallback>{incomingInvite?.sender.name?.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="bg-[#0b121e] text-blue-400 text-3xl font-black italic">{incomingInvite?.sender.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="absolute -bottom-1 -right-1 bg-green-500 p-1.5 rounded-full border-4 border-white">
-                                <Check className="h-4 w-4 text-white" />
+                            <div className="absolute -bottom-2 -right-2 bg-blue-600 p-3 rounded-2xl border-4 border-[#050810] z-20 shadow-2xl">
+                                <Zap className="h-6 w-6 text-white fill-current animate-pulse" />
                             </div>
                         </div>
                     </div>
-                    <DialogFooter className="sm:justify-between gap-2">
+
+                    <DialogFooter className="sm:justify-between gap-6 pt-4">
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             onClick={rejectInvite}
-                            className="flex-1 border-slate-200 hover:bg-slate-50 text-slate-600"
+                            className="flex-1 border border-white/5 bg-white/5 hover:bg-white/10 text-slate-500 hover:text-white rounded-2xl h-16 font-black uppercase tracking-widest text-[10px]"
                         >
-                            <X className="mr-2 h-4 w-4" />
-                            Decline
+                            REJECT
                         </Button>
                         <Button
                             onClick={acceptInvite}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                            className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-2xl h-16 font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-blue-500/20"
                         >
-                            <Check className="mr-2 h-4 w-4" />
-                            Accept
+                            ACKNOWLEDGE
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Input Area - Only visible in Private Rooms */}
+            {/* Chat HUD - Input Area */}
             {isPrivate && (
-                <div className="flex-none bg-white border-t border-slate-200 p-4">
+                <div className="flex-none bg-[#050810]/40 backdrop-blur-3xl border-t border-white/5 p-8 pb-10 z-30">
                     <div className="container mx-auto max-w-4xl">
                         <form
                             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-                            className="flex items-end gap-2"
+                            className="flex items-end gap-5"
                         >
                             <input
                                 type="file"
@@ -833,45 +938,79 @@ export default function PublicRoomPage() {
                                 accept="image/*"
                                 onChange={handleFileUpload}
                             />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="text-slate-400 rounded-full shrink-0"
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                            >
-                                <Paperclip className={`h-5 w-5 ${isUploading ? 'animate-pulse text-purple-500' : ''}`} />
-                            </Button>
+                            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-slate-500 hover:text-blue-400 bg-white/5 rounded-2xl h-14 w-14 border border-white/5 shadow-lg"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={isUploading}
+                                >
+                                    <Paperclip className={`h-6 w-6 ${isUploading ? 'animate-pulse text-blue-400' : ''}`} />
+                                </Button>
+                            </motion.div>
 
-                            <div className="flex-1 bg-slate-100 rounded-2xl flex items-center px-4 py-2 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 transition-all">
+                            <div className="flex-1 bg-white/5 border border-white/10 rounded-[2rem] flex items-center px-6 py-4 focus-within:ring-2 focus-within:ring-blue-500/30 transition-all shadow-2xl relative">
                                 <Input
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder="Type a message..."
-                                    className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-1 text-slate-900 placeholder:text-slate-400"
+                                    placeholder="TRANSMIT DATA..."
+                                    className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-1 text-white placeholder:text-slate-700 text-sm font-black uppercase tracking-widest"
                                 />
-                                <Button type="button" variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full h-8 w-8 -mr-1" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                                    <Smile className="h-5 w-5" />
+                                <Button type="button" variant="ghost" size="icon" className="text-slate-500 hover:text-blue-400 rounded-full h-11 w-11 -mr-2" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                    <Smile className="h-6 w-6" />
                                 </Button>
                                 {showEmojiPicker && (
-                                    <div className="absolute bottom-16 right-0 z-50">
-                                        <EmojiPicker onEmojiClick={onEmojiClick} />
-                                    </div>
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        className="absolute bottom-[calc(100%+24px)] right-0 z-50 shadow-3xl rounded-3xl overflow-hidden border border-white/10"
+                                    >
+                                        <EmojiPicker theme={Theme.DARK} onEmojiClick={onEmojiClick} />
+                                    </motion.div>
                                 )}
                             </div>
 
-                            <Button
-                                type="submit"
-                                disabled={!newMessage.trim()}
-                                className="bg-purple-600 hover:opacity-90 text-white rounded-full h-11 w-11 shrink-0 shadow-sm flex items-center justify-center p-0 transition-transform active:scale-95"
-                            >
-                                <Send className="h-5 w-5 ml-0.5" />
-                            </Button>
+                            <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}>
+                                <Button
+                                    type="submit"
+                                    disabled={!newMessage.trim()}
+                                    className="bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-[1.5rem] h-14 w-14 shadow-3xl shadow-blue-500/30 border border-white/10"
+                                >
+                                    <Send className="h-6 w-6 ml-1" />
+                                </Button>
+                            </motion.div>
                         </form>
                     </div>
                 </div>
             )}
+
+            <UserProfileDialog
+                userId={selectedUserId}
+                open={!!selectedUserId}
+                onOpenChange={(open) => !open && setSelectedUserId(null)}
+            />
+
+            <style jsx global>{`
+                @keyframes scan {
+                    0% { transform: translateY(-100%); }
+                    100% { transform: translateY(200%); }
+                }
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+            `}</style>
         </div >
     )
 }

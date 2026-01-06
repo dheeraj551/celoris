@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { BookOpen, Clock, Users, Star, Filter, Search, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react"
+import { BookOpen, Filter, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import CoursesDisplay from "@/components/CoursesDisplay"
+import { PageWrapper } from "@/components/PageWrapper"
 
 const categories = [
   { name: "Programming", icon: "💻" },
@@ -42,34 +43,40 @@ export default function AllCoursesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container max-w-7xl mx-auto px-4">
+    <PageWrapper className="min-h-screen bg-[#050810] py-24 selection:bg-emerald-500/30">
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-teal-600/10 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[150px]" />
+      </div>
+
+      <div className="container max-w-7xl mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-2 text-sm text-text-secondary mb-4">
-            <Link href="/" className="hover:text-primary-500">Home</Link>
-            <span>/</span>
-            <Link href="/learn" className="hover:text-primary-500">Learn</Link>
-            <span>/</span>
-            <span className="text-text-primary">All Courses</span>
+        <div className="mb-12">
+          <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+            <Link href="/" className="text-slate-500 hover:text-emerald-400 transition-colors">Home</Link>
+            <span className="text-slate-700">/</span>
+            <Link href="/learn" className="text-slate-500 hover:text-emerald-400 transition-colors">Learn</Link>
+            <span className="text-slate-700">/</span>
+            <span className="text-emerald-500 italic">Academy</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-            All Courses
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 italic uppercase tracking-tighter">
+            Skill Academy
           </h1>
-          <p className="text-lg text-text-secondary">
-            Discover our complete collection of courses designed to help you master new skills
+          <p className="text-lg text-slate-400 font-medium italic max-w-2xl">
+            Discover our complete collection of courses designed to help you master new skills and bridge the digital gap.
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-surface rounded-lg p-6 shadow-sm border mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="bg-[#0d1321]/40 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/5 mb-12 shadow-2xl">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-emerald-500/50" />
                 <Input
                   placeholder="Search courses..."
-                  className="pl-10"
+                  className="h-14 bg-white/5 border-white/10 rounded-2xl pl-16 pr-8 text-white text-sm placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all border outline-none"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -79,74 +86,77 @@ export default function AllCoursesPage() {
               </div>
             </div>
             <div>
-              <select
-                className="w-full h-10 px-3 border border-input rounded-md bg-background"
-                value={selectedCategory}
-                onChange={(e) => {
-                  setSelectedCategory(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option>All Categories</option>
-                <option>Mathematics</option>
-                <option>Physics</option>
-                <option>Chemistry</option>
-                <option>Artificial Intelligence</option>
-                <option>Yoga</option>
-                <option>Fitness</option>
-                <option>Programming</option>
-                <option>Design</option>
-                <option>Marketing</option>
-                <option>Data Science</option>
-              </select>
+              <div className="relative">
+                <Filter className="absolute left-6 top-1/2 transform -translate-y-1/2 h-4 w-4 text-emerald-500/50 pointer-events-none" />
+                <select
+                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 text-white text-sm appearance-none focus:border-emerald-500/50 focus:bg-white/10 transition-all outline-none italic font-bold uppercase tracking-widest text-[10px]"
+                  value={selectedCategory}
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option className="bg-[#0d1321]">All Categories</option>
+                  <option className="bg-[#0d1321]">Mathematics</option>
+                  <option className="bg-[#0d1321]">Physics</option>
+                  <option className="bg-[#0d1321]">Chemistry</option>
+                  <option className="bg-[#0d1321]">Artificial Intelligence</option>
+                  <option className="bg-[#0d1321]">Yoga</option>
+                  <option className="bg-[#0d1321]">Fitness</option>
+                  <option className="bg-[#0d1321]">Programming</option>
+                  <option className="bg-[#0d1321]">Design</option>
+                  <option className="bg-[#0d1321]">Marketing</option>
+                  <option className="bg-[#0d1321]">Data Science</option>
+                </select>
+              </div>
             </div>
             <div>
-              <Button className="w-full" variant="outline" onClick={() => {
+              <Button className="w-full h-14 bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 rounded-2xl font-black uppercase tracking-widest text-[10px]" variant="outline" onClick={() => {
                 setSearchTerm("");
                 setSelectedCategory("All Categories");
                 setSelectedLevel("All Levels");
                 setCurrentPage(1);
               }}>
-                Clear Filters
+                Reset Protocol
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* Sidebar Filters */}
           <div className="lg:col-span-1">
-            <div className="space-y-6">
+            <div className="space-y-8">
               {/* Categories */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Categories</CardTitle>
+              <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 rounded-[2.5rem] overflow-hidden shadow-xl">
+                <CardHeader className="p-8 pb-4">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Categories</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="p-6 space-y-2">
                   <div
-                    className={`flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors ${selectedCategory === "All Categories" ? "bg-primary-50 text-primary-600 font-semibold" : ""}`}
+                    className={`flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 cursor-pointer transition-colors ${selectedCategory === "All Categories" ? "bg-emerald-500/10 text-emerald-400 font-bold" : "text-slate-400"}`}
                     onClick={() => {
                       setSelectedCategory("All Categories");
                       setCurrentPage(1);
                     }}
                   >
-                    <div className="flex items-center space-x-3">
-                      <span>📚</span>
-                      <span className="text-sm">All Categories</span>
+                    <div className="flex items-center space-x-3 italic">
+                      <span className="text-lg">📚</span>
+                      <span className="text-xs uppercase tracking-widest font-black">All Academy</span>
                     </div>
                   </div>
                   {categories?.map((category) => (
                     <div
                       key={category.name}
-                      className={`flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors ${selectedCategory === category.name ? "bg-primary-50 text-primary-600 font-semibold" : ""}`}
+                      className={`flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 cursor-pointer transition-colors ${selectedCategory === category.name ? "bg-emerald-500/10 text-emerald-400 font-bold" : "text-slate-400"}`}
                       onClick={() => {
                         setSelectedCategory(category.name);
                         setCurrentPage(1);
                       }}
                     >
-                      <div className="flex items-center space-x-3">
-                        <span>{category.icon}</span>
-                        <span className="text-sm">{category.name}</span>
+                      <div className="flex items-center space-x-3 italic">
+                        <span className="text-lg">{category.icon}</span>
+                        <span className="text-xs uppercase tracking-widest font-black">{category.name}</span>
                       </div>
                     </div>
                   ))}
@@ -154,40 +164,46 @@ export default function AllCoursesPage() {
               </Card>
 
               {/* Levels */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Level</CardTitle>
+              <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 rounded-[2.5rem] overflow-hidden shadow-xl">
+                <CardHeader className="p-8 pb-4">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500">Skill Level</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="p-6 space-y-2">
                   {levels?.map((level) => (
                     <div
                       key={level.name}
-                      className={`flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface cursor-pointer transition-colors ${selectedLevel === level.name ? "bg-primary-50 text-primary-600 font-semibold" : ""}`}
+                      className={`flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 cursor-pointer transition-colors ${selectedLevel === level.name ? "bg-blue-500/10 text-blue-400 font-bold" : "text-slate-400"}`}
                       onClick={() => {
                         setSelectedLevel(level.name);
                         setCurrentPage(1);
                       }}
                     >
-                      <span className="text-sm">{level.name}</span>
+                      <span className="text-xs uppercase tracking-widest font-black italic">{level.name}</span>
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
               {/* Price Range */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Price</CardTitle>
+              <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 rounded-[2.5rem] overflow-hidden shadow-xl">
+                <CardHeader className="p-8 pb-4">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-500">Protocol Fee</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="space-y-2">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-input" />
-                      <span className="text-sm">Free</span>
+                <CardContent className="p-8 space-y-4">
+                  <div className="space-y-4">
+                    <label className="flex items-center space-x-4 cursor-pointer group">
+                      <div className="h-5 w-5 rounded bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-emerald-500/50 transition-all">
+                        <input type="checkbox" className="hidden" />
+                        <div className="h-2 w-2 bg-emerald-500 rounded-sm opacity-0 group-hover:opacity-50" />
+                      </div>
+                      <span className="text-xs uppercase tracking-widest font-black italic text-slate-400 group-hover:text-white transition-colors">Open Source (Free)</span>
                     </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-input" />
-                      <span className="text-sm">Paid</span>
+                    <label className="flex items-center space-x-4 cursor-pointer group">
+                      <div className="h-5 w-5 rounded bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-emerald-500/50 transition-all">
+                        <input type="checkbox" className="hidden" />
+                        <div className="h-2 w-2 bg-emerald-500 rounded-sm opacity-0 group-hover:opacity-50" />
+                      </div>
+                      <span className="text-xs uppercase tracking-widest font-black italic text-slate-400 group-hover:text-white transition-colors">Enterprise (Paid)</span>
                     </label>
                   </div>
                 </CardContent>
@@ -197,6 +213,14 @@ export default function AllCoursesPage() {
 
           {/* Course Grid */}
           <div className="lg:col-span-3">
+            <div className="mb-10 flex items-center justify-between relative z-10">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Discovery Mode: <span className="text-emerald-500">{totalItems} NODES FOUND</span></span>
+              <div className="flex gap-2">
+                <div className="h-8 w-8 bg-emerald-500/10 border border-emerald-500/20 rounded-lg animate-pulse" />
+                <div className="h-8 w-8 bg-teal-500/10 border border-teal-500/20 rounded-lg animate-pulse delay-75" />
+              </div>
+            </div>
+
             <CoursesDisplay
               layout="grid"
               limit={coursesPerPage}
@@ -210,24 +234,25 @@ export default function AllCoursesPage() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center space-x-2 mt-12 pb-12">
+              <div className="flex justify-center items-center space-x-3 mt-20 pb-20">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
+                  className="h-12 px-6 bg-white/5 border-white/10 text-slate-400 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px]"
                 >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Previous
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Prev
                 </Button>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-2">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
                     <Button
                       key={pageNum}
                       variant={currentPage === pageNum ? "default" : "outline"}
                       size="sm"
                       onClick={() => handlePageChange(pageNum)}
-                      className="w-10"
+                      className={`w-12 h-12 rounded-xl font-black transition-all ${currentPage === pageNum ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20" : "bg-white/5 border-white/10 text-slate-500 hover:text-white"}`}
                     >
                       {pageNum}
                     </Button>
@@ -238,21 +263,23 @@ export default function AllCoursesPage() {
                   size="sm"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  className="h-12 px-6 bg-white/5 border-white/10 text-slate-400 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px]"
                 >
                   Next
-                  <ChevronRight className="h-4 w-4 ml-1" />
+                  <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
             )}
 
             {totalItems === 0 && (
-              <div className="text-center py-20">
-                <p className="text-gray-500">No courses match your current filters.</p>
+              <div className="text-center py-32 bg-[#0d1321]/40 rounded-[3rem] border border-white/5">
+                <BookOpen className="h-16 w-16 mx-auto mb-6 text-slate-500 opacity-20" />
+                <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">No modules match your current uplink filters.</p>
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   )
 }

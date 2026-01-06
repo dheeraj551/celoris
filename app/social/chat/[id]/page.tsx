@@ -19,11 +19,20 @@ import {
   Crown,
   Star,
   ArrowLeft,
-  Paperclip
+  Paperclip,
+  Sparkles,
+  Zap,
+  Check,
+  MoreVertical,
+  X,
+  Target,
+  Rocket
 } from "lucide-react"
 import { usePresence } from "@/components/providers/PresenceProvider"
 import { useAuth } from "@/components/providers/AuthProvider"
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
+import { motion, AnimatePresence } from "framer-motion"
+import { PageWrapper } from "@/components/PageWrapper"
 
 const MSG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"
 const JOIN_SOUND = "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
@@ -74,7 +83,6 @@ export default function ChatPage() {
   const router = useRouter()
 
   const matchId = params.id as string
-
   const { user: currentUser } = useAuth()
 
   useEffect(() => {
@@ -117,7 +125,6 @@ export default function ChatPage() {
     if (!currentUser) return
     try {
       const supabase = createClient()
-      // Load match data
       const { data: matchData, error: matchError } = await supabase
         .from('matches')
         .select('*')
@@ -130,7 +137,6 @@ export default function ChatPage() {
         const match = matchData as any
         const otherUserId = match.user1_id === currentUser.id ? match.user2_id : match.user1_id
 
-        // Fetch other user details
         const { data: otherUser } = await supabase
           .from('users')
           .select('*')
@@ -139,7 +145,6 @@ export default function ChatPage() {
 
         if (otherUser) {
           const userData = otherUser as any
-          // Get avatar URL if exists
           let avatar_url = undefined
           if (userData.profile_pic_url) {
             if (userData.profile_pic_url.startsWith('http')) {
@@ -180,7 +185,6 @@ export default function ChatPage() {
   const loadMessages = async () => {
     try {
       const supabase = createClient()
-
       const { data } = await supabase
         .from('messages')
         .select('*')
@@ -189,12 +193,11 @@ export default function ChatPage() {
 
       setMessages(data || [])
 
-      // Mark messages as read
       await (supabase
         .from('messages') as any)
         .update({ is_read: true })
         .eq('match_id', matchId)
-        .neq('sender_id', user?.id)
+        .neq('sender_id', currentUser?.id)
     } catch (error) {
       console.error('Error loading messages:', error)
     }
@@ -202,8 +205,6 @@ export default function ChatPage() {
 
   const setupRealTimeSubscription = () => {
     const supabase = createClient()
-    console.log(`Setting up realtime subscription for match: ${matchId}`)
-
     const subscription = supabase
       .channel(`messages:${matchId}`)
       .on('postgres_changes', {
@@ -212,38 +213,26 @@ export default function ChatPage() {
         table: 'messages',
         filter: `match_id=eq.${matchId}`
       }, (payload) => {
-        console.log('Realtime message received:', payload)
         setMessages(prev => {
-          // Prevent duplicates
           if (prev.some(m => m.id === payload.new.id)) return prev
-          // Play sound for incoming message
-          if (payload.new.sender_id !== user?.id) {
+          if (payload.new.sender_id !== currentUser?.id) {
             new Audio(MSG_SOUND).play().catch(() => { })
           }
           return [...prev, payload.new as Message]
         })
       })
-      .subscribe((status, err) => {
-        console.log(`Subscription status for ${matchId}:`, status)
-        if (err) {
-          console.error('Subscription error:', err)
-        }
-      })
+      .subscribe()
 
     return () => {
-      console.log('Unsubscribing from channel')
       subscription.unsubscribe()
     }
   }
 
   const sendMessage = async () => {
     if (!newMessage.trim() || sending || !user) return
-
     setSending(true)
     try {
       const supabase = createClient()
-
-      // Insert message
       const { error } = await (supabase
         .from('messages') as any)
         .insert({
@@ -255,7 +244,6 @@ export default function ChatPage() {
 
       if (error) throw error
 
-      // Update match last_message_at
       await (supabase
         .from('matches') as any)
         .update({ last_message_at: new Date().toISOString() })
@@ -275,27 +263,21 @@ export default function ChatPage() {
 
   const formatMessageTime = (dateString: string) => {
     const date = new Date(dateString)
-    const now = new Date()
-    const diffTime = Math.abs(now.getTime() - date.getTime())
-    const diffMinutes = Math.floor(diffTime / (1000 * 60))
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffMinutes < 1) return 'now'
-    if (diffMinutes < 60) return `${diffMinutes}m`
-    if (diffHours < 24) return `${diffHours}h`
-    if (diffDays < 7) return `${diffDays}d`
-    return date.toLocaleDateString()
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
-  const isOwnMessage = (message: Message) => message.sender_id === user?.id
+  const isOwnMessage = (message: Message) => message.sender_id === currentUser?.id
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading chat...</p>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full mx-auto mb-6"
+          />
+          <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Initializing Secure Channel...</p>
         </div>
       </div>
     )
@@ -303,11 +285,11 @@ export default function ChatPage() {
 
   if (!match) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Match not found</h2>
-          <Button onClick={() => router.push('/social/matches')}>
-            Back to Matches
+          <h2 className="text-xl font-black text-white italic uppercase tracking-tighter mb-4">Channel Unavailable</h2>
+          <Button onClick={() => router.push('/social/matches')} className="bg-emerald-600 hover:bg-emerald-500">
+            Back to Connections
           </Button>
         </div>
       </div>
@@ -315,196 +297,246 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <PageWrapper className="h-screen bg-[#050810] flex flex-col relative overflow-hidden font-sans">
+      {/* Background Elements */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.05, 0.1, 0.05]
+          }}
+          transition={{ duration: 15, repeat: Infinity }}
+          className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-teal-600/10 rounded-full blur-[150px]"
+        />
+      </div>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4 flex items-center gap-3">
+      <div className="bg-[#0d1321]/80 backdrop-blur-2xl border-b border-white/5 p-5 flex items-center gap-4 relative z-10">
         <button
           onClick={() => router.push('/social/matches')}
-          className="p-2 hover:bg-gray-100 rounded-full"
+          className="p-3 hover:bg-white/10 rounded-2xl transition-all border border-transparent hover:border-white/5"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5 text-slate-400" />
         </button>
 
-        <img
-          src={match.user.avatar_url || `/api/placeholder/40/40`}
-          alt={match.user.full_name}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+        <div className="relative">
+          <img
+            src={match.user.avatar_url || `/api/placeholder/40/40`}
+            alt={match.user.full_name}
+            className="w-12 h-12 rounded-2xl object-cover border-2 border-white/5"
+          />
+          {onlineUsers.has(match.user.id) && (
+            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#0d1321] rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+          )}
+        </div>
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-gray-900">{match.user.full_name}</h3>
+            <h3 className="text-lg font-black text-white italic uppercase tracking-tighter truncate">{match.user.full_name}</h3>
             {match.user.is_verified && (
-              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                <Crown className="w-3 h-3 text-white" />
-              </div>
+              <Crown className="w-4 h-4 text-emerald-500 fill-emerald-500" />
             )}
             {match.user.is_premium && (
-              <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                <Star className="w-3 h-3 text-white" />
-              </div>
+              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
             )}
           </div>
           <div className="flex items-center gap-2">
-            {onlineUsers.has(match.user.id) ? (
-              <>
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <p className="text-xs text-green-600 font-medium">Online</p>
-              </>
-            ) : (
-              <p className="text-xs text-gray-500">Offline</p>
-            )}
+            <span className={`text-[9px] font-black uppercase tracking-widest ${onlineUsers.has(match.user.id) ? 'text-emerald-500' : 'text-slate-500'}`}>
+              {onlineUsers.has(match.user.id) ? 'Active Sync' : 'Standby Mode'}
+            </span>
           </div>
         </div>
 
         <div className="flex gap-2">
-          {/* <button className="p-2 hover:bg-gray-100 rounded-full">
-            <Phone className="w-5 h-5 text-gray-600" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <Video className="w-5 h-5 text-gray-600" />
-          </button> */}
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <MoreHorizontal className="w-5 h-5 text-gray-600" />
+          <button className="p-3 hover:bg-white/10 rounded-2xl transition-all border border-transparent hover:border-white/5 text-slate-400">
+            <MoreVertical size={20} />
           </button>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 relative z-10 scrollbar-hide">
         {messages.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Heart className="w-8 h-8 text-purple-500" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-20 px-10"
+          >
+            <div className="w-24 h-24 bg-emerald-500/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
+              <Sparkles className="w-12 h-12 text-emerald-500" />
             </div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              It's a match! 🎉
+            <h4 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">
+              Secure Match Established
             </h4>
-            <p className="text-gray-600 mb-6">
-              Say hello to {match.user.full_name} and start a conversation!
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-10 leading-relaxed">
+              Datalink active. Encrypted communication ready with {match.user.full_name}.
             </p>
 
             {/* Quick Actions */}
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-wrap gap-3 justify-center">
               {match.user.instagram_handle && (
                 <Button
                   variant="outline"
+                  className="bg-white/5 hover:bg-white/10 border-white/10 rounded-2xl h-12 px-6 font-black uppercase tracking-widest text-[9px] text-white"
                   onClick={() => window.open(`https://instagram.com/${match.user.instagram_handle}`, '_blank')}
                 >
-                  <Instagram className="w-4 h-4 mr-2" />
-                  View Instagram
+                  <Instagram className="w-4 h-4 mr-2 text-pink-500" />
+                  Access Node
                 </Button>
               )}
 
               {match.user.location && (
                 <Button
                   variant="outline"
+                  className="bg-white/5 hover:bg-white/10 border-white/10 rounded-2xl h-12 px-6 font-black uppercase tracking-widest text-[9px] text-white"
                   onClick={() => {
                     const query = encodeURIComponent(`${match.user.location}`)
                     window.open(`https://maps.google.com/?q=${query}`, '_blank')
                   }}
                 >
-                  <MapPin className="w-4 h-4 mr-2" />
+                  <MapPin className="w-4 h-4 mr-2 text-emerald-500" />
                   {match.user.location}
                 </Button>
               )}
             </div>
-          </div>
+          </motion.div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${isOwnMessage(message) ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${isOwnMessage(message)
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-100 text-gray-900'
-                  }`}
+          <div className="space-y-4">
+            {messages.map((message, idx) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.05 }}
+                className={`flex ${isOwnMessage(message) ? 'justify-end' : 'justify-start'}`}
               >
-                <p className="text-sm">{message.content}</p>
-                <p
-                  className={`text-xs mt-1 ${isOwnMessage(message) ? 'text-purple-200' : 'text-gray-500'
-                    }`}
-                >
-                  {formatMessageTime(message.created_at)}
-                </p>
-              </div>
-            </div>
-          ))
+                <div className={`max-w-[80%] flex flex-col ${isOwnMessage(message) ? 'items-end' : 'items-start'}`}>
+                  <div
+                    className={`px-5 py-3 rounded-2xl text-sm font-medium shadow-2xl relative
+                            ${isOwnMessage(message)
+                        ? 'bg-emerald-600 text-white rounded-tr-none shadow-emerald-500/10'
+                        : 'bg-white/10 backdrop-blur-3xl text-white rounded-tl-none border border-white/5'
+                      }`}
+                  >
+                    <p className="leading-relaxed">{message.content}</p>
+                    <div className="absolute top-0 right-[-8px] border-t-[8px] border-t-emerald-600 border-r-[8px] border-r-transparent hidden" />
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 px-1">
+                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                      {formatMessageTime(message.created_at)}
+                    </span>
+                    {isOwnMessage(message) && message.is_read && (
+                      <Check size={10} className="text-emerald-500 stroke-[3px]" />
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
-      <div className="bg-white border-t border-gray-200 p-4">
-        <div className="flex items-center gap-3">
-          <button className="p-2 text-gray-400 hover:text-gray-600">
-            <Paperclip className="w-5 h-5" />
-          </button>
+      {/* Message Input Area */}
+      <div className="bg-[#0d1321]/90 backdrop-blur-3xl border-t border-white/5 p-6 relative z-20">
+        <div className="max-w-4xl mx-auto space-y-4">
+          {/* Input Row */}
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" className="text-slate-500 hover:text-white hover:bg-white/5 rounded-2xl h-12 w-12 shrink-0">
+              <Paperclip size={20} />
+            </Button>
 
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder={`Message ${match.user.full_name}...`}
-              className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              disabled={sending}
-            />
-            <button
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            >
-              <Smile className="w-5 h-5" />
-            </button>
-            {showEmojiPicker && (
-              <div className="absolute bottom-16 right-0 z-50">
-                <EmojiPicker onEmojiClick={onEmojiClick} />
-              </div>
-            )}
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                placeholder={`Transmitting to ${match.user.full_name}...`}
+                className="w-full bg-white/5 border border-white/10 text-white placeholder:text-slate-600 px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all text-sm font-medium"
+                disabled={sending}
+              />
+              <button
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-all"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile size={20} />
+              </button>
+              <AnimatePresence>
+                {showEmojiPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                    className="absolute bottom-20 right-0 z-[100] shadow-[0_32px_120px_rgba(0,0,0,0.8)]"
+                  >
+                    <EmojiPicker theme={undefined as any} onEmojiClick={onEmojiClick} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {newMessage.trim() ? (
+                <motion.div
+                  key="send-btn"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                >
+                  <Button
+                    onClick={sendMessage}
+                    disabled={sending}
+                    className="h-14 w-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-500/20 shrink-0"
+                  >
+                    <Send size={20} />
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="media-btn"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                >
+                  <Button variant="ghost" size="icon" className="text-slate-500 hover:text-white hover:bg-white/5 rounded-2xl h-12 w-12 shrink-0">
+                    <ImageIcon size={20} />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {newMessage.trim() ? (
-            <Button
-              onClick={sendMessage}
-              disabled={sending}
-              className="bg-purple-500 hover:bg-purple-600 p-2 rounded-full"
+          {/* Creator Toolkit */}
+          {match.user.is_creator && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-emerald-600/10 border border-emerald-500/20 rounded-2xl p-4 flex items-center justify-between"
             >
-              <Send className="w-4 h-4" />
-            </Button>
-          ) : (
-            <button className="p-2 text-gray-400 hover:text-gray-600">
-              <ImageIcon className="w-5 h-5" />
-            </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-white uppercase tracking-widest">Creator Support System</p>
+                  <p className="text-[9px] font-medium text-slate-500 uppercase tracking-widest mt-0.5">Initialize transaction protocols</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button size="sm" variant="ghost" className="text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-400 font-black uppercase tracking-widest text-[9px] h-10 px-6 rounded-xl border border-emerald-500/20">
+                  <Zap className="w-3 h-3 mr-2" />
+                  Tip Node
+                </Button>
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[9px] h-10 px-6 rounded-xl shadow-xl shadow-emerald-500/10">
+                  <Rocket className="w-3 h-3 mr-2" />
+                  Force Sync
+                </Button>
+              </div>
+            </motion.div>
           )}
         </div>
-
-        {/* Creator Monetization */}
-        {match.user.is_creator && (
-          <div className="mt-3 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Crown className="w-4 h-4 text-yellow-600" />
-                <span className="text-sm font-medium text-yellow-800">
-                  Support {match.user.full_name}
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="text-green-600 border-green-600">
-                  <Gift className="w-3 h-3 mr-1" />
-                  Tip
-                </Button>
-                <Button size="sm" variant="outline" className="text-purple-600 border-purple-600">
-                  <Crown className="w-3 h-3 mr-1" />
-                  Subscribe
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+    </PageWrapper>
   )
 }

@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { 
+import {
   ArrowLeft,
   Heart,
   Gift,
@@ -59,7 +59,7 @@ export default function TipPage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/login')
         return
@@ -100,7 +100,7 @@ export default function TipPage() {
 
       // In a real implementation, you'd integrate with a payment processor like Stripe
       // For now, we'll simulate the payment process
-      
+
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 2000))
 
@@ -119,7 +119,7 @@ export default function TipPage() {
       if (error) throw error
 
       setSuccess(true)
-      
+
       // Redirect after success
       setTimeout(() => {
         router.push('/social/matches')
@@ -141,29 +141,29 @@ export default function TipPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-500" />
+          <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+            <CheckCircle className="w-12 h-12 text-emerald-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white mb-4">
             Tip Sent Successfully! 🎉
           </h2>
-          <p className="text-gray-600 mb-6">
-            Thank you for supporting {match?.user.full_name}! 
+          <p className="text-slate-400 mb-8 max-w-sm mx-auto font-medium">
+            Thank you for supporting {match?.user.full_name}!
             They'll be notified about your tip.
           </p>
           <div className="space-y-3">
-            <Button 
-              className="w-full"
+            <Button
+              className="w-full h-12 rounded-full font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border-none"
               onClick={() => router.push(`/social/chat/${matchId}`)}
             >
-              <MessageCircle className="w-4 h-4 mr-2" />
+              <MessageCircle className="w-5 h-5 mr-2" />
               Send a Message
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full"
+            <Button
+              variant="outline"
+              className="w-full h-12 rounded-full font-bold uppercase tracking-wider border-white/10 text-white hover:bg-white/10"
               onClick={() => router.push('/social/matches')}
             >
               Back to Matches
@@ -176,10 +176,10 @@ export default function TipPage() {
 
   if (!match) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Match not found</h2>
-          <Button onClick={() => router.push('/social/matches')}>
+          <h2 className="text-xl font-bold text-white mb-4">Match not found</h2>
+          <Button onClick={() => router.push('/social/matches')} className="bg-emerald-600 hover:bg-emerald-500 text-white border-none rounded-full px-8">
             Back to Matches
           </Button>
         </div>
@@ -188,50 +188,50 @@ export default function TipPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+    <div className="min-h-screen bg-[#050810] text-white">
+      <div className="container mx-auto px-4 py-8 max-w-md">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="p-2 hover:bg-white/10 rounded-full transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <h1 className="text-xl font-bold">Send Tip</h1>
+          <h1 className="text-2xl font-black italic uppercase tracking-tighter text-white">Send Tip</h1>
         </div>
 
         {/* Creator Profile */}
-        <Card className="mb-6">
+        <Card className="mb-8 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <img
                 src={match.user.avatar_url || `/api/placeholder/60/60`}
                 alt={match.user.full_name}
-                className="w-16 h-16 rounded-full object-cover"
+                className="w-20 h-20 rounded-[1rem] object-cover border-2 border-white/10"
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-gray-900">{match.user.full_name}</h3>
+                  <h3 className="font-black italic uppercase tracking-tight text-white text-xl">{match.user.full_name}</h3>
                   {match.user.is_verified && (
-                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
                       <Crown className="w-3 h-3 text-white" />
                     </div>
                   )}
                   {match.user.is_premium && (
-                    <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                      <Star className="w-3 h-3 text-white" />
+                    <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                      <Star className="w-3 h-3 text-white fill-white" />
                     </div>
                   )}
                 </div>
                 {match.user.profession && (
-                  <p className="text-sm text-gray-600">{match.user.profession}</p>
+                  <p className="text-emerald-400 font-bold uppercase tracking-wider text-xs">{match.user.profession}</p>
                 )}
               </div>
             </div>
-            
+
             {match.user.bio && (
-              <p className="text-sm text-gray-700 mt-4">{match.user.bio}</p>
+              <p className="text-sm text-slate-400 mt-4 font-medium leading-relaxed">{match.user.bio}</p>
             )}
           </CardContent>
         </Card>
@@ -240,43 +240,40 @@ export default function TipPage() {
         <div className="flex gap-2 mb-6">
           <button
             onClick={() => setTipType('quick')}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-              tipType === 'quick'
-                ? 'bg-purple-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`flex-1 py-4 px-4 rounded-xl font-black uppercase tracking-wider text-xs transition-all duration-300 border ${tipType === 'quick'
+              ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-900/20'
+              : 'bg-[#0d1321]/40 text-slate-400 border-white/5 hover:bg-white/5 hover:text-white'
+              }`}
           >
-            <Gift className="w-4 h-4 mx-auto mb-1" />
+            <Gift className="w-4 h-4 mx-auto mb-2" />
             Quick Tip
           </button>
           <button
             onClick={() => setTipType('custom')}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-              tipType === 'custom'
-                ? 'bg-purple-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`flex-1 py-4 px-4 rounded-xl font-black uppercase tracking-wider text-xs transition-all duration-300 border ${tipType === 'custom'
+              ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-900/20'
+              : 'bg-[#0d1321]/40 text-slate-400 border-white/5 hover:bg-white/5 hover:text-white'
+              }`}
           >
-            <CreditCard className="w-4 h-4 mx-auto mb-1" />
+            <CreditCard className="w-4 h-4 mx-auto mb-2" />
             Custom Amount
           </button>
         </div>
 
         {/* Quick Tip Amounts */}
         {tipType === 'quick' && (
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <h4 className="font-semibold mb-4">Choose an amount</h4>
+          <Card className="mb-6 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
+            <CardContent className="p-6">
+              <h4 className="font-bold text-white uppercase tracking-wide text-sm mb-4">Choose an amount</h4>
               <div className="grid grid-cols-3 gap-3">
                 {TIP_AMOUNTS.map((amount) => (
                   <button
                     key={amount}
                     onClick={() => setSelectedAmount(amount)}
-                    className={`py-3 px-4 rounded-lg border-2 font-semibold transition-colors ${
-                      selectedAmount === amount
-                        ? 'border-purple-500 bg-purple-50 text-purple-700'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`py-4 px-4 rounded-xl border-2 font-black text-lg transition-all duration-300 ${selectedAmount === amount
+                      ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white'
+                      }`}
                   >
                     ${amount}
                   </button>
@@ -288,17 +285,17 @@ export default function TipPage() {
 
         {/* Custom Amount */}
         {tipType === 'custom' && (
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <h4 className="font-semibold mb-4">Enter custom amount</h4>
-              
+          <Card className="mb-6 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
+            <CardContent className="p-6">
+              <h4 className="font-bold text-white uppercase tracking-wide text-sm mb-4">Enter custom amount</h4>
+
               {/* Suggested amounts */}
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-6">
                 {CUSTOM_AMOUNTS.map((amount) => (
                   <button
                     key={amount}
                     onClick={() => setCustomAmount(amount.toString())}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300 rounded-full hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
                   >
                     ${amount}
                   </button>
@@ -307,7 +304,7 @@ export default function TipPage() {
 
               {/* Custom input */}
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 font-bold text-xl">
                   $
                 </span>
                 <input
@@ -315,7 +312,7 @@ export default function TipPage() {
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-4 bg-[#050810] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-white font-mono text-lg"
                   min="1"
                   step="0.01"
                 />
@@ -325,37 +322,37 @@ export default function TipPage() {
         )}
 
         {/* Message */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <h4 className="font-semibold mb-4">Add a message (optional)</h4>
+        <Card className="mb-6 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
+          <CardContent className="p-6">
+            <h4 className="font-bold text-white uppercase tracking-wide text-sm mb-4">Add a message (optional)</h4>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={`Send a message to ${match.user.full_name}...`}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-4 bg-[#050810] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-slate-300 placeholder:text-slate-600"
               rows={3}
               maxLength={200}
             />
-            <p className="text-xs text-gray-500 mt-2 text-right">
+            <p className="text-xs text-slate-500 mt-2 text-right font-medium">
               {message.length}/200
             </p>
           </CardContent>
         </Card>
 
         {/* Tip Preview */}
-        <Card className="mb-6 bg-purple-50 border-purple-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
-                <Gift className="w-6 h-6 text-white" />
+        <Card className="mb-6 bg-emerald-900/10 border-emerald-500/20 backdrop-blur-xl">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-emerald-900/20">
+                <Gift className="w-7 h-7 text-white" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-purple-900">You're sending:</h4>
-                <p className="text-2xl font-bold text-purple-900">
+                <h4 className="font-bold text-emerald-400 uppercase tracking-wide text-xs mb-1">You're sending:</h4>
+                <p className="text-3xl font-black text-white italic tracking-tight">
                   ${tipType === 'quick' ? selectedAmount : customAmount || '0'}
                 </p>
                 {message && (
-                  <p className="text-sm text-purple-700 mt-1">
+                  <p className="text-sm text-slate-300 mt-2 italic border-l-2 border-emerald-500/30 pl-3">
                     "{message}"
                   </p>
                 )}
@@ -365,17 +362,17 @@ export default function TipPage() {
         </Card>
 
         {/* Payment Method */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <h4 className="font-semibold mb-4">Payment Method</h4>
+        <Card className="mb-8 bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
+          <CardContent className="p-6">
+            <h4 className="font-bold text-white uppercase tracking-wide text-sm mb-4">Payment Method</h4>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg">
-                <CreditCard className="w-5 h-5 text-gray-600" />
+              <div className="flex items-center gap-3 p-4 border border-emerald-500/30 bg-emerald-500/5 rounded-xl">
+                <CreditCard className="w-5 h-5 text-emerald-400" />
                 <div className="flex-1">
-                  <p className="font-medium">Credit Card</p>
-                  <p className="text-sm text-gray-600">•••• •••• •••• 1234</p>
+                  <p className="font-bold text-white text-sm">Credit Card</p>
+                  <p className="text-xs text-slate-400 font-mono mt-1">•••• •••• •••• 1234</p>
                 </div>
-                <CheckCircle className="w-5 h-5 text-green-500" />
+                <CheckCircle className="w-5 h-5 text-emerald-500" />
               </div>
             </div>
           </CardContent>
@@ -385,7 +382,7 @@ export default function TipPage() {
         <Button
           onClick={handleTip}
           disabled={processing || (tipType === 'custom' && (!customAmount || parseFloat(customAmount) <= 0))}
-          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-4 text-lg font-semibold"
+          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white py-6 text-lg font-black uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(16,185,129,0.2)]"
         >
           {processing ? (
             <div className="flex items-center gap-2">
@@ -394,41 +391,41 @@ export default function TipPage() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5" />
+              <Heart className="w-5 h-5 fill-white" />
               Send ${tipType === 'quick' ? selectedAmount : customAmount || '0'} Tip
             </div>
           )}
         </Button>
 
         {/* Security Note */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+        <div className="mt-8 p-6 bg-[#0d1321]/40 border border-white/5 rounded-2xl backdrop-blur-xl">
           <div className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
-            <div className="text-sm text-gray-600">
-              <p className="font-medium text-gray-900 mb-1">Secure Payment</p>
-              <p>Your payment information is encrypted and secure. Tips are processed instantly.</p>
+            <CheckCircle className="w-5 h-5 text-emerald-500 mt-0.5" />
+            <div className="text-xs text-slate-400">
+              <p className="font-bold text-white mb-1 uppercase tracking-wide">Secure Payment</p>
+              <p className="leading-relaxed">Your payment information is encrypted and secure. Tips are processed instantly.</p>
             </div>
           </div>
         </div>
 
         {/* Alternative Actions */}
-        <div className="mt-6 text-center space-y-3">
-          <p className="text-sm text-gray-600">
+        <div className="mt-8 text-center space-y-4">
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
             Want to support in other ways?
           </p>
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              className="flex-1"
+          <div className="flex gap-4">
+            <Button
+              variant="outline"
+              className="flex-1 border-white/10 text-white hover:bg-white/10 h-12 rounded-full font-bold uppercase tracking-wider text-xs"
               onClick={() => router.push(`/social/chat/${matchId}`)}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
               Message
             </Button>
             {match.user.is_creator && (
-              <Button 
-                variant="outline" 
-                className="flex-1"
+              <Button
+                variant="outline"
+                className="flex-1 border-white/10 text-white hover:bg-white/10 h-12 rounded-full font-bold uppercase tracking-wider text-xs"
                 onClick={() => router.push(`/social/subscribe/${matchId}`)}
               >
                 <Crown className="w-4 h-4 mr-2" />

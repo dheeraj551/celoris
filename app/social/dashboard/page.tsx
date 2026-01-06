@@ -294,93 +294,93 @@ export default function SocialPlatformDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#050810]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading social platform...</p>
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400">Loading social platform...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen bg-[#050810] text-slate-100">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
             Social Platform Dashboard
           </h1>
-          <p className="text-gray-600">
+          <p className="text-slate-400 font-medium">
             Welcome back, {profile?.full_name || 'User'}! Here's what's happening in your social world.
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-[#0d1321] border border-white/5">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white uppercase tracking-widest text-[10px] font-black">Overview</TabsTrigger>
+            <TabsTrigger value="messages" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white uppercase tracking-widest text-[10px] font-black">Messages</TabsTrigger>
+            <TabsTrigger value="notifications" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white uppercase tracking-widest text-[10px] font-black">Notifications</TabsTrigger>
+            <TabsTrigger value="integrations" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white uppercase tracking-widest text-[10px] font-black">Integrations</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
+              <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Total Matches</p>
-                      <p className="text-3xl font-bold text-gray-800">{socialStats.totalMatches}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Total Matches</p>
+                      <p className="text-3xl font-black text-white italic">{socialStats.totalMatches}</p>
                     </div>
-                    <Users className="w-8 h-8 text-pink-500" />
+                    <Users className="w-8 h-8 text-emerald-500" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Unread Messages</p>
-                      <p className="text-3xl font-bold text-gray-800">{socialStats.unreadMessages}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Unread Messages</p>
+                      <p className="text-3xl font-black text-white italic">{socialStats.unreadMessages}</p>
                     </div>
-                    <MessageCircle className="w-8 h-8 text-blue-500" />
+                    <MessageCircle className="w-8 h-8 text-emerald-400" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Online Now</p>
-                      <p className="text-3xl font-bold text-gray-800">{socialStats.onlineMatches}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Online Now</p>
+                      <p className="text-3xl font-black text-white italic">{socialStats.onlineMatches}</p>
                     </div>
-                    <Zap className="w-8 h-8 text-green-500" />
+                    <Zap className="w-8 h-8 text-yellow-400" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Recent Calls</p>
-                      <p className="text-3xl font-bold text-gray-800">{socialStats.recentCalls}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Recent Calls</p>
+                      <p className="text-3xl font-black text-white italic">{socialStats.recentCalls}</p>
                     </div>
-                    <Phone className="w-8 h-8 text-purple-500" />
+                    <Phone className="w-8 h-8 text-teal-400" />
                   </div>
                 </CardContent>
               </Card>
             </div>
 
             {/* Recent Activity */}
-            <Card>
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5" />
+                <CardTitle className="flex items-center space-x-2 text-white font-black italic uppercase tracking-tighter">
+                  <Activity className="w-5 h-5 text-emerald-500" />
                   <span>Recent Activity</span>
                 </CardTitle>
               </CardHeader>
@@ -388,16 +388,16 @@ export default function SocialPlatformDashboard() {
                 {recentActivity.length > 0 ? (
                   <div className="space-y-4">
                     {recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
                         {activity.user?.avatar_url ? (
                           <img
                             src={activity.user.avatar_url}
                             alt={activity.user.full_name}
-                            className="w-10 h-10 rounded-full object-cover"
+                            className="w-10 h-10 rounded-full object-cover border border-white/10"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
-                            <span className="text-gray-600 font-bold">
+                          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                            <span className="text-emerald-400 font-bold">
                               {activity.user?.full_name?.charAt(0) || '?'}
                             </span>
                           </div>
@@ -406,68 +406,59 @@ export default function SocialPlatformDashboard() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
                             {getActivityIcon(activity.type)}
-                            <h4 className="font-medium text-gray-800">{activity.title}</h4>
-                            <Badge variant="outline" className="text-xs">
+                            <h4 className="font-bold text-white text-sm">{activity.title}</h4>
+                            <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30">
                               {activity.type}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-600">{activity.description}</p>
-                          <p className="text-xs text-gray-500">{formatTimeAgo(activity.timestamp)}</p>
+                          <p className="text-sm text-slate-400">{activity.description}</p>
+                          <p className="text-xs text-slate-600 uppercase tracking-wider font-bold">{formatTimeAgo(activity.timestamp)}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">No recent activity</h3>
-                    <p className="text-gray-600">Start swiping to see your activity here!</p>
+                    <TrendingUp className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-white mb-2">No recent activity</h3>
+                    <p className="text-slate-500">Start swiping to see your activity here!</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             {/* Quick Actions */}
-            <Card>
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle className="text-white font-black italic uppercase tracking-tighter">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Button
                     onClick={() => window.location.href = '/social/swipe'}
-                    className="h-20 flex-col space-y-2"
+                    className="h-24 flex-col space-y-2 bg-emerald-600/10 hover:bg-emerald-600/20 border-emerald-500/20 text-emerald-400 hover:text-emerald-300"
                     variant="outline"
                   >
-                    <Heart className="w-6 h-6 text-pink-500" />
-                    <span>Start Swiping</span>
+                    <Heart className="w-6 h-6" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Start Swiping</span>
                   </Button>
-
-                  {/* <Button 
-                    onClick={() => window.location.href = '/social/matches'}
-                    className="h-20 flex-col space-y-2"
-                    variant="outline"
-                  >
-                    <Users className="w-6 h-6 text-blue-500" />
-                    <span>View Matches</span>
-                  </Button> */}
 
                   <Button
                     onClick={() => window.location.href = '/social/profile'}
-                    className="h-20 flex-col space-y-2"
+                    className="h-24 flex-col space-y-2 bg-white/5 hover:bg-white/10 border-white/10 text-white"
                     variant="outline"
                   >
-                    <Settings className="w-6 h-6 text-gray-500" />
-                    <span>Edit Profile</span>
+                    <Settings className="w-6 h-6" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Edit Profile</span>
                   </Button>
 
                   <Button
                     onClick={() => setActiveTab('notifications')}
-                    className="h-20 flex-col space-y-2"
+                    className="h-24 flex-col space-y-2 bg-white/5 hover:bg-white/10 border-white/10 text-white"
                     variant="outline"
                   >
-                    <Bell className="w-6 h-6 text-purple-500" />
-                    <span>Notifications</span>
+                    <Bell className="w-6 h-6" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Notifications</span>
                   </Button>
                 </div>
               </CardContent>
@@ -476,21 +467,21 @@ export default function SocialPlatformDashboard() {
 
           {/* Messages Tab */}
           <TabsContent value="messages" className="space-y-6">
-            <Card>
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-white font-black italic uppercase tracking-tighter">
                   <span>Your Matches</span>
-                  <Badge variant="secondary">{matches.length} matches</Badge>
+                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{matches.length} matches</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {matches.length > 0 ? (
                   <div className="grid gap-4">
                     {matches.map((match) => (
-                      <div key={match.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-3">
+                      <div key={match.id} className="flex items-center justify-between p-4 border border-white/5 rounded-2xl hover:bg-white/5 transition-colors group bg-[#050810]/50">
+                        <div className="flex items-center space-x-4">
                           <div className="relative">
-                            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-pink-200 to-purple-200">
+                            <div className="w-14 h-14 rounded-[1rem] overflow-hidden bg-emerald-500/10 border-2 border-white/10 group-hover:border-emerald-500/50 transition-colors">
                               {match.otherUser.avatar_url ? (
                                 <img
                                   src={match.otherUser.avatar_url}
@@ -499,7 +490,7 @@ export default function SocialPlatformDashboard() {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <span className="text-gray-600 font-bold">
+                                  <span className="text-emerald-400 font-bold text-lg">
                                     {match.otherUser.full_name.charAt(0)}
                                   </span>
                                 </div>
@@ -509,14 +500,14 @@ export default function SocialPlatformDashboard() {
                           </div>
 
                           <div>
-                            <h3 className="font-medium text-gray-800 flex items-center space-x-2">
+                            <h3 className="font-bold text-white flex items-center space-x-2 text-lg italic">
                               <span>{match.otherUser.full_name}</span>
-                              {match.otherUser.is_verified && <Star className="w-4 h-4 text-blue-500" />}
-                              {match.otherUser.is_premium && <Crown className="w-4 h-4 text-yellow-500" />}
+                              {match.otherUser.is_verified && <Star className="w-4 h-4 text-emerald-400 fill-emerald-400" />}
+                              {match.otherUser.is_premium && <Crown className="w-4 h-4 text-yellow-400 fill-yellow-400" />}
                             </h3>
-                            <p className="text-sm text-gray-600">@{match.otherUser.username}</p>
+                            <p className="text-sm text-slate-400">@{match.otherUser.username}</p>
                             {match.last_message_at && (
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">
                                 Last message {formatTimeAgo(match.last_message_at)}
                               </p>
                             )}
@@ -546,6 +537,7 @@ export default function SocialPlatformDashboard() {
                         <Button
                           size="sm"
                           onClick={() => window.location.href = `/social/chat/${match.id}`}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white border-none rounded-full px-6"
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Chat
@@ -555,12 +547,12 @@ export default function SocialPlatformDashboard() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">No matches yet</h3>
-                    <p className="text-gray-600">Start swiping to find your matches!</p>
+                    <Users className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-white mb-2">No matches yet</h3>
+                    <p className="text-slate-500">Start swiping to find your matches!</p>
                     <Button
                       onClick={() => window.location.href = '/social/swipe'}
-                      className="mt-4"
+                      className="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white border-none"
                     >
                       Start Swiping
                     </Button>
@@ -572,10 +564,10 @@ export default function SocialPlatformDashboard() {
 
           {/* Calls Tab */}
           <TabsContent value="calls" className="space-y-6">
-            <Card>
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <PhoneCall className="w-5 h-5" />
+                <CardTitle className="flex items-center space-x-2 text-white font-black italic uppercase tracking-tighter">
+                  <PhoneCall className="w-5 h-5 text-emerald-500" />
                   <span>Video & Voice Calls</span>
                 </CardTitle>
               </CardHeader>
@@ -591,21 +583,22 @@ export default function SocialPlatformDashboard() {
                   />
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-gray-600">
+                    <p className="text-slate-400">
                       Start a video or voice call with your matches. All calls are powered by Agora for high-quality communication.
                     </p>
 
                     {matches.length > 0 && (
                       <div className="space-y-2">
-                        <h4 className="font-medium">Available for calls:</h4>
+                        <h4 className="font-bold text-white">Available for calls:</h4>
                         <div className="grid gap-2">
                           {matches.slice(0, 3).map((match) => (
-                            <div key={match.id} className="flex items-center justify-between p-3 border rounded-lg">
-                              <span>{match.otherUser.full_name}</span>
+                            <div key={match.id} className="flex items-center justify-between p-3 border border-white/5 rounded-lg bg-[#050810]/50">
+                              <span className="text-white font-medium">{match.otherUser.full_name}</span>
                               <div className="space-x-2">
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  className="border-white/10 text-slate-300 hover:bg-white/10 hover:text-white"
                                   onClick={() => handleStartCall(match.id, false)}
                                 >
                                   <Phone className="w-4 h-4 mr-1" />
@@ -613,6 +606,7 @@ export default function SocialPlatformDashboard() {
                                 </Button>
                                 <Button
                                   size="sm"
+                                  className="bg-emerald-600 hover:bg-emerald-500 text-white border-none"
                                   onClick={() => handleStartCall(match.id, true)}
                                 >
                                   <VideoIcon className="w-4 h-4 mr-1" />
@@ -627,12 +621,12 @@ export default function SocialPlatformDashboard() {
 
                     {matches.length === 0 && (
                       <div className="text-center py-8">
-                        <PhoneCall className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-800 mb-2">No matches to call</h3>
-                        <p className="text-gray-600">Match with someone to start calling!</p>
+                        <PhoneCall className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                        <h3 className="text-lg font-bold text-white mb-2">No matches to call</h3>
+                        <p className="text-slate-500">Match with someone to start calling!</p>
                         <Button
                           onClick={() => window.location.href = '/social/swipe'}
-                          className="mt-4"
+                          className="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white border-none"
                         >
                           Start Matching
                         </Button>

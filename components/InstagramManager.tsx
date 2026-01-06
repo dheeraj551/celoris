@@ -16,10 +16,15 @@ import {
   ExternalLink,
   Upload,
   Camera,
-  Loader2
+  Loader2,
+  Sparkles,
+  Zap,
+  Target,
+  ArrowRight
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import InstagramPosts from './InstagramPosts';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SocialPost {
   id: string;
@@ -54,7 +59,6 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
     try {
       setLoading(true);
       const supabase = createClient();
-
       const result = await supabase
         .from('instagram_posts')
         .select('*')
@@ -74,37 +78,24 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size should be less than 5MB');
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size exceeds 10MB limit.');
       return;
     }
 
     try {
       setIsUploading(true);
       const supabase = createClient();
-
-      // Create a unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       const filePath = fileName;
 
-      // Upload to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from('post-media')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+        .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
-      if (uploadError) {
-        if (uploadError.message === 'Bucket not found') {
-          throw new Error('Support bucket "post-media" not found. Please ensure a public bucket named "post-media" exists in your Supabase dashboard.');
-        }
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('post-media')
         .getPublicUrl(filePath);
@@ -113,7 +104,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
       setPostType(file.type.startsWith('video/') ? 'video' : 'image');
     } catch (error: any) {
       console.error('Error uploading file:', error);
-      alert(`Failed to upload media: ${error.message}`);
+      alert(`Upload failure: ${error.message}`);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -126,48 +117,32 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
     try {
       setIsSubmitting(true);
       const supabase = createClient();
-
-      // Auto-detect type if needed, but we have a selector
-      let finalType = postType;
-
       const { error } = await supabase
         .from('instagram_posts')
         .insert({
           user_id: user.id,
           media_url: mediaUrl,
           caption: caption,
-          post_type: finalType
+          post_type: postType
         } as any);
 
       if (error) throw error;
 
-      // Reset form
       setMediaUrl('');
       setCaption('');
       setPostType('image');
-
-      // Reload posts
       loadPosts();
-
-      // Switch to posts tab (optional, or just show success)
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Failed to create post. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeletePost = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
     try {
       const supabase = createClient();
-      const { error } = await supabase
-        .from('instagram_posts')
-        .delete()
-        .eq('id', id);
-
+      const { error } = await supabase.from('instagram_posts').delete().eq('id', id);
       if (error) throw error;
       loadPosts();
     } catch (error) {
@@ -176,167 +151,154 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Instagram className="h-6 w-6 text-white" />
+    <div className="space-y-12">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-10 bg-white/5 border border-white/5 rounded-[3rem] backdrop-blur-3xl shadow-3xl">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-3xl">
+            <Instagram className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Social Media Manager</h2>
-            <p className="text-sm text-gray-600">Manage your social feed and content</p>
+            <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter">Identity Feed</h2>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">BROADCAST YOUR NEURAL FRAGMENTS TO THE NEXUS.</p>
           </div>
         </div>
       </div>
 
       <Tabs defaultValue="create" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="create" className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Create Post</span>
+        <TabsList className="grid w-full grid-cols-2 bg-white/5 p-2 rounded-[2rem] border border-white/5 mb-10 h-16">
+          <TabsTrigger value="create" className="rounded-2xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-2xl transition-all font-black uppercase tracking-widest text-[9px]">
+            <Plus className="h-3 w-3 mr-2" /> CREATE_NODE
           </TabsTrigger>
-          <TabsTrigger value="manage" className="flex items-center space-x-2">
-            <ExternalLink className="h-4 w-4" />
-            <span>Manage Posts</span>
+          <TabsTrigger value="manage" className="rounded-2xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-2xl transition-all font-black uppercase tracking-widest text-[9px]">
+            <Target className="h-3 w-3 mr-2" /> MANAGE_FEED
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="create" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Post</CardTitle>
-              <CardDescription>
-                Upload an image or video to share on your profile.
-              </CardDescription>
+        <TabsContent value="create" className="mt-0">
+          <Card className="bg-[#0b121e]/80 border-white/5 backdrop-blur-3xl rounded-[3.5rem] p-10 shadow-3xl">
+            <CardHeader className="p-0 mb-10">
+              <div className="flex items-center gap-3 mb-2">
+                <Sparkles size={14} className="text-blue-400" />
+                <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">DATA UPLINK</CardTitle>
+              </div>
+              <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">INJECT NEW MEDIA INTO YOUR NEURAL STREAM.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <Label>Media Content</Label>
-
-                {/* Upload Section */}
-                <div className="w-full">
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className={`
-                      relative aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all
-                      ${mediaUrl ? 'border-primary-500 bg-primary-50/50' : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'}
+            <CardContent className="p-0 space-y-10">
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">MEDIA_BITSTREAM</Label>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`
+                      relative aspect-video rounded-[2.5rem] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden group/upload
+                      ${mediaUrl ? 'border-blue-500/50 bg-blue-500/5' : 'border-white/10 hover:border-blue-500/40 bg-white/[0.02] hover:bg-white/[0.05]'}
                     `}
-                  >
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="image/*,video/*"
-                      className="hidden"
-                    />
+                >
+                  <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,video/*" className="hidden" />
 
-                    {isUploading ? (
-                      <div className="flex flex-col items-center space-y-2">
-                        <Loader2 className="h-8 w-8 text-primary-500 animate-spin" />
-                        <span className="text-sm font-medium text-gray-600">Uploading to post-media...</span>
+                  {isUploading ? (
+                    <div className="flex flex-col items-center space-y-4 animate-pulse">
+                      <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">TRANSMITTING DATA...</span>
+                    </div>
+                  ) : mediaUrl ? (
+                    <div className="relative w-full h-full">
+                      {postType === 'video' ? (
+                        <video src={mediaUrl} className="w-full h-full object-cover" controls />
+                      ) : (
+                        <img src={mediaUrl} alt="P" className="w-full h-full object-cover" />
+                      )}
+                      <div className="absolute top-6 right-6 p-4 bg-[#050810]/80 backdrop-blur-3xl rounded-2xl border border-white/10 text-white shadow-3xl hover:scale-110 transition-transform" onClick={(e) => { e.stopPropagation(); setMediaUrl(''); }}>
+                        <Plus className="h-4 w-4 rotate-45" />
                       </div>
-                    ) : mediaUrl ? (
-                      <div className="relative w-full h-full p-2">
-                        {postType === 'video' ? (
-                          <video
-                            src={mediaUrl}
-                            className="w-full h-full object-contain rounded-lg"
-                            controls
-                          />
-                        ) : (
-                          <img
-                            src={mediaUrl}
-                            alt="Preview"
-                            className="w-full h-full object-contain rounded-lg"
-                          />
-                        )}
-                        <div className="absolute top-4 right-4 bg-primary-500 text-white p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform" onClick={(e) => { e.stopPropagation(); setMediaUrl(''); }}>
-                          <Plus className="h-4 w-4 rotate-45" />
-                        </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center space-y-6">
+                      <div className="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center border border-blue-500/20 group-hover/upload:scale-110 transition-transform">
+                        <Upload className="h-8 w-8 text-blue-400" />
                       </div>
-                    ) : (
-                      <div className="flex flex-col items-center space-y-3">
-                        <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
-                          <Upload className="h-8 w-8 text-primary-600" />
-                        </div>
-                        <div className="text-center px-4">
-                          <span className="block text-base font-semibold text-gray-900">Click to upload media</span>
-                          <span className="block text-sm text-gray-500 mt-1">Images or Videos (max 5MB)</span>
-                        </div>
+                      <div className="text-center">
+                        <span className="block text-sm font-black text-white italic uppercase tracking-tighter">SELECT_MEDIA_FILE</span>
+                        <span className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mt-2">{'{ IMAGES | VIDEOS | MAX_10MB }'}</span>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="caption">Caption (Optional)</Label>
+              <div className="space-y-4">
+                <Label htmlFor="caption" className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">DESCRIPTIVE_CAPTION</Label>
                 <Textarea
                   id="caption"
-                  placeholder="Write a caption..."
+                  placeholder="Annotate this fragment..."
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
-                  rows={3}
+                  className="bg-white/5 border-white/10 focus:border-blue-500/50 text-white rounded-[1.5rem] px-6 py-4 font-bold tracking-tight h-24 focus:outline-none transition-all resize-none shadow-inner"
                 />
               </div>
 
-              <Button
-                onClick={handleCreatePost}
-                disabled={!mediaUrl || isSubmitting}
-                className="w-full h-11 text-base font-medium"
-              >
-                {isSubmitting ? 'Creating...' : 'Create Post'}
-              </Button>
+              <div className="pt-4">
+                <Button
+                  onClick={handleCreatePost}
+                  disabled={!mediaUrl || isSubmitting}
+                  className="w-full h-16 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-blue-500/20 border-none transition-all"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      COMMITTING_FRAGMENTS...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <Zap className="h-4 w-4" />
+                      INITIALIZE_BROADCAST
+                    </div>
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="manage" className="mt-6">
-          <div className="space-y-4">
+        <TabsContent value="manage" className="mt-0">
+          <div className="space-y-8">
             {posts.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center text-gray-500">
-                  No posts yet. Create one to get started!
-                </CardContent>
+              <Card className="bg-white/5 border-white/10 rounded-[3rem] p-16 text-center italic font-black uppercase tracking-widest text-[10px] text-slate-600">
+                NO FRAGMENTS DETECTED IN STREAM.
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {posts.map((post) => (
-                  <Card key={post.id} className="overflow-hidden">
-                    <CardContent className="p-0 relative group">
-                      {/* Preview based on type */}
-                      <div className="aspect-square bg-gray-100 relative">
-                        {post.post_type === 'image' && (
-                          <img src={post.media_url} alt={post.caption || 'Post'} className="w-full h-full object-cover" />
-                        )}
-                        {post.post_type === 'video' && (
-                          <video src={post.media_url} className="w-full h-full object-cover" />
-                        )}
-                        {post.post_type === 'instagram' && (
-                          <div className="flex items-center justify-center h-full text-gray-400">
-                            <Instagram className="h-12 w-12" />
-                          </div>
-                        )}
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    key={post.id}
+                    className="group/item relative rounded-[2.5rem] overflow-hidden bg-white/5 border border-white/5 shadow-3xl h-[400px]"
+                  >
+                    {post.post_type === 'image' && (
+                      <img src={post.media_url} alt="N" className="w-full h-full object-cover transition-transform duration-700 group-hover/item:scale-110" />
+                    )}
+                    {post.post_type === 'video' && (
+                      <video src={post.media_url} className="w-full h-full object-cover" controls />
+                    )}
 
-                        {/* Overlay Actions */}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            onClick={() => handleDeletePost(post.id)}
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </Button>
-                        </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col justify-end p-8 gap-4">
+                      <p className="text-xs font-bold text-white uppercase italic tracking-tight line-clamp-2">
+                        {post.caption || 'UNNAMED_FRAGMENT'}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">{post.post_type.toUpperCase()}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeletePost(post.id)}
+                          className="h-10 w-10 bg-rose-500/20 hover:bg-rose-500 text-rose-500 hover:text-white rounded-xl transition-all border border-rose-500/20"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-
-                      <div className="p-3">
-                        <p className="text-sm text-gray-600 line-clamp-2">{post.caption || 'No caption'}</p>
-                        <p className="text-xs text-gray-400 mt-1 capitalize">{post.post_type}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -345,9 +307,14 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
       </Tabs>
 
       {/* Live Preview of Feed */}
-      <div className="mt-12">
-        <h3 className="text-lg font-semibold mb-4">Your Feed Preview</h3>
-        <InstagramPosts userId={user.id} showHeader={false} />
+      <div className="mt-24 space-y-10">
+        <div className="flex items-center gap-4 px-2">
+          <div className="h-1.5 w-12 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+          <h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Live Preview</h3>
+        </div>
+        <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[4rem] backdrop-blur-3xl shadow- inner">
+          <InstagramPosts userId={user.id} showHeader={false} />
+        </div>
       </div>
     </div>
   );

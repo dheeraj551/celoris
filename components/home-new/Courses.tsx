@@ -1,40 +1,60 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { PlayCircle, Clock, Star } from 'lucide-react';
+import { PlayCircle, Clock, Star, Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
 import { CourseCardProps } from './types';
+import { motion } from 'framer-motion';
 
 export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, instructor, duration, price, tag, image }) => (
-    <div className="flex flex-col sm:flex-row bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        <div className="w-full sm:w-48 bg-slate-200 relative h-48 sm:h-auto">
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        whileHover={{ y: -5 }}
+        className="flex flex-col sm:flex-row bg-[#0d1321]/40 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-3xl hover:border-emerald-500/30 transition-all duration-500 group"
+    >
+        <div className="w-full sm:w-56 bg-[#00120d] relative h-56 sm:h-auto overflow-hidden">
             <img
-                src={image || `https://picsum.photos/200/200?random=${Math.random()}`}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                src={image || `https://picsum.photos/400/400?random=${Math.random()}`}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100"
                 alt={title}
             />
-            {tag && <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-950 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">{tag}</span>}
+            {tag && (
+                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500 px-3 py-1 rounded-full shadow-3xl shadow-emerald-500/50">
+                    <Sparkles size={10} className="text-white" />
+                    <span className="text-white text-[9px] font-black uppercase tracking-widest italic">{tag}</span>
+                </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0d1321]/80 to-transparent sm:block hidden pointer-events-none" />
         </div>
-        <div className="p-5 flex-1 flex flex-col justify-between">
+
+        <div className="p-8 flex-1 flex flex-col justify-between">
             <div>
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">{category}</span>
-                    <div className="flex items-center gap-0.5 text-yellow-400">
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg uppercase tracking-widest italic">{category}</span>
+                    <div className="flex items-center gap-1 text-emerald-500">
                         <Star size={10} fill="currentColor" />
-                        <span className="text-[10px] font-medium text-slate-500">4.9</span>
+                        <span className="text-[10px] font-black tracking-widest">4.9 SYNC</span>
                     </div>
                 </div>
-                <h3 className="text-base font-bold text-slate-900 leading-tight mb-2 line-clamp-2">{title}</h3>
-                <p className="text-xs text-slate-500 mb-3 line-clamp-2">This comprehensive course is designed to transform you...</p>
 
-                <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
-                    <div className="flex items-center gap-1"><PlayCircle size={12} /> {instructor || 'Instructor'}</div>
-                    <div className="flex items-center gap-1"><Clock size={12} /> {duration || 'N/A'}</div>
+                <h3 className="text-xl font-black text-white leading-tight mb-4 group-hover:text-emerald-400 transition-colors uppercase italic tracking-tighter line-clamp-2">{title}</h3>
+
+                <div className="flex items-center gap-6 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6 italic">
+                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/50" /> {instructor || 'Celoris Node'}</div>
+                    <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/50" /> {duration || 'AUTO-SYNC'}</div>
                 </div>
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-                <span className="text-lg font-bold text-slate-900">{price && price.toString().startsWith('$') ? price : `₹${price}`}</span>
+            <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5 italic">Protocol Cost</span>
+                    <span className="text-2xl font-black text-white italic tracking-tighter">
+                        {price && price.toString().startsWith('$') ? price : `₹${price}`}
+                    </span>
+                </div>
+
                 {id ? (
                     <Link
                         href={
@@ -84,31 +104,23 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                                     ? '/courses/agentic-ai-for-cybersecurity'
                                                                                                                     : `/learn/course/${id}`
                         }
-                        className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200 inline-block text-center"
+                        className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
                     >
-                        View Course
+                        Initialize <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                 ) : (
-                    <button className="px-4 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200">
-                        View Course
+                    <button className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl">
+                        Locked
                     </button>
                 )}
             </div>
         </div>
-    </div>
+    </motion.div>
 );
 
-interface CoursesProps {
-    title?: string;
-    description?: string;
-    limit?: number;
-    showBrowseAll?: boolean;
-    featured?: boolean;
-}
-
-export const Courses: React.FC<CoursesProps> = ({
-    title = "Latest Courses",
-    description = "Explore our newest courses and start your learning journey.",
+export const Courses: React.FC<any> = ({
+    title = "Latest Transmissions",
+    description = "Explore our newest knowledge nodes into the global grid.",
     limit = 6,
     showBrowseAll = true,
     featured = false
@@ -116,330 +128,74 @@ export const Courses: React.FC<CoursesProps> = ({
     const [courses, setCourses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Static featured courses
     const staticCourses = [
-        {
-            id: 'architecting-trust-static',
-            title: 'Architecting Trust: AI Safety, Ethics & Compliance',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs',
-            course_duration: '6-8 Weeks',
-            price: 21999,
-            is_featured: true,
-            course_image_url: '/architecting-trust-ai-safety-cover.png',
-            is_static: true,
-            static_url: '/courses/architecting-trust-ai-safety-ethics-compliance'
-        },
-        {
-            id: 'agentic-ai-cybersecurity-static',
-            title: 'Agentic AI for Cybersecurity: Building and Scaling Autonomous Defense & Automation Systems',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs',
-            course_duration: '6-8 Weeks',
-            price: 29999,
-            is_featured: true,
-            course_image_url: '/agentic-ai-cybersecurity-cover.png',
-            is_static: true,
-            static_url: '/courses/agentic-ai-for-cybersecurity'
-        },
-        {
-            id: 'mastering-multimodal-ai-static',
-            title: 'Mastering Multimodal AI: Engineering Vision, Audio, and Language Fusion Systems',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs',
-            course_duration: '8-10 Weeks',
-            price: 24999,
-            is_featured: true,
-            course_image_url: '/mastering-multimodal-ai-cover.png',
-            is_static: true,
-            static_url: '/courses/mastering-multimodal-ai'
-        },
-        {
-            id: 'vibe-coding-mastery-static',
-            title: 'Vibe Coding Mastery: Build Apps Using AI-First Development Workflows',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs',
-            course_duration: '4-6 Weeks',
-            price: 19999,
-            is_featured: true,
-            course_image_url: '/vibe-coding-mastery-cover.png',
-            is_static: true,
-            static_url: '/courses/vibe-coding-mastery'
-        },
-        {
-            id: 'build-ai-products-static',
-            title: 'Build AI Products That Make Money (Practical Guide)',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '12 hours',
-            price: 15000,
-            is_featured: true,
-            course_image_url: '/build-ai-products-cover.png',
-            is_static: true,
-            static_url: '/courses/build-ai-products-that-make-money-practical-guide'
-        },
-        {
-            id: 'langchain-real-static',
-            title: 'LangChain in Action: Real Workflows',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '12 hours',
-            price: 15000,
-            is_featured: true,
-            course_image_url: '/langchain-in-action-cover.png',
-            is_static: true,
-            static_url: '/courses/langchain-in-action-real-workflows'
-        },
-        {
-            id: 'rag-unlocked-static',
-            title: 'RAG Unlocked: Production-Grade Search & Answer Systems',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '10 hours',
-            price: 15000,
-            is_featured: true,
-            course_image_url: '/rag-unlocked-cover.png',
-            is_static: true,
-            static_url: '/courses/rag-unlocked-production-grade-search-answer-systems'
-        },
-        {
-            id: 'deploy-scale-ai-static',
-            title: 'Deploy & Scale AI Apps (Serverless + Edge)',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '10 hours',
-            price: 15000,
-            is_featured: true,
-            course_image_url: '/deploy-scale-ai-apps-cover.png',
-            is_static: true,
-            static_url: '/courses/deploy-scale-ai-apps-serverless-edge'
-        },
-        {
-            id: 'llm-prompt-engineering-static',
-            title: 'LLM Prompt Engineering for Real Results',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '12 hours',
-            price: 15000,
-            is_featured: true,
-            course_image_url: '/llm-prompt-engineering-cover.png',
-            is_static: true,
-            static_url: '/courses/llm-prompt-engineering-for-real-results'
-        },
-        {
-            id: 'agentic-ai-systems-static',
-            title: 'Agentic AI Systems: Design, Build & Deploy',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '15 hours',
-            price: 15000,
-            is_featured: true,
-            course_image_url: '/agentic-ai-systems-cover.png',
-            is_static: true,
-            static_url: '/courses/agentic-ai-systems-design-build-deploy'
-        },
-        {
-            id: 'livekit-ai-agents-static',
-            title: 'Build Real-Time AI Agents with LiveKit',
-            subject: 'Artificial Intelligence',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '10 hours',
-            price: 14999,
-            is_featured: true,
-            course_image_url: '/livekit-ai-agents-cover.png',
-            is_static: true,
-            static_url: '/courses/build-real-time-ai-agents-with-livekit'
-        },
-        {
-            id: 'class-9-maths-static',
-            title: 'Class 9th Mathematics: Complete Syllabus & Mastery Guide',
-            subject: 'Mathematics',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 1999,
-            is_featured: true,
-            course_image_url: '/class-9-maths-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
-        },
-        {
-            id: '28-day-reset-static',
-            title: 'The 28-Day Reset: Foundation Strength & Mobility',
-            subject: 'Fitness',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '4 Weeks',
-            price: 3999,
-            is_featured: true,
-            course_image_url: '/28-day-reset-cover.jpg',
-            is_static: true,
-            static_url: '/courses/the-28-day-reset-foundation-strength-mobility'
-        },
-        {
-            id: 'class-10-chemistry-static',
-            title: 'Class 10 Chemistry Full Course',
-            subject: 'Chemistry',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 1999,
-            is_featured: true,
-            course_image_url: '/class-10-chemistry-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-10-chemistry-complete-course'
-        },
-        {
-            id: 'class-11-chemistry-static',
-            title: 'Class 11 Chemistry Complete Course Syllabus',
-            subject: 'Chemistry',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 2499,
-            is_featured: true,
-            course_image_url: '/class-11-chemistry-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-11-chemistry-complete-course'
-        },
-        {
-            id: 'class-12-chemistry-static',
-            title: 'Class 12 Chemistry: Advanced Mastery & Organic Synthesis',
-            subject: 'Chemistry',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 2999,
-            is_featured: true,
-            course_image_url: '/class-12-chemistry-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-12-chemistry-complete-course'
-        },
-        {
-            id: 'class-9-chemistry-static',
-            title: 'Class 9 Chemistry: Complete Course Overview',
-            subject: 'Chemistry',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 1999,
-            is_featured: true,
-            course_image_url: '/class-9-chemistry-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-9-chemistry-complete-course'
-        },
-        {
-            id: 'class-12-physics-static',
-            title: 'Class 12th Physics Complete Course',
-            subject: 'Physics',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 2499,
-            is_featured: true,
-            course_image_url: '/class-12-physics-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-12-physics-complete-course'
-        },
-        {
-            id: 'class-11-physics-static',
-            title: 'Class 11 Physics: Comprehensive Course Syllabus (2025-26)',
-            subject: 'Physics',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: 'Full Year',
-            price: 2499,
-            is_featured: true,
-            course_image_url: '/class-11-physics-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-11-physics-comprehensive-course'
-        },
-        {
-            id: 'class-10-physics-static',
-            title: 'Class 10 Physics Master Course: Light, Electricity, Magnetism & Energy',
-            subject: 'Physics',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '4 months',
-            price: 1500,
-            is_featured: true,
-            course_image_url: '/class-10-physics-cover.jpg',
-            is_static: true,
-            static_url: '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
-        },
-        {
-            id: 'yoga-mastery-2025-static',
-            title: 'The Complete 2025 Yoga Mastery Course: From Beginner Poses to Advanced Mindfulness',
-            subject: 'Yoga',
-            instructor_name: 'Celoris Designs llp',
-            course_duration: '12 Weeks',
-            price: 6000,
-            is_featured: true,
-            course_image_url: '/yoga-mastery-2025-cover.jpg',
-            is_static: true,
-            static_url: '/courses/complete-2025-yoga-mastery-course'
-        }
+        { id: 'architecting-trust-static', title: 'Architecting Trust: AI Safety, Ethics & Compliance', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: '/architecting-trust-ai-safety-cover.png' },
+        { id: 'agentic-ai-cybersecurity-static', title: 'Agentic AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: '/agentic-ai-cybersecurity-cover.png' },
+        { id: 'mastering-multimodal-ai-static', title: 'Mastering Multimodal AI: Vision, Audio & Fusion', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: '/mastering-multimodal-ai-cover.png' },
+        { id: 'vibe-coding-mastery-static', title: 'Vibe Coding Mastery: AI-First Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
+        { id: 'agentic-ai-systems-static', title: 'Agentic AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
+        { id: 'livekit-ai-agents-static', title: 'Build Real-Time AI Agents with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '10 hours', price: 14999, is_featured: true, course_image_url: '/livekit-ai-agents-cover.png' }
     ];
 
     useEffect(() => {
         const fetchCourses = async () => {
             const supabase = createClient();
-            let query = supabase
+            const { data } = await supabase
                 .from('courses')
                 .select('*')
-                .eq('is_published', true);
-
-            if (featured) {
-                query = query.eq('is_featured', true);
-            }
-
-            const { data, error } = await query
+                .eq('is_published', true)
                 .order('created_at', { ascending: false })
                 .limit(limit);
 
-            if (data) {
-                // Exclude test courses
-                const testCourseTitles = [
-                    'Agentic AI for Beginners: From Prompts to Action',
-                    'Mastering Nano Banana Pro',
-                    'My new ai course will be here'
-                ];
+            if (data && data.length > 0) {
+                const testCourseTitles = ['Agentic AI for Beginners: From Prompts to Action', 'Mastering Nano Banana Pro', 'My new ai course will be here'];
                 const filteredDbCourses = data.filter(c => !testCourseTitles.includes(c.title));
-
-                // Combine static + dynamic
                 const combined = [...staticCourses, ...filteredDbCourses].slice(0, limit);
                 setCourses(combined);
             } else {
-                setCourses(staticCourses);
+                setCourses(staticCourses.slice(0, limit));
             }
             setLoading(false);
         };
-
         fetchCourses();
     }, [limit, featured]);
 
     return (
-        <div className="mt-16 mb-16">
-            <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
-                {description && <p className="text-slate-500 text-sm mt-1">{description}</p>}
-            </div>
+        <div className="mt-24 md:mt-32 mb-32">
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="mb-16 px-4"
+            >
+                <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
+                    <Sparkles size={12} /> Knowledge Nodes
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-none">{title}</h2>
+                <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-5 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+                {description && <p className="text-slate-500 text-xs md:text-sm mt-6 font-bold uppercase tracking-widest italic">{description}</p>}
+            </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {courses.length > 0 ? (
-                    courses.map((course) => (
-                        <CourseCard
-                            key={course.id}
-                            id={course.id}
-                            title={course.title}
-                            category={course.subject}
-                            instructor={course.instructor_name}
-                            duration={course.course_duration}
-                            price={course.price}
-                            tag={course.is_featured ? 'Featured' : undefined}
-                            image={course.course_image_url}
-                        />
-                    ))
-                ) : (
-                    !loading && <div className="text-center col-span-2 text-slate-500">No courses available at the moment.</div>
-                )}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {courses.map((course) => (
+                    <CourseCard
+                        key={course.id}
+                        id={course.id}
+                        title={course.title}
+                        category={course.subject}
+                        instructor={course.instructor_name}
+                        duration={course.course_duration}
+                        price={course.price}
+                        tag={course.is_featured ? 'Elite' : undefined}
+                        image={course.course_image_url}
+                    />
+                ))}
             </div>
 
             {showBrowseAll && (
-                <div className="mt-8 text-center">
-                    <Link href="/learn/courses" className="px-6 py-2 bg-brand-600 text-white text-sm font-medium rounded-full hover:bg-brand-700 transition-colors inline-block shadow-sm shadow-brand-200">
-                        Browse All Courses
+                <div className="mt-16 text-center">
+                    <Link href="/learn/courses" className="px-10 py-5 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-white/10 transition-all inline-flex items-center gap-3 tracking-[0.2em] italic">
+                        Access All Nodes <ArrowRight size={16} className="text-emerald-500" />
                     </Link>
                 </div>
             )}

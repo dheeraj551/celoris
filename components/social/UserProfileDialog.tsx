@@ -22,7 +22,13 @@ import {
     MessageCircle,
     Shield,
     Flag,
-    AlertTriangle
+    AlertTriangle,
+    Sparkles,
+    Zap,
+    ShieldCheck,
+    MoreHorizontal,
+    Globe,
+    Target
 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -30,6 +36,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useRouter } from "next/navigation"
 import { AdUnit } from "@/components/AdUnit"
 import InstagramPosts from "@/components/InstagramPosts"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface UserProfileDialogProps {
     userId: string | null
@@ -64,7 +71,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
         if (open && userId) {
             loadProfile()
         } else {
-            // Reset state on close
             setProfile(null)
             setLoading(true)
             setError('')
@@ -79,12 +85,9 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     const loadProfile = async () => {
         if (!userId) return
-
         try {
             setLoading(true)
             const supabase = createClient()
-
-            // Fetch profile by ID
             const { data: profileData, error: profileError } = await supabase
                 .from('users')
                 .select('*')
@@ -92,16 +95,13 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                 .maybeSingle()
 
             if (profileError) throw profileError
-
             if (!profileData) {
                 setError('Profile not found')
                 return
             }
-
             setProfile(profileData)
 
             if (currentUser && profileData) {
-                // Check if they are already friends (matched)
                 const { data: match } = await supabase
                     .from('matches')
                     .select('*')
@@ -111,7 +111,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                 if (match) {
                     setIsFriend(true)
                 } else {
-                    // Check if friend request sent
                     const { data: swipe } = await supabase
                         .from('swipes')
                         .select('*')
@@ -120,12 +119,9 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                         .eq('direction', 'like')
                         .maybeSingle()
 
-                    if (swipe) {
-                        setRequestSent(true)
-                    }
+                    if (swipe) setRequestSent(true)
                 }
 
-                // Check if already liked
                 const { data: like } = await supabase
                     .from('swipes')
                     .select('*')
@@ -134,11 +130,8 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     .eq('direction', 'like')
                     .maybeSingle()
 
-                if (like) {
-                    setIsLiked(true)
-                }
+                if (like) setIsLiked(true)
 
-                // Check if blocked
                 const { data: block } = await supabase
                     .from('blocked_users')
                     .select('*')
@@ -148,7 +141,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
                 if (block) setIsBlocked(true)
             }
-
         } catch (error) {
             console.error('Error loading profile:', error)
             setError('Failed to load profile')
@@ -159,52 +151,32 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     const handleLikeProfile = async () => {
         if (!currentUser || !profile || isLiked) return
-
         try {
             const supabase = createClient()
-
-            // Insert like into swipes table (using 'like' as direction)
             const { error } = await supabase.from('swipes').insert({
                 swiper_id: currentUser.id,
                 target_user_id: profile.id,
                 direction: 'like'
             } as any)
-
             if (error) throw error
-
             setIsLiked(true)
             setRequestSent(true)
-
-            toast({
-                title: "Profile Liked!",
-                description: `You liked ${profile.full_name}'s profile.`,
-                duration: 3000,
-            })
-
+            toast({ title: "Profile Liked!", description: `Profile marked as high interest.`, duration: 3000 })
         } catch (error) {
             console.error('Error liking profile:', error)
-            toast({
-                title: "Error",
-                description: "Failed to like profile. Please try again.",
-                variant: "destructive",
-            })
+            toast({ title: "Error", description: "Failed to initiate sync.", variant: "destructive" })
         }
     }
 
     const handleSendMessage = () => {
-        if (isFriend) {
-            router.push('/social/matches')
-        }
+        if (isFriend) router.push('/social/matches')
     }
 
     const handleAddFriend = async () => {
         if (!currentUser || !profile || requestSent || sendingRequest) return
-
         setSendingRequest(true)
         try {
             const supabase = createClient()
-
-            // Record the swipe (friend request)
             const { error } = await supabase.from('swipes').insert({
                 swiper_id: currentUser.id,
                 target_user_id: profile.id,
@@ -213,7 +185,6 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
             if (error) throw error
 
-            // Check for match (if they already swiped right on us)
             const { data: oppositeSwipe } = await supabase
                 .from('swipes')
                 .select('*')
@@ -227,17 +198,13 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     user1_id: currentUser.id,
                     user2_id: profile.id
                 } as any)
-                alert("It's a match! You are now friends.")
                 setIsFriend(true)
-            } else {
-                // alert("Friend request sent!")
+                toast({ title: "Datalink Established!", description: "Target node is now matched. Channel open." })
             }
-
             setRequestSent(true)
             setIsLiked(true)
         } catch (error) {
             console.error('Error sending friend request:', error)
-            alert('Failed to send friend request')
         } finally {
             setSendingRequest(false)
         }
@@ -245,38 +212,25 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     const handleBlockUser = async () => {
         if (!currentUser || !profile) return
-
-        if (!confirm("Are you sure you want to block this user? They will not be able to message you.")) return
-
+        if (!confirm("Terminate ALL sync and block this node? Action is irreversible via standard protocols.")) return
         try {
             const supabase = createClient()
             const { error } = await supabase.from('blocked_users').insert({
                 blocker_id: currentUser.id,
                 blocked_id: profile.id
             } as any)
-
             if (error) throw error
-
             setIsBlocked(true)
-            toast({
-                title: "User Blocked",
-                description: "You have blocked this user.",
-            })
+            toast({ title: "Node Terminated", description: "All communication syncs have been severed." })
             onOpenChange(false)
         } catch (error) {
             console.error('Error blocking user:', error)
-            toast({
-                title: "Error",
-                description: "Failed to block user.",
-                variant: "destructive"
-            })
         }
     }
 
     const handleReportUser = async () => {
         if (!currentUser || !profile) return
         setIsSubmittingReport(true)
-
         try {
             const response = await fetch('/api/social/report', {
                 method: 'POST',
@@ -287,21 +241,11 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                     details: reportDetails
                 })
             })
-
             if (!response.ok) throw new Error('Failed to report')
-
-            toast({
-                title: "Report Sent",
-                description: "Our support team will review this report.",
-            })
+            toast({ title: "Incident Logged", description: "Protocol breach reported to central authority." })
             setShowReportView(false)
         } catch (error) {
             console.error('Error reporting user:', error)
-            toast({
-                title: "Error",
-                description: "Failed to send report.",
-                variant: "destructive"
-            })
         } finally {
             setIsSubmittingReport(false)
         }
@@ -311,238 +255,285 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#FDF8F3] p-0 border-none">
-                {loading ? (
-                    <div className="flex items-center justify-center p-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-                    </div>
-                ) : error ? (
-                    <div className="p-12 text-center">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Error</h3>
-                        <p className="text-gray-600">{error}</p>
-                    </div>
-                ) : profile ? (
-                    <div className="relative pb-24">
-                        {/* Cover Image & Profile Picture Wrapper */}
-                        <div className="relative mb-20">
-                            {/* Ad Banner Area */}
-                            <div className="w-full h-auto min-h-[200px] overflow-hidden bg-white flex items-center justify-center">
-                                <AdUnit format="horizontal" className="my-0" />
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#050810] p-0 border-white/5 rounded-[3.5rem] shadow-[0_32px_120px_rgba(0,0,0,0.8)] overflow-hidden">
+                <AnimatePresence mode="wait">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center p-32 space-y-6">
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full"
+                            />
+                            <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Downloading Dossier...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="p-20 text-center space-y-4">
+                            <div className="w-20 h-20 bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                <AlertTriangle className="text-red-500" size={40} />
                             </div>
-
-                            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-10">
-                                <div className="w-32 h-32 rounded-full border-4 border-[#FDF8F3] overflow-hidden shadow-xl bg-white">
-                                    <img
-                                        src={profile.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || profile.username)}&background=6366f1&color=fff&size=160`}
-                                        alt={profile.full_name}
-                                        className="w-full h-full object-cover select-none"
-                                        onContextMenu={(e) => e.preventDefault()}
-                                        draggable={false}
+                            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Protocol Error</h3>
+                            <p className="text-slate-500 text-sm font-medium">{error}</p>
+                        </div>
+                    ) : profile ? (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="relative pb-32 flex flex-col"
+                        >
+                            {/* High-End Social Header/Ad Area */}
+                            <div className="relative h-64 w-full bg-[#0d1321] overflow-hidden flex items-center justify-center border-b border-white/5">
+                                <div className="absolute inset-0 pointer-events-none">
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+                                        transition={{ duration: 10, repeat: Infinity }}
+                                        className="absolute top-[-50%] left-[-20%] w-[150%] h-[150%] bg-emerald-600/10 rounded-full blur-[100px]"
                                     />
                                 </div>
-                            </div>
-                        </div>
+                                <AdUnit format="horizontal" className="z-10" />
 
-                        <div className="px-6 md:px-8">
-                            {/* Profile Header Info */}
-                            <div className="text-center mb-8">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-1">{profile.full_name}</h2>
-                                <p className="text-gray-500 mb-4">@{profile.username}</p>
-
-                                <div className="flex items-center justify-center gap-3">
-                                    {profile.subscription_status === 'premium' && (
-                                        <span className="bg-[#EAD8B1] text-[#8B7355] px-3 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1">
-                                            <Crown className="w-3 h-3 fill-current" /> Premium
-                                        </span>
-                                    )}
-                                    {profile.verification_status === 'verified' && (
-                                        <span className="bg-[#D1E7DD] text-[#0F5132] px-3 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1">
-                                            <CheckCircle2 className="w-3 h-3" /> Verified
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Main Content Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Left Column: Info */}
-                                <div className="md:col-span-1 space-y-6">
-                                    {/* About Section */}
-                                    <div>
-                                        <h3 className="text-lg font-bold text-gray-900 mb-2">About</h3>
-                                        <p className="text-gray-700 text-sm leading-relaxed">
-                                            {profile.bio || "No bio available."}
-                                        </p>
-                                    </div>
-
-                                    {/* Contact Info Card */}
-                                    <Card className="border-none shadow-sm bg-white rounded-xl overflow-hidden">
-                                        <CardHeader className="pb-2 pt-4 px-4">
-                                            <CardTitle className="text-base">Contact Info</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="px-4 pb-4 space-y-3">
-
-                                            {profile.location && (
-                                                <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                    <MapPin className="h-4 w-4" />
-                                                    <span>{profile.location}</span>
-                                                </div>
-                                            )}
-                                            <div
-                                                className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:text-primary-600 transition-colors"
-                                                onClick={handleAddFriend}
-                                            >
-                                                {requestSent ? <Check className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-                                                <span>{requestSent ? 'Request Sent' : 'Add Friend'}</span>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-
-                                </div>
-
-                                {/* Right Column: Social Highlights */}
-                                <div className="md:col-span-2">
-                                    <Card className="border-none shadow-sm bg-white rounded-xl overflow-hidden h-full min-h-[300px]">
-                                        <CardHeader className="pt-4 px-4 pb-2">
-                                            <div className="flex items-center gap-2">
-                                                <Instagram className="w-5 h-5 text-pink-600" />
-                                                <CardTitle className="text-lg">Social Highlights</CardTitle>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="px-4 pb-4">
-                                            <InstagramPosts userId={profile.id} showHeader={false} displayMode="horizontal" autoScroll={false} />
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </div>
-
-                            {/* Blocking & Reporting Section */}
-                            <div className="mt-6 border-t border-gray-100 pt-6">
-                                <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                    <Shield className="h-4 w-4 text-purple-600" />
-                                    Safety & Privacy
-                                </h3>
-                                <div className="flex gap-3">
-                                    <Button
-                                        variant="outline"
-                                        className="flex-1 border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                        onClick={handleBlockUser}
-                                        disabled={isBlocked}
+                                <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-20">
+                                    <motion.div
+                                        whileHover={{ scale: 1.05 }}
+                                        className="w-40 h-40 rounded-[2.5rem] border-8 border-[#050810] overflow-hidden shadow-2xl bg-[#0d1321] relative group"
                                     >
-                                        <AlertTriangle className="w-4 h-4 mr-2" />
-                                        {isBlocked ? 'Blocked' : 'Block User'}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        className="flex-1 border-gray-200 text-gray-600 hover:bg-gray-50"
-                                        onClick={() => setShowReportView(true)}
-                                    >
-                                        <Flag className="w-4 h-4 mr-2" />
-                                        Report User
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Report View Overlay */}
-                        {showReportView && (
-                            <div className="absolute inset-0 bg-white z-50 p-6 flex flex-col">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                        <Flag className="h-5 w-5 text-red-500" />
-                                        Report User
-                                    </h3>
-                                    <Button variant="ghost" size="icon" onClick={() => setShowReportView(false)}>
-                                        <X className="h-5 w-5" />
-                                    </Button>
-                                </div>
-
-                                <div className="space-y-6 flex-1 overflow-y-auto">
-                                    <div className="space-y-4">
-                                        <Label>Why are you reporting this user?</Label>
-                                        <RadioGroup value={reportReason} onValueChange={setReportReason}>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="inappropriate_behavior" id="r1" />
-                                                <Label htmlFor="r1">Inappropriate Behavior</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="spam" id="r2" />
-                                                <Label htmlFor="r2">Spam or Scam</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="harassment" id="r3" />
-                                                <Label htmlFor="r3">Harassment or Bullying</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="fake_profile" id="r4" />
-                                                <Label htmlFor="r4">Fake Profile</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="other" id="r5" />
-                                                <Label htmlFor="r5">Other</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>Additional Details</Label>
-                                        <Textarea
-                                            placeholder="Please provide more details about the issue..."
-                                            value={reportDetails}
-                                            onChange={(e) => setReportDetails(e.target.value)}
-                                            rows={4}
+                                        <img
+                                            src={profile.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || profile.username)}&background=10b981&color=fff&size=200`}
+                                            alt={profile.full_name}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            onContextMenu={(e) => e.preventDefault()}
+                                            draggable={false}
                                         />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                                    </motion.div>
+                                </div>
+                            </div>
+
+                            <div className="px-10 pt-24">
+                                {/* Profile Identities */}
+                                <div className="text-center mb-12">
+                                    <div className="flex items-center justify-center gap-2 mb-2">
+                                        <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">{profile.full_name}</h2>
+                                        {profile.verification_status === 'verified' && (
+                                            <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                                                <ShieldCheck className="w-4 h-4 text-white" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em] mb-6">@{profile.username}</p>
+
+                                    <div className="flex items-center justify-center gap-3">
+                                        {profile.subscription_status === 'premium' && (
+                                            <span className="bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
+                                                <Crown className="w-3.5 h-3.5 fill-emerald-400" /> ELITE LEVEL
+                                            </span>
+                                        )}
+                                        <span className="bg-white/5 border border-white/10 text-slate-400 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                                            <Target className="w-3.5 h-3.5" /> SYNC ID: {profile.id.slice(0, 8)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Info Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    {/* Bio Module */}
+                                    <div className="md:col-span-1 space-y-8">
+                                        <Card className="bg-white/5 border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-3xl shadow-2xl">
+                                            <CardHeader className="p-8 pb-4">
+                                                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                    <Sparkles size={12} className="text-emerald-500" /> Internal Dossier
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="p-8 pt-0">
+                                                <p className="text-slate-300 text-sm leading-relaxed font-medium italic">
+                                                    "{profile.bio || 'IDENTIFICATION PENDING. SIGNAL STRENGTH NOMINAL.'}"
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className="bg-white/5 border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-3xl shadow-2xl">
+                                            <CardHeader className="p-8 pb-4">
+                                                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                    <Globe size={12} className="text-emerald-500" /> Geo Location
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="p-8 pt-0 space-y-4">
+                                                {profile.location ? (
+                                                    <div className="flex items-center gap-3 text-white font-bold text-sm tracking-tight italic">
+                                                        <MapPin className="h-5 w-5 text-emerald-500" />
+                                                        {profile.location}
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest">COORDINATES CLASSIFIED</p>
+                                                )}
+
+                                                <div
+                                                    className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 cursor-pointer hover:bg-white/10 transition-all"
+                                                    onClick={handleAddFriend}
+                                                >
+                                                    <div className="h-8 w-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                                                        {requestSent ? <Check size={16} className="stroke-[3px]" /> : <UserPlus size={16} />}
+                                                    </div>
+                                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">
+                                                        {requestSent ? 'Sync Requested' : 'Initiate Sync'}
+                                                    </span>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
                                     </div>
 
-                                    <div className="pt-4">
+                                    {/* Media Module */}
+                                    <div className="md:col-span-2">
+                                        <Card className="bg-[#0b121e] border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-3xl shadow-[0_32px_120px_rgba(0,0,0,0.5)] h-full min-h-[400px]">
+                                            <CardHeader className="p-10 pb-6 border-b border-white/5">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <Instagram className="w-6 h-6 text-emerald-500" />
+                                                        <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">Metadata Stream</CardTitle>
+                                                    </div>
+                                                    <Button size="icon" variant="ghost" className="text-slate-500 hover:text-white rounded-xl">
+                                                        <MoreHorizontal />
+                                                    </Button>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="p-6">
+                                                <InstagramPosts userId={profile.id} showHeader={false} displayMode="horizontal" autoScroll={false} />
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </div>
+
+                                {/* Safety & Governance */}
+                                <div className="mt-12 space-y-8">
+                                    <div className="flex items-center gap-4">
+                                        <Shield size={16} className="text-emerald-500" />
+                                        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Governance & Privacy Protocols</h3>
+                                        <div className="h-[1px] flex-1 bg-white/5" />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
                                         <Button
-                                            className="w-full bg-red-600 hover:bg-red-700 text-white"
-                                            onClick={handleReportUser}
-                                            disabled={isSubmittingReport}
+                                            variant="outline"
+                                            className="h-16 rounded-2xl bg-white/5 border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 font-black uppercase tracking-widest text-[10px] transition-all"
+                                            onClick={handleBlockUser}
+                                            disabled={isBlocked}
                                         >
-                                            {isSubmittingReport ? 'Sending Report...' : 'Submit Report'}
+                                            <AlertTriangle className="w-4 h-4 mr-3" />
+                                            {isBlocked ? 'ACCESS SEVERED' : 'TERMINATE SYNC'}
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="h-16 rounded-2xl bg-white/5 border-white/10 text-slate-500 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] transition-all"
+                                            onClick={() => setShowReportView(true)}
+                                        >
+                                            <Flag className="w-4 h-4 mr-3" />
+                                            LOG INCIDENT
                                         </Button>
                                     </div>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Bottom Action Bar (Sticky in Dialog) */}
-                        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur border-t border-gray-100 flex justify-center gap-4 z-50 md:absolute md:rounded-b-lg">
-                            <Button
-                                className={`flex-1 max-w-[200px] text-white ${isLiked ? 'bg-pink-600 hover:bg-pink-700' : 'bg-[#4A6755] hover:bg-[#3A5244]'}`}
-                                onClick={handleLikeProfile}
-                                disabled={isLiked}
-                            >
-                                <Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
-                                {isLiked ? 'Liked' : 'Like Profile'}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className={`flex-1 max-w-[200px] border-[#1E293B] text-[#1E293B] hover:bg-gray-100 ${requestSent && !isFriend ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                onClick={isFriend ? handleSendMessage : handleAddFriend}
-                                disabled={(requestSent && !isFriend) || sendingRequest}
-                            >
-                                {isFriend ? (
-                                    <>
-                                        <MessageCircle className="w-4 h-4 mr-2" />
-                                        Send Message
-                                    </>
-                                ) : requestSent ? (
-                                    <>
-                                        <Check className="w-4 h-4 mr-2" />
-                                        Request Sent
-                                    </>
-                                ) : (
-                                    <>
-                                        <UserPlus className="w-4 h-4 mr-2" />
-                                        Add Friend
-                                    </>
+                            {/* Report View Overlay */}
+                            <AnimatePresence>
+                                {showReportView && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 50 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 50 }}
+                                        className="absolute inset-x-0 bottom-0 bg-[#0d1321] z-[100] p-10 rounded-t-[3.5rem] border-t border-white/10 shadow-[0_-32px_120px_rgba(0,0,0,0.8)]"
+                                    >
+                                        <div className="flex items-center justify-between mb-10">
+                                            <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">
+                                                <Flag className="h-8 w-8 text-red-500" />
+                                                Incident Report
+                                            </h3>
+                                            <Button variant="ghost" size="icon" onClick={() => setShowReportView(false)} className="rounded-2xl hover:bg-white/5 text-slate-500">
+                                                <X className="h-6 w-6" />
+                                            </Button>
+                                        </div>
+
+                                        <div className="space-y-8 max-w-2xl mx-auto">
+                                            <div className="space-y-4">
+                                                <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Select Protocol Breach</Label>
+                                                <RadioGroup value={reportReason} onValueChange={setReportReason} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {[
+                                                        { id: 'r1', val: 'inappropriate_behavior', label: 'Improper Conduct' },
+                                                        { id: 'r2', val: 'spam', label: 'Spam Attack' },
+                                                        { id: 'r3', val: 'harassment', label: 'Direct Harassment' },
+                                                        { id: 'r4', val: 'fake_profile', label: 'Identity Mimicry' },
+                                                        { id: 'r5', val: 'other', label: 'Unspecified' }
+                                                    ].map((opt) => (
+                                                        <div key={opt.id} className="flex items-center space-x-3 p-4 bg-white/5 border border-white/5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all">
+                                                            <RadioGroupItem value={opt.val} id={opt.id} className="border-slate-700 text-emerald-500" />
+                                                            <Label htmlFor={opt.id} className="text-white font-bold tracking-tight cursor-pointer uppercase text-[11px]">{opt.label}</Label>
+                                                        </div>
+                                                    ))}
+                                                </RadioGroup>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Breach Details (Encrypted)</Label>
+                                                <Textarea
+                                                    placeholder="Describe the incident sequence for review..."
+                                                    value={reportDetails}
+                                                    onChange={(e) => setReportDetails(e.target.value)}
+                                                    rows={5}
+                                                    className="bg-white/5 border-white/10 text-white rounded-2xl p-6 focus:ring-emerald-500"
+                                                />
+                                            </div>
+
+                                            <Button
+                                                className="w-full h-16 bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-red-500/20"
+                                                onClick={handleReportUser}
+                                                disabled={isSubmittingReport}
+                                            >
+                                                {isSubmittingReport ? 'LOGGING...' : 'COMMIT REPORT'}
+                                            </Button>
+                                        </div>
+                                    </motion.div>
                                 )}
-                            </Button>
-                        </div>
-                    </div>
-                ) : null}
+                            </AnimatePresence>
+
+                            {/* Premium Action HUD */}
+                            <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#050810] to-transparent flex justify-center gap-6 z-[60] md:absolute md:rounded-b-[3.5rem]">
+                                <motion.div className="flex-1 max-w-[280px]" whileHover={{ scale: 1.02, y: -5 }} whileTap={{ scale: 0.98 }}>
+                                    <Button
+                                        className={`w-full h-20 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl transition-all border-none ${isLiked ? 'bg-emerald-600 text-white shadow-emerald-500/30' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
+                                        onClick={handleLikeProfile}
+                                        disabled={isLiked}
+                                    >
+                                        <Heart size={20} className={`mr-3 ${isLiked ? 'fill-white' : ''}`} />
+                                        {isLiked ? 'INTEREST LOGGED' : 'MARK INTEREST'}
+                                    </Button>
+                                </motion.div>
+
+                                <motion.div className="flex-1 max-w-[280px]" whileHover={{ scale: 1.02, y: -5 }} whileTap={{ scale: 0.98 }}>
+                                    <Button
+                                        className={`w-full h-20 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl transition-all border-none ${isFriend ? 'bg-emerald-600 text-white shadow-emerald-500/30' : (requestSent ? 'bg-white/5 text-emerald-400 opacity-60' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20')}`}
+                                        onClick={isFriend ? handleSendMessage : handleAddFriend}
+                                        disabled={(requestSent && !isFriend) || sendingRequest}
+                                    >
+                                        {isFriend ? (
+                                            <>
+                                                <MessageCircle size={20} className="mr-3" />
+                                                SYNC CHANNEL
+                                            </>
+                                        ) : requestSent ? (
+                                            <>
+                                                <Check size={20} className="mr-3" />
+                                                SYNC WAITING
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Zap size={20} className="mr-3 fill-white" />
+                                                INITIALIZE SYNC
+                                            </>
+                                        )}
+                                    </Button>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    ) : null}
+                </AnimatePresence>
             </DialogContent>
         </Dialog>
     )
