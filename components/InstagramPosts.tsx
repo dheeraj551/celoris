@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase-client"
 import { Instagram, Video, Image as ImageIcon, X, Sparkles, Maximize2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface SocialPost {
