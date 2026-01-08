@@ -9,4 +9,5 @@ A curriculum for building apps where AI does the heavy lifting.
 ## Important Links
 - [Vibe Coding Syllabus](/courses/vibe-coding-mastery)
 - [Multimodal AI Syllabus](/courses/mastering-multimodal-ai)
+- [Accelerating Science Syllabus](/courses/accelerating-science-generative-ai-for-research-innovation)
 - [Project Templates](https://github.com/celoris-designs)

@@ -757,6 +757,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'accelerating-science-static',
+      title: 'Accelerating Science: Generative AI for Research & Innovation',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Equip scientists and research engineers with tactical AI skills for literature review, experiment automation, and molecular prediction.',
+      target_audience: 'Scientists, Research Engineers, R&D Leads',
+      instructor_name: 'IntuitionLabs',
+      course_duration: '8-Week Intensive',
+      price: 24999,
+      course_image_url: '/accelerating-science-generative-ai-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `as-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -824,6 +847,7 @@ export default function CoursesDisplay({
     if (id === 'mastering-multimodal-ai-static') return '/courses/mastering-multimodal-ai'
     if (id === 'architecting-trust-static') return '/courses/architecting-trust-ai-safety-ethics-compliance'
     if (id === 'agentic-ai-cybersecurity-static') return '/courses/agentic-ai-for-cybersecurity'
+    if (id === 'accelerating-science-static') return '/courses/accelerating-science-generative-ai-for-research-innovation'
     return `/learn/course/${id}`
   }
 

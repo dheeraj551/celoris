@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { BookOpen, Users, MapPin, Clock, AlertCircle, CheckCircle, Star, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import TrainerRegistrationForm from './learn/TrainerRegistrationForm'
 
 interface NoticeBoardItem {
   id: string
@@ -290,92 +291,17 @@ export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
       </div>
 
       {/* Interest Dialog */}
-      {selectedNotice && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-[#0d1321] border border-white/10 rounded-[3rem] shadow-[0_32px_120px_rgba(0,0,0,0.8)] w-full max-w-md p-10 relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-transparent to-transparent pointer-events-none" />
-            <button
-              onClick={() => setSelectedNotice(null)}
-              className="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors"
-            >
-              <Users size={24} />
-            </button>
-
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-12 w-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center border border-emerald-500/20">
-                <Sparkles className="text-emerald-400" size={24} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter leading-none">Show Interest</h2>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">{selectedNotice.subject}</p>
-              </div>
-            </div>
-
-            {submitSuccess ? (
-              <div className="text-center py-12">
-                <div className="h-20 w-20 bg-emerald-500 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl shadow-emerald-500/20">
-                  <CheckCircle className="h-10 w-10 text-white" />
-                </div>
-                <h3 className="text-xl font-black text-white uppercase italic tracking-tighter mb-2">Interest Recorded</h3>
-                <p className="text-slate-400 text-sm font-medium">We'll notify the student immediately.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleInterestSubmit} className="space-y-6 relative z-10">
-                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 flex items-start gap-4 text-xs">
-                  <AlertCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                  <p className="text-slate-300 font-medium">
-                    Note: <span className="text-emerald-400 font-black">₹25</span> Protocol Fee will be deducted from your wallet to establish this link.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Full Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Enter your name"
-                      className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-white placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all outline-none"
-                      value={interestForm.name}
-                      onChange={(e) => setInterestForm({ ...interestForm, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="name@nexus.com"
-                      className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-white placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all outline-none"
-                      value={interestForm.email}
-                      onChange={(e) => setInterestForm({ ...interestForm, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Phone Link</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+91 . . . ."
-                      className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-white placeholder:text-slate-600 focus:border-emerald-500/50 focus:bg-white/10 transition-all outline-none"
-                      value={interestForm.phone}
-                      onChange={(e) => setInterestForm({ ...interestForm, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-emerald-500/20 border-none mt-6" disabled={submitting}>
-                  {submitting ? 'Transmitting...' : 'Confirm Interest'}
-                </Button>
-              </form>
-            )}
-          </motion.div>
-        </div>
-      )}
+      <AnimatePresence>
+        {selectedNotice && (
+          <TrainerRegistrationForm
+            noticeId={selectedNotice.id}
+            subject={selectedNotice.subject}
+            studentName={selectedNotice.student_name}
+            isOpen={true}
+            onClose={() => setSelectedNotice(null)}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }

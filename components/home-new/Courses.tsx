@@ -102,7 +102,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                                 ? '/courses/architecting-trust-ai-safety-ethics-compliance'
                                                                                                                 : id === 'agentic-ai-cybersecurity-static'
                                                                                                                     ? '/courses/agentic-ai-for-cybersecurity'
-                                                                                                                    : `/learn/course/${id}`
+                                                                                                                    : id === 'accelerating-science-static'
+                                                                                                                        ? '/courses/accelerating-science-generative-ai-for-research-innovation'
+                                                                                                                        : `/learn/course/${id}`
                         }
                         className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
                     >
@@ -131,6 +133,7 @@ export const Courses: React.FC<any> = ({
     const staticCourses = [
         { id: 'architecting-trust-static', title: 'Architecting Trust: AI Safety, Ethics & Compliance', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: '/architecting-trust-ai-safety-cover.png' },
         { id: 'agentic-ai-cybersecurity-static', title: 'Agentic AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: '/agentic-ai-cybersecurity-cover.png' },
+        { id: 'accelerating-science-static', title: 'Accelerating Science: AI for Research & Innovation', subject: 'Artificial Intelligence', instructor_name: 'IntuitionLabs', course_duration: '8-Week Intensive', price: 24999, is_featured: true, course_image_url: '/accelerating-science-generative-ai-cover.png' },
         { id: 'mastering-multimodal-ai-static', title: 'Mastering Multimodal AI: Vision, Audio & Fusion', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: '/mastering-multimodal-ai-cover.png' },
         { id: 'vibe-coding-mastery-static', title: 'Vibe Coding Mastery: AI-First Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
         { id: 'agentic-ai-systems-static', title: 'Agentic AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
