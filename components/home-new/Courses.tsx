@@ -121,7 +121,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 export const Courses: React.FC<any> = ({
-    title = "Latest Transmissions",
+    title = "Latest courses",
     description = "Explore our newest knowledge nodes into the global grid.",
     limit = 6,
     showBrowseAll = true,
@@ -198,7 +198,7 @@ export const Courses: React.FC<any> = ({
             {showBrowseAll && (
                 <div className="mt-16 text-center">
                     <Link href="/learn/courses" className="px-10 py-5 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-white/10 transition-all inline-flex items-center gap-3 tracking-[0.2em] italic">
-                        Access All Nodes <ArrowRight size={16} className="text-emerald-500" />
+                        View All courses <ArrowRight size={16} className="text-emerald-500" />
                     </Link>
                 </div>
             )}

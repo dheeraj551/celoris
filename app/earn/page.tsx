@@ -11,56 +11,13 @@ import InterviewRooms from "@/components/InterviewRooms"
 import { AdUnit } from "@/components/AdUnit"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
+import JobApplicationForm from "@/components/earn/JobApplicationForm"
 
 export default function EarnPage() {
   const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedJob, setSelectedJob] = useState<any | null>(null)
-  const [interestForm, setInterestForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  })
-  const [submitting, setSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
-
-  const handleApplySubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedJob) return
-
-    setSubmitting(true)
-    try {
-      const response = await fetch('/api/jobs/apply', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          job_id: selectedJob.id,
-          ...interestForm
-        })
-      })
-
-      if (!response.ok) {
-        const result = await response.json()
-        throw new Error(result.error || 'Failed to submit application')
-      }
-
-      setSubmitSuccess(true)
-      setTimeout(() => {
-        setSubmitSuccess(false)
-        setSelectedJob(null)
-        setInterestForm({ name: '', email: '', phone: '', message: '' })
-      }, 2000)
-    } catch (err: any) {
-      console.error(err)
-      alert(err.message || 'An error occurred')
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   useEffect(() => {
     loadJobs()
@@ -321,7 +278,7 @@ export default function EarnPage() {
                               onClick={() => setSelectedJob(job)}
                               className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-[1.5rem] px-12 h-16 font-black uppercase tracking-widest text-xs shadow-3xl shadow-emerald-500/20 transition-all duration-300 border-none group"
                             >
-                              Launch Uplink <ArrowRight size={16} className="ml-3 group-hover:translate-x-1 transition-transform" />
+                              Apply Now <ArrowRight size={16} className="ml-3 group-hover:translate-x-1 transition-transform" />
                             </Button>
                           </div>
                         </div>
@@ -336,119 +293,15 @@ export default function EarnPage() {
         </div>
       </section>
 
-      {/* Application Modal */}
+      {/* Application Form */}
       <AnimatePresence>
         {selectedJob && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedJob(null)}
-              className="absolute inset-0 bg-[#050810]/95 backdrop-blur-xl"
-            />
-            <motion.div
-              initial={{ scale: 0.9, y: 50, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 50, opacity: 0 }}
-              className="bg-[#0d1321] border border-white/10 rounded-[3.5rem] shadow-[0_64px_160px_rgba(0,0,0,0.9)] w-full max-w-2xl p-10 md:p-16 relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-transparent to-transparent pointer-events-none" />
-
-              <button
-                onClick={() => setSelectedJob(null)}
-                className="absolute top-12 right-12 text-slate-600 hover:text-white transition-colors"
-              >
-                <X className="w-8 h-8" />
-              </button>
-
-              <div className="mb-14 relative z-10">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="h-16 w-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
-                    <Sparkles className="text-emerald-400" size={32} />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-none mb-2">Protocol Deployment</h2>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic">Link established: {selectedJob.title} @ {selectedJob.company}</p>
-                  </div>
-                </div>
-                <div className="h-[2px] w-40 bg-gradient-to-r from-emerald-500/50 to-transparent" />
-              </div>
-
-              {submitSuccess ? (
-                <div className="text-center py-20 relative z-10">
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="h-32 w-32 bg-emerald-500 rounded-[3rem] mx-auto flex items-center justify-center mb-10 shadow-3xl shadow-emerald-500/30">
-                    <CheckCircle className="h-16 w-16 text-white" />
-                  </motion.div>
-                  <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-3">Transmission Successful</h3>
-                  <p className="text-slate-400 text-lg font-medium italic">Your professional profile has been bridged to the recruitment nexus.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleApplySubmit} className="space-y-10 relative z-10">
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="bg-emerald-500/5 border border-emerald-500/20 rounded-[2rem] p-8 flex items-start gap-6"
-                  >
-                    <AlertCircle className="w-8 h-8 flex-shrink-0 text-emerald-400" />
-                    <div>
-                      <h4 className="text-emerald-400 text-xs font-black uppercase tracking-widest mb-1">Network Transmission Protocol</h4>
-                      <p className="text-slate-400 text-sm font-medium italic">
-                        A <span className="text-white font-black">₹25 Uplink Fee</span> will be deducted from your secure vault to finalize this bridge.
-                      </p>
-                    </div>
-                  </motion.div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-6 italic">Personnel Identifier</label>
-                      <Input
-                        required
-                        placeholder="Full Name"
-                        className="h-16 bg-white/5 border-white/10 rounded-[1.5rem] px-8 text-white text-lg placeholder:text-slate-700 focus:border-emerald-500/50 focus:bg-white/10 transition-all border outline-none font-bold"
-                        value={interestForm.name}
-                        onChange={(e) => setInterestForm({ ...interestForm, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-6 italic">Interface (Email)</label>
-                      <Input
-                        type="email"
-                        required
-                        placeholder="name@nexus.com"
-                        className="h-16 bg-white/5 border-white/10 rounded-[1.5rem] px-8 text-white text-lg placeholder:text-slate-700 focus:border-emerald-500/50 focus:bg-white/10 transition-all border outline-none font-bold"
-                        value={interestForm.email}
-                        onChange={(e) => setInterestForm({ ...interestForm, email: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-6 italic">Communication Bridge (Phone)</label>
-                    <Input
-                      type="tel"
-                      required
-                      placeholder="+91 . . . ."
-                      className="h-16 bg-white/5 border-white/10 rounded-[1.5rem] px-8 text-white text-lg placeholder:text-slate-700 focus:border-emerald-500/50 focus:bg-white/10 transition-all border outline-none font-bold"
-                      value={interestForm.phone}
-                      onChange={(e) => setInterestForm({ ...interestForm, phone: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-6 italic">Engagement Parameters (Optional)</label>
-                    <textarea
-                      className="w-full p-8 bg-white/5 border border-white/10 rounded-[2rem] text-white placeholder:text-slate-700 focus:border-emerald-500/50 focus:bg-white/10 transition-all min-h-[160px] outline-none font-medium italic"
-                      placeholder="Outline your strategic objectives..."
-                      value={interestForm.message}
-                      onChange={(e) => setInterestForm({ ...interestForm, message: e.target.value })}
-                    />
-                  </div>
-                  <Button type="submit" className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs shadow-3xl shadow-emerald-500/30 border-none mt-4 transition-all" disabled={submitting}>
-                    {submitting ? 'TRANSMITTING DATA...' : 'ESTABLISH SECURE UPLINK'}
-                  </Button>
-                </form>
-              )}
-            </motion.div>
-          </div>
+          <JobApplicationForm
+            isOpen={true}
+            onClose={() => setSelectedJob(null)}
+            jobId={selectedJob.id}
+            jobTitle={selectedJob.title}
+          />
         )}
       </AnimatePresence>
     </PageWrapper>

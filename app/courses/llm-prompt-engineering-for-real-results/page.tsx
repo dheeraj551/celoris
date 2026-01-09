@@ -139,6 +139,68 @@ export default function LLMPromptEngineeringCourse() {
                 description: "A framework for tracking accuracy, latency, and cost per request.",
                 icon: "BarChart"
             }
+        ],
+        reviews: [
+            {
+                name: "Rohit Verma",
+                role: "ML Engineer",
+                rating: 5,
+                comment: "This is the first prompt engineering course that actually treats prompts like production code. The JSON enforcement, self-reflection loops, and stress tests were 🔥. I’ve already replaced half our brittle prompts at work with what I learned here."
+            },
+            {
+                name: "Ananya Gupta",
+                role: "Product Manager",
+                rating: 4,
+                comment: "Loved the real-world framing and the performance dashboard idea. Some sections (BLEU/ROUGE) went a bit deep for non-ML folks, but overall it helped me communicate better with engineers and design more reliable AI features."
+            },
+            {
+                name: "Sahil Khan",
+                role: "Startup Founder",
+                rating: 5,
+                comment: "This course saved us money and embarrassment. Token optimization and RAG context strategies alone paid for the course in one week. Not fluffy at all—very “ship it to production” mindset."
+            },
+            {
+                name: "Neha Sharma",
+                role: "Full-Stack Developer",
+                rating: 4,
+                comment: "The “prompts as code” module was gold. I would’ve liked a few more concrete examples in Node/Python, but the concepts translated easily. The fine-tuning capstone was surprisingly practical."
+            },
+            {
+                name: "Arjun Mehta",
+                role: "Data Analyst",
+                rating: 3,
+                comment: "Solid content, but definitely not beginner-friendly. If you’ve never worked with APIs or JSON, you might struggle. Once I caught up, the reasoning and CoT strategies were very useful."
+            },
+            {
+                name: "Priya Nair",
+                role: "AI Consultant",
+                rating: 5,
+                comment: "Finally, a course that explains why prompts fail and how to fix them systematically. The self-consistency and reflection loops changed how I design LLM systems for clients. Highly recommended for professionals."
+            },
+            {
+                name: "Kunal Singh",
+                role: "Automation Engineer",
+                rating: 4,
+                comment: "The RAG optimization and token cost breakdowns were excellent. Some lectures felt dense, but that’s expected at this level. This is not “ChatGPT tips”—it’s real engineering."
+            },
+            {
+                name: "Simran Kaur",
+                role: "Tech Content Creator",
+                rating: 3,
+                comment: "Very powerful techniques, but I felt a bit overwhelmed at times. I was hoping for more content-creator-friendly examples. Still, it helped me understand how serious AI systems are actually built."
+            },
+            {
+                name: "Aditya Rao",
+                role: "Backend Architect",
+                rating: 5,
+                comment: "The production stress tests are the secret sauce. Anyone can write a prompt that works once—this teaches you how to make it work every time. The prompt library alone is worth the price."
+            },
+            {
+                name: "Mohit Bansal",
+                role: "Freelance Developer",
+                rating: 4,
+                comment: "Great balance between theory and hands-on work. The fine-tuning section clarified a lot of confusion I had about JSONL datasets. Would love a follow-up course focused purely on evaluation and benchmarking."
+            }
         ]
     }
 
@@ -248,19 +310,13 @@ export default function LLMPromptEngineeringCourse() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/llm-prompt-engineering-cover.png"
-                                        alt="LLM Prompt Engineering"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        src="https://www.youtube.com/embed/w0vjuI1fLZQ"
+                                        title="LLM Prompt Engineering Course Preview"
+                                        className="w-full h-full border-0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -360,6 +416,56 @@ export default function LLMPromptEngineeringCourse() {
                                         </Card>
                                     )
                                 })}
+                            </div>
+                        </section>
+
+                        {/* Student Reviews Section */}
+                        <section className="space-y-8">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-yellow-500/20 rounded-lg">
+                                        <Star className="h-6 w-6 text-yellow-400" />
+                                    </div>
+                                    Student Reviews
+                                </h2>
+                                <div className="flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
+                                    <span className="text-white font-bold">{courseData.rating}</span>
+                                    <div className="flex">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                        ))}
+                                    </div>
+                                    <span className="text-slate-500 text-sm ml-1">({courseData.students} total)</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.reviews.map((review, index) => (
+                                    <Card key={index} className="bg-slate-900/40 border-slate-800 hover:border-slate-700 transition-all group">
+                                        <CardContent className="p-6">
+                                            <div className="flex gap-0.5 mb-3">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        className={`h-4 w-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-slate-600"}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <p className="text-slate-300 text-sm leading-relaxed mb-6 italic">
+                                                "{review.comment}"
+                                            </p>
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold border border-slate-700 group-hover:border-cyan-500/50 transition-colors">
+                                                    {review.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-white">{review.name}</div>
+                                                    <div className="text-xs text-slate-500">{review.role}</div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
                         </section>
 

@@ -120,6 +120,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
     const toggleArrayItem = (field: keyof typeof formData, value: string) => {
         setFormData(prev => {
             const array = prev[field] as string[]
+            if (!array) return prev // Safety check
             if (array.includes(value)) {
                 return { ...prev, [field]: array.filter(item => item !== value) }
             } else {
@@ -258,11 +259,11 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
     const CheckboxGroup = ({ options, selected, onChange }: { options: string[], selected: string[], onChange: (val: string) => void }) => (
         <div className="grid grid-cols-2 gap-3">
             {options.map(opt => (
-                <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selected.includes(opt) ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}>
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${selected.includes(opt) ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500'}`}>
-                        {selected.includes(opt) && <CheckCircle size={10} className="text-white" />}
+                <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selected?.includes(opt) ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}>
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${selected?.includes(opt) ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500'}`}>
+                        {selected?.includes(opt) && <CheckCircle size={10} className="text-white" />}
                     </div>
-                    <input type="checkbox" className="hidden" checked={selected.includes(opt)} onChange={() => onChange(opt)} />
+                    <input type="checkbox" className="hidden" checked={selected?.includes(opt)} onChange={() => onChange(opt)} />
                     <span className="text-xs font-medium text-slate-300">{opt}</span>
                 </label>
             ))}
@@ -489,7 +490,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Academic Subjects</Label>
-                                    <CheckboxGroup options={['Maths', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Accounts', 'Economics', 'Computer Science']} selected={formData.subjectsAcademic} onChange={val => toggleArrayItem('subjectsAcademics' as any, val)} />
+                                    <CheckboxGroup options={['Maths', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Accounts', 'Economics', 'Computer Science']} selected={formData.subjectsAcademic} onChange={val => toggleArrayItem('subjectsAcademic', val)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Classes</Label>

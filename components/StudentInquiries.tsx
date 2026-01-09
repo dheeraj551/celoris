@@ -17,8 +17,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { useReCaptcha } from "@/components/ReCaptchaProvider"
 
+import { AnimatePresence } from "framer-motion"
+import StudentInquiryForm from "@/components/student/StudentInquiryForm"
+
 export default function StudentInquiries() {
     const [open, setOpen] = useState(false)
+    const [showInquiryForm, setShowInquiryForm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [subject, setSubject] = useState("")
     const [name, setName] = useState("")
@@ -29,11 +33,16 @@ export default function StudentInquiries() {
     const { executeRecaptcha } = useReCaptcha()
 
     const handleOpen = (type: string) => {
-        setSubject(type)
-        setOpen(true)
+        if (type === "Course Information Inquiry") {
+            setShowInquiryForm(true)
+        } else {
+            setSubject(type)
+            setOpen(true)
+        }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
+        // ... existing handleSubmit logic ...
         e.preventDefault()
         setLoading(true)
 
@@ -85,6 +94,7 @@ export default function StudentInquiries() {
 
     return (
         <section className="py-24 relative z-10">
+            {/* ... existing Render ... */}
             <div className="container max-w-7xl mx-auto px-4">
                 <div className="text-center mb-20">
                     <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
@@ -99,13 +109,13 @@ export default function StudentInquiries() {
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-                    {/* Course Information */}
+                    {/* Student Inquiries (Previously Curriculum Data) */}
                     <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 hover:border-emerald-500/30 transition-all duration-500 rounded-[2.5rem] overflow-hidden group shadow-2xl">
                         <CardHeader className="p-10 pt-12">
                             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-2xl shadow-emerald-500/10">
                                 <BookOpen className="h-8 w-8 text-emerald-400" />
                             </div>
-                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Curriculum Data</CardTitle>
+                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Student Inquiries</CardTitle>
                             <CardDescription className="text-slate-400 text-sm font-medium italic leading-relaxed">
                                 Get detailed technical specs on course content, prerequisites, and learning outcomes.
                             </CardDescription>
@@ -115,7 +125,7 @@ export default function StudentInquiries() {
                                 className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-500/10 transition-all border-none"
                                 onClick={() => handleOpen("Course Information Inquiry")}
                             >
-                                Initialize Request
+                                Post Request
                             </Button>
                         </CardContent>
                     </Card>
@@ -126,7 +136,7 @@ export default function StudentInquiries() {
                             <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-2xl shadow-blue-500/10">
                                 <Users className="h-8 w-8 text-blue-400" />
                             </div>
-                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Technical Uplink</CardTitle>
+                            <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">Technical Support</CardTitle>
                             <CardDescription className="text-slate-400 text-sm font-medium italic leading-relaxed">
                                 Support for platform navigation, signal stability, or assignment transmission.
                             </CardDescription>
@@ -136,7 +146,7 @@ export default function StudentInquiries() {
                                 className="w-full h-14 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-blue-500/10 transition-all border-none"
                                 onClick={() => handleOpen("Technical Support Inquiry")}
                             >
-                                Open Terminal
+                                Request Support
                             </Button>
                         </CardContent>
                     </Card>
@@ -223,6 +233,15 @@ export default function StudentInquiries() {
                         </form>
                     </DialogContent>
                 </Dialog>
+
+                <AnimatePresence>
+                    {showInquiryForm && (
+                        <StudentInquiryForm
+                            isOpen={showInquiryForm}
+                            onClose={() => setShowInquiryForm(false)}
+                        />
+                    )}
+                </AnimatePresence>
             </div>
         </section>
     )
