@@ -251,11 +251,11 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Full Name</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.fullName} onChange={e => handleChange('fullName', e.target.value)} required />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.fullName} onChange={e => handleChange('fullName', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Date of Birth</Label>
-                                    <Input type="date" className="bg-white/5 border-white/10" value={formData.dateOfBirth} onChange={e => handleChange('dateOfBirth', e.target.value)} required />
+                                    <Input type="date" className="bg-white/5 border-white/10 text-white" value={formData.dateOfBirth} onChange={e => handleChange('dateOfBirth', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Gender</Label>
@@ -263,19 +263,19 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Mobile Number (WhatsApp Preferred)</Label>
-                                    <Input type="tel" className="bg-white/5 border-white/10" value={formData.mobileNumber} onChange={e => handleChange('mobileNumber', e.target.value)} required />
+                                    <Input type="tel" className="bg-white/5 border-white/10 text-white" value={formData.mobileNumber} onChange={e => handleChange('mobileNumber', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Email Address</Label>
-                                    <Input type="email" className="bg-white/5 border-white/10" value={formData.email} onChange={e => handleChange('email', e.target.value)} required />
+                                    <Input type="email" className="bg-white/5 border-white/10 text-white" value={formData.email} onChange={e => handleChange('email', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Current City</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.currentCity} onChange={e => handleChange('currentCity', e.target.value)} required />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.currentCity} onChange={e => handleChange('currentCity', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Current Address (City, State, Country)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.currentAddress} onChange={e => handleChange('currentAddress', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.currentAddress} onChange={e => handleChange('currentAddress', e.target.value)} />
                                 </div>
                             </div>
 
@@ -314,19 +314,19 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {level !== 'tenth' && level !== 'twelfth' && (
                                                 <div className="space-y-1">
-                                                    <Input placeholder="Degree (e.g. B.Tech)" className="bg-black/20 border-white/10 text-xs h-9" value={(formData.education as any)[level].degree} onChange={e => handleEducationChange(level, 'degree', e.target.value)} />
+                                                    <Input placeholder="Degree (e.g. B.Tech)" className="bg-black/20 border-white/10 text-xs h-9 text-white" value={(formData.education as any)[level].degree} onChange={e => handleEducationChange(level, 'degree', e.target.value)} />
                                                 </div>
                                             )}
                                             {level !== 'tenth' && (
                                                 <div className="space-y-1">
-                                                    <Input placeholder="Specialization" className="bg-black/20 border-white/10 text-xs h-9" value={(formData.education as any)[level].specialization} onChange={e => handleEducationChange(level, 'specialization', e.target.value)} />
+                                                    <Input placeholder="Specialization" className="bg-black/20 border-white/10 text-xs h-9 text-white" value={(formData.education as any)[level].specialization} onChange={e => handleEducationChange(level, 'specialization', e.target.value)} />
                                                 </div>
                                             )}
                                             <div className="space-y-1">
-                                                <Input placeholder="Institute / Board" className="bg-black/20 border-white/10 text-xs h-9" value={(formData.education as any)[level].institute} onChange={e => handleEducationChange(level, 'institute', e.target.value)} />
+                                                <Input placeholder="Institute / Board" className="bg-black/20 border-white/10 text-xs h-9 text-white" value={(formData.education as any)[level].institute} onChange={e => handleEducationChange(level, 'institute', e.target.value)} />
                                             </div>
                                             <div className="space-y-1">
-                                                <Input placeholder="Year of Passing" className="bg-black/20 border-white/10 text-xs h-9" value={(formData.education as any)[level].year} onChange={e => handleEducationChange(level, 'year', e.target.value)} />
+                                                <Input placeholder="Year of Passing" className="bg-black/20 border-white/10 text-xs h-9 text-white" value={(formData.education as any)[level].year} onChange={e => handleEducationChange(level, 'year', e.target.value)} />
                                             </div>
                                         </div>
                                     </div>
@@ -338,15 +338,15 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Primary Skills (Comma Separated)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.primarySkills} onChange={e => handleChange('primarySkills', e.target.value)} required />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.primarySkills} onChange={e => handleChange('primarySkills', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Secondary Skills</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.secondarySkills} onChange={e => handleChange('secondarySkills', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.secondarySkills} onChange={e => handleChange('secondarySkills', e.target.value)} />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Tools / Tech Known</Label>
-                                    <Input placeholder="Excel, Photoshop, React, etc." className="bg-white/5 border-white/10" value={formData.toolsKnown} onChange={e => handleChange('toolsKnown', e.target.value)} />
+                                    <Input placeholder="Excel, Photoshop, React, etc." className="bg-white/5 border-white/10 text-white" value={formData.toolsKnown} onChange={e => handleChange('toolsKnown', e.target.value)} />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Overall Skill Level</Label>
@@ -365,15 +365,15 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
                                     <>
                                         <div className="space-y-2">
                                             <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Last / Current Company</Label>
-                                            <Input className="bg-white/5 border-white/10" value={formData.lastJobCompany} onChange={e => handleChange('lastJobCompany', e.target.value)} />
+                                            <Input className="bg-white/5 border-white/10 text-white" value={formData.lastJobCompany} onChange={e => handleChange('lastJobCompany', e.target.value)} />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Job Role / Designation</Label>
-                                            <Input className="bg-white/5 border-white/10" value={formData.lastJobRole} onChange={e => handleChange('lastJobRole', e.target.value)} />
+                                            <Input className="bg-white/5 border-white/10 text-white" value={formData.lastJobRole} onChange={e => handleChange('lastJobRole', e.target.value)} />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Duration (From - To)</Label>
-                                            <Input className="bg-white/5 border-white/10" value={formData.lastJobDuration} onChange={e => handleChange('lastJobDuration', e.target.value)} />
+                                            <Input className="bg-white/5 border-white/10 text-white" value={formData.lastJobDuration} onChange={e => handleChange('lastJobDuration', e.target.value)} />
                                         </div>
                                         <div className="space-y-2 md:col-span-2">
                                             <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Key Responsibilities</Label>

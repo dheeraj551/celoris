@@ -609,12 +609,7 @@ export default function AllJobsPage() {
                 </div>
               ) : (
                 <form onSubmit={handleApplySubmit} className="space-y-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex items-start gap-2 text-sm text-blue-700">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                    <p>
-                      Note: <span className="font-bold">₹25</span> will be deducted from your wallet when you apply.
-                    </p>
-                  </div>
+
 
                   <div>
                     <label className="block text-sm font-medium mb-1 text-black">Name</label>

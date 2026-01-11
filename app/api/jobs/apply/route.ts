@@ -27,63 +27,7 @@ export async function POST(request: NextRequest) {
 
         const adminSupabase = createSupabaseClientForServer() as any
 
-        // Check wallet balance
-        const { data: userProfile, error: profileError } = await adminSupabase
-            .from('users')
-            .select('wallet_balance')
-            .eq('id', user.id)
-            .single()
-
-        if (profileError || !userProfile) {
-            console.error('Error fetching user profile:', profileError)
-            return NextResponse.json(
-                { error: 'Failed to fetch user profile' },
-                { status: 500 }
-            )
-        }
-
-        const currentBalance = (userProfile as any).wallet_balance || 0
-        const DEDUCTION_AMOUNT = 25
-
-        if (currentBalance < DEDUCTION_AMOUNT) {
-            return NextResponse.json(
-                { error: `Insufficient wallet balance. You need ₹${DEDUCTION_AMOUNT} to apply.` },
-                { status: 400 }
-            )
-        }
-
-        // Perform transaction (Deduct balance, Log transaction, Create application)
-
-        // 1. Deduct balance
-        const { error: updateError } = await adminSupabase
-            .from('users')
-            .update({ wallet_balance: currentBalance - DEDUCTION_AMOUNT } as any)
-            .eq('id', user.id)
-
-        if (updateError) {
-            console.error('Error deducting balance:', updateError)
-            return NextResponse.json(
-                { error: 'Failed to process payment' },
-                { status: 500 }
-            )
-        }
-
-        // 2. Log transaction
-        const { error: transactionError } = await adminSupabase
-            .from('wallet_transactions')
-            .insert({
-                user_id: user.id,
-                amount: DEDUCTION_AMOUNT,
-                type: 'debit',
-                description: `Applied for Job ID: ${job_id}`
-            } as any)
-
-        if (transactionError) {
-            console.error('Error logging transaction:', transactionError)
-            // Non-critical
-        }
-
-        // 3. Create application entry
+        // 1. Create application entry
         const { data, error } = await adminSupabase
             .from('job_applications')
             .insert({
@@ -100,19 +44,13 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Error submitting application:', error)
-            // Refund the user? Ideally yes.
-            await adminSupabase
-                .from('users')
-                .update({ wallet_balance: currentBalance } as any) // Restore balance
-                .eq('id', user.id)
-
             return NextResponse.json(
                 { error: 'Failed to submit application' },
                 { status: 500 }
             )
         }
 
-        return NextResponse.json({ data, newBalance: currentBalance - DEDUCTION_AMOUNT }, { status: 201 })
+        return NextResponse.json({ data }, { status: 201 })
     } catch (error) {
         console.error('Server error:', error)
         return NextResponse.json(

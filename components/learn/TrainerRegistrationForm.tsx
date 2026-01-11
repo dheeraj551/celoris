@@ -330,7 +330,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                             </motion.div>
                             <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-4">Application Submitted!</h3>
                             <p className="text-slate-400 max-w-md mx-auto mb-8">
-                                Your profile has been received. Our team will verify your details and get back to you shortly. A nominal fee has been deducted from your wallet.
+                                Your profile has been received. Our team will verify your details and get back to you shortly.
                             </p>
                             <Button onClick={onClose} className="bg-emerald-600 font-bold">Return to Feed</Button>
                         </div>
@@ -348,7 +348,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Full Name (as per ID)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.fullName} onChange={e => handleChange('personal', 'fullName', e.target.value)} required />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.fullName} onChange={e => handleChange('personal', 'fullName', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Gender</Label>
@@ -356,23 +356,23 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Date of Birth</Label>
-                                    <Input type="date" className="bg-white/5 border-white/10" value={formData.dateOfBirth} onChange={e => handleChange('personal', 'dateOfBirth', e.target.value)} required />
+                                    <Input type="date" className="bg-white/5 border-white/10 text-white" value={formData.dateOfBirth} onChange={e => handleChange('personal', 'dateOfBirth', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Mobile Number</Label>
-                                    <Input type="tel" placeholder="WhatsApp Preferred" className="bg-white/5 border-white/10" value={formData.mobileNumber} onChange={e => handleChange('personal', 'mobileNumber', e.target.value)} required />
+                                    <Input type="tel" placeholder="WhatsApp Preferred" className="bg-white/5 border-white/10 text-white" value={formData.mobileNumber} onChange={e => handleChange('personal', 'mobileNumber', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Alternate Contact</Label>
-                                    <Input type="tel" className="bg-white/5 border-white/10" value={formData.alternateContact} onChange={e => handleChange('personal', 'alternateContact', e.target.value)} />
+                                    <Input type="tel" className="bg-white/5 border-white/10 text-white" value={formData.alternateContact} onChange={e => handleChange('personal', 'alternateContact', e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Email Address</Label>
-                                    <Input type="email" className="bg-white/5 border-white/10" value={formData.email} onChange={e => handleChange('personal', 'email', e.target.value)} required />
+                                    <Input type="email" className="bg-white/5 border-white/10 text-white" value={formData.email} onChange={e => handleChange('personal', 'email', e.target.value)} required />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Current City</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.currentCity} onChange={e => handleChange('personal', 'currentCity', e.target.value)} required />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.currentCity} onChange={e => handleChange('personal', 'currentCity', e.target.value)} required />
                                 </div>
                             </div>
 
@@ -408,7 +408,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                         </div>
                                         <div className="space-y-2 md:col-span-2">
                                             <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">ID Number</Label>
-                                            <Input className="bg-white/5 border-white/10" value={formData.govIdNumber} onChange={e => handleChange('identity', 'govIdNumber', e.target.value)} required={!formData.verificationLater} />
+                                            <Input className="bg-white/5 border-white/10 text-white" value={formData.govIdNumber} onChange={e => handleChange('identity', 'govIdNumber', e.target.value)} required={!formData.verificationLater} />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Upload ID Proof (Front & Back)</Label>
@@ -444,7 +444,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                             <span className="text-sm font-medium text-white capitalize">{level.replace('tenth', '10th').replace('twelfth', '12th').replace('graduation', 'Graduation').replace('postGraduation', 'Post Grad')}</span>
                                         </div>
                                         <div className="col-span-9 grid grid-cols-2 gap-2">
-                                            <Input placeholder="Institution/Board" className="bg-white/5 border-white/10"
+                                            <Input placeholder="Institution/Board" className="bg-white/5 border-white/10 text-white"
                                                 value={level === 'tenth' || level === 'twelfth' ? (formData.education as any)[level].board : (formData.education as any)[level].university}
                                                 onChange={(e) => {
                                                     const field = level === 'tenth' || level === 'twelfth' ? 'board' : 'university';
@@ -452,7 +452,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                                     setFormData({ ...formData, education: newEdu });
                                                 }}
                                             />
-                                            <Input placeholder="Year" className="bg-white/5 border-white/10"
+                                            <Input placeholder="Year" className="bg-white/5 border-white/10 text-white"
                                                 value={(formData.education as any)[level].year}
                                                 onChange={(e) => {
                                                     const newEdu = { ...formData.education, [level]: { ...(formData.education as any)[level], year: e.target.value } };
@@ -464,7 +464,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                 ))}
                                 <div className="space-y-2 mt-4">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Additional Certifications</Label>
-                                    <Input placeholder="B.Ed, CTET, NET, IELTS, etc." className="bg-white/5 border-white/10" value={formData.additionalCertifications} onChange={e => handleChange('edu', 'additionalCertifications', e.target.value)} />
+                                    <Input placeholder="B.Ed, CTET, NET, IELTS, etc." className="bg-white/5 border-white/10 text-white" value={formData.additionalCertifications} onChange={e => handleChange('edu', 'additionalCertifications', e.target.value)} />
                                 </div>
                             </div>
 
@@ -481,7 +481,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Previously Taught At (Optional)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.previouslyTaughtAt} onChange={e => handleChange('exp', 'previouslyTaughtAt', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.previouslyTaughtAt} onChange={e => handleChange('exp', 'previouslyTaughtAt', e.target.value)} />
                                 </div>
                             </div>
 
@@ -502,7 +502,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Other (Specify)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.otherSubjects} onChange={e => handleChange('sub', 'otherSubjects', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.otherSubjects} onChange={e => handleChange('sub', 'otherSubjects', e.target.value)} />
                                 </div>
                             </div>
 
@@ -515,7 +515,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Preferred Location</Label>
-                                    <Input placeholder="Areas you can travel to" className="bg-white/5 border-white/10" value={formData.preferredLocation} onChange={e => handleChange('mode', 'preferredLocation', e.target.value)} />
+                                    <Input placeholder="Areas you can travel to" className="bg-white/5 border-white/10 text-white" value={formData.preferredLocation} onChange={e => handleChange('mode', 'preferredLocation', e.target.value)} />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Online Teaching Tools Known</Label>
@@ -541,11 +541,11 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Expected Fees (per hour/month)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.expectedFees} onChange={e => handleChange('fees', 'expectedFees', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.expectedFees} onChange={e => handleChange('fees', 'expectedFees', e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Minimum Fee You Accept</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.minimumFee} onChange={e => handleChange('fees', 'minimumFee', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.minimumFee} onChange={e => handleChange('fees', 'minimumFee', e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Willing to Offer Free Demo Class?</Label>
@@ -579,11 +579,11 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Special Achievements / Results</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.achievements} onChange={e => handleChange('add', 'achievements', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.achievements} onChange={e => handleChange('add', 'achievements', e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs uppercase text-slate-500 tracking-wider font-bold">Reference (optional)</Label>
-                                    <Input className="bg-white/5 border-white/10" value={formData.reference} onChange={e => handleChange('add', 'reference', e.target.value)} />
+                                    <Input className="bg-white/5 border-white/10 text-white" value={formData.reference} onChange={e => handleChange('add', 'reference', e.target.value)} />
                                 </div>
                             </div>
 

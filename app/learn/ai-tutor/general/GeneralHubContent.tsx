@@ -67,6 +67,8 @@ export default function GeneralHubPage() {
     const [isMicOn, setIsMicOn] = useState(false)
     const [isCamOn, setIsCamOn] = useState(false)
     const [showChat, setShowChat] = useState(true)
+    const [showParticipants, setShowParticipants] = useState(false)
+    const [onlineUsers, setOnlineUsers] = useState<any[]>([])
 
     // Chat & Realtime
     const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -143,7 +145,27 @@ export default function GeneralHubPage() {
                     await promoteSelfToSpeaker()
                 }
             })
-            .subscribe()
+            .on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState()
+                const users = Object.values(state).flat()
+                setOnlineUsers(users)
+            })
+            .on('presence', { event: 'join' }, ({ newPresences }) => {
+                // Optional: show join notifications
+            })
+            .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+                // Optional: show leave notifications
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({
+                        id: currentUser?.id,
+                        name: currentUser?.user_metadata?.full_name || 'Guest User',
+                        avatar_url: currentUser?.user_metadata?.avatar_url,
+                        role: role
+                    })
+                }
+            })
 
         channelRef.current = channel
     }
@@ -385,15 +407,26 @@ export default function GeneralHubPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/5 text-xs font-bold text-slate-400">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 text-xs font-bold transition-all ${showParticipants ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-400'}`}
+                        onClick={() => {
+                            setShowParticipants(!showParticipants)
+                            if (showChat && !showParticipants) setShowChat(false)
+                        }}
+                    >
                         <Users className="w-3 h-3" />
-                        <span>{1 + remoteUsers.length} Online</span>
-                    </div>
+                        <span>{onlineUsers.length} Online</span>
+                    </Button>
                     <Button
                         variant="ghost"
                         size="icon"
                         className={`${showChat ? 'bg-white/10 text-white' : 'text-slate-400'}`}
-                        onClick={() => setShowChat(!showChat)}
+                        onClick={() => {
+                            setShowChat(!showChat)
+                            if (showParticipants && !showChat) setShowParticipants(false)
+                        }}
                     >
                         <MessageSquare className="w-5 h-5" />
                     </Button>
@@ -471,10 +504,11 @@ export default function GeneralHubPage() {
 
                 </div>
 
-                {/* Chat Sidebar */}
-                <AnimatePresence>
+                {/* Chat & Participants Sidebar */}
+                <AnimatePresence mode="wait">
                     {showChat && (
                         <motion.aside
+                            key="chat"
                             initial={{ width: 0, opacity: 0 }}
                             animate={{ width: 320, opacity: 1 }}
                             exit={{ width: 0, opacity: 0 }}
@@ -516,6 +550,53 @@ export default function GeneralHubPage() {
                                         <Send className="w-4 h-4" />
                                     </Button>
                                 </form>
+                            </div>
+                        </motion.aside>
+                    )}
+
+                    {showParticipants && (
+                        <motion.aside
+                            key="participants"
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{ width: 320, opacity: 1 }}
+                            exit={{ width: 0, opacity: 0 }}
+                            className="border-l border-white/5 bg-[#0d1321]/80 backdrop-blur-xl flex flex-col z-20"
+                        >
+                            <div className="p-4 border-b border-white/5 font-bold text-sm tracking-widest uppercase text-slate-400">
+                                Classroom Sync ({onlineUsers.length})
+                            </div>
+
+                            <div className="flex-1 p-4 overflow-y-auto space-y-2">
+                                {onlineUsers.map((u: any) => (
+                                    <div key={u.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 group hover:border-emerald-500/30 transition-all">
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative">
+                                                <Avatar className="h-8 w-8 border border-white/10">
+                                                    <AvatarImage src={u.avatar_url} />
+                                                    <AvatarFallback className="bg-neutral-800 text-[10px] font-black">{u.name?.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0d1321] rounded-full" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-bold text-white leading-none">{u.name}</span>
+                                                <span className="text-[9px] font-black text-slate-500 uppercase mt-1 tracking-tighter">
+                                                    {u.role === 'host' ? 'Teacher' : u.role === 'speaker' ? 'Speaker' : 'Student'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {userRole === 'host' && u.id !== currentUser?.id && u.role === 'audience' && (
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-7 px-2 text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
+                                                onClick={() => promoteToSpeaker(u.id)}
+                                            >
+                                                Unmute
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </motion.aside>
                     )}
