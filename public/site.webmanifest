@@ -1,1 +1,16 @@
-{"name": "Celoris Platform", "short_name": "Celoris", "description": "Transform your digital future with Celoris. Comprehensive platform for learning, earning opportunities, games, and productivity tools.", "start_url": "/", "display": "standalone", "background_color": "#ffffff", "theme_color": "#3b82f6", "icons": [{"src": "/favicon.ico", "sizes": "64x64 32x32 24x24 16x16", "type": "image/x-icon"}, {"src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"}, {"src": "/favicon-32x32.png", "sizes": "32x32", "type": "image/png"}, {"src": "/favicon-16x16.png", "sizes": "16x16", "type": "image/png"}]}
+{
+    "name": "Celoris Platform",
+    "short_name": "Celoris",
+    "description": "Transform your digital future with Celoris. Comprehensive platform for learning, earning opportunities, games, and productivity tools.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3b82f6",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

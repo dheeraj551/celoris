@@ -19,6 +19,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                 src={image || `https://picsum.photos/400/400?random=${Math.random()}`}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100"
                 alt={title}
+                onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800";
+                }}
             />
             {tag && (
                 <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500 px-3 py-1 rounded-full shadow-3xl shadow-emerald-500/50">
@@ -98,13 +101,15 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                         ? '/courses/build-ai-products-that-make-money-practical-guide'
                                                                                                         : id === 'mastering-multimodal-ai-static'
                                                                                                             ? '/courses/mastering-multimodal-ai'
-                                                                                                            : id === 'architecting-trust-static'
-                                                                                                                ? '/courses/architecting-trust-ai-safety-ethics-compliance'
-                                                                                                                : id === 'agentic-ai-cybersecurity-static'
-                                                                                                                    ? '/courses/agentic-ai-for-cybersecurity'
-                                                                                                                    : id === 'accelerating-science-static'
-                                                                                                                        ? '/courses/accelerating-science-generative-ai-for-research-innovation'
-                                                                                                                        : `/learn/course/${id}`
+                                                                                                            : id === 'building-model-native-agent-systems-static'
+                                                                                                                ? '/courses/building-model-native-agent-systems'
+                                                                                                                : id === 'architecting-trust-static'
+                                                                                                                    ? '/courses/architecting-trust-ai-safety-ethics-compliance'
+                                                                                                                    : id === 'agentic-ai-cybersecurity-static'
+                                                                                                                        ? '/courses/agentic-ai-for-cybersecurity'
+                                                                                                                        : id === 'accelerating-science-static'
+                                                                                                                            ? '/courses/accelerating-science-generative-ai-for-research-innovation'
+                                                                                                                            : `/learn/course/${id}`
                         }
                         className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
                     >
@@ -135,6 +140,7 @@ export const Courses: React.FC<any> = ({
         { id: 'agentic-ai-cybersecurity-static', title: 'Agentic AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: '/agentic-ai-cybersecurity-cover.png' },
         { id: 'accelerating-science-static', title: 'Accelerating Science: AI for Research & Innovation', subject: 'Artificial Intelligence', instructor_name: 'IntuitionLabs', course_duration: '8-Week Intensive', price: 24999, is_featured: true, course_image_url: '/accelerating-science-generative-ai-cover.png' },
         { id: 'mastering-multimodal-ai-static', title: 'Mastering Multimodal AI: Vision, Audio & Fusion', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: '/mastering-multimodal-ai-cover.png' },
+        { id: 'building-model-native-agent-systems-static', title: 'Building Model-Native Agent Systems (End-to-End)', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8 Weeks (Accelerated)', price: 29999, is_featured: true, course_image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800' },
         { id: 'vibe-coding-mastery-static', title: 'Vibe Coding Mastery: AI-First Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
         { id: 'agentic-ai-systems-static', title: 'Agentic AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
         { id: 'livekit-ai-agents-static', title: 'Build Real-Time AI Agents with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '10 hours', price: 14999, is_featured: true, course_image_url: '/livekit-ai-agents-cover.png' }

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Verify user is authorized (check if match exists)
     // Allow public interview rooms to bypass match verification
-    if (!channelName.startsWith('interview_')) {
+    if (!channelName.startsWith('interview_') && !channelName.startsWith('classroom_')) {
       const { data: match, error: matchError } = await supabase
         .from('matches')
         .select('*')

@@ -8,8 +8,31 @@ export async function POST(req: Request) {
         const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
         // Shared System Prompt
-        const systemPrompt = `You are a helpful and encouraging AI ${subject} Tutor on the platform "Celoris". 
+        let subjectScope = subject;
+        let aiCourseData = "";
+
+        if (subject === 'quantum-science') {
+            subjectScope = 'Physics, Chemistry, and Mathematics';
+        } else if (subject === 'ai-courses') {
+            subjectScope = 'AI Course Advisor';
+            aiCourseData = `
+            AVAILABLE COURSES ON CELORIS:
+            1. Architecting Trust: AI Safety, Ethics & Compliance (Beginner-Intermediate, 6-8 Weeks)
+            2. Agentic AI for Cybersecurity: Building Autonomous Defense (Advanced, 6-8 Weeks)
+            3. Accelerating Science: AI for Research & Innovation (Intermediate, 8-Week Intensive)
+            4. Mastering Multimodal AI: Vision, Audio & Fusion (Advanced, 8-10 Weeks)
+            5. Vibe Coding Mastery: AI-First Development Workflows (Intermediate, 4-6 Weeks)
+            6. Agentic AI Systems: Design, Build & Deploy (Advanced, 15 hours)
+            7. Build Real-Time AI Agents with LiveKit (Intermediate, 10 hours)
+            8. RAG Unlocked: Production-Grade Search & Answer Systems (Advanced)
+            9. LLM Prompt Engineering for Real Results (Beginner)
+            10. Compete 2025 Yoga Mastery (Wellness)
+            `;
+        }
+
+        const systemPrompt = `You are a helpful and encouraging AI Tutor/Advisor specializing in ${subjectScope} on the platform "Celoris". 
         Your goal is to help the student understand concepts, solve problems, and stay motivated.
+        ${subject === 'ai-courses' ? `You have access to the following course list: ${aiCourseData}. Recommend courses based on the user's goals.` : ''}
         Keep your responses clear, structured (using Markdown), and concise.
         Always be supportive and patient. Identify as part of "Celoris".`;
 

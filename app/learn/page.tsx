@@ -1,6 +1,6 @@
 "use client"
 
-import { BookOpen, Users, TrendingUp, Calculator, Atom, Sparkles, ArrowRight, Zap } from "lucide-react"
+import { BookOpen, Users, TrendingUp, Calculator, Bot, Sparkles, ArrowRight, Zap } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -115,8 +115,8 @@ export default function LearnPage() {
           >
             {[
               { title: "General Hub", icon: BookOpen, color: "from-emerald-600/20 to-teal-600/10", iconColor: "text-emerald-400", link: "/learn/ai-tutor/general", desc: "Collaborative space for cross-discipline knowledge sharing." },
-              { title: "Quantum Math", icon: Calculator, color: "from-blue-600/20 to-indigo-600/10", iconColor: "text-blue-400", link: "/learn/ai-tutor/math", desc: "Deep-focus room for complex logic and mathematical modeling." },
-              { title: "Physics Lab", icon: Atom, color: "from-amber-600/20 to-orange-600/10", iconColor: "text-amber-400", link: "/learn/ai-tutor/physics", desc: "Exploratory space for physical concepts and system mechanics." }
+              { title: "Quantum Science", icon: Calculator, color: "from-blue-600/20 to-indigo-600/10", iconColor: "text-blue-400", link: "/learn/ai-tutor/quantum-science", desc: "Unified hub for Physics, Chemistry, and Advanced Mathematics." },
+              { title: "AI ROOM", icon: Bot, color: "from-purple-600/20 to-pink-600/10", iconColor: "text-purple-400", link: "/learn/ai-tutor/ai-courses", desc: "Explore AI technology courses and find your perfect learning path." }
             ].map((room, idx) => (
               <motion.div
                 key={idx}

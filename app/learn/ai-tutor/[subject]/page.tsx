@@ -96,9 +96,11 @@ export default function AIStudyRoom() {
                     speechConfig: {
                         voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
                     },
-                    systemInstruction: `You are Celoris, a friendly math tutor on the Celoris platform. 
-                    You provide spoken step-by-step guidance. Be encouraging and patient. 
-                    Focus on conceptual understanding. Use the subject: ${subject}.`,
+                    systemInstruction: `You are Celoris, an expert AI Course Advisor on the Celoris platform.
+                    You specialize in guiding students to the right AI technology courses.
+                    Your goal is to understand their interests and recommend the perfect course from our catalog.
+                    Be enthusiastic, knowledgeable about AI trends, and helpful.
+                    Current subject context: ${subject === 'quantum-science' ? 'Physics, Chemistry, and Math' : subject === 'ai-courses' ? 'AI Technology Courses & Career Paths' : subject}.`,
                 },
                 callbacks: {
                     onopen: () => {
@@ -246,7 +248,7 @@ export default function AIStudyRoom() {
                             <BrainCircuit className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold tracking-tight">Celoris MathGenius</h1>
+                            <h1 className="text-xl font-bold tracking-tight">Celoris {subject === 'quantum-science' ? 'ScienceGenius' : subject === 'ai-courses' ? 'AI Advisor' : 'AI Tutor'}</h1>
                             <p className="text-[10px] text-primary-400 font-bold tracking-widest uppercase">Powered by Gemini 2.0</p>
                         </div>
                     </div>
@@ -386,7 +388,13 @@ export default function AIStudyRoom() {
                                 </div>
                                 <div className="space-y-3">
                                     <h3 className="text-3xl font-black tracking-tight uppercase italic">No Brainer?</h3>
-                                    <p className="max-w-xs mx-auto text-sm font-medium">Ask any complex math problem. I can even plot functions for you!</p>
+                                    <p className="max-w-xs mx-auto text-sm font-medium">
+                                        {subject === 'quantum-science'
+                                            ? "Ask about Physics, Chemistry, or Math. I can explain theories and solve problems!"
+                                            : subject === 'ai-courses'
+                                                ? "Ask about AI trends, career paths, or find the best course for you!"
+                                                : "Ask any complex math problem. I can even plot functions for you!"}
+                                    </p>
                                 </div>
                             </div>
                         )}
@@ -429,7 +437,7 @@ export default function AIStudyRoom() {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Solve high-order polynomials or just say hi..."
+                                placeholder={subject === 'quantum-science' ? "Ask about forces, reactions, or calculus..." : subject === 'ai-courses' ? "Find me a course on Generative AI..." : "Solve high-order polynomials or just say hi..."}
                                 disabled={isTyping}
                                 className="flex-1 bg-transparent border-none px-8 py-5 focus:ring-0 outline-none placeholder:text-white/20 text-[16px] font-medium"
                             />

@@ -135,6 +135,29 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'building-model-native-agent-systems-static',
+      title: 'Building Model-Native Agent Systems (End-to-End)',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced (Level 400+)',
+      description: 'Move from System-Centric orchestration to Model-Centric agency. Master internal planning, native tool-use, and persistent latent state for autonomous agents.',
+      target_audience: 'AI Engineers, Advanced Developers, Research Engineers',
+      instructor_name: 'Celoris Designs',
+      course_duration: '8 Weeks (Accelerated)',
+      price: 29999,
+      course_image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(6).fill(null).map((_, i) => ({
+        id: `bmnas-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'vibe-coding-mastery-static',
       title: 'Vibe Coding Mastery: Build Apps Using AI-First Development Workflows',
       subject: 'Artificial Intelligence',
@@ -845,6 +868,7 @@ export default function CoursesDisplay({
     if (id === 'langchain-real-static') return '/courses/langchain-in-action-real-workflows'
     if (id === 'build-ai-products-static') return '/courses/build-ai-products-that-make-money-practical-guide'
     if (id === 'mastering-multimodal-ai-static') return '/courses/mastering-multimodal-ai'
+    if (id === 'building-model-native-agent-systems-static') return '/courses/building-model-native-agent-systems'
     if (id === 'architecting-trust-static') return '/courses/architecting-trust-ai-safety-ethics-compliance'
     if (id === 'agentic-ai-cybersecurity-static') return '/courses/agentic-ai-for-cybersecurity'
     if (id === 'accelerating-science-static') return '/courses/accelerating-science-generative-ai-for-research-innovation'
