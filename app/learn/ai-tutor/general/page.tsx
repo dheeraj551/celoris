@@ -408,13 +408,13 @@ export default function GeneralHubPage() {
 
                     {/* Active Speakers Grid */}
                     <div className={`grid gap-4 w-full h-full transition-all ${remoteUsers.length === 0 && userRole === 'audience' ? 'place-items-center' :
-                            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                        'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
                         }`}>
 
                         {/* If I am Host/Speaker, show my video */}
                         {(userRole === 'host' || userRole === 'speaker') && (
                             <div className="relative aspect-video bg-neutral-900 rounded-2xl overflow-hidden border border-emerald-500/30 shadow-2xl group">
-                                <div ref={node => node && localVideoTrack?.play(node)} className="w-full h-full object-cover transform scale-x-[-1]" />
+                                <div ref={node => { if (node) localVideoTrack?.play(node) }} className="w-full h-full object-cover transform scale-x-[-1]" />
 
                                 <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2">
                                     <Shield className="w-3 h-3 text-emerald-400" />
