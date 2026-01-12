@@ -32,16 +32,9 @@ export async function POST(request: NextRequest) {
         const supabase = createRouteClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        if (!user) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
-        }
-
         // Create Application Entry
         const dbPayload = {
-            user_id: user.id,
+            user_id: user?.id || null,
             application_ref_id,
             job_id,
             job_title,

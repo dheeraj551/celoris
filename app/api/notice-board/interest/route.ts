@@ -17,13 +17,6 @@ export async function POST(request: NextRequest) {
         const supabase = createRouteClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        if (!user) {
-            return NextResponse.json(
-                { error: 'You must be logged in to show interest' },
-                { status: 401 }
-            )
-        }
-
         const adminSupabase = createSupabaseClientForServer() as any
 
         // 1. Create interest entry
@@ -35,7 +28,7 @@ export async function POST(request: NextRequest) {
                 user_email: email,
                 user_phone: phone,
                 message,
-                user_id: user.id
+                user_id: user?.id || null
             } as any)
             .select()
             .single()

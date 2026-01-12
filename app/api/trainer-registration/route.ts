@@ -26,21 +26,14 @@ export async function POST(request: NextRequest) {
         const supabase = createRouteClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        if (!user) {
-            return NextResponse.json(
-                { error: 'You must be logged in to apply' },
-                { status: 401 }
-            )
-        }
-
         const adminSupabase = createSupabaseClientForServer() as any
 
         // 1. Create application entry
         const { data, error } = await adminSupabase
             .from('trainer_applications')
             .insert({
-                user_id: user.id,
-                ...body // We trust the body matches the schema mostly, or extra fields are ignored
+                user_id: user?.id || null,
+                ...body
             } as any)
             .select()
             .single()

@@ -459,41 +459,41 @@ export default function PublicRoomPage() {
             </div>
 
             {/* Header - Advanced Glassmorphism */}
-            <header className="flex-none border-b border-white/5 bg-[#050810]/40 backdrop-blur-3xl px-8 py-5 z-20 shadow-2xl">
+            <header className="flex-none border-b border-white/5 bg-[#050810]/40 backdrop-blur-3xl px-4 md:px-8 py-3 md:py-5 z-20 shadow-2xl">
                 <div className="container mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-3 md:gap-8">
                         <motion.div whileHover={{ x: -5 }} whileTap={{ scale: 0.95 }}>
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => router.push('/social/chat')}
-                                className="rounded-2xl border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 h-11 w-11 shadow-lg"
+                                className="rounded-xl md:rounded-2xl border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 h-9 w-9 md:h-11 md:w-11 shadow-lg"
                             >
-                                <ArrowLeft className="h-5 w-5" />
+                                <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
                             </Button>
                         </motion.div>
 
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-3 md:gap-5">
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                className={`h-14 w-14 rounded-3xl ${isPrivate ? 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.3)]' : 'bg-gradient-to-br from-emerald-400 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.3)]'} flex items-center justify-center text-white font-black overflow-hidden relative group`}
+                                className={`h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-3xl ${isPrivate ? 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.3)]' : 'bg-gradient-to-br from-emerald-400 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.3)]'} flex items-center justify-center text-white font-black overflow-hidden relative group`}
                             >
                                 <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                {isPrivate ? <Lock className="h-6 w-6" /> : <Globe className="h-6 w-6" />}
+                                {isPrivate ? <Lock className="h-5 w-5 md:h-6 md:w-6" /> : <Globe className="h-5 w-5 md:h-6 md:w-6" />}
                             </motion.div>
 
                             <div>
-                                <h1 className="font-black text-white text-2xl italic uppercase tracking-tighter flex items-center gap-3">
+                                <h1 className="font-black text-white text-lg md:text-2xl italic uppercase tracking-tighter flex items-center gap-2 md:gap-3">
                                     {isPrivate ? 'Private Sanctum' : room.title}
-                                    <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                                    <span className="flex h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
                                 </h1>
-                                <div className="flex items-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                                <div className="flex items-center gap-2 text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
                                     <span className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-full border border-white/5">
-                                        {isPrivate ? 'ENCRYPTED' : `${onlineCount} ACTIVE NODES`}
+                                        {isPrivate ? 'ENCRYPTED' : `${onlineCount} ACTIVE`}
                                     </span>
-                                    <span className="opacity-30">|</span>
-                                    <span className={`tracking-widest ${isPrivate ? 'text-teal-400' : 'text-emerald-400'}`}>{isPrivate ? 'CONFIDENTIAL CHANNEL' : 'LOBBY BROADCAST'}</span>
+                                    <span className="hidden xs:inline opacity-30">|</span>
+                                    <span className={`hidden xs:inline tracking-widest ${isPrivate ? 'text-teal-400' : 'text-emerald-400'}`}>{isPrivate ? 'CONFIDENTIAL' : 'LOBBY'}</span>
                                 </div>
                             </div>
                         </div>
@@ -580,35 +580,33 @@ export default function PublicRoomPage() {
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden relative z-10">
                 {/* Messages/Lobby Area */}
-                <div className="flex-1 overflow-y-auto px-6 py-10 flex flex-col items-center custom-scrollbar">
-                    <div className="w-full max-w-5xl space-y-16">
+                <div className="flex-1 overflow-y-auto px-2 md:px-6 py-4 md:py-10 flex flex-col items-center custom-scrollbar">
+                    <div className="w-full max-w-5xl space-y-6 md:space-y-16 flex flex-col justify-end min-h-0">
                         {/* Welcome/Discovery View */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-center py-10"
-                        >
+                        {!isPrivate ? (
                             <motion.div
-                                animate={{
-                                    boxShadow: isPrivate ? ["0 0 20px rgba(16,185,129,0.1)", "0 0 50px rgba(16,185,129,0.3)", "0 0 20px rgba(16,185,129,0.1)"] : ["0 0 20px rgba(16,185,129,0.1)", "0 0 50px rgba(16,185,129,0.3)", "0 0 20px rgba(16,185,129,0.1)"]
-                                }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                                className={`inline-flex items-center justify-center h-28 w-28 rounded-[2.5rem] ${isPrivate ? 'bg-teal-500/20 border-teal-500/30' : 'bg-emerald-500/20 border-emerald-500/30'} border backdrop-blur-2xl mb-10 shadow-3xl relative group`}
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-center py-10"
                             >
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2.5rem]" />
-                                {isPrivate ? <Shield className="h-12 w-12 text-teal-400" /> : <Rocket className="h-12 w-12 text-emerald-400" />}
-                            </motion.div>
+                                <motion.div
+                                    animate={{
+                                        boxShadow: ["0 0 20px rgba(16,185,129,0.1)", "0 0 50px rgba(16,185,129,0.3)", "0 0 20px rgba(16,185,129,0.1)"]
+                                    }}
+                                    transition={{ duration: 3, repeat: Infinity }}
+                                    className="inline-flex items-center justify-center h-28 w-28 rounded-[2.5rem] bg-emerald-500/20 border-emerald-500/30 border backdrop-blur-2xl mb-10 shadow-3xl relative group"
+                                >
+                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2.5rem]" />
+                                    <Rocket className="h-12 w-12 text-emerald-400" />
+                                </motion.div>
 
-                            <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-6 leading-none">
-                                {isPrivate ? 'Confidential' : room.title}
-                            </h2>
-                            <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base font-medium leading-relaxed tracking-wide uppercase italic">
-                                {isPrivate
-                                    ? 'A temporary encrypted sanctuary. Signal termination wipes all records from the social plane.'
-                                    : room.description}
-                            </p>
+                                <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-6 leading-none">
+                                    {room.title}
+                                </h2>
+                                <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base font-medium leading-relaxed tracking-wide uppercase italic">
+                                    {room.description}
+                                </p>
 
-                            {!isPrivate && (
                                 <div className="mt-16 space-y-20">
                                     {/* Active User Cluster */}
                                     <div className="flex flex-col items-center gap-10">
@@ -645,7 +643,7 @@ export default function PublicRoomPage() {
                                         </motion.div>
                                     </div>
 
-                                    {/* Stations Grid - Premium Design */}
+                                    {/* Stations Grid */}
                                     <div className="w-full max-w-4xl mx-auto px-4">
                                         <div className="flex items-center gap-6 mb-8">
                                             <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -706,8 +704,14 @@ export default function PublicRoomPage() {
                                         </div>
                                     </div>
                                 </div>
-                            )}
-                        </motion.div>
+                            </motion.div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-6 md:py-10 opacity-50">
+                                <Shield className="h-8 w-8 text-teal-500 mb-3" />
+                                <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-teal-500/50 to-transparent" />
+                                <p className="mt-3 text-[10px] font-black text-teal-500 uppercase tracking-[0.3em]">Encrypted Channel Established</p>
+                            </div>
+                        )}
 
                         {/* Ad Module */}
                         {!isPrivate && (
@@ -718,7 +722,7 @@ export default function PublicRoomPage() {
 
                         {/* Private Chat Stream */}
                         {isPrivate && (
-                            <div className="space-y-10 pb-32">
+                            <div className="space-y-4 md:space-y-8 pb-32 w-full">
                                 <AnimatePresence initial={false}>
                                     {messages.map((msg, index) => {
                                         const isMe = msg.sender.id === user.id
@@ -727,60 +731,60 @@ export default function PublicRoomPage() {
                                         return (
                                             <motion.div
                                                 key={msg.id}
-                                                initial={{ opacity: 0, scale: 0.9, y: 30, x: isMe ? 20 : -20 }}
+                                                initial={{ opacity: 0, scale: 0.9, y: 10, x: isMe ? 20 : -20 }}
                                                 animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                                                className={`flex gap-6 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}
+                                                className={`flex gap-3 md:gap-5 ${isMe ? 'flex-row-reverse' : 'flex-row'} w-full`}
                                             >
-                                                <div className={`flex-none ${!showAvatar ? 'w-12' : ''}`}>
+                                                <div className={`flex-none ${!showAvatar ? 'w-8 md:w-12' : ''}`}>
                                                     {showAvatar && (
                                                         <motion.div whileHover={{ scale: 1.1 }}>
-                                                            <Avatar className="h-12 w-12 border-2 border-white/10 shadow-2xl cursor-pointer" onClick={() => setSelectedUserId(msg.sender.id)}>
+                                                            <Avatar className="h-8 w-8 md:h-12 md:w-12 border-2 border-white/10 shadow-2xl cursor-pointer" onClick={() => setSelectedUserId(msg.sender.id)}>
                                                                 <AvatarImage src={msg.sender.avatar_url} />
-                                                                <AvatarFallback className="bg-[#0b121e] text-emerald-400 font-black">{msg.sender.name.charAt(0)}</AvatarFallback>
+                                                                <AvatarFallback className="bg-[#0b121e] text-emerald-400 font-black text-xs md:text-sm">{msg.sender.name.charAt(0)}</AvatarFallback>
                                                             </Avatar>
                                                         </motion.div>
                                                     )}
                                                 </div>
 
-                                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[85%] md:max-w-[70%]`}>
                                                     {showAvatar && (
-                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3 px-2 italic">
+                                                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1.5 md:mb-3 px-2 italic">
                                                             {isMe ? 'SYNC TRANSMITTING' : msg.sender.name}
                                                         </span>
                                                     )}
 
                                                     <div
-                                                        className={`relative overflow-hidden group px-6 py-4 rounded-3xl shadow-3xl transition-all duration-500 ${isMe
+                                                        className={`relative overflow-hidden group px-4 py-3 md:px-6 md:py-4 rounded-2xl md:rounded-3xl shadow-3xl transition-all duration-500 ${isMe
                                                             ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-tr-none border border-white/20'
                                                             : 'bg-white/5 backdrop-blur-3xl border border-white/10 text-slate-100 rounded-tl-none hover:bg-white/10'
                                                             }`}
                                                     >
                                                         {msg.type === 'image' ? (
-                                                            <div className="relative group/img overflow-hidden rounded-2xl">
+                                                            <div className="relative group/img overflow-hidden rounded-xl md:rounded-2xl">
                                                                 <img
                                                                     src={msg.content}
                                                                     alt="Satellite Data"
-                                                                    className="max-w-full rounded-2xl max-h-[500px] object-cover cursor-pointer transition-transform duration-700 group-hover/img:scale-105"
+                                                                    className="max-w-full rounded-xl md:rounded-2xl max-h-[300px] md:max-h-[500px] object-cover cursor-pointer transition-transform duration-700 group-hover/img:scale-105"
                                                                     onClick={() => window.open(msg.content, '_blank')}
                                                                 />
                                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                                                                    <div className="p-3 bg-white/10 backdrop-blur-xl rounded-full border border-white/20">
-                                                                        <Search className="h-6 w-6 text-white" />
+                                                                    <div className="p-2 md:p-3 bg-white/10 backdrop-blur-xl rounded-full border border-white/20">
+                                                                        <Search className="h-4 w-4 md:h-6 md:w-6 text-white" />
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <p className="text-sm md:text-base font-medium leading-relaxed tracking-wide italic selection:bg-white/30">
+                                                            <p className="text-xs md:text-base font-medium leading-relaxed tracking-wide italic selection:bg-white/30 whitespace-pre-wrap break-words">
                                                                 {msg.content}
                                                             </p>
                                                         )}
                                                     </div>
 
-                                                    <div className="flex items-center gap-3 mt-3 px-2">
-                                                        <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">
+                                                    <div className="flex items-center gap-2 md:gap-3 mt-1 md:mt-3 px-2">
+                                                        <span className="text-[8px] md:text-[9px] font-black text-slate-700 uppercase tracking-widest">
                                                             {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                         </span>
-                                                        {isMe && <Check className="h-2.5 w-2.5 text-emerald-500" />}
+                                                        {isMe && <Check className="h-2 w-2 md:h-2.5 md:w-2.5 text-emerald-500" />}
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -925,11 +929,11 @@ export default function PublicRoomPage() {
 
             {/* Chat HUD - Input Area */}
             {isPrivate && (
-                <div className="flex-none bg-[#050810]/40 backdrop-blur-3xl border-t border-white/5 p-8 pb-10 z-30">
+                <div className="flex-none bg-[#050810]/40 backdrop-blur-3xl border-t border-white/5 p-4 pb-6 md:p-8 md:pb-10 z-30">
                     <div className="container mx-auto max-w-4xl">
                         <form
                             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-                            className="flex items-end gap-5"
+                            className="flex items-end gap-2 md:gap-5"
                         >
                             <input
                                 type="file"
@@ -943,23 +947,23 @@ export default function PublicRoomPage() {
                                     type="button"
                                     variant="ghost"
                                     size="icon"
-                                    className="text-slate-500 hover:text-blue-400 bg-white/5 rounded-2xl h-14 w-14 border border-white/5 shadow-lg"
+                                    className="text-slate-500 hover:text-blue-400 bg-white/5 rounded-2xl h-12 w-12 md:h-14 md:w-14 border border-white/5 shadow-lg"
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={isUploading}
                                 >
-                                    <Paperclip className={`h-6 w-6 ${isUploading ? 'animate-pulse text-blue-400' : ''}`} />
+                                    <Paperclip className={`h-5 w-5 md:h-6 md:w-6 ${isUploading ? 'animate-pulse text-blue-400' : ''}`} />
                                 </Button>
                             </motion.div>
 
-                            <div className="flex-1 bg-white/5 border border-white/10 rounded-[2rem] flex items-center px-6 py-4 focus-within:ring-2 focus-within:ring-blue-500/30 transition-all shadow-2xl relative">
+                            <div className="flex-1 bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] flex items-center px-4 py-3 md:px-6 md:py-4 focus-within:ring-2 focus-within:ring-blue-500/30 transition-all shadow-2xl relative">
                                 <Input
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     placeholder="TRANSMIT DATA..."
-                                    className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-1 text-white placeholder:text-slate-700 text-sm font-black uppercase tracking-widest"
+                                    className="border-0 bg-transparent focus-visible:ring-0 px-0 h-auto py-0 md:py-1 text-white placeholder:text-slate-700 text-xs md:text-sm font-black uppercase tracking-widest"
                                 />
-                                <Button type="button" variant="ghost" size="icon" className="text-slate-500 hover:text-blue-400 rounded-full h-11 w-11 -mr-2" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                                    <Smile className="h-6 w-6" />
+                                <Button type="button" variant="ghost" size="icon" className="text-slate-500 hover:text-blue-400 rounded-full h-8 w-8 md:h-11 md:w-11 -mr-2" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                    <Smile className="h-5 w-5 md:h-6 md:w-6" />
                                 </Button>
                                 {showEmojiPicker && (
                                     <motion.div
@@ -976,9 +980,9 @@ export default function PublicRoomPage() {
                                 <Button
                                     type="submit"
                                     disabled={!newMessage.trim()}
-                                    className="bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-[1.5rem] h-14 w-14 shadow-3xl shadow-blue-500/30 border border-white/10"
+                                    className="bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-[1.5rem] h-12 w-12 md:h-14 md:w-14 shadow-3xl shadow-blue-500/30 border border-white/10"
                                 >
-                                    <Send className="h-6 w-6 ml-1" />
+                                    <Send className="h-5 w-5 md:h-6 md:w-6 ml-1" />
                                 </Button>
                             </motion.div>
                         </form>
