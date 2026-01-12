@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -32,7 +33,14 @@ import {
   Eye,
   TrendingUp,
   UserCheck,
-  Calendar
+  Calendar,
+  GraduationCap,
+  Award,
+  FileText,
+  Mail,
+  Phone,
+  User,
+  Sparkles
 } from "lucide-react"
 
 export default function AdminEarnPage() {
@@ -69,6 +77,8 @@ export default function AdminEarnPage() {
     is_active: true,
     is_published: true
   })
+  const [selectedApplication, setSelectedApplication] = useState<any>(null)
+  const [showApplicationModal, setShowApplicationModal] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -112,10 +122,15 @@ export default function AdminEarnPage() {
         setJobs(jobsResult.data)
       }
 
-      // For now, keep applications empty since we haven't implemented applications yet
-      setApplications([])
+      // Load applications
+      const applicationsResponse = await fetch('/api/job-application?limit=20')
+      const applicationsResult = await applicationsResponse.json()
 
-      console.log('Loaded jobs:', jobsResult.data?.length || 0)
+      if (applicationsResult.success) {
+        setApplications(applicationsResult.data)
+      }
+
+      console.log('Loaded jobs:', jobsResult.data?.length || 0, 'Loaded applications:', applicationsResult.data?.length || 0)
     } catch (error) {
       console.error("Error loading data:", error)
     } finally {
@@ -346,6 +361,69 @@ export default function AdminEarnPage() {
                   <p className="text-sm text-slate-400">Success Rate</p>
                   <p className="text-2xl font-bold text-white">78%</p>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center space-x-2">
+              <UserCheck className="h-6 w-6" />
+              <span>Recent Applications</span>
+            </h2>
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              <Eye className="h-4 w-4 mr-2" />
+              View All Applications
+            </Button>
+          </div>
+
+          {/* Applications List */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                {applications?.map((application) => (
+                  <div key={application.id} className="border border-slate-700 rounded-lg p-4 hover:bg-slate-750 transition-colors">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-medium text-white">{application.full_name}</h4>
+                        <p className="text-sm text-slate-400">Applied for: {application.job_title}</p>
+                        <p className="text-xs text-slate-500">{application.email} • {application.mobile_number}</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status || 'pending')}`}>
+                          {application.status || 'pending'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-4 text-xs text-slate-400">
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>Applied: {new Date(application.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Briefcase className="h-3 w-3" />
+                          <span>Exp: {application.total_experience}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-slate-600 text-slate-300"
+                          onClick={() => {
+                            setSelectedApplication(application)
+                            setShowApplicationModal(true)
+                          }}
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -784,68 +862,146 @@ export default function AdminEarnPage() {
           })}
         </div>
 
-        {/* Recent Applications */}
-        <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white flex items-center space-x-2">
-              <UserCheck className="h-6 w-6" />
-              <span>Recent Applications</span>
-            </h2>
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              <Eye className="h-4 w-4 mr-2" />
-              View All Applications
-            </Button>
-          </div>
 
-          {/* Applications List */}
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                {applications?.map((application) => (
-                  <div key={application.id} className="border border-slate-700 rounded-lg p-4 hover:bg-slate-750 transition-colors">
-                    <div className="flex justify-between items-start mb-3">
+
+        {/* Application Details Modal */}
+        <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 text-white border-slate-700">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                <FileText className="text-blue-400" />
+                Candidate Application: {selectedApplication?.application_ref_id}
+              </DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Full profile and history for {selectedApplication?.full_name}
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedApplication && (
+              <div className="space-y-8 py-4">
+                {/* 1. Header Info */}
+                <div className="flex flex-col md:flex-row gap-6 p-6 bg-slate-800 rounded-2xl border border-slate-700">
+                  <div className="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-500/30">
+                    <User className="w-10 h-10 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium text-white">{application.applicantName}</h4>
-                        <p className="text-sm text-slate-400">Applied for: {application.jobTitle}</p>
-                        <p className="text-xs text-slate-500">{application.email}</p>
+                        <h3 className="text-2xl font-bold">{selectedApplication.full_name}</h3>
+                        <p className="text-blue-400 font-medium">Applied for: {selectedApplication.job_title}</p>
                       </div>
-                      <div className="flex space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
-                          {application.status}
-                        </span>
-                      </div>
+                      <Badge className={getStatusColor(selectedApplication.status || 'pending')}>
+                        {(selectedApplication.status || 'pending').toUpperCase()}
+                      </Badge>
                     </div>
-
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-4 text-xs text-slate-400">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>Applied: {new Date(application.appliedAt).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Briefcase className="h-3 w-3" />
-                          <span>Resume: {application.resume}</span>
-                        </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Mail className="w-4 h-4" />
+                        {selectedApplication.email}
                       </div>
-
-                      <div className="space-x-2">
-                        <Button size="sm" variant="outline" className="border-slate-600 text-slate-300">
-                          View Resume
-                        </Button>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                          Review
-                        </Button>
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                          Shortlist
-                        </Button>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Phone className="w-4 h-4" />
+                        {selectedApplication.mobile_number}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <MapPin className="w-4 h-4" />
+                        {selectedApplication.current_city}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Calendar className="w-4 h-4" />
+                        Born: {new Date(selectedApplication.date_of_birth).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Clock className="w-4 h-4" />
+                        Applied: {new Date(selectedApplication.created_at).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
-                ))}
+                </div>
+
+                {/* 2. Professional Summary */}
+                <section>
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-orange-400" /> Professional Summary
+                  </h4>
+                  <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 italic text-slate-300">
+                    "{selectedApplication.professional_summary}"
+                  </div>
+                </section>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* 3. Education */}
+                  <section>
+                    <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4 text-green-400" /> Academic Background
+                    </h4>
+                    <div className="space-y-3">
+                      {Object.entries(selectedApplication.education_details || {}).map(([level, edu]: any) => (
+                        <div key={level} className="p-3 bg-slate-800 rounded-lg border border-slate-700">
+                          <p className="text-xs font-bold text-emerald-400 uppercase">{edu.qualification}</p>
+                          <p className="text-sm font-medium">{edu.degree || edu.specialization || 'N/A'}</p>
+                          <p className="text-xs text-slate-400">{edu.institute} • {edu.year}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 4. Experience & Skills */}
+                  <div className="space-y-8">
+                    <section>
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-purple-400" /> Experience
+                      </h4>
+                      <div className="p-4 bg-slate-800 rounded-xl border border-slate-700 space-y-3">
+                        <div>
+                          <p className="text-xs text-slate-500">Total Experience</p>
+                          <p className="font-bold">{selectedApplication.total_experience}</p>
+                        </div>
+                        {selectedApplication.total_experience !== 'Fresher' && (
+                          <div className="pt-2 border-t border-slate-700">
+                            <p className="text-sm font-bold">{selectedApplication.last_job_role}</p>
+                            <p className="text-xs text-slate-400">{selectedApplication.last_job_company} • {selectedApplication.last_job_duration}</p>
+                            <p className="text-xs text-slate-500 mt-2 line-clamp-3">{selectedApplication.last_job_responsibilities}</p>
+                          </div>
+                        )}
+                      </div>
+                    </section>
+
+                    <section>
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                        <Award className="w-4 h-4 text-yellow-400" /> Skills & Expertise
+                      </h4>
+                      <div className="p-4 bg-slate-800 rounded-xl border border-slate-700 space-y-4">
+                        <div>
+                          <p className="text-xs text-slate-500 mb-2">Primary Skills</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedApplication.primary_skills?.split(',').map((s: string) => (
+                              <Badge key={s} variant="secondary" className="bg-blue-500/10 text-blue-400 border-blue-500/20">{s.trim()}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-2">Tools & Tech</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedApplication.tools_known?.split(',').map((s: string) => (
+                              <Badge key={s} variant="outline" className="text-slate-400 border-slate-700">{s.trim()}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-6 border-t border-slate-800">
+                  <Button variant="outline" onClick={() => setShowApplicationModal(false)}>Close</Button>
+                  <Button className="bg-red-600 hover:bg-red-700">Reject</Button>
+                  <Button className="bg-green-600 hover:bg-green-700">Shortlist</Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main >
     </div >
   )

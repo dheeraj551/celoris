@@ -97,3 +97,40 @@ export async function POST(request: NextRequest) {
         )
     }
 }
+
+export async function GET(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url)
+        const limit = parseInt(searchParams.get('limit') || '50')
+        const offset = parseInt(searchParams.get('offset') || '0')
+
+        const { data, error, count } = await adminSupabase
+            .from('job_applications')
+            .select('*', { count: 'exact' })
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1)
+
+        if (error) {
+            console.error('Error fetching job applications:', error)
+            return NextResponse.json(
+                { error: 'Failed to fetch applications' },
+                { status: 500 }
+            )
+        }
+
+        return NextResponse.json({
+            success: true,
+            data,
+            count,
+            limit,
+            offset
+        })
+
+    } catch (error: any) {
+        console.error('Job App GET error:', error)
+        return NextResponse.json(
+            { error: 'Internal Server Error' },
+            { status: 500 }
+        )
+    }
+}

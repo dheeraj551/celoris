@@ -11,7 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function AcceleratingScienceCourse() {
     // Set page title and meta tags dynamically
     useEffect(() => {
-        document.title = "Accelerating Science: Generative AI for Research & Innovation | IntuitionLabs";
+        document.title = "Accelerating Science: Generative AI for Research & Innovation | Celoris Designs";
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
@@ -29,13 +29,13 @@ export default function AcceleratingScienceCourse() {
     const courseData = {
         title: "Accelerating Science",
         subtitle: "Generative AI for Research & Innovation",
-        description: "Presented by IntuitionLabs. To equip scientists and research engineers with the tactical skills to integrate advanced AI agents (GPT-4o, Claude 3.5, and upcoming GPT-5 class models) into the scientific method—from accelerating literature review to automating experiment protocols and predicting molecular properties.",
+        description: "Presented by Celoris Designs. To equip scientists and research engineers with the tactical skills to integrate advanced AI agents (GPT-4o, Claude 3.5, and upcoming GPT-5 class models) into the scientific method—from accelerating literature review to automating experiment protocols and predicting molecular properties.",
         students: 1250,
         rating: 4.98,
         duration: "8-Week Intensive",
         price: 24999,
         currency: "INR",
-        provider: "IntuitionLabs",
+        provider: "Celoris Designs",
         website: "https://www.celorisdesigns.com",
         url: "https://www.celorisdesigns.com/courses/accelerating-science-generative-ai-for-research-innovation",
         learning_outcomes: [
@@ -195,7 +195,7 @@ export default function AcceleratingScienceCourse() {
         "description": "Equip scientists and research engineers with tactical AI skills for literature review, experiment automation, and molecular prediction.",
         "provider": {
             "@type": "Organization",
-            "name": "IntuitionLabs",
+            "name": "Celoris Designs",
             "sameAs": "https://www.celorisdesigns.com"
         },
         "educationalLevel": "Advanced",
@@ -243,7 +243,7 @@ export default function AcceleratingScienceCourse() {
                             <div className="flex flex-wrap gap-2 mb-4">
                                 <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Generative AI</span>
                                 <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Scientific Research</span>
-                                <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">IntuitionLabs</span>
+                                <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Celoris Designs</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
                                 {courseData.title}
@@ -489,7 +489,7 @@ export default function AcceleratingScienceCourse() {
                             <Card className="bg-slate-900/50 backdrop-blur-md border-slate-700/50 rounded-2xl overflow-hidden">
                                 <CardHeader className="pb-4">
                                     <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Presented by</div>
-                                    <CardTitle className="text-xl text-white italic tracking-tight">IntuitionLabs</CardTitle>
+                                    <CardTitle className="text-xl text-white italic tracking-tight">Celoris Designs</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex items-center gap-4 mb-6">
@@ -497,7 +497,7 @@ export default function AcceleratingScienceCourse() {
                                             <Microscope className="h-8 w-8 text-emerald-400" />
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-white">IntuitionLabs</h4>
+                                            <h4 className="font-bold text-white">Celoris Designs</h4>
                                             <p className="text-xs text-slate-400">Pioneering AI in Science</p>
                                         </div>
                                     </div>

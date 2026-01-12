@@ -41,6 +41,7 @@ interface Interest {
     user_phone: string
     message: string
     created_at: string
+    user_id: string
 }
 
 export default function AdminNoticeBoard() {
@@ -195,6 +196,7 @@ export default function AdminNoticeBoard() {
                                                                                 <TableHead>Phone</TableHead>
                                                                                 <TableHead>Message</TableHead>
                                                                                 <TableHead>Date</TableHead>
+                                                                                <TableHead>Profile</TableHead>
                                                                             </TableRow>
                                                                         </TableHeader>
                                                                         <TableBody>
@@ -205,6 +207,18 @@ export default function AdminNoticeBoard() {
                                                                                     <TableCell>{interest.user_phone}</TableCell>
                                                                                     <TableCell className="max-w-xs truncate" title={interest.message}>{interest.message}</TableCell>
                                                                                     <TableCell>{new Date(interest.created_at).toLocaleDateString()}</TableCell>
+                                                                                    <TableCell>
+                                                                                        <Button
+                                                                                            variant="link"
+                                                                                            size="sm"
+                                                                                            asChild
+                                                                                            className="text-emerald-400 p-0"
+                                                                                        >
+                                                                                            <Link href={`/admin/trainer-applications?userId=${interest.user_id}`}>
+                                                                                                View Profile
+                                                                                            </Link>
+                                                                                        </Button>
+                                                                                    </TableCell>
                                                                                 </TableRow>
                                                                             ))}
                                                                         </TableBody>

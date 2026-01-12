@@ -89,6 +89,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'personalized-ai-experiences-static',
+      title: 'Personalized AI Experiences with RAG & Agents',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Intermediate to Advanced',
+      description: 'Build AI that knows your users, remembers their history, and anticipates their needs. Master RAG, memory systems, and agentic workflows.',
+      target_audience: 'AI Engineers, Developers, Product Leaders',
+      instructor_name: 'Celoris Designs',
+      course_duration: '6-Week Self-Paced',
+      price: 19999,
+      course_image_url: '/personalized-ai-rag-agents-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(6).fill(null).map((_, i) => ({
+        id: `personalized-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'architecting-trust-static',
       title: 'Architecting Trust: AI Safety, Ethics & Compliance',
       subject: 'Artificial Intelligence',
@@ -788,7 +811,7 @@ export default function CoursesDisplay({
       grade_level: 'Advanced',
       description: 'Equip scientists and research engineers with tactical AI skills for literature review, experiment automation, and molecular prediction.',
       target_audience: 'Scientists, Research Engineers, R&D Leads',
-      instructor_name: 'IntuitionLabs',
+      instructor_name: 'Celoris Designs',
       course_duration: '8-Week Intensive',
       price: 24999,
       course_image_url: '/accelerating-science-generative-ai-cover.png',
@@ -872,6 +895,7 @@ export default function CoursesDisplay({
     if (id === 'architecting-trust-static') return '/courses/architecting-trust-ai-safety-ethics-compliance'
     if (id === 'agentic-ai-cybersecurity-static') return '/courses/agentic-ai-for-cybersecurity'
     if (id === 'accelerating-science-static') return '/courses/accelerating-science-generative-ai-for-research-innovation'
+    if (id === 'personalized-ai-experiences-static') return '/courses/personalized-ai-experiences-with-rag-and-agents'
     return `/learn/course/${id}`
   }
 

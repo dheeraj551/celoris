@@ -163,6 +163,15 @@ export default function AdminDashboard() {
       color: "from-pink-500 to-pink-600",
       stats: "View Interests",
       features: ["Create Notices", "Track Interests", "Manage Listings", "Student Requests"]
+    },
+    {
+      title: "Trainer Applications",
+      description: "Review and approve trainer/tutor registrations",
+      icon: GraduationCap,
+      href: "/admin/trainer-applications",
+      color: "from-emerald-500 to-teal-600",
+      stats: "View Applications",
+      features: ["Review Profiles", "Verify Documents", "Approve Trainers", "Notice-Linked Apps"]
     }
   ]
 

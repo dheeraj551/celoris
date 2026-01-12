@@ -114,7 +114,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/building-model-native-agent-systems',
         '/courses/architecting-trust-ai-safety-ethics-compliance',
         '/courses/agentic-ai-for-cybersecurity',
-        '/courses/accelerating-science-generative-ai-for-research-innovation'
+        '/courses/accelerating-science-generative-ai-for-research-innovation',
+        '/courses/personalized-ai-experiences-with-rag-and-agents'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
