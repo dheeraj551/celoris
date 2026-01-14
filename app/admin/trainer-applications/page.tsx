@@ -74,8 +74,15 @@ function TrainerApplicationsContent() {
 
     const fetchApplications = async () => {
         try {
+            setLoading(true)
             const response = await fetch('/api/trainer-registration')
             const result = await response.json()
+
+            if (!response.ok) {
+                console.error('API Error:', result.error)
+                return
+            }
+
             if (result.data) {
                 setApplications(result.data)
             }

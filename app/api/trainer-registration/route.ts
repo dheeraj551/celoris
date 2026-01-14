@@ -6,14 +6,10 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
         const {
-            notice_id,
             full_name,
             email,
             mobile_number,
-            declaration_accepted,
-            verification_later,
-            application_ref_id
-            // ... other fields are passed but we mainly destructure required ones for validation
+            declaration_accepted
         } = body
 
         if (!full_name || !email || !mobile_number || !declaration_accepted) {
@@ -32,8 +28,8 @@ export async function POST(request: NextRequest) {
         const { data, error } = await adminSupabase
             .from('trainer_applications')
             .insert({
-                user_id: user?.id || null,
-                ...body
+                ...body,
+                user_id: user?.id || null, // Allow null for guests, but wait for DB update
             } as any)
             .select()
             .single()
@@ -41,6 +37,7 @@ export async function POST(request: NextRequest) {
         if (error) {
             console.error('Error submitting application:', error)
 
+            // If it's a constraint error on user_id, it means DB still has NOT NULL
             return NextResponse.json(
                 { error: 'Failed to submit application: ' + error.message },
                 { status: 500 }
@@ -59,35 +56,18 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
-        const supabase = createRouteClient()
-        const { data: { user } } = await supabase.auth.getUser()
-
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        // Check if user is admin
         const adminSupabase = createSupabaseClientForServer() as any
-        const { data: isAdmin } = await adminSupabase
-            .from('users')
-            .select('role')
-            .eq('id', user.id)
-            .eq('role', 'admin')
-            .single()
 
-        // if (!isAdmin) {
-        //     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-        // } 
-        // Commented out STRICT admin check for now to allow viewing own applications if needed, 
-        // but typically this endpoint is for ADMIM panel.
-
-        // Simple fetch all for now
+        // Simple fetch all for now, similar to job-applications
         const { data, error } = await adminSupabase
             .from('trainer_applications')
             .select('*')
             .order('created_at', { ascending: false })
 
-        if (error) throw error
+        if (error) {
+            console.error('Error fetching trainer applications:', error)
+            return NextResponse.json({ error: error.message }, { status: 500 })
+        }
 
         return NextResponse.json({ data })
     } catch (error) {

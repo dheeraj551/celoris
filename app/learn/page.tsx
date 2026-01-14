@@ -9,9 +9,53 @@ import NoticeBoard from "@/components/NoticeBoard"
 import StudentInquiries from "@/components/StudentInquiries"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion } from "framer-motion"
+import { useAuth } from "@/components/providers/AuthProvider"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
 
 
 export default function LearnPage() {
+  const { profile, user } = useAuth()
+  const router = useRouter()
+  const { toast } = useToast()
+
+  const handleRoomEntry = (link: string) => {
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const balance = profile?.wallet_balance || 0
+    if (balance < 100) {
+      toast({
+        title: "Insufficient Wallet Balance",
+        description: `Entering a study hub requires ₹100.00. Your current balance is ₹${balance.toFixed(2)}.`,
+        variant: "destructive"
+      })
+      return
+    }
+
+    router.push(link)
+  }
+
+  const handleInitializeRoom = () => {
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const balance = profile?.wallet_balance || 0
+    if (balance < 1000) {
+      toast({
+        title: "Insufficient Wallet Balance",
+        description: `Creating a Study Nexus requires ₹1000.00. Your current balance is ₹${balance.toFixed(2)}.`,
+        variant: "destructive"
+      })
+      return
+    }
+
+    router.push("/learn/study-room/my-study-room")
+  }
   return (
     <PageWrapper className="min-h-screen bg-[#050810] text-slate-200 selection:bg-emerald-500/30">
       {/* Background Decorative Elements */}
@@ -138,10 +182,14 @@ export default function LearnPage() {
                     <p className="text-slate-400 mb-10 text-sm font-medium leading-relaxed italic flex-1">
                       {room.desc}
                     </p>
-                    <Button className="w-full bg-white/5 hover:bg-emerald-600 text-slate-300 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 border border-white/5" asChild>
-                      <Link href={room.link} className="flex items-center justify-center gap-3">
-                        Enter Room <ArrowRight className="h-4 w-4" />
-                      </Link>
+                    <Button
+                      onClick={() => handleRoomEntry(room.link)}
+                      className="w-full bg-white/5 hover:bg-emerald-600 text-slate-300 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 border border-white/5"
+                    >
+                      <div className="flex flex-col items-center">
+                        <span className="flex items-center gap-3">Enter Room <ArrowRight className="h-4 w-4" /></span>
+                        <span className="text-[8px] opacity-60 mt-1">₹100 Required in Wallet</span>
+                      </div>
                     </Button>
                   </CardContent>
                 </Card>
@@ -166,10 +214,14 @@ export default function LearnPage() {
                 <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Invite peers via link • End-to-end Focus • Always Online</p>
               </div>
             </div>
-            <Button className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-xs shadow-2xl shadow-emerald-500/20 relative z-10 transition-all duration-300" asChild>
-              <Link href="/learn/study-room/my-study-room">
-                Initialize Room
-              </Link>
+            <Button
+              onClick={handleInitializeRoom}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-xs shadow-2xl shadow-emerald-500/20 relative z-10 transition-all duration-300"
+            >
+              <div className="flex flex-col items-center">
+                <span>Initialize Room</span>
+                <span className="text-[8px] opacity-80 mt-1 tracking-widest">₹1000 Required</span>
+              </div>
             </Button>
           </motion.div>
         </div>

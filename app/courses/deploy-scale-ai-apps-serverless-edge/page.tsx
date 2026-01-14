@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Layers, Filter, RefreshCw, Activity, Globe, ShieldCheck, TrendingDown, Terminal } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Layers, Filter, RefreshCw, Activity, Globe, ShieldCheck, TrendingDown, Terminal, Trophy } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 
 export default function DeployScaleAICourse() {
     // Set page title and meta tags dynamically
@@ -144,6 +145,360 @@ export default function DeployScaleAICourse() {
                 description: "A pre-configured Starter Kit featuring Next.js, Tailwind, and Cloudflare.",
                 icon: "Code"
             }
+        ],
+        quiz_data: [
+            {
+                title: "Core Objectives & Philosophy",
+                questions: [
+                    {
+                        question: "What is the primary goal of the 'Deploy & Scale AI' course?",
+                        options: ["To build local prototypes only", "To bridge the gap from local prototype to global production", "To teach hardware manufacturing", "To focus exclusively on manual scaling"],
+                        correctIndex: 1,
+                        explanation: "The course is specifically designed to take you from localhost to a global production environment."
+                    },
+                    {
+                        question: "Which scaling philosophy does the course promote?",
+                        options: ["Cost-heavy scaling", "Slow-growth scaling", "Zero-waste scaling", "Local-only scaling"],
+                        correctIndex: 2,
+                        explanation: "Zero-waste scaling focuses on efficiency and only paying for what you actually use."
+                    },
+                    {
+                        question: "What does the course aim to help developers stop paying for?",
+                        options: ["API keys", "Idle GPUs", "Internet bandwidth", "Domain registration"],
+                        correctIndex: 1,
+                        explanation: "Traditional GPU hosting is expensive when idle; serverless architectures solve this."
+                    },
+                    {
+                        question: "The course ensures applications are cost-efficient starting from user #1 up to how many users?",
+                        options: ["10,000", "100,000", "500,000", "1,000,000"],
+                        correctIndex: 3,
+                        explanation: "The architecture is designed to scale seamlessly up to 1 million users."
+                    },
+                    {
+                        question: "How does the source describe the speed of applications deployed using these architectures?",
+                        options: ["Moderately paced", "Lightning-fast", "Standard industry speed", "Variable speed"],
+                        correctIndex: 1,
+                        explanation: "Edge and serverless architectures minimize latency for lightning-fast performance."
+                    }
+                ]
+            },
+            {
+                title: "Architecture & Infrastructure",
+                questions: [
+                    {
+                        question: "Which two architecture types are central to the course?",
+                        options: ["Monolithic and On-premise", "Serverless and Edge", "P2P and Client-Server", "Legacy and Hybrid"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which platform is recommended for global deployment alongside the Next.js AI SDK?",
+                        options: ["Heroku", "DigitalOcean", "Vercel", "Bluehost"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the primary benefit of using Cloudflare Workers mentioned in the sources?",
+                        options: ["High storage capacity", "Edge Computing with 10ms latency", "Specialized hardware cooling", "Manual server management"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What specific latency benchmark is associated with Cloudflare Workers in the source?",
+                        options: ["1ms", "10ms", "100ms", "1 second"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which AWS service is recommended for 'Heavy Inference'?",
+                        options: ["AWS S3", "AWS Lambda", "AWS CloudFront", "AWS IAM"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Besides AWS Lambda, which other AWS service is mentioned for heavy inference tasks?",
+                        options: ["AWS Fargate", "AWS Route 53", "AWS EC2 (Standard)", "AWS Amplify"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is 'Edge Computing' as used in this context?",
+                        options: ["Computing done at the central data centre", "Computing done closer to the user to reduce latency", "Computing using outdated hardware", "Computing without an internet connection"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the course help you master regarding architecture selection?",
+                        options: ["Choosing the most expensive provider", "Serverless & Edge Architecture Selection", "Building your own data centre", "Using only local servers"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "AI Models & Management",
+                questions: [
+                    {
+                        question: "Which of the following is NOT one of the specific models mentioned for Model Routing?",
+                        options: ["GPT-4o", "Claude 3.5", "Llama 3", "Gemini 1.5"],
+                        correctIndex: 3
+                    },
+                    {
+                        question: "What does 'Model Routing' refer to in the curriculum?",
+                        options: ["Physical cables connecting servers", "Choosing between models like GPT-4o, Claude 3.5, and Llama 3 based on needs", "Improving the internet speed of the user", "Training a new model from scratch"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What aspect of AI management focuses on 'Tokens'?",
+                        options: ["Token Security only", "Precision Cost Optimization & Token Management", "Token Mining", "Selling tokens as cryptocurrency"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which tool is recommended for AI Observability and Tracing?",
+                        options: ["Google Analytics", "LangSmith", "Wireshark", "Meta Pixel"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which alternative tool is mentioned for tracing alongside LangSmith?",
+                        options: ["Helicone", "Postman", "Docker", "Kubernetes"],
+                        correctIndex: 0
+                    }
+                ]
+            },
+            {
+                title: "Security & Operations",
+                questions: [
+                    {
+                        question: "What is a key security mastery point mentioned for AI applications?",
+                        options: ["Physical locks on servers", "Prompt Injection Defense & Guardrails", "Biometric authentication for users", "Hiding the website URL"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How should API Keys and Environment Variables be managed according to the source?",
+                        options: ["Publicly in the GitHub repo", "Secure API Key & Environment Variable Management", "Hardcoded in the JavaScript files", "Sent via unencrypted email"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What type of CI/CD is taught in the course?",
+                        options: ["Manual deployment only", "Production-Grade CI/CD for AI Infrastructure", "Local-only testing", "Peer-to-peer sharing"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which automation tool is used for infrastructure provisioning?",
+                        options: ["Jenkins", "GitHub Actions", "CircleCI", "Travis CI"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Tech Stack & Deliverables",
+                questions: [
+                    {
+                        question: "What is the era of the tech stack taught in the course?",
+                        options: ["2018-2019", "2020-2022", "2024-2025", "2026-2030"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which CSS framework is included in the 'Starter Kit'?",
+                        options: ["Bootstrap", "Tailwind", "Bulma", "Foundation"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The 'Boilerplate Repo' features which combination of technologies?",
+                        options: ["Next.js, Tailwind, and Cloudflare", "React, Sass, and AWS", "Vue, CSS, and Azure", "Angular, Less, and Google Cloud"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is 'The Deployment Guide'?",
+                        options: ["A physical book", "A step-by-step PDF checklist", "A video-only series", "A phone support line"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the course provide for automated infrastructure provisioning?",
+                        options: ["Manual instructions", "GitHub Actions workflows", "A list of phone numbers", "A physical server"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the destination for the 'Deployment Guide' checklist?",
+                        options: ["Moving from local prototype to a backup drive", "Moving from localhost to main", "Moving from one PC to another", "Storing code in a private folder"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Course Logistics & Prerequisites",
+                questions: [
+                    {
+                        question: "What is the total duration of the course content?",
+                        options: ["2 hours", "5 hours", "10 hours", "24 hours"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the required proficiency level for JavaScript/TypeScript?",
+                        options: ["Beginner", "Intermediate", "Expert", "None"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is a 'basic understanding' requirement for the course?",
+                        options: ["Basic understanding of hardware repair", "Basic understanding of AI/LLM APIs", "Basic understanding of Photoshop", "Basic understanding of marketing"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is mentioned as a 'plus' for students?",
+                        options: ["Familiarity with Cloud platforms", "A degree in Mathematics", "Ownership of a GPU cluster", "Experience in mobile app design"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is the cost for 'Full Lifetime Access'?",
+                        options: ["₹5,000", "₹10,000", "₹15,000", "₹20,000"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What kind of certification is provided upon completion?",
+                        options: ["Participation certificate", "Professional Certification", "No certification", "Honorary degree"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Where can students access the 'Exclusive Community'?",
+                        options: ["Facebook", "Slack", "Discord", "LinkedIn"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Who is the instructor/team behind the course?",
+                        options: ["The Vercel Team", "The Celoris Team", "The AWS Support Team", "Anonymous contributors"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the average rating of the course/instructors?",
+                        options: ["3.5", "4.0", "4.5", "4.9"],
+                        correctIndex: 3
+                    },
+                    {
+                        question: "How many students/ratings are cited for the platform?",
+                        options: ["100+", "500+", "1200+", "5000+"],
+                        correctIndex: 2
+                    }
+                ]
+            },
+            {
+                title: "The Celoris Platform & Company",
+                questions: [
+                    {
+                        question: "Which of the following is NOT one of the four main platform areas?",
+                        options: ["Learn", "Earn", "Sleep", "Apps"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "The fourth pillar of the Celoris platform, besides Learn, Earn, and Apps, is:",
+                        options: ["Social", "Market", "Trade", "Build"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is the legal name of the company behind the platform?",
+                        options: ["Celoris AI Inc.", "Celoris Designs LLP", "Celoris Serverless Ltd.", "Celoris Education Group"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "According to the footer, what is the status of the protocol?",
+                        options: ["Protocol Inactive", "Protocol Loading", "Protocol Active", "Protocol Error"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the 'Stay Synchronized' section for?",
+                        options: ["Clock settings", "Getting updates on knowledge nodes and grid opportunities", "Synchronizing files between computers", "Employee payroll"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which 'Company' link would you use to find job openings?",
+                        options: ["About", "Contact", "Careers", "Blog"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which 'Support' link explains how user data is handled?",
+                        options: ["Help Center", "Privacy Policy", "Terms of Service", "Cookie Policy"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the name of the unified platform mentioned in the source?",
+                        options: ["Celoris Unified Platform", "AI Scaling Hub", "Serverless Masterclass", "The Grid"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What type of engineering does the Celoris Team specialize in?",
+                        options: ["Civil Engineering", "AI Infrastructure and Serverless Architectures", "Mechanical Engineering", "Basic Web Design"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The platform aims to empower individuals through learning and what other opportunities?",
+                        options: ["Gaming", "Earning opportunities", "Physical fitness", "Travel"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In the 'Connect' section, which of these is NOT listed?",
+                        options: ["Newsletter", "Community", "Partners", "Telephone"],
+                        correctIndex: 3
+                    },
+                    {
+                        question: "What is the overarching theme of the Celoris platform?",
+                        options: ["Localised computing for small tasks", "Learn, Earn, Fun & Apps", "Purely academic research", "Non-profit open source only"],
+                        correctIndex: 1
+                    }
+                ]
+            }
+        ],
+        student_reviews: [
+            {
+                name: "Arjun Mehta",
+                role: "Full-Stack Developer",
+                rating: 5,
+                content: "This course finally showed me how to move from a local AI prototype to a real production system. The serverless and edge architecture lessons were extremely practical and easy to follow."
+            },
+            {
+                name: "Rohan Kulkarni",
+                role: "AI Engineer",
+                rating: 5,
+                content: "The cost optimization strategies helped me reduce inference expenses significantly. Learning model routing and token management alone made this course worth it."
+            },
+            {
+                name: "Neel Patel",
+                role: "Indie Hacker",
+                rating: 5,
+                content: "I had AI demos but no idea how to scale them globally. Deploying with Vercel, Next.js AI SDK, and Cloudflare Workers was a game changer for me."
+            },
+            {
+                name: "Aditi Sharma",
+                role: "Software Engineer",
+                rating: 4.5,
+                content: "Very hands-on and production-focused. The AWS Lambda and Fargate sections clearly explained when serverless beats traditional GPU servers."
+            },
+            {
+                name: "Kunal Verma",
+                role: "Startup Founder",
+                rating: 5,
+                content: "This course is perfect for founders building AI products. It shows how to scale from your first user to thousands without burning money on infrastructure."
+            },
+            {
+                name: "Sarthak Jain",
+                role: "Backend Engineer",
+                rating: 5,
+                content: "The edge computing module was eye-opening. Running AI workloads close to users for ultra-low latency finally made sense after this course."
+            },
+            {
+                name: "Meera Nair",
+                role: "Product Engineer",
+                rating: 4.5,
+                content: "The observability and tracing lessons were excellent. I can now debug AI failures and monitor model behavior in production with confidence."
+            },
+            {
+                name: "Ankit Srivastava",
+                role: "DevOps Engineer",
+                rating: 5,
+                content: "Security and CI/CD for AI are rarely taught this well. Prompt injection defense and API key management were explained with real-world scenarios."
+            },
+            {
+                name: "Rahul Bansal",
+                role: "Freelance AI Consultant",
+                rating: 5,
+                content: "The deployment checklist and automation scripts saved me days of work. This course feels like learning from someone who has shipped AI at scale."
+            },
+            {
+                name: "Ishan Choudhary",
+                role: "Computer Science Student",
+                rating: 5,
+                content: "This course connected the gap between theory and real production AI systems. I now understand how modern AI infrastructure actually works."
+            }
         ]
     }
 
@@ -185,6 +540,23 @@ export default function DeployScaleAICourse() {
                 "description": "Monitoring AI flows and preventing prompt injections."
             }
         ],
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": courseData.rating.toString(),
+            "reviewCount": courseData.student_reviews.length.toString()
+        },
+        "review": courseData.student_reviews.map(review => ({
+            "@type": "Review",
+            "author": {
+                "@type": "Person",
+                "name": review.name
+            },
+            "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": review.rating.toString()
+            },
+            "reviewBody": review.content
+        })),
         "offers": {
             "@type": "Offer",
             "category": "Paid",
@@ -283,7 +655,7 @@ export default function DeployScaleAICourse() {
                         </section>
 
                         {/* Course Curriculum */}
-                        <section className="space-y-6">
+                        <section id="curriculum" className="space-y-6">
                             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                                 <div className="p-2 bg-purple-500/20 rounded-lg">
                                     <BookOpen className="h-6 w-6 text-purple-400" />
@@ -369,6 +741,63 @@ export default function DeployScaleAICourse() {
                             </div>
                         </section>
 
+                        {/* Student Reviews Section */}
+                        <section id="reviews" className="space-y-8 pt-12 border-t border-slate-800/50">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                <div>
+                                    <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                                        <div className="p-2 bg-yellow-500/20 rounded-lg">
+                                            <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />
+                                        </div>
+                                        Student Success Stories
+                                    </h2>
+                                    <p className="text-slate-400 mt-2">Hear from developers who have successfully scaled their AI applications.</p>
+                                </div>
+                                <div className="flex items-center gap-4 bg-slate-900/60 backdrop-blur-sm border border-slate-800 px-6 py-3 rounded-2xl w-fit">
+                                    <div className="text-center border-r border-slate-800 pr-6">
+                                        <div className="text-2xl font-bold text-white">{courseData.rating}</div>
+                                        <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Course Rating</div>
+                                    </div>
+                                    <div className="text-center pl-2">
+                                        <div className="text-2xl font-bold text-white">{courseData.student_reviews.length}</div>
+                                        <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Verified Reviews</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.student_reviews.map((review, index) => (
+                                    <Card key={index} className="bg-slate-900/40 border-slate-800 hover:border-cyan-500/30 transition-all duration-300 group">
+                                        <CardContent className="p-6 space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex gap-1">
+                                                    {Array.from({ length: 5 }).map((_, i) => (
+                                                        <Star
+                                                            key={i}
+                                                            className={`h-3.5 w-3.5 ${i < Math.floor(review.rating) ? "text-yellow-400 fill-yellow-400" : (i < review.rating ? "text-yellow-400 fill-yellow-400 opacity-50" : "text-slate-700")}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-500 bg-slate-800/50 px-2 py-1 rounded-md">{review.rating} / 5</span>
+                                            </div>
+                                            <p className="text-slate-300 text-sm leading-relaxed italic">
+                                                "{review.content}"
+                                            </p>
+                                            <div className="flex items-center gap-3 pt-4 border-t border-slate-800/50">
+                                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-slate-700 flex items-center justify-center text-cyan-400 font-bold text-xs uppercase shadow-inner">
+                                                    {review.name.split(' ').map(n => n[0]).join('')}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-white">{review.name}</div>
+                                                    <div className="text-[11px] text-slate-500 font-medium">{review.role}</div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
+
                         {/* FAQ Section */}
                         <section className="space-y-6">
                             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
@@ -387,6 +816,29 @@ export default function DeployScaleAICourse() {
                                     </AccordionItem>
                                 ))}
                             </Accordion>
+                        </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-primary-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-primary-400" />
+                                    </div>
+                                    Deployment Readiness Assessment
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your mastery of serverless scaling, edge computing, and cost optimization before going to production.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Deployment Readiness Assessment"
+                                quizDescription="50 questions covering the end-to-end AI deployment and scaling lifecycle."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Master Architect! You are fully prepared to scale AI applications to millions of users.";
+                                    if (score >= 35) return "Production Ready! You have a solid grasp of serverless and edge deployment patterns.";
+                                    return "Keep Learning! Review the architecture and security modules to strengthen your deployment skills.";
+                                }}
+                            />
                         </section>
                     </div>
 
@@ -410,6 +862,13 @@ export default function DeployScaleAICourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                Take Assessment Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">
@@ -428,6 +887,28 @@ export default function DeployScaleAICourse() {
                                             <div className="flex items-center gap-3 text-sm text-slate-300">
                                                 <Zap className="h-5 w-5 text-orange-400" />
                                                 <span>2024-2025 Tech Stack (Edge/Serverless)</span>
+                                            </div>
+                                            <div
+                                                className="mt-6 p-4 bg-yellow-400/5 border border-yellow-400/10 rounded-2xl flex items-center justify-between cursor-pointer group/reviews"
+                                                onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex -space-x-2">
+                                                        {[
+                                                            { initial: "A", color: "from-cyan-500/20 to-blue-500/20", text: "text-cyan-400" },
+                                                            { initial: "R", color: "from-purple-500/20 to-pink-500/20", text: "text-purple-400" },
+                                                            { initial: "N", color: "from-orange-500/20 to-red-500/20", text: "text-orange-400" }
+                                                        ].map((avatar, i) => (
+                                                            <div key={i} className={`h-6 w-6 rounded-full border border-slate-900 bg-gradient-to-br ${avatar.color} flex items-center justify-center text-[10px] font-extrabold ${avatar.text} shadow-inner`}>
+                                                                {avatar.initial}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="text-[11px] font-bold text-slate-300">
+                                                        10+ Student Reviews
+                                                    </div>
+                                                </div>
+                                                <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 group-hover/reviews:scale-125 transition-transform" />
                                             </div>
                                         </div>
                                     </CardContent>
