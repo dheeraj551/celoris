@@ -39,15 +39,17 @@ export default function TestimonialsDisplay({
   layout = 'grid',
   showFeatured = true,
   showImages = true,
-  className = ''
-}: TestimonialsDisplayProps) {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-  const [loading, setLoading] = useState(true)
+  className = '',
+  initialTestimonials = null
+}: TestimonialsDisplayProps & { initialTestimonials?: Testimonial[] | null }) {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials || [])
+  const [loading, setLoading] = useState(!initialTestimonials)
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
+    if (initialTestimonials) return;
     loadTestimonials()
-  }, [type, page, limit, showFeatured])
+  }, [type, page, limit, showFeatured, initialTestimonials])
 
   const loadTestimonials = async () => {
     try {

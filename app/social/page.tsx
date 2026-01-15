@@ -218,8 +218,31 @@ export default function SocialPage() {
     )
   }
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.celorisdesigns.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Social",
+        "item": "https://www.celorisdesigns.com/social"
+      }
+    ]
+  };
+
   return (
     <PageWrapper className="min-h-screen bg-[#050810] text-slate-200 selection:bg-emerald-500/30 font-sans overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <motion.div
@@ -259,7 +282,7 @@ export default function SocialPage() {
               transition={{ delay: 0.1, duration: 0.8 }}
               className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.8] text-white"
             >
-              Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Social</span>
+              Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">AI Social</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -312,7 +335,7 @@ export default function SocialPage() {
               <Target className="h-10 w-10 text-emerald-400" />
             </motion.div>
             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic mb-6">
-              Core Features
+              Ecosystem Core Features
             </h2>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto font-black uppercase tracking-widest text-[10px]">
               A unified platform bridging discovery and professional networking.
@@ -400,7 +423,7 @@ export default function SocialPage() {
               </motion.div>
               <div className="space-y-6">
                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] uppercase italic">
-                  Public <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">Chat Rooms</span>
+                  Global <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">AI Chat Hubs</span>
                 </h2>
                 <p className="text-xl text-slate-400 leading-relaxed font-bold uppercase tracking-wide">
                   Join public chat rooms and talk with people across the globe in real-time.

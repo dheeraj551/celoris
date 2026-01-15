@@ -59,8 +59,31 @@ const categories = [
 const featuredApps = mobileApps.filter(app => app.isFeatured)
 
 export default function AppsPage() {
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.celorisdesigns.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Apps",
+        "item": "https://www.celorisdesigns.com/apps"
+      }
+    ]
+  };
+
   return (
     <PageWrapper className="min-h-screen bg-[#fafbfc]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       {/* Hero Section */}
       <section className="bg-[#030712] text-white py-24 relative overflow-hidden">
         <motion.div
@@ -95,7 +118,7 @@ export default function AppsPage() {
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-black mb-8 tracking-tighter"
           >
-            Software for the <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Next Generation.</span>
+            AI-Driven Software <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Next-Gen Ecosystem.</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -161,7 +184,7 @@ export default function AppsPage() {
                 <Zap size={14} className="fill-blue-600" />
                 Priority Flagship Selection
               </motion.div>
-              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Active Deployments</h2>
+              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Active AI Deployments</h2>
             </div>
             <Button variant="ghost" className="font-black uppercase tracking-widest text-[10px] text-slate-400 hover:text-blue-600" asChild>
               <Link href="#all-apps">Full Catalog <ArrowRight className="ml-2 h-4 w-4" /></Link>
@@ -225,7 +248,7 @@ export default function AppsPage() {
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="container relative z-10">
           <div className="text-center mb-20">
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase italic mb-4">Ecosystem Integrity</h2>
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase italic mb-4">AI Ecosystem Integrity</h2>
             <p className="text-slate-500 font-medium text-lg">Architected for maximum reliability and user impact.</p>
           </div>
 

@@ -128,15 +128,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 export const Courses: React.FC<any> = ({
-    title = "Latest courses",
-    description = "Explore our newest knowledge nodes into the global grid.",
+    title = "Elite AI Learning Nodes",
+    description = "Explore our newest AI knowledge nodes and master the digital future.",
     limit = 6,
     showBrowseAll = true,
-    featured = false
+    featured = false,
+    initialCourses = null
 }) => {
-    const [courses, setCourses] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-
     const staticCourses = [
         { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: '/personalized-ai-rag-agents-cover.png' },
         { id: 'architecting-trust-static', title: 'Architecting Trust: AI Safety, Ethics & Compliance', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: '/architecting-trust-ai-safety-cover.png' },
@@ -149,7 +147,12 @@ export const Courses: React.FC<any> = ({
         { id: 'livekit-ai-agents-static', title: 'Build Real-Time AI Agents with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '10 hours', price: 14999, is_featured: true, course_image_url: '/livekit-ai-agents-cover.png' }
     ];
 
+    const [courses, setCourses] = useState<any[]>(initialCourses ? [...staticCourses, ...initialCourses].slice(0, limit) : []);
+    const [loading, setLoading] = useState(!initialCourses);
+
     useEffect(() => {
+        if (initialCourses) return;
+
         const fetchCourses = async () => {
             const supabase = createClient();
             const { data } = await supabase
@@ -170,7 +173,7 @@ export const Courses: React.FC<any> = ({
             setLoading(false);
         };
         fetchCourses();
-    }, [limit, featured]);
+    }, [limit, featured, initialCourses]);
 
     return (
         <div className="mt-24 md:mt-32 mb-32">

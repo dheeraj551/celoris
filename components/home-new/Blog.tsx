@@ -75,10 +75,21 @@ const VideoCard: React.FC<VideoPostProps> = ({ category, title, views, date, ima
     </motion.div>
 );
 
-export const Blog = () => {
-    const [posts, setPosts] = React.useState<any[]>([]);
+export const Blog = ({ initialVideos = null }: { initialVideos?: any[] | null }) => {
+    const [posts, setPosts] = React.useState<any[]>(initialVideos ? initialVideos.map((v: any) => ({
+        category: v.category,
+        title: v.title,
+        views: `${v.views_count > 1000 ? (v.views_count / 1000).toFixed(1) + 'K' : v.views_count}`,
+        date: new Date(v.created_at).toLocaleDateString(),
+        author: v.author,
+        duration: v.duration,
+        image: v.thumbnail_url || `https://img.youtube.com/vi/${v.youtube_url.split('v=')[1]}/maxresdefault.jpg`,
+        youtube_url: v.youtube_url
+    })) : []);
 
     React.useEffect(() => {
+        if (initialVideos) return;
+
         const fetchVideos = async () => {
             const supabase = createClient();
             const { data } = await supabase

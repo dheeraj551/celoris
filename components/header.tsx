@@ -52,13 +52,21 @@ export default function Header() {
     }
   }
 
-  const isDarkPage = pathname === "/" || pathname === "/about" || pathname === "/contact" || pathname?.startsWith("/courses/")
+  const isDarkPage = pathname === "/" ||
+    pathname === "/about" ||
+    pathname === "/contact" ||
+    pathname === "/learn" ||
+    pathname === "/earn" ||
+    pathname === "/social" ||
+    pathname === "/apps" ||
+    pathname?.startsWith("/blog") ||
+    pathname?.startsWith("/courses/")
 
   return (
     <header className={cn(
       "sticky top-0 z-50 w-full transition-all duration-300",
       isDarkPage
-        ? "border-b border-white/5 bg-[#050810]/80 backdrop-blur-xl"
+        ? "border-b border-slate-200 bg-white/90 backdrop-blur-xl"
         : "border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60"
     )}>
       <div className="container flex h-16 items-center justify-between">
@@ -81,7 +89,7 @@ export default function Header() {
                 "text-sm font-black uppercase tracking-widest transition-colors italic",
                 pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
                   ? "text-emerald-500"
-                  : isDarkPage ? "text-slate-400 hover:text-white" : "text-text-secondary hover:text-primary-500"
+                  : isDarkPage ? "text-slate-600 hover:text-black" : "text-text-secondary hover:text-primary-500"
               )}
             >
               {item.name}
@@ -167,7 +175,7 @@ export default function Header() {
                 asChild
                 className={cn(
                   "font-black uppercase tracking-widest text-[10px] italic",
-                  isDarkPage ? "text-slate-400 hover:text-white hover:bg-white/5" : ""
+                  isDarkPage ? "text-slate-600 hover:text-black hover:bg-slate-100" : ""
                 )}
               >
                 <Link href="/login">Sign In</Link>

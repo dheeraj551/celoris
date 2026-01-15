@@ -56,7 +56,15 @@ export default function Footer() {
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
 
-  const isDarkPage = pathname === "/" || pathname === "/about" || pathname === "/contact" || pathname?.startsWith("/courses/")
+  const isDarkPage = pathname === "/" ||
+    pathname === "/about" ||
+    pathname === "/contact" ||
+    pathname === "/learn" ||
+    pathname === "/earn" ||
+    pathname === "/social" ||
+    pathname === "/apps" ||
+    pathname?.startsWith("/blog") ||
+    pathname?.startsWith("/courses/")
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -71,7 +79,7 @@ export default function Footer() {
     <footer className={cn(
       "border-t transition-all duration-300 px-4",
       isDarkPage
-        ? "bg-[#050810] border-white/5"
+        ? "bg-slate-50 border-slate-200"
         : "bg-surface border-border"
     )}>
       <div className="container py-16">
@@ -102,7 +110,7 @@ export default function Footer() {
                   className={cn(
                     "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
                     isDarkPage
-                      ? "bg-white/5 border border-white/10 text-slate-400 hover:bg-emerald-500 hover:text-white hover:border-emerald-500"
+                      ? "bg-slate-200 border border-slate-300 text-slate-600 hover:bg-emerald-500 hover:text-white hover:border-emerald-500"
                       : "bg-gray-100 hover:bg-primary-100 text-text-secondary hover:text-primary-500"
                   )}
                   aria-label={social.label}
@@ -130,7 +138,7 @@ export default function Footer() {
                       className={cn(
                         "text-[11px] font-black uppercase tracking-widest transition-colors italic",
                         isDarkPage
-                          ? "text-slate-500 hover:text-white"
+                          ? "text-slate-500 hover:text-emerald-600"
                           : "text-text-secondary hover:text-primary-500"
                       )}
                     >
@@ -152,7 +160,7 @@ export default function Footer() {
             <div>
               <h3 className={cn(
                 "text-2xl font-black uppercase tracking-tighter italic mb-2",
-                isDarkPage ? "text-white" : "text-text-primary"
+                isDarkPage ? "text-slate-900" : "text-text-primary"
               )}>
                 Stay Synchronized
               </h3>
@@ -172,7 +180,7 @@ export default function Footer() {
                 className={cn(
                   "flex-1 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest italic focus:outline-none transition-all",
                   isDarkPage
-                    ? "bg-white/5 border border-white/10 text-white focus:border-emerald-500/50"
+                    ? "bg-slate-100 border border-slate-200 text-slate-900 focus:border-emerald-500/50"
                     : "border-border focus:ring-2 focus:ring-primary-500"
                 )}
                 required

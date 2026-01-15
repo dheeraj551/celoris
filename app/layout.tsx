@@ -12,9 +12,19 @@ import { AdUnit } from "@/components/AdUnit"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Celoris Unified Platform - Learn, Earn, Fun & Apps",
-  description: "Transform your digital future with Celoris. Comprehensive platform for learning, earning opportunities, games, and productivity tools.",
-  keywords: ["education", "jobs", "gaming", "productivity", "digital transformation"],
+  title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
+  description: "Celoris is a premier AI-powered ecosystem for digital transformation. Explore elite AI courses, high-impact career opportunities, and productivity tools in one unified platform.",
+  keywords: [
+    "Celoris",
+    "AI ecosystem",
+    "digital transformation",
+    "AI learning",
+    "AI courses",
+    "agentic AI",
+    "RAG systems",
+    "career growth",
+    "productivity tools"
+  ],
   authors: [{ name: "Celoris Designs LLP" }],
   creator: "Celoris Designs LLP",
   publisher: "Celoris Designs LLP",
@@ -23,30 +33,30 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://celoris.com"),
+  metadataBase: new URL("https://www.celorisdesigns.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://celoris.com",
-    title: "Celoris Unified Platform - Learn, Earn, Fun & Apps",
-    description: "Transform your digital future with Celoris. Comprehensive platform for learning, earning opportunities, games, and productivity tools.",
+    url: "https://www.celorisdesigns.com",
+    title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
+    description: "Celoris is a premier AI-powered ecosystem for digital transformation. Explore elite AI courses, high-impact career opportunities, and productivity tools in one unified platform.",
     siteName: "Celoris Platform",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Celoris Unified Platform",
+        alt: "Celoris AI-Powered Ecosystem",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Celoris Unified Platform - Learn, Earn, Fun & Apps",
-    description: "Transform your digital future with Celoris. Comprehensive platform for learning, earning opportunities, games, and productivity tools.",
+    title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
+    description: "Celoris is a premier AI-powered ecosystem for digital transformation. Explore elite AI courses, high-impact career opportunities, and productivity tools in one unified platform.",
     images: ["/og-image.jpg"],
     creator: "@celoris",
   },
@@ -101,6 +111,64 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
         <link rel="manifest" href="/site.webmanifest" />
+        {/* Global Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "@id": "https://www.celorisdesigns.com/#organization",
+              "name": "Celoris Designs",
+              "legalName": "Celoris Designs LLP",
+              "alternateName": "Celoris",
+              "url": "https://www.celorisdesigns.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.celorisdesigns.com/celoris-logo.png",
+                "width": "512",
+                "height": "512"
+              },
+              "description": "Celoris is a premier AI-powered ecosystem for digital transformation, offering elite AI training, career opportunities, and productivity software.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "IN"
+              },
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+91 9643579101",
+                "contactType": "customer service",
+                "email": "support@celorisdesigns.com",
+                "availableLanguage": ["English", "Hindi"]
+              },
+              "sameAs": [
+                "https://www.linkedin.com/company/celoris",
+                "https://www.facebook.com/celoris",
+                "https://www.youtube.com/celoris",
+                "https://x.com/celoris"
+              ]
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": "https://www.celorisdesigns.com/#website",
+              "name": "Celoris",
+              "url": "https://www.celorisdesigns.com",
+              "description": "Celoris AI-Powered Ecosystem - Learn, Earn, Social & Apps",
+              "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://www.celorisdesigns.com/learn/courses?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
       </head>
       <body className={inter.className}>
         <ReCaptchaProvider siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>

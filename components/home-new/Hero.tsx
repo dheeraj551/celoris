@@ -51,8 +51,8 @@ export const Hero: React.FC = () => {
                         transition={{ delay: 0.3, duration: 0.8 }}
                         className="text-4xl md:text-6xl lg:text-7xl font-black leading-[1] mb-6 tracking-tight italic uppercase"
                     >
-                        Transform Your <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-green-400 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">Digital Future.</span>
+                        The AI-Powered <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-green-400 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">Celoris Ecosystem.</span>
                     </motion.h1>
 
                     <motion.p

@@ -1,9 +1,7 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, User, Clock, Tag, Eye, TrendingUp, ArrowLeft } from 'lucide-react';
+import { createServerClient } from '@/lib/supabase-server';
+import { notFound } from 'next/navigation';
 
 interface BlogPost {
   id: string;
@@ -22,43 +20,33 @@ interface BlogPost {
   is_featured?: boolean;
 }
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const slug = params.slug as string;
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  const supabase = createServerClient();
+  const { slug } = params;
 
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Fetch the post
+  const { data: post, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .eq('status', 'published')
+    .maybeSingle();
 
-  useEffect(() => {
-    if (slug) {
-      loadPost();
-    }
-  }, [slug]);
+  if (error || !post) {
+    notFound();
+  }
 
-  const loadPost = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/blog/${slug}`);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          setError('Blog post not found');
-        } else {
-          setError('Failed to load blog post');
-        }
-        return;
-      }
-
-      const data = await response.json();
-      setPost(data.post);
-    } catch (error) {
-      console.error('Error loading blog post:', error);
-      setError('Failed to load blog post');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Increment views count (background)
+  // Note: In a production app, you might want to debounce this or use a different strategy
+  // but for now we follow the existing logic.
+  supabase
+    .from('blog_posts')
+    .update({ views_count: (post.views_count || 0) + 1 })
+    .eq('id', post.id)
+    .then(({ error: updateError }) => {
+      if (updateError) console.error('Error incrementing views:', updateError);
+    });
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Recently';
@@ -89,34 +77,62 @@ export default function BlogPostPage() {
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-      </div>
-    );
-  }
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.celorisdesigns.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://www.celorisdesigns.com/blog"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": post.title,
+        "item": `https://www.celorisdesigns.com/blog/${post.slug}`
+      }
+    ]
+  };
 
-  if (error || !post) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-          <p className="text-xl text-gray-600 mb-8">{error || 'Blog post not found'}</p>
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Blog
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt,
+    "image": post.featured_image_url,
+    "author": {
+      "@type": "Organization",
+      "name": "Celoris Designs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Celoris Designs",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.celorisdesigns.com/celoris-logo.png"
+      }
+    },
+    "datePublished": post.published_at || post.created_at
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+      />
       <article className="max-w-4xl mx-auto px-4 py-8">
         {/* Back Button */}
         <Link
@@ -156,23 +172,23 @@ export default function BlogPostPage() {
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5" />
-              <span>{post.reading_time} min read</span>
+              <span>{post.reading_time || 5} min read</span>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <Eye className="w-4 h-4" />
-                <span>{post.views_count} views</span>
+                <span>{post.views_count || 0} views</span>
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-4 h-4" />
-                <span>{post.likes_count} likes</span>
+                <span>{post.likes_count || 0} likes</span>
               </div>
             </div>
           </div>
 
           {post.tags && Array.isArray(post.tags) && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-8">
-              {post.tags.map((tag, index) => (
+              {post.tags.map((tag: string, index: number) => (
                 <span
                   key={index}
                   className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full"
@@ -187,7 +203,6 @@ export default function BlogPostPage() {
 
         {/* Featured Video */}
         {(() => {
-          // Helper to extract YouTube ID
           const getVideoId = (url: string) => {
             if (!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -230,11 +245,11 @@ export default function BlogPostPage() {
             <div className="flex items-center gap-6 text-gray-600">
               <div className="flex items-center gap-2">
                 <Eye className="w-5 h-5" />
-                <span>{post.views_count} views</span>
+                <span>{post.views_count || 0} views</span>
               </div>
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
-                <span>{post.likes_count} likes</span>
+                <span>{post.likes_count || 0} likes</span>
               </div>
             </div>
 

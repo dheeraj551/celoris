@@ -73,8 +73,53 @@ export default function ContactPage() {
     }
   }
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.celorisdesigns.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Contact",
+        "item": "https://www.celorisdesigns.com/contact"
+      }
+    ]
+  };
+
+  const contactPageLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "Celoris AI-Powered Ecosystem",
+      "email": "support@celorisdesigns.com",
+      "telephone": "+91 9643579101",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 9643579101",
+        "contactType": "customer service",
+        "email": "support@celorisdesigns.com",
+        "availableLanguage": ["English", "Hindi"]
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050810] text-[#E2E8F0] relative overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageLd) }}
+      />
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/[0.03] blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-100px] left-[-100px] w-[600px] h-[600px] bg-teal-500/[0.03] blur-[120px] rounded-full pointer-events-none" />

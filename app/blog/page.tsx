@@ -1,9 +1,7 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, User, Clock } from "lucide-react"
+import { createServerClient } from "@/lib/supabase-server"
 
 interface BlogPost {
   id: string;
@@ -17,14 +15,8 @@ interface BlogPost {
   featured_image_url?: string;
 }
 
-export default function BlogPage() {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadBlogPosts();
-  }, []);
+export default async function BlogPage() {
+  const supabase = createServerClient();
 
   // Static blog post definition
   const STATIC_POST: BlogPost = {
@@ -39,33 +31,25 @@ export default function BlogPage() {
     published_at: '2025-12-01T12:00:00Z',
   };
 
-  const loadBlogPosts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/blog?page=1&limit=10');
+  let fetchedPosts: BlogPost[] = [];
+  try {
+    const { data: dbPosts } = await supabase
+      .from('blog_posts')
+      .select('id, title, slug, excerpt, featured_image_url, author_name, category, reading_time, published_at')
+      .eq('status', 'published')
+      .eq('is_published', true)
+      .order('published_at', { ascending: false })
+      .limit(10);
 
-      let fetchedPosts: BlogPost[] = [];
-      if (response.ok) {
-        const data = await response.json();
-        fetchedPosts = data.posts || [];
-      }
+    fetchedPosts = dbPosts || [];
+  } catch (error) {
+    console.error('Error loading blog posts:', error);
+  }
 
-      // Add static post if not present
-      if (!fetchedPosts.some(p => p.slug === STATIC_POST.slug)) {
-        fetchedPosts = [STATIC_POST, ...fetchedPosts];
-      }
-
-      setBlogPosts(fetchedPosts);
-    } catch (error) {
-      console.error('Error loading blog posts:', error);
-      // Fallback to show static post
-      setBlogPosts([STATIC_POST]);
-      // Don't show error if we have at least the static post
-      setError(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Add static post if not present
+  if (!fetchedPosts.some(p => p.slug === STATIC_POST.slug)) {
+    fetchedPosts = [STATIC_POST, ...fetchedPosts];
+  }
 
   const formatDate = (dateString: string) => {
     try {
@@ -79,8 +63,31 @@ export default function BlogPage() {
     }
   };
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.celorisdesigns.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://www.celorisdesigns.com/blog"
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <div className="container py-8">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" asChild>
@@ -100,27 +107,13 @@ export default function BlogPage() {
             </p>
           </div>
 
-          {loading && (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-center py-12">
-              <p className="text-red-600">{error}</p>
-            </div>
-          )}
-
-          {!loading && !error && blogPosts.length === 0 && (
+          {fetchedPosts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-text-secondary">No blog posts found.</p>
             </div>
-          )}
-
-          {!loading && !error && blogPosts.length > 0 && (
+          ) : (
             <div className="space-y-8">
-              {blogPosts.map((post) => (
+              {fetchedPosts.map((post) => (
                 <article key={post.id} className="bg-surface p-6 rounded-lg border hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-2 text-sm text-text-secondary mb-3">
                     <span className="bg-primary-100 text-primary-700 px-2 py-1 rounded-full text-xs">

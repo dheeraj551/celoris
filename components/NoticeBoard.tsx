@@ -97,12 +97,14 @@ function getTimeAgo(dateString: string): string {
   }
 }
 
-export default function NoticeBoard({ limit = 6 }: { limit?: number }) {
-  const [notices, setNotices] = useState<NoticeBoardItem[]>([])
-  const [loading, setLoading] = useState(true)
+export default function NoticeBoard({ limit = 6, initialNotices = null }: { limit?: number, initialNotices?: NoticeBoardItem[] | null }) {
+  const [notices, setNotices] = useState<NoticeBoardItem[]>(initialNotices || [])
+  const [loading, setLoading] = useState(!initialNotices)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (initialNotices) return;
+
     const fetchNotices = async () => {
       try {
         setLoading(true)
