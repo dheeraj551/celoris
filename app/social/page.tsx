@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
 import { useAuth } from "@/components/providers/AuthProvider"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -34,6 +36,28 @@ import { motion, AnimatePresence } from "framer-motion"
 
 export default function SocialPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const router = useRouter()
+  const { toast } = useToast()
+
+  const handleSafeNavigation = (path: string) => {
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const balance = profile?.wallet_balance || 0
+    if (balance < 100) {
+      toast({
+        title: "Access Restricted",
+        description: `Participation in social activities requires a minimum balance of ₹100.00. Current balance: ₹${balance.toFixed(2)}.`,
+        variant: "destructive"
+      })
+      return
+    }
+
+    router.push(path)
+  }
+
   const [roomData, setRoomData] = useState<any>({
     social: { count: 0, users: [] },
     networking: { count: 0, users: [] },
@@ -282,7 +306,7 @@ export default function SocialPage() {
               transition={{ delay: 0.1, duration: 0.8 }}
               className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.8] text-white"
             >
-              Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">AI Social</span>
+              Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Social</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -302,21 +326,17 @@ export default function SocialPage() {
             className="mt-16 flex flex-wrap justify-center gap-6"
           >
             <Button
-              asChild
+              onClick={() => handleSafeNavigation("/social/swipe")}
               className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 transition-all"
             >
-              <Link href="/social/swipe">
-                Find People <ArrowRight className="ml-3 h-4 w-4" />
-              </Link>
+              Find People <ArrowRight className="ml-3 h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
-              asChild
+              onClick={() => handleSafeNavigation("/social/lobby")}
               className="bg-white/5 border border-white/10 text-white hover:bg-white/10 h-16 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px]"
             >
-              <Link href="/social/lobby">
-                Join Chat Rooms
-              </Link>
+              Join Chat Rooms
             </Button>
           </motion.div>
         </div>
@@ -384,11 +404,9 @@ export default function SocialPage() {
                   <CardContent className="px-10 pb-12 mt-auto">
                     <Button
                       className="w-full bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-2xl"
-                      asChild
+                      onClick={() => handleSafeNavigation(feature.href || "#")}
                     >
-                      <Link href={feature.href || "#"}>
-                        {feature.action} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
+                      {feature.action} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardContent>
                 </Card>
@@ -423,7 +441,7 @@ export default function SocialPage() {
               </motion.div>
               <div className="space-y-6">
                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] uppercase italic">
-                  Global <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">AI Chat Hubs</span>
+                  Celoris <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">Chat Cafe</span>
                 </h2>
                 <p className="text-xl text-slate-400 leading-relaxed font-bold uppercase tracking-wide">
                   Join public chat rooms and talk with people across the globe in real-time.
@@ -431,11 +449,9 @@ export default function SocialPage() {
               </div>
               <Button
                 className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-5 transition-all shadow-3xl shadow-emerald-500/20"
-                asChild
+                onClick={() => handleSafeNavigation("/social/lobby")}
               >
-                <Link href="/social/lobby">
-                  OPEN CHAT LOBBY <Rocket className="h-5 w-5" />
-                </Link>
+                OPEN CHAT CAFE <Rocket className="h-5 w-5" />
               </Button>
             </div>
 
@@ -571,10 +587,11 @@ export default function SocialPage() {
                     <CardDescription className="text-slate-500 font-bold uppercase tracking-wide text-xs leading-relaxed mb-12">
                       {feature.description}
                     </CardDescription>
-                    <Button className="w-full mt-auto bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all" asChild>
-                      <Link href="/social/upgrade">
-                        Upgrade Now
-                      </Link>
+                    <Button
+                      className="w-full mt-auto bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all"
+                      onClick={() => handleSafeNavigation("/social/upgrade")}
+                    >
+                      Upgrade Now
                     </Button>
                   </CardContent>
                 </Card>
@@ -641,12 +658,10 @@ export default function SocialPage() {
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
-              asChild
               className="bg-emerald-600 hover:bg-emerald-500 text-white h-20 px-16 rounded-3xl font-black uppercase tracking-[0.4em] text-xs shadow-3xl shadow-emerald-500/30 transition-all border-none"
+              onClick={() => handleSafeNavigation(user ? "/social/chat" : "/login")}
             >
-              <Link href={user ? "/social/chat" : "/login"}>
-                {user ? 'GO TO SOCIAL HUB' : 'GET STARTED NOW'}
-              </Link>
+              {user ? 'GO TO SOCIAL HUB' : 'GET STARTED NOW'}
             </Button>
           </motion.div>
         </div>

@@ -14,6 +14,49 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 
 
+const TRANSACTIONS = [
+  "Asima paid for Chemistry Class 12 Tuition. To Grish Kumar",
+  "Sanjay paid for Maths Class 12 Tuition. To Sipra Aggrwal",
+  "Sunita paid to Yoga Class To Ananya J",
+  "Gunika paid to yoga class To Ananya J",
+  "Ranjeet paid for Chemistry Class 10 Tuition To Agam Gupta",
+  "Rohan paid to Excel Training To Dheeraj Kushwaha.",
+  "Harpreet paid to Graphics Design To Neha Sharma.",
+  "Neha paid to Class 10 Maths Tuition.to Arvind Sir",
+  "Vishnu paid to Class 11 Physics Tuition. To Reema",
+  "Seema to Yoga Class To Ananya J"
+]
+
+function ScrollingTicker() {
+  return (
+    <div className="w-full overflow-hidden bg-emerald-500/5 border-y border-emerald-500/10 py-3 mb-16 relative">
+      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#050810] to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#050810] to-transparent z-10" />
+
+      <motion.div
+        animate={{
+          x: [0, -1000],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        className="flex whitespace-nowrap gap-12 items-center"
+      >
+        {[...TRANSACTIONS, ...TRANSACTIONS].map((text, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-400 italic">
+              {text}
+            </span>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
 export default function LearnClient({ initialCourses, initialNotices }: { initialCourses: any[], initialNotices: any[] }) {
   const { profile, user } = useAuth()
   const router = useRouter()
@@ -116,7 +159,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-8xl font-black mb-8 tracking-tighter text-white italic uppercase"
           >
-            Elite AI Academy <br className="hidden md:block" /> & Mastery
+            Celoris Academy <br className="hidden md:block" /> & Classrooms
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -143,7 +186,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
       <section className="py-24 relative z-10">
         <div className="container">
           <Courses
-            title="Popular Modules"
+            title="Popular Courses"
             description="Deep-dive into our most sought-after learning experiences"
             limit={4}
             featured={true}
@@ -165,7 +208,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
               viewport={{ once: true }}
               className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 uppercase italic"
             >
-              AI-Driven Interactive Study Hubs
+              live classrooms
             </motion.h2>
             <p className="text-lg text-slate-400 max-w-xl mx-auto font-medium italic">
               Join live rooms for real-time collaboration and group mastery sessions.
@@ -259,12 +302,14 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
               <Zap size={14} /> Global Feed
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 uppercase italic">
-              AI Intelligence Feed
+              Notice Board
             </h2>
             <p className="text-lg text-slate-400 font-medium italic">
               Current tutoring opportunities and industry requirements.
             </p>
           </div>
+
+          <ScrollingTicker />
 
           <NoticeBoard limit={6} initialNotices={initialNotices} />
         </div>

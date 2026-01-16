@@ -4,7 +4,9 @@ import React from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MessageSquare, Users, Video, ArrowRight, Clock, Share2 } from "lucide-react"
-import Link from "next/link"
+import { useAuth } from "@/components/providers/AuthProvider"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
 
 const rooms = [
     {
@@ -58,6 +60,29 @@ const rooms = [
 ]
 
 export default function InterviewRooms() {
+    const { profile, user } = useAuth()
+    const router = useRouter()
+    const { toast } = useToast()
+
+    const handleRoomEntry = (roomId: string) => {
+        if (!user) {
+            router.push("/login")
+            return
+        }
+
+        const balance = profile?.wallet_balance || 0
+        if (balance < 100) {
+            toast({
+                title: "Insufficient Wallet Balance",
+                description: `Entering an interview room requires ₹100.00. Your current balance is ₹${balance.toFixed(2)}.`,
+                variant: "destructive"
+            })
+            return
+        }
+
+        router.push(`/earn/interview-room/${roomId}`)
+    }
+
     return (
         <section className="py-32 relative z-10 bg-[#050810]/50">
             <div className="container px-4">
@@ -67,7 +92,7 @@ export default function InterviewRooms() {
                             <Video size={14} /> LIVE NEXUS ROOMS
                         </div>
                         <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic uppercase">
-                            Interview Matrix
+                            Interview Rooms
                         </h2>
                         <p className="text-lg text-slate-400 font-medium italic mt-4 max-w-2xl">
                             Deploy into always-on collaborative environments for real-time skill verification and professional networking.
@@ -107,11 +132,17 @@ export default function InterviewRooms() {
                                     </div>
                                 </div>
 
-                                <Button asChild className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 border-none group">
-                                    <Link href={`/earn/interview-room/${room.id}`}>
-                                        Initialize Uplink <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                                    </Link>
-                                </Button>
+                                <div className="mt-auto">
+                                    <Button
+                                        onClick={() => handleRoomEntry(room.id)}
+                                        className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 border-none group"
+                                    >
+                                        <div className="flex flex-col items-center">
+                                            <span className="flex items-center gap-2">Enter room <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></span>
+                                            <span className="text-[8px] opacity-60 mt-1">₹100 Required in Wallet</span>
+                                        </div>
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
                     ))}

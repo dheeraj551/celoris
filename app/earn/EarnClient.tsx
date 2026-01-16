@@ -111,7 +111,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-8xl font-black mb-8 tracking-tighter text-white italic uppercase"
           >
-            Forge Your <br className="hidden md:block" /> AI Career Path
+            Find Your <br className="hidden md:block" /> IT Project
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -121,13 +121,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
           >
             Connect with industry-leading organizations and unlock career architectures that redefine your professional destiny.
           </motion.p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl px-12 h-16 font-black uppercase tracking-widest text-xs shadow-2xl shadow-emerald-500/20">
-                Browse Opportunities
-              </Button>
-            </motion.div>
-          </div>
+
         </div>
       </section>
 

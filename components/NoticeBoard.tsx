@@ -292,6 +292,7 @@ export default function NoticeBoard({ limit = 6, initialNotices = null }: { limi
         )}
       </div>
 
+
       {/* Interest Dialog */}
       <AnimatePresence>
         {selectedNotice && (
