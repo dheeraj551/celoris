@@ -15,16 +15,16 @@ import { useToast } from "@/components/ui/use-toast"
 
 
 const TRANSACTIONS = [
-  "Asima paid for Chemistry Class 12 Tuition. To Grish Kumar",
-  "Sanjay paid for Maths Class 12 Tuition. To Sipra Aggrwal",
-  "Sunita paid to Yoga Class To Ananya J",
-  "Gunika paid to yoga class To Ananya J",
-  "Ranjeet paid for Chemistry Class 10 Tuition To Agam Gupta",
-  "Rohan paid to Excel Training To Dheeraj Kushwaha.",
-  "Harpreet paid to Graphics Design To Neha Sharma.",
-  "Neha paid to Class 10 Maths Tuition.to Arvind Sir",
-  "Vishnu paid to Class 11 Physics Tuition. To Reema",
-  "Seema to Yoga Class To Ananya J"
+  "Riya paid For The Microsoft Excel Training – Tutor: Arjun Mehta",
+  "Kabir paid For The Yoga Training – Tutor: Nidhi Verma",
+  "Ananya paid For The Class 10 Tuition training – Tutor: Karan Suri",
+  "Aarav paid For The Vocal Music training – Tutor: Sneha Rao",
+  "Meera paid For The Guitar training – Tutor: Rohit Malhotra",
+  "Dev paid For The Class 12 Tuition training – Tutor: Priya Sharma",
+  "Sanvi paid For The Class 9 Tuition training – Tutor: Manish Kulkarni",
+  "Ishaan paid For The Batch-Of-Two-Students training – Tutor: Neha Joshi",
+  "Tara paid For The Class 10 Tuition training – Tutor: Suresh Iyer",
+  "Vihaan paid For The Class 10 Tuition training – Tutor: Aditi Desai"
 ]
 
 function ScrollingTicker() {

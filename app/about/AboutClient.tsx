@@ -256,7 +256,7 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6">
                 <ShieldCheck size={10} /> Verified Pulse
               </div>
-              <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter mb-4">Network Feedback</h2>
+              <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter mb-4">Customer Feedback</h2>
               <p className="text-slate-500 font-black uppercase tracking-widest text-[8px] italic">
                 Direct transmissions from our synchronized node network.
               </p>
@@ -283,7 +283,7 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
               className="text-center space-y-10"
             >
               <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-none">
-                Ready to Initiate <br /><span className="text-emerald-500 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">Your Link?</span>
+                Ready to Connect <br /><span className="text-emerald-500 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">with Celoris ?</span>
               </h2>
               <p className="text-base text-slate-400 max-w-xl mx-auto font-bold uppercase tracking-widest italic">
                 Get in touch with our team to start your transformation.
