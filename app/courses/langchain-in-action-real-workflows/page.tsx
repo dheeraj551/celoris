@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Layers, Filter, RefreshCw, Activity, Terminal, MessageSquare, Link as LinkIcon, GitBranch, Cpu as Brain } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Layers, Filter, RefreshCw, Activity, Terminal, MessageSquare, Link as LinkIcon, GitBranch, Cpu as Brain, Trophy } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 
 export default function LangChainCourse() {
     // Set page title and meta tags dynamically
@@ -139,6 +140,284 @@ export default function LangChainCourse() {
                 title: "LangSmith Trace Dashboard",
                 description: "Ready-to-use debugging setup for complex LLM chains.",
                 icon: "Activity"
+            }
+        ],
+        quiz_data: [
+            {
+                title: "Core Objectives & Framework",
+                questions: [
+                    {
+                        question: "What is the primary focus of the 'LangChain in Action' course?",
+                        options: ["Simple chat prompts", "Building autonomous \"reasoning loops\"", "Basic Python syntax", "Graphic design"],
+                        correctIndex: 1,
+                        explanation: "The course specifically moves beyond simple chat prompts to build complex autonomous reasoning systems."
+                    },
+                    {
+                        question: "Which industry-standard framework is used to build intelligent automation in this course?",
+                        options: ["TensorFlow", "PyTorch", "LangChain", "Django"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What does the acronym LCEL stand for?",
+                        options: ["LangChain External Logic", "LangChain Expression Language", "Linear Chain Entry Level", "Logical Coding Enhanced Language"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of the following models are included under \"Unified model management\"?",
+                        options: ["Only OpenAI", "OpenAI and Google Gemini", "OpenAI, Anthropic, and Llama 3", "Anthropic and Midjourney"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is used for \"Dynamic Output Parsing\" to ensure structured data?",
+                        options: ["Plain text", "JSON and Pydantic", "HTML", "XML only"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which databases are mentioned for \"Advanced Memory & State Management\"?",
+                        options: ["MongoDB and Oracle", "Redis and PostgreSQL", "SQLite and MariaDB", "DynamoDB only"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What specific architecture is used to connect a bot to a company's knowledge base?",
+                        options: ["CNN", "RNN", "RAG Pipelines (Retrieval-Augmented Generation)", "GANs"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which tool is designated for \"Production Debugging\" of complex LLM chains?",
+                        options: ["LangSmith", "PyCharm", "VS Code", "Postman"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What type of autonomous agents will students learn to build?",
+                        options: ["Linear agents", "ReAct and Zero-Shot agents", "Chat-only agents", "Static agents"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the name of the end-to-end automation bot project?",
+                        options: ["The Global Guide", "The \"Universal Assistant\" Bot", "Celoris Master Bot", "AI Orchestrator Pro"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Tools, Integrations & Stack",
+                questions: [
+                    {
+                        question: "The Tool Integration Kit includes custom connectors for which of the following?",
+                        options: ["SQL, Gmail, and Search APIs", "Slack and Discord", "Facebook and Instagram", "WhatsApp and Telegram"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "Which tech stack version is utilised in the 2024-2025 curriculum?",
+                        options: ["LangChain v0.1", "LangChain v0.2", "LangChain v0.3+", "LangChain v1.0"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is a prerequisite for enrolling in this course?",
+                        options: ["Basic Python programming knowledge", "PhD in Data Science", "10 years of AI experience", "Knowledge of C++"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "Besides Python knowledge, what else is a prerequisite?",
+                        options: ["Advanced Calculus", "Familiarity with API integrations", "Graphic design skills", "Project management certification"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the cost for 'Full Lifetime Access' to the course?",
+                        options: ["₹5,000", "₹10,000", "₹15,000", "₹20,000"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is included with the professional certification?",
+                        options: ["A physical trophy", "Production Ready GitHub Templates", "A new laptop", "Free OpenAI credits"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How many hours of content are included in the course?",
+                        options: ["5 hours", "10 hours", "12 hours", "20 hours"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Who is the instructor for the LangChain course?",
+                        options: ["Celoris (Expert AI Engineer)", "A generic AI bot", "A guest professor", "Anonymous"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is the instructor's rating based on the sources?",
+                        options: ["4.5", "4.7", "4.9", "5.0"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which company is responsible for the Celoris AI-Powered Ecosystem?",
+                        options: ["Celoris Tech Ltd", "Celoris Designs LLP", "AI Global Partners", "LangChain Corp"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Platform & Logistics",
+                questions: [
+                    {
+                        question: "What are the four main pillars of the Celoris platform?",
+                        options: ["Read, Write, Speak, Listen", "Learn, Earn, Social, Apps", "Build, Deploy, Test, Scale", "Code, Design, Market, Sell"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Where can students join for 'Exclusive' interaction?",
+                        options: ["A private WhatsApp group", "Exclusive Discord Community", "LinkedIn group", "Facebook page"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The course promises to move 'beyond' which of the following?",
+                        options: ["Python coding", "Simple chat prompts", "API calls", "Database management"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "'Persistent AI Memory' is achieved using which combination?",
+                        options: ["Flash drive and Cloud", "Redis & PostgreSQL", "RAM and Hard Drive", "Cache and Cookies"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which specific capability allows agents to use external tools?",
+                        options: ["Hardcoding", "Autonomous reasoning loops", "Manual intervention", "Basic if-else statements"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What can students stay 'Synchronised' with by following the platform?",
+                        options: ["Only price changes", "New knowledge nodes and grid opportunities", "Weather updates", "Stock market trends"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What kind of workflows are taught in the course?",
+                        options: ["Single-step prompts", "Multi-Step Automation Workflows", "Manual data entry", "Offline workflows"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of the following is NOT a prerequisite mentioned in the source?",
+                        options: ["Understanding of LLM concepts", "Desire to build production-ready AI", "Expertise in React.js", "Basic Python programming"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "LangSmith provides a dashboard for which of the following?",
+                        options: ["Designing logos", "Tracing and debugging complex LLM chains", "Buying tokens", "Hosting websites"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The 'Universal Assistant' bot connects to what for its RAG capabilities?",
+                        options: ["A public library", "A company's knowledge base", "Random Wikipedia pages", "YouTube transcripts only"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Advanced Agents & RAG",
+                questions: [
+                    {
+                        question: "What is a 'Zero-Shot' agent?",
+                        options: ["An agent that never works", "An agent that performs tasks without prior examples", "An agent that requires 100 prompts", "A human-in-the-loop system"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the copyright year mentioned for Celoris Designs LLP?",
+                        options: ["2024", "2025", "2026", "2023"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the instructor's specific area of expertise?",
+                        options: ["Web development", "LLM Orchestration Specialist", "Cyber security", "Hardware engineering"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Vector Databases are specifically mentioned in the context of:",
+                        options: ["Saving images", "RAG Pipelines", "Deleting logs", "Calculating math"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of the following is part of the 'Connect' section of the platform?",
+                        options: ["Careers", "Newsletter, Community, Events, Partners", "Help Center", "Terms of Service"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The 'Universal Assistant' project involves building an 'End-to-End' what?",
+                        options: ["Chat interface", "Automation Bot", "Search Engine", "Social Network"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which concept involves 'Prompts and Completion'?",
+                        options: ["Database management", "LLM concepts (Prerequisite)", "Networking", "Hardware assembly"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the status of the 'Protocol' mentioned in the footer?",
+                        options: ["Inactive", "Active", "Pending", "Error"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "'Pydantic' is primarily used in this course for:",
+                        options: ["Styling CSS", "Dynamic Output Parsing", "Setting up servers", "Encrypting passwords"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of these is a 'Support' category on the platform?",
+                        options: ["Social", "Help Center", "Newsletter", "Partners"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Operational Excellence",
+                questions: [
+                    {
+                        question: "The course is described as providing 'Real ______':",
+                        options: ["Stories", "Workflows", "People", "Problems"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which 'Company' link would you click to find employment?",
+                        options: ["About", "Contact", "Careers", "Blog"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "How many people are indicated to have rated the instructor/course?",
+                        options: ["500+", "1000+", "1250+", "2000+"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "'Unified model management' helps a developer avoid:",
+                        options: ["Writing Python", "Managing multiple different LLM interfaces separately", "Using the internet", "Paying for APIs"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the 'Earn' section of the platform likely refer to?",
+                        options: ["Spending money", "Opportunities for income/rewards", "Learning for free", "Social media likes"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Multi-step automation is a move away from:",
+                        options: ["Computers", "Simple, single-response AI", "Python", "The cloud"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "'Custom Tool & Connector Development' allows the AI to:",
+                        options: ["Change its own code", "Interact with external software like Gmail", "Sleep", "Play games"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "ReAct agents stand for:",
+                        options: ["Reacting to people", "Reasoning and Acting", "Redux and Actions", "Read and Account"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of the following is NOT a model mentioned in the core stack?",
+                        options: ["Llama 3", "Anthropic", "Claude 2", "OpenAI"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "The 'Universal Assistant' bot is designed to maintain:",
+                        options: ["Long-term memory", "No history", "Only the last message", "Temporary cache only"],
+                        correctIndex: 0
+                    }
+                ]
             }
         ]
     }
@@ -391,6 +670,29 @@ export default function LangChainCourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-blue-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-blue-400" />
+                                    </div>
+                                    LangChain & AI Orchestration Mastery Assessment
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your expertise in building autonomous agents, RAG pipelines, and complex LLM workflows.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="LangChain & AI Orchestration Mastery Assessment"
+                                quizDescription="50 questions covering the end-to-end LangChain ecosystem and production-ready AI automation."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Architect Level! You are fully prepared to build and deploy complex autonomous agents.";
+                                    if (score >= 35) return "Orchestration Ready! You have a solid grasp of LangChain and RAG architectures.";
+                                    return "Keep Building! Review the memory and tool integration modules to strengthen your automation skills.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -413,6 +715,13 @@ export default function LangChainCourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white rounded-2xl shadow-lg shadow-blue-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                Take Assessment Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

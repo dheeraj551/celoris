@@ -95,7 +95,7 @@ export const Features: React.FC = () => {
                     <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
                         <Sparkles size={12} /> Sync Operations
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">AI-Powered Ecosystem Core</h2>
+                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter italic uppercase">Experience Unified Celoris Ecosystem</h2>
                     <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-4 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
                 </div>
             </motion.div>

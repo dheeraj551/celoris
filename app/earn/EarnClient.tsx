@@ -192,23 +192,14 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
                 <Rocket size={14} /> LIVE OPPORTUNITIES
               </div>
               <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic uppercase">
-                Active AI Uplinks
+                Active Jobs
               </h2>
               <p className="text-lg text-slate-400 font-medium italic mt-4">
                 High-priority roles from verified network partners.
               </p>
             </div>
             <div className="flex-1 h-[2px] bg-gradient-to-r from-emerald-500/10 via-white/5 to-transparent hidden md:block" />
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-[#050810] bg-[#0d1321] overflow-hidden">
-                    <div className="w-full h-full bg-emerald-500/10 animate-pulse" />
-                  </div>
-                ))}
-              </div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">+2.4k Talents Engaged</span>
-            </div>
+
           </div>
 
           {loading ? (

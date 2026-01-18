@@ -1,12 +1,87 @@
 "use client"
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Rocket, ArrowRight, Sparkles, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase-client';
+
+const TRANSACTIONS = [
+    "Riya paid For The Microsoft Excel Training – Tutor: Arjun Mehta",
+    "Kabir paid For The Yoga Training – Tutor: Nidhi Verma",
+    "Ananya paid For The Class 10 Tuition training – Tutor: Karan Suri",
+    "Aarav paid For The Vocal Music training – Tutor: Sneha Rao",
+    "Meera paid For The Guitar training – Tutor: Rohit Malhotra",
+    "Dev paid For The Class 12 Tuition training – Tutor: Priya Sharma",
+    "Sanvi paid For The Class 9 Tuition training – Tutor: Manish Kulkarni",
+    "Ishaan paid For The Batch-Of-Two-Students training – Tutor: Neha Joshi",
+    "Tara paid For The Class 10 Tuition training – Tutor: Suresh Iyer",
+    "Vihaan paid For The Class 10 Tuition training – Tutor: Aditi Desai"
+];
+
+function ScrollingTicker() {
+    return (
+        <div className="w-full overflow-hidden bg-emerald-500/5 border-t border-white/5 py-4 relative mt-12">
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#00120d] to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#00120d] to-transparent z-10" />
+
+            <motion.div
+                animate={{
+                    x: [0, -1000],
+                }}
+                transition={{
+                    duration: 30,
+                    repeat: Infinity,
+                    ease: "linear",
+                }}
+                className="flex whitespace-nowrap gap-12 items-center"
+            >
+                {[...TRANSACTIONS, ...TRANSACTIONS].map((text, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400/60 italic">
+                            {text}
+                        </span>
+                    </div>
+                ))}
+            </motion.div>
+        </div>
+    )
+}
 
 export const Hero: React.FC = () => {
+    const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
+    const [onlineCount, setOnlineCount] = useState(0);
+
+    useEffect(() => {
+        const supabase = createClient();
+        const lobbyChannel = supabase.channel('room:lobby');
+
+        const updatePresence = () => {
+            const state = lobbyChannel.presenceState();
+            const presences = Object.values(state).flat() as any[];
+            const users = presences
+                .map(p => p.user)
+                .filter(Boolean)
+                // Filter duplicates by ID
+                .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+
+            setOnlineUsers(users.slice(0, 3));
+            setOnlineCount(users.length);
+        };
+
+        lobbyChannel
+            .on('presence', { event: 'sync' }, updatePresence)
+            .on('presence', { event: 'join' }, updatePresence)
+            .on('presence', { event: 'leave' }, updatePresence)
+            .subscribe();
+
+        return () => {
+            lobbyChannel.unsubscribe();
+        };
+    }, []);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -61,24 +136,9 @@ export const Hero: React.FC = () => {
                         transition={{ delay: 0.5, duration: 0.8 }}
                         className="text-slate-400 text-lg md:text-xl mb-10 max-w-lg leading-relaxed font-bold uppercase italic tracking-wide"
                     >
-                        Celoris Designs AI is your trusted partner in digital transformation,
+                        Celoris Designs LLP is your trusted partner in digital transformation,
                         delivering cutting-edge solutions for individuals to thrive in the new era.
                     </motion.p>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
-                    >
-                        <Button
-                            asChild
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-3xl shadow-emerald-500/20 transition-all border-none"
-                        >
-                            <Link href="/social" className="flex items-center gap-3">
-                                Initialize Link <ArrowRight className="h-5 w-5" />
-                            </Link>
-                        </Button>
-                    </motion.div>
                 </div>
 
                 <div className="flex-1 relative group w-full max-w-xl">
@@ -102,20 +162,47 @@ export const Hero: React.FC = () => {
                             className="absolute bottom-8 left-8 right-8 p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 flex items-center justify-between"
                         >
                             <div className="text-left">
-                                <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Grid Status</div>
-                                <div className="text-xs font-bold text-white uppercase italic">Active Ecosystem Sync</div>
+                                <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    Cafe Online
+                                </div>
+                                <div className="text-xs font-bold text-white uppercase italic">
+                                    {onlineCount > 0 ? `${onlineCount} Celoris Social` : 'Celoris Social'}
+                                </div>
                             </div>
                             <div className="flex -space-x-3">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#00120d] bg-emerald-500/10 flex items-center justify-center backdrop-blur-md">
-                                        <Users size={12} className="text-emerald-400" />
-                                    </div>
-                                ))}
+                                <AnimatePresence mode="popLayout">
+                                    {onlineUsers.length > 0 ? (
+                                        onlineUsers.map((u, i) => (
+                                            <motion.div
+                                                key={u.id || i}
+                                                initial={{ opacity: 0, scale: 0.5, x: 20 }}
+                                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                                exit={{ opacity: 0, scale: 0.5, x: -20 }}
+                                                className="w-8 h-8 rounded-full border-2 border-[#00120d] bg-emerald-500/10 overflow-hidden backdrop-blur-md relative"
+                                            >
+                                                <img
+                                                    src={u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`}
+                                                    alt="u"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </motion.div>
+                                        ))
+                                    ) : (
+                                        [1, 2, 3].map(i => (
+                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-[#00120d] bg-white/5 flex items-center justify-center backdrop-blur-md">
+                                                <Users size={12} className="text-emerald-400/30" />
+                                            </div>
+                                        ))
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </motion.div>
                     </motion.div>
                 </div>
             </div>
+
+            <ScrollingTicker />
         </motion.div>
     );
 };

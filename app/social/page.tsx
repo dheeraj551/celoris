@@ -29,7 +29,8 @@ import {
   Rocket,
   Globe,
   ZapOff,
-  Target
+  Target,
+  Lock
 } from "lucide-react"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
@@ -128,13 +129,24 @@ export default function SocialPage() {
       const state = tracker.presenceState()
       const roomsMap: Record<string, any[]> = {}
       Object.values(state).forEach((presences: any) => {
-        const presence = presences[0]
-        if (presence?.roomId && presence.roomId.startsWith('private-')) {
-          if (!roomsMap[presence.roomId]) roomsMap[presence.roomId] = []
-          roomsMap[presence.roomId].push(presence.user)
-        }
+        (presences as any[]).forEach(presence => {
+          if (presence?.roomId && presence.roomId.startsWith('private-')) {
+            if (!roomsMap[presence.roomId]) {
+              roomsMap[presence.roomId] = []
+            }
+            if (!roomsMap[presence.roomId].some(u => u?.id === presence.user?.id)) {
+              roomsMap[presence.roomId].push(presence.user)
+            }
+          }
+        })
       })
-      setActivePrivateRooms(Object.values(roomsMap))
+
+      const rooms = Object.entries(roomsMap).map(([id, users]) => ({
+        id,
+        users
+      })).sort((a, b) => a.id.localeCompare(b.id))
+
+      setActivePrivateRooms(rooms)
     }).subscribe()
 
     return () => {
@@ -457,59 +469,53 @@ export default function SocialPage() {
 
             {/* Right Side: Virtual Lobby Display */}
             <div className="flex-1 w-full max-w-2xl relative group">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
-                {/* Room Slot: Socialize */}
-                <motion.div whileHover={{ y: -15, scale: 1.05 }} className="bg-[#0d1321]/60 p-8 rounded-[3rem] border border-white/5 hover:border-emerald-500/30 shadow-3xl transition-all cursor-pointer relative overflow-hidden group/card">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent -translate-y-full group-hover/card:animate-[scan_3s_linear_infinite] pointer-events-none" />
-                  <div className="flex -space-x-3 mb-8 overflow-hidden">
-                    {roomData.social.users.length > 0 ? (
-                      roomData.social.users.map((u: any, i: number) => (
-                        <div key={i} className="h-14 w-14 rounded-2xl ring-4 ring-[#0d1321] overflow-hidden bg-white/10 shadow-2xl">
-                          <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 15}`} alt="n" className="w-full h-full object-cover" />
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 bg-white/5 rounded-2xl text-[10px] text-slate-700 font-black uppercase tracking-widest">IDLE_LOBBY</div>
-                    )}
-                  </div>
-                  <h4 className="font-black text-white text-xl uppercase italic tracking-tighter mb-4">Socialize</h4>
-                  <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest">
-                    <div className="flex items-center gap-2 text-emerald-400">
-                      <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                      ACTIVE
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                      <Users size={12} className="text-slate-500" />
-                      {roomData.social.count}
-                    </div>
-                  </div>
-                </motion.div>
+              <div className="grid grid-cols-2 gap-5 mb-8">
+                {[1, 2, 3, 4, 5].map((num) => {
+                  const roomSlot = activePrivateRooms[num - 1];
+                  const isOccupied = !!roomSlot;
+                  return (
+                    <motion.div
+                      key={num}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: num * 0.1 }}
+                      whileHover={{ y: -10, scale: 1.02 }}
+                      className={`relative flex flex-col items-center p-6 rounded-[2.5rem] border transition-all duration-500 group ${isOccupied
+                        ? 'border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_30px_rgba(16,185,129,0.15)]'
+                        : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.05]'
+                        }`}
+                    >
+                      {isOccupied && (
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent -translate-y-full animate-[scan_3s_linear_infinite] pointer-events-none" />
+                      )}
 
-                {/* Room Slot: Networking */}
-                <motion.div whileHover={{ y: -15, scale: 1.05 }} className="bg-[#0d1321]/60 p-8 rounded-[3rem] border border-white/5 hover:border-teal-500/30 shadow-3xl transition-all cursor-pointer relative overflow-hidden group/card">
-                  <div className="flex -space-x-3 mb-8 overflow-hidden">
-                    {roomData.networking.users.length > 0 ? (
-                      roomData.networking.users.map((u: any, i: number) => (
-                        <div key={i} className="h-14 w-14 rounded-2xl ring-4 ring-[#0d1321] overflow-hidden bg-white/10 shadow-2xl">
-                          <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 25}`} alt="n" className="w-full h-full object-cover" />
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 bg-white/5 rounded-2xl text-[10px] text-slate-700 font-black uppercase tracking-widest">IDLE_LOBBY</div>
-                    )}
-                  </div>
-                  <h4 className="font-black text-white text-xl uppercase italic tracking-tighter mb-4">Networking</h4>
-                  <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest">
-                    <div className="flex items-center gap-2 text-teal-400">
-                      <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(45,212,191,0.8)]" />
-                      SYNCED
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                      <Users size={12} className="text-slate-500" />
-                      {roomData.networking.count}
-                    </div>
-                  </div>
-                </motion.div>
+                      <span className={`text-[8px] font-black tracking-widest mb-6 uppercase ${isOccupied ? 'text-emerald-400' : 'text-slate-600'}`}>
+                        STATION_{num.toString().padStart(2, '0')}
+                      </span>
+
+                      <div className="flex -space-x-2.5 mb-6 min-h-[44px] items-center">
+                        {isOccupied ? (
+                          roomSlot.users.map((u: any, i: number) => (
+                            <div key={i} className="h-11 w-11 rounded-xl ring-4 ring-[#050810] shadow-2xl overflow-hidden border border-white/10 bg-white/5">
+                              <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`} alt="u" className="w-full h-full object-cover" />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="h-11 w-11 rounded-2xl bg-white/[0.02] flex items-center justify-center border border-white/5 group-hover:border-emerald-500/20 transition-all shadow-inner">
+                            <Lock className="h-4 w-4 text-slate-800 group-hover:text-emerald-900/40 transition-colors" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={`px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest italic ${isOccupied
+                        ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                        : 'bg-white/5 text-slate-600'
+                        }`}>
+                        {isOccupied ? 'BUSY' : 'READY'}
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Lobby Status Plate */}
