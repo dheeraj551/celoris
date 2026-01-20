@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
     Mic, MicOff, Video, VideoOff, PhoneOff, Hand, Users,
-    MessageSquare, Send, Shield, ShieldAlert, Sparkles, LayoutGrid, AlertCircle
+    MessageSquare, Send, Shield, ShieldAlert, Sparkles, LayoutGrid, AlertCircle, Calendar, Clock, Plus, X
 } from 'lucide-react'
 import AgoraRTC, {
     IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack,
@@ -69,6 +69,7 @@ export default function GeneralHubPage() {
     const [showChat, setShowChat] = useState(true)
     const [showParticipants, setShowParticipants] = useState(false)
     const [onlineUsers, setOnlineUsers] = useState<any[]>([])
+    const [isAgoraJoined, setIsAgoraJoined] = useState(false)
 
     // Chat & Realtime
     const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -76,17 +77,40 @@ export default function GeneralHubPage() {
     const channelRef = useRef<any>(null) // Supabase Channel
     const chatEndRef = useRef<HTMLDivElement>(null)
 
+    // Schedule State
+    const [schedules, setSchedules] = useState<any[]>([])
+    const [showScheduleModal, setShowScheduleModal] = useState(false)
+    const [scheduleForm, setScheduleForm] = useState({
+        topic: '',
+        date: '',
+        time: '',
+        description: ''
+    })
+
     // --- Effects ---
 
     useEffect(() => {
         setMounted(true)
         initializeUser()
+        loadSchedules()
+
+        // Realtime Subscription for Schedules
+        const supabase = createClient()
+        const scheduleChannel = supabase
+            .channel('scheduled-classes-updates')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'scheduled_classes' },
+                () => loadSchedules()
+            )
+            .subscribe()
 
         return () => {
             leaveRoom()
             if (channelRef.current) {
                 channelRef.current.unsubscribe()
             }
+            supabase.removeChannel(scheduleChannel)
         }
     }, [])
 
@@ -103,11 +127,46 @@ export default function GeneralHubPage() {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            // Guest fallback
             const guestId = `guest_${Math.floor(Math.random() * 1000)}`
             setCurrentUser({ id: guestId, email: 'guest@celoris.com', user_metadata: { full_name: 'Guest User' } })
         } else {
             setCurrentUser(user)
+        }
+    }
+
+    const loadSchedules = async () => {
+        const supabase = createClient()
+        const { data } = await supabase
+            .from('scheduled_classes')
+            .select('*')
+            .eq('subject', 'general')
+            .gte('start_time', new Date().toISOString())
+            .order('start_time', { ascending: true })
+
+        if (data) setSchedules(data)
+    }
+
+    const handleCreateSchedule = async (e: React.FormEvent) => {
+        e.preventDefault()
+        const supabase = createClient()
+
+        const startTime = new Date(`${scheduleForm.date}T${scheduleForm.time}`).toISOString()
+
+        const { error } = await supabase.from('scheduled_classes').insert({
+            topic: scheduleForm.topic,
+            description: scheduleForm.description,
+            start_time: startTime,
+            teacher_id: currentUser?.id,
+            teacher_name: currentUser?.user_metadata?.full_name || 'Teacher',
+            subject: 'general'
+        })
+
+        if (error) {
+            toast({ title: "Failed to schedule", description: error.message, variant: "destructive" })
+        } else {
+            toast({ title: "Class Scheduled", description: "The session has been added to the hub." })
+            setShowScheduleModal(false)
+            setScheduleForm({ topic: '', date: '', time: '', description: '' })
         }
     }
 
@@ -147,14 +206,26 @@ export default function GeneralHubPage() {
             })
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState()
-                const users = Object.values(state).flat()
+                const users = Object.values(state).flat() as any[]
                 setOnlineUsers(users)
+
+                // COST OPTIMIZATION: Only join Agora if a teacher (host) is present
+                const hostPresent = users.some(u => u.role === 'host')
+                if (hostPresent && role === 'audience' && !isAgoraJoined) {
+                    initAgoraInternal('audience')
+                } else if (!hostPresent && role === 'audience' && isAgoraJoined) {
+                    // OPTIONAL: Disconnect Agora if teacher leaves to save costs
+                    leaveAgoraOnly()
+                }
             })
             .on('presence', { event: 'join' }, ({ newPresences }) => {
-                // Optional: show join notifications
+                const someHost = Object.values(newPresences).flat().some((p: any) => p.role === 'host')
+                if (someHost && role === 'audience' && !isAgoraJoined) {
+                    initAgoraInternal('audience')
+                }
             })
             .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-                // Optional: show leave notifications
+                // Check if the host left
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
@@ -228,7 +299,23 @@ export default function GeneralHubPage() {
 
     // --- Agora Logic ---
 
-    const initAgora = async (selectedRole: UserRole) => {
+    const initConnection = async (selectedRole: UserRole) => {
+        setIsConnected(true)
+        setUserRole(selectedRole)
+
+        // Step 1: Join Realtime first (Always ZERO cost)
+        await initRealtime(selectedRole)
+
+        // Step 2: If Host, start Agora immediately
+        if (selectedRole === 'host') {
+            await initAgoraInternal(selectedRole)
+        }
+        // If Student (audience), we wait for host presence (handled in initRealtime)
+    }
+
+    const initAgoraInternal = async (selectedRole: UserRole) => {
+        if (isAgoraJoined) return
+
         if (!client) {
             client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
         }
@@ -246,7 +333,7 @@ export default function GeneralHubPage() {
                 body: JSON.stringify({
                     channelName: ROOM_CHANNEL,
                     uid: uid,
-                    role: 'publisher' // Only asking for permission to publish potentially
+                    role: 'publisher'
                 })
             })
 
@@ -256,15 +343,10 @@ export default function GeneralHubPage() {
 
             await client.join(appId, ROOM_CHANNEL, token, uid)
 
-            // Initial Role
             const agoraRole = selectedRole === 'host' ? 'host' : 'audience'
             await client.setClientRole(agoraRole)
 
-            setUserRole(selectedRole)
-            setIsConnected(true)
-
-            // Realtime
-            await initRealtime(selectedRole)
+            setIsAgoraJoined(true)
 
             if (selectedRole === 'host') {
                 publishTracks()
@@ -272,7 +354,7 @@ export default function GeneralHubPage() {
 
         } catch (err: any) {
             console.error("Agora Init Error:", err)
-            toast({ title: "Connection Failed", description: err.message, variant: "destructive" })
+            // toast({ title: "Media Connection Failed", description: "Audio/Video might not be available.", variant: "destructive" })
         }
     }
 
@@ -291,18 +373,22 @@ export default function GeneralHubPage() {
         }
     }
 
-    const leaveRoom = async () => {
+    const leaveAgoraOnly = async () => {
         localAudioTrack?.close()
         localVideoTrack?.close()
         setLocalAudioTrack(null)
         setLocalVideoTrack(null)
-
-        if (client) {
+        if (client && isAgoraJoined) {
             await client.leave()
         }
+        setIsAgoraJoined(false)
+        setRemoteUsers([])
+    }
+
+    const leaveRoom = async () => {
+        await leaveAgoraOnly()
         setIsConnected(false)
         setUserRole('audience')
-        setRemoteUsers([])
         if (channelRef.current) channelRef.current.unsubscribe()
     }
 
@@ -365,7 +451,7 @@ export default function GeneralHubPage() {
                     <div className="space-y-4">
                         <Button
                             className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-xs rounded-xl transition-all hover:scale-[1.02]"
-                            onClick={() => initAgora('audience')}
+                            onClick={() => initConnection('audience')}
                         >
                             Join as Student
                         </Button>
@@ -378,7 +464,7 @@ export default function GeneralHubPage() {
                         <Button
                             variant="outline"
                             className="w-full h-14 border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-black uppercase tracking-widest text-xs rounded-xl"
-                            onClick={() => initAgora('host')}
+                            onClick={() => initConnection('host')}
                         >
                             <Shield className="w-4 h-4 mr-2 text-amber-400" />
                             Join as Teacher (Host)
@@ -428,6 +514,17 @@ export default function GeneralHubPage() {
                             if (showParticipants && !showChat) setShowParticipants(false)
                         }}
                     >
+                        <Calendar className="w-5 h-5 transition-all text-emerald-400" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`${showChat ? 'bg-white/10 text-white' : 'text-slate-400'}`}
+                        onClick={() => {
+                            setShowChat(!showChat)
+                            if (showParticipants && !showChat) setShowParticipants(false)
+                        }}
+                    >
                         <MessageSquare className="w-5 h-5" />
                     </Button>
                 </div>
@@ -435,6 +532,35 @@ export default function GeneralHubPage() {
 
             {/* Main Stage */}
             <main className="flex-1 flex overflow-hidden">
+
+                {/* Upcoming Sessions Banner */}
+                <AnimatePresence>
+                    {schedules.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-xl z-20"
+                        >
+                            <div className="bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-3xl p-4 rounded-2xl flex items-center justify-between gap-6 shadow-2xl">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-emerald-500/20 rounded-xl">
+                                        <Calendar className="w-5 h-5 text-emerald-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none mb-1">Upcoming Class</p>
+                                        <h4 className="text-sm font-bold text-white leading-tight">{schedules[0].topic}</h4>
+                                        <p className="text-[10px] text-slate-400 italic">Today at {new Date(schedules[0].start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                    </div>
+                                </div>
+                                {userRole === 'host' && (
+                                    <Button variant="ghost" size="sm" className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10 h-8">
+                                        Manage
+                                    </Button>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Stage / Video Area */}
                 <div className="flex-1 p-4 flex flex-col gap-4 relative">
@@ -523,7 +649,7 @@ export default function GeneralHubPage() {
                                     <div className="text-center text-slate-600 text-xs py-10 italic">
                                         No messages yet.
                                     </div>
-                                ) : messages.map(m => (
+                                ) : messages.map((m: any) => (
                                     <div key={m.id} className="flex flex-col gap-1">
                                         <span className={`text-[10px] font-bold ${m.senderId === currentUser?.id ? 'text-emerald-400' : 'text-slate-400'}`}>
                                             {m.senderName}
@@ -601,6 +727,88 @@ export default function GeneralHubPage() {
                         </motion.aside>
                     )}
                 </AnimatePresence>
+
+                {/* Schedule Modal (Teacher Only) */}
+                <AnimatePresence>
+                    {showScheduleModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                className="w-full max-w-md bg-[#0d1321] border border-white/10 rounded-[2.5rem] p-10 shadow-3xl"
+                            >
+                                <div className="flex items-center justify-between mb-8">
+                                    <h2 className="text-2xl font-black italic uppercase tracking-tighter text-white">Schedule Class</h2>
+                                    <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-slate-400" onClick={() => setShowScheduleModal(false)}>
+                                        <X size={18} />
+                                    </Button>
+                                </div>
+
+                                <form onSubmit={handleCreateSchedule} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Class Topic</label>
+                                        <input
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                                            placeholder="e.g. Master Calculus in 60mins"
+                                            value={scheduleForm.topic}
+                                            onChange={e => setScheduleForm({ ...scheduleForm, topic: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Date</label>
+                                            <input
+                                                required
+                                                type="date"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                                                value={scheduleForm.date}
+                                                onChange={e => setScheduleForm({ ...scheduleForm, date: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Time</label>
+                                            <input
+                                                required
+                                                type="time"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                                                value={scheduleForm.time}
+                                                onChange={e => setScheduleForm({ ...scheduleForm, time: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
+                                        <textarea
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none min-h-[100px]"
+                                            placeholder="What will students learn?"
+                                            value={scheduleForm.description}
+                                            onChange={e => setScheduleForm({ ...scheduleForm, description: e.target.value })}
+                                        />
+                                    </div>
+                                    <Button type="submit" className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-2xl shadow-emerald-500/20">
+                                        Confirm Schedule
+                                    </Button>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Floating Action Button for Teacher */}
+                {userRole === 'host' && (
+                    <div className="fixed bottom-24 right-8 z-40">
+                        <Button
+                            onClick={() => setShowScheduleModal(true)}
+                            className="bg-emerald-600 hover:bg-emerald-500 h-16 w-16 rounded-full shadow-3xl shadow-emerald-600/30 border-2 border-white/10 flex items-center justify-center p-0 group overflow-hidden"
+                        >
+                            <Plus size={32} className="text-white group-hover:rotate-90 transition-transform duration-500" />
+                        </Button>
+                        <div className="absolute right-0 -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap border border-white/10 pointer-events-none">
+                            Schedule Class
+                        </div>
+                    </div>
+                )}
 
             </main>
         </div>

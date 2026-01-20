@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Briefcase, MapPin, Clock, DollarSign, Users, TrendingUp, Filter, Search, CheckCircle, AlertCircle, X, Laptop, Palette, LineChart, BarChart, Heart, Rocket, Settings, Sparkles, ArrowRight } from "lucide-react"
+import { Briefcase, MapPin, Clock, DollarSign, Users, TrendingUp, Filter, Search, CheckCircle, AlertCircle, X, Rocket, Sparkles, ArrowRight, ChevronDown, ChevronUp } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,12 +14,63 @@ import { motion, AnimatePresence } from "framer-motion"
 import JobApplicationForm from "@/components/earn/JobApplicationForm"
 import { createClient } from "@/lib/supabase-client"
 
+const HIRING_FEEDS = [
+  "TechNova Solutions hired Aarav Mehta for AI-Powered Chatbot Development",
+  "BlueWave Systems hired Neha Sharma for Cloud Infrastructure Migration",
+  "CodeCraft Labs hired Rohan Verma for E-commerce Web App Revamp",
+  "NextGen Infotech hired Priya Iyer for Data Analytics Dashboard",
+  "PixelCore Technologies hired Kunal Singh for Mobile App UI/UX Redesign",
+  "InnoSoft Pvt Ltd hired Sneha Kapoor for CRM System Integration",
+  "Skyline Digital hired Aditya Malhotra for Blockchain Wallet Development",
+  "QuantumByte Solutions hired Pooja Nair for Machine Learning Model Optimization",
+  "HexaTech Global hired Vikram Joshi for Cybersecurity Risk Assessment",
+  "Vertex IT Services hired Ananya Gupta for SaaS Platform Performance Optimization"
+]
+
+function ScrollingTicker() {
+  return (
+    <div className="w-full overflow-hidden bg-emerald-500/5 border-y border-emerald-500/10 py-3 mb-16 relative">
+      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#050810] to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#050810] to-transparent z-10" />
+
+      <motion.div
+        animate={{
+          x: [0, -2000],
+        }}
+        transition={{
+          duration: 40,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        className="flex whitespace-nowrap gap-12 items-center"
+      >
+        {[...HIRING_FEEDS, ...HIRING_FEEDS].map((text, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-400 italic">
+              {text}
+            </span>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
 
 export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }) {
   const [jobs, setJobs] = useState<any[]>(initialJobs)
   const [loading, setLoading] = useState(initialJobs.length === 0)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedJob, setSelectedJob] = useState<any | null>(null)
+  const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({})
+
+  const toggleJobExpansion = (jobId: string) => {
+    setExpandedJobs(prev => ({
+      ...prev,
+      [jobId]: !prev[jobId]
+    }))
+  }
 
   useEffect(() => {
     // Initial fetch
@@ -64,16 +115,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
     }
   }
 
-  const jobCategories = [
-    { name: "Technology", count: 159, icon: Laptop, color: "text-blue-400", bg: "bg-blue-500/10" },
-    { name: "Design", count: 83, icon: Palette, color: "text-rose-400", bg: "bg-rose-500/10" },
-    { name: "Marketing", count: 124, icon: LineChart, color: "text-indigo-400", bg: "bg-indigo-500/10" },
-    { name: "Data Science", count: 67, icon: BarChart, color: "text-teal-400", bg: "bg-teal-500/10" },
-    { name: "Sales", count: 98, icon: Briefcase, color: "text-amber-400", bg: "bg-amber-500/10" },
-    { name: "Success", count: 45, icon: Heart, color: "text-red-400", bg: "bg-red-500/10" },
-    { name: "Product", count: 78, icon: Rocket, color: "text-purple-400", bg: "bg-purple-500/10" },
-    { name: "Operations", count: 30, icon: Settings, color: "text-slate-400", bg: "bg-slate-500/10" }
-  ]
+
 
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -149,54 +191,6 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
         </div>
       </section>
 
-      {/* Job Categories */}
-      <section className="py-32 relative z-10">
-        <div className="container">
-          <div className="text-center mb-24">
-            <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
-              <Filter size={14} /> Career Domains
-            </div>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic uppercase mb-6">
-              Explore AI & Tech Sectors
-            </h2>
-            <p className="text-lg text-slate-400 max-w-xl mx-auto font-medium italic">
-              Strategic deployments across high-impact industry sectors.
-            </p>
-          </div>
-
-          <motion.div
-            variants={{
-              show: { transition: { staggerChildren: 0.05 } }
-            }}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
-          >
-            {jobCategories.map((category) => (
-              <motion.div
-                key={category.name}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  show: { opacity: 1, y: 0 }
-                }}
-                whileHover={{ y: -10 }}
-              >
-                <Card className="bg-[#0d1321]/60 backdrop-blur-3xl border-white/5 hover:border-emerald-500/30 transition-all duration-500 rounded-[2.5rem] overflow-hidden group shadow-2xl">
-                  <CardContent className="p-10 text-center flex flex-col items-center">
-                    <div className={`w-20 h-20 ${category.bg} rounded-2xl flex items-center justify-center mb-8 border border-white/5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-2xl shadow-emerald-500/5`}>
-                      <category.icon size={32} className={category.color} />
-                    </div>
-                    <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-2 group-hover:text-emerald-400 transition-colors leading-none">{category.name}</h3>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">{category.count} Postings</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       <section className="py-12 relative z-10">
         <div className="container">
           <div className="bg-[#0d1321]/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] overflow-hidden">
@@ -225,6 +219,8 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
             <div className="flex-1 h-[2px] bg-gradient-to-r from-emerald-500/10 via-white/5 to-transparent hidden md:block" />
 
           </div>
+
+          <ScrollingTicker />
 
           {loading ? (
             <div className="text-center py-32 bg-[#0d1321]/20 rounded-[3rem] border border-white/5">
@@ -273,9 +269,78 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
                             </div>
                           </div>
 
-                          <p className="text-slate-400 mb-12 line-clamp-2 font-medium italic text-lg leading-relaxed max-w-4xl">
-                            {job.description}
-                          </p>
+                          <div className="relative">
+                            <p className={`text-slate-400 mb-6 font-medium italic text-lg leading-relaxed max-w-4xl transition-all duration-500 ${expandedJobs[job.id] ? 'line-clamp-none' : 'line-clamp-2'}`}>
+                              {job.description}
+                            </p>
+
+                            <button
+                              onClick={() => toggleJobExpansion(job.id)}
+                              className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em] mb-12 hover:text-emerald-400 transition-colors flex items-center gap-2"
+                            >
+                              {expandedJobs[job.id] ? (
+                                <>HIDE DETAILS <ChevronUp size={14} /></>
+                              ) : (
+                                <>VIEW DETAILS <ChevronDown size={14} /></>
+                              )}
+                            </button>
+
+                            <AnimatePresence>
+                              {expandedJobs[job.id] && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  className="overflow-hidden mb-12 space-y-8"
+                                >
+                                  {job.responsibilities && job.responsibilities.length > 0 && (
+                                    <div className="space-y-4">
+                                      <h4 className="text-white font-black uppercase text-xs tracking-widest italic flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Key Responsibilities
+                                      </h4>
+                                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {job.responsibilities.map((resp: string, idx: number) => (
+                                          <li key={idx} className="flex gap-3 text-slate-400 text-sm italic font-medium">
+                                            <span className="text-emerald-500">•</span> {resp}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+
+                                  {job.requirements && job.requirements.length > 0 && (
+                                    <div className="space-y-4">
+                                      <h4 className="text-white font-black uppercase text-xs tracking-widest italic flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Requirements
+                                      </h4>
+                                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {job.requirements.map((req: string, idx: number) => (
+                                          <li key={idx} className="flex gap-3 text-slate-400 text-sm italic font-medium">
+                                            <span className="text-emerald-500">•</span> {req}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+
+                                  {job.benefits && job.benefits.length > 0 && (
+                                    <div className="space-y-4">
+                                      <h4 className="text-white font-black uppercase text-xs tracking-widest italic flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Benefits & Perks
+                                      </h4>
+                                      <div className="flex flex-wrap gap-3">
+                                        {job.benefits.map((benefit: string, idx: number) => (
+                                          <span key={idx} className="bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider italic">
+                                            {benefit}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
 
                           <div className="flex flex-wrap items-center gap-10">
                             <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500 italic">

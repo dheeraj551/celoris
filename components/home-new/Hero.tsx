@@ -20,27 +20,37 @@ const TRANSACTIONS = [
     "Vihaan paid For The Class 10 Tuition training – Tutor: Aditi Desai"
 ];
 
-function ScrollingTicker() {
-    return (
-        <div className="w-full overflow-hidden bg-emerald-500/5 border-t border-white/5 py-4 relative mt-12">
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#00120d] to-transparent z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#00120d] to-transparent z-10" />
+const HIRING_FEEDS = [
+    "TechNova Solutions hired Aarav Mehta for AI-Powered Chatbot Development",
+    "BlueWave Systems hired Neha Sharma for Cloud Infrastructure Migration",
+    "CodeCraft Labs hired Rohan Verma for E-commerce Web App Revamp",
+    "NextGen Infotech hired Priya Iyer for Data Analytics Dashboard",
+    "PixelCore Technologies hired Kunal Singh for Mobile App UI/UX Redesign",
+    "InnoSoft Pvt Ltd hired Sneha Kapoor for CRM System Integration",
+    "Skyline Digital hired Aditya Malhotra for Blockchain Wallet Development",
+    "QuantumByte Solutions hired Pooja Nair for Machine Learning Model Optimization",
+    "HexaTech Global hired Vikram Joshi for Cybersecurity Risk Assessment",
+    "Vertex IT Services hired Ananya Gupta for SaaS Platform Performance Optimization"
+];
 
+function TickerLine({ items, duration = 30, reverse = false }: { items: string[], duration?: number, reverse?: boolean }) {
+    return (
+        <div className="w-full overflow-hidden py-2 relative">
             <motion.div
                 animate={{
-                    x: [0, -1000],
+                    x: reverse ? [-1000, 0] : [0, -1000],
                 }}
                 transition={{
-                    duration: 30,
+                    duration: duration,
                     repeat: Infinity,
                     ease: "linear",
                 }}
                 className="flex whitespace-nowrap gap-12 items-center"
             >
-                {[...TRANSACTIONS, ...TRANSACTIONS].map((text, i) => (
+                {[...items, ...items].map((text, i) => (
                     <div key={i} className="flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400/60 italic">
+                        <div className={`w-1.5 h-1.5 rounded-full ${reverse ? 'bg-blue-500' : 'bg-emerald-500'} animate-pulse`} />
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${reverse ? 'text-blue-400/60' : 'text-emerald-400/60'} italic`}>
                             {text}
                         </span>
                     </div>
@@ -50,37 +60,83 @@ function ScrollingTicker() {
     )
 }
 
+function ScrollingTicker() {
+    return (
+        <div className="w-full bg-white/5 border-t border-white/10 relative mt-12 py-4">
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#00120d] via-[#00120d]/80 to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#00120d] via-[#00120d]/80 to-transparent z-10" />
+
+            <div className="flex flex-col gap-2">
+                <TickerLine items={TRANSACTIONS} duration={40} />
+                <div className="h-px bg-white/5 w-full mx-auto" />
+                <TickerLine items={HIRING_FEEDS} duration={50} reverse={true} />
+            </div>
+        </div>
+    )
+}
+
 export const Hero: React.FC = () => {
-    const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
-    const [onlineCount, setOnlineCount] = useState(0);
+    const [presenceData, setPresenceData] = useState<any>({
+        lobby: { count: 0, users: [], label: 'Celoris Cafe' },
+        general: { count: 0, users: [], label: 'General Hub' },
+        quantum: { count: 0, users: [], label: 'Quantum Room' },
+        ai: { count: 0, users: [], label: 'AI Classroom' }
+    });
+    const LEARNING_ROOM_IDS = ['general', 'quantum', 'ai'];
+    const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
         const supabase = createClient();
-        const lobbyChannel = supabase.channel('room:lobby');
+        const channels = [
+            { id: 'lobby', name: 'room:lobby', label: 'Celoris Cafe', hasAi: false },
+            { id: 'general', name: 'room:classroom_general', label: 'General Hub', hasAi: false },
+            { id: 'quantum', name: 'room:classroom_quantum-science', label: 'Quantum Room', hasAi: true },
+            { id: 'ai', name: 'room:classroom_ai-courses', label: 'AI Classroom', hasAi: true }
+        ];
 
-        const updatePresence = () => {
-            const state = lobbyChannel.presenceState();
-            const presences = Object.values(state).flat() as any[];
-            const users = presences
-                .map(p => p.user)
-                .filter(Boolean)
-                // Filter duplicates by ID
-                .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+        const subs = channels.map(ch => {
+            const channel = supabase.channel(ch.name);
 
-            setOnlineUsers(users.slice(0, 3));
-            setOnlineCount(users.length);
-        };
+            const update = () => {
+                const state = channel.presenceState();
+                const presences = Object.values(state).flat() as any[];
+                const uniqueUsers = presences
+                    .map(p => p.user || p)
+                    .filter(Boolean)
+                    .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
 
-        lobbyChannel
-            .on('presence', { event: 'sync' }, updatePresence)
-            .on('presence', { event: 'join' }, updatePresence)
-            .on('presence', { event: 'leave' }, updatePresence)
-            .subscribe();
+                setPresenceData((prev: any) => ({
+                    ...prev,
+                    [ch.id]: {
+                        count: uniqueUsers.length,
+                        users: uniqueUsers.slice(0, 3),
+                        label: ch.label,
+                        hasAi: ch.hasAi
+                    }
+                }));
+            };
+
+            return channel
+                .on('presence', { event: 'sync' }, update)
+                .on('presence', { event: 'join' }, update)
+                .on('presence', { event: 'leave' }, update)
+                .subscribe();
+        });
+
+        const interval = setInterval(() => {
+            setActiveIndex(prev => (prev + 1) % LEARNING_ROOM_IDS.length);
+        }, 5000);
 
         return () => {
-            lobbyChannel.unsubscribe();
+            subs.forEach(s => s.unsubscribe());
+            clearInterval(interval);
         };
     }, []);
+
+    const activeLearningRoomId = LEARNING_ROOM_IDS[activeIndex];
+    const activeLearningRoom = presenceData[activeLearningRoomId] || { count: 0, users: [] };
+    const totalLearning = LEARNING_ROOM_IDS.reduce((acc: number, id: string) => acc + (presenceData[id]?.count || 0), 0);
+    const cafeData = presenceData.lobby || { count: 0, users: [] };
 
     return (
         <motion.div
@@ -159,30 +215,72 @@ export const Hero: React.FC = () => {
                         <motion.div
                             animate={{ y: [0, -10, 0] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute bottom-8 left-8 right-8 p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 flex items-center justify-between"
+                            className="absolute bottom-8 left-8 right-8 p-6 bg-[#00120d]/80 backdrop-blur-2xl rounded-[2rem] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
                         >
-                            <div className="text-left">
-                                <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    Cafe Online
+                            <div className="text-left flex flex-col sm:flex-row gap-8 sm:items-center flex-1">
+                                {/* Rooms Status - Moved to Left */}
+                                <div className="flex flex-col">
+                                    <div className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1.5 flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${activeLearningRoom.count === 0 && activeLearningRoom.hasAi ? 'bg-indigo-500 animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)]' : 'bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]'}`} />
+                                        Learning Classrooms
+                                    </div>
+                                    <AnimatePresence mode="wait">
+                                        <motion.div
+                                            key={activeLearningRoomId}
+                                            initial={{ opacity: 0, y: 5 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -5 }}
+                                            className="flex flex-col"
+                                        >
+                                            <div className={`text-sm font-black uppercase italic tracking-tight ${activeLearningRoom.count === 0 && activeLearningRoom.hasAi ? 'text-indigo-400' : 'text-white'}`}>
+                                                {activeLearningRoom.count > 0 ? (
+                                                    `${activeLearningRoom.count} in ${activeLearningRoom.label}`
+                                                ) : activeLearningRoom.hasAi ? (
+                                                    'Support agent online'
+                                                ) : (
+                                                    `0 in ${activeLearningRoom.label}`
+                                                )}
+                                            </div>
+                                            {totalLearning > 0 && (
+                                                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                                    {totalLearning} Academy Active
+                                                </div>
+                                            )}
+                                        </motion.div>
+                                    </AnimatePresence>
                                 </div>
-                                <div className="text-xs font-bold text-white uppercase italic">
-                                    {onlineCount > 0 ? `${onlineCount} Celoris Social` : 'Celoris Social'}
+
+                                <div className="hidden sm:block w-px h-8 bg-white/10" />
+
+                                {/* Cafe Status - Moved to Right */}
+                                <div className="flex flex-col">
+                                    <div className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-1.5 flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shadow-[0_0_10px_rgba(20,184,166,0.8)]" />
+                                        Celoris Cafe (Social)
+                                    </div>
+                                    <div className="text-sm font-black text-white uppercase italic tracking-tight">
+                                        {cafeData.count} Online Now
+                                    </div>
+                                    <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5 whitespace-nowrap">
+                                        Community Hub
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex -space-x-3">
+
+                            {/* Avatar group - Now showing Cafe Users */}
+                            <div className="flex -space-x-4">
                                 <AnimatePresence mode="popLayout">
-                                    {onlineUsers.length > 0 ? (
-                                        onlineUsers.map((u, i) => (
+                                    {cafeData.users.length > 0 ? (
+                                        cafeData.users.map((u: any, i: number) => (
                                             <motion.div
                                                 key={u.id || i}
                                                 initial={{ opacity: 0, scale: 0.5, x: 20 }}
                                                 animate={{ opacity: 1, scale: 1, x: 0 }}
                                                 exit={{ opacity: 0, scale: 0.5, x: -20 }}
-                                                className="w-8 h-8 rounded-full border-2 border-[#00120d] bg-emerald-500/10 overflow-hidden backdrop-blur-md relative"
+                                                className="w-10 h-10 rounded-full border-2 border-[#00120d] bg-teal-500/10 overflow-hidden backdrop-blur-md relative shadow-xl"
                                             >
                                                 <img
-                                                    src={u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`}
+                                                    src={u.avatar_url || u.profile_pic_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`}
                                                     alt="u"
                                                     className="w-full h-full object-cover"
                                                 />
@@ -190,8 +288,8 @@ export const Hero: React.FC = () => {
                                         ))
                                     ) : (
                                         [1, 2, 3].map(i => (
-                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-[#00120d] bg-white/5 flex items-center justify-center backdrop-blur-md">
-                                                <Users size={12} className="text-emerald-400/30" />
+                                            <div key={i} className="w-10 h-10 rounded-full border-2 border-[#00120d] bg-white/5 flex items-center justify-center backdrop-blur-md">
+                                                <Users size={14} className="text-teal-400/20" />
                                             </div>
                                         ))
                                     )}

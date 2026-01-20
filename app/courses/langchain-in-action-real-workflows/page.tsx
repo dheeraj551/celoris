@@ -142,6 +142,68 @@ export default function LangChainCourse() {
                 icon: "Activity"
             }
         ],
+        reviews: [
+            {
+                name: "Rahul K.",
+                role: "Backend Engineer",
+                rating: 5,
+                comment: "This is not another prompt-engineering course. I finally understand how real-world LLM systems are built. LCEL, memory, tools, RAG—everything is explained with production context. The Universal Assistant project alone is worth the price."
+            },
+            {
+                name: "Ananya S.",
+                role: "AI Developer",
+                rating: 5,
+                comment: "LangChain finally clicked for me. I had read the docs and watched random YouTube videos, but nothing felt complete. This course connects all the pieces—state, memory, tools, agents—into real workflows."
+            },
+            {
+                name: "Mohit R.",
+                role: "Senior Python Engineer",
+                rating: 5,
+                comment: "Very practical, zero fluff. What I loved most is the focus on debugging and LangSmith. Most courses stop at 'it works'. This one shows how to trace, fix, and optimize production chains."
+            },
+            {
+                name: "Sneha P.",
+                role: "Software Consultant",
+                rating: 5,
+                comment: "Exactly what companies expect from an AI engineer now. RAG with vector DBs, Redis memory, PostgreSQL, tool calling—this is what interviews and real projects demand. Helped me confidently pitch myself as an AI automation engineer."
+            },
+            {
+                name: "Arjun M.",
+                role: "ML Engineer",
+                rating: 5,
+                comment: "The Universal Assistant project is gold. Building an end-to-end agent with long-term memory and tools gave me a portfolio project I can actually showcase. Recruiters immediately ask about it."
+            },
+            {
+                name: "Vikram N.",
+                role: "Full-Stack Developer",
+                rating: 5,
+                comment: "Clear, structured, and advanced. The LCEL module alone cleared months of confusion. The course assumes you’re serious and treats you like a professional, not a beginner."
+            },
+            {
+                name: "Pooja D.",
+                role: "Freelance AI Engineer",
+                rating: 5,
+                comment: "Best course I’ve taken on LLM orchestration. Multi-step workflows, ReAct agents, zero-shot reasoning—this goes way beyond chatbots. I’m already using these patterns in client projects."
+            },
+            {
+                name: "Kunal J.",
+                role: "Platform Engineer",
+                rating: 5,
+                comment: "Strong focus on production readiness. Redis, PostgreSQL, structured outputs, error handling—this course prepares you for real deployments, not demos. That’s rare."
+            },
+            {
+                name: "Neeraj T.",
+                role: "Startup CTO",
+                rating: 5,
+                comment: "Worth every rupee. ₹15,000 felt like a lot initially, but after finishing the course, it feels underpriced. The depth and clarity are exceptional."
+            },
+            {
+                name: "Aditi L.",
+                role: "Product Engineer",
+                rating: 5,
+                comment: "Finally a course that respects the learner. No hype, no buzzwords—just solid engineering principles applied to LLM systems. If you want to build serious AI products, take this."
+            }
+        ],
         quiz_data: [
             {
                 title: "Core Objectives & Framework",
@@ -522,24 +584,19 @@ export default function LangChainCourse() {
                             </p>
                         </div>
 
-                        {/* Course Preview Image with Glassmorphism */}
+                        {/* Course Preview Video with Glassmorphism */}
                         <div className="relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                            <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
+                            <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-3xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/langchain-in-action-cover.png"
-                                        alt="LangChain Course Cover"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        className="w-full h-full"
+                                        src="https://www.youtube.com/embed/-Z1P-ebnfwQ?rel=0&showinfo=0&autoplay=0"
+                                        title="LangChain in Action Course Preview"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -648,6 +705,41 @@ export default function LangChainCourse() {
                                         </Card>
                                     )
                                 })}
+                            </div>
+                        </section>
+
+                        {/* Student Reviews Section */}
+                        <section className="space-y-8">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                <div className="p-2 bg-yellow-500/20 rounded-lg">
+                                    <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />
+                                </div>
+                                Student Success Stories
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.reviews.map((review, index) => (
+                                    <Card key={index} className="bg-slate-900/40 border-slate-800 hover:border-blue-500/30 transition-all duration-300 group">
+                                        <CardContent className="pt-6">
+                                            <div className="flex gap-1 mb-4">
+                                                {[...Array(review.rating)].map((_, i) => (
+                                                    <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                                                ))}
+                                            </div>
+                                            <p className="text-slate-300 text-sm leading-relaxed mb-6 italic">
+                                                "{review.comment}"
+                                            </p>
+                                            <div className="flex items-center gap-3 border-t border-slate-800 pt-4">
+                                                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">
+                                                    {review.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-white">{review.name}</div>
+                                                    <div className="text-xs text-slate-500">{review.role}</div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
                         </section>
 

@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, TrendingUp, DollarSign, Rocket, Target } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, TrendingUp, DollarSign, Rocket, Target, Trophy } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 
 export default function BuildAIProductsCourse() {
     // Set page title and meta tags dynamically
@@ -143,6 +144,289 @@ export default function BuildAIProductsCourse() {
                 title: "Launch Day Swipe File",
                 description: "Templates for emails, social posts, and announcements.",
                 icon: "Mail"
+            }
+        ],
+        quiz_data: [
+            {
+                title: "Course Philosophy & Objectives",
+                questions: [
+                    {
+                        question: "What is the primary reason most AI projects fail, according to the sources?",
+                        options: ["Lack of coding skills", "Inadequate GPU power", "Staying stuck in the \"cool prototype\" phase", "High API costs"],
+                        correctIndex: 2,
+                        explanation: "Most AI projects die in the 'cool prototype' phase because they lack a solid business strategy and market validation."
+                    },
+                    {
+                        question: "The course focus shifts the student's attention from \"cool demos\" to what?",
+                        options: ["Academic research", "Profitable businesses", "Open-source contributions", "Government grants"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the \"missing half of the equation\" that this course provides?",
+                        options: ["Advanced Python scripts", "Business strategy", "Neural network architecture", "Hardware optimization"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the target number of paying customers the course helps you acquire?",
+                        options: ["10", "50", "100", "1,000"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the \"AI Hammer\" trap?",
+                        options: ["Using too much processing power", "Starting with a tool like GPT-4 before finding a problem", "Pricing a product too low", "Hiring too many engineers"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Market Validation & Problem Mining",
+                questions: [
+                    {
+                        question: "Which platforms are recommended for mining \"expensive, boring problems\"?",
+                        options: ["TikTok and Instagram", "Reddit, G2, and forums", "GitHub and Stack Overflow", "Academic journals"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the purpose of a \"Smoke Test\" campaign?",
+                        options: ["To test server load", "To check for code bugs", "To gauge customers' willingness to pay", "To generate fake reviews"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "When should validation occur according to the framework?",
+                        options: ["After the product is fully built", "Before writing a single line of code", "After the first round of funding", "Once the API keys are generated"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the acronym MSP stand for in this context?",
+                        options: ["Maximum Sustainable Profit", "Minimum Sellable Product", "Multi-Stage Prototype", "Managed Service Provider"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How is an MSP different from a traditional MVP?",
+                        options: ["It requires more coding", "It is free for all users", "It goes beyond viability to focus on \"sellability\"", "It only uses local LLMs"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the focus of high-converting AI SaaS landing pages?",
+                        options: ["Technical specifications", "Outcomes", "Founder biographies", "Coding language used"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: " \"Problem Mining\" targets what kind of problems?",
+                        options: ["Complex mathematical proofs", "Expensive and boring problems", "Entertainment-focused issues", "Non-profit social causes"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The Validation Checklist provided in the course is a scorecard of how many points?",
+                        options: ["5-point", "10-point", "20-point", "50-point"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the \"Smoke Test\" involve?",
+                        options: ["Running a beta test", "A pre-sale campaign", "Emailing friends and family", "Deleting the codebase"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Why is \"boring\" a desired quality for a problem to solve?",
+                        options: ["It is easier to code", "There is no competition", "It often indicates an overlooked business need", "It requires less documentation"],
+                        correctIndex: 2
+                    }
+                ]
+            },
+            {
+                title: "Economics & Pricing Models",
+                questions: [
+                    {
+                        question: "What is the \"Token Tax\"?",
+                        options: ["A government levy on AI", "The impact of API unit economics on profit margins", "The cost of hiring a developer", "A subscription fee for GitHub"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which tool helps model API costs against revenue?",
+                        options: ["Revenue Ledger", "Pricing Calculator", "Token Tracker", "Profit Mapper"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the \"BYOK\" pricing model?",
+                        options: ["Buy Your Own Keyboard", "Bring Your Own Key", "Build Your Own Kernel", "Be Your Own King"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which pricing model involves users purchasing specific amounts of usage?",
+                        options: ["Credit-Based", "Flat-rate", "Freemium", "Open-source"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is a \"Hybrid Tier\" pricing model?",
+                        options: ["A mix of human and AI labor", "A combination of different pricing structures", "A mix of local and cloud processing", "A discount for early adopters"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the primary goal of mastering unit economics in this course?",
+                        options: ["To reduce latency", "To guarantee profit margins", "To increase token usage", "To please investors"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How is the \"Token Tax\" managed?",
+                        options: ["By ignoring costs", "By understanding unit economics", "By using only free models", "By charging a flat monthly $1 fee"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The course provides a roadmap to reach which specific monthly recurring revenue (MRR) milestone?",
+                        options: ["$100 MRR", "$500 MRR", "$1k MRR", "$10k MRR"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "In the Pricing Calculator template, what is compared against revenue?",
+                        options: ["Marketing spend", "API costs", "Office rent", "Employee salaries"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which pricing model is most likely to reduce the developer's direct API costs?",
+                        options: ["Credit-based", "Hybrid Tier", "BYOK (Bring Your Own Key)", "Monthly subscription"],
+                        correctIndex: 2
+                    }
+                ]
+            },
+            {
+                title: "Growth & Acquisition Strategies",
+                questions: [
+                    {
+                        question: "What is \"Programmatic SEO\" in the context of this course?",
+                        options: ["Paying for Google Ads", "Using LLMs ethically to attract organic search traffic", "Writing code to optimize meta tags manually", "Hiring an SEO agency"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is \"Building in Public\"?",
+                        options: ["Working in a library", "Leveraging X and LinkedIn for day-one traction", "Releasing all source code for free", "Live-streaming every hour of work"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which social platforms are specifically mentioned for \"Building in Public\"?",
+                        options: ["Facebook and Instagram", "X and LinkedIn", "Discord and Telegram", "YouTube and Twitch"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the \"Launch Day Swipe File\"?",
+                        options: ["A list of competitors to avoid", "Templates for emails, social posts, and announcements", "A folder of stolen code", "A guide on how to use Tinder for networking"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which platforms are included in the \"Tactical checklist\" for launches?",
+                        options: ["App Store and Play Store", "Product Hunt, Hacker News, and niche launches", "eBay and Amazon", "Facebook Marketplace"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How are LLMs used in the course's SEO strategy?",
+                        options: ["To spam forums", "To generate organic search traffic ethically", "To hide keywords from Google", "To write fake product reviews"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the ultimate goal of \"Building in Public\"?",
+                        options: ["To find a co-founder", "To gain day-one traction", "To get featured on the news", "To practice typing skills"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The \"Monetization Roadmap\" covers the timeline from \"Idea\" to what?",
+                        options: ["Exit/Acquisition", "$1k MRR", "Series A funding", "IPO"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What kind of \"traction\" does Building in Public aim to achieve?",
+                        options: ["Negative feedback", "Day-one traction", "Yearly growth", "Viral memes"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Launching on \"niche\" platforms is recommended for what?",
+                        options: ["Avoiding taxes", "Targeted product launches", "Testing server speed", "Hiding from competitors"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Course Logistics & Details",
+                questions: [
+                    {
+                        question: "How much does full lifetime access to the course cost?",
+                        options: ["₹ 5,000", "₹ 10,000", "₹ 15,000", "₹ 25,000"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "How many hours of content are included in the course?",
+                        options: ["5 hours", "12 hours", "24 hours", "48 hours"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the rating of the Celoris instructors/team?",
+                        options: ["4.0", "4.5", "4.9", "5.0"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "How many students/reviews (represented by 850+) have contributed to the rating?",
+                        options: ["100+", "500+", "850+", "1,000+"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What kind of certification is provided upon completion?",
+                        options: ["Academic Diploma", "Professional Certification", "Participation Trophy", "Government License"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The course tech stack is described as being \"Ready\" for which year?",
+                        options: ["2024", "2025", "2026", "2030"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What does \"GEO Ready\" refer to in the 2026 Tech Stack?",
+                        options: ["Geographic location tracking", "A specific feature of the 2026 Tech Stack", "Geology-based AI", "Global Education Online"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Who are the instructors for this course?",
+                        options: ["General Business Teachers", "AI Product Strategists / Expert engineering team", "Marketing interns", "Freelance copywriters"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is a prerequisite for taking this course?",
+                        options: ["A PhD in Computer Science", "Basic understanding of AI/LLM capabilities", "$10,000 in startup capital", "Proficiency in C++"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Is advanced coding required for this course?",
+                        options: ["Yes, it is mandatory", "No, but it is helpful", "No, coding is prohibited", "Only for the final exam"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What mindset is required for students, according to the prerequisites?",
+                        options: ["Corporate employee mindset", "Entrepreneurial mindset", "Academic researcher mindset", "Passive observer mindset"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What kind of access is granted with the ₹ 15,000 payment?",
+                        options: ["One-month access", "One-year access", "Full Lifetime Access", "Weekend-only access"],
+                        correctIndex: 2
+                    }
+                ]
+            },
+            {
+                title: "Platform & Company Information",
+                questions: [
+                    {
+                        question: "What is the name of the entity that owns the copyright (© 2026)?",
+                        options: ["Celoris AI Ltd", "Celoris Designs LLP", "Celoris Education Group", "Celoris Global"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of these is NOT one of the four main pillars of the Celoris platform?",
+                        options: ["Learn", "Earn", "Social", "Invest"],
+                        correctIndex: 3
+                    },
+                    {
+                        question: "What is the ultimate mission of Celoris, as stated in the sources?",
+                        options: ["To build the world's fastest AI", "Empowering individuals through learning, earning, and engaging experiences", "To replace human workers with AI", "To sell hardware components"],
+                        correctIndex: 1
+                    }
+                ]
             }
         ]
     }
@@ -376,6 +660,29 @@ export default function BuildAIProductsCourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-amber-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-amber-400" />
+                                    </div>
+                                    AI Monetization & Business Strategy Assessment
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your skills in market validation, unit economics, and AI product launch strategies.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="AI Monetization & Business Strategy Assessment"
+                                quizDescription="50 questions covering the end-to-end framework for building and scaling profitable AI products."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Founder Grade! You have a clinical understanding of AI monetization. Time to launch!";
+                                    if (score >= 35) return "Strategist Ready! You have a solid grasp of the business side of AI. Keep refining your MSP.";
+                                    return "Keep Validating! Review the unit economics and problem mining sections to strengthen your business case.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -398,6 +705,14 @@ export default function BuildAIProductsCourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-amber-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 text-white rounded-2xl shadow-lg shadow-amber-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <Trophy className="h-4 w-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                                                Take Assessment Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

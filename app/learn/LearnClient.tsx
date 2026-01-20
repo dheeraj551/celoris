@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { BookOpen, Users, TrendingUp, Calculator, Bot, Sparkles, ArrowRight, Zap } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,10 +9,12 @@ import { Courses } from "@/components/home-new/Courses"
 import NoticeBoard from "@/components/NoticeBoard"
 import StudentInquiries from "@/components/StudentInquiries"
 import { PageWrapper } from "@/components/PageWrapper"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
+import { createClient } from "@/lib/supabase-client"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 
 const TRANSACTIONS = [
@@ -55,6 +58,73 @@ function ScrollingTicker() {
       </motion.div>
     </div>
   )
+}
+
+function RoomPresence({ channelName, hasAiAgent }: { channelName: string; hasAiAgent?: boolean }) {
+  const [users, setUsers] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase.channel(channelName);
+
+    const updatePresence = () => {
+      const state = channel.presenceState();
+      const presences = Object.values(state).flat() as any[];
+      const uniqueUsers = presences
+        .filter(Boolean)
+        .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+
+      setUsers(uniqueUsers.slice(0, 3));
+      setCount(uniqueUsers.length);
+    };
+
+    channel
+      .on('presence', { event: 'sync' }, updatePresence)
+      .on('presence', { event: 'join' }, updatePresence)
+      .on('presence', { event: 'leave' }, updatePresence)
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [channelName]);
+
+  if (count === 0) return (
+    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest italic mb-6">
+      <div className={`w-1.5 h-1.5 rounded-full ${hasAiAgent ? 'bg-indigo-500 animate-pulse' : 'bg-slate-700'}`} />
+      <span className={hasAiAgent ? 'text-indigo-400' : 'text-slate-500'}>
+        {hasAiAgent ? 'Support agent online' : 'Room Empty'}
+      </span>
+    </div>
+  );
+
+  return (
+    <div className="flex items-center justify-between gap-4 mb-6 bg-white/5 p-3 rounded-2xl border border-white/5">
+      <div className="flex items-center gap-2">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest italic">
+          {count} Online Now
+        </span>
+      </div>
+      <div className="flex -space-x-2">
+        {users.map((u: any, i: number) => (
+          <div key={u.id || i} className="w-6 h-6 rounded-full border border-[#0d1321] overflow-hidden bg-neutral-800">
+            <img
+              src={u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`}
+              alt="u"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+        {count > 3 && (
+          <div className="w-6 h-6 rounded-full border border-[#0d1321] bg-neutral-800 flex items-center justify-center text-[8px] font-black text-white">
+            +{count - 3}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function LearnClient({ initialCourses, initialNotices }: { initialCourses: any[], initialNotices: any[] }) {
@@ -225,9 +295,9 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-20"
           >
             {[
-              { title: "General Hub", icon: BookOpen, color: "from-emerald-600/20 to-teal-600/10", iconColor: "text-emerald-400", link: "/learn/ai-tutor/general", desc: "Collaborative space for cross-discipline knowledge sharing." },
-              { title: "Quantum Science", icon: Calculator, color: "from-blue-600/20 to-indigo-600/10", iconColor: "text-blue-400", link: "/learn/ai-tutor/quantum-science", desc: "Unified hub for Physics, Chemistry, and Advanced Mathematics." },
-              { title: "AI ROOM", icon: Bot, color: "from-purple-600/20 to-pink-600/10", iconColor: "text-purple-400", link: "/learn/ai-tutor/ai-courses", desc: "Explore AI technology courses and find your perfect learning path." }
+              { title: "General Hub", icon: BookOpen, color: "from-emerald-600/20 to-teal-600/10", iconColor: "text-emerald-400", link: "/learn/ai-tutor/general", desc: "Collaborative space for cross-discipline knowledge sharing.", channel: "room:classroom_general", hasAi: false },
+              { title: "Quantum Science", icon: Calculator, color: "from-blue-600/20 to-indigo-600/10", iconColor: "text-blue-400", link: "/learn/ai-tutor/quantum-science", desc: "Unified hub for Physics, Chemistry, and Advanced Mathematics.", channel: "room:classroom_quantum-science", hasAi: true },
+              { title: "AI ROOM", icon: Bot, color: "from-purple-600/20 to-pink-600/10", iconColor: "text-purple-400", link: "/learn/ai-tutor/ai-courses", desc: "Explore AI technology courses and find your perfect learning path.", channel: "room:classroom_ai-courses", hasAi: true }
             ].map((room, idx) => (
               <motion.div
                 key={idx}
@@ -246,9 +316,11 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
                       </div>
                     </div>
                     <h3 className="text-2xl font-black text-white mb-4 tracking-tighter uppercase italic">{room.title}</h3>
-                    <p className="text-slate-400 mb-10 text-sm font-medium leading-relaxed italic flex-1">
+                    <p className="text-slate-400 mb-8 text-sm font-medium leading-relaxed italic flex-1">
                       {room.desc}
                     </p>
+
+                    <RoomPresence channelName={room.channel} hasAiAgent={room.hasAi} />
                     <Button
                       onClick={() => handleRoomEntry(room.link)}
                       className="w-full bg-white/5 hover:bg-emerald-600 text-slate-300 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 border border-white/5"
