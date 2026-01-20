@@ -42,6 +42,8 @@ import {
   User,
   Sparkles
 } from "lucide-react"
+import { createClient } from "@/lib/supabase-client"
+
 
 export default function AdminEarnPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -112,6 +114,41 @@ export default function AdminEarnPage() {
     }
   }
 
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    const supabase = createClient()
+    const channel = supabase
+      .channel('admin-jobs-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'jobs'
+        },
+        () => {
+          loadData()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'job_applications'
+        },
+        () => {
+          loadData()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [isAuthenticated])
+
   const loadData = async () => {
     try {
       // Load jobs from API
@@ -137,6 +174,7 @@ export default function AdminEarnPage() {
       setLoading(false)
     }
   }
+
 
   const handleDeleteJob = async (jobId: string) => {
     if (!confirm("Are you sure you want to delete this job posting?")) return

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { IconRenderer } from "@/components/ui/icon-renderer"
+import { createClient } from "@/lib/supabase-client"
+
 
 
 
@@ -208,6 +210,29 @@ export default function AllJobsPage() {
   useEffect(() => {
     loadJobs()
   }, [filters, currentPage])
+
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel('all-jobs-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'jobs'
+        },
+        () => {
+          loadJobs()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
 
   const loadJobs = async () => {
     setLoading(true)

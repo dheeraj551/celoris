@@ -12,6 +12,8 @@ import { AdUnit } from "@/components/AdUnit"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
 import JobApplicationForm from "@/components/earn/JobApplicationForm"
+import { createClient } from "@/lib/supabase-client"
+
 
 export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }) {
   const [jobs, setJobs] = useState<any[]>(initialJobs)
@@ -20,9 +22,31 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
   const [selectedJob, setSelectedJob] = useState<any | null>(null)
 
   useEffect(() => {
-    if (initialJobs.length > 0) return;
+    // Initial fetch
     loadJobs()
-  }, [initialJobs])
+
+    // Set up real-time subscription
+    const supabase = createClient()
+    const channel = supabase
+      .channel('jobs-realtime-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'jobs'
+        },
+        (payload) => {
+          console.log('Jobs table changed, refreshing...', payload)
+          loadJobs()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const loadJobs = async () => {
     try {
