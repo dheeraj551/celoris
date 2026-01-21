@@ -15,8 +15,13 @@ const categories = [
   { name: "Marketing", icon: "📈" },
   { name: "Data Science", icon: "📊" },
   { name: "Business", icon: "💼" },
+  { name: "Artificial Intelligence", icon: "🤖" },
+  { name: "Mathematics", icon: "🔢" },
+  { name: "Physics", icon: "⚛️" },
+  { name: "Chemistry", icon: "🧪" },
+  { name: "Yoga", icon: "🧘" },
+  { name: "Fitness", icon: "💪" },
   { name: "Mobile Development", icon: "📱" },
-  { name: "AI/ML", icon: "🤖" },
   { name: "Cybersecurity", icon: "🔒" }
 ]
 
@@ -61,7 +66,7 @@ export default function AllCoursesPage() {
             <span className="text-emerald-500 italic">Academy</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6 italic uppercase tracking-tighter">
-            Skill Academy
+            Celoris Academy
           </h1>
           <p className="text-lg text-slate-400 font-medium italic max-w-2xl">
             Discover our complete collection of courses designed to help you master new skills and bridge the digital gap.
@@ -97,16 +102,11 @@ export default function AllCoursesPage() {
                   }}
                 >
                   <option className="bg-[#0d1321]">All Categories</option>
-                  <option className="bg-[#0d1321]">Mathematics</option>
-                  <option className="bg-[#0d1321]">Physics</option>
-                  <option className="bg-[#0d1321]">Chemistry</option>
-                  <option className="bg-[#0d1321]">Artificial Intelligence</option>
-                  <option className="bg-[#0d1321]">Yoga</option>
-                  <option className="bg-[#0d1321]">Fitness</option>
-                  <option className="bg-[#0d1321]">Programming</option>
-                  <option className="bg-[#0d1321]">Design</option>
-                  <option className="bg-[#0d1321]">Marketing</option>
-                  <option className="bg-[#0d1321]">Data Science</option>
+                  {categories.map(cat => (
+                    <option key={cat.name} value={cat.name} className="bg-[#0d1321]">
+                      {cat.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function AllCoursesPage() {
                 setSelectedLevel("All Levels");
                 setCurrentPage(1);
               }}>
-                Reset Protocol
+                Reset Search
               </Button>
             </div>
           </div>
@@ -184,37 +184,13 @@ export default function AllCoursesPage() {
                 </CardContent>
               </Card>
 
-              {/* Price Range */}
-              <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 rounded-[2.5rem] overflow-hidden shadow-xl">
-                <CardHeader className="p-8 pb-4">
-                  <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-500">Protocol Fee</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-4">
-                  <div className="space-y-4">
-                    <label className="flex items-center space-x-4 cursor-pointer group">
-                      <div className="h-5 w-5 rounded bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-emerald-500/50 transition-all">
-                        <input type="checkbox" className="hidden" />
-                        <div className="h-2 w-2 bg-emerald-500 rounded-sm opacity-0 group-hover:opacity-50" />
-                      </div>
-                      <span className="text-xs uppercase tracking-widest font-black italic text-slate-400 group-hover:text-white transition-colors">Open Source (Free)</span>
-                    </label>
-                    <label className="flex items-center space-x-4 cursor-pointer group">
-                      <div className="h-5 w-5 rounded bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-emerald-500/50 transition-all">
-                        <input type="checkbox" className="hidden" />
-                        <div className="h-2 w-2 bg-emerald-500 rounded-sm opacity-0 group-hover:opacity-50" />
-                      </div>
-                      <span className="text-xs uppercase tracking-widest font-black italic text-slate-400 group-hover:text-white transition-colors">Enterprise (Paid)</span>
-                    </label>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
 
           {/* Course Grid */}
           <div className="lg:col-span-3">
             <div className="mb-10 flex items-center justify-between relative z-10">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Discovery Mode: <span className="text-emerald-500">{totalItems} NODES FOUND</span></span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Discovery Mode: <span className="text-emerald-500">{totalItems} COURSES FOUND</span></span>
               <div className="flex gap-2">
                 <div className="h-8 w-8 bg-emerald-500/10 border border-emerald-500/20 rounded-lg animate-pulse" />
                 <div className="h-8 w-8 bg-teal-500/10 border border-teal-500/20 rounded-lg animate-pulse delay-75" />
@@ -229,6 +205,7 @@ export default function AllCoursesPage() {
               showStats={true}
               subject={selectedCategory === "All Categories" ? undefined : selectedCategory}
               grade_level={selectedLevel === "All Levels" ? undefined : selectedLevel}
+              search={searchTerm}
               className=""
             />
 

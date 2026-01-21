@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
+import { Trophy } from "lucide-react"
 
 export default function VibeCodingMasteryCourse() {
     // Set page title and meta tags dynamically
@@ -154,6 +156,283 @@ export default function VibeCodingMasteryCourse() {
                 description: "An app that manages other AI agents to perform complex tasks.",
                 tools: "CrewAI + GitHub Copilot",
                 icon: "Bot"
+            }
+        ],
+        quiz_data: [
+            {
+                title: "The Karpathy Paradigm & Philosophy",
+                questions: [
+                    {
+                        question: "According to the sources, what is the primary role of a developer in 2026?",
+                        options: ["Writing manual syntax", "Managing the AI agents writing the code", "Designing physical hardware", "Writing SQL queries"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The \"Karpathy Paradigm\" represents a shift from Deductive programming to which type?",
+                        options: ["Inductive", "Abductive", "Reductive", "Conductive"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In a Vibe-Coded environment, what percentage of code should be written manually?",
+                        options: ["Less than 50%", "Exactly 20%", "Less than 5%", "0%"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What does \"Programming in English\" imply in the context of Vibe Coding?",
+                        options: ["Translating Python to English", "Using natural language to describe high-level intent or \"vibes\"", "Only using English-speaking AI models", "Writing comments in English only"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Vibe Coding is defined as what kind of workflow?",
+                        options: ["Manual-first", "Cloud-only", "AI-First Development", "Syntax-heavy"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the core focus of \"Abductive\" programming in this context?",
+                        options: ["Strictly following logical syntax", "Inferring the best path to a result from high-level intent", "Removing agents from the workflow", "Writing code for offline systems"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the target development velocity increase for those adopting these methods?",
+                        options: ["2x", "5x", "10x", "100x"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "According to the 2026 Manual, the developer's job is to move away from being a writer to being a what?",
+                        options: ["Manager", "Salesperson", "Hardware engineer", "Manual tester"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "The shift to Vibe Coding is described as a transition toward which reality?",
+                        options: ["No-code only", "AI-First Development Workflows", "Purely physical prototyping", "Manual database management"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What mindset is listed as a prerequisite for Vibe Coding?",
+                        options: ["Strict adherence to C++", "An open mind to 'Programming in English'", "Rejection of AI tools", "Expertise in manual assembly language"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Command Centres & Tools",
+                questions: [
+                    {
+                        question: "Which of the following is considered a \"2026 Command Centre\" for Vibe Coding?",
+                        options: ["Notepad++", "Windsurf", "Eclipse", "Vim"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which tool is specifically paired with v0 for rapid prototyping?",
+                        options: ["Cursor", "Replit Agent", "GitHub Copilot", "AutoGen"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "For the \"Full-Stack SaaS\" project, which two tools are recommended?",
+                        options: ["Replit + v0", "Cursor + Windsurf", "CrewAI + Copilot", "SQL + Notepad"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which tool is used for deploying Multi-Agent Systems (MAS)?",
+                        options: ["v0", "Stripe", "CrewAI", "Notepad"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Along with CrewAI, which other framework is mentioned for MAS?",
+                        options: ["AutoGen", "AutoCode", "GenAI", "AgenticSQL"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What does MCP stand for in the Vibe Coding ecosystem?",
+                        options: ["Manual Code Process", "Model Context Protocol", "Multi-Core Programming", "Master Command Program"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the purpose of the Model Context Protocol (MCP)?",
+                        options: ["Writing unit tests", "High-level context injection", "Managing Stripe payments", "Compiling C code"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which tool is integrated with CrewAI for building the \"Multi-Agent Tool\" project?",
+                        options: ["Windsurf", "GitHub Copilot", "Replit", "v0"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which Command Centre is mentioned alongside Windsurf and Replit?",
+                        options: ["IntelliJ", "Cursor", "Sublime", "Xcode"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What type of IDEs are specifically used in the 2026 tech stack?",
+                        options: ["Manual IDEs", "Legacy IDEs", "Agentic IDEs", "Cloud-only IDEs"],
+                        correctIndex: 2
+                    }
+                ]
+            },
+            {
+                title: "Project Types & Deliverables",
+                questions: [
+                    {
+                        question: "The \"Weekend MVP\" focuses on rapid prototyping from what inputs?",
+                        options: ["500 lines of Java", "A sketch or voice note", "A 50-page technical document", "Manual SQL schemas"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In the \"Full-Stack SaaS\" project, how much manual SQL is required?",
+                        options: ["50%", "100%", "Zero", "5%"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What are the three core features included in the Full-Stack SaaS project?",
+                        options: ["HTML, CSS, JS", "Auth, Database, and Stripe integration", "Voice notes, Sketches, and Images", "Python, Ruby, and Perl"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the definition of a \"Multi-Agent Tool\" project?",
+                        options: ["A tool used by a single developer", "An app that manages other AI agents to perform complex tasks", "A manual debugging tool", "A compiler for assembly language"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How many production-ready apps are shipped in the Vibe Coding Mastery course?",
+                        options: ["One", "Two", "Three", "Five"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which project type uses \"Replit Agent + v0\"?",
+                        options: ["The Full-Stack SaaS", "The 'Weekend MVP'", "The Multi-Agent Tool", "The manual SQL project"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What kind of templates are provided with the Vibe Coding Mastery course?",
+                        options: ["Word templates", "Production Ready GitHub Templates", "PowerPoint templates", "Manual CSS templates"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the goal of \"Vibe-to-Production\" projects?",
+                        options: ["To write as much code as possible", "To ship production-ready apps with minimal manual coding", "To learn manual assembly", "To avoid using AI agents"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which project involves managing \"complex tasks\" through multiple agents?",
+                        options: ["Weekend MVP", "Full-Stack SaaS", "The Multi-Agent Tool", "The Stripe Integration project"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which project emphasizes \"Zero manual SQL\"?",
+                        options: ["Weekend MVP", "The Full-Stack SaaS", "Multi-Agent Tool", "Replit sketches"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Methodologies & Governance",
+                questions: [
+                    {
+                        question: "What is the focus of \"Spec-Driven Development\"?",
+                        options: ["Writing code first", "Architecture before code", "Manual debugging", "Deleting all documentation"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What strategy is used to navigate \"advanced debugging\"?",
+                        options: ["Manual line-by-line reading", "The 'Error Loop' feedback strategy", "Restarting the computer", "Deleting the repository"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How are \"hallucinated vulnerabilities\" addressed in Vibe Coding?",
+                        options: ["By ignoring them", "By securing AI-generated code against them", "By writing more manual code", "By disabling AI"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does \"Agentic Governance\" involve?",
+                        options: ["Hiring more human managers", "Mastering the oversight and management of agent outputs", "Manual unit testing for every line", "Eliminating agents from the workflow"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "\"Automated testing vibes\" refers to what?",
+                        options: ["Testing how a developer feels", "Implementing testing within agentic workflows", "Manual QA testing", "Skipping testing entirely"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How should \"technical debt\" be handled in this new paradigm?",
+                        options: ["By ignoring it until the project fails", "By managing it within a vibe-coded environment", "By only writing manual code to avoid it", "Technical debt does not exist in 2026"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "High-level context injection is achieved through which protocol?",
+                        options: ["HTTP", "MCP (Model Context Protocol)", "FTP", "SMTP"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In Spec-Driven Development, what must be defined before the code?",
+                        options: ["The marketing plan", "The architecture", "The final price", "The manual syntax"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The 'Error Loop' feedback strategy is primarily used for what?",
+                        options: ["Designing sketches", "Advanced debugging", "Stripe integration", "SQL management"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the result of applying \"Agentic Governance\"?",
+                        options: ["Uncontrolled AI code", "Secured and managed AI-generated code", "Slower development speed", "Manual code reviews only"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Course Logistics & Prerequisites",
+                questions: [
+                    {
+                        question: "Who is the provider of the Vibe Coding Mastery course?",
+                        options: ["OpenAI", "Celoris Designs", "Microsoft", "Replit"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is a listed prerequisite for the course regarding AI tools?",
+                        options: ["Mastery of C++", "Familiarity with using AI chat tools (ChatGPT/Claude)", "Having never used AI before", "Experience in manual server rack mounting"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What level of software development understanding is required as a prerequisite?",
+                        options: ["Advanced PhD level", "Basic understanding of software development concepts", "No understanding required", "Expert level in 10+ languages"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the duration of the self-paced Vibe Coding course?",
+                        options: ["1 week", "4-6 weeks", "1 year", "2 days"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the cost of \"Full Lifetime Access\" for the course?",
+                        options: ["₹ 5000", "₹ 19999", "₹ 999", "Free"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the current rating of the Celoris AI-Powered Ecosystem course?",
+                        options: ["3.5", "4.95", "2.0", "5.0"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Where can students join the \"Exclusive Community\" for this course?",
+                        options: ["Facebook", "Discord", "LinkedIn", "Slack"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How many people have rated/joined the course according to the source?",
+                        options: ["100+", "2450+", "10,000+", "500+"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What type of certification is offered upon completion?",
+                        options: ["No certification", "Professional Certification", "Attendance only", "Manual Coding License"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The Celoris platform enables developers to build at what speed?",
+                        options: ["The speed of light", "The speed of thought", "10 lines of code per hour", "Manual typing speed"],
+                        correctIndex: 1
+                    }
+                ]
             }
         ]
     }
@@ -379,6 +658,29 @@ export default function VibeCodingMasteryCourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-cyan-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-cyan-400" />
+                                    </div>
+                                    Vibe Coding Mastery Assessment
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your expertise in AI-First development, agentic workflows, and the Karpathy paradigm.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Vibe Coding Mastery Assessment"
+                                quizDescription="50 questions covering the Karpathy paradigm, command centers, and multi-agent development methodologies."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Vibe Master Grade! You have an exceptional grasp of AI-First development. You're ready to ship at the speed of thought.";
+                                    if (score >= 35) return "Expert Developer! You have a solid understanding of agentic workflows. Focus on refining your Spec-Driven Development.";
+                                    return "Good attempt! Review the Karpathy paradigm and command center modules to sharpen your vibe coding skills.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -401,6 +703,14 @@ export default function VibeCodingMasteryCourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <Trophy className="h-4 w-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                                                Take Assessment Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

@@ -428,6 +428,68 @@ export default function BuildAIProductsCourse() {
                     }
                 ]
             }
+        ],
+        reviews: [
+            {
+                rating: 5,
+                text: "This course finally answered the question I kept avoiding: who will actually pay for my AI idea? The validation framework alone saved me months of wasted development.",
+                author: "Rohit K.",
+                role: "Solo Founder"
+            },
+            {
+                rating: 5,
+                text: "I’ve built multiple AI demos before, but none made money. The MSP concept completely changed how I think about shipping. I launched faster and charged from day one.",
+                author: "Ananya S.",
+                role: "Product Designer"
+            },
+            {
+                rating: 4.5,
+                text: "The pricing and unit economics module was a wake-up call. I was losing money on API costs without realizing it. Now my margins are clear and predictable.",
+                author: "Daniel M.",
+                role: "AI SaaS Founder"
+            },
+            {
+                rating: 5,
+                text: "What I loved most is that this course doesn’t start with tools—it starts with problems. The Reddit and forum mining techniques are insanely practical.",
+                author: "Neha P.",
+                role: "Growth Marketer"
+            },
+            {
+                rating: 5,
+                text: "The smoke test strategy worked exactly as taught. I validated demand before building anything and got my first paying users in under two weeks.",
+                author: "Arjun V.",
+                role: "Solo Founder"
+            },
+            {
+                rating: 4,
+                text: "I’m not a developer, and I was worried this would be too technical. Instead, it focused on business thinking—pricing, positioning, and customer psychology.",
+                author: "Sarah L.",
+                role: "B2B Consultant"
+            },
+            {
+                rating: 5,
+                text: "The landing page anatomy section alone is worth the course price. I rewrote my page to focus on outcomes and immediately saw higher conversions.",
+                author: "Kevin R.",
+                role: "SaaS Builder"
+            },
+            {
+                rating: 5,
+                text: "Most AI courses teach how to build. This is one of the few that teaches how to sell. The ‘Minimum Sellable Product’ framework is gold.",
+                author: "Vikram N.",
+                role: "Startup Operator"
+            },
+            {
+                rating: 4.5,
+                text: "The launch checklist for Product Hunt and niche communities is extremely tactical—no fluff. I finally felt confident launching instead of endlessly ‘preparing.’",
+                author: "Emily C.",
+                role: "First-Time Founder"
+            },
+            {
+                rating: 5,
+                text: "This course forced me to stop romanticizing AI and start treating it like a business. I now have a clear path from idea to my first $1k MRR.",
+                author: "Mohit A.",
+                role: "AI Product Builder"
+            }
         ]
     }
 
@@ -524,19 +586,14 @@ export default function BuildAIProductsCourse() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-emerald-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/build-ai-products-cover.png"
-                                        alt="Build AI Products That Make Money"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        className="w-full h-full"
+                                        src="https://www.youtube.com/embed/tOCGnMAm_PE"
+                                        title="Build AI Products That Make Money"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -638,6 +695,69 @@ export default function BuildAIProductsCourse() {
                                         </Card>
                                     )
                                 })}
+                            </div>
+                        </section>
+
+                        {/* FAQ Section */}
+                        <section className="space-y-12">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-800/50">
+                                <div>
+                                    <h2 className="text-3xl font-bold text-white flex items-center gap-3 mb-2">
+                                        <div className="p-2 bg-amber-500/20 rounded-lg">
+                                            <Star className="h-6 w-6 text-amber-400 fill-amber-400" />
+                                        </div>
+                                        Student Reviews & Ratings
+                                    </h2>
+                                    <p className="text-slate-400">Hear from founders and builders who scaled their AI products using this framework.</p>
+                                </div>
+                                <div className="flex items-center gap-4 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+                                    <div className="text-center px-4 border-r border-slate-800">
+                                        <div className="text-2xl font-bold text-white">4.9</div>
+                                        <div className="flex text-amber-400 scale-75 -mx-2">
+                                            <Star className="fill-current w-4 h-4" />
+                                            <Star className="fill-current w-4 h-4" />
+                                            <Star className="fill-current w-4 h-4" />
+                                            <Star className="fill-current w-4 h-4" />
+                                            <Star className="fill-current w-4 h-4" />
+                                        </div>
+                                    </div>
+                                    <div className="text-sm font-medium text-slate-400">
+                                        Overall Satisfaction<br />From 850+ Students
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.reviews.map((review, index) => (
+                                    <Card key={index} className="bg-slate-900/40 border-slate-800 hover:border-amber-500/30 transition-all duration-500 group">
+                                        <CardContent className="p-6">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex text-amber-400 gap-0.5">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star
+                                                            key={i}
+                                                            className={`w-3.5 h-3.5 ${i < Math.floor(review.rating) ? 'fill-current' : i < review.rating ? 'fill-current opacity-50' : 'text-slate-700'}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{review.rating}/5 Rating</span>
+                                            </div>
+                                            <p className="text-slate-300 italic mb-6 leading-relaxed relative">
+                                                <span className="text-4xl text-amber-500/10 absolute -top-4 -left-2 font-serif">"</span>
+                                                {review.text}
+                                            </p>
+                                            <div className="flex items-center gap-3 pt-4 border-t border-slate-800/50">
+                                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-[10px] font-bold text-amber-500 border border-slate-700">
+                                                    {review.author.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-white">{review.author}</div>
+                                                    <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{review.role}</div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
                         </section>
 

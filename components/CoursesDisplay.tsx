@@ -65,6 +65,7 @@ interface CoursesDisplayProps {
   layout?: 'grid' | 'list'
   showStats?: boolean
   className?: string
+  search?: string
 }
 
 export default function CoursesDisplay({
@@ -76,7 +77,8 @@ export default function CoursesDisplay({
   onTotalChange,
   layout = 'grid',
   showStats = true,
-  className = ""
+  className = "",
+  search = ""
 }: CoursesDisplayProps) {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -84,7 +86,7 @@ export default function CoursesDisplay({
 
   useEffect(() => {
     loadCourses()
-  }, [subject, grade_level, featured, limit, page])
+  }, [subject, grade_level, featured, limit, page, search])
 
   // Static courses definition
   const staticCourses: Course[] = [
@@ -844,6 +846,7 @@ export default function CoursesDisplay({
       if (subject) params.append('subject', subject)
       if (grade_level) params.append('grade_level', grade_level)
       if (featured) params.append('featured', 'true')
+      if (search) params.append('search', search)
 
       const response = await fetch(`/api/courses?${params.toString()}`)
       const data = response.ok ? await response.json() : { courses: [] }
@@ -851,9 +854,24 @@ export default function CoursesDisplay({
 
       // Filter static courses
       let filteredStatic = staticCourses
-      if (subject) filteredStatic = filteredStatic.filter(c => c.subject === subject)
-      if (grade_level) filteredStatic = filteredStatic.filter(c => c.grade_level === grade_level)
+      if (subject) {
+        const subLower = subject.toLowerCase()
+        filteredStatic = filteredStatic.filter(c => c.subject.toLowerCase().includes(subLower))
+      }
+      if (grade_level) {
+        const levelLower = grade_level.toLowerCase()
+        filteredStatic = filteredStatic.filter(c => c.grade_level.toLowerCase().includes(levelLower))
+      }
       if (featured) filteredStatic = filteredStatic.filter(c => c.is_featured)
+
+      if (search) {
+        const searchLower = search.toLowerCase()
+        filteredStatic = filteredStatic.filter(c =>
+          c.title.toLowerCase().includes(searchLower) ||
+          c.description.toLowerCase().includes(searchLower) ||
+          c.subject.toLowerCase().includes(searchLower)
+        )
+      }
 
       const allItems = [...filteredStatic, ...dbCourses]
 
