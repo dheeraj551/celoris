@@ -77,14 +77,24 @@ export default function SocialProfilePage() {
         .maybeSingle()
 
       if (profile) {
-        setProfile(profile)
+        const profileData = profile as any
+
+        // Ensure profile pic public URL is resolved
+        if (profileData.profile_pic_url && !profileData.profile_pic_url.startsWith('http')) {
+          const { data: publicUrlData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(profileData.profile_pic_url)
+          profileData.profile_pic_url = publicUrlData.publicUrl
+        }
+
+        setProfile(profileData)
         setFormData({
-          username: (profile as any).username || '',
-          full_name: (profile as any).full_name || '',
-          bio: (profile as any).bio || '',
-          location: (profile as any).location || '',
-          gender: (profile as any).gender || '',
-          date_of_birth: (profile as any).date_of_birth || '',
+          username: profileData.username || '',
+          full_name: profileData.full_name || '',
+          bio: profileData.bio || '',
+          location: profileData.location || '',
+          gender: profileData.gender || '',
+          date_of_birth: profileData.date_of_birth || '',
         })
       }
 
@@ -138,7 +148,8 @@ export default function SocialProfilePage() {
       const supabase = createClient()
       const { error: profileError } = await (supabase as any)
         .from('users')
-        .update({
+        .upsert({
+          id: user.id,
           username: formData.username,
           full_name: formData.full_name,
           bio: formData.bio,
@@ -146,8 +157,7 @@ export default function SocialProfilePage() {
           gender: formData.gender,
           date_of_birth: formData.date_of_birth,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
+        }, { onConflict: 'id' })
 
       if (profileError) throw profileError
 
@@ -177,7 +187,7 @@ export default function SocialProfilePage() {
 
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}/profile-photo.${fileExt}`
-      const filePath = `avatars/${fileName}`
+      const filePath = fileName // Removed redundant 'avatars/' prefix to avoid avatars/avatars/ doubling
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -189,18 +199,25 @@ export default function SocialProfilePage() {
         .from('avatars')
         .getPublicUrl(filePath)
 
+      // Add timestamp to bust cache
+      const uniqueUrl = `${publicUrl}?t=${Date.now()}`
+
       const { error: updateError } = await (supabase as any)
         .from('users')
-        .update({ profile_pic_url: publicUrl })
-        .eq('id', user.id)
+        .upsert({
+          id: user.id,
+          profile_pic_url: uniqueUrl,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' })
 
       if (updateError) throw updateError
 
       await loadProfile()
       if (refreshProfile) refreshProfile()
       setMessage({ type: 'success', text: 'VISUAL SYNC: Neural avatar updated.' })
-    } catch (error) {
-      setMessage({ type: 'error', text: 'VISUAL ERROR: Avatar transmission failed.' })
+    } catch (error: any) {
+      console.error('Upload error:', error)
+      setMessage({ type: 'error', text: `VISUAL ERROR: ${error.message || 'Avatar transmission failed.'}` })
     } finally {
       setUploadingPhoto(false)
     }
@@ -309,6 +326,9 @@ export default function SocialProfilePage() {
                       src={profile?.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.full_name || 'User')}&background=050810&color=10b981&size=256&format=png`}
                       alt="Profile"
                       className="w-full h-full object-cover rounded-[2rem] transition-transform duration-700 group-hover:scale-110"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.full_name || 'User')}&background=050810&color=10b981&size=256&format=png`;
+                      }}
                     />
                     {uploadingPhoto && (
                       <div className="absolute inset-0 bg-[#050810]/80 flex items-center justify-center rounded-[2.5rem]">

@@ -82,14 +82,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (data) {
                 const profileAny = data as any
                 if (profileAny.profile_pic_url) {
-                    if (profileAny.profile_pic_url.startsWith('http://') || profileAny.profile_pic_url.startsWith('https://')) {
-                        profileAny.avatar_url = profileAny.profile_pic_url
-                    } else {
+                    if (!profileAny.profile_pic_url.startsWith('http')) {
                         const { data: publicUrlData } = supabase.storage
                             .from('avatars')
                             .getPublicUrl(profileAny.profile_pic_url)
-                        profileAny.avatar_url = publicUrlData.publicUrl
+                        profileAny.profile_pic_url = publicUrlData.publicUrl
                     }
+                    // Also maintain avatar_url for backward compatibility
+                    profileAny.avatar_url = profileAny.profile_pic_url
                 }
                 setProfile(profileAny)
             }

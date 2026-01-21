@@ -49,38 +49,44 @@ export default function ProfilePreviewPage() {
       const { data: { user } } = await supabase.auth.getUser()
       setCurrentUser(user)
 
-      // Try to find profile by username first
-      let { data: profileData, error: profileError } = await supabase
+      let profileData = null
+
+      // 1. Try to find by username (case-insensitive)
+      const { data: byUsername } = await supabase
         .from('users')
         .select('*')
-        .eq('username', username)
+        .ilike('username', username)
         .maybeSingle()
 
-      // If not found by username and no error, try by id
-      if (!profileData && !profileError && username) {
-        const { data, error: idError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', username)
-          .maybeSingle()
-
-        if (idError && idError.code !== 'PGRST116') {
-          console.error('Error loading profile by ID:', idError)
-          setError('Failed to load profile')
-          return
+      if (byUsername) {
+        profileData = byUsername
+      } else {
+        // 2. If not found and input is a valid UUID, try by ID
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(username)
+        if (isUuid) {
+          const { data: byId } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', username)
+            .maybeSingle()
+          profileData = byId
         }
-        profileData = data
-      }
-
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error('Error loading profile:', profileError)
-        setError('Failed to load profile')
-        return
       }
 
       if (!profileData || (profileData as any).is_social_blocked) {
-        setError('Profile unavailable')
+        setError('Profile unavailable or not found')
         return
+      }
+
+      // Fix relative profile picture URLs
+      if ((profileData as any).profile_pic_url && !(profileData as any).profile_pic_url.startsWith('http')) {
+        const { data } = supabase.storage
+          .from('avatars')
+          .getPublicUrl((profileData as any).profile_pic_url)
+
+        if (data) {
+          (profileData as any).profile_pic_url = data.publicUrl
+        }
       }
 
       setProfile(profileData)
@@ -244,6 +250,9 @@ export default function ProfilePreviewPage() {
                 className="w-full h-full object-cover select-none"
                 onContextMenu={(e) => e.preventDefault()}
                 draggable={false}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || profile.username)}&background=6366f1&color=fff&size=160`;
+                }}
               />
             </div>
           </div>

@@ -66,12 +66,33 @@ export default function UserManagementPage() {
     const [rechargeAmount, setRechargeAmount] = useState("")
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [recharging, setRecharging] = useState(false)
+    const [isSyncing, setIsSyncing] = useState(false)
     const router = useRouter()
     const { onlineUsers } = usePresence()
 
     useEffect(() => {
         checkAdminAuth()
     }, [])
+
+    const handleSyncUsers = async () => {
+        if (!confirm("This will attempt to sync all users from Auth to the public table. Continue?")) return
+
+        setIsSyncing(true)
+        try {
+            const response = await fetch('/api/admin/users', { method: 'POST' })
+            const result = await response.json()
+            if (response.ok) {
+                alert(`Success: ${result.message}`)
+                fetchUsers() // Refresh the list
+            } else {
+                throw new Error(result.error || "Sync failed")
+            }
+        } catch (error: any) {
+            alert(`Sync Error: ${error.message}`)
+        } finally {
+            setIsSyncing(false)
+        }
+    }
 
     const checkAdminAuth = async () => {
         try {
@@ -104,15 +125,14 @@ export default function UserManagementPage() {
 
     const fetchUsers = async () => {
         try {
+            const response = await fetch('/api/admin/users')
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.error || 'Failed to fetch users')
+            }
+
+            const { users: data } = await response.json()
             const supabase = createClient()
-
-            // Fetch users from the public users table
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
 
             // Process users to resolve avatar URLs
             const processedUsers = (data || []).map((user: any) => {
@@ -131,8 +151,9 @@ export default function UserManagementPage() {
             })
 
             setUsers(processedUsers)
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error fetching users:", error)
+            alert(`FETCH ERROR: ${error.message || 'Check API route'}`)
         } finally {
             setLoading(false)
         }
@@ -279,6 +300,25 @@ export default function UserManagementPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSyncUsers}
+                            disabled={isSyncing}
+                            className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                        >
+                            {isSyncing ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                                    <span>Syncing...</span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                    <span>Repair Database</span>
+                                </div>
+                            )}
+                        </Button>
                         <div className="bg-slate-800 p-2 rounded-lg border border-slate-700 flex items-center gap-2">
                             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                             <span className="text-sm font-medium text-slate-300">

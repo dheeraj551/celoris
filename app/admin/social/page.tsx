@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  Users, 
-  Search, 
+import {
+  Users,
+  Search,
   Filter,
   Shield,
   LogOut,
@@ -45,7 +45,7 @@ export default function AdminSocialPage() {
   const checkAdminAuth = async () => {
     try {
       const adminSession = localStorage.getItem("admin_session")
-      
+
       if (!adminSession) {
         router.push("/admin/login")
         return
@@ -54,7 +54,7 @@ export default function AdminSocialPage() {
       const session = JSON.parse(adminSession)
       const sessionAge = Date.now() - session.timestamp
       const maxAge = 24 * 60 * 60 * 1000 // 24 hours
-      
+
       if (sessionAge > maxAge) {
         localStorage.removeItem("admin_session")
         router.push("/admin/login")
@@ -71,78 +71,30 @@ export default function AdminSocialPage() {
 
   const loadData = async () => {
     try {
-      // Mock data - in real implementation, fetch from Supabase
-      setProfiles([
-        {
-          id: 1,
-          username: "john_doe_2024",
-          fullName: "John Doe",
-          email: "john.doe@email.com",
-          bio: "Frontend developer passionate about React and TypeScript",
-          avatar: "/api/placeholder/64/64",
-          followers: 245,
-          following: 189,
-          posts: 45,
-          status: "active",
-          verified: true,
-          joinedAt: "2024-12-15",
-          lastActive: "2025-01-18",
-          totalLikes: 1234,
-          totalShares: 89
-        },
-        {
-          id: 2,
-          username: "sarah_designer",
-          fullName: "Sarah Wilson",
-          email: "sarah.wilson@email.com",
-          bio: "UI/UX Designer creating beautiful digital experiences",
-          avatar: "/api/placeholder/64/64",
-          followers: 456,
-          following: 234,
-          posts: 67,
-          status: "active",
-          verified: false,
-          joinedAt: "2024-11-20",
-          lastActive: "2025-01-17",
-          totalLikes: 2341,
-          totalShares: 156
-        },
-        {
-          id: 3,
-          username: "mike_tech",
-          fullName: "Mike Johnson",
-          email: "mike.johnson@email.com",
-          bio: "Full-stack developer and tech enthusiast",
-          avatar: "/api/placeholder/64/64",
-          followers: 189,
-          following: 345,
-          posts: 23,
-          status: "warning",
-          verified: false,
-          joinedAt: "2025-01-05",
-          lastActive: "2025-01-16",
-          totalLikes: 567,
-          totalShares: 34
-        },
-        {
-          id: 4,
-          username: "anna_creative",
-          fullName: "Anna Smith",
-          email: "anna.smith@email.com",
-          bio: "Digital artist and creative thinker",
-          avatar: "/api/placeholder/64/64",
-          followers: 678,
-          following: 123,
-          posts: 89,
-          status: "suspended",
-          verified: true,
-          joinedAt: "2024-10-10",
-          lastActive: "2025-01-10",
-          totalLikes: 4567,
-          totalShares: 234
-        }
-      ])
+      const response = await fetch('/api/admin/users')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to fetch users')
+      }
 
+      const { users: usersData } = await response.json()
+
+      const processedProfiles = (usersData || []).map((u: any) => ({
+        id: u.id,
+        username: u.username || 'user',
+        fullName: u.full_name || 'Anonymous',
+        email: u.email || '',
+        bio: u.bio || '',
+        avatar: u.profile_pic_url || '',
+        status: u.is_social_blocked ? 'suspended' : 'active',
+        verified: u.verification_status === 'verified',
+        joinedAt: u.created_at,
+        subscription: u.subscription_status
+      }))
+
+      setProfiles(processedProfiles)
+
+      // Keep mock interactions for now as they are complex to fetch
       setInteractions([
         {
           id: 1,
@@ -252,9 +204,9 @@ export default function AdminSocialPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => router.push("/admin/dashboard")}
                 className="text-slate-400 hover:text-white"
               >
@@ -269,10 +221,10 @@ export default function AdminSocialPage() {
                 <p className="text-sm text-slate-400">Manage user profiles and social interactions</p>
               </div>
             </div>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
+
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleSignOut}
               className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
@@ -384,7 +336,7 @@ export default function AdminSocialPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <select 
+                  <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white text-sm"
@@ -442,7 +394,7 @@ export default function AdminSocialPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-slate-300 mb-4">{profile.bio}</p>
-                  
+
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center">
                       <p className="text-lg font-bold text-white">{profile.followers}</p>
@@ -457,7 +409,7 @@ export default function AdminSocialPage() {
                       <p className="text-xs text-slate-400">Posts</p>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Total Likes</span>
@@ -468,7 +420,7 @@ export default function AdminSocialPage() {
                       <span className="text-white">{profile.totalShares}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-between items-center">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(profile.status)}`}>
                       {profile.status}
@@ -510,12 +462,12 @@ export default function AdminSocialPage() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <p className="text-sm text-slate-300 mb-3">
                         <span className="font-medium">Reason:</span> {report.reason}
                       </p>
                       <p className="text-xs text-slate-400 mb-3">{report.description}</p>
-                      
+
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-slate-500">
                           {new Date(report.reportedAt).toLocaleDateString()}
