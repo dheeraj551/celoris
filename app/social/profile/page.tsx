@@ -150,7 +150,7 @@ export default function SocialProfilePage() {
         .from('users')
         .upsert({
           id: user.id,
-          username: formData.username,
+          username: formData.username || user.user_metadata?.username || user.email?.split('@')[0] || `user_${user.id.substring(0, 8)}`,
           full_name: formData.full_name,
           bio: formData.bio,
           location: formData.location,
@@ -206,6 +206,7 @@ export default function SocialProfilePage() {
         .from('users')
         .upsert({
           id: user.id,
+          username: formData.username || user.user_metadata?.username || user.email?.split('@')[0] || `user_${user.id.substring(0, 8)}`,
           profile_pic_url: uniqueUrl,
           updated_at: new Date().toISOString()
         }, { onConflict: 'id' })

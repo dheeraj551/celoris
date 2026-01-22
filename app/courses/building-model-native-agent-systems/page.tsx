@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, MousePointer2, Layout, Music, Video, Mic, Image as ImageIcon, Brain, Network, Boxes, Activity, GitBranch, Layers } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, MousePointer2, Layout, Music, Video, Mic, Image as ImageIcon, Brain, Network, Boxes, Activity, GitBranch, Layers, Trophy } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 
 export default function BuildingModelNativeAgentSystemsCourse() {
     // Set page title and meta tags dynamically
@@ -166,6 +167,283 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                 description: "An agent that builds its own K-graph of experiences to optimize future tool choice.",
                 tools: "Fine-tuned Llama + Neo4j + LangSmith",
                 icon: "Database"
+            }
+        ],
+        quiz_data: [
+            {
+                "title": "Core Philosophy & Mastery Framework",
+                "questions": [
+                    {
+                        "question": "What is the fundamental shift described in a \"model-native\" system?",
+                        "options": ["From human-in-the-loop to fully human-led", "From orchestration to agency", "From LLMs to small language models", "From Python to JavaScript"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "In a model-native world, the Large Language Model (LLM) is considered the:",
+                        "options": ["User interface", "External plugin", "Kernel", "Database"],
+                        "correctIndex": 2
+                    },
+                    {
+                        "question": "Why do the sources suggest moving away from traditional \"if/else\" loops?",
+                        "options": ["They are too fast for modern models", "They are too expensive to run", "They fail at scale in complex systems", "They require too much GPU memory"],
+                        "correctIndex": 2
+                    },
+                    {
+                        "question": "\"Native Tool-Use\" involves teaching models to:",
+                        "options": ["Search Google manually", "'Invent' API calls directly from documentation", "Use only pre-coded Python scripts", "Rely on human prompts for tool selection"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which concept involves moving from hard-coded graphs to dynamic navigation?",
+                        "options": ["Linear processing", "Latent-space navigation", "Vector database indexing", "Boolean logic gates"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "\"Persistent Latent State\" refers to building memory that:",
+                        "options": ["Is cleared after every prompt", "Evolves as the agent works", "Is stored only in CSV files", "Cannot be modified once created"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What is \"baked\" into model weights during fine-tuning for agency?",
+                        "options": ["Static facts", "Reasoning traces", "CSS styling", "HTML templates"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "How is success measured in model-native systems?",
+                        "options": ["Static benchmarks", "Word count", "Trajectory success rates", "Latency only"],
+                        "correctIndex": 2
+                    },
+                    {
+                        "question": "What is the purpose of \"Distillation\" in this framework?",
+                        "options": ["Making models larger", "Moving agentic power from frontier models to local, specialised models", "Deleting old data", "Converting Python to C++"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "\"Autonomous Discovery\" uses which protocol to connect to data sources?",
+                        "options": ["HTTP/2", "MCP (Model Context Protocol)", "FTP", "SMTP"],
+                        "correctIndex": 1
+                    }
+                ]
+            },
+            {
+                "title": "The Agentic Stack & Infrastructure",
+                "questions": [
+                    {
+                        "question": "Which framework is specifically mentioned for stateful multi-agent orchestration?",
+                        "options": ["Django", "LangGraph", "Flask", "React"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which tool is recommended for handling structured data/validation in the stack?",
+                        "options": ["PydanticAI", "NumPy", "Pandas", "Matplotlib"],
+                        "correctIndex": 0
+                    },
+                    {
+                        "question": "What does MCP stand for in the context of these sources?",
+                        "options": ["Multi-Core Processing", "Model Context Protocol", "Main Control Program", "Model Command Power"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which companies are listed as providers for \"Compute\"?",
+                        "options": ["AWS and Azure", "Modal and Lambda Labs", "Google Cloud and Oracle", "IBM and Intel"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which tools are used for \"Evaluations\" in the agentic stack?",
+                        "options": ["Excel and Word", "LangSmith and W&B", "Pytest and Selenium", "Docker and Kubernetes"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Secure Sandboxing is required to execute code in:",
+                        "options": ["Public servers", "Isolated environments", "Shared databases", "Frontend browsers"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What challenge does \"Long-Horizon Management\" address?",
+                        "options": ["Short Wi-Fi range", "Token pressure and state across multi-hour runs", "Fast cooling of GPUs", "Immediate response times"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The \"Agentic Stack\" aims to handle what real-world phenomenon?",
+                        "options": ["Binary code", "Entropy", "Static data", "Linear growth"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What type of models are used to navigate complex goals without hard-coded logic?",
+                        "options": ["Image models", "Reasoning Models", "Audio models", "Translation models"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which evaluation platform is paired with Neo4j in the capstone projects?",
+                        "options": ["W&B", "LangSmith", "GitHub", "Modal"],
+                        "correctIndex": 1
+                    }
+                ]
+            },
+            {
+                "title": "Capstone Projects & Practical Labs",
+                "questions": [
+                    {
+                        "question": "The \"Autonomous Researcher\" system uses which specific model?",
+                        "options": ["GPT-4", "Claude 3.5", "Gemini", "Mistral"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which tool is used by the Autonomous Researcher for web navigation?",
+                        "options": ["BeautifulSoup", "Playwright", "Scrapy", "Selenium"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The \"Self-Healing DevOps Agent\" primarily monitors:",
+                        "options": ["User comments", "Logs and bugs", "Stock prices", "Social media trends"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What action does the DevOps agent take after identifying a bug?",
+                        "options": ["Emails the manager", "Autonomously submits Pull Requests (PRs)", "Shuts down the server", "Deletes the repository"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The Self-Healing DevOps agent utilizes which API?",
+                        "options": ["Twitter API", "GitHub API", "Stripe API", "Google Maps API"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What does the \"Latent Memory Agent\" build to optimise tool choice?",
+                        "options": ["A spreadsheet", "A K-graph (Knowledge Graph) of experiences", "A list of passwords", "A CSS stylesheet"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which database is used by the Latent Memory Agent?",
+                        "options": ["PostgreSQL", "Neo4j", "MongoDB", "SQLite"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which base model is fine-tuned for the Latent Memory Agent?",
+                        "options": ["BERT", "Llama", "T5", "RoBERTa"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The Autonomous Researcher project is designed to handle:",
+                        "options": ["Single-word prompts", "Multi-modal goals", "Offline data only", "Voice commands only"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What is the outcome of building with the \"grain of the model\"?",
+                        "options": ["A simple script", "A production agent", "A basic prototype", "A static website"],
+                        "correctIndex": 1
+                    }
+                ]
+            },
+            {
+                "title": "Prerequisites & Course Details",
+                "questions": [
+                    {
+                        "question": "What is the required level of Python proficiency for this course?",
+                        "options": ["Beginner", "Intermediate", "Advanced"],
+                        "correctIndex": 2
+                    },
+                    {
+                        "question": "Experience with which specific orchestration tools is a prerequisite?",
+                        "options": ["LangChain/LlamaIndex", "Django/Flask", "TensorFlow/Keras", "Spark/Hadoop"],
+                        "correctIndex": 0
+                    },
+                    {
+                        "question": "Students should have a basic understanding of which training methods?",
+                        "options": ["Supervised learning only", "Fine-tuning and RLHF", "Unsupervised clustering", "Manual data entry"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Familiarity with which data storage technology is required?",
+                        "options": ["Flat files", "Vector Databases and RAG", "Tape drives", "Floppy disks"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The course is described as an:",
+                        "options": ["One-year degree", "8-week accelerated programme", "Weekend workshop", "Self-paced hobby course"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What is the rating listed for the \"Syncs\"?",
+                        "options": ["3.5", "4.99", "4.0", "5.0"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "How many \"Syncs\" are mentioned in the course details?",
+                        "options": ["100+", "1240+", "500", "10"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which organisation provides this training?",
+                        "options": ["OpenAI", "Celoris Designs", "Anthropic", "DeepMind"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What certification is offered upon completion?",
+                        "options": ["Python Developer", "Agentic Engineering Certification", "Web Designer", "Data Entry Specialist"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The platform is described as a unified place for:",
+                        "options": ["Gaming and movies", "Learning, earning, and engaging experiences", "Only corporate meetings", "Trading stocks"],
+                        "correctIndex": 1
+                    }
+                ]
+            },
+            {
+                "title": "Systems & Technical Specifics",
+                "questions": [
+                    {
+                        "question": "What is the cost mentioned for \"Full Lifetime System Access\"?",
+                        "options": ["₹ 5000", "₹ 29999", "₹ 9999", "Free"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "How many dollars in compute credits are included?",
+                        "options": ["$100", "$500", "$1000", "$50"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What type of datasets are provided to students?",
+                        "options": ["Random text", "Custom Reasoning Datasets", "Public weather data", "Image galleries"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which hub do students get private access to?",
+                        "options": ["Docker Hub", "Private MCP Hub", "GitHub Public", "npm registry"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Celoris Designs specialises in moving from traditional LLM apps to:",
+                        "options": ["Basic chatbots", "Autonomous agentic systems", "Mobile games", "Hardware manufacturing"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "The \"Reasoning Traces\" are baked into weights via SFT and:",
+                        "options": ["CNN", "RLHF", "GAN", "RNN"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "What does the \"Agency Kernel\" help differentiate?",
+                        "options": ["High and low cost", "Prototype and production", "Python and C++", "Front-end and back-end"],
+                        "correctIndex": 1
+                    },
+                    {
+                        "question": "Which of these is NOT part of the Agentic Stack listed?",
+                        "options": ["PydanticAI", "Modal", "WordPress", "LangGraph"],
+                        "correctIndex": 2
+                    },
+                    {
+                        "question": "According to the sources, what is the copyright year?",
+                        "options": ["2024", "2025", "2026", "2023"],
+                        "correctIndex": 2
+                    },
+                    {
+                        "question": "What is the primary goal of \"unlearning\" the pipeline mindset?",
+                        "options": ["To stop using computers", "To build systems where models manage systems", "To go back to manual coding", "To simplify user interfaces"],
+                        "correctIndex": 1
+                    }
+                ]
             }
         ]
     }
@@ -419,6 +697,29 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-emerald-400" />
+                                    </div>
+                                    Mastery Assessment: Model-Native Agent Systems
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your expertise in reasoning models, latent-space navigation, and autonomous agent architectures.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Model-Native Agent Systems Mastery Assessment"
+                                quizDescription="50 questions covering the core philosophy, technical stack, and capstone projects of model-native engineering."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Architect Level! You have mastered the model-native paradigm and are ready to build production agents.";
+                                    if (score >= 35) return "Engineering Ready! You have a strong grasp of latent-space navigation and autonomous discovery.";
+                                    return "Keep Building! Review the internal planning and persistent state modules to strengthen your agency skills.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -441,6 +742,14 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white rounded-2xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <Trophy className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                                                Take Mastery Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">
