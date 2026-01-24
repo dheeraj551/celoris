@@ -111,7 +111,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                                                                                                             ? '/courses/accelerating-science-generative-ai-for-research-innovation'
                                                                                                                             : id === 'personalized-ai-experiences-static'
                                                                                                                                 ? '/courses/personalized-ai-experiences-with-rag-and-agents'
-                                                                                                                                : `/learn/course/${id}`
+                                                                                                                                : id === 'sovereign-intelligence-static'
+                                                                                                                                    ? '/courses/sovereign-intelligence'
+                                                                                                                                    : `/learn/course/${id}`
                         }
                         className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
                     >
@@ -128,12 +130,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
+    { id: 'sovereign-intelligence-static', title: 'Sovereign Intelligence: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: '/sovereign-intelligence-cover.png' },
     { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: '/personalized-ai-rag-agents-cover.png' },
     { id: 'architecting-trust-static', title: 'Architecting Trust: AI Safety, Ethics & Compliance', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: '/architecting-trust-ai-safety-cover.png' },
     { id: 'agentic-ai-cybersecurity-static', title: 'Agentic AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: '/agentic-ai-cybersecurity-cover.png' },
     { id: 'accelerating-science-static', title: 'Accelerating Science: AI for Research & Innovation', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-Week Intensive', price: 24999, is_featured: true, course_image_url: '/accelerating-science-generative-ai-cover.png' },
     { id: 'mastering-multimodal-ai-static', title: 'Mastering Multimodal AI: Vision, Audio & Fusion', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: '/mastering-multimodal-ai-cover.png' },
-    { id: 'building-model-native-agent-systems-static', title: 'Building Model-Native Agent Systems (End-to-End)', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8 Weeks (Accelerated)', price: 29999, is_featured: true, course_image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800' },
+    { id: 'building-model-native-agent-systems-static', title: 'Building Model-Native Agent Systems (End-to-End)', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8 Weeks (Accelerated)', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/MoZQeCYorns/maxresdefault.jpg' },
     { id: 'vibe-coding-mastery-static', title: 'Vibe Coding Mastery: AI-First Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
     { id: 'agentic-ai-systems-static', title: 'Agentic AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
     { id: 'livekit-ai-agents-static', title: 'Build Real-Time AI Agents with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '10 hours', price: 14999, is_featured: true, course_image_url: '/livekit-ai-agents-cover.png' }

@@ -91,6 +91,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'sovereign-intelligence-static',
+      title: 'Sovereign Intelligence: Building Your Private, Local, & Uncensored AI Knowledge Base',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Intermediate to Advanced',
+      description: 'Master the art of local AI. Build your own private, air-gapped knowledge base using Ollama, PrivateGPT, and RAG. Escape the cloud and claim your digital sovereignty.',
+      target_audience: 'AI Engineers, Researchers, Privacy Advocates',
+      instructor_name: 'Celoris Designs',
+      course_duration: '6 Weeks (Intensive)',
+      price: 24999,
+      course_image_url: '/sovereign-intelligence-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `sovereign-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'personalized-ai-experiences-static',
       title: 'Personalized AI Experiences with RAG & Agents',
       subject: 'Artificial Intelligence',
@@ -169,7 +192,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '8 Weeks (Accelerated)',
       price: 29999,
-      course_image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800',
+      course_image_url: 'https://img.youtube.com/vi/MoZQeCYorns/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(6).fill(null).map((_, i) => ({

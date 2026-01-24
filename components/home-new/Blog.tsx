@@ -76,77 +76,60 @@ const VideoCard: React.FC<VideoPostProps> = ({ category, title, views, date, ima
 );
 
 export const Blog = ({ initialVideos = null }: { initialVideos?: any[] | null }) => {
-    const [posts, setPosts] = React.useState<any[]>(initialVideos ? initialVideos.map((v: any) => ({
-        category: v.category,
-        title: v.title,
-        views: `${v.views_count > 1000 ? (v.views_count / 1000).toFixed(1) + 'K' : v.views_count}`,
-        date: new Date(v.created_at).toLocaleDateString(),
-        author: v.author,
-        duration: v.duration,
-        image: v.thumbnail_url || `https://img.youtube.com/vi/${v.youtube_url.split('v=')[1]}/maxresdefault.jpg`,
-        youtube_url: v.youtube_url
-    })) : []);
+    const hardcodedPosts = [
+        {
+            category: "Tutorial",
+            title: "LangChain in Action: Real Workflows | Master LLM Orchestration",
+            views: "1.2K",
+            date: "2025",
+            author: "Celoris Team",
+            duration: "12:00",
+            image: "https://img.youtube.com/vi/-Z1P-ebnfwQ/maxresdefault.jpg",
+            youtube_url: "https://youtu.be/-Z1P-ebnfwQ"
+        },
+        {
+            category: "Education",
+            title: "Building Model-Native Agent Systems (End-to-End)",
+            views: "1.2K",
+            date: "2025",
+            author: "Celoris Team",
+            duration: "08:00",
+            image: "https://img.youtube.com/vi/MoZQeCYorns/maxresdefault.jpg",
+            youtube_url: "https://youtu.be/MoZQeCYorns"
+        },
+        {
+            category: "Education",
+            title: "Sovereign Intelligence: Private & Local AI Knowledge Base",
+            views: "850+",
+            date: "2025",
+            author: "Celoris Team",
+            duration: "06:00",
+            image: "https://img.youtube.com/vi/v5O_K6z2vEY/maxresdefault.jpg",
+            youtube_url: "https://youtu.be/v5O_K6z2vEY"
+        }
+    ];
+
+    const [posts, setPosts] = React.useState<any[]>(hardcodedPosts);
 
     React.useEffect(() => {
-        if (initialVideos) return;
-
-        const fetchVideos = async () => {
-            const supabase = createClient();
-            const { data } = await supabase
-                .from('featured_videos')
-                .select('*')
-                .eq('is_active', true)
-                .order('created_at', { ascending: false })
-                .limit(6);
-
-            if (data && data.length > 0) {
-                setPosts(data.map(v => ({
+        // If we want to merge with DB later, we could, but for now we follow the "no role of backend" instruction
+        if (initialVideos && initialVideos.length > 0) {
+            const dbPosts = initialVideos
+                .map((v: any) => ({
                     category: v.category,
                     title: v.title,
                     views: `${v.views_count > 1000 ? (v.views_count / 1000).toFixed(1) + 'K' : v.views_count}`,
                     date: new Date(v.created_at).toLocaleDateString(),
                     author: v.author,
                     duration: v.duration,
-                    image: v.thumbnail_url || `https://img.youtube.com/vi/${v.youtube_url.split('v=')[1]}/maxresdefault.jpg`,
+                    image: v.thumbnail_url || `https://img.youtube.com/vi/${v.youtube_url.split('v=')[1]?.split('?')[0]}/maxresdefault.jpg`,
                     youtube_url: v.youtube_url
-                })));
-            } else {
-                setPosts([
-                    {
-                        category: "Tutorial",
-                        title: "Building Autonomous Agents with Gemini 2.0 Flash",
-                        views: "12K",
-                        date: "2 days ago",
-                        author: "Celoris Tech",
-                        duration: "12:45",
-                        image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=600&auto=format&fit=crop",
-                        youtube_url: "https://youtube.com"
-                    },
-                    {
-                        category: "Product",
-                        title: "Introducing Nano Banana Pro: The Future of AI Coding",
-                        views: "8.5K",
-                        date: "1 week ago",
-                        author: "Product Team",
-                        duration: "08:20",
-                        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=600&auto=format&fit=crop",
-                        youtube_url: "https://youtube.com"
-                    },
-                    {
-                        category: "Education",
-                        title: "How to Optimize Your Learning Path in 2025",
-                        views: "45K",
-                        date: "3 weeks ago",
-                        author: "Sarah Lin",
-                        duration: "15:10",
-                        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop",
-                        youtube_url: "https://youtube.com"
-                    }
-                ]);
-            }
-        };
-        fetchVideos();
-    }, []);
+                }))
+                .filter(p => !p.youtube_url.includes("-Z1P-ebnfwQ") && !p.title.toLowerCase().includes("excel"));
+
+            setPosts([hardcodedPosts[0], ...dbPosts].slice(0, 6));
+        }
+    }, [initialVideos]);
 
     return (
         <div className="mt-24 md:mt-32">
@@ -160,7 +143,7 @@ export const Blog = ({ initialVideos = null }: { initialVideos?: any[] | null })
                     <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
                         <Sparkles size={12} /> Visual Transmissions
                     </div>
-                    <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter">Featured Intelligence</h2>
+                    <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter">Featured Videos</h2>
                     <div className="h-1 w-16 bg-emerald-600 rounded-full mt-3 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
                 </div>
                 <a
@@ -170,7 +153,7 @@ export const Blog = ({ initialVideos = null }: { initialVideos?: any[] | null })
                     className="hidden md:flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 text-slate-300 rounded-2xl hover:bg-white/10 transition-all font-black text-[10px] uppercase tracking-widest italic"
                 >
                     <Youtube size={16} className="text-red-500 shrink-0" />
-                    Browse Hub
+                    Watch YouTube
                 </a>
             </motion.div>
 

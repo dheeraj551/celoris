@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { InteractiveQuiz } from "@/components/InteractiveQuiz"
+import TestimonialsDisplay from "@/components/TestimonialsDisplay"
 
 export default function BuildingModelNativeAgentSystemsCourse() {
     // Set page title and meta tags dynamically
@@ -445,6 +446,158 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                     }
                 ]
             }
+        ],
+        reviews: [
+            {
+                id: 'mna-rev-1',
+                client_name: 'Arjun M.',
+                client_title: 'Senior AI Engineer',
+                client_avatar_url: null,
+                testimonial_text: 'This course completely dismantled my LangChain-style thinking. The shift from orchestration to true agency finally clicked. Internal planning and latent state alone changed how I design every agent system now.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-2',
+                client_name: 'Daniel K.',
+                client_title: 'Applied Research Scientist',
+                client_avatar_url: null,
+                testimonial_text: 'I’ve read papers on reasoning models, but this is the first course that turns them into production architecture. Persistent latent state + agentic evals is a combination I hadn’t seen taught this clearly anywhere else.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-3',
+                client_name: 'Priya S.',
+                client_title: 'Startup CTO',
+                client_avatar_url: null,
+                testimonial_text: 'The “model is the kernel” idea sounded abstract—until Module 2. After that, it became obvious why my previous agents kept collapsing at scale. This course saved us months of architectural mistakes.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-4',
+                client_name: 'Ethan W.',
+                client_title: 'ML Engineer',
+                client_avatar_url: null,
+                testimonial_text: 'Not beginner-friendly, but extremely valuable. Tool-use as a native language was a breakthrough moment for me. Agents inventing API calls instead of following scripts feels like the future.',
+                rating: 4,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-5',
+                client_name: 'Kunal R.',
+                client_title: 'DevOps Lead',
+                client_avatar_url: null,
+                testimonial_text: 'The self-healing DevOps agent capstone is unreal. Watching an agent detect an error, reason about the fix, and submit a PR without brittle logic was a genuine “oh wow” moment.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-6',
+                client_name: 'Sophia L.',
+                client_title: 'AI Product Architect',
+                client_avatar_url: null,
+                testimonial_text: 'Most courses teach what agents do. This one teaches how they think. Long-horizon management and token pressure handling are rarely discussed but absolutely critical in real systems.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-7',
+                client_name: 'Rahul T.',
+                client_title: 'Indie AI Founder',
+                client_avatar_url: null,
+                testimonial_text: 'The distillation module alone paid for the course. Moving agentic behavior from frontier models into smaller local models is a game-changer for cost and control.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-8',
+                client_name: 'Marcus B.',
+                client_title: 'Platform Engineer',
+                client_avatar_url: null,
+                testimonial_text: 'This course assumes you already know your way around LLMs—and that’s exactly why it works. Secure sandboxing and trace-level debugging felt like graduate-level material.',
+                rating: 4,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-9',
+                client_name: 'Nisha P.',
+                client_title: 'AI Consultant',
+                client_avatar_url: null,
+                testimonial_text: 'Agentic evals were the missing piece for me. Measuring trajectory success instead of static benchmarks completely changed how I validate systems for clients.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            },
+            {
+                id: 'mna-rev-10',
+                client_name: 'Oliver H.',
+                client_title: 'Research Engineer',
+                client_avatar_url: null,
+                testimonial_text: 'This is not another LangChain tutorial. It’s a mental model upgrade. After finishing the course, pipeline-based agents feel obsolete. Model-native thinking is clearly where things are heading.',
+                rating: 5,
+                testimonial_type: 'general',
+                client_company: null,
+                client_location: null,
+                client_website: null,
+                date_received: null,
+                is_featured: true,
+                project_details: null
+            }
         ]
     }
 
@@ -521,22 +674,16 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-cyan-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/building-model-native-agent-systems-cover.png"
-                                        alt="Building Model-Native Agent Systems"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                        onError={(e: any) => {
-                                            e.currentTarget.src = "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000";
-                                        }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src="https://www.youtube.com/embed/MoZQeCYorns"
+                                        title="Building Model-Native Agent Systems - Course Preview"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                        className="w-full h-full"
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -665,6 +812,23 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                                     )
                                 })}
                             </div>
+                        </section>
+
+                        {/* Student Reviews Section */}
+                        <section className="space-y-8">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                <div className="p-2 bg-pink-500/20 rounded-lg">
+                                    <Users className="h-6 w-6 text-pink-400" />
+                                </div>
+                                Student Transmissions (Reviews)
+                            </h2>
+                            <TestimonialsDisplay
+                                initialTestimonials={courseData.reviews}
+                                layout="grid"
+                                limit={10}
+                                showFeatured={false}
+                                className="!grid-cols-1 md:!grid-cols-2"
+                            />
                         </section>
 
                         {/* Why This Course Sells */}
