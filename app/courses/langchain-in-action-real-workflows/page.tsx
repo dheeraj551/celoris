@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Layers, Filter, RefreshCw, Activity, Terminal, MessageSquare, Link as LinkIcon, GitBranch, Cpu as Brain, Trophy } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,6 +9,57 @@ import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { InteractiveQuiz } from "@/components/InteractiveQuiz"
+
+const CountdownTimer = ({ targetDate }: { targetDate: string }) => {
+    const [timeLeft, setTimeLeft] = useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+    });
+
+    useEffect(() => {
+        const calculateTimeLeft = () => {
+            const difference = +new Date(targetDate) - +new Date();
+            if (difference > 0) {
+                setTimeLeft({
+                    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                    minutes: Math.floor((difference / 1000 / 60) % 60),
+                    seconds: Math.floor((difference / 1000) % 60)
+                });
+            }
+        };
+
+        const timer = setInterval(calculateTimeLeft, 1000);
+        calculateTimeLeft();
+        return () => clearInterval(timer);
+    }, [targetDate]);
+
+    return (
+        <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 mb-6">
+            <div className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-3 flex items-center justify-between">
+                <span>Republic Day Offer</span>
+                <span className="animate-pulse">Hurry, offer expires soon!</span>
+            </div>
+            <div className="flex justify-between items-center px-2">
+                {[
+                    { label: 'Days', value: timeLeft.days },
+                    { label: 'Hrs', value: timeLeft.hours },
+                    { label: 'Min', value: timeLeft.minutes },
+                    { label: 'Sec', value: timeLeft.seconds }
+                ].map((item, i) => (
+                    <div key={i} className="text-center group">
+                        <div className="text-2xl font-black text-white tabular-nums group-hover:scale-110 transition-transform">
+                            {String(item.value).padStart(2, '0')}
+                        </div>
+                        <div className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">{item.label}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default function LangChainCourse() {
     // Set page title and meta tags dynamically
@@ -34,7 +86,8 @@ export default function LangChainCourse() {
         students: 1250,
         rating: 4.9,
         duration: "12 hours",
-        price: 15000,
+        price: 13500,
+        originalPrice: 15000,
         currency: "INR",
         provider: "Celoris Designs llp",
         website: "https://www.celorisdesigns.com",
@@ -144,6 +197,78 @@ export default function LangChainCourse() {
         ],
         reviews: [
             {
+                name: "Saurabh P.",
+                role: "Software Engineer",
+                rating: 5,
+                comment: "This course finally taught me how to think in LangChain. LCEL, state, memory, tools, RAG—everything is connected logically instead of being taught in isolation. I now design agents instead of just wiring prompts."
+            },
+            {
+                name: "Megha R.",
+                role: "AI Engineer",
+                rating: 5,
+                comment: "I had built basic LangChain demos before, but they always broke in real scenarios. This course shows how to handle memory, failures, debugging, and scale. The LangSmith module alone changed how I build LLM systems."
+            },
+            {
+                name: "Aditya V.",
+                role: "Backend Lead",
+                rating: 5,
+                comment: "Hands down the most production-oriented LangChain course I’ve taken. Redis memory, PostgreSQL persistence, structured outputs—this is what real companies expect. I applied these patterns directly at work."
+            },
+            {
+                name: "Rohan M.",
+                role: "Senior Python Developer",
+                rating: 4.5,
+                comment: "This is not a beginner hand-holding course, and that’s exactly why it’s good. It treats you like a serious engineer. The LCEL mindset shift helped me simplify complex workflows dramatically."
+            },
+            {
+                name: "Ishita K.",
+                role: "AI Consultant",
+                rating: 5,
+                comment: "The Universal Assistant project is a legit portfolio piece. It’s not a toy chatbot—it’s a full agent with tools, RAG, and long-term memory. Recruiters actually understand the value when I explain it."
+            },
+            {
+                name: "Harsh S.",
+                role: "Machine Learning Engineer",
+                rating: 5,
+                comment: "I finally understand how ReAct agents and zero-shot reasoning actually work in practice. The course explains why things fail, not just how to make them run once."
+            },
+            {
+                name: "Neha D.",
+                role: "Data Scientist",
+                rating: 4.5,
+                comment: "What I appreciated most was the focus on debugging. Most courses ignore this part. LangSmith traces, structured outputs, and evaluation techniques made my workflows reliable and observable."
+            },
+            {
+                name: "Karthik R.",
+                role: "Platform Engineer",
+                rating: 5,
+                comment: "This course closed the gap between tutorials and real systems. I stopped copy-pasting snippets and started designing clean, modular chains using LCEL and runnables."
+            },
+            {
+                name: "Pritam S.",
+                role: "Automation Architect",
+                rating: 5,
+                comment: "If you want to build AI agents for actual businesses—SQL tools, Gmail integrations, search APIs—this course shows how to do it properly. No hacks, no shortcuts."
+            },
+            {
+                name: "Simran A.",
+                role: "Product Engineer",
+                rating: 5,
+                comment: "I had read the LangChain docs multiple times, but they never fully clicked. This course provides the missing structure and mental model. Everything finally made sense."
+            },
+            {
+                name: "Deepak N.",
+                role: "Startup CTO",
+                rating: 5,
+                comment: "Worth every hour. The course doesn’t just teach LangChain—it teaches system design for LLMs. That mindset is what separates hobby projects from production software."
+            },
+            {
+                name: "Aman J.",
+                role: "Freelance AI Engineer",
+                rating: 5,
+                comment: "This is one of those rare courses where you feel more confident after finishing it. I can now explain, design, debug, and deploy LangChain systems end-to-end."
+            },
+            {
                 name: "Rahul K.",
                 role: "Backend Engineer",
                 rating: 5,
@@ -166,42 +291,6 @@ export default function LangChainCourse() {
                 role: "Software Consultant",
                 rating: 5,
                 comment: "Exactly what companies expect from an AI engineer now. RAG with vector DBs, Redis memory, PostgreSQL, tool calling—this is what interviews and real projects demand. Helped me confidently pitch myself as an AI automation engineer."
-            },
-            {
-                name: "Arjun M.",
-                role: "ML Engineer",
-                rating: 5,
-                comment: "The Universal Assistant project is gold. Building an end-to-end agent with long-term memory and tools gave me a portfolio project I can actually showcase. Recruiters immediately ask about it."
-            },
-            {
-                name: "Vikram N.",
-                role: "Full-Stack Developer",
-                rating: 5,
-                comment: "Clear, structured, and advanced. The LCEL module alone cleared months of confusion. The course assumes you’re serious and treats you like a professional, not a beginner."
-            },
-            {
-                name: "Pooja D.",
-                role: "Freelance AI Engineer",
-                rating: 5,
-                comment: "Best course I’ve taken on LLM orchestration. Multi-step workflows, ReAct agents, zero-shot reasoning—this goes way beyond chatbots. I’m already using these patterns in client projects."
-            },
-            {
-                name: "Kunal J.",
-                role: "Platform Engineer",
-                rating: 5,
-                comment: "Strong focus on production readiness. Redis, PostgreSQL, structured outputs, error handling—this course prepares you for real deployments, not demos. That’s rare."
-            },
-            {
-                name: "Neeraj T.",
-                role: "Startup CTO",
-                rating: 5,
-                comment: "Worth every rupee. ₹15,000 felt like a lot initially, but after finishing the course, it feels underpriced. The depth and clarity are exceptional."
-            },
-            {
-                name: "Aditi L.",
-                role: "Product Engineer",
-                rating: 5,
-                comment: "Finally a course that respects the learner. No hype, no buzzwords—just solid engineering principles applied to LLM systems. If you want to build serious AI products, take this."
             }
         ],
         quiz_data: [
@@ -480,6 +569,331 @@ export default function LangChainCourse() {
                         correctIndex: 0
                     }
                 ]
+            },
+            {
+                title: "Prompt Template Fundamentals",
+                questions: [
+                    {
+                        question: "Which LangChain class is specifically designed for completion-style models that expect a single text input?",
+                        options: ["ChatPromptTemplate", "PromptTemplate", "MessagesPlaceholder", "StructuredOutputParser"],
+                        correctIndex: 1,
+                        explanation: "PromptTemplate is used for creating basic string-based prompts for completion models like text-davinci-003."
+                    },
+                    {
+                        question: "Chat-based models (e.g., GPT-4, Gemini) expect messages structured with specific roles. Which of these is NOT a standard role?",
+                        options: ["System", "Human", "Moderator", "AI"],
+                        correctIndex: 2,
+                        explanation: "Standard roles include \"system\", \"human\" (user), and \"ai\" (assistant)."
+                    },
+                    {
+                        question: "What is the primary purpose of MessagesPlaceholder?",
+                        options: ["To act as a fallback when a model fails.", "To inject a dynamic list of messages, such as conversation history, into a prompt.", "To validate that all input variables are strings.", "To convert JSON into Pydantic objects."],
+                        correctIndex: 1,
+                        explanation: "MessagesPlaceholder acts as a stand-in for a dynamic sequence of messages provided at runtime."
+                    },
+                    {
+                        question: "When using ChatPromptTemplate.from_messages, how is a message typically represented?",
+                        options: ["A dictionary with \"role\" and \"text\" keys.", "A 2-tuple of (role, template string).", "A single string containing the entire conversation.", "A list of integers representing tokens."],
+                        correctIndex: 1,
+                        explanation: "It is typically defined as a sequence of message representations, often 2-tuples like (\"system\", \"template\")."
+                    },
+                    {
+                        question: "What happens if you invoke a LangChain prompt template with a dictionary missing a required placeholder variable?",
+                        options: ["It returns a partial prompt.", "It triggers a runtime error.", "It automatically fills the blank with \"None\".", "The editor warns you before execution."],
+                        correctIndex: 1,
+                        explanation: "LangChain’s prompt templates generally do not offer built-in editor support, meaning errors regarding missing keys often only appear at runtime."
+                    },
+                    {
+                        question: "Which method allows you to pre-fill some variables in a template while leaving others to be filled later?",
+                        options: [".bind()", ".partial()", ".invoke()", ".batch()"],
+                        correctIndex: 1,
+                        explanation: "Partial formatting allows you to predefine certain variables in a template while leaving others open for later customisation."
+                    },
+                    {
+                        question: "How does the from_template method in ChatPromptTemplate behave differently from PromptTemplate?",
+                        options: ["It creates a single message assumed to be from the human.", "It requires a system message by default.", "It cannot accept variables.", "It only works with local models."],
+                        correctIndex: 0,
+                        explanation: "ChatPromptTemplate.from_template creates a template consisting of a single message assumed to be from the human."
+                    },
+                    {
+                        question: "In a production setting, what is a key benefit of using a \"System\" message?",
+                        options: ["It collects user feedback.", "It defines global behaviour, tone, and operational boundaries for the LLM.", "It reduces the cost per token by 50%.", "It acts as a primary retriever for vector databases."],
+                        correctIndex: 1,
+                        explanation: "System messages define the model's persona, constraints, and operational boundaries."
+                    },
+                    {
+                        question: "What is the default template format used by LangChain?",
+                        options: ["Jinja2", "Mustache", "f-string", "YAML"],
+                        correctIndex: 2,
+                        explanation: "The template_format defaults to \"f-string\"."
+                    },
+                    {
+                        question: "Which method would you use to convert a ChatPromptTemplate into a list of message objects?",
+                        options: [".to_json()", ".format_messages()", ".extract_roles()", ".get_history()"],
+                        correctIndex: 1,
+                        explanation: ".format_messages() fills in the template variables and returns a list of structured message objects."
+                    }
+                ]
+            },
+            {
+                title: "LCEL and the Pipe Operator",
+                questions: [
+                    {
+                        question: "What does the pipe operator (|) signify in the LangChain Expression Language (LCEL)?",
+                        options: ["Logical \"OR\" condition.", "Chaining components so the output of one becomes the input of the next.", "Parallel execution of all components.", "Dividing the token limit between two models."],
+                        correctIndex: 1,
+                        explanation: "LCEL uses the pipe operator to connect modular building blocks into a seamless data flow."
+                    },
+                    {
+                        question: "Every component in LCEL (prompts, models, parsers) implements which standard interface?",
+                        options: ["The Agent protocol.", "The Chain class.", "The Runnable protocol.", "The Flow interface."],
+                        correctIndex: 2,
+                        explanation: "At the heart of LCEL is the Runnable protocol, ensuring a consistent API across all components."
+                    },
+                    {
+                        question: "Which invocation method is used for real-time token delivery?",
+                        options: [".invoke()", ".batch()", ".stream()", ".ainvoke()"],
+                        correctIndex: 2,
+                        explanation: ".stream() is used for incremental streaming to allow a faster time-to-first-token."
+                    },
+                    {
+                        question: "Why is LCEL considered \"declarative\" rather than \"imperative\"?",
+                        options: ["It requires users to write their own loops for every call.", "Users describe what the chain does rather than how to execute every manual step.", "It only works with pre-declared global variables.", "It cannot be used with Python functions."],
+                        correctIndex: 1,
+                        explanation: "LCEL allows developers to describe the chain's structure, which the framework then executes, reducing boilerplate code."
+                    },
+                    {
+                        question: "What is the main advantage of using .batch() over calling .invoke() multiple times in a loop?",
+                        options: ["It is cheaper per token.", "It handles parallelisation client-side for more efficient processing.", "It automatically retries failed calls with different models.", "It translates the prompt into multiple languages."],
+                        correctIndex: 1,
+                        explanation: ".batch() is faster because it handles parallelisation for multiple inputs simultaneously."
+                    },
+                    {
+                        question: "In the LCEL expression chain = prompt | model | parser, what is the output of the model step?",
+                        options: ["A raw JSON string.", "A PromptValue.", "An AIMessage.", "A Pydantic object."],
+                        correctIndex: 2,
+                        explanation: "The model receives a PromptValue and outputs an AIMessage."
+                    },
+                    {
+                        question: "What inspired the syntax of the LCEL pipe operator?",
+                        options: ["JavaScript Promises.", "Unix/Linux pipe functionality.", "C++ templates.", "SQL JOIN statements."],
+                        correctIndex: 1,
+                        explanation: "LCEL is inspired by the Linux pipe functionality where output is passed to the next function."
+                    },
+                    {
+                        question: "Which environment variable is typically used to enable LangSmith tracing for LCEL chains?",
+                        options: ["LANGCHAIN_DEBUG=true", "LANGSMITH_TRACING=true", "ENABLE_LCEL_LOGS=1", "TRACE_ALL_LLMS=yes"],
+                        correctIndex: 1,
+                        explanation: "Setting LANGSMITH_TRACING=true (or LANGCHAIN_TRACING_V2=true) automatically logs runs to LangSmith."
+                    },
+                    {
+                        question: "What is a \"Legacy Chain\" in the context of LangChain's evolution?",
+                        options: ["A chain that only uses GPT-2.", "Monolithic classes like LLMChain or SimpleSequentialChain used before LCEL.", "Any chain that doesn't use a vector database.", "Chains written in COBOL."],
+                        correctIndex: 1,
+                        explanation: "Early versions relied on \"classic\" monolithic classes like LLMChain, which are now being phased out in favour of LCEL."
+                    },
+                    {
+                        question: "Which LCEL method is best for high-concurrency web servers to prevent blocking the event loop?",
+                        options: [".invoke()", ".ainvoke()", ".batch()", ".stream()"],
+                        correctIndex: 1,
+                        explanation: ".ainvoke() is the asynchronous version of invoke, critical for maintaining application SLAs in high-concurrency environments."
+                    }
+                ]
+            },
+            {
+                title: "Advanced Runnables and Logic",
+                questions: [
+                    {
+                        question: "Which Runnable type is used to execute multiple paths simultaneously, such as querying two retrievers?",
+                        options: ["RunnablePassthrough", "RunnableLambda", "RunnableParallel", "RunnableRetry"],
+                        correctIndex: 2,
+                        explanation: "RunnableParallel allows for the concurrent execution of multiple runnables, reducing total latency."
+                    },
+                    {
+                        question: "What does RunnablePassthrough do?",
+                        options: ["It ignores the input and returns a random string.", "It acts as an identity function, passing data through unchanged to the next step.", "It automatically translates the input for the model.", "It parses the output into a dictionary."],
+                        correctIndex: 1,
+                        explanation: "RunnablePassthrough allows data to flow through a step unchanged, often used to preserve the original question alongside retrieved context."
+                    },
+                    {
+                        question: "How can you turn a standard Python function into a component that can be used with the pipe operator?",
+                        options: ["By wrapping it in RunnableLambda.", "By naming the function \"runnable_func\".", "By using the | operator inside the function.", "By saving the function as a .json file."],
+                        correctIndex: 0,
+                        explanation: "RunnableLambda permits the injection of arbitrary Python functions into an LCEL chain."
+                    },
+                    {
+                        question: "In LCEL, how do you provide extra arguments to a model that aren't part of the previous step's output (e.g., a \"stop\" sequence)?",
+                        options: ["Use the .partial() method.", "Use the .bind() method.", "Hardcode it into the prompt template.", "Use RunnablePassthrough."],
+                        correctIndex: 1,
+                        explanation: ".bind() is used to bind arguments to a Runnable that are not in the user input or previous output."
+                    },
+                    {
+                        question: "What is the purpose of with_fallbacks() in a LangChain runnable?",
+                        options: ["To add extra examples to the prompt.", "To define a sequence of alternative runnables to try if the primary one fails.", "To convert a Chat model into a Completion model.", "To limit the number of tokens used."],
+                        correctIndex: 1,
+                        explanation: "with_fallbacks() adds a sequence of runnables to try in order upon failure."
+                    },
+                    {
+                        question: "Which feature allows you to choose between different models at runtime based on a configuration key?",
+                        options: ["RunnableParallel", "configurable_alternatives", "with_structured_output", "MessagesPlaceholder"],
+                        correctIndex: 1,
+                        explanation: "configurable_alternatives allows configuring alternatives for Runnables that can be set at runtime."
+                    },
+                    {
+                        question: "What is a \"Branching Chain\"?",
+                        options: ["A chain that only uses one model.", "A flow where one step's result is split into several paths processed independently.", "A chain that has been deprecated.", "A chain that requires a GitHub account to run."],
+                        correctIndex: 1,
+                        explanation: "In branching chains, one step produces a result that is split into several paths, often processed in parallel."
+                    },
+                    {
+                        question: "How does RunnableParallel handle inputs?",
+                        options: ["It splits the input string in half for each branch.", "It provides the same input to each branch in the mapping.", "It waits for the first branch to finish before starting the second.", "It converts the input into a list of integers."],
+                        correctIndex: 1,
+                        explanation: "It invokes branches concurrently, providing the same input to each."
+                    },
+                    {
+                        question: "Which of these is a limitation of LCEL noted in the sources?",
+                        options: ["It is too fast for most models.", "It makes debugging long or nested chains difficult.", "It cannot be used with OpenAI.", "It only supports English."],
+                        correctIndex: 1,
+                        explanation: "Debugging long or nested LCEL chains can be difficult, and managing complex state is tricky."
+                    },
+                    {
+                        question: "What is the \"Runnable Protocol\" contract?",
+                        options: ["input → processing → output", "prompt → token → response", "user → system → assistant", "login → query → logout"],
+                        correctIndex: 0,
+                        explanation: "Every component implements a clear input → processing → output contract."
+                    }
+                ]
+            },
+            {
+                title: "Structured Outputs and Evaluation",
+                questions: [
+                    {
+                        question: "Which method is the modern industry standard for extracting structured data from models that natively support it?",
+                        options: ["PydanticOutputParser", ".with_structured_output()", "StrOutputParser", "RegexParser"],
+                        correctIndex: 1,
+                        explanation: ".with_structured_output() is the standard for models supporting structured data natively through APIs."
+                    },
+                    {
+                        question: "Why is Pydantic recommended for structured outputs?",
+                        options: ["It makes the model 20% faster.", "It provides strict type checking, field validation, and support for nested structures.", "It is the only library that works with Python 2.", "It removes the need for an API key."],
+                        correctIndex: 1,
+                        explanation: "Pydantic is highly recommended for its support of strict type checking and field validation."
+                    },
+                    {
+                        question: "What is the fallback if a model does not natively support structured output?",
+                        options: ["Use a PydanticOutputParser with prompt instructions.", "The chain will automatically stop.", "The model will use random JSON.", "You must switch to a Completion model."],
+                        correctIndex: 0,
+                        explanation: "For models without native support, traditional output parsers like PydanticOutputParser are used."
+                    },
+                    {
+                        question: "What does the OutputFixingParser do?",
+                        options: ["It translates the output into French.", "It captures validation errors and asks the LLM to fix the formatting.", "It reduces the token count of the response.", "It adds a signature to the end of the text."],
+                        correctIndex: 1,
+                        explanation: "It attempts to fix formatting automatically or prompts the model to retry with the error message as feedback."
+                    },
+                    {
+                        question: "In LangSmith, what is a \"Trace\"?",
+                        options: ["A single line of code.", "A record of every step and LLM call in an application for a specific request.", "A list of all your API keys.", "A method to delete old data."],
+                        correctIndex: 1,
+                        explanation: "A trace records every step and LLM call in your application for debugging."
+                    },
+                    {
+                        question: "What is \"LLM-as-a-judge\"?",
+                        options: ["Using an LLM to write legal documents.", "Using a high-capacity LLM to evaluate the quality of another model's output.", "A model that has been trained on courtroom transcripts.", "A LangChain component that blocks harmful prompts."],
+                        correctIndex: 1,
+                        explanation: "It involves using an LLM to grade responses against a prompt or rubric."
+                    },
+                    {
+                        question: "Which LangSmith feature allows you to test prompts in the UI without redeploying code?",
+                        options: ["Tracing", "Playground", "Datasets", "Evaluators"],
+                        correctIndex: 1,
+                        explanation: "The Playground allows for real-time testing of prompts and models."
+                    },
+                    {
+                        question: "What is the benefit of a \"binary pass/fail\" evaluation system for domain experts?",
+                        options: ["It is more mathematically complex.", "It keeps evaluations focused, fast, and aligned with production readiness.", "It is only used for very simple models.", "It prevents the model from generating text."],
+                        correctIndex: 1,
+                        explanation: "Binary pass/fail systems keep evaluations fast and aligned with real-world goals."
+                    },
+                    {
+                        question: "How does init_chat_model help developers?",
+                        options: ["It automatically writes the code for the agent.", "It provides a unified interface to initialize models from various providers using a consistent syntax.", "It makes all models free to use.", "It only works for local models like Ollama."],
+                        correctIndex: 1,
+                        explanation: "It supports a wide range of providers with a consistent syntax, reducing vendor lock-in."
+                    },
+                    {
+                        question: "What is \"Token Optimization\" in prompt engineering?",
+                        options: ["Buying tokens at a discount.", "Reducing redundancy in templates to achieve more consistent outputs and cut costs.", "Using only the most common words in English.", "Increasing the max_tokens limit to 1 million."],
+                        correctIndex: 1,
+                        explanation: "Token optimisation involves reducing redundancy while maintaining clarity to cut costs and improve consistency."
+                    }
+                ]
+            },
+            {
+                title: "Comparisons and Best Practices",
+                questions: [
+                    {
+                        question: "According to the sources, why might a developer choose Mirascope over LangChain?",
+                        options: ["LangChain is too simple.", "Mirascope uses native Python and Pydantic without requiring new complex abstractions like Runnables.", "Mirascope is written in C++.", "LangChain does not support OpenAI."],
+                        correctIndex: 1,
+                        explanation: "Mirascope is designed to be a lightweight toolkit using native Python, avoiding the learning curve of custom abstractions."
+                    },
+                    {
+                        question: "How does the Lilypad framework handle versioning differently from LangChain Hub?",
+                        options: ["It requires manual \"Save as\" clicks for every change.", "It automatically versions the entire code context, including model settings and logic, behind the scenes.", "It only versions the prompt string.", "It uses a blockchain to store prompts."],
+                        correctIndex: 1,
+                        explanation: "Lilypad automatically versions the entire context (code, model, parameters) and handles it behind the scenes."
+                    },
+                    {
+                        question: "What is the recommended strategy for handling high-latency agentic runs in production?",
+                        options: ["Blocking the main thread until the agent finishes.", "Implementing token-by-token streaming to improve \"perceived latency\".", "Using only the smallest available models.", "Disabling all logging."],
+                        correctIndex: 1,
+                        explanation: "Implementing token-by-token streaming is the most effective way to improve perceived latency."
+                    },
+                    {
+                        question: "What \"leaky abstraction\" warning is given regarding structured outputs?",
+                        options: ["Smaller models like GPT-3.5 are more reliable than GPT-4.", "Even with structured output settings, larger models are significantly more reliable at adhering to complex schemas.", "JSON is not a real data format.", "Pydantic cannot be used with LCEL."],
+                        correctIndex: 1,
+                        explanation: "Larger models are significantly more reliable for complex schemas."
+                    },
+                    {
+                        question: "In LangChain, what does \"Partialing\" a prompt allow you to do?",
+                        options: ["Only send half the prompt to the model to save money.", "Bind some variables now and others later.", "Delete variables from a template.", "Use a template that only works 50% of the time."],
+                        correctIndex: 1,
+                        explanation: "Partial variables populate the template so you don’t need to pass them in every time."
+                    },
+                    {
+                        question: "Which tool offers a visual drag-and-drop builder for LangChain prompts for non-programmers?",
+                        options: ["LangSmith", "Latenode", "Mirascope", "Pydantic"],
+                        correctIndex: 1,
+                        explanation: "Latenode offers a visual drag-and-drop builder, making prompt creation accessible to non-programmers."
+                    },
+                    {
+                        question: "What is the \"Long-Term Support (LTS)\" philosophy in LangChain Core?",
+                        options: ["Support for only one week after release.", "A commitment to stability and a designated maintenance period to ensure enterprise-grade reliability.", "It means the software will never be updated.", "It only applies to the JavaScript version."],
+                        correctIndex: 1,
+                        explanation: "LTS ensures breaking changes are reserved for major versions and provides maintenance support."
+                    },
+                    {
+                        question: "Why is \"Context Pruning\" important in RAG systems?",
+                        options: ["To make the prompt as long as possible.", "To minimize token usage and latency by removing redundant information.", "To prevent the model from seeing the user's question.", "To ensure the model only uses internal training data."],
+                        correctIndex: 1,
+                        explanation: "Developers should rank documents and prune redundant context to minimize cost and latency."
+                    },
+                    {
+                        question: "How does Lilypad facilitate collaboration between developers and domain experts?",
+                        options: ["By requiring domain experts to learn Python.", "By providing a playground UI where non-technical users can test and edit prompts independently of code deployment.", "By automatically translating code into plain English.", "By giving everyone the same admin password."],
+                        correctIndex: 1,
+                        explanation: "The playground allows non-technical experts to run prompts and evaluate outputs without developers needing to redeploy code."
+                    },
+                    {
+                        question: "What is the \"Applications of the Future\" thesis mentioned by LangChain’s founders?",
+                        options: ["Moving away from AI altogether.", "Autonomous, stateful agents capable of complex reasoning loops and human-in-the-loop support.", "Simple linear chains for everyone.", "Using LLMs only for spell-checking."],
+                        correctIndex: 1,
+                        explanation: "The future involves move toward complex, autonomous, and stateful systems like LangGraph."
+                    }
+                ]
             }
         ]
     }
@@ -572,6 +986,7 @@ export default function LangChainCourse() {
                                 <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">AI Orchestration</span>
                                 <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Agents</span>
                                 <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Python</span>
+                                <span className="bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] uppercase animate-pulse">Republic Day Sale: 10% OFF</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
                                 {courseData.title}
@@ -708,38 +1123,95 @@ export default function LangChainCourse() {
                             </div>
                         </section>
 
-                        {/* Student Reviews Section */}
-                        <section className="space-y-8">
-                            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                        {/* Student Reviews Section - Animated Marquee */}
+                        <section className="space-y-8 overflow-hidden">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-3 px-4 sm:px-0">
                                 <div className="p-2 bg-yellow-500/20 rounded-lg">
                                     <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />
                                 </div>
                                 Student Success Stories
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {courseData.reviews.map((review, index) => (
-                                    <Card key={index} className="bg-slate-900/40 border-slate-800 hover:border-blue-500/30 transition-all duration-300 group">
-                                        <CardContent className="pt-6">
-                                            <div className="flex gap-1 mb-4">
-                                                {[...Array(review.rating)].map((_, i) => (
-                                                    <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                                                ))}
-                                            </div>
-                                            <p className="text-slate-300 text-sm leading-relaxed mb-6 italic">
-                                                "{review.comment}"
-                                            </p>
-                                            <div className="flex items-center gap-3 border-t border-slate-800 pt-4">
-                                                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">
-                                                    {review.name.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-bold text-white">{review.name}</div>
-                                                    <div className="text-xs text-slate-500">{review.role}</div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
+
+                            <div className="relative space-y-6">
+                                {/* First Row - Right to Left */}
+                                <div className="flex overflow-hidden group">
+                                    <motion.div
+                                        animate={{ x: [0, -2500] }}
+                                        transition={{
+                                            duration: 60,
+                                            repeat: Infinity,
+                                            ease: "linear"
+                                        }}
+                                        className="flex gap-6 whitespace-nowrap"
+                                    >
+                                        {[...courseData.reviews, ...courseData.reviews].slice(0, 16).map((review, index) => (
+                                            <Card key={index} className="w-[400px] shrink-0 bg-slate-900/40 border-slate-800 hover:border-blue-500/30 transition-all duration-300">
+                                                <CardContent className="p-6">
+                                                    <div className="flex gap-1 mb-4">
+                                                        {[...Array(Math.floor(review.rating))].map((_, i) => (
+                                                            <Star key={i} className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                                                        ))}
+                                                        {review.rating % 1 !== 0 && <Star className="h-3 w-3 fill-yellow-500/50 text-yellow-500" />}
+                                                    </div>
+                                                    <p className="text-slate-300 text-sm leading-relaxed mb-6 whitespace-normal italic">
+                                                        "{review.comment}"
+                                                    </p>
+                                                    <div className="flex items-center gap-3 border-t border-slate-800 pt-4">
+                                                        <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">
+                                                            {review.name.charAt(0)}
+                                                        </div>
+                                                        <div className="text-left">
+                                                            <div className="text-sm font-bold text-white">{review.name}</div>
+                                                            <div className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">{review.role}</div>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </motion.div>
+                                </div>
+
+                                {/* Second Row - Left to Right */}
+                                <div className="flex overflow-hidden group">
+                                    <motion.div
+                                        animate={{ x: [-2500, 0] }}
+                                        transition={{
+                                            duration: 70,
+                                            repeat: Infinity,
+                                            ease: "linear"
+                                        }}
+                                        className="flex gap-6 whitespace-nowrap"
+                                    >
+                                        {[...courseData.reviews, ...courseData.reviews].slice(8, 24).map((review, index) => (
+                                            <Card key={index} className="w-[400px] shrink-0 bg-slate-900/40 border-slate-800 hover:border-blue-500/30 transition-all duration-300">
+                                                <CardContent className="p-6">
+                                                    <div className="flex gap-1 mb-4">
+                                                        {[...Array(Math.floor(review.rating))].map((_, i) => (
+                                                            <Star key={i} className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                                                        ))}
+                                                        {review.rating % 1 !== 0 && <Star className="h-3 w-3 fill-yellow-500/50 text-yellow-500" />}
+                                                    </div>
+                                                    <p className="text-slate-300 text-sm leading-relaxed mb-6 whitespace-normal italic">
+                                                        "{review.comment}"
+                                                    </p>
+                                                    <div className="flex items-center gap-3 border-t border-slate-800 pt-4">
+                                                        <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">
+                                                            {review.name.charAt(0)}
+                                                        </div>
+                                                        <div className="text-left">
+                                                            <div className="text-sm font-bold text-white">{review.name}</div>
+                                                            <div className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">{review.role}</div>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </motion.div>
+                                </div>
+
+                                {/* Gradient Overlays for smooth edges */}
+                                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
+                                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
                             </div>
                         </section>
 
@@ -776,11 +1248,11 @@ export default function LangChainCourse() {
                             </div>
                             <InteractiveQuiz
                                 quizTitle="LangChain & AI Orchestration Mastery Assessment"
-                                quizDescription="50 questions covering the end-to-end LangChain ecosystem and production-ready AI automation."
+                                quizDescription="100 questions covering the end-to-end LangChain ecosystem and production-ready AI automation."
                                 quizUnits={courseData.quiz_data}
                                 onCompleteMessage={(score) => {
-                                    if (score >= 45) return "Architect Level! You are fully prepared to build and deploy complex autonomous agents.";
-                                    if (score >= 35) return "Orchestration Ready! You have a solid grasp of LangChain and RAG architectures.";
+                                    if (score >= 90) return "Architect Level! You are fully prepared to build and deploy complex autonomous agents.";
+                                    if (score >= 70) return "Orchestration Ready! You have a solid grasp of LangChain and RAG architectures.";
                                     return "Keep Building! Review the memory and tool integration modules to strengthen your automation skills.";
                                 }}
                             />
@@ -795,9 +1267,16 @@ export default function LangChainCourse() {
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
+                                        <CountdownTimer targetDate="2026-01-27T00:00:00" />
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹15,000
+                                            <div className="inline-block px-3 py-1 bg-orange-500/20 text-orange-400 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 border border-orange-500/30">
+                                                Republic Day Sale - Ends 26 Jan
+                                            </div>
+                                            <div className="flex items-center justify-center gap-3 mb-2">
+                                                <span className="text-2xl text-slate-500 line-through font-bold">₹15,000</span>
+                                                <div className="text-5xl font-extrabold text-white tracking-tighter">
+                                                    ₹13,500
+                                                </div>
                                             </div>
                                             <div className="text-blue-400 font-bold tracking-widest uppercase text-xs">Full Lifetime Access</div>
                                         </div>

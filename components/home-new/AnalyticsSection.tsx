@@ -18,9 +18,9 @@ export const AnalyticsSection: React.FC = () => {
                 >
                     <div className="relative rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl aspect-[4/3] lg:aspect-square">
                         <img
-                            src="/images/homepage/analytics.png"
+                            src="/images/homepage/analytics-person.jpg"
                             alt="AI Analytics Interface"
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-[#050810] via-transparent to-transparent opacity-40" />
 

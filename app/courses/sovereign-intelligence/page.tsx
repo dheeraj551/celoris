@@ -656,21 +656,13 @@ export default function SovereignIntelligenceCourse() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-cyan-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/sovereign-intelligence-cover.png"
-                                        alt="Sovereign Intelligence"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                        onError={(e: any) => {
-                                            e.currentTarget.src = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000";
-                                        }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="p-6 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-2xl text-center">
-                                            <Lock className="h-12 w-12 text-emerald-400 mx-auto mb-2" />
-                                            <div className="text-sm font-bold text-white uppercase tracking-widest">100% Private Instance</div>
-                                        </div>
-                                    </div>
+                                    <iframe
+                                        className="w-full h-full"
+                                        src="https://www.youtube.com/embed/ynZOXVGFjyA?autoplay=0&rel=0"
+                                        title="Sovereign Intelligence Course Preview"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>

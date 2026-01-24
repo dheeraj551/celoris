@@ -130,7 +130,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
-    { id: 'sovereign-intelligence-static', title: 'Sovereign Intelligence: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: '/sovereign-intelligence-cover.png' },
+    { id: 'sovereign-intelligence-static', title: 'Sovereign Intelligence: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
     { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: '/personalized-ai-rag-agents-cover.png' },
     { id: 'architecting-trust-static', title: 'Architecting Trust: AI Safety, Ethics & Compliance', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: '/architecting-trust-ai-safety-cover.png' },
     { id: 'agentic-ai-cybersecurity-static', title: 'Agentic AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: '/agentic-ai-cybersecurity-cover.png' },

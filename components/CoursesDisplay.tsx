@@ -100,7 +100,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '6 Weeks (Intensive)',
       price: 24999,
-      course_image_url: '/sovereign-intelligence-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(5).fill(null).map((_, i) => ({
