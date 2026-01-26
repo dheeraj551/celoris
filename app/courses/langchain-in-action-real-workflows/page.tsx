@@ -115,6 +115,7 @@ export default function LangChainCourse() {
                 number: 1,
                 title: "LangChain Core & Expression Language (LCEL)",
                 icon: "Layers",
+                videoUrl: "https://www.youtube.com/embed/Fvf5k_jocUk",
                 topics: [
                     "Prompts & Models: Mastering ChatPromptTemplates and the unified interface.",
                     "The Power of LCEL: Using the pipe operator (|) to create declarative chains.",
@@ -1006,7 +1007,7 @@ export default function LangChainCourse() {
                                 <div className="aspect-video relative overflow-hidden">
                                     <iframe
                                         className="w-full h-full"
-                                        src="https://www.youtube.com/embed/-Z1P-ebnfwQ?rel=0&showinfo=0&autoplay=0"
+                                        src="https://www.youtube.com/embed/Fvf5k_jocUk?rel=0&showinfo=0&autoplay=0"
                                         title="LangChain in Action Course Preview"
                                         frameBorder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1073,6 +1074,30 @@ export default function LangChainCourse() {
                                             <AccordionContent className="pb-6 px-4">
                                                 <div className="pl-14 space-y-4">
                                                     <div className="h-px bg-gradient-to-r from-blue-500/30 to-transparent mb-4"></div>
+
+                                                    {chapter.videoUrl && (
+                                                        <div className="mb-6 rounded-xl overflow-hidden border border-slate-700/50 shadow-2xl bg-slate-950">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={`${chapter.videoUrl}?rel=0&showinfo=0`}
+                                                                    title={`${chapter.title} Video Content`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                            <div className="p-3 bg-slate-900/50 border-t border-slate-800 flex items-center justify-between">
+                                                                <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400/80 uppercase tracking-widest">
+                                                                    <Play className="h-3 w-3 fill-blue-400" /> Lesson Preview
+                                                                </div>
+                                                                <div className="text-[10px] text-slate-500 font-medium">
+                                                                    Module {chapter.number} Support Video
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     <ul className="grid grid-cols-1 gap-3">
                                                         {chapter.topics.map((topic, topicIndex) => (
                                                             <li key={topicIndex} className="flex items-start gap-3 text-slate-400 group">

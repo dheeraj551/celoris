@@ -169,7 +169,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '8-10 Weeks',
       price: 24999,
-      course_image_url: '/mastering-multimodal-ai-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/G_eFurGI3Go/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(5).fill(null).map((_, i) => ({
@@ -260,8 +260,8 @@ export default function CoursesDisplay({
       target_audience: 'Developers, AI Engineers, Automation Specialists',
       instructor_name: 'Celoris',
       course_duration: '12 hours',
-      price: 15000,
-      course_image_url: '/langchain-in-action-cover.png',
+      price: 13500,
+      course_image_url: 'https://img.youtube.com/vi/Fvf5k_jocUk/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(4).fill(null).map((_, i) => ({

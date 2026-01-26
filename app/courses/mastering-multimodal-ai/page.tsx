@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, MousePointer2, Layout, Music, Video, Mic, Image as ImageIcon } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, HelpCircle, BookOpen, Zap, Eye, Lightbulb, Battery, Cpu, Radio, Shield, BarChart, Server, Workflow, Bot, Database, Search, Mail, Code, Terminal, MousePointer2, Layout, Music, Video, Mic, Image as ImageIcon, Trophy } from "lucide-react"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -155,6 +156,283 @@ export default function MasteringMultimodalAICourse() {
                 tools: "BioViL + Med-PALM 2 Principles",
                 icon: "Database"
             }
+        ],
+        quiz_data: [
+            {
+                title: "Foundations & MLLM Architecture",
+                questions: [
+                    {
+                        question: "What are the three core modules of a typical Multimodal Large Language Model (MLLM)?",
+                        options: ["Encoder, Transformer, and Decoder", "Modality encoder, pre-trained LLM, and modality interface", "Vision model, Audio model, and Text model", "Input layer, Hidden layer, and Output layer"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In the context of MLLMs, the modality interface is responsible for what task?",
+                        options: ["Compressing raw information into compact representations", "Bridging the gap and aligning different modalities", "Storing world knowledge", "Generating multi-round conversations"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which model is a representative of the discriminative paradigm in multimodality?",
+                        options: ["CLIP", "OFA", "GPT-4V", "LLaVA"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is referred to as the 'brain' of an MLLM?",
+                        options: ["The Modality Encoder", "The Modality Interface", "The Large Language Model (LLM)", "The Generator"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which trait distinguishes MLLMs from traditional multimodal models?",
+                        options: ["Use of small-scale datasets", "Billion-scale parameters and new training paradigms like instruction tuning", "Reliance on rule-based systems", "Lack of reasoning capabilities"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What surprising emergent capability is rare in traditional multimodal methods but present in MLLMs?",
+                        options: ["Simple image classification", "OCR-free math reasoning", "Basic text summarisation", "Voice recording"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which type of connector enables feature-level fusion inside the LLM?",
+                        options: ["Projection-based connectors", "Query-based connectors", "Fusion-based connectors", "MLP-based interfaces"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "The Q-Former style approach is an example of what interface type?",
+                        options: ["Query-based learnable connector", "Expert model translation", "Linear projection", "Encoder-free architecture"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "How does Flamingo integrate visual information into its language model?",
+                        options: ["Via a linear MLP", "Inserting extra cross-attention layers between frozen Transformer layers", "Directly concatenating raw pixels to text tokens", "Using a bilingual Qwen base"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which model supports flexible image resolution by directly projecting image patches?",
+                        options: ["MiniGPT-4", "Fuyu-8b", "InstructBLIP", "Qwen-VL"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Training Stage & Data Alignment",
+                questions: [
+                    {
+                        question: "What is the primary objective of the pre-training stage in MLLM training?",
+                        options: ["Aligning models with human preferences", "Aligning different modalities and learning multimodal world knowledge", "Reducing hallucinations via RLHF", "Improving multi-round conversation skills"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Pre-training data typically consists of which of the following?",
+                        options: ["Large-scale text-paired data, such as image-caption pairs", "Hand-crafted demonstrations", "Human preference labels", "Negative instructions only"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What does instruction tuning aim to teach MLLMs?",
+                        options: ["To predict the next word in a sentence", "To better understand user instructions and generalise to unseen tasks", "To align with specific human ethical values", "To compress audio signals into spectrograms"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "LLaVA-Instruct-150k was primarily constructed using which data collection method?",
+                        options: ["Data Adaptation", "Self-Instruction using GPT-4", "Data Mixture", "Manual annotation by medical experts"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which alignment technique simplifies the pipeline by learning from preference labels using a binary classification loss?",
+                        options: ["RLHF", "PPO", "DPO (Direct Preference Optimization)", "Supervised Fine-Tuning"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the core mechanism of Reinforcement Learning with Human Feedback (RLHF)?",
+                        options: ["Utilising reinforcement learning to align LLMs with human preferences via a reward model", "Training a model to predict image captions from scratch", "Reducing the number of parameters in a model", "Using expert models to translate images into text"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "Which dataset is a research-purpose multilingual dataset containing 5.85B image-text pairs?",
+                        options: ["CC-3M", "SBU Captions", "LAION-5B", "COYO-700M"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is a common trait of coarse-grained web-scrawled caption data?",
+                        options: ["They are long and accurate", "They are usually short and noisy as they originate from alt-text", "they are manually verified by experts", "they are exclusively in Chinese"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In MLLM evaluation, what do 'closed-set' questions refer to?",
+                        options: ["Questions with arbitrary, flexible responses", "Questions where answer options are predefined and limited", "Internal model weights testing", "Questions that only a chatbot can answer"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the MME benchmark specifically evaluate in MLLMs?",
+                        options: ["Only text generation speed", "14 perception and cognition tasks using manually designed pairs", "The number of parameters in the encoder", "The ethical bias of the model"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Agentic AI & Advanced Interaction",
+                questions: [
+                    {
+                        question: "Define 'Agentic AI' according to the latest technology trends.",
+                        options: ["A model that only generates text responses", "A system capable of independently planning and executing complex, multistep tasks", "A chatbot designed for single-turn conversations", "A static knowledge database"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What shift is described by the term 'model-native agent system'?",
+                        options: ["From cloud computing to edge computing", "From rigid pipelines to kernels where the LLM is the core operating system", "From multimodal inputs to text-only outputs", "From human leadership to complete AI governance"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The 'Silent Guardian' bot, an agentic system for cybersecurity, uses which framework?",
+                        options: ["AutoGen", "CrewAI", "LangGraph", "PyTorch"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is a primary goal of transitioning to an Agentic Security Operations Centre (SOC)?",
+                        options: ["Increasing the cost of security software", "Reducing 'Tier 1 burnout' by delegating routine triage and investigation to agents", "Removing humans from the decision-making loop entirely", "Building larger databases for static signatures"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which framework is specifically mentioned for building 'Swarms' of investigation agents?",
+                        options: ["CrewAI", "Stable Diffusion", "TensorFlow", "OpenCV"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What does a 'self-healing DevOps agent' do?",
+                        options: ["Alerts humans when a server is down", "Diagnoses bugs, writes code to fix them, and submits fixes for review", "Deletes all files when a vulnerability is found", "Predicts future market trends for software"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the enterprise adoption score for Agentic AI in 2025?",
+                        options: ["1—Frontier Innovation", "2—Experimentation", "4—Scaling in Progress", "5—Fully Scaled"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "How does 'Agency' differ from 'Orchestration' in AI systems?",
+                        options: ["Agency is more brittle and rigid", "Agency is dynamic, makes plans as it goes, and acts as the system itself", "Orchestration allows for real-world entropy", "Orchestration treats the model as the kernel"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'Native Tool Use' in the context of model-native agents?",
+                        options: ["Hard-coding every API call", "The ability of agents to read documentation and teach themselves how to use new tools", "Relying on human developers to script every action", "Using only one specific search engine"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which protocol was introduced to standardize data sharing between AI models and external tools?",
+                        options: ["A2A", "Model Context Protocol (MCP)", "HTTP/3", "TCP/IP"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Gradient Modulation & Modality Synergy",
+                questions: [
+                    {
+                        question: "What phenomenon does Adaptive Gradient Modulation (AGM) aim to address?",
+                        options: ["Data leakage", "Sub-optimal performance caused by 'modality competition'", "The high cost of GPU training", "Slow inference speeds in mobile devices"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'modality competition' in joint training?",
+                        options: ["Modalities working together to improve accuracy", "The existence of a dominant modality that prevents the model from exploiting others", "A marketing term for different AI companies", "The process of choosing between vision or audio encoders"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How does AGM compute mono-modal responses to modulate training?",
+                        options: ["Using a simple linear regression", "Utilising a Shapley value-based attribution technique", "By turning off the LLM during training", "Manually weighting the visual encoder at 90%"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the 'mono-modal concept' represent?",
+                        options: ["The model's performance on text-only tasks", "The competition-less state of a modality within a multimodal model", "A model trained on a single dataset", "The average of all modality encoders"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which multimodal interaction occurs when both modalities are needed simultaneously to fulfil a task?",
+                        options: ["Redundancy", "Uniqueness", "Synergy", "Competition"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "'Redundancy' in multimodal learning means what?",
+                        options: ["One modality contains no useful information", "The task can be performed using either modality because they contain the same information", "The model has too many parameters", "The dataset is a duplicate of another"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does CoMM stand for in the context of multimodal learning?",
+                        options: ["Collaborative Multimodal Management", "Contrastive MultiModal learning", "Computational Modality Modulation", "Causal Model Multimodality"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "CoMM's formulation is aligned with which theory in cognitive neuroscience?",
+                        options: ["Theory of Mind", "Global Workspace Theory", "Neural Plasticity", "Selective Attention Theory"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Multimodal In-Context Learning (M-ICL) differs from supervised learning because its crux is to:",
+                        options: ["Learn implicit patterns from millions of samples", "Learn from analogy using a few examples and instructions", "Update model weights at every inference step", "Use a reward model to score answers"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Reasoning chains in Multimodal Chain of Thought (M-CoT) can be structured as:",
+                        options: ["Only single-step", "Single-chain or tree-shape", "Circular or linear", "Text-only or image-only"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Hallucinations, Security & Metrics",
+                questions: [
+                    {
+                        question: "What is a 'Multimodal Hallucination'?",
+                        options: ["A visual glitch in the user interface", "Responses generated by MLLMs that are inconsistent with image content", "The model refusing to answer a prompt", "The model generating text in a foreign language"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which hallucination type involves false descriptions of relative positions or interactions between objects?",
+                        options: ["Existence Hallucination", "Attribute Hallucination", "Relationship Hallucination", "Linguistic Hallucination"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which early metric measures the proportion of sentences with hallucinated objects in captions?",
+                        options: ["CHAIR", "POPE", "MME", "BLEU"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "The 'Amplify-then-contrast' decoding scheme (VCD) is designed to offset what?",
+                        options: ["High training costs", "False bias caused by statistical bias in training data or language priors", "Low resolution of input images", "Slow response times in chatbots"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'steganographic collusion' in multi-agent security?",
+                        options: ["Agents sharing passwords in plain text", "Agents learning to embed hidden messages in natural language to evade oversight", "A bug that causes models to stop working", "Humans tricking AI into leaking data"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Define a 'Swarm attack' in the context of AI agents.",
+                        options: ["One powerful agent attacking a database", "Coordinated fleets of agents combining resources to overwhelm targets", "A model generating too many emails", "A virus that affects only robotics foundation models"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'LLM Vaccination'?",
+                        options: ["Installing antivirus software on a GPU", "Seeding an agent's memory with examples of safely handling malicious prompts", "Fine-tuning a model on medical data", "Restricting a model's access to the internet"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Why are 'edge of chaos' dynamics significant for decentralized AI?",
+                        options: ["Represent a state where the system is completely broken", "Believed to be a pre-condition for the emergence of distributed intelligence", "Refer to the physical edge of a data centre", "Type of cybersecurity firewall"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is a 'Heterogeneous attack'?",
+                        options: ["Attacking models of different sizes", "Combining multiple 'safe' agents with complementary skills to execute a complex exploit", "Using text to attack a vision model", "A single agent using multiple languages"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which method mitigates hallucinations in a 'post-remedy' way after output generation?",
+                        options: ["LRV-Instruction", "Woodpecker", "HACL", "HallE-Switch"],
+                        correctIndex: 1
+                    }
+                ]
+            }
         ]
     }
 
@@ -226,24 +504,21 @@ export default function MasteringMultimodalAICourse() {
                             </p>
                         </div>
 
-                        {/* Course Preview Image with Glassmorphism */}
+                        {/* Course Preview Video with Glassmorphism */}
                         <div className="relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/mastering-multimodal-ai-cover.png"
-                                        alt="Mastering Multimodal AI"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src="https://www.youtube.com/embed/G_eFurGI3Go?rel=0"
+                                        title="Mastering Multimodal AI Course Preview"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                        className="absolute inset-0 w-full h-full"
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -403,6 +678,29 @@ export default function MasteringMultimodalAICourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-cyan-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-cyan-400" />
+                                    </div>
+                                    Mastery Assessment: Multimodal AI & Agentic Systems
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your expertise in MLLM architectures, modality alignment, and agentic AI security.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Multimodal AI Mastery Assessment"
+                                quizDescription="50 comprehensive questions covering MLLM modules, training stages, modality competition, and agentic security."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Multimodal Expert Grade! Your understanding of alignment, fusion, and agentic intelligence is exceptional. You're ready to engineer the next generation of 'seeing and hearing' AI.";
+                                    if (score >= 35) return "LMM Engineer! You have a solid grasp of multimodal concepts. Focus on refining your understanding of modality competition and synergy.";
+                                    return "Good attempt! Review the modules on MLLM architecture and adaptive gradient modulation to strengthen your foundational knowledge.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -425,6 +723,14 @@ export default function MasteringMultimodalAICourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <Trophy className="h-4 w-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                                                Take Mastery Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">
