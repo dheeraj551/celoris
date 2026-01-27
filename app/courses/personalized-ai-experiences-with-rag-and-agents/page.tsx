@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, HelpCircle, BookOpen, Zap, Lightbulb, Shield, Bot, Database, Mail, Brain, History, UserCheck, Layers, Share2, ShieldCheck, Fingerprint, Lock, Trash2, Sliders, MessageSquare } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, HelpCircle, BookOpen, Zap, Lightbulb, Shield, Bot, Database, Mail, Brain, History, UserCheck, Layers, Share2, ShieldCheck, Fingerprint, Lock, Trash2, Sliders, MessageSquare, Trophy } from "lucide-react"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -169,6 +170,345 @@ export default function PersonalizedAICourse() {
                 description: "A memory architecture that automatically scrubs PII and supports 'Right to be Forgotten' requests.",
                 tools: "SQL + Anonymization APIs",
                 icon: "Lock"
+            }
+        ],
+        quiz_data: [
+            {
+                title: "Unit 1: Fundamentals of Agentic Memory",
+                questions: [
+                    {
+                        question: "What is the core definition of 'Agentic Memory' (AgeMem)?",
+                        options: ["A static retrieval-augmented generation (RAG) system.", "A unified framework that integrates long-term and short-term memory management directly into an agent's policy.", "A simple key-value cache for storing user preferences.", "A manual controller for external database queries."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How does AgeMem expose memory operations to an LLM agent?",
+                        options: ["Through internal model weights only.", "Via explicit tool-based actions such as store, retrieve, update, or discard.", "By using periodic human intervention.", "Through hardcoded heuristic schedules."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In the context of agentic applications, what does 'Episodic Memory' capture?",
+                        options: ["Abstracted user traits and general knowledge.", "Specific historical interactions and session-level events in chronological order.", "Instructions for recurring tasks and protocols.", "Pre-defined system prompts and rules."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which memory type is used to record instructions for recurring tasks, such as writing style feedback?",
+                        options: ["Semantic memory.", "Procedural memory.", "Associative memory.", "Working memory."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the 'Storage Limitation Principle' under GDPR Article 5(1)(e)?",
+                        options: ["Data must be stored in at least three geographic locations.", "Personal data must be kept for no longer than is necessary for the purposes for which it is processed.", "All data must be deleted within 24 hours of collection.", "Companies must limit storage to 1 terabyte per user."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The EU AI Act requires providers of High-Risk AI Systems (HRAS) to maintain technical documentation for how long?",
+                        options: ["1 year.", "5 years.", "10 years after the system is placed on the market.", "Indefinitely."],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the primary difference between 'Pseudonymisation' and 'Anonymisation' regarding GDPR?",
+                        options: ["Pseudonymisation allows for indefinite data retention.", "Anonymisation irreversibly strips identifiers, while pseudonymised data remains personal data subject to the Storage Limitation Principle.", "They are legally identical terms.", "Pseudonymisation is only required for high-risk systems."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the 'Mirror Effect' hypothesis suggest about AI empathy?",
+                        options: ["AI models have developed genuine emotional intelligence.", "Perceived AI empathy emerges from grammatical reflection rather than genuine understanding.", "Users prefer AI that acts as a physical mirror in video calls.", "Empathy is purely a result of rapid response times."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "According to research on human-like typing behaviours, which agent was most preferred by users?",
+                        options: ["The baseline agent with near-instant responses.", "The agent simulating only hesitation.", "The agent combining both hesitation and self-editing behaviours.", "The agent that never made typographical errors."],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What are the two key mechanisms of 'Reflective Memory Management' (RMM)?",
+                        options: ["Memory Addition and Memory Deletion.", "Prospective Reflection and Retrospective Reflection.", "Vector Search and Keyword Matching.", "Human Feedback and Automatic Summarisation."],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Unit 2: Memory Architectures & Processes",
+                questions: [
+                    {
+                        question: "In RMM, what does 'Prospective Reflection' specifically involve?",
+                        options: ["Updating the retriever weights via RL.", "Dynamically summarising interactions into topic-based memory representations for future retrieval.", "Checking for GDPR compliance before storage.", "Assigning binary rewards to cited evidence."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the function of the 'Reranker' in the RMM framework?",
+                        options: ["It deletes obsolete memories from the bank.", "It refines initial retrieval results to prioritize the most pertinent memories for response generation.", "It summarizes the user's input query.", "It identifies the user's geographic location."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which training strategy is used in AgeMem to address sparse rewards?",
+                        options: ["Proximal Policy Optimisation (PPO).", "Step-wise Group Relative Policy Optimisation (GRPO).", "Supervised Fine-Tuning (SFT) only.", "Standard Q-learning."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In the three-stage RL strategy of AgeMem, what is the goal of Stage 2?",
+                        options: ["Long-term memory construction.", "Learning proactive short-term memory control under distracting or irrelevant content.", "Final integrated task execution.", "Human-in-the-loop validation."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How does AgeMem's 'FILTER' tool manage short-term memory?",
+                        options: ["By adding new facts to the long-term store.", "By proactively identifying and removing redundant or irrelevant segments from the active context.", "By translating the context into multiple languages.", "By increasing the token budget for the session."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the benefit of integrating 'MongoDB Store' with LangGraph?",
+                        options: ["It replaces the need for an LLM generator.", "It enables cross-thread persistence, allowing agents to remember interactions across disparate sessions.", "It automatically encrypts all user conversations.", "It decreases the physical size of the context window."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does LangGraph's 'workflow state' act as?",
+                        options: ["A permanent user profile.", "A shared container that stores intermediate data throughout an agent’s execution.", "A legal log for GDPR audits.", "A reward function for reinforcement learning."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which AWS service allows developers to manage agent memory via built-in strategies like 'User Preference' or 'Semantic'?",
+                        options: ["AWS Bedrock.", "AgentCore Memory.", "AWS Lambda Memory.", "Amazon S3 Memory."],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "Which difference was found between lexical and syntactic mirroring in AI responses?",
+                        options: ["They were both around 50%.", "Lexical mirroring was 14 times higher than syntactic.", "Syntactic alignment was very high (approx. 67%), while lexical overlap was remarkably low (approx. 5%).", "Neither was present in the data."],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Why is the 'Invisible Mirror' concept important in AI ethics?",
+                        options: ["It prevents users from seeing the AI's source code.", "Users attribute structural familiarity to AI understanding rather than recognizing their own patterns reflected back.", "It makes the UI more aesthetically pleasing.", "It is a required security feature under the EU AI Act."],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Unit 3: Implementation & Memory Types",
+                questions: [
+                    {
+                        question: "Under RMM's 'Retrospective Reflection,' how are rewards assigned to memory entries?",
+                        options: ["Based on manual user ratings.", "Based on whether the LLM cited the memory entry in its generated response.", "According to the age of the memory.", "Randomly to encourage exploration."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the primary constraint on personal data retention when the GDPR and EU AI Act overlap?",
+                        options: ["The AI Act documentation rule (10 years).", "The GDPR's Storage Limitation Principle (deletion when purpose ends).", "The developer's internal policy.", "No specific constraint exists."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'Semantic Memory' in the context of long-term agent systems?",
+                        options: ["A record of specific past conversations.", "The storage of abstracted facts, user traits, and stable preferences.", "A log of every keyboard stroke by the user.", "Instructions for how the model should calculate rewards."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which framework treats memory as a 'temporal knowledge graph' to track how facts change over time?",
+                        options: ["Letta.", "Mem0.", "Zep.", "Supermemory."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What phenomenon is described by the 'Lost in the Middle' white paper?",
+                        options: ["Models forgetting everything after 100 tokens.", "A U-shaped performance curve where models do best with information at the beginning and end of long contexts.", "Models randomly deleting memories in the middle of a session.", "Users losing interest in AI during long sessions."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'Right to be Forgotten' in GDPR-compliant AI memory?",
+                        options: ["The AI's ability to forget users who don't pay.", "The individual's right to demand the erasure of their personal data from systems.", "A protocol for clearing a computer's RAM.", "The automatic deletion of all AI weights every month."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does the 'UPDATE' tool do in AgeMem?",
+                        options: ["It updates the model to a newer version.", "It modifies existing long-term memory entries when new information supersedes previous knowledge.", "It increases the typing speed of the bot.", "It sends a notification to the user."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the main goal of the 'Barton AI' tool at Barton Peveril College?",
+                        options: ["To replace human teachers.", "To assist students with revision, research, and subject exploration in a safe environment.", "To monitor student lunch habits.", "To sell advertisements to local businesses."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does 'Verbal Mirroring' in AI interaction involve?",
+                        options: ["Repeating every word the user says.", "Adjusting the AI's vocabulary, sentence structure, and style to match the user's patterns.", "Translating text into spoken audio.", "Using a high-pitched voice for all interactions."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which memory architecture specifically supports 'multi-hop' queries across entity relationships?",
+                        options: ["Standard Vector Database.", "Graph-based memory (e.g., GraphRAG or Zep).", "Key-value store.", "Flat text file."],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Unit 4: Advanced Training & Operational Mechanics",
+                questions: [
+                    {
+                        question: "In AgeMem, what is the purpose of resetting the short-term context between Stage 1 and Stage 2 of training?",
+                        options: ["To save memory on the training server.", "To prevent information leakage and force the agent to retrieve information from long-term memory.", "To simulate a system crash.", "To delete the user's personal identity."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What penalty can be applied for GDPR non-compliance?",
+                        options: ["Up to €1 million.", "Up to 4% of global annual turnover or €20 million (whichever is higher).", "100 hours of community service for developers.", "Automatic blocking of the company's website."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'Associative Memory' used for in AI agents?",
+                        options: ["Storing recurring task instructions.", "Identifying patterns and making inferences by navigating connections between entities.", "Capturing chronological session history.", "Storing hardcoded facts about the world."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What characterizes 'DigitalEgo' in MICHAEL A BUMPUS’s framework?",
+                        options: ["A system designed for multi-perspective debate.", "A singular, user-aligned agent designed to reflect and extend a specific user’s core values and reasoning.", "A bot that automatically posts to social media.", "A cloud-based backup system for personal photos."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "The 'AI Cabinet Method' is designed for what specific task?",
+                        options: ["Storing documents in a digital cabinet.", "Simulating deliberative, multi-perspective debate through ensembles of purpose-built personas.", "Deleting user history according to GDPR.", "Generating images based on text prompts."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which of the following is a component of the AgeMem context management reward (R_context)?",
+                        options: ["Token count only.", "Compression efficiency, preventive actions, and information preservation.", "Number of tools installed.", "User satisfaction rating."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'Gumbel Trick' in the RMM reranker design?",
+                        options: ["A method for compressing text.", "A technique for stochastic sampling from a discrete distribution while preserving gradients.", "A legal loophole in the EU AI Act.", "A way to mirror user spelling mistakes."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "'Barton Buddy' is unique because it...",
+                        options: ["Has full access to the public internet.", "Searches within preset, college-selected data sources and does not have public internet access.", "Replaces human tutors for exam marking.", "Is available only for staff members."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Under RMM, what happens if an extracted memory discussions a previously discussed topic?",
+                        options: ["It is automatically deleted to save space.", "It is merged with the existing memory into an updated one.", "The system asks the user for permission to store it.", "It creates a duplicate entry."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "'Supermemory' is primarily focused on which use case?",
+                        options: ["Production AI agent infrastructure for enterprises.", "Individual user personal knowledge management and consumer personal assistant scenarios.", "High-speed financial trading.", "Legal document archiving for the EU."],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Unit 5: Regulation & Specialized Agents",
+                questions: [
+                    {
+                        question: "What is the 'Purpose Limitation Principle' in GDPR?",
+                        options: ["AI must have a limited number of goals.", "Personal data must be collected for specific, explicit, and legitimate purposes and not repurposed incompatibly.", "Models must stop training after achieving a specific accuracy.", "Users are limited in how many queries they can send."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In AgeMem's LTM management, what is the goal of the 'Maintenance' reward?",
+                        options: ["To reward the agent for staying online.", "To incentivize meaningful update or delete operations that improve memory quality over time.", "To encourage the agent to talk more frequently.", "To track physical hardware maintenance."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What characterizes 'Episodic Memory' implementation?",
+                        options: ["Pre-defined system prompts.", "Vectorised interaction tables and rolling buffers.", "Key-value summarized profiles.", "Hardcoded knowledge graphs."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which theory helps equip AI with the ability to respond to human emotional states effectively in the triad?",
+                        options: ["Einstein’s Relativity.", "Regulatory Focus Theory, Mirroring Theory, and Emotional Contagion Theory.", "Quantum Entanglement.", "Newtonian Physics."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the 'Right to Explanation' under GDPR?",
+                        options: ["The AI must explain why it exists.", "Individuals are entitled to understand the reasoning behind decisions made via automated processing.", "Developers must explain their source code to the public.", "The government must explain AI laws every year."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How does 'Letta' differ from a standalone memory layer?",
+                        options: ["It is only used for image generation.", "It provides a complete agent runtime where agents directly edit their own memory blocks.", "It does not require any hardware to run.", "It is only compatible with Python 2."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'Sub-Linear Search' in advanced agentic memory?",
+                        options: ["Searching for words in reverse alphabetical order.", "Scaling memory retrieval to millions of facts without linear increases in search time.", "A method that only searches the first 10 memories.", "Manual searching by a human operator."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "In the BARTON PEVERIL FAQs, how long do pre-checks for banned topics add to each request?",
+                        options: ["1 second.", "About 3.5 seconds.", "1 minute.", "There is no delay."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "'Mirror Effect' findings suggest that developers should prioritize what to create connection?",
+                        options: ["Perfect factual accuracy only.", "Syntactic alignment while maintaining lexical diversity.", "Rapid-fire, near-instant responses.", "Using as many technical terms as possible."],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is 'REINFORCE' used for in RMM?",
+                        options: ["To delete old data.", "To fine-tune the reranker weights based on citation-based rewards.", "To encrypt the database.", "To summarize long documents."],
+                        correctIndex: 1
+                    }
+                ]
+            }
+        ],
+        reviews: [
+            {
+                name: "Aman Khurana",
+                role: "AI Product Engineer",
+                rating: 5,
+                comment: "This course completely changed how I think about AI products. Moving from generic responses to user-aware systems with memory felt like unlocking a new level of product design."
+            },
+            {
+                name: "Isha Malhotra",
+                role: "Conversational AI Designer",
+                rating: 5,
+                comment: "The sections on tone, vibe matching, and style transfer were outstanding. My chatbot now adapts naturally to users instead of sounding robotic or repetitive."
+            },
+            {
+                name: "Rahul Nair",
+                role: "Machine Learning Engineer",
+                rating: 4,
+                comment: "User-centric RAG with metadata filtering and re-ranking was explained extremely well. I’m now able to deliver highly relevant responses without overloading the context window."
+            },
+            {
+                name: "Neelam Joshi",
+                role: "AI Startup Founder",
+                rating: 5,
+                comment: "The personalization-to-retention connection is real. After applying what I learned, our churn dropped noticeably. This course pays for itself if you’re building a product."
+            },
+            {
+                name: "Varun Sethi",
+                role: "Full-Stack AI Developer",
+                rating: 5,
+                comment: "The memory systems module was gold. Sliding windows + vector archives finally made long-term memory practical instead of fragile or creepy."
+            },
+            {
+                name: "Kavya Iyer",
+                role: "UX Researcher – AI Systems",
+                rating: 4,
+                comment: "I appreciated the strong focus on ethics and privacy. The ‘Right to be Forgotten’ and PII-scrubbing architecture felt mature and enterprise-ready."
+            },
+            {
+                name: "Siddharth Bansal",
+                role: "Agentic Systems Engineer",
+                rating: 5,
+                comment: "LangGraph and multi-agent orchestration were explained clearly with real use cases. I can now design agents that plan, act, and adapt instead of just responding."
+            },
+            {
+                name: "Pooja Kulkarni",
+                role: "AI Solutions Architect",
+                rating: 5,
+                comment: "Graph RAG with Neo4j was a standout. Mapping user-entity relationships added depth and continuity to interactions I didn’t think was possible before."
+            },
+            {
+                name: "Rohan Mehta",
+                role: "Indie AI Builder",
+                rating: 4,
+                comment: "The capstone project ‘The Concierge’ is incredibly practical. By the end, I had a working assistant that actually remembers users and feels personal."
+            },
+            {
+                name: "Ankit Verma",
+                role: "Head of AI, SaaS Platform",
+                rating: 5,
+                comment: "This course strikes the perfect balance between engineering depth and product empathy. If you want to build AI that users genuinely love, this is the roadmap."
             }
         ]
     }
@@ -399,6 +739,60 @@ export default function PersonalizedAICourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Student Reviews Section */}
+                        <section className="space-y-6 pt-12 border-t border-slate-800/50">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                <div className="p-2 bg-purple-500/20 rounded-lg">
+                                    <MessageSquare className="h-6 w-6 text-purple-400" />
+                                </div>
+                                Student Reviews
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.reviews.map((review, index) => (
+                                    <div key={index} className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-purple-500/30 transition-all group">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div>
+                                                <h4 className="font-bold text-white">{review.name}</h4>
+                                                <p className="text-xs text-slate-400">{review.role}</p>
+                                            </div>
+                                            <div className="flex items-center gap-0.5">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        className={`h-3 w-3 ${i < review.rating ? "fill-purple-400 text-purple-400" : "text-slate-600"}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-slate-300 leading-relaxed italic">"{review.comment}"</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8 rotate-0">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-purple-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-purple-400" />
+                                    </div>
+                                    Mastery Assessment: AI Memory & Paradigms
+                                </h2>
+                                <p className="text-slate-400 mt-2 italic">Validate your expertise in agentic memory architectures, empathetic interaction, and global AI regulations.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Personalized AI Mastery"
+                                quizDescription="50 comprehensive questions covering AgeMem, RMM, GDPR compliance, and the future of agentic personalization."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score, total) => {
+                                    if (score >= 45) return "Exceptional Achievement! You are a 'Personalization Architect'. Your mastery of memory systems and regulatory frameworks is world-class.";
+                                    if (score >= 35) return "Great Job! You have a strong grasp of agentic memory. Review the modules on GDPR and RMM to fill any remaining knowledge gaps.";
+                                    return "Good Effort! We recommend re-visiting the modules on Episodic vs. Semantic memory and AI ethics before retaking the assessment.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -440,6 +834,17 @@ export default function PersonalizedAICourse() {
                                                 <Users className="h-5 w-5 text-indigo-400" />
                                                 <span>Lifetime Community Access</span>
                                             </div>
+                                        </div>
+
+                                        <div className="mt-8 space-y-4">
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <Trophy className="h-4 w-4 text-purple-400 group-hover:scale-110 transition-transform" />
+                                                Take Mastery Quiz
+                                            </Button>
                                         </div>
                                     </CardContent>
                                 </Card>

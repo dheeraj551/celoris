@@ -146,7 +146,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '6-8 Weeks',
       price: 21999,
-      course_image_url: '/architecting-trust-ai-safety-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/CdCAuee0qyI/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(6).fill(null).map((_, i) => ({
