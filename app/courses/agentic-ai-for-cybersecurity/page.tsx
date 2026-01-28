@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
+import { Trophy } from "lucide-react"
 
 export default function AgenticAICybersecurityCourse() {
     // Set page title and meta tags dynamically
@@ -154,6 +156,343 @@ export default function AgenticAICybersecurityCourse() {
                 description: "An agent that reads scan reports, writes patches, and opens PRs for review.",
                 tools: "AutoGen + Snyk + GitHub Actions",
                 icon: "Activity"
+            }
+        ],
+        quiz_data: [
+            {
+                title: "Section 1: The 2025 Global Threat Landscape",
+                questions: [
+                    {
+                        question: "According to CrowdStrike, what was the fastest recorded eCrime breakout time in 2024?",
+                        options: ["48 minutes", "51 seconds", "10 minutes", "5 minutes"],
+                        correctIndex: 1,
+                        explanation: "CrowdStrike's 2025 Global Threat Report recorded a lightning-fast breakout time of just 51 seconds in 2024."
+                    },
+                    {
+                        question: "What percentage of detections in 2024 were found to be malware-free?",
+                        options: ["40%", "50%", "79%", "26%"],
+                        correctIndex: 2,
+                        explanation: "An staggering 79% of intrusions in 2024 involved malware-free techniques, leveraging compromised credentials and legitimate tools."
+                    },
+                    {
+                        question: "Which nation-state nexus saw a 150% increase in activity according to 2024 data?",
+                        options: ["North Korea", "Russia", "China", "Iran"],
+                        correctIndex: 2,
+                        explanation: "China-nexus adversaries saw a massive 150% increase in activity, focusing on persistence and stealth."
+                    },
+                    {
+                        question: "The 'math problem' facing modern SOCs refers to what imbalance?",
+                        options: ["High budgets versus low software quality", "Exponentially expanding attack surfaces versus linear headcount growth", "Increasing salaries versus decreasing skill levels", "Too many firewalls versus too few endpoints"],
+                        correctIndex: 1,
+                        explanation: "The 'SOC Math Problem' is the gap between the exponential growth of data/threats and the linear ability to hire and train analysts."
+                    },
+                    {
+                        question: "Which adversary is specifically noted for using Generative AI to supercharge insider threats?",
+                        options: ["CHATTY SPIDER", "FAMOUS CHOLLIMA", "LIMINAL PANDA", "SLICK STINGER"],
+                        correctIndex: 1,
+                        explanation: "FAMOUS CHOLLIMA (North Korea) uses GenAI to create fake personas and infiltrate companies as remote workers."
+                    },
+                    {
+                        question: "What was the year-over-year surge in ransomware attacks reported in 2025?",
+                        options: ["25%", "50%", "100%", "703%"],
+                        correctIndex: 3,
+                        explanation: "The 2025 landscape saw a dramatic 703% surge in ransomware-related phishing and initial access activity."
+                    },
+                    {
+                        question: "In 2025, how many corporate network access listings were typically found for sale on cybercrime forums?",
+                        options: ["Over 1,000", "Over 2,000", "Over 3,000", "Over 10,000"],
+                        correctIndex: 2,
+                        explanation: "Over 3,000 corporate access listings were identified on criminal forums, highlighting the scale of initial access brokers."
+                    },
+                    {
+                        question: "Which sector suffered the highest operational disruption due to attacks on OT and ICS environments?",
+                        options: ["Manufacturing", "Healthcare", "Financial Services", "Retail"],
+                        correctIndex: 0,
+                        explanation: "Manufacturing remains the primary target for OT/ICS attacks due to its direct impact on supply chains and production."
+                    }
+                ]
+            },
+            {
+                title: "Section 2: Defining the AI SOC and Agentic AI",
+                questions: [
+                    {
+                        question: "What is the primary difference between Generative AI (GenAI) and Agentic AI?",
+                        options: ["GenAI is faster than Agentic AI", "GenAI is offensive, while Agentic AI is defensive", "GenAI acts as an assistant (summarising/reporting), while Agentic AI acts as an autonomous actor (executing tasks)", "There is no difference; they are interchangeable terms"],
+                        correctIndex: 2,
+                        explanation: "Agentic AI moves from 'talking' (GenAI) to 'doing'—it carries out multi-step tasks autonomously."
+                    },
+                    {
+                        question: "An 'Agentic SOC' is defined as a model where:",
+                        options: ["Decision-making for routine tasks is decoupled from human intervention", "Human analysts are replaced entirely by a single LLM", "All security tools are moved to a local server", "Only phishing emails are automated"],
+                        correctIndex: 0,
+                        explanation: "In an Agentic SOC, the AI handles the routine thinking and execution, escalating only when it hits a judgment boundary."
+                    },
+                    {
+                        question: "What does the term 'Hyperautomation' refer to in the context of an Agentic SOC?",
+                        options: ["Using multiple firewalls simultaneously", "The evolution of SOAR through AI-driven reasoning to adapt workflows in real-time", "Automating the payroll of security analysts", "Increasing the speed of internet connections"],
+                        correctIndex: 1,
+                        explanation: "Hyperautomation is the shift from static scripts to AI agents that can adapt their workflow based on the live context of a threat."
+                    },
+                    {
+                        question: "Which capability allows Agentic AI to improve over time by reviewing its own errors?",
+                        options: ["Static Scripting", "Hard-coding", "Self-reflection and feedback loops", "Manual data entry"],
+                        correctIndex: 2,
+                        explanation: "Self-reflection allows agents to critique their own work and adjust their reasoning to correct mistakes without human input."
+                    },
+                    {
+                        question: "In the 'Self-Driving Car' analogy for SOCs, what represents the 'Fuel'?",
+                        options: ["The SOC Manager", "Unified Telemetry", "Compliance reports", "The annual budget"],
+                        correctIndex: 1,
+                        explanation: "Data (Unified Telemetry) is the fuel that powers the reasoning engine of an Agentic AI system."
+                    },
+                    {
+                        question: "What is the 'Maintenance Trap' associated with traditional SOAR?",
+                        options: ["Spending more time maintaining rigid playbooks than investigating threats", "The cost of electricity for servers", "The need to clean hardware components", "High subscription fees for antivirus software"],
+                        correctIndex: 0,
+                        explanation: "Traditional SOAR requires manual upkeep of fragile playbooks; Agentic AI replaces these with dynamic reasoning."
+                    }
+                ]
+            },
+            {
+                title: "Section 3: Professional Roles and Evolution",
+                questions: [
+                    {
+                        question: "Which new role is responsible for reviewing and approving decisions made by AI agents?",
+                        options: ["AI Systems Engineer", "AI Validation Analyst", "Automation Policy Lead", "AI Behavior Auditor"],
+                        correctIndex: 1,
+                        explanation: "Validation Analysts act as the 'Human disposes' layer, verifying that the AI's complex findings are correct."
+                    },
+                    {
+                        question: "How does the role of a Tier 1 Analyst change in an Agentic SOC?",
+                        options: ["They are promoted to CEO", "Their repetitive triage duties are automated, allowing them to focus on validating AI outputs", "They no longer need to understand cybersecurity", "They move into a pure data entry role for the LLM"],
+                        correctIndex: 1,
+                        explanation: "Analysts move 'up the stack' to focus on high-context validation instead of manual, low-level alerting."
+                    },
+                    {
+                        question: "What is the focus of a 'Threat Hunter' in an AI-augmented SOC?",
+                        options: ["Writing incident reports manually", "Hypothesis creation, validation, and adversarial reasoning", "Filtering through thousands of false positives", "Checking if the server is plugged in"],
+                        correctIndex: 1,
+                        explanation: "With AI handling the noise, Threat Hunters can finally focus on deep hypothesis-driven work."
+                    },
+                    {
+                        question: "The 'AI Systems Engineer' focuses on:",
+                        options: ["Maintaining the operational health of agentic frameworks and model retraining", "Negotiating with ransomware groups", "Installing Windows updates on workstations", "Managing the company's social media security"],
+                        correctIndex: 0,
+                        explanation: "This role ensures the underlying agentic platform, its prompts, and its integrations stay healthy."
+                    }
+                ]
+            },
+            {
+                title: "Section 4: Vendor-Specific Innovations",
+                questions: [
+                    {
+                        question: "Which subscription level is required to have Microsoft Security Copilot included for customers?",
+                        options: ["Microsoft 365 Business", "Microsoft 365 E3", "Microsoft 365 E5", "Office 365 Home"],
+                        correctIndex: 2,
+                        explanation: "Security Copilot and associated integrations are primary features of the Microsoft 365 E5 tier."
+                    },
+                    {
+                        question: "What is the reported increase in detection speed for malicious emails using Microsoft’s Phishing Triage Agent?",
+                        options: ["100%", "250%", "550%", "77%"],
+                        correctIndex: 2,
+                        explanation: "Agents can process the massive volume of phishing data significantly faster, with some reporting up to 550% speed gains."
+                    },
+                    {
+                        question: "CrowdStrike's Charlotte AI Detection Triage Agent reports a decision accuracy of over:",
+                        options: ["80%", "90%", "98%", "75%"],
+                        correctIndex: 2,
+                        explanation: "Tested against standard triage benchmarks, Charlotte AI achieves 98%+ accuracy in identifying true positives."
+                    },
+                    {
+                        question: "According to CrowdStrike, how much time is saved per detection by automating triage?",
+                        options: ["1 minute", "At least 5 minutes", "30 seconds", "1 hour"],
+                        correctIndex: 1,
+                        explanation: "Automated triage saves at least 5 minutes per alert, which adds up to thousands of hours annually in large SOCs."
+                    },
+                    {
+                        question: "What is the name of Google Cloud’s modern, AI-powered SecOps platform?",
+                        options: ["Falcon", "Sentinel", "Google SecOps", "Cortex"],
+                        correctIndex: 2,
+                        explanation: "Google SecOps (formerly Chronicle) is the core of their autonomous security vision."
+                    },
+                    {
+                        question: "Which Alias Robotics model is purpose-built for 'unrestricted' cybersecurity tasks?",
+                        options: ["GPT-4", "Claude", "alias1", "Llama"],
+                        correctIndex: 2,
+                        explanation: "alias1 is a cybersecurity-specific model designed without the typical refusals for security research."
+                    },
+                    {
+                        question: "What is the primary benefit of the CAI PRO framework's 'Parallel Agent Swarms'?",
+                        options: ["It makes the TUI look better", "Deploying hundreds of specialized agents simultaneously for massive coverage", "It reduces the cost of internet bandwidth", "It allows agents to talk to each other about non-work topics"],
+                        correctIndex: 1,
+                        explanation: "Swarms allow you to do things like check 500 endpoints for a specific file at the same time using local agents."
+                    },
+                    {
+                        question: "Which protocol, developed by Google, enables interoperability between AI agents from different providers?",
+                        options: ["HTTP", "SMTP", "Agent2Agent (A2A)", "FTP"],
+                        correctIndex: 2,
+                        explanation: "The A2A protocol allows a Microsoft agent to delegate a task to a Google agent or vice-versa."
+                    },
+                    {
+                        question: "What does the Model Context Protocol (MCP) aim to solve?",
+                        options: ["The 'NxM' integration problem between many models and many tools", "The speed of light in fibre optic cables", "Password complexity requirements", "The number of emails sent per day"],
+                        correctIndex: 0,
+                        explanation: "MCP provides a standardized way for any AI model to safely interact with any data source or tool."
+                    }
+                ]
+            },
+            {
+                title: "Section 5: Tactical Implementation and Metrics",
+                questions: [
+                    {
+                        question: "'Mean Time to Conclusion' (MTTC) is a metric highlighting:",
+                        options: ["How long it takes to hire an analyst", "The reduction in time to finish an investigation using AI", "The time it takes for a server to reboot", "The length of a security briefing"],
+                        correctIndex: 1,
+                        explanation: "MTTC measures the efficiency gains from AI correlating data much faster than a human could."
+                    },
+                    {
+                        question: "Why is 'Human-on-the-Loop' governance preferred over 'Human-in-the-Loop' as trust grows?",
+                        options: ["It requires more humans to work at night", "Humans monitor performance and step in only when necessary, rather than approving every action", "It is a cheaper licensing model", "It prevents the AI from learning too much"],
+                        correctIndex: 1,
+                        explanation: "On-the-loop allows for massive scale; the AI acts autonomously, but the human retains total supervisory control."
+                    },
+                    {
+                        question: "What is a 'Kill-Switch' in the context of Agentic AI?",
+                        options: ["A mechanism to immediately stop an agent if it behaves unexpectedly", "A physical button on the laptop", "A command to delete all logs", "A way to fire an analyst"],
+                        correctIndex: 0,
+                        explanation: "Every autonomous system must have an emergency stop to prevent run-away actions."
+                    },
+                    {
+                        question: "In the Agentic SOC, why can detection sensitivity be safely increased?",
+                        options: ["Because hackers are becoming less skilled", "Because cloud storage is cheaper", "Because AI agents provide an infinite capacity layer to triage the resulting noise", "Because false positives no longer exist"],
+                        correctIndex: 2,
+                        explanation: "AI can triage the additional noise, allowing you to catch subtler threats you would previously have ignored."
+                    },
+                    {
+                        question: "What is 'Analyst Notes Reconstruction' in Microsoft Defender?",
+                        options: ["A way to record audio in the SOC", "An AI feature that automatically turns an investigation session into structured notes", "A backup of the analyst's personal files", "A tool for checking spelling and grammar"],
+                        correctIndex: 1,
+                        explanation: "It uses AI to digest hours of investigation steps into a perfect clear executive summary."
+                    },
+                    {
+                        question: "What is the 'DIY Trap' warned about by security experts?",
+                        options: ["Trying to fix your own hardware", "Building your own AI SOC engine from scratch instead of using established platforms", "Using free versions of antivirus", "Setting your own passwords"],
+                        correctIndex: 1,
+                        explanation: "Building the core reasoning and state-management engine is extremely difficult; companies should use proven frameworks like LangGraph."
+                    }
+                ]
+            },
+            {
+                title: "Section 6: Advanced Concepts and Strategy",
+                questions: [
+                    {
+                        question: "What is the 'Funnel of Fidelity' problem?",
+                        options: ["A lack of trustworthy employees", "The need to filter massive alert volumes with fixed human capacity, leading to blind spots", "High latency in satellite communications", "The process of encrypting data for transit"],
+                        correctIndex: 1,
+                        explanation: "Humans can only look at so much; the 'funnel' forces teams to turn off detectors just to survive the noise."
+                    },
+                    {
+                        question: "Which framework provides an open-source library for building offensive and defensive AI automation?",
+                        options: ["Microsoft Office", "CAI (Cybersecurity AI)", "Adobe Creative Cloud", "Salesforce"],
+                        correctIndex: 1,
+                        explanation: "CAI is the standard library for building high-performance cybersecurity agents."
+                    },
+                    {
+                        question: "'Adversarial Robustness' for an AI agent means:",
+                        options: ["It can run on any operating system", "It is resistant to physical theft", "It is designed to withstand attempts by hackers to probe, poison, or subvert it", "It can work without an internet connection"],
+                        correctIndex: 2,
+                        explanation: "Security agents must be able to ignore 'jailbreak' attempts and prompt injections while they investigate hackers."
+                    },
+                    {
+                        question: "Which term describes providing agents with unique, verifiable identities and fine-grained permissions?",
+                        options: ["OAuth", "Agentic Identity and Access Management (AIAM)", "Two-Factor Authentication", "Biometric Scanning"],
+                        correctIndex: 1,
+                        explanation: "AIAM ensures that every action an agent takes can be audited back to its specific identity and policy."
+                    },
+                    {
+                        question: "What is the 'Sweet Middle' of Incident Response that Agentic AI targets?",
+                        options: ["Resetting passwords for employees", "Negotiating with the Board for more budget", "Tier 1 and Tier 2 work like context gathering, enrichment, and initial reasoning", "Physically securing the data centre"],
+                        correctIndex: 2,
+                        explanation: "AI is most powerful at the 80% of work that is time-consuming but routine (T1/T2)."
+                    },
+                    {
+                        question: "How does Agentic AI help with the 'Skills Shortage'?",
+                        options: ["By mimicking the human-like decision process to automate tasks that previously required more staff", "By teaching people how to code in one hour", "By allowing companies to pay analysts less", "By making the job so easy that children can do it"],
+                        correctIndex: 0,
+                        explanation: "By cloning the 'reasoning' of a Tier 3 analyst into an agent, you multiply your force without hiring 100 juniors."
+                    },
+                    {
+                        question: "In Microsoft’s vision, the Threat Intelligence Briefing Agent provides:",
+                        options: ["A list of news articles from the morning", "Daily, tailored briefings combining global intelligence with organization-specific context", "A weather report for the SOC location", "Alerts about upcoming social events"],
+                        correctIndex: 1,
+                        explanation: "It eliminates generic news by showing only what threats actually matter to *your* unique infrastructure."
+                    }
+                ]
+            },
+            {
+                title: "Section 7: Governance, Risks, and Future Outlook",
+                questions: [
+                    {
+                        question: "Why is 'Explainability' a critical requirement for CISOs adopting AI?",
+                        options: ["'Black box' decisions are unacceptable; AI must provide citations and logic for its actions", "It makes the software more expensive", "Analysts enjoy reading long explanations", "It is required by international copyright law"],
+                        correctIndex: 0,
+                        explanation: "A SOC cannot take a destructive action (like blocking a CEO's laptop) without a clear 'Chain of Thought' explaining why."
+                    },
+                    {
+                        question: "Which regulation began setting global expectations for responsible AI in 2025?",
+                        options: ["The Patriot Act", "Europe’s AI Act", "GDPR 2.0", "The Digital Millennium Copyright Act"],
+                        correctIndex: 1,
+                        explanation: "The EU AI Act is the first major regulatory framework to classify and govern high-risk AI uses."
+                    },
+                    {
+                        question: "What is a 'Hallucination' in AI terms?",
+                        options: ["A virus that makes the screen flicker", "When the AI provides a confident but false or fabricated answer", "A power surge in the data centre", "When the AI takes a scheduled break"],
+                        correctIndex: 1,
+                        explanation: "Hallucinations are the biggest risk in the SOC, which is why 'Self-Reflection' and HITL are mandatory."
+                    },
+                    {
+                        question: "According to Omdia, when will the autonomous SOC likely become a standard for CISOs?",
+                        options: ["In 10 years", "In 5 years", "Within 1-2 years", "It is already the standard everywhere"],
+                        correctIndex: 2,
+                        explanation: "Analyst firm Omdia predicts the shift to autonomous SOCs will hit the mainstream within 24 months."
+                    },
+                    {
+                        question: "What is the 'Governance Trap' in AI security?",
+                        options: ["Having too many lawyers in the company", "Letting a model make all decisions without controls, leading to risks like isolating critical systems accidentally", "Paying too much for compliance certifications", "Using the wrong fonts in official documents"],
+                        correctIndex: 1,
+                        explanation: "Governance must define exactly what an agent can and cannot do independently."
+                    },
+                    {
+                        question: "Which open-source framework is used to build resilient language agents as graphs?",
+                        options: ["Microsoft Word", "LangGraph", "WordPress", "Docker"],
+                        correctIndex: 1,
+                        explanation: "LangGraph (by LangChain) is the premier tool for building stateful, multi-agent security 'graphs'."
+                    },
+                    {
+                        question: "The 'AI Chief Compliance Officer' is a new role responsible for:",
+                        options: ["Establishing policy for regulatory frameworks governing system-to-system AI use", "Checking if employees are wearing their ID badges", "Managing the company's tax returns", "Running the fire drills in the building"],
+                        correctIndex: 0,
+                        explanation: "This role manages the legal and ethical boundaries of interacting AI swarms."
+                    },
+                    {
+                        question: "Why is 'Data Sovereignty' emphasized by European AI providers like Alias Robotics?",
+                        options: ["To ensure the AI speaks local languages", "To ensure sensitive security data never leaves European jurisdiction", "To promote local tourism", "To avoid paying international shipping fees"],
+                        correctIndex: 1,
+                        explanation: "In security, you cannot afford to send your network logs to a model that might be trained by a competitor or adversary."
+                    },
+                    {
+                        question: "By 2026, resilience in cybersecurity is described as being about:",
+                        options: ["Never being breached", "Awareness, decisiveness, and staying ahead of threats through machine-speed investigation", "Buying the most expensive tools available", "Hiring only analysts with 20 years of experience"],
+                        correctIndex: 1,
+                        explanation: "Breaches are inevitable; resilience is how fast your agents can find and stop them automatically."
+                    },
+                    {
+                        question: "What does the 'A2A Client' do in the Agent2Agent protocol?",
+                        options: ["It pays the bill for the AI service", "It is the initiator agent that delegates a request to a remote agent", "It cleans the data before the AI sees it", "It translates human speech into code"],
+                        correctIndex: 1,
+                        explanation: "The A2A Client is the 'manager' agent that finds and talks to other agents to get a job done."
+                    }
+                ]
             }
         ]
     }
@@ -403,6 +742,29 @@ export default function AgenticAICybersecurityCourse() {
                                 ))}
                             </Accordion>
                         </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-cyan-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-cyan-400" />
+                                    </div>
+                                    Agentic AI & SOC Mastery Assessment
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your expertise in building autonomous defense systems, agentic swarms, and AI-driven SOC playbooks.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Agentic AI & SOC Mastery Assessment"
+                                quizDescription="50 questions covering the 2025 threat landscape, Agentic AI architectures, and production-ready security automation."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 90) return "Defense Architect! You are fully prepared to engineer autonomous security systems.";
+                                    if (score >= 70) return "Agentic Engineer! You have a solid grasp of modern AI-driven defense patterns.";
+                                    return "Keep Building! Review the agentic governance and orchestration modules to strengthen your skills.";
+                                }}
+                            />
+                        </section>
                     </div>
 
                     {/* Sidebar */}
@@ -425,6 +787,13 @@ export default function AgenticAICybersecurityCourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                Take Mastery Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">

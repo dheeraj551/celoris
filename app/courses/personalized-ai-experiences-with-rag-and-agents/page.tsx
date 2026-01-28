@@ -581,24 +581,19 @@ export default function PersonalizedAICourse() {
                             </p>
                         </div>
 
-                        {/* Course Preview Image */}
+                        {/* Course Preview Image - Replaced with YouTube Video */}
                         <div className="relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/personalized-ai-rag-agents-cover.png"
-                                        alt="Personalized AI Experiences"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        className="w-full h-full"
+                                        src="https://www.youtube.com/embed/ZwqAdQsXy3A?autoplay=0"
+                                        title="Personalized AI Experiences with RAG & Agents"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>

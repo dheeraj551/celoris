@@ -123,7 +123,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '6-Week Self-Paced',
       price: 19999,
-      course_image_url: '/personalized-ai-rag-agents-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/ZwqAdQsXy3A/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(6).fill(null).map((_, i) => ({

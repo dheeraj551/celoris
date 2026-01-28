@@ -10,56 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { InteractiveQuiz } from "@/components/InteractiveQuiz"
 
-const CountdownTimer = ({ targetDate }: { targetDate: string }) => {
-    const [timeLeft, setTimeLeft] = useState({
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0
-    });
 
-    useEffect(() => {
-        const calculateTimeLeft = () => {
-            const difference = +new Date(targetDate) - +new Date();
-            if (difference > 0) {
-                setTimeLeft({
-                    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                    minutes: Math.floor((difference / 1000 / 60) % 60),
-                    seconds: Math.floor((difference / 1000) % 60)
-                });
-            }
-        };
-
-        const timer = setInterval(calculateTimeLeft, 1000);
-        calculateTimeLeft();
-        return () => clearInterval(timer);
-    }, [targetDate]);
-
-    return (
-        <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 mb-6">
-            <div className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-3 flex items-center justify-between">
-                <span>Republic Day Offer</span>
-                <span className="animate-pulse">Hurry, offer expires soon!</span>
-            </div>
-            <div className="flex justify-between items-center px-2">
-                {[
-                    { label: 'Days', value: timeLeft.days },
-                    { label: 'Hrs', value: timeLeft.hours },
-                    { label: 'Min', value: timeLeft.minutes },
-                    { label: 'Sec', value: timeLeft.seconds }
-                ].map((item, i) => (
-                    <div key={i} className="text-center group">
-                        <div className="text-2xl font-black text-white tabular-nums group-hover:scale-110 transition-transform">
-                            {String(item.value).padStart(2, '0')}
-                        </div>
-                        <div className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">{item.label}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
 
 export default function LangChainCourse() {
     // Set page title and meta tags dynamically
@@ -87,7 +38,6 @@ export default function LangChainCourse() {
         rating: 4.9,
         duration: "12 hours",
         price: 13500,
-        originalPrice: 15000,
         currency: "INR",
         provider: "Celoris Designs llp",
         website: "https://www.celorisdesigns.com",
@@ -987,7 +937,6 @@ export default function LangChainCourse() {
                                 <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">AI Orchestration</span>
                                 <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Agents</span>
                                 <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Python</span>
-                                <span className="bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1 rounded-full text-[10px] font-black tracking-[0.2em] uppercase animate-pulse">Republic Day Sale: 10% OFF</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
                                 {courseData.title}
@@ -1292,13 +1241,8 @@ export default function LangChainCourse() {
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
-                                        <CountdownTimer targetDate="2026-01-27T00:00:00" />
                                         <div className="text-center mb-8">
-                                            <div className="inline-block px-3 py-1 bg-orange-500/20 text-orange-400 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 border border-orange-500/30">
-                                                Republic Day Sale - Ends 26 Jan
-                                            </div>
                                             <div className="flex items-center justify-center gap-3 mb-2">
-                                                <span className="text-2xl text-slate-500 line-through font-bold">₹15,000</span>
                                                 <div className="text-5xl font-extrabold text-white tracking-tighter">
                                                     ₹13,500
                                                 </div>
