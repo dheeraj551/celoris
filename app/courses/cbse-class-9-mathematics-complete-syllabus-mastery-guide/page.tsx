@@ -536,14 +536,20 @@ export default function CBSEClass9MathematicsCourse() {
                             </p>
                         </div>
 
-                        {/* Course Image */}
+                        {/* Course Image - Replaced with YouTube Video */}
                         <Card>
-                            <div className="aspect-video relative overflow-hidden rounded-lg">
-                                <img
-                                    src="/class-9-maths-cover.jpg"
-                                    alt="Class 9th Mathematics Mastery Course"
-                                    className="w-full h-full object-cover"
-                                />
+                            <div className="aspect-video relative overflow-hidden rounded-lg shadow-xl">
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src="https://www.youtube.com/embed/ZhIt0AVS-0I"
+                                    title="Class 9th Mathematics: Complete Syllabus & Mastery Guide"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen
+                                    className="w-full h-full"
+                                ></iframe>
                             </div>
                         </Card>
 

@@ -412,7 +412,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs llp',
       course_duration: 'Full Year',
       price: 1999,
-      course_image_url: '/class-9-maths-cover.jpg',
+      course_image_url: 'https://img.youtube.com/vi/ZhIt0AVS-0I/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(6).fill(null).map((_, i) => ({
@@ -816,7 +816,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '6-8 Weeks',
       price: 29999,
-      course_image_url: '/agentic-ai-cybersecurity-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/Y72t0L4wdsE/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(5).fill(null).map((_, i) => ({
