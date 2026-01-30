@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Courses } from "@/components/home-new/Courses"
 import NoticeBoard from "@/components/NoticeBoard"
 import StudentInquiries from "@/components/StudentInquiries"
+import LeadCenter from "@/components/learn/LeadCenter"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/AuthProvider"
@@ -387,6 +388,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
         </div>
       </section>
 
+      <LeadCenter />
       <StudentInquiries />
     </PageWrapper>
   )

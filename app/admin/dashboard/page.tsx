@@ -28,6 +28,7 @@ import {
   GraduationCap,
   Video
 } from "lucide-react"
+import LeadSync from "@/components/admin/LeadSync"
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -289,6 +290,8 @@ export default function AdminDashboard() {
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium">System Online</span>
               </div>
+
+              <LeadSync />
 
               <Button
                 variant="outline"

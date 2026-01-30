@@ -187,7 +187,7 @@ export default function StudentInquiries() {
                         </DialogHeader>
                         <form onSubmit={handleSubmit} className="grid gap-6 py-4 relative z-10">
                             <div className="grid gap-2">
-                                <Label htmlFor="name" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Identifier</Label>
+                                <Label htmlFor="name" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Name</Label>
                                 <Input
                                     id="name"
                                     value={name}
@@ -198,7 +198,7 @@ export default function StudentInquiries() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Interface (Email)</Label>
+                                <Label htmlFor="email" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -210,7 +210,7 @@ export default function StudentInquiries() {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="message" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Data Payload (Message)</Label>
+                                <Label htmlFor="message" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Message</Label>
                                 <Textarea
                                     id="message"
                                     value={message}

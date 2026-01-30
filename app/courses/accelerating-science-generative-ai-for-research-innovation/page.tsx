@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { InteractiveQuiz } from "@/components/InteractiveQuiz"
+import { Trophy } from "lucide-react"
 
 export default function AcceleratingScienceCourse() {
     // Set page title and meta tags dynamically
@@ -31,7 +33,7 @@ export default function AcceleratingScienceCourse() {
         subtitle: "Generative AI for Research & Innovation",
         description: "Presented by Celoris Designs. To equip scientists and research engineers with the tactical skills to integrate advanced AI agents (GPT-4o, Claude 3.5, and upcoming GPT-5 class models) into the scientific method—from accelerating literature review to automating experiment protocols and predicting molecular properties.",
         students: 1250,
-        rating: 4.98,
+        rating: 4.8,
         duration: "8-Week Intensive",
         price: 24999,
         currency: "INR",
@@ -184,6 +186,345 @@ export default function AcceleratingScienceCourse() {
                 description: "A pipeline that screams a library of small molecules for binding affinity to a target protein.",
                 tools: "ESM-2 + AutoDock AI",
                 icon: "Dna"
+            }
+        ],
+        quiz_data: [
+            {
+                title: "Scientific Research & Celoris Labs",
+                questions: [
+                    {
+                        question: "Which library is specifically used for machine learning in the Coursera series?",
+                        options: ["Matplotlib", "Scikit Learn", "Flask", "Pygame"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How many courses are included in the AI for Scientific Research Specialisation?",
+                        options: ["2", "3", "4", "5"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "In Course 1, what medical condition do learners build a model to predict?",
+                        options: ["Diabetes", "Heart disease", "Lung fibrosis", "Alzheimer's"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the capstone project for the fourth course in the Coursera specialisation?",
+                        options: ["Predicting stock trends", "Comparing genome sequences of COVID-19 mutations", "Optimising solar panel arrays", "Designing a chat interface"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which skill is explicitly mentioned as being gained in Course 3 of the Coursera series?",
+                        options: ["SQL", "Decision Tree Learning", "Adobe Premiere", "React Development"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How long is the Celoris Designs 'Accelerating Science' intensive course?",
+                        options: ["4 weeks", "8 weeks", "12 weeks", "6 months"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which tool is suggested for the 'Protocol Optimizer' capstone project?",
+                        options: ["GPT-4o + SMILES Integration", "Claude 3.5 + Custom RAG", "ESM-2 + AutoDock AI", "Scikit-Learn + NumPy"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What platform is the Celoris Designs course hosted on?",
+                        options: ["Coursera", "Udemy", "Graphy", "LinkedIn Learning"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "According to the sources, what does the 'Third Generation' of tools emphasize?",
+                        options: ["Tabular Data", "Generative Solutions (e.g., GPT-4o, Claude 3.5)", "Basic Statistics", "Autonomous Agentic Labs"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is a key benefit of 'Fourth Generation' tool orchestration in laboratories?",
+                        options: ["High entry barriers", "Integrated R&D and Autonomous Agentic Labs", "Reduced need for data", "Focus only on SQL"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Technical Models & Vision Tools",
+                questions: [
+                    {
+                        question: "How many parameters does the DeepSeek V3 model have in total?",
+                        options: ["175 billion", "400 billion", "671 billion", "1 trillion"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "How many parameters does DeepSeek V3 activate for each token it processes?",
+                        options: ["671 billion", "37 billion", "100 billion", "1 billion"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does 'MLA' stand for in the context of DeepSeek V3's architecture?",
+                        options: ["Multi-Layer Analysis", "Multi-head Latent Attention", "Machine Learning Algorithm", "Modal Latent Assessment"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the training data cutoff date mentioned for Claude 3.5 Sonnet?",
+                        options: ["January 2023", "April 2024", "June 2024", "December 2023"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "In the Attention equation, what does 'Q' represent?",
+                        options: ["Quantity", "Quality", "Query", "Quota"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Azure Vision was formerly known as what?",
+                        options: ["Azure Image Pro", "Azure AI Vision", "Microsoft Lens", "Foundry Sight"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which Azure Vision feature is used to detect human presence using body bounding boxes?",
+                        options: ["OCR", "Spatial analysis", "Image Analysis", "Facial Recognition"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the minimum amount of data required to start prototyping with model customisation in Azure Vision?",
+                        options: ["100 images", "50 images", "One image per label", "10 images"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which industry used Azure Vision to automate invoice validation and cut review time by two-thirds?",
+                        options: ["Goodwill", "Prague Airport", "CATRION", "Team USA"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Azure Vision pulls from how many concepts and objects for image analysis?",
+                        options: ["Over 500", "Over 1,000", "Over 5,000", "More than 10,000"],
+                        correctIndex: 3
+                    }
+                ]
+            },
+            {
+                title: "Biotech Startups (Y Combinator 2026)",
+                questions: [
+                    {
+                        question: "Which startup is building AI agents to design better clinical trials faster in a $10B market?",
+                        options: ["Scoop", "Delineate", "Rhizome AI", "Mantis Biotechnology"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Rhizome AI provides answers backed by up to how many documents?",
+                        options: ["100", "500", "1,000", "5,000"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Which company is building the 'data layer' to connected messy lab data from tools?",
+                        options: ["AminoAnalytica", "Labric", "Baseline AI", "Ohmic Biosciences"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What is the mission of 10x Science?",
+                        options: ["Manufacturing drugs in the USA", "Enabling biopharmaceutical development to keep pace with AI-powered discovery", "Designing microbes for metal extraction", "Automating grant methodology"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which company improves survival from 0% to 90% in a challenging brain cancer model?",
+                        options: ["Anto Biosciences", "Kopra Bio", "Granza Bio", "Eris Biotech"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "What does 1849 bio design microbes for?",
+                        options: ["DNA manufacturing", "Cheap metal extraction", "Perimenopause care", "Synthetic bacteriophages"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which startup describes its AI scientist as 'Quinn'?",
+                        options: ["iollo", "Diffuse Bio", "Synvivia", "Nephrogen"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which company uses AI to automate the process of creating study data collection forms from protocols?",
+                        options: ["Rhizome AI", "Baseline AI", "Delineate", "Miracle"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What does ALT TEX produce from food waste?",
+                        options: ["Biodegradable fuel", "Biodegradable and carbon-neutral fabric", "Lab-grade diagnostics", "Synthetic enzymes"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which startup is located in Oxford, UK and focuses on 'future-proof' antibiotics?",
+                        options: ["Blank Bio", "Evolvere BioSciences", "Sensible Biotechnologies", "Invitris"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Ethics, Platforms & Trainers",
+                questions: [
+                    {
+                        question: "What is a common criticism of LLMs mentioned by Sabine Hossenfelder?",
+                        options: ["They are too expensive", "They fabricate links, references, and quotes", "They take too long to respond", "They cannot translate languages"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "According to Reddit users, why was GPT-5 considered 'colder' than GPT-4o?",
+                        options: ["It was slower", "It didn't hold context across interactions in a meaningful way", "It refused to code", "It was too expensive"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What percentage of agentic coding problems did Claude 3.5 Sonnet solve in internal evaluations?",
+                        options: ["38%", "21%", "64%", "80%"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "Which algorithm streamlines the interplay between computation and data transfer for DeepSeek?",
+                        options: ["Dualpipe", "Multipipe", "Fluxpipe", "Flowpipe"],
+                        correctIndex: 0
+                    },
+                    {
+                        question: "What is the ethical concern mentioned regarding 'sycophantic AI'?",
+                        options: ["High latency", "Potential for inducing psychosis in vulnerable people", "Lack of coding skills", "High energy consumption"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Who offers the 'Complete Data Science with Python' course on UrbanPro?",
+                        options: ["Sangeetha Marikkannan", "Souvik Sahoo", "Suvabrata Mitra", "Dinesh Babu"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "How many years of experience does trainer Suvabrata Mitra have?",
+                        options: ["5", "9", "17", "23"],
+                        correctIndex: 3
+                    },
+                    {
+                        question: "Which subject is NOT mentioned in Dheeraj Kushwaha's list of taught subjects?",
+                        options: ["Adobe Photoshop", "Yoga", "Advanced Surgery", "Digital Marketing"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Trainer Sangeetha Marikkannan was awarded the 'Domain star' from which institution?",
+                        options: ["Stanford", "IIT Madras", "Anna University", "LearnQuest"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the fee to register for 'Data Science 201' by Suvabrata Mitra?",
+                        options: ["₹1,000", "₹100", "₹2,500", "₹6,000"],
+                        correctIndex: 1
+                    }
+                ]
+            },
+            {
+                title: "Privacy, Methodology & General AI",
+                questions: [
+                    {
+                        question: "What is 'Nexus' in the Clay personal CRM?",
+                        options: ["A storage drive", "An AI navigator for network insights", "A social media platform", "A contact deletion tool"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which data transfer region is used by Celoris Designs via AWS?",
+                        options: ["USA", "Europe", "India", "Singapore"],
+                        correctIndex: 2
+                    },
+                    {
+                        question: "Under the Celoris Privacy Policy, what does 'Sensitive Personal Information' include?",
+                        options: ["Only email addresses", "Passwords, health data, and official identifiers", "Public forum usernames", "Browser language preferences"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What term is used for the process of interpreting text by introducing one's own biases?",
+                        options: ["Exegesis", "Eisegesis", "Synthesis", "Grounding"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which method is recommended to improve the results of academic prompts?",
+                        options: ["Using shorter sentences", "Iterative refinement based on initial outputs", "Using only uppercase letters", "Removing all context"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which open-source model is described as 'crushing' GPT-4o in mathematical reasoning?",
+                        options: ["Llama 3", "DeepSeek V3", "Mistral Large", "Qwen 2"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What score did DeepSeek V3 achieve on the Math 500 benchmark?",
+                        options: ["75.9", "88.5", "90.2", "64.0"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "How many GPU hours were utilized to train DeepSeek V3?",
+                        options: ["1 million", "2.788 million", "5 million", "10 million"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "Which platform does the Coursera specialization use for practice labs?",
+                        options: ["AWS SageMaker", "Coursera lab platform", "Google Colab", "GitHub Codespaces"],
+                        correctIndex: 1
+                    },
+                    {
+                        question: "What is the primary focus of 'Week 2' in the Celoris 8-week intensive?",
+                        options: ["Molecule design", "Grant writing", "Automated Literature Review and Synthesis", "Autonomous Agents"],
+                        correctIndex: 2
+                    }
+                ]
+            }
+        ],
+        reviews: [
+            {
+                name: "Dr. Ananya Verma",
+                role: "PhD Researcher – Biotechnology",
+                content: "This course completely changed how I approach research. I went from spending weeks on literature review to generating structured hypotheses in hours. The module on protocol optimization alone saved my lab months of trial-and-error.",
+                rating: 5
+            },
+            {
+                name: "Rahul Mehta",
+                role: "Senior Wet Lab Scientist – Pharma",
+                content: "I was skeptical about AI in wet labs—this course removed that skepticism fast. Automating protocol checks and predicting failure points using AI agents felt like having a senior postdoc working 24/7.",
+                rating: 5
+            },
+            {
+                name: "Dr. Neha Kulkarni",
+                role: "Materials Science Engineer",
+                content: "The chemistry and materials modules were incredibly practical. I built a virtual screening pipeline during the course that we are now actively evaluating for internal R&D.",
+                rating: 4.5
+            },
+            {
+                name: "Amit Rosenberg",
+                role: "Postdoctoral Fellow – Computational Biology",
+                content: "The way LLMs were framed as scientific reasoning engines—not just chatbots—was eye-opening. The self-driving lab concepts feel like the future, and now I actually know how to build them.",
+                rating: 5
+            },
+            {
+                name: "Sneha Iyer",
+                role: "Research Scientist (Early Career)",
+                content: "I didn’t have strong coding skills, but the workflows were explained clearly enough that I could still implement real AI tools. The data analysis module alone justified the course fee.",
+                rating: 4.5
+            },
+            {
+                name: "Daniel Wong",
+                role: "Founder – BioTech Startup",
+                content: "This course helped me bridge the gap between AI hype and real lab execution. We’re now using AI-assisted experiment design in our startup, and it’s already improving reproducibility and speed.",
+                rating: 5
+            },
+            {
+                name: "Priya Sharma",
+                role: "MSc Student – Life Sciences",
+                content: "The automated literature review and hypothesis generation module felt like cheating—in the best way. I used the techniques directly in my thesis proposal and my advisor was genuinely impressed.",
+                rating: 5
+            },
+            {
+                name: "Lucas Fernández",
+                role: "Research Engineer – AI & Science",
+                content: "Finally, a course that understands both science and modern AI. The sections on hallucinations, IP, and reproducibility were especially valuable—this isn’t just powerful, it’s responsible.",
+                rating: 4.5
+            },
+            {
+                name: "Karan Malhotra",
+                role: "Lab Manager – Molecular Biology",
+                content: "What surprised me most was the immediate ROI. We’re already saving hours every week on protocol planning and data cleanup. This course pays for itself very quickly.",
+                rating: 5
+            },
+            {
+                name: "Prof. Michael Stein",
+                role: "Senior Scientist – Academia",
+                content: "This is not a theoretical AI course—it’s tactical and deeply relevant to real research. It helped me rethink my entire workflow, from idea generation to execution.",
+                rating: 5
             }
         ]
     }
@@ -420,6 +761,49 @@ export default function AcceleratingScienceCourse() {
                             </div>
                         </div>
 
+                        {/* Student Reviews Section */}
+                        <section className="space-y-8">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-500/20 rounded-lg">
+                                        <Users className="h-6 w-6 text-emerald-400" />
+                                    </div>
+                                    What Our Learners Say
+                                </h2>
+                                <div className="flex items-center gap-2 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20">
+                                    <Star className="h-5 w-5 fill-emerald-400 text-emerald-400" />
+                                    <span className="text-xl font-bold text-white">{courseData.rating}</span>
+                                    <span className="text-slate-400 text-sm">/ 5.0 (Global Rating)</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {courseData.reviews.map((review, index) => (
+                                    <Card key={index} className="bg-slate-900/40 border-slate-700/50 hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden group">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20 group-hover:bg-emerald-500/50 transition-colors" />
+                                        <CardContent className="p-6 space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex gap-0.5">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star
+                                                            key={i}
+                                                            className={`h-4 w-4 ${i < Math.floor(review.rating) ? 'fill-emerald-400 text-emerald-400' : 'text-slate-600'}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <span className="text-xs font-mono text-emerald-500/70">{review.rating}/5</span>
+                                            </div>
+                                            <p className="text-slate-300 italic leading-relaxed">"{review.content}"</p>
+                                            <div className="pt-4 border-t border-slate-800">
+                                                <h4 className="font-bold text-white">{review.name}</h4>
+                                                <p className="text-xs text-emerald-500/80 font-medium">{review.role}</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
+
                         {/* FAQ Section */}
                         <section className="space-y-6">
                             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
@@ -438,6 +822,29 @@ export default function AcceleratingScienceCourse() {
                                     </AccordionItem>
                                 ))}
                             </Accordion>
+                        </section>
+
+                        {/* Interactive Quiz Section */}
+                        <section id="quiz" className="pt-12 border-t border-slate-800/50">
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-500/20 rounded-lg">
+                                        <Trophy className="h-6 w-6 text-emerald-400" />
+                                    </div>
+                                    Accelerating Science Mastery Assessment
+                                </h2>
+                                <p className="text-slate-400 mt-2">Validate your expertise in AI for scientific research, lab automation, and biotech innovation.</p>
+                            </div>
+                            <InteractiveQuiz
+                                quizTitle="Accelerating Science Mastery Assessment"
+                                quizDescription="50 questions covering AI models, biotech startups, lab architecture, and research methodologies."
+                                quizUnits={courseData.quiz_data}
+                                onCompleteMessage={(score) => {
+                                    if (score >= 45) return "Research lead Grade! Your understanding of AI in the scientific domain is exceptional. You're ready to lead the next generation of autonomous labs.";
+                                    if (score >= 35) return "Expert Researcher! You have a solid grasp of how AI models and agentic systems are transforming science. Focus on the technical details to reach the top tier.";
+                                    return "Good attempt! Review the modules on AI models and biotech startups to further sharpen your scientific AI expertise.";
+                                }}
+                            />
                         </section>
                     </div>
 
@@ -461,6 +868,14 @@ export default function AcceleratingScienceCourse() {
                                                 courseTitle={courseData.title}
                                                 buttonClassName="w-full h-14 text-lg font-bold bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-400 hover:to-blue-500 text-white rounded-2xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95"
                                             />
+                                            <Button
+                                                variant="outline"
+                                                className="w-full h-12 border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                                                onClick={() => document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' })}
+                                            >
+                                                <Trophy className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                                                Take Mastery Quiz
+                                            </Button>
                                         </div>
 
                                         <div className="space-y-4 pt-6 border-t border-slate-800">
