@@ -20,17 +20,55 @@ export async function POST(request: NextRequest) {
         }
 
         // 1. Fetch User Profile to check balance
-        const { data: userProfile, error: profileError } = await supabase
+        let { data: userProfile, error: profileError } = await supabase
             .from('users')
             .select('wallet_balance, full_name, email')
             .eq('id', userId)
             .single();
 
-        if (profileError || !userProfile) {
-            return NextResponse.json(
-                { error: 'User profile not found' },
-                { status: 404 }
-            );
+        // Auto-heal: If profile missing in public.users but exists in Auth, create it.
+        if (!userProfile) {
+            console.log(`Profile missing for ${userId}, attempting auto-heal...`);
+            const { data: { user: authUser }, error: authError } = await supabase.auth.admin.getUserById(userId);
+
+            if (authError || !authUser) {
+                console.error('Auth user not found:', authError);
+                return NextResponse.json(
+                    { error: 'User account not found system-wide', details: authError?.message },
+                    { status: 404 }
+                );
+            }
+
+            // Insert into public.users
+            const { error: insertError } = await supabase
+                .from('users')
+                .insert({
+                    id: userId,
+                    email: authUser.email,
+                    full_name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || 'Unknown User',
+                    wallet_balance: 0 // Default starting balance if healed
+                });
+
+            if (insertError) {
+                console.error('Failed to auto-heal profile:', insertError);
+                return NextResponse.json(
+                    { error: 'Failed to initialize user profile', details: insertError.message },
+                    { status: 500 }
+                );
+            }
+
+            // Retry fetch
+            const { data: retryProfile, error: retryError } = await supabase
+                .from('users')
+                .select('wallet_balance, full_name, email')
+                .eq('id', userId)
+                .single();
+
+            if (retryError || !retryProfile) {
+                return NextResponse.json({ error: 'Profile creation failed after retry' }, { status: 500 });
+            }
+
+            userProfile = retryProfile;
         }
 
         const currentBalance = userProfile.wallet_balance || 0;
