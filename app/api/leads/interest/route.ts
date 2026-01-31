@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         // 1. Fetch User Profile to check balance
         let { data: userProfile, error: profileError } = await supabase
             .from('users')
-            .select('wallet_balance, full_name, email')
+            .select('wallet_balance, full_name')
             .eq('id', userId)
             .single();
 
@@ -52,11 +52,11 @@ export async function POST(request: NextRequest) {
             }
 
             // Upsert into public.users to handle race conditions or partial states
+            // Note: We don't insert email as the table might not have it.
             const { error: insertError } = await supabase
                 .from('users')
                 .upsert({
                     id: userId,
-                    email: authUser.email,
                     full_name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || 'Unknown User',
                     wallet_balance: 0,
                     created_at: new Date().toISOString()
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
             // Retry fetch
             const { data: retryProfile, error: retryError } = await supabase
                 .from('users')
-                .select('wallet_balance, full_name, email')
+                .select('wallet_balance, full_name')
                 .eq('id', userId)
                 .single();
 
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
             subject: `Lead Interest: ${leadName || 'Unknown Lead'}`,
             html: `
           <h3>Lead Interest Registered</h3>
-          <p><strong>User:</strong> ${userProfile.full_name} (${userProfile.email})</p>
+          <p><strong>User:</strong> ${userProfile.full_name} (${userEmail})</p>
           <p><strong>Lead Name:</strong> ${leadName}</p>
           <p><strong>Requirement:</strong> ${leadRequirement}</p>
           <p><strong>Lead ID:</strong> ${leadId}</p>
