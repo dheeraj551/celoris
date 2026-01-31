@@ -22,7 +22,7 @@ type Lead = {
     location?: string
     budget?: string
     contact_info?: string
-    status: 'open' | 'contacted' | 'closed'
+    status: 'open' | 'contacted' | 'closed' | 'booked'
     source: string
     created_at?: string
 }
@@ -146,6 +146,7 @@ export default function LeadCenter() {
             })
 
             await refreshProfile()
+            fetchLeads() // Refresh leads to show updated status
 
         } catch (error: any) {
             toast({
@@ -261,9 +262,10 @@ export default function LeadCenter() {
                                                 <span className="text-emerald-400 font-black text-sm">{lead.name ? lead.name.charAt(0) : 'L'}</span>
                                             </div>
                                             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${lead.status === 'open' ? 'bg-blue-500/10 text-blue-400' :
-                                                lead.status === 'contacted' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-emerald-500/10 text-emerald-400'
+                                                lead.status === 'contacted' ? 'bg-yellow-500/10 text-yellow-400' :
+                                                    lead.status === 'booked' ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'
                                                 }`}>
-                                                {lead.status}
+                                                {lead.status === 'booked' ? 'BOOKED' : lead.status}
                                             </span>
                                         </div>
                                         <CardTitle className="text-lg text-white mt-3 truncate">{lead.name || "Unknown Lead"}</CardTitle>
@@ -291,14 +293,17 @@ export default function LeadCenter() {
                                     <Button
                                         size="sm"
                                         onClick={() => handleShowInterest(lead)}
-                                        disabled={!!processingId}
-                                        className="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 text-xs font-bold uppercase tracking-wider transition-all"
+                                        disabled={!!processingId || lead.status === 'booked'}
+                                        className={`w-full text-xs font-bold uppercase tracking-wider transition-all ${lead.status === 'booked'
+                                                ? 'bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed'
+                                                : 'bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20'
+                                            }`}
                                     >
                                         {processingId === lead.id ? (
                                             <>
                                                 <Loader2 className="mr-2 h-3 w-3 animate-spin" /> Processing
                                             </>
-                                        ) : "Show Interest"}
+                                        ) : lead.status === 'booked' ? "BOOKED" : "Show Interest"}
                                     </Button>
                                 </div>
                             </Card>

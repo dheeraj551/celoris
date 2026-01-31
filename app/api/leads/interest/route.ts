@@ -3,10 +3,22 @@ import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export async function POST(request: NextRequest) {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    if (!supabaseServiceKey) {
+        return NextResponse.json(
+            { error: 'Server Context Error: Missing Service Role Key' },
+            { status: 500 }
+        );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+        },
+    });
 
     try {
         const body = await request.json();
@@ -34,25 +46,26 @@ export async function POST(request: NextRequest) {
             if (authError || !authUser) {
                 console.error('Auth user not found:', authError);
                 return NextResponse.json(
-                    { error: 'User account not found system-wide', details: authError?.message },
+                    { error: `User identity not found: ${authError?.message || 'Unknown ID'}` },
                     { status: 404 }
                 );
             }
 
-            // Insert into public.users
+            // Upsert into public.users to handle race conditions or partial states
             const { error: insertError } = await supabase
                 .from('users')
-                .insert({
+                .upsert({
                     id: userId,
                     email: authUser.email,
                     full_name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || 'Unknown User',
-                    wallet_balance: 0 // Default starting balance if healed
-                });
+                    wallet_balance: 0,
+                    created_at: new Date().toISOString()
+                }, { onConflict: 'id' });
 
             if (insertError) {
                 console.error('Failed to auto-heal profile:', insertError);
                 return NextResponse.json(
-                    { error: 'Failed to initialize user profile', details: insertError.message },
+                    { error: `Failed to initialize user profile: ${insertError.message}` },
                     { status: 500 }
                 );
             }
@@ -125,7 +138,20 @@ export async function POST(request: NextRequest) {
         `
         };
 
-        await transporter.sendMail(mailOptions);
+        if (transporter) {
+            await transporter.sendMail(mailOptions);
+        }
+
+        // 5. Update Lead Status to 'booked'
+        const { error: leadUpdateError } = await supabase
+            .from('leads')
+            .update({ status: 'booked' })
+            .eq('id', leadId);
+
+        if (leadUpdateError) {
+            console.error('Failed to update lead status:', leadUpdateError);
+            // We don't fail the request here since money is deducted and email sent, but we log it.
+        }
 
         return NextResponse.json(
             { message: 'Request has been accepted', newBalance: currentBalance - deductionAmount },
@@ -135,7 +161,7 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error('Error processing interest:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: 'Internal server error: ' + error.message },
             { status: 500 }
         );
     }

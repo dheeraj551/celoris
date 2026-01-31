@@ -839,7 +839,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs',
       course_duration: '8-Week Intensive',
       price: 24999,
-      course_image_url: '/accelerating-science-generative-ai-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/57LQCUE2FWk/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(8).fill(null).map((_, i) => ({
