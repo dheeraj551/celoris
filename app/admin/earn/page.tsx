@@ -258,7 +258,7 @@ export default function AdminEarnPage() {
         })
         alert("Job created successfully!")
       } else {
-        alert(`Error: ${result.error}`)
+        alert(`Error: ${result.error}${result.details ? `\nDetails: ${result.details}` : ''}${result.message ? `\nMessage: ${result.message}` : ''}`)
       }
     } catch (error) {
       console.error("Error creating job:", error)

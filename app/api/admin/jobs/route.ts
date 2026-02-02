@@ -3,11 +3,11 @@
 // ===========================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-client';
+import { createSupabaseClientForServer } from '@/lib/supabase-client';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = createSupabaseClientForServer()
     const { searchParams } = new URL(request.url)
 
     const type = searchParams.get('type')
@@ -73,15 +73,18 @@ export async function GET(request: NextRequest) {
       }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Server error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: error.message
+    }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = createSupabaseClientForServer()
     const body = await request.json()
 
     // Validate required fields
@@ -125,32 +128,7 @@ export async function POST(request: NextRequest) {
       is_published: body.is_published !== false,
       category: body.category || null,
       industry: body.industry || null,
-      company_size: body.company_size || null,
-      remote_policy: body.remote_policy || 'hybrid',
-      visa_sponsorship: body.visa_sponsorship || false,
-      years_required: body.years_required ? parseInt(body.years_required) : null,
-      education_required: body.education_required || null,
-      language_requirements: Array.isArray(body.language_requirements) ? body.language_requirements : [],
-      travel_required: body.travel_required || false,
-      department: body.department || null,
-      seniority: body.seniority || null,
-      reporting_to: body.reporting_to || null,
-      team_size: body.team_size ? parseInt(body.team_size) : null,
-      job_posting_source: body.job_posting_source || 'internal',
-      meta_title: body.meta_title || null,
-      meta_description: body.meta_description || null,
-      tags: Array.isArray(body.tags) ? body.tags : [],
-      application_instructions_detailed: body.application_instructions_detailed || null,
-      hiring_manager_name: body.hiring_manager_name || null,
-      hiring_manager_email: body.hiring_manager_email || null,
-      hiring_manager_phone: body.hiring_manager_phone || null,
-      external_job_id: body.external_job_id || null,
-      status: body.status || 'active',
-      urgency_level: body.urgency_level || 'normal',
-      budget_range_min: body.budget_range_min ? parseInt(body.budget_range_min) : null,
-      budget_range_max: body.budget_range_max ? parseInt(body.budget_range_max) : null,
-      interview_process: body.interview_process || null,
-      onboarding_timeline: body.onboarding_timeline || null
+      company_size: body.company_size || null
     }
 
     // Insert job into database
@@ -161,8 +139,12 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Database error:', error)
-      return NextResponse.json({ error: 'Failed to create job posting' }, { status: 500 })
+      console.error('Database error creating job:', error)
+      return NextResponse.json({
+        error: 'Failed to create job posting',
+        details: error.message,
+        code: error.code
+      }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -171,15 +153,18 @@ export async function POST(request: NextRequest) {
       data
     }, { status: 201 })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Server error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: error.message
+    }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = createSupabaseClientForServer()
     const body = await request.json()
     const { id, ...updateData } = body
 
@@ -195,14 +180,7 @@ export async function PUT(request: NextRequest) {
       'skills', 'responsibilities', 'benefits', 'application_deadline',
       'contact_email', 'application_url', 'application_instructions',
       'is_featured', 'is_active', 'is_published', 'category', 'industry',
-      'company_size', 'company_description', 'company_website', 'remote_policy', 'visa_sponsorship', 'years_required',
-      'education_required', 'language_requirements', 'travel_required',
-      'department', 'seniority', 'reporting_to', 'team_size',
-      'job_posting_source', 'meta_title', 'meta_description', 'tags',
-      'application_instructions_detailed', 'hiring_manager_name',
-      'hiring_manager_email', 'hiring_manager_phone', 'external_job_id',
-      'status', 'urgency_level', 'budget_range_min', 'budget_range_max',
-      'interview_process', 'onboarding_timeline'
+      'company_size', 'company_description', 'company_website'
     ]
 
     // Filter update data to only allowed fields
@@ -216,10 +194,6 @@ export async function PUT(request: NextRequest) {
     // Convert string numbers to integers where needed
     if (filteredData.salary_min) filteredData.salary_min = parseInt(filteredData.salary_min)
     if (filteredData.salary_max) filteredData.salary_max = parseInt(filteredData.salary_max)
-    if (filteredData.years_required) filteredData.years_required = parseInt(filteredData.years_required)
-    if (filteredData.team_size) filteredData.team_size = parseInt(filteredData.team_size)
-    if (filteredData.budget_range_min) filteredData.budget_range_min = parseInt(filteredData.budget_range_min)
-    if (filteredData.budget_range_max) filteredData.budget_range_max = parseInt(filteredData.budget_range_max)
 
     // Update job in database
     const { data, error } = await (supabase as any)
@@ -230,8 +204,12 @@ export async function PUT(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Database error:', error)
-      return NextResponse.json({ error: 'Failed to update job posting' }, { status: 500 })
+      console.error('Database error updating job:', error)
+      return NextResponse.json({
+        error: 'Failed to update job posting',
+        details: error.message,
+        code: error.code
+      }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -240,15 +218,18 @@ export async function PUT(request: NextRequest) {
       data
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Server error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: error.message
+    }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = createSupabaseClientForServer()
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
@@ -263,8 +244,12 @@ export async function DELETE(request: NextRequest) {
       .eq('id', id)
 
     if (error) {
-      console.error('Database error:', error)
-      return NextResponse.json({ error: 'Failed to delete job posting' }, { status: 500 })
+      console.error('Database error deleting job:', error)
+      return NextResponse.json({
+        error: 'Failed to delete job posting',
+        details: error.message,
+        code: error.code
+      }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -272,8 +257,11 @@ export async function DELETE(request: NextRequest) {
       message: 'Job posting deleted successfully'
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Server error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: error.message
+    }, { status: 500 })
   }
 }

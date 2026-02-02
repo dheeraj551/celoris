@@ -42,6 +42,7 @@ export default function CBSEClass9MathematicsCourse() {
             },
             {
                 unit: "Unit II: Algebra",
+                videoUrl: "https://www.youtube.com/embed/tOdmSmnzgFU",
                 chapters: [
                     { title: "Chapter 2: Polynomials", content: "Zeroes of a polynomial, Remainder Theorem, Factor Theorem. Core: Algebraic Identities (e.g., (a+b+c)^2, (a ± b)^3, a^3+b^3+c^3-3abc)." },
                     { title: "Chapter 3: Linear Equations in Two Variables", content: "General form ax + by + c = 0, Graphing linear equations, Equations of lines parallel to x-axis and y-axis." }
@@ -585,6 +586,21 @@ export default function CBSEClass9MathematicsCourse() {
                                 {courseData.syllabus.map((unit, index) => (
                                     <div key={index} className="border-b last:border-0 pb-4 last:pb-0">
                                         <h2 className="text-xl font-bold text-text-primary mb-3 text-primary-700">{unit.unit}</h2>
+                                        {unit.videoUrl && (
+                                            <div className="aspect-video relative overflow-hidden rounded-lg shadow-md mb-6">
+                                                <iframe
+                                                    width="100%"
+                                                    height="100%"
+                                                    src={unit.videoUrl}
+                                                    title={unit.unit}
+                                                    frameBorder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                    referrerPolicy="strict-origin-when-cross-origin"
+                                                    allowFullScreen
+                                                    className="w-full h-full"
+                                                ></iframe>
+                                            </div>
+                                        )}
                                         <div className="space-y-3 pl-4">
                                             {unit.chapters.map((chapter, cIndex) => (
                                                 <div key={cIndex}>
