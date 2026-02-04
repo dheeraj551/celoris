@@ -25,6 +25,8 @@ export function AdUnit({
         if (initialized.current) return
 
         const pushAd = () => {
+            if (typeof window === 'undefined') return
+
             try {
                 // @ts-ignore
                 if (window.adsbygoogle && adRef.current) {
@@ -37,9 +39,10 @@ export function AdUnit({
                         // @ts-ignore
                         (window.adsbygoogle = window.adsbygoogle || []).push({})
                         initialized.current = true
-                    } else if (!hasWidth && !isDone && !initialized.current) {
-                        // Retry later if width is still 0
-                        setTimeout(pushAd, 500)
+                    } else if (!hasWidth && !isDone && !initialized.current && typeof window !== 'undefined') {
+                        // Retry later if width is still 0, but only in browser
+                        const retryTimer = setTimeout(pushAd, 500)
+                        return () => clearTimeout(retryTimer)
                     }
                 }
             } catch (err) {
