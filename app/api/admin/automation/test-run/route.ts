@@ -4,10 +4,10 @@ import { createRouteClient } from '@/lib/supabase-server';
 // POST /api/admin/automation/test-run
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteClient();
+    const supabase = createRouteClient() as any;
 
     // Log the test run start
-    const { data: logEntry, error: logError } = await (supabase
+    const { data: logEntry, error: logError } = await supabase
       .from('automation_logs')
       .insert([{
         automation_type: 'blog_generation',
@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
         input_data: { test_mode: true, triggered_at: new Date().toISOString() },
         executed_at: new Date().toISOString(),
         metadata: { test_run: true, manual_trigger: true }
-      }] as any)
+      }])
       .select()
-      .single() as any);
+      .single();
 
     if (logError) {
       console.error('Error creating test log entry:', logError);
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       const executionTime = endTime - startTime;
 
       // Update log with success
-      await (supabase
+      await supabase
         .from('automation_logs')
         .update({
           status: 'completed',
@@ -69,11 +69,11 @@ export async function POST(request: NextRequest) {
               'Blog Publishing - Completed'
             ]
           }
-        } as any) as any)
+        })
         .eq('id', logEntry.id);
 
       // Create success notification
-      await (supabase
+      await supabase
         .from('admin_notifications')
         .insert([{
           type: 'automation_test',
@@ -85,17 +85,17 @@ export async function POST(request: NextRequest) {
             execution_time: executionTime,
             status: 'success'
           }
-        }] as any) as any);
+        }]);
 
       // Update automation settings last execution time
-      await (supabase
+      await supabase
         .from('n8n_automation_settings')
         .update({
           last_execution: new Date().toISOString(),
           last_success: new Date().toISOString(),
           total_executions: 1,
           successful_executions: 1
-        } as any) as any)
+        })
         .eq('automation_type', 'blog_generation')
         .limit(1);
 

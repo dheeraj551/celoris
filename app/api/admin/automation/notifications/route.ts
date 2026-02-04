@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const severity = searchParams.get('severity');
 
-    const supabase = createRouteClient();
+    const supabase = createRouteClient() as any;
 
     // Build query
     let query = supabase
@@ -72,16 +72,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { notification_id, mark_all_read = false } = body;
 
-    const supabase = createRouteClient();
+    const supabase = createRouteClient() as any;
 
     if (mark_all_read) {
       // Mark all notifications as read
-      const { error } = await (supabase
+      const { error } = await supabase
         .from('admin_notifications')
         .update({
           read: true,
           read_at: new Date().toISOString()
-        } as any) as any)
+        })
         .eq('read', false);
 
       if (error) {
@@ -106,12 +106,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Mark specific notification as read
-    const { error } = await (supabase
+    const { error } = await supabase
       .from('admin_notifications')
       .update({
         read: true,
         read_at: new Date().toISOString()
-      } as any) as any)
+      })
       .eq('id', notification_id);
 
     if (error) {

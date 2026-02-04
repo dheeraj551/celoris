@@ -71,6 +71,7 @@ export default function PersonalizedAICourse() {
                     "Architecture Patterns: Where personalization lives (Prompt vs. Context Window vs. Fine-tuning vs. RAG).",
                     "Case Study: Deconstructing Netflix or Spotify’s recommendation engines and mapping them to LLM architectures."
                 ],
+                videoUrl: "https://www.youtube.com/embed/knZTarz_df8",
                 duration: "Week 1"
             },
             {
@@ -672,6 +673,21 @@ export default function PersonalizedAICourse() {
                                                             </li>
                                                         ))}
                                                     </ul>
+
+                                                    {(chapter as any).videoUrl && (
+                                                        <div className="mt-6 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={(chapter as any).videoUrl}
+                                                                    title={`${chapter.title} - Video Lesson`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>
@@ -896,6 +912,6 @@ export default function PersonalizedAICourse() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

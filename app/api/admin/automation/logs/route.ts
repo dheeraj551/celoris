@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const source = searchParams.get('source');
 
-    const supabase = createRouteClient();
-    
+    const supabase = createRouteClient() as any;
+
     // Build query
     let query = supabase
       .from('automation_logs')

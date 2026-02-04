@@ -5,8 +5,8 @@ import { createRouteClient } from '@/lib/supabase-server';
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const supabase = createRouteClient();
-    
+    const supabase = createRouteClient() as any;
+
     const { data: settings, error } = await supabase
       .from('n8n_automation_settings')
       .select('*')
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createRouteClient();
+    const supabase = createRouteClient() as any;
 
     const { data, error } = await supabase
       .from('n8n_automation_settings')
