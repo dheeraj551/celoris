@@ -1,8 +1,9 @@
+"use client"
+
 import { MobileNavBar } from "@/components/mobile/MobileNavBar"
 import { CapacitorProvider } from "@/components/providers/CapacitorProvider"
 import {
     Home,
-    Search,
     MessageCircle,
     User,
     Heart,
@@ -23,11 +24,13 @@ export default function SocialLayout({
     ]
 
     return (
-        <div className="relative min-h-screen">
-            <main className="pb-32">
-                {children}
-            </main>
-            <MobileNavBar items={navItems} />
-        </div>
+        <CapacitorProvider>
+            <div className="relative min-h-screen">
+                <main className="pb-32">
+                    {children}
+                </main>
+                <MobileNavBar items={navItems} />
+            </div>
+        </CapacitorProvider>
     )
 }
