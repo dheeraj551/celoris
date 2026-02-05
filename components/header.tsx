@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/providers/AuthProvider"
+import { Capacitor } from '@capacitor/core'
+import { useEffect } from "react"
 
 const publicNavigation = [
   { name: "Home", href: "/" },
@@ -39,10 +41,20 @@ const authenticatedNavigation = [
   { name: "Contact", href: "/contact" },
 ]
 
+
 export default function Header() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [isNative, setIsNative] = useState(false)
   const { user, profile, loading, signOut } = useAuth()
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      setIsNative(true)
+    }
+  }, [])
+
+  if (isNative) return null
 
   const handleSignOut = async () => {
     try {

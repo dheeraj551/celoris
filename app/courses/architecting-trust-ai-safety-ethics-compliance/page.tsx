@@ -64,7 +64,8 @@ export default function ArchitectingTrustCourse() {
                     "The Cost of Failure: Case studies on algorithmic bias and security breaches.",
                     "Alignment: Ensuring AI objectives match human values and corporate ROI."
                 ],
-                duration: "1 Week"
+                duration: "1 Week",
+                videoUrl: "https://www.youtube.com/embed/BaUPz52yDQM"
             },
             {
                 number: 2,
@@ -652,6 +653,22 @@ export default function ArchitectingTrustCourse() {
                                             <AccordionContent className="pb-6 px-4">
                                                 <div className="pl-14 space-y-4">
                                                     <div className="h-px bg-gradient-to-r from-gold-500/30 to-transparent mb-4"></div>
+
+                                                    {chapter.videoUrl && (
+                                                        <div className="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-slate-950 aspect-video">
+                                                            <iframe
+                                                                width="100%"
+                                                                height="100%"
+                                                                src={chapter.videoUrl}
+                                                                title={`${chapter.title} Video`}
+                                                                frameBorder="0"
+                                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                allowFullScreen
+                                                                className="w-full h-full"
+                                                            ></iframe>
+                                                        </div>
+                                                    )}
+
                                                     <ul className="grid grid-cols-1 gap-3">
                                                         {chapter.topics.map((topic, topicIndex) => (
                                                             <li key={topicIndex} className="flex items-start gap-3 text-slate-400 group">

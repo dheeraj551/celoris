@@ -11,6 +11,9 @@ export function CapacitorProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (!Capacitor.isNativePlatform()) return
 
+        // Add native-app class for CSS targeting
+        document.body.classList.add('native-app')
+
         // Handle Android Back Button
         const setupBackButton = async () => {
             const { App } = await import('@capacitor/app')
@@ -28,6 +31,10 @@ export function CapacitorProvider({ children }: { children: React.ReactNode }) {
         }
 
         setupBackButton()
+
+        return () => {
+            document.body.classList.remove('native-app')
+        }
     }, [pathname, router])
 
     return <>{children}</>

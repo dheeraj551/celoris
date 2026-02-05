@@ -30,6 +30,15 @@ export function ReCaptchaProvider({ children, siteKey }: ReCaptchaProviderProps)
                 setIsReady(true)
             })
         }
+
+        // Hide badge if native
+        import('@capacitor/core').then(({ Capacitor }) => {
+            if (Capacitor.isNativePlatform()) {
+                const style = document.createElement('style')
+                style.innerHTML = '.grecaptcha-badge { visibility: hidden !important; }'
+                document.head.appendChild(style)
+            }
+        })
     }, [])
 
     const handleScriptLoad = () => {

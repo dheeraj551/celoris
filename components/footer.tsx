@@ -51,10 +51,22 @@ const socialLinks = [
   { icon: Youtube, href: "#", label: "YouTube" },
 ]
 
+import { Capacitor } from '@capacitor/core'
+import { useEffect } from "react"
+
 export default function Footer() {
   const pathname = usePathname()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [isNative, setIsNative] = useState(false)
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      setIsNative(true)
+    }
+  }, [])
+
+  if (isNative) return null
 
   const isDarkPage = pathname === "/" ||
     pathname === "/about" ||
