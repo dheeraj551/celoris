@@ -69,6 +69,7 @@ export default function AgenticAICybersecurityCourse() {
                     "The 'Agentic SOC' Architecture: Moving from human-led triage to agent-led investigation.",
                     "Market Trends: Analysis of vendor adoption (Google SecOps, Microsoft Copilot, and open-source frameworks)."
                 ],
+                videoUrl: "https://www.youtube.com/embed/Cn-mnWlpSjQ",
                 duration: "1 Week"
             },
             {
@@ -647,6 +648,21 @@ export default function AgenticAICybersecurityCourse() {
                                                             </li>
                                                         ))}
                                                     </ul>
+
+                                                    {(chapter as any).videoUrl && (
+                                                        <div className="mt-6 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={(chapter as any).videoUrl}
+                                                                    title={`${chapter.title} - Video Lesson`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>
