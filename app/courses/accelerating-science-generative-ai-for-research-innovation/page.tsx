@@ -68,6 +68,7 @@ export default function AcceleratingScienceCourse() {
                     "Prompt Engineering for Scientists: Chain-of-Thought (CoT) prompting for complex problem solving.",
                     "Lab: Setting up a secure, local RAG system to 'chat' with 1,000+ PDFs of internal lab data."
                 ],
+                videoUrl: "https://www.youtube.com/embed/buSEoVEUzmU",
                 duration: "Week 1"
             },
             {
@@ -692,6 +693,21 @@ export default function AcceleratingScienceCourse() {
                                                             </li>
                                                         ))}
                                                     </ul>
+
+                                                    {(chapter as any).videoUrl && (
+                                                        <div className="mt-6 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={(chapter as any).videoUrl}
+                                                                    title={`${chapter.title} - Video Lesson`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>
