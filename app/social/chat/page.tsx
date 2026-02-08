@@ -143,7 +143,7 @@ export default function ChatLobbyPage() {
 
             {/* Header */}
             <header className="relative z-20 border-b border-white/5 bg-[#050810]/40 backdrop-blur-3xl">
-                <div className="container mx-auto px-6 py-10">
+                <div className="container mx-auto px-4 md:px-6 py-6 md:py-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div className="flex items-center gap-6">
                             <Link href="/social">
@@ -180,7 +180,7 @@ export default function ChatLobbyPage() {
             </header>
 
             {/* Main Content */}
-            <main className="container mx-auto px-6 py-20 relative z-10">
+            <main className="container mx-auto px-4 md:px-6 py-10 md:py-20 relative z-10">
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
@@ -194,7 +194,7 @@ export default function ChatLobbyPage() {
                             whileHover={{ y: -10 }}
                             className="group"
                         >
-                            <Card className={`h-full flex flex-col bg-[#0d1321]/60 backdrop-blur-3xl border-white/10 hover:border-${room.accent}-500/30 transition-all duration-500 overflow-hidden shadow-2xl rounded-[2.5rem]`}>
+                            <Card className={`h-full flex flex-col bg-[#0d1321]/60 backdrop-blur-3xl border-white/10 hover:border-${room.accent}-500/30 transition-all duration-500 overflow-hidden shadow-2xl rounded-3xl md:rounded-[2.5rem]`}>
                                 <div className={`h-1.5 bg-gradient-to-r ${room.isAvailable ? room.color : 'from-slate-800 to-slate-900 group-hover:from-slate-700'}`} />
                                 <CardHeader className="p-10 pb-6">
                                     <div className="flex items-start justify-between mb-8">

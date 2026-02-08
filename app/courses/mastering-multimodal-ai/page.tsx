@@ -68,6 +68,7 @@ export default function MasteringMultimodalAICourse() {
                     "Joint vs. Coordinated Representations: Mapping different modalities into one space.",
                     "Hands-on: Visualizing image and text clusters using UMAP/t-SNE."
                 ],
+                videoUrl: "https://www.youtube.com/embed/VUTgjCNI4m0",
                 duration: "1.5 Weeks"
             },
             {
@@ -575,8 +576,24 @@ export default function MasteringMultimodalAICourse() {
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent className="pb-6 px-4">
-                                                <div className="pl-14 space-y-4">
+                                                <div className="pl-14 space-y-6">
                                                     <div className="h-px bg-gradient-to-r from-cyan-500/30 to-transparent mb-4"></div>
+
+                                                    {chapter.videoUrl && (
+                                                        <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-700/50 mb-6 bg-slate-950">
+                                                            <iframe
+                                                                width="100%"
+                                                                height="100%"
+                                                                src={chapter.videoUrl}
+                                                                title={`${chapter.title} Video`}
+                                                                frameBorder="0"
+                                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                allowFullScreen
+                                                                className="absolute inset-0 w-full h-full"
+                                                            ></iframe>
+                                                        </div>
+                                                    )}
+
                                                     <ul className="grid grid-cols-1 gap-3">
                                                         {chapter.topics.map((topic, topicIndex) => (
                                                             <li key={topicIndex} className="flex items-start gap-3 text-slate-400 group">

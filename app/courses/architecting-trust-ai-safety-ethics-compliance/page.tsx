@@ -124,6 +124,7 @@ export default function ArchitectingTrustCourse() {
                     "Continuous Monitoring: Tracking drift and bias in production environments.",
                     "Ethical ROI: Quantifying trust as a competitive advantage."
                 ],
+                videoUrl: "https://www.youtube.com/embed/li0MXF76ZvE",
                 duration: "1 Week"
             }
         ],

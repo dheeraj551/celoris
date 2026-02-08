@@ -300,142 +300,70 @@ export default function SocialPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-48 px-6 overflow-hidden z-10">
-        <div className="container mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-black uppercase tracking-[0.4em] mb-12 shadow-3xl backdrop-blur-3xl"
-          >
-            <Sparkles size={14} className="fill-emerald-400" />
-            Social Networking Redefined
-          </motion.div>
-
-          <div className="max-w-5xl mx-auto space-y-12">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.8 }}
-              className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.8] text-white"
-            >
-              Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Social</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-base md:text-xl max-w-3xl mx-auto text-slate-400 font-medium leading-relaxed italic uppercase tracking-wide"
-            >
-              "Swipe. Connect. Grow." The ultimate platform for finding creators,
-              building influence, and professional networking.
-            </motion.p>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-16 flex flex-wrap justify-center gap-6"
-          >
-            <Button
-              onClick={() => handleSafeNavigation("/social/swipe")}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 transition-all"
-            >
-              Find People <ArrowRight className="ml-3 h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleSafeNavigation("/social/lobby")}
-              className="bg-white/5 border border-white/10 text-white hover:bg-white/10 h-16 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px]"
-            >
-              Join Chat Rooms
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Core Protocol Components */}
-      <section className="py-32 relative z-10 px-6">
-        <div className="container mx-auto">
-          <div className="text-center mb-24">
+      <section className="relative pt-20 pb-32 md:pt-32 md:pb-48 px-4 md:px-6 overflow-hidden z-10">
+        <div className="container mx-auto text-center md:text-left">
+          <div className="flex flex-col md:items-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="inline-block p-4 bg-emerald-500/10 rounded-[2rem] border border-emerald-500/20 mb-8"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-black uppercase tracking-[0.4em] mb-12 shadow-3xl backdrop-blur-3xl"
             >
-              <Target className="h-10 w-10 text-emerald-400" />
+              <Sparkles size={14} className="fill-emerald-400" />
+              Social Networking Redefined
             </motion.div>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic mb-6">
-              Ecosystem Core Features
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto font-black uppercase tracking-widest text-[10px]">
-              A unified platform bridging discovery and professional networking.
-            </p>
-          </div>
 
-          <motion.div
-            variants={{
-              show: { transition: { staggerChildren: 0.1 } }
-            }}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
-          >
-            {platformFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  show: { opacity: 1, y: 0 }
-                }}
-                whileHover={{ y: -15, scale: 1.02 }}
-                className="group h-full"
+            <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.8 }}
+                className="text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.9] text-white"
               >
-                <Card className="bg-[#0d1321]/40 border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl rounded-[3rem] overflow-hidden h-full flex flex-col transition-all duration-500">
-                  <CardHeader className="pt-12 px-10 flex-col items-center text-center">
-                    <div className={`w-20 h-20 bg-gradient-to-br ${feature.color} rounded-3xl flex items-center justify-center mb-10 shadow-3xl group-hover:scale-110 transition-transform duration-500 relative`}>
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <feature.icon className="h-10 w-10 text-white" />
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-center gap-3">
-                        <CardTitle className="text-2xl font-black text-white tracking-tighter uppercase italic">{feature.title}</CardTitle>
-                        {feature.premium && (
-                          <span className="bg-emerald-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
-                            ELITE
-                          </span>
-                        )}
-                      </div>
-                      <CardDescription className="text-slate-500 font-bold text-sm leading-relaxed uppercase tracking-wide">
-                        {feature.description}
-                      </CardDescription>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-10 pb-12 mt-auto">
-                    <Button
-                      className="w-full bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-2xl"
-                      onClick={() => handleSafeNavigation(feature.href || "#")}
-                    >
-                      {feature.action} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+                Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Social</span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-sm sm:text-base md:text-xl max-w-3xl mx-auto md:mx-0 text-slate-400 font-medium leading-relaxed italic uppercase tracking-wide"
+              >
+                "Swipe. Connect. Grow." The ultimate platform for finding creators,
+                building influence, and professional networking.
+              </motion.p>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-16 flex flex-wrap justify-center gap-6"
+            >
+              <Button
+                onClick={() => handleSafeNavigation("/social/swipe")}
+                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white h-14 md:h-16 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 transition-all"
+              >
+                Find People <ArrowRight className="ml-3 h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleSafeNavigation("/social/lobby")}
+                className="w-full sm:w-auto bg-white/5 border border-white/10 text-white hover:bg-white/10 h-14 md:h-16 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px]"
+              >
+                Join Chat Rooms
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Global Hubs Interaction Visualization */}
-      <section className="py-32 px-6 relative z-10 overflow-hidden">
+      <section className="py-20 md:py-32 px-4 md:px-6 relative z-10 overflow-hidden">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-3xl rounded-[4rem] p-10 md:p-24 border border-white/5 flex flex-col lg:flex-row items-center gap-20 overflow-hidden relative shadow-3xl"
+            className="bg-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[4rem] p-6 sm:p-10 md:p-24 border border-white/5 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 overflow-hidden relative shadow-3xl"
           >
             {/* Animated Mesh Background */}
             <div className="absolute inset-0 pointer-events-none opacity-30">
@@ -545,8 +473,84 @@ export default function SocialPage() {
         </div>
       </section>
 
+      {/* Core Protocol Components */}
+      <section className="py-20 md:py-32 relative z-10 px-4 md:px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-24">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="inline-block p-4 bg-emerald-500/10 rounded-[2rem] border border-emerald-500/20 mb-8"
+            >
+              <Target className="h-10 w-10 text-emerald-400" />
+            </motion.div>
+            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic mb-6">
+              Ecosystem Core Features
+            </h2>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto font-black uppercase tracking-widest text-[10px]">
+              A unified platform bridging discovery and professional networking.
+            </p>
+          </div>
+
+          <motion.div
+            variants={{
+              show: { transition: { staggerChildren: 0.1 } }
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10"
+          >
+            {platformFeatures.map((feature, index) => (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  show: { opacity: 1, y: 0 }
+                }}
+                whileHover={{ y: -15, scale: 1.02 }}
+                className="group h-full"
+              >
+                <Card className="bg-[#0d1321]/40 border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl rounded-3xl md:rounded-[3rem] overflow-hidden h-full flex flex-col transition-all duration-500">
+                  <CardHeader className="pt-8 md:pt-12 px-6 md:px-10 flex-col items-center text-center">
+                    <div className={`w-20 h-20 bg-gradient-to-br ${feature.color} rounded-3xl flex items-center justify-center mb-10 shadow-3xl group-hover:scale-110 transition-transform duration-500 relative`}>
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <feature.icon className="h-10 w-10 text-white" />
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-center gap-3">
+                        <CardTitle className="text-2xl font-black text-white tracking-tighter uppercase italic">{feature.title}</CardTitle>
+                        {feature.premium && (
+                          <span className="bg-emerald-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                            ELITE
+                          </span>
+                        )}
+                      </div>
+                      <CardDescription className="text-slate-500 font-bold text-sm leading-relaxed uppercase tracking-wide">
+                        {feature.description}
+                      </CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="px-10 pb-12 mt-auto">
+                    <Button
+                      className="w-full bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-2xl"
+                      onClick={() => handleSafeNavigation(feature.href || "#")}
+                    >
+                      {feature.action} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+
+
       {/* Premium Perks - High End Grid */}
-      <section className="py-32 px-6 bg-[#0d1321]/30 relative z-10">
+      <section className="py-20 md:py-32 px-4 md:px-6 bg-[#0d1321]/30 relative z-10">
         <div className="container mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic mb-8">
@@ -577,7 +581,7 @@ export default function SocialPage() {
                 whileHover={{ y: -15 }}
                 className="group h-full"
               >
-                <Card className="text-center border-white/5 bg-white/5 backdrop-blur-3xl rounded-[3rem] p-6 flex flex-col h-full transition-all duration-500 hover:bg-white/10 hover:border-emerald-500/30 shadow-3xl">
+                <Card className="text-center border-white/5 bg-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[3rem] p-6 flex flex-col h-full transition-all duration-500 hover:bg-white/10 hover:border-emerald-500/30 shadow-3xl">
                   <CardHeader className="pt-10">
                     <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-3xl group-hover:scale-110 transition-transform duration-500">
                       <feature.icon className="h-10 w-10 text-white" />
@@ -608,7 +612,7 @@ export default function SocialPage() {
       </section>
 
       {/* Integrity Shield View */}
-      <section className="py-32 px-6 relative z-10">
+      <section className="py-20 md:py-32 px-4 md:px-6 relative z-10">
         <div className="container mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-6">
@@ -619,8 +623,8 @@ export default function SocialPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            <motion.div whileHover={{ y: -10 }} className="text-center p-12 bg-white/5 rounded-[3.5rem] border border-white/5 backdrop-blur-3xl shadow-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
+            <motion.div whileHover={{ y: -10 }} className="text-center p-8 md:p-12 bg-white/5 rounded-3xl md:rounded-[3.5rem] border border-white/5 backdrop-blur-3xl shadow-3xl">
               <Shield className="h-16 w-16 text-emerald-500 mx-auto mb-8 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]" />
               <h3 className="text-xl font-black text-white mb-6 tracking-tighter uppercase italic">Verified Users</h3>
               <p className="text-slate-500 font-bold text-sm uppercase tracking-wide leading-relaxed">
@@ -646,7 +650,7 @@ export default function SocialPage() {
       </section>
 
       {/* Call to Signal Section */}
-      <section className="py-48 px-6 relative z-10 text-center">
+      <section className="py-24 md:py-48 px-4 md:px-6 relative z-10 text-center">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-600/5 to-transparent pointer-events-none" />
         <div className="container mx-auto max-w-4xl space-y-12">
           <motion.div

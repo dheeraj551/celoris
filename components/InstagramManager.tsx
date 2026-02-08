@@ -158,8 +158,8 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
             <Instagram className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter">Identity Feed</h2>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">BROADCAST YOUR NEURAL FRAGMENTS TO THE NEXUS.</p>
+            <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter">Social Feed</h2>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Share your recent photos and videos with the community.</p>
           </div>
         </div>
       </div>
@@ -167,10 +167,10 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
       <Tabs defaultValue="create" className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-white/5 p-2 rounded-[2rem] border border-white/5 mb-10 h-16">
           <TabsTrigger value="create" className="rounded-2xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-2xl transition-all font-black uppercase tracking-widest text-[9px]">
-            <Plus className="h-3 w-3 mr-2" /> CREATE_NODE
+            <Plus className="h-3 w-3 mr-2" /> Add Post
           </TabsTrigger>
           <TabsTrigger value="manage" className="rounded-2xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-2xl transition-all font-black uppercase tracking-widest text-[9px]">
-            <Target className="h-3 w-3 mr-2" /> MANAGE_FEED
+            <Target className="h-3 w-3 mr-2" /> Manage Feed
           </TabsTrigger>
         </TabsList>
 
@@ -179,13 +179,13 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
             <CardHeader className="p-0 mb-10">
               <div className="flex items-center gap-3 mb-2">
                 <Sparkles size={14} className="text-blue-400" />
-                <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">DATA UPLINK</CardTitle>
+                <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">Upload Media</CardTitle>
               </div>
-              <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">INJECT NEW MEDIA INTO YOUR NEURAL STREAM.</CardDescription>
+              <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Add a new photo or video to your social feed.</CardDescription>
             </CardHeader>
             <CardContent className="p-0 space-y-10">
               <div className="space-y-4">
-                <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">MEDIA_BITSTREAM</Label>
+                <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Select Media</Label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   className={`
@@ -198,7 +198,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
                   {isUploading ? (
                     <div className="flex flex-col items-center space-y-4 animate-pulse">
                       <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">TRANSMITTING DATA...</span>
+                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Uploading...</span>
                     </div>
                   ) : mediaUrl ? (
                     <div className="relative w-full h-full">
@@ -217,8 +217,8 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
                         <Upload className="h-8 w-8 text-blue-400" />
                       </div>
                       <div className="text-center">
-                        <span className="block text-sm font-black text-white italic uppercase tracking-tighter">SELECT_MEDIA_FILE</span>
-                        <span className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mt-2">{'{ IMAGES | VIDEOS | MAX_10MB }'}</span>
+                        <span className="block text-sm font-black text-white italic uppercase tracking-tighter">Select Photo or Video</span>
+                        <span className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mt-2">{'{ Image | Video | Max 10MB }'}</span>
                       </div>
                     </div>
                   )}
@@ -226,10 +226,10 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
               </div>
 
               <div className="space-y-4">
-                <Label htmlFor="caption" className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">DESCRIPTIVE_CAPTION</Label>
+                <Label htmlFor="caption" className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Caption</Label>
                 <Textarea
                   id="caption"
-                  placeholder="Annotate this fragment..."
+                  placeholder="What's on your mind?"
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
                   className="bg-white/5 border-white/10 focus:border-blue-500/50 text-white rounded-[1.5rem] px-6 py-4 font-bold tracking-tight h-24 focus:outline-none transition-all resize-none shadow-inner"
@@ -245,12 +245,12 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
                   {isSubmitting ? (
                     <div className="flex items-center gap-3">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      COMMITTING_FRAGMENTS...
+                      Creating post...
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
                       <Zap className="h-4 w-4" />
-                      INITIALIZE_BROADCAST
+                      Share Post
                     </div>
                   )}
                 </Button>
@@ -263,7 +263,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
           <div className="space-y-8">
             {posts.length === 0 ? (
               <Card className="bg-white/5 border-white/10 rounded-[3rem] p-16 text-center italic font-black uppercase tracking-widest text-[10px] text-slate-600">
-                NO FRAGMENTS DETECTED IN STREAM.
+                No posts found in your feed.
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -284,7 +284,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col justify-end p-8 gap-4">
                       <p className="text-xs font-bold text-white uppercase italic tracking-tight line-clamp-2">
-                        {post.caption || 'UNNAMED_FRAGMENT'}
+                        {post.caption || 'No caption'}
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">{post.post_type.toUpperCase()}</span>

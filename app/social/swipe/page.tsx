@@ -256,7 +256,7 @@ export default function DiscoverPage() {
   }
 
   return (
-    <PageWrapper className="min-h-screen bg-[#050810] py-12 px-6 relative overflow-hidden font-sans">
+    <PageWrapper className="min-h-screen bg-[#050810] py-8 md:py-12 px-3 md:px-6 relative overflow-hidden font-sans">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -277,7 +277,7 @@ export default function DiscoverPage() {
         />
       </div>
 
-      <div className="container mx-auto max-w-xl relative z-10">
+      <div className="container mx-auto max-w-xl relative z-10 px-1 md:px-0">
         {/* Header/Navigation */}
         <header className="flex items-center justify-between mb-12">
           <motion.div whileHover={{ x: -2 }}>
@@ -321,7 +321,7 @@ export default function DiscoverPage() {
               transition={{ type: "spring", damping: 20, stiffness: 100 }}
               className="absolute inset-0"
             >
-              <Card className="h-full bg-[#0d1321]/80 backdrop-blur-3xl border-white/10 rounded-[3.5rem] overflow-hidden shadow-[0_32px_120px_rgba(0,0,0,0.5)] flex flex-col">
+              <Card className="h-full bg-[#0d1321]/80 backdrop-blur-3xl border-white/10 rounded-3xl md:rounded-[3.5rem] overflow-hidden shadow-[0_32px_120px_rgba(0,0,0,0.5)] flex flex-col">
                 <CardContent className="p-0 flex-1 flex flex-col relative">
                   {/* Profile Visuals */}
                   <div className="relative h-2/3">

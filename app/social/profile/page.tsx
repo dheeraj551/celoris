@@ -169,11 +169,11 @@ export default function SocialProfilePage() {
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' })
 
-      setMessage({ type: 'success', text: 'SYNC SUCCESSFUL: Profiles protocols updated.' })
+      setMessage({ type: 'success', text: 'Profile updated successfully.' })
       if (refreshProfile) refreshProfile()
       setTimeout(() => setMessage({ type: '', text: '' }), 5000)
     } catch (error) {
-      setMessage({ type: 'error', text: 'SYNC ERROR: Critical failure in protocol update.' })
+      setMessage({ type: 'error', text: 'Failed to update profile.' })
     } finally {
       setSaving(false)
     }
@@ -215,10 +215,10 @@ export default function SocialProfilePage() {
 
       await loadProfile()
       if (refreshProfile) refreshProfile()
-      setMessage({ type: 'success', text: 'VISUAL SYNC: Neural avatar updated.' })
+      setMessage({ type: 'success', text: 'Profile photo updated.' })
     } catch (error: any) {
       console.error('Upload error:', error)
-      setMessage({ type: 'error', text: `VISUAL ERROR: ${error.message || 'Avatar transmission failed.'}` })
+      setMessage({ type: 'error', text: `Photo upload failed: ${error.message || 'Please try again.'}` })
     } finally {
       setUploadingPhoto(false)
     }
@@ -239,7 +239,7 @@ export default function SocialProfilePage() {
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full mx-auto mb-6"
           />
-          <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Decoding Identity Node...</p>
+          <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Loading profile...</p>
         </div>
       </div>
     )
@@ -261,7 +261,7 @@ export default function SocialProfilePage() {
         />
       </div>
 
-      <div className="container mx-auto max-w-5xl relative z-10">
+      <div className="container mx-auto max-w-5xl relative z-10 px-4 md:px-0">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
           <div className="space-y-4">
@@ -273,11 +273,11 @@ export default function SocialProfilePage() {
                 className="bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl mb-4"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                RETURN TO HUB
+                Go Back
               </Button>
             </motion.div>
-            <h1 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter">Your Profile</h1>
-            <p className="text-slate-500 font-black uppercase tracking-widest text-[10px] italic">MANAGE YOUR NEURAL SPECIFICATIONS & PREFERENCES.</p>
+            <h1 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter">Edit Profile</h1>
+            <p className="text-slate-500 font-black uppercase tracking-widest text-[10px] italic">Update your personal info and account settings.</p>
           </div>
           <div className="flex items-center gap-4">
             <Button
@@ -286,7 +286,7 @@ export default function SocialProfilePage() {
               className="h-14 px-8 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl"
             >
               <Eye className="h-4 w-4 mr-3 text-emerald-400" />
-              PREVIEW_NODE
+              Preview Profile
             </Button>
             <Button
               onClick={() => setShowSettings(!showSettings)}
@@ -294,7 +294,7 @@ export default function SocialProfilePage() {
               className={`h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl border transition-all ${showSettings ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}
             >
               <Settings className={`h-4 w-4 mr-3 ${showSettings ? 'animate-spin' : ''}`} />
-              {showSettings ? 'CLOSE_SYSTEM' : 'SYSTEM_CONFIG'}
+              {showSettings ? 'Close Settings' : 'Preferences'}
             </Button>
           </div>
         </div>
@@ -317,10 +317,10 @@ export default function SocialProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Sidebar: Photo & Stats */}
           <div className="space-y-8">
-            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-3xl rounded-[3rem] p-10 shadow-3xl overflow-hidden group">
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[3rem] p-6 sm:p-10 shadow-3xl overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardHeader className="text-center p-0 mb-10">
-                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic mb-10">NEURAL VISUALIZER</CardTitle>
+                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic mb-10">Profile Picture</CardTitle>
                 <div className="relative inline-block">
                   <div className="w-48 h-48 mx-auto rounded-[3rem] overflow-hidden bg-white/5 p-4 border border-white/10 group-hover:border-emerald-500/40 transition-all shadow-3xl relative">
                     <img
@@ -358,30 +358,30 @@ export default function SocialProfilePage() {
                     className="w-full h-14 bg-white/5 hover:bg-emerald-600 text-white border border-white/5 hover:border-emerald-500 rounded-2xl font-black uppercase tracking-widest text-[9px] shadow-3xl transition-all"
                   >
                     <Camera className="h-4 w-4 mr-3" />
-                    {uploadingPhoto ? 'TRANSMITTING...' : 'TRANSMIT NEW_AVATAR'}
+                    {uploadingPhoto ? 'Uploading...' : 'Change Profile Photo'}
                   </Button>
                 </div>
               </CardHeader>
             </Card>
 
-            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-3xl rounded-[3rem] p-10 shadow-3xl">
-              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic mb-10 text-center">CORE PROTOCOLS</CardTitle>
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[3rem] p-6 sm:p-10 shadow-3xl">
+              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic mb-10 text-center">Account Info</CardTitle>
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">RANK</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Account Type</span>
                   <span className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${profile?.subscription_status === 'premium' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 shadow-3xl' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}>
-                    {profile?.subscription_status === 'premium' ? <><Crown className="h-3 w-3" /> ELITE_SYNC</> : 'STANDARD'}
+                    {profile?.subscription_status === 'premium' ? <><Crown className="h-3 w-3" /> Verified Elite</> : 'Standard'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">SYNC_VERIFIED</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</span>
                   <span className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${profile?.verification_status === 'verified' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-3xl' : 'bg-yellow-500/10 text-yellow-500/80 border border-yellow-500/20'}`}>
                     <Zap className="h-3 w-3" /> {profile?.verification_status?.toUpperCase() || 'OFFLINE'}
                   </span>
                 </div>
                 {profile?.subscription_status === 'free' && (
                   <Button className="w-full h-14 bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white rounded-2xl font-black uppercase tracking-widest text-[9px] shadow-3xl shadow-emerald-500/20 mt-6" asChild>
-                    <a href="/social/upgrade">UPGRADE TO ELITE_RANK <ArrowLeft className="h-3 w-3 ml-2 rotate-180" /></a>
+                    <a href="/social/upgrade">Upgrade to Elite <ArrowLeft className="h-3 w-3 ml-2 rotate-180" /></a>
                   </Button>
                 )}
               </div>
@@ -391,72 +391,72 @@ export default function SocialProfilePage() {
           {/* Main Content: Info & Preferences */}
           <div className="lg:col-span-2 space-y-12">
             {/* Basic Information */}
-            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-3xl rounded-[4rem] p-12 shadow-3xl">
+            <Card className="bg-[#0d1321]/40 border-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[4rem] p-6 sm:p-12 shadow-3xl">
               <CardHeader className="p-0 mb-12">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
                     <User className="h-6 w-6 text-emerald-400" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">DATA IDENTIFICATION</CardTitle>
-                    <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">YOUR PUBLIC FREQUENCY BROADCAST DATA.</CardDescription>
+                    <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">Public Profile</CardTitle>
+                    <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">This information will be visible to everyone.</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <div className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">NODE_HANDLE *</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Username *</label>
                     <div className="relative group">
                       <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-700 group-focus-within:text-emerald-500 transition-colors" />
                       <Input
                         value={formData.username}
                         onChange={(e) => handleInputChange('username', e.target.value)}
                         className="bg-white/5 border-white/10 focus:bg-white/10 focus:border-emerald-500/50 text-white rounded-2xl pl-14 h-14 font-bold uppercase italic tracking-wide"
-                        placeholder="handle_01"
+                        placeholder="username"
                       />
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">FULL_DESIGNATION *</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Name *</label>
                     <Input
                       value={formData.full_name}
                       onChange={(e) => handleInputChange('full_name', e.target.value)}
                       className="bg-white/5 border-white/10 focus:bg-white/10 focus:border-emerald-500/50 text-white rounded-2xl px-6 h-14 font-bold uppercase italic tracking-wide"
-                      placeholder="Unit Name"
+                      placeholder="Your Name"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">BIOGRAPHICAL_DATA_STREAM</label>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Bio</label>
                   <textarea
                     value={formData.bio}
                     onChange={(e) => handleInputChange('bio', e.target.value)}
-                    placeholder="Broadcast your internal thought patterns..."
+                    placeholder="Tell us about yourself..."
                     className="w-full bg-white/5 border border-white/10 focus:bg-white/10 focus:border-emerald-500/50 text-white rounded-[2rem] px-8 py-6 font-bold italic tracking-wide h-40 focus:outline-none transition-all resize-none"
                     maxLength={500}
                   />
                   <div className="flex justify-end pr-4">
-                    <span className="text-[9px] font-black text-slate-700 tracking-widest uppercase">{formData.bio.length}/500 BITS</span>
+                    <span className="text-[9px] font-black text-slate-700 tracking-widest uppercase">{formData.bio.length}/500 Characters</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">SOCIAL_COORDINATES (LOCATION)</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Location</label>
                     <div className="relative group">
                       <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-700 group-focus-within:text-emerald-500 transition-colors" />
                       <Input
                         value={formData.location}
                         onChange={(e) => handleInputChange('location', e.target.value)}
                         className="bg-white/5 border-white/10 focus:bg-white/10 focus:border-emerald-500/50 text-white rounded-2xl pl-14 h-14 font-bold uppercase italic tracking-wide"
-                        placeholder="Global Region"
+                        placeholder="Your Location"
                       />
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">SYNC_START (D.O.B)</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">Birthday</label>
                     <Input
                       type="date"
                       value={formData.date_of_birth}
@@ -477,22 +477,22 @@ export default function SocialProfilePage() {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <Card className="bg-[#0b121e]/80 border-emerald-500/20 backdrop-blur-3xl rounded-[4rem] p-12 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+                  <Card className="bg-[#0b121e]/80 border-emerald-500/20 backdrop-blur-3xl rounded-3xl md:rounded-[4rem] p-6 sm:p-12 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
                     <CardHeader className="p-0 mb-12">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-teal-500/10 rounded-2xl border border-teal-500/20">
                           <Heart className="h-6 w-6 text-teal-400" />
                         </div>
                         <div>
-                          <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">ALGORITHMIC PARAMETERS</CardTitle>
-                          <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">FINE-TUNE YOUR DISCOVERY FREQUENCY.</CardDescription>
+                          <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">Matching Filters</CardTitle>
+                          <CardDescription className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Customize who you'd like to discover and connect with.</CardDescription>
                         </div>
                       </div>
                     </CardHeader>
                     <div className="space-y-12">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="space-y-4">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">MIN_AGE_THRESHOLD</label>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Minimum Age</label>
                           <Input
                             type="number"
                             value={preferencesData.min_age}
@@ -501,7 +501,7 @@ export default function SocialProfilePage() {
                           />
                         </div>
                         <div className="space-y-4">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">MAX_AGE_THRESHOLD</label>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Maximum Age</label>
                           <Input
                             type="number"
                             value={preferencesData.max_age}
@@ -510,7 +510,7 @@ export default function SocialProfilePage() {
                           />
                         </div>
                         <div className="space-y-4">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">MAX_SIGNAL_RADIUS (KM)</label>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Distance Limit (KM)</label>
                           <Input
                             type="number"
                             value={preferencesData.max_distance}
@@ -522,36 +522,36 @@ export default function SocialProfilePage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-4">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">FILTER_BY_IDENTITY</label>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Interested In</label>
                           <select
                             value={preferencesData.gender_preference}
                             onChange={(e) => handlePreferenceChange('gender_preference', e.target.value)}
                             className="w-full h-14 bg-white/5 border border-white/10 focus:border-emerald-500/50 text-white rounded-2xl px-6 font-black uppercase text-xs focus:outline-none appearance-none cursor-pointer"
                           >
-                            <option value="all" className="bg-[#0d1321]">OMNI_DIRECTIONAL (ALL)</option>
-                            <option value="male" className="bg-[#0d1321]">MALE_NODES</option>
-                            <option value="female" className="bg-[#0d1321]">FEMALE_NODES</option>
-                            <option value="non-binary" className="bg-[#0d1321]">NON_BINARY</option>
+                            <option value="all" className="bg-[#0d1321]">Everyone (All)</option>
+                            <option value="male" className="bg-[#0d1321]">Men</option>
+                            <option value="female" className="bg-[#0d1321]">Women</option>
+                            <option value="non-binary" className="bg-[#0d1321]">Non-Binary</option>
                           </select>
                         </div>
                         <div className="space-y-4">
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">SYNC_OBJECTIVE</label>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Looking For</label>
                           <select
                             value={preferencesData.looking_for}
                             onChange={(e) => handlePreferenceChange('looking_for', e.target.value)}
                             className="w-full h-14 bg-white/5 border border-white/10 focus:border-emerald-500/50 text-white rounded-2xl px-6 font-black uppercase text-xs focus:outline-none appearance-none cursor-pointer"
                           >
-                            <option value="friends" className="bg-[#0d1321]">SOCIAL_BONDING (FRIENDS)</option>
-                            <option value="networking" className="bg-[#0d1321]">DATA_EXCHANGE (NETWORKING)</option>
-                            <option value="dating" className="bg-[#0d1321]">NEURAL_MERGE (DATING)</option>
-                            <option value="collaboration" className="bg-[#0d1321]">SYNERGY (CO-OP)</option>
+                            <option value="friends" className="bg-[#0d1321]">Friends</option>
+                            <option value="networking" className="bg-[#0d1321]">Networking</option>
+                            <option value="dating" className="bg-[#0d1321]">Dating</option>
+                            <option value="collaboration" className="bg-[#0d1321]">Collaboration</option>
                           </select>
                         </div>
                       </div>
 
                       <div className="space-y-8">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic flex items-center gap-3">
-                          <Sparkles size={12} className="text-emerald-500" /> RESONANCE_TAGS (INTERESTS)
+                          <Sparkles size={12} className="text-emerald-500" /> Interests & Tags
                         </label>
                         <div className="flex flex-wrap gap-3">
                           {availableInterests.map((interest) => (
@@ -591,7 +591,7 @@ export default function SocialProfilePage() {
                   asChild
                   className="w-full sm:w-auto h-16 px-12 bg-white/5 border border-white/10 hover:bg-white/10 text-slate-500 hover:text-white rounded-[1.5rem] font-black uppercase tracking-widest text-[10px]"
                 >
-                  <Link href="/social">CANCEL_REQUEST</Link>
+                  <Link href="/social">Cancel</Link>
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
@@ -603,12 +603,12 @@ export default function SocialProfilePage() {
                   {saving ? (
                     <div className="flex items-center gap-3">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent shadow-3xl"></div>
-                      ENCRYPTING...
+                      Saving...
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
                       <Save className="h-5 w-5" />
-                      SAVE_SPECIFICATIONS
+                      Save Profile
                     </div>
                   )}
                 </Button>
