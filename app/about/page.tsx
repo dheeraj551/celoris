@@ -1,13 +1,17 @@
 import AboutClient from "./AboutClient"
 import { createServerClient } from "@/lib/supabase-server"
 
+export const dynamic = 'force-dynamic'
+
 export default async function AboutPage() {
     const supabase = createServerClient()
 
     const { data: dbTestimonials } = await supabase
         .from('testimonials')
         .select('*')
-        .eq('is_featured', true)
+        .contains('target_pages', ['about'])
+        .eq('is_visible', true)
+        .order('created_at', { ascending: false })
         .limit(3);
 
     return (
