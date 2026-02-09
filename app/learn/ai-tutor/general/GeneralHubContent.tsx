@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
     Mic, MicOff, Video, VideoOff, PhoneOff, Hand, Users,
-    MessageSquare, Send, Shield, ShieldAlert, Sparkles, LayoutGrid, AlertCircle, Calendar, Clock, Plus, X
+    MessageSquare, Send, Shield, ShieldAlert, Sparkles, LayoutGrid, AlertCircle, Calendar, Clock, Plus, X, BookOpen
 } from 'lucide-react'
 import AgoraRTC, {
     IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack,
@@ -476,270 +476,234 @@ export default function GeneralHubPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#050810] relative text-white flex flex-col overflow-hidden">
+        <div className="flex h-screen bg-[#050810] text-slate-200 overflow-hidden font-sans">
 
-            {/* Top Bar */}
-            <header className="h-16 border-b border-white/5 bg-[#0d1321]/50 backdrop-blur-md flex items-center justify-between px-6 z-20">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white" onClick={leaveRoom}>
-                        <PhoneOff className="w-5 h-5 text-red-500" />
-                    </Button>
-                    <div>
-                        <h2 className="font-black italic uppercase tracking-tighter text-lg flex items-center gap-2">
-                            General Hub
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                        </h2>
-                    </div>
+            {/* Left Sidebar: Video Feeds & Controls */}
+            <aside className="w-80 flex-shrink-0 bg-[#0d1321]/50 border-r border-white/5 flex flex-col relative z-20">
+
+                {/* Sidebar Header */}
+                <div className="p-6 border-b border-white/5 bg-[#0d1321]/80 backdrop-blur-md">
+                    <h1 className="font-black text-lg text-white flex items-center gap-3 italic uppercase tracking-tighter">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                            <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
+                        </div>
+                        <div>
+                            Academy AI
+                            <span className="block text-[10px] text-emerald-500 font-bold tracking-widest not-italic">Virtual Classroom</span>
+                        </div>
+                    </h1>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 text-xs font-bold transition-all ${showParticipants ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-400'}`}
-                        onClick={() => {
-                            setShowParticipants(!showParticipants)
-                            if (showChat && !showParticipants) setShowChat(false)
-                        }}
-                    >
-                        <Users className="w-3 h-3" />
-                        <span>{onlineUsers.length} Online</span>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`${showChat ? 'bg-white/10 text-white' : 'text-slate-400'}`}
-                        onClick={() => {
-                            setShowChat(!showChat)
-                            if (showParticipants && !showChat) setShowParticipants(false)
-                        }}
-                    >
-                        <Calendar className="w-5 h-5 transition-all text-emerald-400" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`${showChat ? 'bg-white/10 text-white' : 'text-slate-400'}`}
-                        onClick={() => {
-                            setShowChat(!showChat)
-                            if (showParticipants && !showChat) setShowParticipants(false)
-                        }}
-                    >
-                        <MessageSquare className="w-5 h-5" />
-                    </Button>
-                </div>
-            </header>
+                {/* Video Grid (Vertical Stack) */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
 
-            {/* Main Stage */}
-            <main className="flex-1 flex overflow-hidden">
-
-                {/* Upcoming Sessions Banner */}
-                <AnimatePresence>
-                    {schedules.length > 0 && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-xl z-20"
-                        >
-                            <div className="bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-3xl p-4 rounded-2xl flex items-center justify-between gap-6 shadow-2xl">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-emerald-500/20 rounded-xl">
-                                        <Calendar className="w-5 h-5 text-emerald-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none mb-1">Upcoming Class</p>
-                                        <h4 className="text-sm font-bold text-white leading-tight">{schedules[0].topic}</h4>
-                                        <p className="text-[10px] text-slate-400 italic">Today at {new Date(schedules[0].start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                    </div>
-                                </div>
-                                {userRole === 'host' && (
-                                    <Button variant="ghost" size="sm" className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10 h-8">
-                                        Manage
-                                    </Button>
-                                )}
+                    {/* My Video */}
+                    {(userRole === 'host' || userRole === 'speaker') && (
+                        <div className="relative aspect-video bg-neutral-900 rounded-xl overflow-hidden border border-emerald-500/30 shadow-lg group">
+                            <div ref={node => { if (node) localVideoTrack?.play(node) }} className="w-full h-full object-cover transform scale-x-[-1]" />
+                            <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1.5 text-white">
+                                <Shield className="w-3 h-3 text-emerald-400" />
+                                You ({userRole})
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Stage / Video Area */}
-                <div className="flex-1 p-4 flex flex-col gap-4 relative">
-
-                    {/* Active Speakers Grid */}
-                    <div className={`grid gap-4 w-full h-full transition-all ${remoteUsers.length === 0 && userRole === 'audience' ? 'place-items-center' :
-                        'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                        }`}>
-
-                        {/* If I am Host/Speaker, show my video */}
-                        {(userRole === 'host' || userRole === 'speaker') && (
-                            <div className="relative aspect-video bg-neutral-900 rounded-2xl overflow-hidden border border-emerald-500/30 shadow-2xl group">
-                                <div ref={node => { if (node) localVideoTrack?.play(node) }} className="w-full h-full object-cover transform scale-x-[-1]" />
-
-                                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2">
-                                    <Shield className="w-3 h-3 text-emerald-400" />
-                                    You ({userRole})
-                                </div>
-
-                                <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 border border-white/10" onClick={toggleMic}>
-                                        {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4 text-red-400" />}
-                                    </Button>
-                                    <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 border border-white/10" onClick={toggleCam}>
-                                        {isCamOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4 text-red-400" />}
-                                    </Button>
-                                </div>
+                            {/* Overlay Controls */}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/60 hover:bg-black/80 border border-white/10 text-white" onClick={toggleMic}>
+                                    {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4 text-red-500" />}
+                                </Button>
+                                <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/60 hover:bg-black/80 border border-white/10 text-white" onClick={toggleCam}>
+                                    {isCamOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4 text-red-500" />}
+                                </Button>
                             </div>
-                        )}
-
-                        {/* Remote Host/Speakers */}
-                        {remoteUsers.map(user => (
-                            <div key={user.uid} className="relative aspect-video bg-neutral-900 rounded-2xl overflow-hidden border border-white/5 shadow-xl">
-                                <RemoteVideoTrack track={user.videoTrack} />
-                                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2">
-                                    <Mic className="w-3 h-3 text-blue-400" />
-                                    Speaker {user.uid}
-                                </div>
-                            </div>
-                        ))}
-
-                        {/* Empty State */}
-                        {remoteUsers.length === 0 && userRole === 'audience' && (
-                            <div className="text-center space-y-4">
-                                <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto animate-pulse">
-                                    <LayoutGrid className="w-10 h-10 text-slate-600" />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-300">Classroom is Quiet</h3>
-                                <p className="text-slate-500 text-sm">Waiting for the teacher to join the stage...</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Action Bar (Student) */}
-                    {userRole === 'audience' && (
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-[#0d1321]/90 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl z-30">
-                            <Button
-                                variant={handRaised ? "secondary" : "default"}
-                                onClick={raiseHand}
-                                className={`h-12 w-12 rounded-xl transition-all ${handRaised ? 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30' : 'bg-white/5 hover:bg-white/10'}`}
-                            >
-                                <Hand className={`w-6 h-6 ${handRaised ? 'fill-current' : ''}`} />
-                            </Button>
-                            {handRaised && <span className="text-xs font-bold text-amber-500 pr-3 animate-pulse">Requesting to Speak...</span>}
                         </div>
                     )}
 
+                    {/* Remote Videos */}
+                    {remoteUsers.map(user => (
+                        <div key={user.uid} className="relative aspect-video bg-neutral-900 rounded-xl overflow-hidden border border-white/5 shadow-md">
+                            <RemoteVideoTrack track={user.videoTrack} />
+                            <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1.5 text-white">
+                                <Mic className="w-3 h-3 text-blue-400" />
+                                User {user.uid}
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* Empty State / Placeholders if needed */}
+                    {remoteUsers.length === 0 && !(userRole === 'host' || userRole === 'speaker') && (
+                        <div className="flex flex-col items-center justify-center h-48 text-center p-4 border border-dashed border-white/10 rounded-xl bg-white/5">
+                            <Users className="w-8 h-8 text-slate-600 mb-2" />
+                            <p className="text-xs text-slate-500 font-medium">No active speakers</p>
+                        </div>
+                    )}
                 </div>
 
-                {/* Chat & Participants Sidebar */}
-                <AnimatePresence mode="wait">
-                    {showChat && (
-                        <motion.aside
-                            key="chat"
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 320, opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
-                            className="border-l border-white/5 bg-[#0d1321]/80 backdrop-blur-xl flex flex-col z-20"
+                {/* Bottom Action Bar (Sidebar) */}
+                <div className="p-4 border-t border-white/5 bg-[#0d1321]/80 backdrop-blur-md">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                            {isConnected ? 'Live Connection' : 'Disconnected'}
+                        </span>
+                    </div>
+                    <Button
+                        variant="destructive"
+                        onClick={leaveRoom}
+                        className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 text-xs font-black uppercase tracking-widest h-10"
+                    >
+                        <PhoneOff className="w-4 h-4 mr-2" />
+                        Leave Class
+                    </Button>
+                </div>
+            </aside>
+
+            {/* Main Content: Chat & Interaction */}
+            <main className="flex-1 flex flex-col relative bg-[#050810] shadow-inner">
+
+                {/* Main Header */}
+                <header className="h-24 border-b border-white/5 bg-[#0d1321]/30 flex items-center justify-between px-8 z-10">
+                    <div>
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="p-1.5 rounded bg-blue-500/10 border border-blue-500/20">
+                                <BookOpen className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <h2 className="text-xl font-bold text-white tracking-tight">
+                                {schedules.length > 0 ? schedules[0].topic : "General Discussion & Collaboration"}
+                            </h2>
+                        </div>
+                        <p className="text-[10px] font-black tracking-[0.2em] text-slate-500 uppercase pl-9">
+                            {schedules.length > 0 ? "CURRENT SESSION" : "OPEN LOBBY"}
+                        </p>
+                    </div>
+
+                    {/* Participants Pile */}
+                    <div className="flex items-center gap-6">
+                        <div className="flex -space-x-3">
+                            {onlineUsers.slice(0, 5).map((u, i) => (
+                                <Avatar key={u.id} className="w-10 h-10 border-2 border-[#050810] shadow-lg">
+                                    <AvatarImage src={u.avatar_url} />
+                                    <AvatarFallback className="bg-emerald-600 text-white text-xs font-bold">
+                                        {u.name?.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            ))}
+                            {onlineUsers.length > 5 && (
+                                <div className="w-10 h-10 rounded-full bg-[#0d1321] border-2 border-[#050810] flex items-center justify-center text-xs font-bold text-slate-400">
+                                    +{onlineUsers.length - 5}
+                                </div>
+                            )}
+                        </div>
+                        <div className="text-right hidden md:block">
+                            <div className="text-2xl font-black text-white leading-none">{onlineUsers.length}</div>
+                            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Active</div>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Chat Area */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar" ref={chatEndRef}>
+                    {messages.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-slate-600 opacity-50">
+                            <MessageSquare className="w-12 h-12 mb-4" />
+                            <p className="text-sm font-medium">No messages yet. Start the conversation!</p>
+                        </div>
+                    ) : messages.map((m: any, idx) => {
+                        const isMe = m.senderId === currentUser?.id;
+                        return (
+                            <div key={m.id || idx} className={`flex gap-4 max-w-3xl ${isMe ? 'ml-auto flex-row-reverse' : ''}`}>
+                                <Avatar className="w-10 h-10 border border-white/10 mt-1">
+                                    <AvatarFallback className={`${isMe ? 'bg-emerald-600' : 'bg-indigo-600'} text-white text-xs font-bold`}>
+                                        {m.senderName?.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-xs font-bold text-white">{m.senderName}</span>
+                                        {/* <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 uppercase tracking-wider">Teacher</span> */}
+                                        <span className="text-[10px] text-slate-500">{new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </div>
+                                    <div className={`p-4 rounded-2xl text-sm leading-relaxed ${isMe
+                                        ? 'bg-emerald-600 text-white rounded-tr-none shadow-lg shadow-emerald-900/20'
+                                        : 'bg-white/5 text-slate-100 border border-white/5 rounded-tl-none'
+                                        }`}>
+                                        {m.content}
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+
+                {/* Input Area */}
+                <div className="p-6 md:p-10 pb-12">
+                    <div className="max-w-4xl mx-auto relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/10 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <form
+                            onSubmit={sendMessage}
+                            className="relative bg-[#0d1321] border border-white/10 rounded-[1.5rem] shadow-2xl flex items-center p-2 pr-3 transition-all focus-within:ring-2 focus-within:ring-emerald-500/50"
                         >
-                            <div className="p-4 border-b border-white/5 font-bold text-sm tracking-widest uppercase text-slate-400">
-                                Live Chat
-                            </div>
-
-                            <div className="flex-1 p-4 overflow-y-auto space-y-4" ref={chatEndRef}>
-                                {messages.length === 0 ? (
-                                    <div className="text-center text-slate-600 text-xs py-10 italic">
-                                        No messages yet.
-                                    </div>
-                                ) : messages.map((m: any) => (
-                                    <div key={m.id} className="flex flex-col gap-1">
-                                        <span className={`text-[10px] font-bold ${m.senderId === currentUser?.id ? 'text-emerald-400' : 'text-slate-400'}`}>
-                                            {m.senderName}
-                                        </span>
-                                        <div className="bg-white/5 p-3 rounded-lg rounded-tl-none text-sm text-slate-300 break-words">
-                                            {m.content}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="p-4 border-t border-white/5">
-                                <form
-                                    onSubmit={sendMessage}
-                                    className="flex gap-2"
+                            <div className="pl-4 pr-2">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className={`rounded-full transition-all ${handRaised ? 'bg-amber-500/10 text-amber-500 animate-pulse' : 'text-slate-400 hover:bg-white/5'}`}
+                                    onClick={raiseHand}
+                                    title="Raise Hand"
                                 >
-                                    <input
-                                        className="flex-1 bg-white/5 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                                        placeholder="Type a message..."
-                                        value={newMessage}
-                                        onChange={e => setNewMessage(e.target.value)}
-                                    />
-                                    <Button size="icon" type="submit" className="bg-emerald-600 hover:bg-emerald-500 h-9 w-9">
-                                        <Send className="w-4 h-4" />
-                                    </Button>
-                                </form>
-                            </div>
-                        </motion.aside>
-                    )}
-
-                    {showParticipants && (
-                        <motion.aside
-                            key="participants"
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 320, opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
-                            className="border-l border-white/5 bg-[#0d1321]/80 backdrop-blur-xl flex flex-col z-20"
-                        >
-                            <div className="p-4 border-b border-white/5 font-bold text-sm tracking-widest uppercase text-slate-400">
-                                Classroom Sync ({onlineUsers.length})
+                                    <Hand className="w-5 h-5" />
+                                </Button>
                             </div>
 
-                            <div className="flex-1 p-4 overflow-y-auto space-y-2">
-                                {onlineUsers.map((u: any) => (
-                                    <div key={u.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 group hover:border-emerald-500/30 transition-all">
-                                        <div className="flex items-center gap-3">
-                                            <div className="relative">
-                                                <Avatar className="h-8 w-8 border border-white/10">
-                                                    <AvatarImage src={u.avatar_url} />
-                                                    <AvatarFallback className="bg-neutral-800 text-[10px] font-black">{u.name?.charAt(0)}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0d1321] rounded-full" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-white leading-none">{u.name}</span>
-                                                <span className="text-[9px] font-black text-slate-500 uppercase mt-1 tracking-tighter">
-                                                    {u.role === 'host' ? 'Teacher' : u.role === 'speaker' ? 'Speaker' : 'Student'}
-                                                </span>
-                                            </div>
-                                        </div>
+                            <input
+                                className="flex-1 bg-transparent px-2 py-4 text-base text-white placeholder:text-slate-500 focus:outline-none"
+                                placeholder="Raise your hand or ask a question..."
+                                value={newMessage}
+                                onChange={e => setNewMessage(e.target.value)}
+                            />
 
-                                        {userRole === 'host' && u.id !== currentUser?.id && u.role === 'audience' && (
-                                            <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                className="h-7 px-2 text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
-                                                onClick={() => promoteToSpeaker(u.id)}
-                                            >
-                                                Unmute
-                                            </Button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.aside>
+                            <Button
+                                type="submit"
+                                disabled={!newMessage.trim()}
+                                className="h-12 w-12 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all bg-gradient-to-br from-emerald-500 to-emerald-700"
+                            >
+                                <Send className="w-5 h-5 ml-0.5" />
+                            </Button>
+                        </form>
+                        <p className="text-center text-[10px] font-medium text-slate-500 mt-4 tracking-wide">
+                            Shift + Enter to send. This is an AI-powered educational simulation.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Floating Schedule Button (Host Only) */}
+                <AnimatePresence>
+                    {userRole === 'host' && (
+                        <div className="absolute top-24 right-8 z-30">
+                            <Button
+                                onClick={() => setShowScheduleModal(true)}
+                                variant="outline"
+                                className="bg-[#0d1321]/80 backdrop-blur border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 text-xs font-black uppercase tracking-widest gap-2"
+                            >
+                                <Plus size={14} /> Schedule Class
+                            </Button>
+                        </div>
                     )}
                 </AnimatePresence>
 
                 {/* Schedule Modal (Teacher Only) */}
                 <AnimatePresence>
                     {showScheduleModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
                                 className="w-full max-w-md bg-[#0d1321] border border-white/10 rounded-[2.5rem] p-10 shadow-3xl"
                             >
                                 <div className="flex items-center justify-between mb-8">
                                     <h2 className="text-2xl font-black italic uppercase tracking-tighter text-white">Schedule Class</h2>
-                                    <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-slate-400" onClick={() => setShowScheduleModal(false)}>
+                                    <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-slate-400 hover:text-white" onClick={() => setShowScheduleModal(false)}>
                                         <X size={18} />
                                     </Button>
                                 </div>
@@ -749,7 +713,7 @@ export default function GeneralHubPage() {
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Class Topic</label>
                                         <input
                                             required
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none text-white"
                                             placeholder="e.g. Master Calculus in 60mins"
                                             value={scheduleForm.topic}
                                             onChange={e => setScheduleForm({ ...scheduleForm, topic: e.target.value })}
@@ -761,7 +725,7 @@ export default function GeneralHubPage() {
                                             <input
                                                 required
                                                 type="date"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none text-white color-scheme-dark"
                                                 value={scheduleForm.date}
                                                 onChange={e => setScheduleForm({ ...scheduleForm, date: e.target.value })}
                                             />
@@ -771,7 +735,7 @@ export default function GeneralHubPage() {
                                             <input
                                                 required
                                                 type="time"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none text-white color-scheme-dark"
                                                 value={scheduleForm.time}
                                                 onChange={e => setScheduleForm({ ...scheduleForm, time: e.target.value })}
                                             />
@@ -780,7 +744,7 @@ export default function GeneralHubPage() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
                                         <textarea
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none min-h-[100px]"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none min-h-[100px] text-white"
                                             placeholder="What will students learn?"
                                             value={scheduleForm.description}
                                             onChange={e => setScheduleForm({ ...scheduleForm, description: e.target.value })}
@@ -794,21 +758,6 @@ export default function GeneralHubPage() {
                         </div>
                     )}
                 </AnimatePresence>
-
-                {/* Floating Action Button for Teacher */}
-                {userRole === 'host' && (
-                    <div className="fixed bottom-24 right-8 z-40">
-                        <Button
-                            onClick={() => setShowScheduleModal(true)}
-                            className="bg-emerald-600 hover:bg-emerald-500 h-16 w-16 rounded-full shadow-3xl shadow-emerald-600/30 border-2 border-white/10 flex items-center justify-center p-0 group overflow-hidden"
-                        >
-                            <Plus size={32} className="text-white group-hover:rotate-90 transition-transform duration-500" />
-                        </Button>
-                        <div className="absolute right-0 -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap border border-white/10 pointer-events-none">
-                            Schedule Class
-                        </div>
-                    </div>
-                )}
 
             </main>
         </div>

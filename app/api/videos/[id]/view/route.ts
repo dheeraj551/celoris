@@ -4,11 +4,11 @@ import { createClient } from '@/lib/supabase-client';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const videoId = params.id;
+    const { id: videoId } = await params;
     const supabase = createClient();
-    
+
     // Get user from session (optional for views)
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -55,9 +55,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 }
 
 // GET - Get view count for a video
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const videoId = params.id;
+    const { id: videoId } = await params;
     const supabase = createClient();
 
     const { data: video, error } = await (supabase

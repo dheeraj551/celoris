@@ -6,8 +6,9 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY!
 );
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id: postId } = await params;
     // Get user session from headers
     const session = request.headers.get('x-admin-session');
     if (!session) {
@@ -22,7 +23,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const postId = params.id;
+
 
     if (!postId) {
       return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });

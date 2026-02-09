@@ -4,18 +4,18 @@ import { createClient } from '@/lib/supabase-client'
 // GET - List topics for a module
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string, moduleId: string } }
+  { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { moduleId } = params
+    const { moduleId } = await params;
 
     const { data, error } = await supabase
       .from('course_topics')
@@ -36,18 +36,18 @@ export async function GET(
 // POST - Create new topic
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string, moduleId: string } }
+  { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { moduleId } = params
+    const { moduleId } = await params;
     const body = await request.json()
 
     const { data, error } = await supabase

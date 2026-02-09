@@ -64,8 +64,9 @@ const getJob = (id: string) => {
   return jobs[id] || jobs["1"] // Default to first job if ID not found
 }
 
-export default function JobDetailPage({ params }: { params: { id: string } }) {
-  const job = getJob(params.id)
+export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const job = getJob(id)
 
   const responsibilities = [
     "Build and maintain high-quality web applications",

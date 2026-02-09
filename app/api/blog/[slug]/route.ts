@@ -4,11 +4,11 @@ import { createClientForBrowser } from '@/lib/supabase-client';
 // GET /api/blog/[slug] - Get single published blog post by slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const supabase = createClientForBrowser()
-    let { slug } = params;
+    let { slug } = await params;
 
     console.log('Blog API - Requested slug:', slug);
 

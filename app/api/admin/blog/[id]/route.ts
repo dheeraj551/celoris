@@ -5,11 +5,11 @@ import type { Updates } from '@/lib/database.types';
 // GET /api/admin/blog/[id] - Get single blog post
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient()
-    const { id } = params;
+    const { id } = await params;
 
     const { data: post, error } = await supabase
       .from('blog_posts')
@@ -40,11 +40,11 @@ export async function GET(
 // PUT /api/admin/blog/[id] - Update blog post
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient()
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Remove id from update data if present
@@ -81,11 +81,11 @@ export async function PUT(
 // DELETE /api/admin/blog/[id] - Delete blog post
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient()
-    const { id } = params;
+    const { id } = await params;
 
     const { error } = await supabase
       .from('blog_posts')
@@ -111,11 +111,11 @@ export async function DELETE(
 // POST /api/admin/blog/[id]/publish - Publish/unpublish blog post
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient()
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { action } = body; // 'publish' or 'unpublish'
 

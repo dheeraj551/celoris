@@ -937,6 +937,7 @@ export default function CoursesDisplay({
     if (id === 'agentic-ai-cybersecurity-static') return '/courses/agentic-ai-for-cybersecurity'
     if (id === 'accelerating-science-static') return '/courses/accelerating-science-generative-ai-for-research-innovation'
     if (id === 'personalized-ai-experiences-static') return '/courses/personalized-ai-experiences-with-rag-and-agents'
+    if (id === 'sovereign-intelligence-static') return '/courses/sovereign-intelligence'
     return `/learn/course/${id}`
   }
 

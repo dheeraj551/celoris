@@ -54,8 +54,9 @@ const getCourse = (id: string) => {
   return courses.find(c => c.id.toString() === id)
 }
 
-export default function CourseDetailPage({ params }: { params: { id: string } }) {
-  const course = getCourse(params.id)
+export default async function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const course = getCourse(id)
 
   if (!course) {
     return (
@@ -112,7 +113,7 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
               <p className="text-lg text-text-secondary mb-6">
                 {course.description}
               </p>
-              
+
               {/* Course Stats */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-text-secondary">
                 <div className="flex items-center space-x-1">

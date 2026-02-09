@@ -4,12 +4,12 @@ import { createRouteClient } from '@/lib/supabase-server';
 // PATCH /api/admin/automation/settings/[id]
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
-    
+
     if (!id) {
       return NextResponse.json(
         { error: 'Automation settings ID is required' },
@@ -68,11 +68,11 @@ export async function PATCH(
 // DELETE /api/admin/automation/settings/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
-    
+    const { id } = await params;
+
     if (!id) {
       return NextResponse.json(
         { error: 'Automation settings ID is required' },

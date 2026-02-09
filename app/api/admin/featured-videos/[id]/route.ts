@@ -5,11 +5,11 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client';
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const supabase = createSupabaseClientForServer();
-        const id = params.id;
+        const { id } = await params;
 
         const { error } = await supabase
             .from('featured_videos')

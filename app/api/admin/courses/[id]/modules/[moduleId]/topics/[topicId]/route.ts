@@ -4,18 +4,18 @@ import { createClient } from '@/lib/supabase-client'
 // GET - Get single topic
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string, moduleId: string, topicId: string } }
+  { params }: { params: Promise<{ id: string, moduleId: string, topicId: string }> }
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { topicId } = params
+    const { topicId } = await params;
 
     const { data, error } = await supabase
       .from('course_topics')
@@ -36,18 +36,18 @@ export async function GET(
 // PUT - Update topic
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string, moduleId: string, topicId: string } }
+  { params }: { params: Promise<{ id: string, moduleId: string, topicId: string }> }
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { topicId } = params
+    const { topicId } = await params;
     const body = await request.json()
 
     const { data, error } = await (supabase as any)
@@ -73,18 +73,18 @@ export async function PUT(
 // DELETE - Delete topic
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string, moduleId: string, topicId: string } }
+  { params }: { params: Promise<{ id: string, moduleId: string, topicId: string }> }
 ) {
   try {
     const supabase = createClient()
-    
+
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.email !== 'support@celorisdesigns.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { topicId } = params
+    const { topicId } = await params;
 
     const { error } = await supabase
       .from('course_topics')

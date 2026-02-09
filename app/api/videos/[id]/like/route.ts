@@ -5,11 +5,11 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // POST - Toggle like on video
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const videoId = params.id;
+    const { id: videoId } = await params;
     const supabase = createClient();
-    
+
     // Get user from session
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
@@ -83,11 +83,11 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 }
 
 // GET - Check if user liked the video
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const videoId = params.id;
+    const { id: videoId } = await params;
     const supabase = createClient();
-    
+
     // Get user from session
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {

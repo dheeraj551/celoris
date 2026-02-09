@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
-export default async function StudyRoomPage({ params }: { params: { roomName: string } }) {
+export default async function StudyRoomPage({ params }: { params: Promise<{ roomName: string }> }) {
+    const { roomName } = await params;
     const supabase = createServerComponentClient({ cookies });
 
     const {
@@ -15,7 +16,7 @@ export default async function StudyRoomPage({ params }: { params: { roomName: st
     } = await supabase.auth.getSession();
 
     if (!session) {
-        redirect(`/login?next=/learn/study-room/${params.roomName}`);
+        redirect(`/login?next=/learn/study-room/${roomName}`);
     }
 
     const user = session.user;
@@ -36,7 +37,7 @@ export default async function StudyRoomPage({ params }: { params: { roomName: st
         console.error("Error fetching profile", e);
     }
 
-    const roomName = params.roomName;
+
     let token;
 
     try {

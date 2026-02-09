@@ -20,9 +20,9 @@ interface BlogPost {
   is_featured?: boolean;
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const supabase = createServerClient();
-  const { slug } = params;
+  const { slug } = await params;
 
   // Fetch the post
   const { data: post, error } = await supabase
