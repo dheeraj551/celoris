@@ -66,6 +66,7 @@ export default function AgenticAISystemsCourse() {
                     "The Anatomy of an Agent: Perception, Planning, Memory, and Action.",
                     "Cognitive Frameworks: Chain-of-Thought (CoT), Self-Reflection, and ReAct patterns."
                 ],
+                videoUrl: "https://www.youtube.com/embed/Y46XgRfD4GU",
                 duration: "3 hours"
             },
             {
@@ -318,7 +319,7 @@ export default function AgenticAISystemsCourse() {
                                 <div className="aspect-video relative overflow-hidden">
                                     <iframe
                                         className="w-full h-full"
-                                        src="https://www.youtube.com/embed/Mjt1rh7rgsA"
+                                        src="https://www.youtube.com/embed/Y46XgRfD4GU"
                                         title="Agentic AI Systems Course Video"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                         referrerPolicy="strict-origin-when-cross-origin"
@@ -389,6 +390,21 @@ export default function AgenticAISystemsCourse() {
                                                             </li>
                                                         ))}
                                                     </ul>
+
+                                                    {(chapter as any).videoUrl && (
+                                                        <div className="mt-6 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={(chapter as any).videoUrl}
+                                                                    title={`${chapter.title} - Video Lesson`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>

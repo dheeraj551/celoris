@@ -71,6 +71,7 @@ export default function RAGUnlockedCourse() {
                     "RAG vs. Fine-Tuning: A cost-benefit analysis. When to update weights vs. context.",
                     "The Standard RAG Stack: Document loaders, splitters, embedders, and vector stores."
                 ],
+                videoUrl: "https://www.youtube.com/embed/WPLkuo2ZgZQ",
                 duration: "2 hours"
             },
             {
@@ -83,6 +84,7 @@ export default function RAGUnlockedCourse() {
                     "Chunking Strategies: Fixed-size vs. Semantic vs. Recursive Character splitting.",
                     "Dimensionality & Distance: Understanding Cosine Similarity, Euclidean Distance, and Dot Product."
                 ],
+                videoUrl: "https://www.youtube.com/embed/6Bs41TdnbGw",
                 duration: "2 hours"
             },
             {
@@ -251,19 +253,17 @@ export default function RAGUnlockedCourse() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <Card className="relative overflow-hidden border-0 bg-slate-900/50 backdrop-blur-xl rounded-2xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <img
-                                        src="/rag-unlocked-cover.png"
-                                        alt="RAG Unlocked Course Cover"
-                                        className="w-full h-full object-cover transform transition duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Button size="lg" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-full h-20 w-20 p-0 flex items-center justify-center group/btn" asChild>
-                                            <Link href="#">
-                                                <Play className="h-8 w-8 fill-white group-hover/btn:scale-110 transition-transform ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src="https://www.youtube.com/embed/WPLkuo2ZgZQ"
+                                        title="RAG Unlocked: Production-Grade Search & Answer Systems"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        referrerPolicy="strict-origin-when-cross-origin"
+                                        allowFullScreen
+                                        className="w-full h-full"
+                                    ></iframe>
                                 </div>
                             </Card>
                         </div>
@@ -334,6 +334,21 @@ export default function RAGUnlockedCourse() {
                                                             </li>
                                                         ))}
                                                     </ul>
+
+                                                    {(chapter as any).videoUrl && (
+                                                        <div className="mt-6 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={(chapter as any).videoUrl}
+                                                                    title={`${chapter.title} - Video Lesson`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>

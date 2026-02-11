@@ -316,7 +316,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris',
       course_duration: '10 hours',
       price: 15000,
-      course_image_url: '/rag-unlocked-cover.png',
+      course_image_url: 'https://img.youtube.com/vi/WPLkuo2ZgZQ/maxresdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(5).fill(null).map((_, i) => ({
