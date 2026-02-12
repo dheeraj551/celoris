@@ -851,6 +851,73 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'arjuna-ssc-jee-bridge-static',
+      title: 'Arjuna Integrated: The SSC-JEE Bridge',
+      subject: 'Mathematics',
+      grade_level: 'SSC-JEE Integrated',
+      description: 'Master Algebra, Trigonometry, Geometry, and Statistics. This course bridges the gap between competitive exams like SSC and JEE, focusing on overlapping core concepts with dual-value learning.',
+      target_audience: 'SSC and JEE Aspirants',
+      instructor_name: 'Celoris Designs',
+      course_duration: '8 Weeks',
+      price: 4999,
+      course_image_url: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070&auto=format&fit=crop',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: [
+        {
+          id: 'arjuna-m1',
+          module_number: 1,
+          title: 'Phase 1: Foundations',
+          description: 'Arithmetic foundations and basic algebraic structures.',
+          estimated_duration: 360,
+          is_published: true,
+          course_topics: [
+            { id: 'arjuna-m1-t1', order_in_module: 1, title: 'Progressions and Series', short_description: 'AP, GP, and their respective means.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: true },
+            { id: 'arjuna-m1-t2', order_in_module: 2, title: 'Quadratic Equations', short_description: 'Real/complex roots, coefficients, and nature of roots.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+            { id: 'arjuna-m1-t3', order_in_module: 3, title: 'Set Theory', short_description: 'Venn diagrams, union, intersection, and practical problems.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+          ]
+        },
+        {
+          id: 'arjuna-m2',
+          module_number: 2,
+          title: 'Phase 2: Geometry and Measurement',
+          description: 'Visualising shapes and understanding coordinate systems.',
+          estimated_duration: 360,
+          is_published: true,
+          course_topics: [
+            { id: 'arjuna-m2-t1', order_in_module: 1, title: 'Cartesian Coordinate Geometry', short_description: 'Distance formula, section formula, slope, and triangle centers.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+            { id: 'arjuna-m2-t2', order_in_module: 2, title: 'Trigonometric Foundations', short_description: 'Functions, identities, periodicity, and Heights and Distances.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+            { id: 'arjuna-m2-t3', order_in_module: 3, title: 'Circles and Conics', short_description: 'Standard equations, tangents, Parabolas, and Ellipses.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+          ]
+        },
+        {
+          id: 'arjuna-m3',
+          module_number: 3,
+          title: 'Phase 3: Data and Advanced Algebra',
+          description: 'Handling uncertainty and structured data.',
+          estimated_duration: 360,
+          is_published: true,
+          course_topics: [
+            { id: 'arjuna-m3-t1', order_in_module: 1, title: 'Statistics and Measures of Dispersion', short_description: 'Mean, Median, Mode, Variance, and Standard Deviation.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+            { id: 'arjuna-m3-t2', order_in_module: 2, title: 'Probability Basics', short_description: 'Random experiments, sample spaces, and Bayes’ Theorem.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+            { id: 'arjuna-m3-t3', order_in_module: 3, title: 'Matrices and Determinants', short_description: 'Matrix operations and solving linear equations.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+          ]
+        },
+        {
+          id: 'arjuna-m4',
+          module_number: 4,
+          title: 'Phase 4: Advanced Calculus Overview',
+          description: 'Analytical edge for SSC Tier 2 and essential for JEE.',
+          estimated_duration: 240,
+          is_published: true,
+          course_topics: [
+            { id: 'arjuna-m4-t1', order_in_module: 1, title: 'Limits and Continuity', short_description: 'Limits at a real number and L’Hospital’s Rule.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+            { id: 'arjuna-m4-t2', order_in_module: 2, title: 'Application of Derivatives', short_description: 'Maxima, Minima, and rate of change optimization.', content_type: 'video', estimated_duration: 120, status: 'published', is_free_preview: false },
+          ]
+        }
+      ]
     }
   ]
 
@@ -938,6 +1005,7 @@ export default function CoursesDisplay({
     if (id === 'accelerating-science-static') return '/courses/accelerating-science-generative-ai-for-research-innovation'
     if (id === 'personalized-ai-experiences-static') return '/courses/personalized-ai-experiences-with-rag-and-agents'
     if (id === 'sovereign-intelligence-static') return '/courses/sovereign-intelligence'
+    if (id === 'arjuna-ssc-jee-bridge-static') return '/courses/arjuna-ssc-jee-bridge'
     return `/learn/course/${id}`
   }
 
