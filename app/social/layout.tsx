@@ -6,7 +6,6 @@ import {
     Home,
     MessageCircle,
     User,
-    Heart,
     Sparkles
 } from "lucide-react"
 
@@ -17,7 +16,6 @@ export default function SocialLayout({
 }) {
     const navItems = [
         { label: "Home", href: "/social", icon: Home },
-        { label: "Swipe", href: "/social/swipe", icon: Heart },
         { label: "Chat", href: "/social/chat", icon: MessageCircle },
         { label: "Lobby", href: "/social/lobby", icon: Sparkles },
         { label: "Profile", href: "/social/profile", icon: User },

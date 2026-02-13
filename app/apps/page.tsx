@@ -23,9 +23,9 @@ const mobileApps = [
   },
   {
     id: 2,
-    name: "Celoris Social",
-    description: "The definitive social layer for high-impact networking and discovery.",
-    category: "Social",
+    name: "Celoris Play",
+    description: "The definitive entertainment and interactive layer for high-impact networking and discovery.",
+    category: "Play",
     icon: Users,
     rating: 4.7,
     downloads: "100K+",
@@ -51,7 +51,7 @@ const mobileApps = [
 
 const categories = [
   { name: "Education", count: 12, icon: Globe, color: "text-blue-500", bg: "bg-blue-50" },
-  { name: "Social", count: 8, icon: Users, color: "text-purple-500", bg: "bg-purple-50" },
+  { name: "Play", count: 8, icon: Users, color: "text-purple-500", bg: "bg-purple-50" },
   { name: "Ops", count: 15, icon: Cpu, color: "text-emerald-500", bg: "bg-emerald-50" },
   { name: "Creative", count: 6, icon: Palette, color: "text-rose-500", bg: "bg-rose-50" }
 ]
@@ -126,8 +126,8 @@ export default function AppsPage() {
             transition={{ delay: 0.3 }}
             className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-slate-400 font-medium leading-relaxed"
           >
-            Deploying high-impact mobile solutions across education, social
-            networking, and enterprise operations. Scalable, secure, and beautiful.
+            Deploying high-impact mobile solutions across education, interactive
+            play, and enterprise operations. Scalable, secure, and beautiful.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

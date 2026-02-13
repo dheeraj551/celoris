@@ -248,7 +248,7 @@ export default function SocialPage() {
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full mx-auto mb-6"
           />
-          <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Connecting to Social Network...</p>
+          <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Connecting to Play Plane...</p>
         </div>
       </div>
     )
@@ -267,7 +267,7 @@ export default function SocialPage() {
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Social",
+        "name": "Play",
         "item": "https://www.celorisdesigns.com/social"
       }
     ]
@@ -309,7 +309,7 @@ export default function SocialPage() {
               className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-black uppercase tracking-[0.4em] mb-12 shadow-3xl backdrop-blur-3xl"
             >
               <Sparkles size={14} className="fill-emerald-400" />
-              Social Networking Redefined
+              Social Media Marketplace
             </motion.div>
 
             <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
@@ -319,7 +319,7 @@ export default function SocialPage() {
                 transition={{ delay: 0.1, duration: 0.8 }}
                 className="text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.9] text-white"
               >
-                Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Social</span>
+                Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Play</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -327,8 +327,7 @@ export default function SocialPage() {
                 transition={{ delay: 0.3 }}
                 className="text-sm sm:text-base md:text-xl max-w-3xl mx-auto md:mx-0 text-slate-400 font-medium leading-relaxed italic uppercase tracking-wide"
               >
-                "Swipe. Connect. Grow." The ultimate platform for finding creators,
-                building influence, and professional networking.
+                “Turn Followers into Customers.” The ultimate platform for “Sell Anywhere. Own Everywhere.”
               </motion.p>
             </div>
 
@@ -342,14 +341,14 @@ export default function SocialPage() {
                 onClick={() => handleSafeNavigation("/social/swipe")}
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white h-14 md:h-16 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 transition-all"
               >
-                Find People <ArrowRight className="ml-3 h-4 w-4" />
+                Find customers <ArrowRight className="ml-3 h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => handleSafeNavigation("/social/lobby")}
                 className="w-full sm:w-auto bg-white/5 border border-white/10 text-white hover:bg-white/10 h-14 md:h-16 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px]"
               >
-                Join Chat Rooms
+                Join Public Room
               </Button>
             </motion.div>
           </div>
@@ -381,17 +380,17 @@ export default function SocialPage() {
               </motion.div>
               <div className="space-y-6">
                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] uppercase italic">
-                  Celoris <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">Chat Cafe</span>
+                  Celoris <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">Play Cafe</span>
                 </h2>
                 <p className="text-xl text-slate-400 leading-relaxed font-bold uppercase tracking-wide">
-                  Join public chat rooms and talk with people across the globe in real-time.
+                  Join public rooms and talk with customers across the Social Medias
                 </p>
               </div>
               <Button
                 className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-5 transition-all shadow-3xl shadow-emerald-500/20"
                 onClick={() => handleSafeNavigation("/social/lobby")}
               >
-                OPEN CHAT CAFE <Rocket className="h-5 w-5" />
+                JOIN PLAY CAFE <Rocket className="h-5 w-5" />
               </Button>
             </div>
 
@@ -473,79 +472,7 @@ export default function SocialPage() {
         </div>
       </section>
 
-      {/* Core Protocol Components */}
-      <section className="py-20 md:py-32 relative z-10 px-4 md:px-6">
-        <div className="container mx-auto">
-          <div className="text-center mb-24">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="inline-block p-4 bg-emerald-500/10 rounded-[2rem] border border-emerald-500/20 mb-8"
-            >
-              <Target className="h-10 w-10 text-emerald-400" />
-            </motion.div>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic mb-6">
-              Ecosystem Core Features
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto font-black uppercase tracking-widest text-[10px]">
-              A unified platform bridging discovery and professional networking.
-            </p>
-          </div>
 
-          <motion.div
-            variants={{
-              show: { transition: { staggerChildren: 0.1 } }
-            }}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10"
-          >
-            {platformFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  show: { opacity: 1, y: 0 }
-                }}
-                whileHover={{ y: -15, scale: 1.02 }}
-                className="group h-full"
-              >
-                <Card className="bg-[#0d1321]/40 border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl rounded-3xl md:rounded-[3rem] overflow-hidden h-full flex flex-col transition-all duration-500">
-                  <CardHeader className="pt-8 md:pt-12 px-6 md:px-10 flex-col items-center text-center">
-                    <div className={`w-20 h-20 bg-gradient-to-br ${feature.color} rounded-3xl flex items-center justify-center mb-10 shadow-3xl group-hover:scale-110 transition-transform duration-500 relative`}>
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <feature.icon className="h-10 w-10 text-white" />
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-center gap-3">
-                        <CardTitle className="text-2xl font-black text-white tracking-tighter uppercase italic">{feature.title}</CardTitle>
-                        {feature.premium && (
-                          <span className="bg-emerald-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
-                            ELITE
-                          </span>
-                        )}
-                      </div>
-                      <CardDescription className="text-slate-500 font-bold text-sm leading-relaxed uppercase tracking-wide">
-                        {feature.description}
-                      </CardDescription>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-10 pb-12 mt-auto">
-                    <Button
-                      className="w-full bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-2xl"
-                      onClick={() => handleSafeNavigation(feature.href || "#")}
-                    >
-                      {feature.action} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
 
 
 
@@ -661,7 +588,7 @@ export default function SocialPage() {
             <ZapOff className="h-14 w-14 text-white fill-current" />
           </motion.div>
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-[0.85]">
-            Start Your <br /><span className="text-emerald-500">Social Journey</span>
+            Start Your <br /><span className="text-emerald-500">Play Journey</span>
           </h2>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto font-black uppercase tracking-widest text-xs leading-relaxed italic">
             Join thousands of creators already growing their network on Celoris.

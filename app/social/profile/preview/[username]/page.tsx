@@ -18,12 +18,15 @@ import {
   Calendar,
   ArrowLeft,
   CheckCircle2,
-  UserPlus,
-  Check
+  MessageSquare,
+  Check,
+  ShoppingBag,
+  ArrowRight
 } from "lucide-react"
 import Link from "next/link"
 import { AdUnit } from "@/components/AdUnit"
 import InstagramPosts from "@/components/InstagramPosts"
+import ProfileStore from "@/components/ProfileStore"
 
 export default function ProfilePreviewPage() {
   const params = useParams()
@@ -309,26 +312,31 @@ export default function ProfilePreviewPage() {
                   className="flex items-center gap-3 text-gray-700 cursor-pointer hover:text-primary-600 transition-colors"
                   onClick={handleAddFriend}
                 >
-                  {requestSent ? <Check className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
-                  <span>{requestSent ? 'Request Sent' : 'Add Friend'}</span>
+                  {requestSent ? <Check className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
+                  <span>{requestSent ? 'Contacted' : 'Contact Me'}</span>
                 </div>
               </CardContent>
             </Card>
 
           </div>
 
-          {/* Right Column: Social Highlights */}
+          {/* Right Column: Profile Store */}
           <div className="lg:col-span-2">
             <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden h-full">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Instagram className="w-6 h-6 text-pink-600" />
-                  <CardTitle className="text-xl">Social Highlights</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <ShoppingBag className="w-6 h-6 text-[#1E293B]" />
+                    <CardTitle className="text-xl">Official Store</CardTitle>
+                  </div>
+                  <p className="text-sm text-gray-500">Curated by {profile.full_name}</p>
                 </div>
-                <p className="text-sm text-gray-500">Posts shared by {profile.full_name}</p>
+                <Button variant="ghost" className="text-xs font-bold text-gray-400 group">
+                  View All <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+                </Button>
               </CardHeader>
               <CardContent>
-                <InstagramPosts userId={profile.id} showHeader={false} displayMode="horizontal" autoScroll={true} />
+                <ProfileStore username={profile.username} />
               </CardContent>
             </Card>
           </div>
@@ -357,12 +365,12 @@ export default function ProfilePreviewPage() {
             {requestSent ? (
               <>
                 <Check className="w-5 h-5 mr-2" />
-                Request Sent
+                Contacted
               </>
             ) : (
               <>
-                <UserPlus className="w-5 h-5 mr-2" />
-                Add Friend
+                <MessageSquare className="w-5 h-5 mr-2" />
+                Contact Me
               </>
             )}
           </Button>

@@ -17,7 +17,7 @@ export default function HelpCenterPage() {
   const faqs = [
     {
       question: "How do I get started with Celoris?",
-      answer: "Getting started is simple. Create an account, complete your profile, and begin exploring Celoris features such as Learn, Earn, Social, and Apps based on your goals."
+      answer: "Getting started is simple. Create an account, complete your profile, and begin exploring Celoris features such as Learn, Earn, Play, and Apps based on your goals."
     },
     {
       question: "Is Celoris free to use?",

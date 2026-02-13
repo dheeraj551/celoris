@@ -159,7 +159,7 @@ export default function RootLayout({
               "@id": "https://www.celorisdesigns.com/#website",
               "name": "Celoris",
               "url": "https://www.celorisdesigns.com",
-              "description": "Celoris AI-Powered Ecosystem - Learn, Earn, Social & Apps",
+              "description": "Celoris AI-Powered Ecosystem - Learn, Earn, Play & Apps",
               "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
               "potentialAction": {
                 "@type": "SearchAction",

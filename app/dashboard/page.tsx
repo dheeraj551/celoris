@@ -20,17 +20,17 @@ export default function DashboardPage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (user) {
         setUser(user)
-        
+
         // Get user profile
         const { data: profile } = await supabase
           .from("users")
           .select("*")
           .eq("id", user.id)
           .single()
-          
+
         setProfile(profile)
       } else {
         // Redirect to login if not authenticated
@@ -92,8 +92,8 @@ export default function DashboardPage() {
       color: "bg-green-500"
     },
     {
-      title: "Social",
-      description: "Connect with creators and build your network",
+      title: "Play",
+      description: "Connect with creators and engage in interactive experiences",
       icon: Users,
       href: "/social",
       color: "bg-purple-500"
@@ -116,9 +116,9 @@ export default function DashboardPage() {
             Welcome to your dashboard
           </h1>
           <p className="text-xl text-text-secondary mb-6">
-            Your personalized gateway to learning, earning, social connections, and productivity
+            Your personalized gateway to learning, earning, play, and productivity
           </p>
-          
+
           {/* User Stats Card */}
           <Card className="mb-8">
             <CardHeader>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button 
+                <Button
                   onClick={handleAdminAccess}
                   className="w-full bg-red-600 hover:bg-red-700 text-white"
                 >
