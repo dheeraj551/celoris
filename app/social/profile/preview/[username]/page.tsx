@@ -320,9 +320,8 @@ export default function ProfilePreviewPage() {
 
           </div>
 
-          {/* Right Column: Profile Store */}
           <div className="lg:col-span-2">
-            <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden h-full">
+            <Card className="border-none shadow-sm bg-white rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">

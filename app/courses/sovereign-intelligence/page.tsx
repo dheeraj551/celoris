@@ -79,6 +79,7 @@ export default function SovereignIntelligenceCourse() {
                     "CLI Mastery: Interacting with local silicon via terminal for speed and automation.",
                     "Modelfiles: Customizing system prompts and parameters natively."
                 ],
+                videoUrl: "https://www.youtube.com/embed/t-AFTcqxGko",
                 duration: "1 Week"
             },
             {
@@ -729,6 +730,21 @@ export default function SovereignIntelligenceCourse() {
                                                             </li>
                                                         ))}
                                                     </ul>
+
+                                                    {(chapter as any).videoUrl && (
+                                                        <div className="mt-6 rounded-xl overflow-hidden border border-slate-700/50 bg-slate-950 shadow-2xl">
+                                                            <div className="aspect-video">
+                                                                <iframe
+                                                                    className="w-full h-full"
+                                                                    src={(chapter as any).videoUrl}
+                                                                    title={`${chapter.title} - Video Lesson`}
+                                                                    frameBorder="0"
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                    allowFullScreen
+                                                                ></iframe>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>

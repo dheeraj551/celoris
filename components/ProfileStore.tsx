@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { ShoppingBag, Star, ArrowRight, Tag, Heart, Info, ExternalLink } from "lucide-react"
-import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { ShoppingBag, Star, Info, ExternalLink, Heart, ChevronLeft, ChevronRight } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
 interface Product {
@@ -10,7 +10,8 @@ interface Product {
     name: string
     price: string
     discountPrice?: string
-    image: string
+    image?: string
+    images?: string[]
     category: string
     rating: number
     isBestSeller?: boolean
@@ -19,6 +20,21 @@ interface Product {
 }
 
 const MOCK_PRODUCTS: Product[] = [
+    {
+        id: "4",
+        name: "Bershka Striped Tie-Up A-Line Dress",
+        price: "₹1470",
+        discountPrice: "₹2950",
+        images: [
+            "/uploads/bershka-white.jpg",
+            "/uploads/bershka-red.jpg",
+            "/uploads/bershka-blue.jpg"
+        ],
+        category: "Women's Collection",
+        rating: 4.8,
+        isSale: true,
+        isBestSeller: true
+    },
     {
         id: "1",
         name: "Glitzy Night Set",
@@ -37,7 +53,8 @@ const MOCK_PRODUCTS: Product[] = [
         price: "$75.00",
         image: "https://images.unsplash.com/photo-1549062572-544a64fb0c56?auto=format&fit=crop&q=80&w=400",
         category: "Vacation Wear",
-        rating: 4.9
+        rating: 4.9,
+        videoUrl: "https://www.youtube.com/embed/uGSdpPj6TnA?autoplay=1&mute=1&loop=1&playlist=uGSdpPj6TnA&controls=0&modestbranding=1&rel=0"
     },
     {
         id: "3",
@@ -50,65 +67,76 @@ const MOCK_PRODUCTS: Product[] = [
     }
 ]
 
-export default function ProfileStore({ username }: { username: string }) {
-    const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const [isHovered, setIsHovered] = useState(false)
+function ProductImage({ product }: { product: Product }) {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0)
+    const hasMultipleImages = product.images && product.images.length > 1
 
     useEffect(() => {
-        if (!isHovered) {
-            const scrollContainer = scrollContainerRef.current
-            if (!scrollContainer) return
+        if (!hasMultipleImages) return
+        const timer = setInterval(() => {
+            setCurrentImageIndex((prev) => (prev + 1) % product.images!.length)
+        }, 3000)
+        return () => clearInterval(timer)
+    }, [hasMultipleImages, product.images])
 
-            let animationFrameId: number;
-            const scroll = () => {
-                if (scrollContainer) {
-                    if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
-                        scrollContainer.scrollLeft = 0;
-                    } else {
-                        scrollContainer.scrollLeft += 0.5;
-                    }
-                    animationFrameId = requestAnimationFrame(scroll);
-                }
-            };
+    if (product.videoUrl) {
+        return (
+            <iframe
+                src={product.videoUrl}
+                className="w-full h-full object-cover pointer-events-none"
+                title={product.name}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+            />
+        )
+    }
 
-            animationFrameId = requestAnimationFrame(scroll);
-            return () => {
-                if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            }
-        }
-    }, [isHovered])
+    const images = product.images || [product.image!]
 
     return (
+        <div className="relative w-full h-full group/img">
+            <AnimatePresence mode="wait">
+                <motion.img
+                    key={currentImageIndex}
+                    src={images[currentImageIndex]}
+                    alt={product.name}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full h-full object-cover"
+                />
+            </AnimatePresence>
+
+            {hasMultipleImages && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                    {product.images!.map((_, idx) => (
+                        <div
+                            key={idx}
+                            className={`h-1 rounded-full transition-all duration-300 ${idx === currentImageIndex ? "w-4 bg-white" : "w-1.5 bg-white/50"
+                                }`}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default function ProfileStore({ username }: { username: string }) {
+    return (
         <div className="w-full">
-            <div
-                ref={scrollContainerRef}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className="flex overflow-x-auto gap-6 pb-2 snap-x hide-scrollbar"
-            >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                 {MOCK_PRODUCTS.map((product) => (
                     <motion.div
                         key={product.id}
                         whileHover={{ y: -5 }}
-                        className="w-64 flex-shrink-0 snap-start bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all hover:shadow-md h-full group"
+                        className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all hover:shadow-md h-full group"
                     >
                         {/* Visual Container */}
                         <div className="relative aspect-[4/5] overflow-hidden bg-black">
-                            {product.videoUrl ? (
-                                <iframe
-                                    src={product.videoUrl}
-                                    className="w-full h-full object-cover pointer-events-none"
-                                    title={product.name}
-                                    allow="autoplay; encrypted-media"
-                                    allowFullScreen
-                                />
-                            ) : (
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                            )}
+                            <ProductImage product={product} />
+
                             <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
                                 {product.isSale && (
                                     <div className="bg-[#E11D48] text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg w-fit">
@@ -162,16 +190,6 @@ export default function ProfileStore({ username }: { username: string }) {
                     </motion.div>
                 ))}
             </div>
-
-            <style jsx>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
         </div>
     )
 }
