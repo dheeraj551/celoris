@@ -668,7 +668,7 @@ export default function CoursesDisplay({
       instructor_name: 'Celoris Designs llp',
       course_duration: '12 Weeks',
       price: 6000,
-      course_image_url: '/yoga-mastery-2025-cover.jpg',
+      course_image_url: 'https://img.youtube.com/vi/eGBQv8_DipU/hqdefault.jpg',
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(4).fill(null).map((_, i) => ({
