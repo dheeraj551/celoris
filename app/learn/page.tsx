@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase-server"
 import LearnClient from "./LearnClient"
+import { DashboardShell } from "@/components/home-new/DashboardShell"
 
 export default async function LearnPage() {
     const supabase = createServerClient()
@@ -14,12 +15,11 @@ export default async function LearnPage() {
 
     // Fetch notices on server
     const { data: dbNotices } = await supabase
-        .from('notice_board_view') // Use a view if possible, or just notice_board
+        .from('notice_board_view')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(6);
 
-    // Fallback to notice_board if view missing (based on previous knowledge of project)
     let notices = dbNotices;
     if (!notices) {
         const { data: altNotices } = await supabase
@@ -31,9 +31,11 @@ export default async function LearnPage() {
     }
 
     return (
-        <LearnClient
-            initialCourses={dbCourses || []}
-            initialNotices={notices || []}
-        />
+        <DashboardShell>
+            <LearnClient
+                initialCourses={dbCourses || []}
+                initialNotices={notices || []}
+            />
+        </DashboardShell>
     )
 }

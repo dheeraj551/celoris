@@ -23,6 +23,7 @@ import { useEffect } from "react"
 
 const publicNavigation = [
   { name: "Home", href: "/" },
+  { name: "AI Explorer", href: "/ai-explorer" },
   { name: "Learn", href: "/learn" },
   { name: "Earn", href: "/earn" },
   { name: "Play", href: "/social" },
@@ -32,7 +33,8 @@ const publicNavigation = [
 ]
 
 const authenticatedNavigation = [
-  { name: "Dashboard", href: "/dashboard" },
+  { name: "Dashboard", href: "/" },
+  { name: "AI Explorer", href: "/ai-explorer" },
   { name: "Learn", href: "/learn" },
   { name: "Earn", href: "/earn" },
   { name: "Play", href: "/social" },
@@ -54,7 +56,15 @@ export default function Header() {
     }
   }, [])
 
-  if (isNative) return null
+  const isDashboardPage = pathname === "/" ||
+    pathname?.startsWith("/learn") ||
+    pathname?.startsWith("/earn") ||
+    pathname?.startsWith("/social") ||
+    pathname?.startsWith("/ai-explorer") ||
+    pathname === "/login" ||
+    pathname === "/register";
+
+  if (isNative || isDashboardPage) return null
 
   const handleSignOut = async () => {
     try {
@@ -71,6 +81,7 @@ export default function Header() {
     pathname === "/earn" ||
     pathname === "/social" ||
     pathname === "/apps" ||
+    pathname === "/ai-explorer" ||
     pathname?.startsWith("/blog") ||
     pathname?.startsWith("/courses/")
 

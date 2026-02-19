@@ -63,8 +63,8 @@ function TickerLine({ items, duration = 30, reverse = false }: { items: string[]
 function ScrollingTicker() {
     return (
         <div className="w-full bg-white/5 border-t border-white/10 relative mt-12 py-4">
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#00120d] via-[#00120d]/80 to-transparent z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#00120d] via-[#00120d]/80 to-transparent z-10" />
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050810] via-[#050810]/80 to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050810] via-[#050810]/80 to-transparent z-10" />
 
             <div className="flex flex-col gap-2">
                 <TickerLine items={TRANSACTIONS} duration={40} />
@@ -143,7 +143,7 @@ export const Hero: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-[2rem] overflow-hidden bg-[#00120d] text-white shadow-2xl shadow-emerald-900/10 border border-white/5"
+            className="relative rounded-[2rem] overflow-hidden bg-[#050810] text-white shadow-2xl shadow-emerald-900/10 border border-white/5"
         >
             {/* Background Decor - Animated */}
             <motion.div
@@ -195,6 +195,26 @@ export const Hero: React.FC = () => {
                         Celoris Designs LLP is your trusted partner in digital transformation,
                         delivering cutting-edge solutions for individuals to thrive in the new era.
                     </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
+                    >
+                        <Link href="/ai-explorer">
+                            <Button className="h-14 px-8 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-2xl shadow-emerald-500/20 group transition-all hover:scale-105">
+                                <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+                                Launch AI Explorer
+                                <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </Button>
+                        </Link>
+                        <Link href="/learn">
+                            <Button variant="outline" className="h-14 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 font-black uppercase tracking-widest text-xs rounded-xl">
+                                Explore Courses
+                            </Button>
+                        </Link>
+                    </motion.div>
                 </div>
 
                 <div className="flex-1 relative group w-full max-w-xl">
@@ -209,13 +229,13 @@ export const Hero: React.FC = () => {
                             alt="Unified AI Ecosystem"
                             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#00120d] via-transparent to-transparent opacity-60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-60" />
 
                         {/* Floating Status Badge */}
                         <motion.div
                             animate={{ y: [0, -10, 0] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute bottom-8 left-8 right-8 p-6 bg-[#00120d]/80 backdrop-blur-2xl rounded-[2rem] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
+                            className="absolute bottom-8 left-8 right-8 p-6 bg-[#050810]/80 backdrop-blur-2xl rounded-[2rem] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
                         >
                             <div className="text-left flex flex-col sm:flex-row gap-8 sm:items-center flex-1">
                                 {/* Rooms Status - Moved to Left */}
@@ -277,7 +297,7 @@ export const Hero: React.FC = () => {
                                                 initial={{ opacity: 0, scale: 0.5, x: 20 }}
                                                 animate={{ opacity: 1, scale: 1, x: 0 }}
                                                 exit={{ opacity: 0, scale: 0.5, x: -20 }}
-                                                className="w-10 h-10 rounded-full border-2 border-[#00120d] bg-teal-500/10 overflow-hidden backdrop-blur-md relative shadow-xl"
+                                                className="w-10 h-10 rounded-full border-2 border-[#050810] bg-teal-500/10 overflow-hidden backdrop-blur-md relative shadow-xl"
                                             >
                                                 <img
                                                     src={u.avatar_url || u.profile_pic_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`}
@@ -288,7 +308,7 @@ export const Hero: React.FC = () => {
                                         ))
                                     ) : (
                                         [1, 2, 3].map(i => (
-                                            <div key={i} className="w-10 h-10 rounded-full border-2 border-[#00120d] bg-white/5 flex items-center justify-center backdrop-blur-md">
+                                            <div key={i} className="w-10 h-10 rounded-full border-2 border-[#050810] bg-white/5 flex items-center justify-center backdrop-blur-md">
                                                 <Users size={14} className="text-teal-400/20" />
                                             </div>
                                         ))

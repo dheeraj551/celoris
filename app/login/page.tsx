@@ -30,8 +30,8 @@ export default function LoginPage() {
       if (error) {
         setError(error.message)
       } else {
-        // Redirect to dashboard
-        window.location.href = "/dashboard"
+        // Redirect to new home/dashboard
+        window.location.href = "/"
       }
     } catch (err) {
       setError("An unexpected error occurred")
@@ -91,93 +91,96 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-[#050810] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
+      <div className="max-w-md w-full space-y-8 relative">
+        {/* Background Decorative Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+
         {/* Header */}
-        <div className="text-center">
-          <Link href="/" className="flex items-center justify-center space-x-2 mb-6">
+        <div className="text-center relative z-10">
+          <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
             <img
               src="/celoris-logo.png"
               alt="Celoris Logo"
-              className="h-12 w-auto object-contain"
+              className="h-10 w-auto object-contain brightness-0 invert"
             />
           </Link>
-          <h2 className="text-3xl font-bold text-text-primary">Welcome back</h2>
-          <p className="mt-2 text-text-secondary">
+          <h2 className="text-4xl font-black text-white italic uppercase tracking-tight mb-3">Welcome back</h2>
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] italic">
             Sign in to your account to continue your journey
           </p>
         </div>
 
         {/* Login Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign In</CardTitle>
-            <CardDescription>
+        <Card className="bg-[#0d1321]/60 backdrop-blur-2xl border-white/5 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
+          <CardHeader className="text-center pb-2">
+            <CardTitle className="text-xl font-bold text-white italic uppercase">Sign In</CardTitle>
+            <CardDescription className="text-slate-500 text-xs italic">
               Enter your email and password to access your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-4">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-600" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
+                    className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-2">
+              <div className="space-y-2">
+                <label htmlFor="password" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-600" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
+                    className="pl-12 pr-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-600 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-primary-500 focus:ring-primary-500" />
-                  <span className="ml-2 text-sm text-text-secondary">Remember me</span>
+              <div className="flex items-center justify-between px-2">
+                <label className="flex items-center cursor-pointer group">
+                  <input type="checkbox" className="rounded-md border-white/10 bg-white/5 text-emerald-500 focus:ring-emerald-500/20" />
+                  <span className="ml-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300 transition-colors">Remember me</span>
                 </label>
-                <Link href="/forgot-password" className="text-sm text-primary-500 hover:text-primary-600">
+                <Link href="/forgot-password" title="Recover Password" className="text-[10px] font-bold text-emerald-500 hover:text-emerald-400 uppercase tracking-widest transition-colors">
                   Forgot password?
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-emerald-500/20 border-none transition-all hover:scale-[1.02]" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
@@ -185,10 +188,10 @@ export default function LoginPage() {
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+                <span className="w-full border-t border-white/5" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-surface px-2 text-text-secondary">Or</span>
+              <div className="relative flex justify-center text-[8px] font-bold uppercase tracking-[0.3em]">
+                <span className="bg-[#0d1321] px-4 text-slate-600">Or</span>
               </div>
             </div>
 
@@ -197,7 +200,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-2"
+                className="w-full h-12 flex items-center justify-center gap-3 bg-white/5 border-white/10 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white transition-all shadow-none"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
@@ -228,7 +231,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 variant="ghost"
-                className="w-full"
+                className="w-full h-10 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all"
                 disabled={isLoading || !email}
               >
                 Sign in with Magic Link
@@ -236,20 +239,21 @@ export default function LoginPage() {
             </form>
 
             {/* Sign Up Link */}
-            <div className="text-center text-sm">
-              <span className="text-text-secondary">Don't have an account? </span>
-              <Link href="/register" className="text-primary-500 hover:text-primary-600 font-medium">
+            <div className="text-center pt-2">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Don't have an account? </span>
+              <Link href="/register" className="text-[10px] font-black text-emerald-500 hover:text-emerald-400 uppercase tracking-widest ml-1 transition-colors">
                 Sign up
               </Link>
             </div>
           </CardContent>
         </Card>
 
-        {/* Features */}
-        <div className="grid grid-cols-1 gap-4 text-center">
-          <div className="text-xs text-text-secondary">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </div>
+        {/* Footer */}
+        <div className="text-center relative z-10">
+          <p className="text-[8px] font-bold text-slate-600 uppercase tracking-[0.3em] leading-relaxed">
+            By signing in, you agree to our <br />
+            <Link href="/terms" className="text-slate-500 hover:text-white underline transition-colors">Terms of Service</Link> and <Link href="/privacy" className="text-slate-500 hover:text-white underline transition-colors">Privacy Policy</Link>
+          </p>
         </div>
       </div>
     </div>

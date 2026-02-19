@@ -76,8 +76,8 @@ export default function RegisterPage() {
         // Email confirmation required
         setSuccess(true)
       } else {
-        // Direct login successful - redirect to dashboard
-        window.location.href = "/dashboard"
+        // Direct login successful - redirect to home
+        window.location.href = "/"
       }
     } catch (err) {
       setError("An unexpected error occurred")
@@ -111,19 +111,24 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-500" />
+      <div className="min-h-screen bg-[#050810] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
+        <div className="max-w-md w-full relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+          <Card className="bg-[#0d1321]/60 backdrop-blur-2xl border-white/5 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
+            <CardContent className="p-8 text-center space-y-6">
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-2 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
+                <CheckCircle className="w-10 h-10 text-emerald-500" />
               </div>
-              <h2 className="text-2xl font-bold text-text-primary mb-4">Check your email</h2>
-              <p className="text-text-secondary mb-6">
-                We've sent a confirmation link to <strong>{formData.email}</strong>.
-                Click the link in your email to activate your account.
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black text-white italic uppercase tracking-tight">Check your email</h2>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] italic">
+                  Confirmation link sent to <span className="text-white brightness-125 underline">{formData.email}</span>
+                </p>
+              </div>
+              <p className="text-slate-500 text-xs italic leading-relaxed">
+                Click the link in your email to activate your account and start your journey with Celoris 3.0.
               </p>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-emerald-500/20 border-none transition-all hover:scale-[1.02]">
                 <Link href="/login">
                   Back to Sign In
                 </Link>
@@ -136,152 +141,146 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-[#050810] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
+      <div className="max-w-md w-full space-y-8 relative py-8">
+        {/* Background Decorative Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+
         {/* Header */}
-        <div className="text-center">
-          <Link href="/" className="flex items-center justify-center space-x-2 mb-6">
+        <div className="text-center relative z-10">
+          <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
             <img
               src="/celoris-logo.png"
               alt="Celoris Logo"
-              className="h-12 w-auto object-contain"
+              className="h-10 w-auto object-contain brightness-0 invert"
             />
           </Link>
-          <h2 className="text-3xl font-bold text-text-primary">Create your account</h2>
-          <p className="mt-2 text-text-secondary">
-            Join thousands of learners and professionals on Celoris
+          <h2 className="text-4xl font-black text-white italic uppercase tracking-tight mb-3">Create Account</h2>
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] italic">
+            Join thousands of professionals on Celoris 3.0
           </p>
         </div>
 
         {/* Registration Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign Up</CardTitle>
-            <CardDescription>
+        <Card className="bg-[#0d1321]/60 backdrop-blur-2xl border-white/5 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
+          <CardHeader className="text-center pb-2">
+            <CardTitle className="text-xl font-bold text-white italic uppercase">Sign Up</CardTitle>
+            <CardDescription className="text-slate-500 text-xs italic">
               Fill in your details to create your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-4">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-text-primary mb-2">
+            <form onSubmit={handleRegister} className="space-y-5">
+              <div className="space-y-2">
+                <label htmlFor="fullName" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                  <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-600" />
                   <Input
                     id="fullName"
                     name="fullName"
                     type="text"
-                    placeholder="Enter your full name"
+                    placeholder="John Doe"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-600" />
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
                     value={formData.email}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-2">
+              <div className="space-y-2">
+                <label htmlFor="password" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-600" />
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a password"
+                    placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                    className="pl-10 pr-10"
+                    className="pl-12 pr-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-600 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-text-secondary">
-                  Must be at least 6 characters long
-                </p>
               </div>
 
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary mb-2">
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-600" />
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm your password"
+                    placeholder="••••••••"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="pl-10 pr-10"
+                    className="pl-12 pr-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-600 hover:text-white transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center">
+              <div className="flex items-center px-2">
                 <input
                   type="checkbox"
                   id="terms"
-                  className="rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+                  className="rounded-md border-white/10 bg-white/5 text-emerald-500 focus:ring-emerald-500/20"
                   required
                 />
-                <label htmlFor="terms" className="ml-2 text-sm text-text-secondary">
+                <label htmlFor="terms" className="ml-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">
                   I agree to the{" "}
-                  <Link href="/terms" className="text-primary-500 hover:text-primary-600">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-primary-500 hover:text-primary-600">
-                    Privacy Policy
-                  </Link>
+                  <Link href="/terms" className="text-emerald-500 hover:text-emerald-400">Terms</Link> & <Link href="/privacy" className="text-emerald-500 hover:text-emerald-400">Privacy</Link>
                 </label>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-emerald-500/20 border-none transition-all hover:scale-[1.02]" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
@@ -289,10 +288,10 @@ export default function RegisterPage() {
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+                <span className="w-full border-t border-white/5" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-surface px-2 text-text-secondary">Or</span>
+              <div className="relative flex justify-center text-[8px] font-bold uppercase tracking-[0.3em]">
+                <span className="bg-[#0d1321] px-4 text-slate-600">Or</span>
               </div>
             </div>
 
@@ -301,7 +300,7 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-2"
+                className="w-full h-12 flex items-center justify-center gap-3 bg-white/5 border-white/10 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white transition-all shadow-none"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
@@ -328,9 +327,9 @@ export default function RegisterPage() {
             </div>
 
             {/* Sign In Link */}
-            <div className="text-center text-sm">
-              <span className="text-text-secondary">Already have an account? </span>
-              <Link href="/login" className="text-primary-500 hover:text-primary-600 font-medium">
+            <div className="text-center pt-2">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Already have an account? </span>
+              <Link href="/login" className="text-[10px] font-black text-emerald-500 hover:text-emerald-400 uppercase tracking-widest ml-1 transition-colors">
                 Sign in
               </Link>
             </div>
@@ -338,24 +337,26 @@ export default function RegisterPage() {
         </Card>
 
         {/* Benefits */}
-        <div className="bg-surface rounded-lg p-6 border">
-          <h3 className="font-semibold text-text-primary mb-4">Why join Celoris?</h3>
-          <ul className="space-y-2 text-sm text-text-secondary">
-            <li className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span>Access to 500+ expert-led courses</span>
+        <div className="bg-[#0d1321]/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 relative z-10">
+          <h3 className="text-[10px] font-black text-white uppercase tracking-widest mb-4 italic">Why join Celoris 3.0?</h3>
+          <ul className="space-y-3 text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+            <li className="flex items-center space-x-3 group">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center p-1 border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
+                <CheckCircle className="w-full h-full text-emerald-500" />
+              </div>
+              <span className="group-hover:text-slate-300 transition-colors">Access to 500+ expert-led courses</span>
             </li>
-            <li className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span>Exclusive job opportunities</span>
+            <li className="flex items-center space-x-3 group">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center p-1 border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
+                <CheckCircle className="w-full h-full text-emerald-500" />
+              </div>
+              <span className="group-hover:text-slate-300 transition-colors">Exclusive AI job opportunities</span>
             </li>
-            <li className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span>Engaging games and community</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span>Productive tools and utilities</span>
+            <li className="flex items-center space-x-3 group">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center p-1 border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
+                <CheckCircle className="w-full h-full text-emerald-500" />
+              </div>
+              <span className="group-hover:text-slate-300 transition-colors">Engaging social matches and community</span>
             </li>
           </ul>
         </div>

@@ -32,7 +32,6 @@ import {
   Target,
   Lock
 } from "lucide-react"
-import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function SocialPage() {
@@ -158,60 +157,6 @@ export default function SocialPage() {
     }
   }, [user, authLoading])
 
-  const platformFeatures = [
-    {
-      icon: Heart,
-      title: "Discovery",
-      description: "Find and connect with creators and experts tailored to your interests.",
-      color: "from-pink-500 to-rose-600",
-      action: "Start Browsing",
-      href: "/social/swipe"
-    },
-    {
-      icon: Instagram,
-      title: "Profile Sync",
-      description: "Connect your social accounts and showcase your work to the community.",
-      color: "from-purple-500 to-indigo-600",
-      action: "Update Profile",
-      href: "/social/profile"
-    },
-    {
-      icon: MessageCircle,
-      title: "Private Chat",
-      description: "Secure, real-time messaging with your friends and connections.",
-      color: "from-emerald-500 to-teal-600",
-      action: "Open Chats",
-      href: "/social/chat"
-    },
-    {
-      icon: Video,
-      title: "Video Calls",
-      description: "Crystal clear video calling for face-to-face meetings and collab.",
-      color: "from-emerald-500 to-teal-600",
-      action: "Go Premium",
-      premium: true,
-      href: "/social/upgrade"
-    },
-    {
-      icon: Smartphone,
-      title: "Notifications",
-      description: "Instant alerts for new messages, likes, and profile updates.",
-      color: "from-orange-500 to-amber-600",
-      action: "Enable Alerts",
-      premium: true,
-      href: "/social/upgrade"
-    },
-    {
-      icon: Users,
-      title: "Expert Network",
-      description: "Direct access to verified leaders and industry professionals.",
-      color: "from-indigo-500 to-purple-600",
-      action: "Join Network",
-      premium: true,
-      href: "/social/upgrade"
-    }
-  ]
-
   const premiumFeatures = [
     {
       icon: Crown,
@@ -246,9 +191,9 @@ export default function SocialPage() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full mx-auto mb-6"
+            className="w-12 h-12 border-4 border-emerald-500/10 border-t-emerald-600 rounded-full mx-auto mb-6"
           />
-          <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">Connecting to Play Plane...</p>
+          <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest">Connecting...</p>
         </div>
       </div>
     )
@@ -274,355 +219,252 @@ export default function SocialPage() {
   };
 
   return (
-    <PageWrapper className="min-h-screen bg-[#050810] text-slate-200 selection:bg-emerald-500/30 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#050810] text-slate-200 selection:bg-emerald-500/30 font-sans overflow-x-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
-      {/* Background Decorative Elements */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.15, 0.1]
-          }}
-          transition={{ duration: 20, repeat: Infinity }}
-          className="absolute top-[-10%] left-[-5%] w-[800px] h-[800px] bg-emerald-600/20 rounded-full blur-[150px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.05, 0.1, 0.05]
-          }}
-          transition={{ duration: 25, repeat: Infinity }}
-          className="absolute bottom-[-10%] right-[-5%] w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[150px]"
-        />
-      </div>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 md:pt-32 md:pb-48 px-4 md:px-6 overflow-hidden z-10">
-        <div className="container mx-auto text-center md:text-left">
-          <div className="flex flex-col md:items-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-black uppercase tracking-[0.4em] mb-12 shadow-3xl backdrop-blur-3xl"
-            >
-              <Sparkles size={14} className="fill-emerald-400" />
-              Social Media Marketplace
-            </motion.div>
-
-            <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.8 }}
-                className="text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.9] text-white"
-              >
-                Celoris <span className="text-emerald-500 drop-shadow-[0_0_50px_rgba(16,185,129,0.3)]">Play</span>
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-sm sm:text-base md:text-xl max-w-3xl mx-auto md:mx-0 text-slate-400 font-medium leading-relaxed italic uppercase tracking-wide"
-              >
-                “Turn Followers into Customers.” The ultimate platform for “Sell Anywhere. Own Everywhere.”
-              </motion.p>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-16 flex flex-wrap justify-center gap-6"
-            >
-              <Button
-                onClick={() => handleSafeNavigation("/social/swipe")}
-                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white h-14 md:h-16 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-3xl shadow-emerald-500/20 transition-all"
-              >
-                Find customers <ArrowRight className="ml-3 h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => handleSafeNavigation("/social/lobby")}
-                className="w-full sm:w-auto bg-white/5 border border-white/10 text-white hover:bg-white/10 h-14 md:h-16 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px]"
-              >
-                Join Public Room
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Global Hubs Interaction Visualization */}
-      <section className="py-20 md:py-32 px-4 md:px-6 relative z-10 overflow-hidden">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[4rem] p-6 sm:p-10 md:p-24 border border-white/5 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 overflow-hidden relative shadow-3xl"
-          >
-            {/* Animated Mesh Background */}
-            <div className="absolute inset-0 pointer-events-none opacity-30">
-              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1)_0%,transparent_50%)]" />
-            </div>
-
-            {/* Left Side: Dynamic Text */}
-            <div className="flex-1 space-y-12 relative z-10">
-              <motion.div
-                animate={{ rotate: [0, 5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="w-24 h-24 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl flex items-center justify-center shadow-3xl"
-              >
-                <Globe className="h-10 w-10 text-emerald-400" />
-              </motion.div>
-              <div className="space-y-6">
-                <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] uppercase italic">
-                  Celoris <br /><span className="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">Play Cafe</span>
-                </h2>
-                <p className="text-xl text-slate-400 leading-relaxed font-bold uppercase tracking-wide">
-                  Join public rooms and talk with customers across the Social Medias
-                </p>
-              </div>
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-5 transition-all shadow-3xl shadow-emerald-500/20"
-                onClick={() => handleSafeNavigation("/social/lobby")}
-              >
-                JOIN PLAY CAFE <Rocket className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Right Side: Virtual Lobby Display */}
-            <div className="flex-1 w-full max-w-2xl relative group">
-              <div className="grid grid-cols-2 gap-5 mb-8">
-                {[1, 2, 3, 4, 5].map((num) => {
-                  const roomSlot = activePrivateRooms[num - 1];
-                  const isOccupied = !!roomSlot;
-                  return (
-                    <motion.div
-                      key={num}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: num * 0.1 }}
-                      whileHover={{ y: -10, scale: 1.02 }}
-                      className={`relative flex flex-col items-center p-6 rounded-[2.5rem] border transition-all duration-500 group ${isOccupied
-                        ? 'border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_30px_rgba(16,185,129,0.15)]'
-                        : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.05]'
-                        }`}
-                    >
-                      {isOccupied && (
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent -translate-y-full animate-[scan_3s_linear_infinite] pointer-events-none" />
-                      )}
-
-                      <span className={`text-[8px] font-black tracking-widest mb-6 uppercase ${isOccupied ? 'text-emerald-400' : 'text-slate-600'}`}>
-                        STATION_{num.toString().padStart(2, '0')}
-                      </span>
-
-                      <div className="flex -space-x-2.5 mb-6 min-h-[44px] items-center">
-                        {isOccupied ? (
-                          roomSlot.users.map((u: any, i: number) => (
-                            <div key={i} className="h-11 w-11 rounded-xl ring-4 ring-[#050810] shadow-2xl overflow-hidden border border-white/10 bg-white/5">
-                              <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`} alt="u" className="w-full h-full object-cover" />
-                            </div>
-                          ))
-                        ) : (
-                          <div className="h-11 w-11 rounded-2xl bg-white/[0.02] flex items-center justify-center border border-white/5 group-hover:border-emerald-500/20 transition-all shadow-inner">
-                            <Lock className="h-4 w-4 text-slate-800 group-hover:text-emerald-900/40 transition-colors" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className={`px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest italic ${isOccupied
-                        ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
-                        : 'bg-white/5 text-slate-600'
-                        }`}>
-                        {isOccupied ? 'BUSY' : 'READY'}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Lobby Status Plate */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                className="bg-white/5 backdrop-blur-2xl p-8 rounded-[3rem] border border-white/5 flex items-center justify-between shadow-3xl"
-              >
-                <div className="flex items-center gap-6">
-                  <div className="flex -space-x-3">
-                    {roomData.lobby.users.slice(0, 5).map((u: any, i: number) => (
-                      <div key={i} className="h-10 w-10 rounded-full ring-2 ring-[#050810] overflow-hidden shadow-xl">
-                        <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 45}`} alt="u" />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                    {roomData.lobby.count} People Online
-                  </div>
-                </div>
-                <div className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest animate-pulse">
-                  SYSTEM ONLINE
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-
-
-
-
-      {/* Premium Perks - High End Grid */}
-      <section className="py-20 md:py-32 px-4 md:px-6 bg-[#0d1321]/30 relative z-10">
-        <div className="container mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic mb-8">
-              Premium Benefits
-            </h2>
-            <div className="h-2 w-32 bg-emerald-600 mx-auto rounded-full mb-10 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto font-black uppercase tracking-widest text-[11px] italic">
-              Upgrade your plan to get professional tools and wider reach.
-            </p>
-          </div>
-
-          <motion.div
-            variants={{
-              show: { transition: { staggerChildren: 0.1 } }
-            }}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-          >
-            {premiumFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                variants={{
-                  hidden: { opacity: 0, scale: 0.9 },
-                  show: { opacity: 1, scale: 1 }
-                }}
-                whileHover={{ y: -15 }}
-                className="group h-full"
-              >
-                <Card className="text-center border-white/5 bg-white/5 backdrop-blur-3xl rounded-3xl md:rounded-[3rem] p-6 flex flex-col h-full transition-all duration-500 hover:bg-white/10 hover:border-emerald-500/30 shadow-3xl">
-                  <CardHeader className="pt-10">
-                    <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-3xl group-hover:scale-110 transition-transform duration-500">
-                      <feature.icon className="h-10 w-10 text-white" />
-                    </div>
-                    <div className="mb-6">
-                      <span className="bg-emerald-600/10 text-emerald-400 text-[9px] font-black uppercase tracking-[0.3em] px-5 py-2 rounded-full border border-emerald-500/20">
-                        {feature.badge}
-                      </span>
-                    </div>
-                    <CardTitle className="text-2xl font-black text-white tracking-tighter uppercase italic mb-4">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col flex-1">
-                    <CardDescription className="text-slate-500 font-bold uppercase tracking-wide text-xs leading-relaxed mb-12">
-                      {feature.description}
-                    </CardDescription>
-                    <Button
-                      className="w-full mt-auto bg-white text-[#050810] hover:bg-emerald-600 hover:text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all"
-                      onClick={() => handleSafeNavigation("/social/upgrade")}
-                    >
-                      Upgrade Now
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Integrity Shield View */}
-      <section className="py-20 md:py-32 px-4 md:px-6 relative z-10">
-        <div className="container mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-6">
-              Safe & Secure
-            </h2>
-            <p className="text-slate-500 font-black uppercase tracking-[0.2em] text-[10px]">
-              Your privacy and security are our top priorities.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
-            <motion.div whileHover={{ y: -10 }} className="text-center p-8 md:p-12 bg-white/5 rounded-3xl md:rounded-[3.5rem] border border-white/5 backdrop-blur-3xl shadow-3xl">
-              <Shield className="h-16 w-16 text-emerald-500 mx-auto mb-8 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]" />
-              <h3 className="text-xl font-black text-white mb-6 tracking-tighter uppercase italic">Verified Users</h3>
-              <p className="text-slate-500 font-bold text-sm uppercase tracking-wide leading-relaxed">
-                Identity verification ensures you're connecting with real people.
-              </p>
-            </motion.div>
-            <motion.div whileHover={{ y: -10 }} className="text-center p-12 bg-white/5 rounded-[3.5rem] border border-white/5 backdrop-blur-3xl shadow-3xl">
-              <Award className="h-16 w-16 text-emerald-500 mx-auto mb-8 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]" />
-              <h3 className="text-xl font-black text-white mb-6 tracking-tighter uppercase italic">Smart Moderation</h3>
-              <p className="text-slate-500 font-bold text-sm uppercase tracking-wide leading-relaxed">
-                Our AI moderation system ensures a positive and helpful community environment.
-              </p>
-            </motion.div>
-            <motion.div whileHover={{ y: -10 }} className="text-center p-12 bg-white/5 rounded-[3.5rem] border border-white/5 backdrop-blur-3xl shadow-3xl">
-              <Sparkles className="h-16 w-16 text-purple-500 mx-auto mb-8 drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]" />
-              <h3 className="text-xl font-black text-white mb-6 tracking-tighter uppercase italic">Community Rules</h3>
-              <p className="text-slate-500 font-bold text-sm uppercase tracking-wide leading-relaxed">
-                Clearly defined guidelines to keep the network professional and friendly.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Signal Section */}
-      <section className="py-24 md:py-48 px-4 md:px-6 relative z-10 text-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-600/5 to-transparent pointer-events-none" />
-        <div className="container mx-auto max-w-4xl space-y-12">
+      <section className="relative py-20 px-8 overflow-hidden z-10 border-b border-white/5 bg-[#0d1321]/40 backdrop-blur-3xl">
+        <div className="max-w-6xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="w-32 h-32 bg-emerald-600 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-[0_0_80px_rgba(16,185,129,0.4)]"
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-8 shadow-sm backdrop-blur-md"
           >
-            <ZapOff className="h-14 w-14 text-white fill-current" />
+            <Sparkles size={14} className="fill-emerald-400" />
+            Social Media Marketplace
           </motion.div>
-          <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-[0.85]">
-            Start Your <br /><span className="text-emerald-500">Play Journey</span>
-          </h2>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto font-black uppercase tracking-widest text-xs leading-relaxed italic">
-            Join thousands of creators already growing their network on Celoris.
-          </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              className="bg-emerald-600 hover:bg-emerald-500 text-white h-20 px-16 rounded-3xl font-black uppercase tracking-[0.4em] text-xs shadow-3xl shadow-emerald-500/30 transition-all border-none"
-              onClick={() => handleSafeNavigation(user ? "/social/chat" : "/login")}
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.8 }}
+              className="text-5xl md:text-7xl font-bold tracking-tight text-white italic uppercase"
             >
-              {user ? 'GO TO SOCIAL HUB' : 'GET STARTED NOW'}
+              Celoris <span className="text-emerald-500">Play</span>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-lg md:text-xl max-w-2xl mx-auto text-slate-400 font-medium leading-relaxed italic"
+            >
+              “Turn Followers into Customers.” The ultimate platform for “Sell Anywhere. Own Everywhere.”
+            </motion.p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-12 flex flex-wrap justify-center gap-4"
+          >
+            <Button
+              onClick={() => handleSafeNavigation("/social/swipe")}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white h-14 px-10 rounded-2xl font-bold text-sm shadow-xl shadow-emerald-500/20 transition-all border-none"
+            >
+              Find customers <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handleSafeNavigation("/social/lobby")}
+              className="bg-white/5 border-white/10 text-white hover:bg-white/10 h-14 px-10 rounded-2xl font-bold text-sm"
+            >
+              Join Public Room
             </Button>
           </motion.div>
         </div>
       </section>
 
-      <style jsx global>{`
-                @keyframes scan {
-                    0% { transform: translateY(-100%); }
-                    100% { transform: translateY(300%); }
-                }
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
-    </PageWrapper>
+      {/* Global Hubs Interaction Visualization */}
+      <section className="py-24 px-8 relative z-10 overflow-hidden bg-[#0d1321]/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white/5 rounded-[3rem] p-10 md:p-16 border border-white/5 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 overflow-hidden relative shadow-none">
+            {/* Left Side: Dynamic Text */}
+            <div className="flex-1 space-y-8 relative z-10">
+              <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center shadow-sm">
+                <Globe className="h-8 w-8 text-emerald-400" />
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-4xl font-bold text-white tracking-tight leading-tight italic uppercase">
+                  Celoris <span className="text-emerald-500">Play Cafe</span>
+                </h2>
+                <p className="text-lg text-slate-400 leading-relaxed font-medium italic">
+                  Join public rooms and talk with customers across Social Media
+                </p>
+              </div>
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white h-14 px-10 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-3 transition-all shadow-xl shadow-emerald-500/20 border-none"
+                onClick={() => handleSafeNavigation("/social/lobby")}
+              >
+                JOIN PLAY CAFE <Rocket className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Right Side: Virtual Lobby Display */}
+            <div className="flex-1 w-full max-w-xl relative group">
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {[1, 2, 3, 4].map((num) => {
+                  const roomSlot = activePrivateRooms[num - 1];
+                  const isOccupied = !!roomSlot;
+                  return (
+                    <div
+                      key={num}
+                      className={`relative flex flex-col items-center p-6 rounded-[2rem] border transition-all duration-500 ${isOccupied
+                        ? 'border-emerald-500/30 bg-emerald-500/10 shadow-none'
+                        : 'border-white/5 bg-white/[0.02]'
+                        }`}
+                    >
+                      <span className={`text-[8px] font-bold tracking-widest mb-4 uppercase ${isOccupied ? 'text-emerald-400' : 'text-slate-600'}`}>
+                        STATION_{num.toString().padStart(2, '0')}
+                      </span>
+
+                      <div className="flex -space-x-2 mb-4 h-10 items-center">
+                        {isOccupied ? (
+                          roomSlot.users.map((u: any, i: number) => (
+                            <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050810] overflow-hidden bg-neutral-800 shadow-sm">
+                              <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`} alt="u" />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
+                            <Lock className="h-3 w-3 text-slate-700" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={`px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-widest ${isOccupied
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-white/5 text-slate-600'
+                        }`}>
+                        {isOccupied ? 'BUSY' : 'READY'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Lobby Status Plate */}
+              <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-between shadow-none">
+                <div className="flex items-center gap-4">
+                  <div className="flex -space-x-2">
+                    {roomData.lobby.users.slice(0, 3).map((u: any, i: number) => (
+                      <div key={i} className="h-8 w-8 rounded-full border-2 border-[#050810] overflow-hidden shadow-sm">
+                        <img src={u?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 45}`} alt="u" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {roomData.lobby.count} Online Now
+                  </div>
+                </div>
+                <div className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest">
+                  LIVE
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Perks - High End Grid */}
+      <section className="py-24 px-8 relative z-10 border-t border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white tracking-tight mb-4 italic uppercase">
+              Premium Benefits
+            </h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium italic">
+              Upgrade your plan to get professional tools and wider reach.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {premiumFeatures.map((feature, index) => (
+              <Card key={index} className="border-white/10 bg-white/5 hover:border-emerald-500/30 transition-all rounded-[2rem] p-6 flex flex-col h-full shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 group">
+                <div className="w-20 h-20 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
+                  <feature.icon className="h-8 w-8 text-emerald-500" />
+                </div>
+                <div className="text-center space-y-4 flex flex-col h-full">
+                  <div className="space-y-2">
+                    <span className="bg-emerald-500/20 text-emerald-400 text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">{feature.badge}</span>
+                    <h3 className="text-xl font-bold text-white tracking-tight italic uppercase">{feature.title}</h3>
+                    <p className="text-slate-500 text-xs leading-relaxed italic">{feature.description}</p>
+                  </div>
+                  <Button
+                    className="w-full mt-auto bg-white/5 text-white hover:bg-emerald-600 hover:text-white rounded-xl h-12 font-bold text-xs border border-white/10"
+                    onClick={() => handleSafeNavigation("/social/upgrade")}
+                  >
+                    Upgrade Now
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Integrity Shield View */}
+      <section className="py-24 px-8 relative z-10 border-t border-white/5 bg-[#0d1321]/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white tracking-tight mb-4 italic uppercase">
+              Safe & Secure
+            </h2>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">
+              Your privacy and security are our top priorities.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="text-center p-10 bg-white/5 rounded-[2.5rem] border border-white/10 shadow-none">
+              <Shield className="h-12 w-12 text-emerald-500 mx-auto mb-6" />
+              <h3 className="text-lg font-bold text-white mb-4 tracking-tight italic uppercase">Verified Users</h3>
+              <p className="text-slate-500 text-sm leading-relaxed italic">
+                Identity verification ensures you're connecting with real people.
+              </p>
+            </div>
+            <div className="text-center p-10 bg-white/5 rounded-[2.5rem] border border-white/10 shadow-none">
+              <Award className="h-12 w-12 text-emerald-500 mx-auto mb-6" />
+              <h3 className="text-lg font-bold text-white mb-4 tracking-tight italic uppercase">Smart Moderation</h3>
+              <p className="text-slate-500 text-sm leading-relaxed italic">
+                Our AI moderation system ensures a positive and helpful community environment.
+              </p>
+            </div>
+            <div className="text-center p-10 bg-white/5 rounded-[2.5rem] border border-white/10 shadow-none">
+              <Sparkles className="h-12 w-12 text-purple-500 mx-auto mb-6" />
+              <h3 className="text-lg font-bold text-white mb-4 tracking-tight italic uppercase">Community Rules</h3>
+              <p className="text-slate-500 text-sm leading-relaxed italic">
+                Clearly defined guidelines to keep the network professional and friendly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Signal Section */}
+      <section className="py-32 px-8 relative z-10 text-center bg-emerald-600 text-white rounded-[4rem] mx-8 mb-20 overflow-hidden">
+        <div className="max-w-4xl mx-auto space-y-8 relative z-10">
+          <div className="w-24 h-24 bg-white/10 rounded-3xl flex items-center justify-center mx-auto backdrop-blur-md">
+            <ZapOff className="h-12 w-12 text-white fill-current" />
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+            Start Your Play Journey
+          </h2>
+          <p className="text-xl text-emerald-100 max-w-2xl mx-auto font-medium italic">
+            Join thousands of creators already growing their network on Celoris.
+          </p>
+          <Button
+            className="bg-white text-emerald-600 hover:bg-emerald-50 h-16 px-12 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all border-none"
+            onClick={() => handleSafeNavigation(user ? "/social/chat" : "/login")}
+          >
+            {user ? 'GO TO SOCIAL HUB' : 'GET STARTED NOW'}
+          </Button>
+        </div>
+      </section>
+    </div>
   )
 }

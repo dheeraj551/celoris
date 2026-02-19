@@ -66,7 +66,15 @@ export default function Footer() {
     }
   }, [])
 
-  if (isNative) return null
+  const isDashboardPage = pathname === "/" ||
+    pathname?.startsWith("/learn") ||
+    pathname?.startsWith("/earn") ||
+    pathname?.startsWith("/social") ||
+    pathname?.startsWith("/ai-explorer") ||
+    pathname === "/login" ||
+    pathname === "/register";
+
+  if (isNative || isDashboardPage) return null
 
   const isDarkPage = pathname === "/" ||
     pathname === "/about" ||

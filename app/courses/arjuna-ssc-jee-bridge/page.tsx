@@ -56,6 +56,7 @@ export default function ArjunaIntegratedCourse() {
                 unit: "Phase 1: Foundations",
                 duration: "Week 1–2",
                 description: "Arithmetic foundations and basic algebraic structures.",
+                videoUrl: "https://www.youtube.com/embed/ghntV4rzIZ8",
                 chapters: [
                     {
                         title: "Progressions and Series",
@@ -382,6 +383,24 @@ export default function ArjunaIntegratedCourse() {
                                                         </div>
                                                     ))}
                                                 </div>
+
+                                                {(unit as any).videoUrl && (
+                                                    <div className="mt-8 relative group">
+                                                        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                                                        <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-2xl">
+                                                            <iframe
+                                                                width="100%"
+                                                                height="100%"
+                                                                src={(unit as any).videoUrl}
+                                                                title={`${unit.unit} Video Lesson`}
+                                                                frameBorder="0"
+                                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                                allowFullScreen
+                                                                className="w-full h-full"
+                                                            ></iframe>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </AccordionContent>
                                     </AccordionItem>

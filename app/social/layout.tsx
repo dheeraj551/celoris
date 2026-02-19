@@ -9,6 +9,8 @@ import {
     Sparkles
 } from "lucide-react"
 
+import { DashboardShell } from "@/components/home-new/DashboardShell"
+
 export default function SocialLayout({
     children,
 }: {
@@ -23,12 +25,14 @@ export default function SocialLayout({
 
     return (
         <CapacitorProvider>
-            <div className="relative min-h-screen">
-                <main className="pb-32">
-                    {children}
-                </main>
-                <MobileNavBar items={navItems} />
-            </div>
+            <DashboardShell>
+                <div className="relative min-h-screen pb-20">
+                    <main>
+                        {children}
+                    </main>
+                    <MobileNavBar items={navItems} />
+                </div>
+            </DashboardShell>
         </CapacitorProvider>
     )
 }
