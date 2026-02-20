@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from 'groq-sdk';
+
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY || '',
+});
 
 export async function POST(req: Request) {
     try {
         const { message, history, subject } = await req.json();
 
-        const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+        const geminiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+        const groqKey = process.env.GROQ_API_KEY;
 
         // Shared System Prompt
         let subjectScope = subject;
@@ -58,63 +64,100 @@ export async function POST(req: Request) {
             return data.message.content;
         };
 
-        if (!apiKey) {
-            const content = await callOllama();
-            return NextResponse.json({ content });
+        if (groqKey) {
+            try {
+                const stream = await groq.chat.completions.create({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        ...history,
+                        { role: "user", content: message }
+                    ],
+                    stream: true,
+                });
+
+                const encoder = new TextEncoder();
+                const readableStream = new ReadableStream({
+                    async start(controller) {
+                        try {
+                            for await (const chunk of stream) {
+                                const content = chunk.choices[0]?.delta?.content || "";
+                                if (content) {
+                                    controller.enqueue(encoder.encode(content));
+                                }
+                            }
+                        } catch (err) {
+                            console.error("AI Tutor Groq Stream Error:", err);
+                        } finally {
+                            controller.close();
+                        }
+                    },
+                });
+
+                return new Response(readableStream, {
+                    headers: {
+                        'Content-Type': 'text/event-stream',
+                        'Cache-Control': 'no-cache',
+                        'Connection': 'keep-alive',
+                    },
+                });
+            } catch (groqErr: any) {
+                console.error("Groq Failed in Tutor, trying Gemini:", groqErr.message);
+            }
         }
 
-        try {
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-
-            const chat = model.startChat({
-                history: history.map((m: any) => ({
-                    role: m.role === 'assistant' ? 'model' : 'user',
-                    parts: [{ text: m.content }],
-                })),
-                generationConfig: {
-                    maxOutputTokens: 1000,
-                },
-            });
-
-            const streamingResult = await chat.sendMessageStream([
-                { text: `SYSTEM: ${systemPrompt}\n\nUSER MESSAGE: ${message}` }
-            ]);
-
-            const encoder = new TextEncoder();
-            const readableStream = new ReadableStream({
-                async start(controller) {
-                    try {
-                        for await (const chunk of streamingResult.stream) {
-                            const chunkText = chunk.text();
-                            if (chunkText) {
-                                controller.enqueue(encoder.encode(chunkText));
-                            }
-                        }
-                    } catch (err) {
-                        console.error("AI Tutor Stream Error:", err);
-                    } finally {
-                        controller.close();
-                    }
-                },
-            });
-
-            return new Response(readableStream, {
-                headers: {
-                    'Content-Type': 'text/event-stream',
-                    'Cache-Control': 'no-cache',
-                    'Connection': 'keep-alive',
-                },
-            });
-
-        } catch (geminiError: any) {
-            console.error('Gemini failed, trying Ollama:', geminiError.message);
+        if (geminiKey) {
             try {
-                const content = await callOllama();
-                return NextResponse.json({ content, note: "Ollama Fallback Active" });
-            } catch (ollamaError: any) {
-                return NextResponse.json({ error: "All AI engines failed." }, { status: 500 });
+                const genAI = new GoogleGenerativeAI(geminiKey);
+                const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+                const chat = model.startChat({
+                    history: history.map((m: any) => ({
+                        role: m.role === 'assistant' ? 'model' : 'user',
+                        parts: [{ text: m.content }],
+                    })),
+                });
+
+                const streamingResult = await chat.sendMessageStream([
+                    { text: `SYSTEM: ${systemPrompt}\n\nUSER MESSAGE: ${message}` }
+                ]);
+
+                const encoder = new TextEncoder();
+                const readableStream = new ReadableStream({
+                    async start(controller) {
+                        try {
+                            for await (const chunk of streamingResult.stream) {
+                                const chunkText = chunk.text();
+                                if (chunkText) {
+                                    controller.enqueue(encoder.encode(chunkText));
+                                }
+                            }
+                        } catch (err) {
+                            console.error("AI Tutor Gemini Stream Error:", err);
+                        } finally {
+                            controller.close();
+                        }
+                    },
+                });
+
+                return new Response(readableStream, {
+                    headers: {
+                        'Content-Type': 'text/event-stream',
+                        'Cache-Control': 'no-cache',
+                        'Connection': 'keep-alive',
+                    },
+                });
+            } catch (geminiError: any) {
+                console.error('Gemini failed in Tutor, trying Ollama:', geminiError.message);
             }
+        }
+
+        // Final Fallback
+        try {
+            const content = await callOllama();
+            return NextResponse.json({ content });
+        } catch (ollamaError: any) {
+            return NextResponse.json({ error: "All AI engines failed." }, { status: 500 });
         }
 
     } catch (error: any) {

@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
         const supabase = createRouteClient();
 
         if (!process.env.GROQ_API_KEY) {
-            return NextResponse.json({ error: "Groq API Key not configured." }, { status: 500 });
+            console.error("GROQ_API_KEY is missing from environment variables.");
+            return new Response("Error: GROQ_API_KEY is not configured on the server. Please add it to your environment variables.", { status: 500 });
         }
 
         // Format messages for Groq
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
 
         // Step 1: Tool detection
         const completion = await groq.chat.completions.create({
-            model: "llama-3.1-70b-versatile",
+            model: "llama-3.3-70b-versatile",
             messages: groqMessages,
             tools: tools,
             tool_choice: "auto",
@@ -164,7 +165,7 @@ export async function POST(req: NextRequest) {
             ];
 
             const stream = await groq.chat.completions.create({
-                model: "llama-3.1-70b-versatile",
+                model: "llama-3.3-70b-versatile",
                 messages: secondResponseMessages,
                 stream: true,
             });
@@ -173,7 +174,7 @@ export async function POST(req: NextRequest) {
         } else {
             // No tool call, just stream directly
             const stream = await groq.chat.completions.create({
-                model: "llama-3.1-70b-versatile",
+                model: "llama-3.3-70b-versatile",
                 messages: groqMessages,
                 stream: true,
             });
