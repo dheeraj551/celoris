@@ -207,14 +207,14 @@ export default function AIExplorerPage() {
 
                                 <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                     <div className={`p-5 rounded-2xl text-sm leading-relaxed shadow-xl ${msg.role === 'user'
-                                            ? 'bg-[#0d1321] text-white rounded-tr-none border border-white/5'
-                                            : 'bg-gradient-to-br from-emerald-600/90 to-emerald-700 text-white rounded-tl-none'
+                                        ? 'bg-[#0d1321] text-white rounded-tr-none border border-white/5'
+                                        : 'bg-gradient-to-br from-emerald-600/90 to-emerald-700 text-white rounded-tl-none'
                                         }`}>
                                         {msg.content}
                                         {renderData(msg.data)}
                                     </div>
                                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2 px-1">
-                                        {msg.role === 'assistant' ? 'Celoris Intelligence' : 'You'}
+                                        {msg.role === 'assistant' ? 'Gemini 3.1 Pro' : 'You'}
                                     </span>
                                 </div>
                             </motion.div>

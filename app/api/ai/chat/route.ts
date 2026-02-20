@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI, Tool, SchemaType } from '@google/generative-ai';
 import { createRouteClient } from '@/lib/supabase-server';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey || '');
 
 const tools: Tool[] = [
     {
@@ -78,9 +79,13 @@ export async function POST(req: NextRequest) {
         const { messages } = await req.json();
         const supabase = createRouteClient();
 
-        console.log("Using model: gemini-1.5-flash-latest");
+        if (!apiKey) {
+            return NextResponse.json({ error: "API Key not configured." }, { status: 500 });
+        }
+
+        console.log("Using model: gemini-3-flash-preview");
         const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash-latest',
+            model: 'gemini-3-flash-preview',
             tools: tools,
         });
 
