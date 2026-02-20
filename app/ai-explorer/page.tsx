@@ -64,6 +64,9 @@ export default function AIExplorerPage() {
         setInput('');
         setIsLoading(true);
 
+        const assistantMessage: Message = { role: 'assistant', content: '' };
+        setMessages(prev => [...prev, assistantMessage]);
+
         try {
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
@@ -71,12 +74,58 @@ export default function AIExplorerPage() {
                 body: JSON.stringify({ messages: newMessages }),
             });
 
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
+            if (!res.ok) throw new Error("Failed to fetch stream");
 
-            setMessages(prev => [...prev, { role: 'assistant', content: data.content, data: data.data }]);
+            const reader = res.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+            let toolData: any = null;
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+
+                    // Parse custom tool data if present
+                    if (chunk.includes('__DATA__')) {
+                        const match = chunk.match(/__DATA__(.*?)__END_DATA__/);
+                        if (match) {
+                            try {
+                                toolData = JSON.parse(match[1]);
+                                const cleanChunk = chunk.replace(/__DATA__.*?__END_DATA__\n?/, '');
+                                fullContent += cleanChunk;
+                            } catch (e) {
+                                console.error("Error parsing tool data", e);
+                            }
+                        }
+                    } else {
+                        fullContent += chunk;
+                    }
+
+                    // Update the last message (the assistant's) in real-time
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        updated[updated.length - 1] = {
+                            role: 'assistant',
+                            content: fullContent,
+                            data: toolData
+                        };
+                        return updated;
+                    });
+                }
+            }
         } catch (error) {
-            setMessages(prev => [...prev, { role: 'assistant', content: "I'm sorry, I encountered an error. Please try again." }]);
+            console.error("Chat Error:", error);
+            setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                    role: 'assistant',
+                    content: "I'm sorry, I encountered an error. Please try again."
+                };
+                return updated;
+            });
         } finally {
             setIsLoading(false);
         }

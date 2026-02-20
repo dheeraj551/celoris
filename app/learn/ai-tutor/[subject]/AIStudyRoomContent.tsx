@@ -205,25 +205,49 @@ export default function AIStudyRoomContent() {
                     subject
                 })
             });
-            const data = await res.json();
-            if (data.content) {
-                // Heuristic to detect equations for visualization
-                let equation: string | undefined;
-                const match = data.content.match(/(?:y|f\(x\))\s*=\s*([^.\n]+)/i);
-                if (match) {
-                    equation = match[1].trim();
-                }
 
-                setMsgs(prev => [...prev, {
-                    role: 'assistant',
-                    content: data.content,
-                    id: (Date.now() + 1).toString(),
-                    equation
-                }]);
-            } else if (data.error) {
-                setMsgs(prev => [...prev, { role: 'assistant', content: `Error: ${data.error}`, id: 'err-' + Date.now() }]);
+            if (!res.ok) throw new Error("Failed to connect to AI");
+
+            const reader = res.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+            const assistantId = (Date.now() + 1).toString();
+
+            // Initial empty message for assistant
+            setMsgs(prev => [...prev, { role: 'assistant', content: '', id: assistantId }]);
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    fullContent += chunk;
+
+                    // Heuristic to detect equations for visualization in real-time or at end
+                    let equation: string | undefined;
+                    const match = fullContent.match(/(?:y|f\(x\))\s*=\s*([^.\n]+)/i);
+                    if (match) {
+                        equation = match[1].trim();
+                    }
+
+                    setMsgs(prev => {
+                        const updated = [...prev];
+                        const lastIdx = updated.findIndex(m => m.id === assistantId);
+                        if (lastIdx !== -1) {
+                            updated[lastIdx] = {
+                                role: 'assistant',
+                                content: fullContent,
+                                id: assistantId,
+                                equation
+                            };
+                        }
+                        return updated;
+                    });
+                }
             }
         } catch (err) {
+            console.error("Study Chat Error:", err);
             setMsgs(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting to Celoris Brain.", id: 'err-' + Date.now() }]);
         } finally {
             setIsTyping(false);

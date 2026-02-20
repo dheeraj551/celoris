@@ -83,7 +83,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "API Key not configured." }, { status: 500 });
         }
 
-        console.log("Using model: gemini-3-flash-preview");
         const model = genAI.getGenerativeModel({
             model: 'gemini-3-flash-preview',
             tools: tools,
@@ -97,9 +96,12 @@ export async function POST(req: NextRequest) {
         });
 
         const lastMessage = messages[messages.length - 1].content;
-        let result = await chat.sendMessage(lastMessage);
-        let response = result.response;
-        let call = response.candidates?.[0].content.parts.find((p) => p.functionCall);
+
+        // Step 1: Check for tool calls first (non-streaming for tool detection is often more reliable)
+        const initialResult = await chat.sendMessage(initialUserPrompt(lastMessage));
+        const initialResponse = initialResult.response;
+        let call = initialResponse.candidates?.[0].content.parts.find((p) => p.functionCall);
+        let toolData = null;
 
         if (call) {
             const { name, args } = call.functionCall!;
@@ -139,8 +141,10 @@ export async function POST(req: NextRequest) {
                 };
             }
 
-            // Send the function result back to Gemini
-            result = await chat.sendMessage([
+            toolData = { type: name, results: functionResponse };
+
+            // Start streaming the FINAL response after tool execution
+            const streamingResult = await chat.sendMessageStream([
                 {
                     functionResponse: {
                         name,
@@ -148,18 +152,57 @@ export async function POST(req: NextRequest) {
                     },
                 },
             ]);
-            response = result.response;
+
+            return createStreamResponse(streamingResult.stream, toolData);
+        } else {
+            // No tool call, just stream the response directly
+            // We need to re-send or use the result we already got?
+            // To maintain speed, we'll start a fresh stream for the message.
+            const streamingResult = await chat.sendMessageStream(lastMessage);
+            return createStreamResponse(streamingResult.stream, null);
         }
 
-        const text = response.text();
-
-        return NextResponse.json({
-            role: 'assistant',
-            content: text,
-            data: call ? { type: call.functionCall!.name, results: (result as any)._response?.candidates?.[0]?.content?.parts?.[0]?.functionResponse?.response?.content } : null,
-        });
     } catch (error: any) {
-        console.error('Gemini Error:', error);
+        console.error('Gemini Stream Error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
+}
+
+function initialUserPrompt(msg: string) {
+    return msg;
+}
+
+function createStreamResponse(stream: any, toolData: any) {
+    const encoder = new TextEncoder();
+
+    const readableStream = new ReadableStream({
+        async start(controller) {
+            // If we have tool data, send it as the first item
+            if (toolData) {
+                const dataStr = `__DATA__${JSON.stringify(toolData)}__END_DATA__\n`;
+                controller.enqueue(encoder.encode(dataStr));
+            }
+
+            try {
+                for await (const chunk of stream) {
+                    const chunkText = chunk.text();
+                    if (chunkText) {
+                        controller.enqueue(encoder.encode(chunkText));
+                    }
+                }
+            } catch (err) {
+                console.error("Stream processing error:", err);
+            } finally {
+                controller.close();
+            }
+        },
+    });
+
+    return new Response(readableStream, {
+        headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+        },
+    });
 }

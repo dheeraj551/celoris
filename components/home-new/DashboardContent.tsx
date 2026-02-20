@@ -47,6 +47,9 @@ export function DashboardContent({ courses }: DashboardContentProps) {
         setInput('');
         setIsLoading(true);
 
+        const assistantMessage = { role: 'assistant', content: '' };
+        setMessages(prev => [...prev, assistantMessage]);
+
         try {
             const response = await fetch('/api/ai/chat', {
                 method: 'POST',
@@ -54,13 +57,45 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                 body: JSON.stringify({ messages: newMessages }),
             });
 
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
+            if (!response.ok) throw new Error("Failed to fetch stream");
 
-            setMessages([...newMessages, { role: 'assistant', content: data.content }]);
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+
+                    // We'll skip complex tool data parsing for the home dashboard for now
+                    // to keep it simple, or we can add it if needed.
+                    // Home dashboard usually doesn't show the tool results cards yet.
+                    const cleanChunk = chunk.replace(/__DATA__.*?__END_DATA__\n?/, '');
+                    fullContent += cleanChunk;
+
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        updated[updated.length - 1] = {
+                            role: 'assistant',
+                            content: fullContent
+                        };
+                        return updated;
+                    });
+                }
+            }
         } catch (error) {
             console.error('Chat Error:', error);
-            setMessages([...newMessages, { role: 'assistant', content: "I'm sorry, I encountered an error. Please try again later." }]);
+            setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                    role: 'assistant',
+                    content: "I'm sorry, I encountered an error. Please try again later."
+                };
+                return updated;
+            });
         } finally {
             setIsLoading(false);
         }

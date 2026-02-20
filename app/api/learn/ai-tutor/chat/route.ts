@@ -64,11 +64,7 @@ export async function POST(req: Request) {
         }
 
         try {
-            // Attempt Gemini with the exact model from your AI Studio
             const genAI = new GoogleGenerativeAI(apiKey);
-
-            // Note: We use gemini-1.5-flash which is generally the most stable.
-            // If the SDK defaults to v1beta and fails, we'll catch it and go to Ollama.
             const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
             const chat = model.startChat({
@@ -81,16 +77,38 @@ export async function POST(req: Request) {
                 },
             });
 
-            const result = await chat.sendMessage([
+            const streamingResult = await chat.sendMessageStream([
                 { text: `SYSTEM: ${systemPrompt}\n\nUSER MESSAGE: ${message}` }
             ]);
-            const responseText = result.response.text();
 
-            return NextResponse.json({ content: responseText });
+            const encoder = new TextEncoder();
+            const readableStream = new ReadableStream({
+                async start(controller) {
+                    try {
+                        for await (const chunk of streamingResult.stream) {
+                            const chunkText = chunk.text();
+                            if (chunkText) {
+                                controller.enqueue(encoder.encode(chunkText));
+                            }
+                        }
+                    } catch (err) {
+                        console.error("AI Tutor Stream Error:", err);
+                    } finally {
+                        controller.close();
+                    }
+                },
+            });
+
+            return new Response(readableStream, {
+                headers: {
+                    'Content-Type': 'text/event-stream',
+                    'Cache-Control': 'no-cache',
+                    'Connection': 'keep-alive',
+                },
+            });
 
         } catch (geminiError: any) {
             console.error('Gemini failed, trying Ollama:', geminiError.message);
-            // If Gemini fails (Quota, 404, etc.), silently fallback to Ollama
             try {
                 const content = await callOllama();
                 return NextResponse.json({ content, note: "Ollama Fallback Active" });
