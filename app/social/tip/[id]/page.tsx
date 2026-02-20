@@ -275,7 +275,7 @@ export default function TipPage() {
                       : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white'
                       }`}
                   >
-                    ${amount}
+                    {amount}
                   </button>
                 ))}
               </div>
@@ -297,22 +297,19 @@ export default function TipPage() {
                     onClick={() => setCustomAmount(amount.toString())}
                     className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300 rounded-full hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
                   >
-                    ${amount}
+                    {amount}
                   </button>
                 ))}
               </div>
 
               {/* Custom input */}
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 font-bold text-xl">
-                  $
-                </span>
                 <input
                   type="number"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full pl-10 pr-4 py-4 bg-[#050810] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-white font-mono text-lg"
+                  placeholder="0.00 Credits"
+                  className="w-full px-4 py-4 bg-[#050810] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-white font-mono text-lg"
                   min="1"
                   step="0.01"
                 />
@@ -349,7 +346,7 @@ export default function TipPage() {
               <div className="flex-1">
                 <h4 className="font-bold text-emerald-400 uppercase tracking-wide text-xs mb-1">You're sending:</h4>
                 <p className="text-3xl font-black text-white italic tracking-tight">
-                  ${tipType === 'quick' ? selectedAmount : customAmount || '0'}
+                  {tipType === 'quick' ? selectedAmount : customAmount || '0'} Credits
                 </p>
                 {message && (
                   <p className="text-sm text-slate-300 mt-2 italic border-l-2 border-emerald-500/30 pl-3">
@@ -392,7 +389,7 @@ export default function TipPage() {
           ) : (
             <div className="flex items-center gap-2">
               <Heart className="w-5 h-5 fill-white" />
-              Send ${tipType === 'quick' ? selectedAmount : customAmount || '0'} Tip
+              Send {tipType === 'quick' ? selectedAmount : customAmount || '0'} Credits Tip
             </div>
           )}
         </Button>
@@ -435,6 +432,6 @@ export default function TipPage() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }

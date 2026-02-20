@@ -117,7 +117,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       "name": "Celoris Designs",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.celorisdesigns.com/celoris-logo.png"
+        "url": "https://www.celorisdesigns.com/celoris-logo.svg"
       }
     },
     "datePublished": post.published_at || post.created_at

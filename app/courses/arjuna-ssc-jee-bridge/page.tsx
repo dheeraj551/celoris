@@ -76,6 +76,7 @@ export default function ArjunaIntegratedCourse() {
                 unit: "Phase 2: Geometry & Measurement",
                 duration: "Week 3–4",
                 description: "Visualising shapes and understanding coordinate systems.",
+                videoUrl: "https://www.youtube.com/embed/yhy3hREJtFU",
                 chapters: [
                     {
                         title: "Cartesian Coordinate Geometry",

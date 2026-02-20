@@ -27,6 +27,29 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             console.error("Error signing out:", error);
         }
     };
+    const [timeLeft, setTimeLeft] = React.useState({ h: 12, m: 45, s: 20 });
+
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeLeft(prev => {
+                let { h, m, s } = prev;
+                if (s > 0) s--;
+                else if (m > 0) {
+                    m--;
+                    s = 59;
+                } else if (h > 0) {
+                    h--;
+                    m = 59;
+                    s = 59;
+                } else {
+                    clearInterval(timer);
+                }
+                return { h, m, s };
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <div className="flex bg-[#050810] min-h-screen">
             <Sidebar />
@@ -38,7 +61,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                         <span>Celoris 3.0 is live. Save 60% on our Starter Yearly plan.</span>
                         <button className="underline font-bold">Claim offer</button>
                         <div className="h-4 w-px bg-white/10" />
-                        <span>Offer ends in 12h : 45m : 20s</span>
+                        <span>Offer ends in {timeLeft.h.toString().padStart(2, '0')}h : {timeLeft.m.toString().padStart(2, '0')}m : {timeLeft.s.toString().padStart(2, '0')}s</span>
                     </div>
                 </div>
 
@@ -47,16 +70,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-bold text-emerald-400">
                             <Plus className="w-3 h-3" />
-                            800 Credits
+                            {profile?.wallet_balance?.toString() || '0'} Credits
                         </div>
-                        <button className="text-xs font-bold text-slate-400 hover:text-white">Try for ₹0</button>
                     </div>
-                    <div className="h-4 w-px bg-white/10" />
                     <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 text-xs font-bold text-amber-500">
-                            <ShoppingBag className="w-4 h-4" />
-                            Earn credits
-                        </button>
 
                         {loading ? (
                             <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 animate-pulse" />
@@ -113,8 +130,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator className="bg-white/5" />
                                     <DropdownMenuItem className="cursor-default focus:bg-transparent">
-                                        <Wallet className="mr-2 h-4 w-4 text-amber-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Wallet: ₹{profile?.wallet_balance?.toFixed(2) || '0.00'}</span>
+                                        <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
+                                        <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator className="bg-white/5" />
                                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-rose-500 focus:text-rose-400 focus:bg-rose-500/10">

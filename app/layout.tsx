@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Outfit } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
@@ -10,6 +10,7 @@ import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { AdUnit } from "@/components/AdUnit"
 
 const inter = Inter({ subsets: ["latin"] })
+const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
@@ -170,7 +171,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body className={outfit.className}>
         <ReCaptchaProvider siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
           <AuthProvider>
             <PresenceProvider>

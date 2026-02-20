@@ -10,7 +10,7 @@
         {
             "src": "/celoris-logo.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/svg+xml"
         }
     ],
     "ai_metadata": {

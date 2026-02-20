@@ -129,10 +129,7 @@ export default function EarningsPage() {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount)
+    return `${amount.toLocaleString()} Credits`
   }
 
   if (loading) {
@@ -246,9 +243,9 @@ export default function EarningsPage() {
                 <DollarSign className="w-8 h-8 text-emerald-500 group-hover:rotate-12 transition-transform" />
               </div>
               <p className="text-4xl font-black text-white italic tracking-tighter mb-2">
-                {formatCurrency(stats.totalEarnings)}
+                {stats.totalEarnings.toLocaleString()}
               </p>
-              <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">LIFETIME REVENUE FRAGMENTS</p>
+              <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">LIFETIME CREDIT FRAGMENTS</p>
             </motion.div>
 
             <motion.div
@@ -291,7 +288,7 @@ export default function EarningsPage() {
         <div className="flex items-center gap-2 bg-white/5 p-2 rounded-[2.5rem] border border-white/5 mb-12 h-20 shadow-3xl">
           {[
             { key: 'overview', label: 'OVERVIEW', icon: Activity },
-            { key: 'earnings', label: 'CREDIT_LOG', icon: Wallet },
+            { key: 'earnings', label: 'CREDIT_LOG', icon: Zap },
             { key: 'content', label: 'MEDIA_ASSETS', icon: Eye },
             { key: 'subscribers', label: 'ELITE_NODES', icon: Users }
           ].map((tab, idx) => (
@@ -367,9 +364,9 @@ export default function EarningsPage() {
             <div className="space-y-6">
               {earnings.length === 0 ? (
                 <Card className="bg-white/5 border-white/5 rounded-[4rem] p-24 text-center">
-                  <Wallet className="w-20 h-20 text-slate-800 mx-auto mb-10" />
+                  <Zap className="w-20 h-20 text-slate-800 mx-auto mb-10" />
                   <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4">No Transmissions Logged</h3>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">INITIALIZE MONETIZATION MODES TO START BROADCASTING VALUE.</p>
+                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">INITIALIZE MONETIZATION MODES TO START BROADCASTING CREDITS.</p>
                 </Card>
               ) : (
                 earnings.map((earning, idx) => (

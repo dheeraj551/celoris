@@ -34,90 +34,162 @@ interface DashboardContentProps {
 
 export function DashboardContent({ courses }: DashboardContentProps) {
     const [activeTab, setActiveTab] = useState<'video' | 'image'>('video');
+    const [input, setInput] = useState('');
+    const [messages, setMessages] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSend = async () => {
+        if (!input.trim() || isLoading) return;
+
+        const userMessage = { role: 'user', content: input };
+        const newMessages = [...messages, userMessage];
+        setMessages(newMessages);
+        setInput('');
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: newMessages }),
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            setMessages([...newMessages, { role: 'assistant', content: data.content }]);
+        } catch (error) {
+            console.error('Chat Error:', error);
+            setMessages([...newMessages, { role: 'assistant', content: "I'm sorry, I encountered an error. Please try again later." }]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="py-16 px-8 max-w-6xl mx-auto">
-            {/* Hero Title */}
-            {/* Hero Title */}
-            <div className="text-center mb-12">
-                <Badge variant="outline" className="mb-4 border-emerald-500/20 text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-widest">
-                    <Sparkles className="w-3 h-3 mr-2" />
-                    The latest Celoris model is live now
-                </Badge>
-                <h1 className="text-5xl font-bold tracking-tight text-white mb-4 italic uppercase">
-                    Hi, what will we create today?
-                </h1>
-            </div>
+            {/* Hero Title - Hide if there are messages */}
+            {messages.length === 0 && (
+                <div className="text-center mb-16 pt-10 relative">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
+                    <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-6">
+                        Welcome to Celoris <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Designs</span>
+                    </h1>
+                </div>
+            )}
 
-            {/* Central AI Input Box */}
-            <div className="max-w-3xl mx-auto mb-20">
-                <div className="relative">
-                    {/* Tabs */}
-                    <div className="flex justify-center mb-0 relative z-10 -translate-y-1/2">
-                        <div className="bg-[#0d1321]/80 backdrop-blur-md p-1.5 rounded-2xl flex gap-1 border border-white/5">
-                            <button
-                                onClick={() => setActiveTab('video')}
-                                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'video' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                <Video className={`w-4 h-4 ${activeTab === 'video' ? 'text-emerald-400' : ''}`} />
-                                Video
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('image')}
-                                className={`flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'image' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                <ImageIcon className={`w-4 h-4 ${activeTab === 'image' ? 'text-emerald-400' : ''}`} />
-                                Image
-                            </button>
+            {/* Chat History Section */}
+            {messages.length > 0 && (
+                <div className="max-w-4xl mx-auto mb-8 space-y-6">
+                    {messages.map((m, idx) => (
+                        <div key={idx} className={cn(
+                            "flex flex-col gap-2 p-6 rounded-[2rem] border",
+                            m.role === 'user'
+                                ? "bg-white/5 border-white/5 ml-auto max-w-[80%]"
+                                : "bg-emerald-500/5 border-emerald-500/10 mr-auto max-w-[90%]"
+                        )}>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                {m.role === 'user' ? 'You' : 'Gemini 3.1 Pro'}
+                            </div>
+                            <div className="text-white text-lg font-light leading-relaxed">
+                                {m.content}
+                            </div>
                         </div>
-                    </div>
+                    ))}
+                    {isLoading && (
+                        <div className="flex flex-col gap-2 p-6 rounded-[2rem] border bg-emerald-500/5 border-emerald-500/10 mr-auto max-w-[90%] animate-pulse">
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                                Gemini is thinking...
+                            </div>
+                            <div className="h-4 w-48 bg-white/10 rounded-full" />
+                        </div>
+                    )}
+                </div>
+            )}
 
-                    {/* Input Box */}
-                    <div className="bg-[#0d1321]/60 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-none p-6 pt-10">
+            <div className="max-w-4xl mx-auto mb-20">
+                <div className="relative group overflow-hidden rounded-[2rem]">
+                    {/* Animated Border Beam */}
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent animate-border-beam opacity-50 z-10" />
+
+                    {/* Input Container */}
+                    <div className="relative bg-[#1e1f20] border border-white/5 rounded-[2rem] shadow-2xl transition-all duration-500 focus-within:border-emerald-500/30 focus-within:bg-[#282a2d] p-6 pb-4 z-0">
+                        <div className="text-[11px] font-medium text-slate-500 mb-4 px-2 uppercase tracking-widest">
+                            Describe your idea
+                        </div>
                         <textarea
-                            className="w-full h-32 bg-transparent text-lg text-white placeholder:text-slate-600 resize-none focus:outline-none px-4"
-                            placeholder="Tell me what you want. Add links, media, or docs to generate more precise results."
+                            className="w-full h-32 bg-transparent text-xl text-white placeholder:text-slate-600 resize-none focus:outline-none px-2 font-light"
+                            placeholder="Tell me what you want to create..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
                         />
 
-                        <div className="flex items-center justify-between mt-6 px-2">
+                        {/* Bottom Controls Area */}
+                        <div className="flex items-center justify-between mt-4">
+                            {/* Left Side: Type/Model Selector */}
                             <div className="flex items-center gap-2">
-                                <button className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 transition-colors border border-white/5">
-                                    <Plus className="w-4 h-4" />
-                                </button>
-                                <div className="h-6 w-px bg-white/5 mx-1" />
-                                <button className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 border border-white/5"><AtSign className="w-4 h-4" /></button>
-                                <button className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 border border-white/5"><MapPin className="w-4 h-4" /></button>
-
-                                <div className="flex items-center bg-white/5 border border-white/5 rounded-full px-4 py-2 gap-2 ml-2">
-                                    <div className="w-4 h-4 bg-emerald-600 rounded flex items-center justify-center shadow-[0_0_10px_rgba(16,185,129,0.4)]">
-                                        <Zap className="w-2.5 h-2.5 text-white" />
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-tight">Celoris Standard</span>
+                                <div className="flex bg-black/30 backdrop-blur-md p-1 rounded-full border border-white/5">
+                                    <button
+                                        onClick={() => setActiveTab('video')}
+                                        className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold transition-all ${activeTab === 'video' ? 'bg-emerald-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                                    >
+                                        <Video className="w-3 h-3" />
+                                        Video
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('image')}
+                                        className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold transition-all ${activeTab === 'image' ? 'bg-emerald-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                                    >
+                                        <ImageIcon className="w-3 h-3" />
+                                        Image
+                                    </button>
                                 </div>
 
-                                <div className="flex items-center bg-white/5 border border-white/5 rounded-full px-4 py-2 gap-2">
-                                    <Layout className="w-3 h-3 text-slate-500" />
-                                    <span className="text-[10px] font-bold uppercase tracking-tight text-slate-300">9:16 EN</span>
-                                </div>
+                                <div className="h-4 w-px bg-white/10 mx-1" />
 
-                                <button className="flex items-center bg-white/5 border border-white/5 rounded-full px-4 py-2 gap-2 text-slate-500 hover:text-slate-300 transition-colors">
-                                    <Calendar className="w-3 h-3" />
-                                    <span className="text-[10px] font-bold uppercase tracking-tight">Schedule</span>
+                                <button className="flex items-center bg-white/10 border border-white/5 rounded-full px-4 py-1.5 gap-2 hover:bg-white/20 transition-all group/btn">
+                                    <Zap className="w-3 h-3 text-emerald-400 group-hover/btn:animate-pulse" />
+                                    <span className="text-[10px] font-bold text-slate-200 uppercase tracking-tight">Gemini 3.1 Pro</span>
                                 </button>
                             </div>
 
-                            <button className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-slate-700 cursor-not-allowed border border-white/5">
-                                <ArrowRight className="w-6 h-6" />
-                            </button>
+                            {/* Right Side: Tools & Submit */}
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
+                                    <button className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors">
+                                        <Plus className="w-4 h-4" />
+                                    </button>
+                                    <button className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors">
+                                        <AtSign className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <button
+                                    onClick={handleSend}
+                                    disabled={isLoading || !input.trim()}
+                                    className={cn(
+                                        "w-12 h-12 rounded-full flex items-center justify-center transition-all border",
+                                        input.trim() && !isLoading
+                                            ? "bg-emerald-500 text-white border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-105"
+                                            : "bg-white/5 text-slate-700 border-white/5 cursor-not-allowed"
+                                    )}
+                                >
+                                    {isLoading ? (
+                                        <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                    ) : (
+                                        <ArrowRight className="w-6 h-6" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Prompt Suggestions */}
-                    <div className="flex justify-center gap-8 mt-8 text-xs font-bold text-slate-500 italic uppercase tracking-wider">
-                        <button className="hover:text-emerald-400 transition-colors">Wool-felt winter village ↗</button>
-                        <button className="hover:text-emerald-400 transition-colors">Snowfall around you ↗</button>
-                        <button className="hover:text-emerald-400 transition-colors">Black Friday promotional videos ↗</button>
-                    </div>
                 </div>
             </div>
 
@@ -154,7 +226,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
             {/* Feed Section */}
             <div>
                 <div className="flex items-center gap-8 border-b border-white/5 mb-8">
-                    <button className="pb-4 border-b-2 border-emerald-500 text-white text-sm font-bold uppercase italic">Trending on Academy</button>
+                    <button className="pb-4 border-b-2 border-emerald-500 text-white text-sm font-bold uppercase italic">Trending on Internet</button>
                     <button className="pb-4 text-sm font-bold text-slate-500 hover:text-white uppercase italic">Image inspiration</button>
                     <div className="ml-auto">
                         <button className="text-[11px] font-bold text-emerald-500 border border-emerald-500/20 px-4 py-1.5 rounded-full hover:bg-emerald-500/10 transition-colors uppercase italic">More inspirations</button>
@@ -171,11 +243,55 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                     <span className="text-[8px] text-white font-medium">User #854</span>
                                 </div>
                             </div>
-                            <img
-                                src={`https://images.unsplash.com/photo-${1600000000000 + (i * 100000)}?w=400&h=600&fit=crop`}
-                                className="w-full h-full object-cover"
-                                alt="sample"
-                            />
+                            {i === 0 ? (
+                                <iframe
+                                    src="https://www.youtube.com/embed/4eJcMyJFJnk?autoplay=1&mute=1&loop=1&playlist=4eJcMyJFJnk&controls=0"
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    allow="autoplay; encrypted-media"
+                                    title="AI Video Sample 1"
+                                />
+                            ) : i === 1 ? (
+                                <iframe
+                                    src="https://www.youtube.com/embed/nm2heuHYNM0?autoplay=1&mute=1&loop=1&playlist=nm2heuHYNM0&controls=0"
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    allow="autoplay; encrypted-media"
+                                    title="AI Video Sample 2"
+                                />
+                            ) : i === 2 ? (
+                                <iframe
+                                    src="https://www.youtube.com/embed/hQs4kJ00Rm4?autoplay=1&mute=1&loop=1&playlist=hQs4kJ00Rm4&controls=0"
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    allow="autoplay; encrypted-media"
+                                    title="AI Video Sample 3"
+                                />
+                            ) : i === 3 ? (
+                                <iframe
+                                    src="https://www.youtube.com/embed/zUoOvsjw4Bk?autoplay=1&mute=1&loop=1&playlist=zUoOvsjw4Bk&controls=0"
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    allow="autoplay; encrypted-media"
+                                    title="AI Video Sample 4"
+                                />
+                            ) : i === 4 ? (
+                                <iframe
+                                    src="https://www.youtube.com/embed/mZ-zhxOtzoI?autoplay=1&mute=1&loop=1&playlist=mZ-zhxOtzoI&controls=0"
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    allow="autoplay; encrypted-media"
+                                    title="AI Video Sample 5"
+                                />
+                            ) : i === 5 ? (
+                                <iframe
+                                    src="https://www.youtube.com/embed/OmGoSgGV7CM?autoplay=1&mute=1&loop=1&playlist=OmGoSgGV7CM&controls=0"
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    allow="autoplay; encrypted-media"
+                                    title="AI Video Sample 6"
+                                />
+                            ) : (
+                                <img
+                                    src={`https://images.unsplash.com/photo-${1600000000000 + (i * 100000)}?w=400&h=600&fit=crop`}
+                                    className="w-full h-full object-cover"
+                                    alt="sample"
+                                />
+                            )}
                             <div className="absolute top-2 left-2 z-20">
                                 <span className="bg-black/50 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full flex items-center gap-1">
                                     <Video className="w-2 h-2" /> AI Video

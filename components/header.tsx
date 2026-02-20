@@ -61,6 +61,7 @@ export default function Header() {
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||
     pathname?.startsWith("/ai-explorer") ||
+    pathname?.startsWith("/courses") ||
     pathname === "/login" ||
     pathname === "/register";
 
@@ -181,8 +182,8 @@ export default function Header() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-default focus:bg-transparent">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  <span>Wallet: ₹{profile?.wallet_balance?.toFixed(2) || '0.00'}</span>
+                  <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">

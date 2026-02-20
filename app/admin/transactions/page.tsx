@@ -12,7 +12,7 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table"
-import { ArrowLeft, ArrowRight, DollarSign, Search } from "lucide-react"
+import { ArrowLeft, ArrowRight, DollarSign, Search, Plus } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
@@ -75,8 +75,8 @@ export default function TransactionsPage() {
                             Back
                         </Button>
                         <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-                            <DollarSign className="w-8 h-8 text-green-500" />
-                            Wallet Transactions
+                            <Plus className="w-8 h-8 text-emerald-500" />
+                            Credit Transactions
                         </h1>
                     </div>
                 </div>
@@ -140,7 +140,7 @@ export default function TransactionsPage() {
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell className={`font-bold ${transaction.type === 'credit' ? 'text-green-500' : 'text-red-500'}`}>
-                                                            {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount}
+                                                            {transaction.type === 'credit' ? '+' : '-'}{transaction.amount}
                                                         </TableCell>
                                                         <TableCell className="text-slate-300 max-w-md truncate" title={transaction.description}>
                                                             {transaction.description}
