@@ -124,7 +124,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                 : "bg-emerald-500/5 border-emerald-500/10 mr-auto max-w-[90%]"
                         )}>
                             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                                {m.role === 'user' ? 'You' : 'Gemini 3.1 Pro'}
+                                {m.role === 'user' ? 'You' : 'Groq Llama 3.1'}
                             </div>
                             <div className="text-white text-lg font-light leading-relaxed">
                                 {m.content}
@@ -134,7 +134,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                     {isLoading && (
                         <div className="flex flex-col gap-2 p-6 rounded-[2rem] border bg-emerald-500/5 border-emerald-500/10 mr-auto max-w-[90%] animate-pulse">
                             <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">
-                                Gemini is thinking...
+                                Groq is thinking...
                             </div>
                             <div className="h-4 w-48 bg-white/10 rounded-full" />
                         </div>
@@ -190,7 +190,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
 
                                 <button className="flex items-center bg-white/10 border border-white/5 rounded-full px-4 py-1.5 gap-2 hover:bg-white/20 transition-all group/btn">
                                     <Zap className="w-3 h-3 text-emerald-400 group-hover/btn:animate-pulse" />
-                                    <span className="text-[10px] font-bold text-slate-200 uppercase tracking-tight">Gemini 3.1 Pro</span>
+                                    <span className="text-[10px] font-bold text-slate-200 uppercase tracking-tight">Groq Llama 3.1</span>
                                 </button>
                             </div>
 

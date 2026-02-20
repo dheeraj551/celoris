@@ -1,76 +1,85 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, Tool, SchemaType } from '@google/generative-ai';
 import { createRouteClient } from '@/lib/supabase-server';
+import Groq from 'groq-sdk';
 
-const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey || '');
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY || '',
+});
 
-const tools: Tool[] = [
+const tools: any[] = [
     {
-        functionDeclarations: [
-            {
-                name: 'search_courses',
-                description: 'Search for educational courses available on the Celoris platform.',
-                parameters: {
-                    type: SchemaType.OBJECT,
-                    properties: {
-                        query: {
-                            type: SchemaType.STRING,
-                            description: 'The search query or keyword (e.g., "physics", "react", "class 10").',
-                        },
-                        limit: {
-                            type: SchemaType.NUMBER,
-                            description: 'Maximum number of results to return (default 5).',
-                        },
+        type: 'function',
+        function: {
+            name: 'search_courses',
+            description: 'Search for educational courses available on the Celoris platform.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    query: {
+                        type: 'string',
+                        description: 'The search query or keyword (e.g., "physics", "react", "class 10").',
                     },
-                    required: ['query'],
-                },
-            },
-            {
-                name: 'search_jobs',
-                description: 'Search for job openings and career opportunities.',
-                parameters: {
-                    type: SchemaType.OBJECT,
-                    properties: {
-                        query: {
-                            type: SchemaType.STRING,
-                            description: 'The job title, location, or skill (e.g., "software engineer", "mumbai").',
-                        },
-                        limit: {
-                            type: SchemaType.NUMBER,
-                            description: 'Maximum number of results to return (default 5).',
-                        },
+                    limit: {
+                        type: 'number',
+                        description: 'Maximum number of results to return (default 5).',
                     },
-                    required: ['query'],
                 },
+                required: ['query'],
             },
-            {
-                name: 'search_blog',
-                description: 'Search for articles, news, and tutorials on the Celoris blog.',
-                parameters: {
-                    type: SchemaType.OBJECT,
-                    properties: {
-                        query: {
-                            type: SchemaType.STRING,
-                            description: 'The topic or keyword (e.g., "ai trends", "how to study").',
-                        },
-                        limit: {
-                            type: SchemaType.NUMBER,
-                            description: 'Maximum number of results to return (default 5).',
-                        },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'search_jobs',
+            description: 'Search for job openings and career opportunities.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    query: {
+                        type: 'string',
+                        description: 'The job title, location, or skill (e.g., "software engineer", "mumbai").',
                     },
-                    required: ['query'],
+                    limit: {
+                        type: 'number',
+                        description: 'Maximum number of results to return (default 5).',
+                    },
                 },
+                required: ['query'],
             },
-            {
-                name: 'get_contact_info',
-                description: 'Get contact details for Celoris support and services.',
-                parameters: {
-                    type: SchemaType.OBJECT,
-                    properties: {},
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'search_blog',
+            description: 'Search for articles, news, and tutorials on the Celoris blog.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    query: {
+                        type: 'string',
+                        description: 'The topic or keyword (e.g., "ai trends", "how to study").',
+                    },
+                    limit: {
+                        type: 'number',
+                        description: 'Maximum number of results to return (default 5).',
+                    },
                 },
+                required: ['query'],
             },
-        ],
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'get_contact_info',
+            description: 'Get contact details for Celoris support and services.',
+            parameters: {
+                type: 'object',
+                properties: {},
+            },
+        },
     },
 ];
 
@@ -79,58 +88,57 @@ export async function POST(req: NextRequest) {
         const { messages } = await req.json();
         const supabase = createRouteClient();
 
-        if (!apiKey) {
-            return NextResponse.json({ error: "API Key not configured." }, { status: 500 });
+        if (!process.env.GROQ_API_KEY) {
+            return NextResponse.json({ error: "Groq API Key not configured." }, { status: 500 });
         }
 
-        const model = genAI.getGenerativeModel({
-            model: 'gemini-3-flash-preview',
+        // Format messages for Groq
+        const groqMessages = messages.map((m: any) => ({
+            role: m.role,
+            content: m.content,
+        }));
+
+        // Step 1: Tool detection
+        const completion = await groq.chat.completions.create({
+            model: "llama-3.1-70b-versatile",
+            messages: groqMessages,
             tools: tools,
+            tool_choice: "auto",
+            max_tokens: 1024,
         });
 
-        const chat = model.startChat({
-            history: messages.slice(0, -1).map((m: any) => ({
-                role: m.role === 'user' ? 'user' : 'model',
-                parts: [{ text: m.content }],
-            })),
-        });
+        const responseMessage = completion.choices[0].message;
+        const toolCalls = responseMessage.tool_calls;
 
-        const lastMessage = messages[messages.length - 1].content;
-
-        // Step 1: Check for tool calls first (non-streaming for tool detection is often more reliable)
-        const initialResult = await chat.sendMessage(initialUserPrompt(lastMessage));
-        const initialResponse = initialResult.response;
-        let call = initialResponse.candidates?.[0].content.parts.find((p) => p.functionCall);
-        let toolData = null;
-
-        if (call) {
-            const { name, args } = call.functionCall!;
-            const functionArgs = args as any;
+        if (toolCalls && toolCalls.length > 0) {
+            const toolCall = toolCalls[0]; // Take the first one for now
+            const { name } = toolCall.function;
+            const args = JSON.parse(toolCall.function.arguments);
             let functionResponse: any;
 
             if (name === 'search_courses') {
                 const { data } = await supabase
                     .from('courses')
                     .select('*')
-                    .ilike('title', `%${functionArgs.query}%`)
+                    .ilike('title', `%${args.query}%`)
                     .eq('is_published', true)
-                    .limit(functionArgs.limit || 5);
+                    .limit(args.limit || 5);
                 functionResponse = data;
             } else if (name === 'search_jobs') {
                 const { data } = await supabase
                     .from('jobs')
                     .select('*')
-                    .ilike('title', `%${functionArgs.query}%`)
+                    .ilike('title', `%${args.query}%`)
                     .eq('is_published', true)
-                    .limit(functionArgs.limit || 5);
+                    .limit(args.limit || 5);
                 functionResponse = data;
             } else if (name === 'search_blog') {
                 const { data } = await supabase
                     .from('blog_posts')
                     .select('*')
-                    .ilike('title', `%${functionArgs.query}%`)
+                    .ilike('title', `%${args.query}%`)
                     .eq('is_published', true)
-                    .limit(functionArgs.limit || 5);
+                    .limit(args.limit || 5);
                 functionResponse = data;
             } else if (name === 'get_contact_info') {
                 functionResponse = {
@@ -141,35 +149,41 @@ export async function POST(req: NextRequest) {
                 };
             }
 
-            toolData = { type: name, results: functionResponse };
+            const toolData = { type: name, results: functionResponse };
 
-            // Start streaming the FINAL response after tool execution
-            const streamingResult = await chat.sendMessageStream([
+            // Step 2: Final response with tool results (Streaming)
+            const secondResponseMessages = [
+                ...groqMessages,
+                responseMessage,
                 {
-                    functionResponse: {
-                        name,
-                        response: { content: functionResponse },
-                    },
-                },
-            ]);
+                    tool_call_id: toolCall.id,
+                    role: "tool",
+                    name: name,
+                    content: JSON.stringify(functionResponse),
+                }
+            ];
 
-            return createStreamResponse(streamingResult.stream, toolData);
+            const stream = await groq.chat.completions.create({
+                model: "llama-3.1-70b-versatile",
+                messages: secondResponseMessages,
+                stream: true,
+            });
+
+            return createStreamResponse(stream, toolData);
         } else {
-            // No tool call, just stream the response directly
-            // We need to re-send or use the result we already got?
-            // To maintain speed, we'll start a fresh stream for the message.
-            const streamingResult = await chat.sendMessageStream(lastMessage);
-            return createStreamResponse(streamingResult.stream, null);
+            // No tool call, just stream directly
+            const stream = await groq.chat.completions.create({
+                model: "llama-3.1-70b-versatile",
+                messages: groqMessages,
+                stream: true,
+            });
+            return createStreamResponse(stream, null);
         }
 
     } catch (error: any) {
-        console.error('Gemini Stream Error:', error);
+        console.error('Groq Error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
-}
-
-function initialUserPrompt(msg: string) {
-    return msg;
 }
 
 function createStreamResponse(stream: any, toolData: any) {
@@ -177,7 +191,6 @@ function createStreamResponse(stream: any, toolData: any) {
 
     const readableStream = new ReadableStream({
         async start(controller) {
-            // If we have tool data, send it as the first item
             if (toolData) {
                 const dataStr = `__DATA__${JSON.stringify(toolData)}__END_DATA__\n`;
                 controller.enqueue(encoder.encode(dataStr));
@@ -185,9 +198,9 @@ function createStreamResponse(stream: any, toolData: any) {
 
             try {
                 for await (const chunk of stream) {
-                    const chunkText = chunk.text();
-                    if (chunkText) {
-                        controller.enqueue(encoder.encode(chunkText));
+                    const content = chunk.choices[0]?.delta?.content || "";
+                    if (content) {
+                        controller.enqueue(encoder.encode(content));
                     }
                 }
             } catch (err) {

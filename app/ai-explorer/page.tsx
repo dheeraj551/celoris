@@ -263,7 +263,7 @@ export default function AIExplorerPage() {
                                         {renderData(msg.data)}
                                     </div>
                                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2 px-1">
-                                        {msg.role === 'assistant' ? 'Gemini 3.1 Pro' : 'You'}
+                                        {msg.role === 'assistant' ? 'Groq Llama 3.1' : 'You'}
                                     </span>
                                 </div>
                             </motion.div>
