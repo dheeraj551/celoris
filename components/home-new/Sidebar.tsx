@@ -13,7 +13,8 @@ import {
     FolderOpen,
     Zap,
     ChevronRight,
-    Search
+    Search,
+    MessageCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -24,7 +25,7 @@ const MENU_GROUPS = [
         title: "Creation",
         items: [
             { name: "Video generator", icon: Video, href: "/ai-explorer" },
-            { name: "Image studio", icon: ImageIcon, href: "/ai-explorer" },
+            { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
             { name: "Inspiration", icon: Lightbulb, href: "/blog" },
             { name: "Avatars and voices", icon: UserCircle, href: "/social" },
         ]
@@ -144,16 +145,21 @@ export function Sidebar() {
                 ))}
             </div>
 
-            <div className="p-4">
-                <div className="bg-emerald-500/5 rounded-2xl p-4 border border-emerald-500/10 relative overflow-hidden group">
-                    <div className="relative z-10">
-                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-tight mb-2">Unlock all AI features</p>
-                        <p className="text-xs font-medium text-slate-400 mb-4">Trending templates free for 7 days</p>
-                        <button className="w-full py-2 bg-white/10 text-white text-xs font-bold rounded-xl shadow-sm border border-emerald-500/20 hover:bg-white/20 transition-colors">
-                            Try for ₹0
-                        </button>
+            <div className="px-6 mb-8 mt-auto">
+                <a
+                    href="https://wa.me/919643579101"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1e1f20] border border-white/5 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-[#282a2d] transition-all group/wa shadow-xl"
+                >
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover/wa:scale-110 group-hover/wa:bg-emerald-500/20 transition-all">
+                        <MessageCircle className="w-4 h-4 text-emerald-500" />
                     </div>
-                </div>
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest leading-none mb-1">Get support</p>
+                        <p className="text-xs font-medium text-slate-500 group-hover/wa:text-slate-400 transition-colors">WhatsApp Contact</p>
+                    </div>
+                </a>
             </div>
         </aside>
     );
