@@ -128,7 +128,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                 <div className="text-center mb-16 pt-10 relative">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
                     <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-6">
-                        Welcome to Celoris <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Designs</span>
+                        India's Free Creative <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Studio</span>
                     </h1>
                 </div>
             )}

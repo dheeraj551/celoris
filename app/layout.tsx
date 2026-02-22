@@ -13,8 +13,8 @@ const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
-  description: "Celoris is a premier AI-powered ecosystem for digital transformation. Explore elite AI courses, high-impact career opportunities, and productivity tools in one unified platform.",
+  title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+  description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
   keywords: [
     "Celoris",
     "AI ecosystem",
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://www.celorisdesigns.com",
-    title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
-    description: "Celoris is a premier AI-powered ecosystem for digital transformation. Explore elite AI courses, high-impact career opportunities, and productivity tools in one unified platform.",
+    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
     siteName: "Celoris Platform",
     images: [
       {
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Celoris AI-Powered Ecosystem | Digital Transformation & Elite Learning",
-    description: "Celoris is a premier AI-powered ecosystem for digital transformation. Explore elite AI courses, high-impact career opportunities, and productivity tools in one unified platform.",
+    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
     images: ["/og-image.jpg"],
     creator: "@celoris",
   },
@@ -130,7 +130,7 @@ export default function RootLayout({
                 "width": "512",
                 "height": "512"
               },
-              "description": "Celoris is a premier AI-powered ecosystem for digital transformation, offering elite AI training, career opportunities, and productivity software.",
+              "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
               "address": {
                 "@type": "PostalAddress",
                 "addressCountry": "IN"
@@ -160,7 +160,7 @@ export default function RootLayout({
               "@id": "https://www.celorisdesigns.com/#website",
               "name": "Celoris",
               "url": "https://www.celorisdesigns.com",
-              "description": "Celoris AI-Powered Ecosystem - Learn, Earn, Play & Apps",
+              "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
               "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
               "potentialAction": {
                 "@type": "SearchAction",

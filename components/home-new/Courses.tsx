@@ -168,8 +168,8 @@ export const Courses: React.FC<any> = ({
                 .limit(limit);
 
             if (data && data.length > 0) {
-                const testCourseTitles = ['Agentic AI for Beginners: From Prompts to Action', 'Mastering Nano Banana Pro', 'My new ai course will be here'];
-                const filteredDbCourses = data.filter(c => !testCourseTitles.includes(c.title));
+                const testCourseTitles = ['agentic ai for beginners: from prompts to action', 'mastering nano banana pro', 'my new ai course will be here'];
+                const filteredDbCourses = data.filter(c => !testCourseTitles.includes((c.title || '').toLowerCase()));
                 const combined = [...staticCourses, ...filteredDbCourses].slice(0, limit);
                 setCourses(combined);
             } else {
