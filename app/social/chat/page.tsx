@@ -252,21 +252,7 @@ export default function ChatLobbyPage() {
                     ))}
                 </motion.div>
 
-                {/* Sponsored Content / Ad */}
-                <motion.section
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 0.8 }}
-                    className="max-w-4xl mx-auto"
-                >
-                    <div className="bg-[#0d1321]/40 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl shadow-2xl">
-                        <div className="flex items-center gap-3 mb-8">
-                            <Sparkles size={16} className="text-emerald-500" />
-                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Sponsored Feed</h3>
-                        </div>
-                        <AdUnit slot="9266909448" />
-                    </div>
-                </motion.section>
+
             </main>
         </PageWrapper>
     )

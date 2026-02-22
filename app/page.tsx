@@ -13,9 +13,13 @@ export default async function HomePage() {
     .order('created_at', { ascending: false })
     .limit(12);
 
+  const filteredCourses = (dbCourses || []).filter(course =>
+    !['My new ai course will be here', 'Agentic AI for Beginners: From Prompts to Action', 'Mastering Nano Banana Pro'].includes(course.title)
+  );
+
   return (
     <DashboardShell>
-      <DashboardContent courses={dbCourses || []} />
+      <DashboardContent courses={filteredCourses} />
     </DashboardShell>
   )
 }

@@ -61,6 +61,7 @@ export default function Header() {
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||
     pathname?.startsWith("/ai-explorer") ||
+    pathname?.startsWith("/video-studio") ||
     pathname?.startsWith("/image-studio") ||
     pathname?.startsWith("/courses") ||
     pathname === "/login" ||
@@ -84,6 +85,8 @@ export default function Header() {
     pathname === "/social" ||
     pathname === "/apps" ||
     pathname === "/ai-explorer" ||
+    pathname === "/video-studio" ||
+    pathname === "/image-studio" ||
     pathname?.startsWith("/blog") ||
     pathname?.startsWith("/courses/")
 

@@ -171,13 +171,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
         </div>
       </section>
 
-      <section className="py-12 relative z-10">
-        <div className="container">
-          <div className="bg-[#0d1321]/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] overflow-hidden">
-            <AdUnit slot="9266909448" />
-          </div>
-        </div>
-      </section>
+
 
       <InterviewRooms />
 

@@ -713,12 +713,7 @@ export default function PublicRoomPage() {
                             </div>
                         )}
 
-                        {/* Ad Module */}
-                        {!isPrivate && (
-                            <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-white/10 to-transparent">
-                                <AdUnit slot="9266909448" className="m-0 rounded-[2.4rem] overflow-hidden" />
-                            </div>
-                        )}
+
 
                         {/* Private Chat Stream */}
                         {isPrivate && (

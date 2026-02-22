@@ -30,6 +30,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     const [timeLeft, setTimeLeft] = React.useState({ h: 12, m: 45, s: 20 });
 
     React.useEffect(() => {
+        // Simple logic to make it look persistent for the session or at least not reset to EXACT same value
+        const now = new Date();
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const diff = endOfDay.getTime() - now.getTime();
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setTimeLeft({ h, m, s });
+
         const timer = setInterval(() => {
             setTimeLeft(prev => {
                 let { h, m, s } = prev;
@@ -59,7 +71,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <div className="container mx-auto px-6 flex items-center justify-center gap-4 text-[11px] font-medium text-emerald-400">
                         <span className="bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px]">Limited-time offer</span>
                         <span>Celoris 3.0 is live. Save 60% on our Starter Yearly plan.</span>
-                        <button className="underline font-bold">Claim offer</button>
+                        <Link href="/register">
+                            <button className="underline font-bold">Claim offer</button>
+                        </Link>
                         <div className="h-4 w-px bg-white/10" />
                         <span>Offer ends in {timeLeft.h.toString().padStart(2, '0')}h : {timeLeft.m.toString().padStart(2, '0')}m : {timeLeft.s.toString().padStart(2, '0')}s</span>
                     </div>
@@ -67,12 +81,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
                 {/* Top Navigation / Dashboard Header */}
                 <header className="h-16 px-8 flex items-center justify-end gap-6 border-b border-white/5 sticky top-0 bg-[#050810]/80 backdrop-blur-md z-30">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-bold text-emerald-400">
-                            <Plus className="w-3 h-3" />
-                            {profile?.wallet_balance?.toString() || '0'} Credits
+                    {user && (
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-bold text-emerald-400">
+                                <Plus className="w-3 h-3" />
+                                {profile?.wallet_balance?.toString() || '0'} Credits
+                            </div>
                         </div>
-                    </div>
+                    )}
                     <div className="flex items-center gap-4">
 
                         {loading ? (
