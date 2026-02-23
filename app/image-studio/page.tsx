@@ -29,7 +29,8 @@ import {
     Maximize2,
     ChevronLeft,
     ChevronRight,
-    AlignLeft
+    AlignLeft,
+    Trash2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -58,6 +59,35 @@ const TEMPLATES = [
 export default function ImageStudio() {
     const [activeTab, setActiveTab] = useState('templates');
     const [zoom, setZoom] = useState(68);
+    const [uploads, setUploads] = useState<string[]>([]);
+    const [canvasImage, setCanvasImage] = useState<string | null>(null);
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const result = event.target?.result as string;
+                setUploads(prev => [result, ...prev]);
+                setCanvasImage(result);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = ''; // Reset input to allow uploading the same file again
+        }
+    };
+
+    const handleDeleteUpload = (e: React.MouseEvent, index: number) => {
+        e.stopPropagation();
+        setUploads(prev => {
+            const newUploads = [...prev];
+            const deletedUrl = newUploads[index];
+            newUploads.splice(index, 1);
+            if (canvasImage === deletedUrl) {
+                setCanvasImage(null);
+            }
+            return newUploads;
+        });
+    };
 
     return (
         <div className="h-screen w-full bg-[#f3f4f6] text-slate-800 flex font-sans overflow-hidden">
@@ -74,8 +104,8 @@ export default function ImageStudio() {
                             key={item.id}
                             onClick={() => setActiveTab(item.id)}
                             className={`w-full py-3 flex flex-col items-center gap-1.5 transition-colors relative ${activeTab === item.id
-                                    ? 'text-white'
-                                    : 'text-[#888888] hover:text-white'
+                                ? 'text-white'
+                                : 'text-[#888888] hover:text-white'
                                 }`}
                         >
                             {activeTab === item.id && (
@@ -93,63 +123,97 @@ export default function ImageStudio() {
 
             {/* Secondary Panel (Dark Grey) */}
             <div className="w-[320px] bg-[#1a1a1a] flex flex-col shrink-0 z-10 border-r border-[#2a2a2a]">
-                <div className="p-4 flex flex-col gap-4">
-                    {/* Search Bar */}
-                    <div className="relative flex items-center">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-                        <input
-                            type="text"
-                            placeholder="Search templates..."
-                            className="w-full bg-[#252525] text-white text-sm rounded-lg pl-9 pr-10 py-2.5 outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-slate-500"
-                        />
-                        <button className="absolute right-3">
-                            <SlidersHorizontal className="w-4 h-4 text-slate-400 hover:text-white" />
-                        </button>
-                    </div>
+                {activeTab === 'templates' ? (
+                    <>
+                        <div className="p-4 flex flex-col gap-4">
+                            {/* Search Bar */}
+                            <div className="relative flex items-center">
+                                <Search className="w-4 h-4 text-slate-400 absolute left-3" />
+                                <input
+                                    type="text"
+                                    placeholder="Search templates..."
+                                    className="w-full bg-[#252525] text-white text-sm rounded-lg pl-9 pr-10 py-2.5 outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-slate-500"
+                                />
+                                <button className="absolute right-3">
+                                    <SlidersHorizontal className="w-4 h-4 text-slate-400 hover:text-white" />
+                                </button>
+                            </div>
 
-                    {/* Pills */}
-                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                        <button className="whitespace-nowrap bg-[#252525] hover:bg-[#333333] text-slate-300 text-xs px-3 py-1.5 rounded-full transition-colors flex items-center gap-2">
-                            <span>Father's Day</span>
-                        </button>
-                        <button className="whitespace-nowrap bg-[#252525] hover:bg-[#333333] text-slate-300 text-xs px-3 py-1.5 rounded-full transition-colors flex items-center gap-2">
-                            <span className="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
-                            <span>Wallpaper</span>
-                        </button>
-                    </div>
+                            {/* Pills */}
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                                <button className="whitespace-nowrap bg-[#252525] hover:bg-[#333333] text-slate-300 text-xs px-3 py-1.5 rounded-full transition-colors flex items-center gap-2">
+                                    <span>Father's Day</span>
+                                </button>
+                                <button className="whitespace-nowrap bg-[#252525] hover:bg-[#333333] text-slate-300 text-xs px-3 py-1.5 rounded-full transition-colors flex items-center gap-2">
+                                    <span className="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                                    <span>Wallpaper</span>
+                                </button>
+                            </div>
 
-                    {/* Promo Card */}
-                    <div className="bg-gradient-to-br from-[#2a1a3a] to-[#1a1f3a] p-4 rounded-xl border border-white/5 relative overflow-hidden group cursor-pointer">
-                        <div className="absolute top-2 right-2 text-white/50 hover:text-white">×</div>
-                        <h4 className="text-white text-sm font-bold mb-1">Text to design</h4>
-                        <p className="text-slate-400 text-xs mb-3 pr-4 leading-relaxed">Generate personalized design from your prompts and text.</p>
-                        <button className="w-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 rounded-lg transition-colors">
-                            Try now →
-                        </button>
-                    </div>
-                </div>
-
-                {/* Grid */}
-                <div className="flex-1 overflow-y-auto p-4 pt-0 custom-scrollbar-dark grid grid-cols-2 gap-3 auto-rows-max">
-                    <div className="col-span-2 flex items-center justify-between mt-2 mb-1">
-                        <span className="text-white text-sm font-bold">Current size</span>
-                        <ChevronDown className="w-4 h-4 text-slate-400" />
-                    </div>
-
-                    {TEMPLATES.map((t) => (
-                        <div key={t.id} className="aspect-[4/5] bg-[#252525] rounded-xl overflow-hidden cursor-pointer group relative border border-transparent hover:border-blue-500 transition-colors">
-                            <img src={t.image} alt="Template" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span className="text-white text-xs font-bold bg-blue-600 px-3 py-1.5 rounded-full">Apply</span>
+                            {/* Promo Card */}
+                            <div className="bg-gradient-to-br from-[#2a1a3a] to-[#1a1f3a] p-4 rounded-xl border border-white/5 relative overflow-hidden group cursor-pointer">
+                                <div className="absolute top-2 right-2 text-white/50 hover:text-white">×</div>
+                                <h4 className="text-white text-sm font-bold mb-1">Text to design</h4>
+                                <p className="text-slate-400 text-xs mb-3 pr-4 leading-relaxed">Generate personalized design from your prompts and text.</p>
+                                <button className="w-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+                                    Try now →
+                                </button>
                             </div>
                         </div>
-                    ))}
-                    {TEMPLATES.map((t) => (
-                        <div key={`${t.id}-dup`} className="aspect-square bg-[#252525] rounded-xl overflow-hidden cursor-pointer group relative border border-transparent hover:border-blue-500 transition-colors">
-                            <img src={t.image} alt="Template" className="w-full h-full object-cover" />
+
+                        {/* Grid */}
+                        <div className="flex-1 overflow-y-auto p-4 pt-0 custom-scrollbar-dark grid grid-cols-2 gap-3 auto-rows-max">
+                            <div className="col-span-2 flex items-center justify-between mt-2 mb-1">
+                                <span className="text-white text-sm font-bold">Current size</span>
+                                <ChevronDown className="w-4 h-4 text-slate-400" />
+                            </div>
+
+                            {TEMPLATES.map((t) => (
+                                <div key={t.id} onClick={() => setCanvasImage(t.image)} className="aspect-[4/5] bg-[#252525] rounded-xl overflow-hidden cursor-pointer group relative border border-transparent hover:border-blue-500 transition-colors">
+                                    <img src={t.image} alt="Template" className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span className="text-white text-xs font-bold bg-blue-600 px-3 py-1.5 rounded-full">Apply</span>
+                                    </div>
+                                </div>
+                            ))}
+                            {TEMPLATES.map((t) => (
+                                <div key={`${t.id}-dup`} onClick={() => setCanvasImage(t.image)} className="aspect-square bg-[#252525] rounded-xl overflow-hidden cursor-pointer group relative border border-transparent hover:border-blue-500 transition-colors">
+                                    <img src={t.image} alt="Template" className="w-full h-full object-cover" />
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </>
+                ) : activeTab === 'uploads' ? (
+                    <div className="p-4 flex flex-col h-full gap-4">
+                        <div className="bg-[#252525] p-6 rounded-xl border border-dashed border-slate-600 flex flex-col items-center justify-center text-center">
+                            <UploadCloud className="w-8 h-8 text-slate-400 mb-3" />
+                            <h4 className="text-white text-sm font-bold mb-1">Upload files</h4>
+                            <p className="text-slate-400 text-xs mb-4">Click to browse your device</p>
+                            <label className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer w-full text-center inline-block">
+                                Upload Media
+                                <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                            </label>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar-dark grid grid-cols-2 gap-3 auto-rows-max content-start">
+                            {uploads.map((url, i) => (
+                                <div key={i} onClick={() => setCanvasImage(url)} className="aspect-square bg-[#252525] rounded-xl overflow-hidden cursor-pointer group relative border border-transparent hover:border-blue-500 transition-colors">
+                                    <img src={url} alt="Upload" className="w-full h-full object-cover" />
+                                    <button
+                                        onClick={(e) => handleDeleteUpload(e, i)}
+                                        className="absolute top-2 right-2 bg-black/60 p-1.5 rounded-md hover:bg-rose-600 transition-colors opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                                    >
+                                        <Trash2 className="w-4 h-4 text-white" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="p-4 flex items-center justify-center h-full text-slate-500 text-sm">
+                        {SIDEBAR_ITEMS.find(item => item.id === activeTab)?.label} coming soon...
+                    </div>
+                )}
             </div>
 
             {/* Main Content Area */}
@@ -246,7 +310,7 @@ export default function ImageStudio() {
 
                         {/* White Canvas Paper */}
                         <div
-                            className="bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-transform duration-200 ease-out"
+                            className="bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] transition-transform duration-200 ease-out relative overflow-hidden"
                             style={{
                                 width: '800px',
                                 height: '600px',
@@ -254,7 +318,13 @@ export default function ImageStudio() {
                                 transformOrigin: 'center center'
                             }}
                         >
-                            {/* Empty Canvas - Ready for design */}
+                            {canvasImage ? (
+                                <img src={canvasImage} alt="Canvas content" className="w-full h-full object-contain" />
+                            ) : (
+                                <div className="flex items-center justify-center w-full h-full text-slate-300">
+                                    Empty Canvas - Ready for design
+                                </div>
+                            )}
                         </div>
 
                         {/* Floating Context Menu (Right of canvas) */}

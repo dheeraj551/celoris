@@ -7,7 +7,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider"
 import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
-import { AdUnit } from "@/components/AdUnit"
+import { GlobalAd } from "@/components/GlobalAd"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -180,7 +180,7 @@ export default function RootLayout({
                 <main className="flex-1">
                   {children}
                 </main>
-                <AdUnit slot="6910734069" format="horizontal" className="mb-4" />
+                <GlobalAd />
                 <Footer />
               </div>
             </PresenceProvider>

@@ -26,7 +26,7 @@ const MENU_GROUPS = [
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
-            { name: "Inspiration", icon: Lightbulb, href: "/blog" },
+            { name: "Blog", icon: Lightbulb, href: "/blog" },
             { name: "Avatars and voices", icon: UserCircle, href: "/social" },
         ]
     },

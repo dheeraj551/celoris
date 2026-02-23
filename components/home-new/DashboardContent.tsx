@@ -400,7 +400,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {feedTab === 'trending' ? (
-                        (courses || [1, 2, 3, 4, 5, 6]).map((item: any, i) => (
+                        ((courses && courses.length > 0) ? courses : [1, 2, 3, 4, 5, 6]).map((item: any, i) => (
                             <div key={i} className="aspect-[3/4] bg-white/5 rounded-2xl overflow-hidden relative group cursor-pointer border border-white/5 shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 transition-all">
                                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col justify-end p-3">
                                     <p className="text-[10px] text-white font-bold mb-1 truncate">{item.title || "AI Generated Marvel"}</p>
