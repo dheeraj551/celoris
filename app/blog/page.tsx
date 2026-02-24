@@ -21,6 +21,17 @@ export default async function BlogPage() {
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'create-professional-videos-free',
+      title: 'How to Create Professional Videos Without Expensive Software in 2025',
+      slug: 'create-professional-videos-free',
+      excerpt: "The complete guide for Indian students, creators and small businesses who refuse to pay ₹3,500/month for Adobe.",
+      featured_image_url: '/blog-create-videos-free.png',
+      author_name: 'Celoris',
+      category: 'Tutorials',
+      reading_time: 5,
+      published_at: '2026-02-24T12:00:00Z',
+    },
+    {
       id: 'best-free-video-editor-india',
       title: 'Best Free Video Editing and AI Tools for Indian Creators in 2025',
       slug: 'best-free-video-editor-india',

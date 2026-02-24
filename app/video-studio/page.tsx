@@ -39,6 +39,8 @@ import {
     Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from "@/components/providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const SIDEBAR_ITEMS = [
     { id: 'media', icon: Video, label: 'Media' },
@@ -69,6 +71,22 @@ export default function VideoStudio() {
     const [zoom, setZoom] = useState(100);
     const [currentTime, setCurrentTime] = useState('00:00:00');
     const [duration] = useState('00:00:00');
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
+
+    if (authLoading || !user) {
+        return (
+            <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-[#00c4cc]/20 border-t-[#00c4cc] rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="h-screen w-full bg-[#f8f9fa] text-slate-800 flex font-sans overflow-hidden">

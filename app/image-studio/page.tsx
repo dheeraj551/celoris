@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     LayoutTemplate,
     Palette,
@@ -33,6 +33,8 @@ import {
     Trash2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from "@/components/providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const SIDEBAR_ITEMS = [
     { id: 'templates', icon: LayoutTemplate, label: 'Templates' },
@@ -88,6 +90,23 @@ export default function ImageStudio() {
             return newUploads;
         });
     };
+
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
+
+    if (authLoading || !user) {
+        return (
+            <div className="min-h-screen bg-[#f3f4f6] flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="h-screen w-full bg-[#f3f4f6] text-slate-800 flex font-sans overflow-hidden">
