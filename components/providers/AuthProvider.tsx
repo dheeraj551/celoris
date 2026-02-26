@@ -36,16 +36,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         let mounted = true
 
         // Check active session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!mounted) return
-            setSession(session)
-            setUser(session?.user ?? null)
-            if (session?.user) {
-                fetchProfile(session.user.id)
-            } else {
-                setLoading(false)
-            }
-        })
+        supabase.auth.getSession()
+            .then(({ data: { session } }) => {
+                if (!mounted) return
+                setSession(session)
+                setUser(session?.user ?? null)
+                if (session?.user) {
+                    fetchProfile(session.user.id)
+                } else {
+                    setLoading(false)
+                }
+            })
+            .catch((error) => {
+                console.error("Error getting session:", error)
+                if (mounted) setLoading(false)
+            })
 
         const {
             data: { subscription },

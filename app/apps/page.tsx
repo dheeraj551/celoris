@@ -230,8 +230,8 @@ export default function AppsPage() {
                         ))}
                       </div>
                       <Button className="w-full bg-[#0d1321] hover:bg-blue-600 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg shadow-black/5" asChild>
-                        <Link href={`/apps/${app.id}`}>
-                          Initialize Node
+                        <Link href={app.id === 1 ? "/video-studio" : app.id === 2 ? "/image-studio" : `/apps/${app.id}`}>
+                          Open Studio
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>

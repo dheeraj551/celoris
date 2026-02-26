@@ -244,27 +244,27 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                 <h2 className="text-xl font-bold text-white tracking-tight mb-6">You might want to try</h2>
                 <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                     {/* Item 1 */}
-                    <button className="flex-shrink-0 w-[400px] h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-8 rounded-[2rem] transition-all relative overflow-hidden group flex items-center justify-between">
-                        <span className="text-2xl font-bold text-white">New video</span>
+                    <Link href="/video-studio" className="flex-shrink-0 w-[400px] h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-8 rounded-[2rem] transition-all relative overflow-hidden group flex items-center justify-between">
+                        <span className="text-2xl font-bold text-white">Video Studio</span>
                         <div className="relative w-48 h-full flex items-center justify-center translate-x-4">
                             <img
                                 src="/images/homepage/new-video-cta-transparent.png"
                                 className="w-full h-full object-contain scale-150 group-hover:scale-[1.6] transition-transform duration-500"
-                                alt="New video icon"
+                                alt="Video Studio icon"
                             />
                         </div>
-                    </button>
+                    </Link>
 
                     {/* Item 2 */}
-                    <button className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
+                    <Link href="/image-studio" className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
                         <div className="flex-1 text-left">
                             <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-2 uppercase tracking-tight">New</span>
                             <div className="mt-1">
                                 <span className="text-base font-bold text-white block leading-tight">
-                                    Free AI Video
+                                    Image Studio
                                 </span>
                                 <span className="text-base font-bold text-white block leading-tight">
-                                    Creation Tool
+                                    Creative Engine
                                     <Sparkles className="w-3 h-3 text-rose-500 inline-block ml-1" />
                                 </span>
                             </div>
@@ -273,10 +273,10 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                             <img
                                 src="/images/homepage/ai-video-tool-transparent.png"
                                 className="w-full h-full object-contain scale-[1.4] group-hover:scale-[1.5] transition-transform duration-500"
-                                alt="AI Video Tool"
+                                alt="Image Studio"
                             />
                         </div>
-                    </button>
+                    </Link>
 
                     {/* Item 3 */}
                     <button className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
