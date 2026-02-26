@@ -170,7 +170,7 @@ export default function Canvas({
         >
           <video
             ref={videoRef}
-            src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             className="w-full h-full object-cover pointer-events-none select-none"
             onTimeUpdate={handleTimeUpdate}
             muted
