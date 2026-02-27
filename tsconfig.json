@@ -37,6 +37,8 @@
   ],
   "exclude": [
     "node_modules",
-    "mobile"
+    "mobile",
+    "video-editor-web",
+    "image-editor-ui"
   ]
 }
