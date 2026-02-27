@@ -459,7 +459,7 @@ export default function YogaMasteryCourse2025() {
                                         <div className="text-center mb-10">
                                             <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 block italic">Protocol Access Cost</span>
                                             <div className="text-5xl font-black text-white mb-2 tracking-tighter italic">
-                                                ₹{courseData.price}
+                                                
                                             </div>
                                             <div className="text-emerald-400 font-black tracking-[0.2em] uppercase text-[10px] italic bg-emerald-500/10 py-2 rounded-full border border-emerald-500/20">Full Lifetime Sync</div>
                                         </div>

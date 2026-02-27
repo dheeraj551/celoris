@@ -17,7 +17,7 @@ export default function AgenticAICybersecurityCourse() {
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Build Agentic Systems for cybersecurity. Learn to reduce Tier 1 burnout by delegating triage, investigation, and remediation to specialized AI agents.";
+        const descriptionText = "Build Agentic Systems for cybersecurity. Learn to reduce Tier 1 burnout by delegating triage, investigation, and remediation to specialized AI agents. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -790,9 +790,7 @@ export default function AgenticAICybersecurityCourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-cyan-400 font-bold tracking-widest uppercase text-xs">Full Lifetime Access</div>
                                         </div>
 

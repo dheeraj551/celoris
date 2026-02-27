@@ -13,11 +13,11 @@ import TestimonialsDisplay from "@/components/TestimonialsDisplay"
 export default function SovereignIntelligenceCourse() {
     // Set page title and meta tags dynamically
     useEffect(() => {
-        document.title = "Sovereign Intelligence: Building Your Private, Local, & Uncensored AI Knowledge Base";
+        document.title = "Learn AI Basics Free: Build Your Private AI Knowledge Base";
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Master the art of local AI. Build your own private, air-gapped knowledge base using Ollama, PrivateGPT, and RAG. Escape the cloud and claim your digital sovereignty.";
+        const descriptionText = "Learn the basics of AI. Build your own private knowledge base using simple tools like Ollama and PrivateGPT. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -29,9 +29,9 @@ export default function SovereignIntelligenceCourse() {
     }, []);
 
     const courseData = {
-        title: "Sovereign Intelligence",
-        subtitle: "Building Your Private, Local, & Uncensored AI Knowledge Base",
-        description: "Escape the cloud. This course teaches you how to deploy enterprise-grade AI on your own hardware. From air-gapped RAG systems to uncensored research models, learn to build a knowledge base that is 100% private, 100% yours, and 100% sovereign.",
+        title: "Learn AI Basics Free",
+        subtitle: "Build Your Private and Simple AI Knowledge Base",
+        description: "Learn how to use AI on your own computer. Use AI for your personal notes and documents without needing the cloud. This course is perfect for beginners who want to start their AI journey for free.",
         students: 850,
         rating: 4.98,
         duration: "6 Weeks (Intensive)",
@@ -674,7 +674,7 @@ export default function SovereignIntelligenceCourse() {
                                 <div className="p-2 bg-emerald-500/20 rounded-lg">
                                     <CheckCircle className="h-6 w-6 text-emerald-400" />
                                 </div>
-                                Mastery Framework
+                                What You'll Learn
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {courseData.learning_outcomes.map((item, index) => (
@@ -694,7 +694,7 @@ export default function SovereignIntelligenceCourse() {
                                 <div className="p-2 bg-purple-500/20 rounded-lg">
                                     <BookOpen className="h-6 w-6 text-purple-400" />
                                 </div>
-                                Curriculum Architecture
+                                Course Content
                             </h2>
                             <Accordion type="single" collapsible className="space-y-4">
                                 {courseData.chapters.map((chapter, index) => {
@@ -759,7 +759,7 @@ export default function SovereignIntelligenceCourse() {
                                 <div className="p-2 bg-green-500/20 rounded-lg">
                                     <Cpu className="h-6 w-6 text-green-400" />
                                 </div>
-                                The Sovereign Stack
+                                Tools You'll Use
                             </h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {[
@@ -782,7 +782,7 @@ export default function SovereignIntelligenceCourse() {
                                 <div className="p-2 bg-blue-500/20 rounded-lg">
                                     <Globe className="h-6 w-6 text-blue-400" />
                                 </div>
-                                Deliverables (Project Labs)
+                                Hands-on Projects
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {courseData.projects.map((item, index) => {
@@ -886,9 +886,7 @@ export default function SovereignIntelligenceCourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-emerald-400 font-bold tracking-widest uppercase text-xs">Full Lifetime System Access</div>
                                         </div>
 

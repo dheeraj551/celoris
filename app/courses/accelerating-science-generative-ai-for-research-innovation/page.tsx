@@ -17,7 +17,7 @@ export default function AcceleratingScienceCourse() {
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Equip scientists and research engineers with tactical skills to integrate advanced AI agents into the scientific method. From literature review to experiment automation.";
+        const descriptionText = "Equip scientists and research engineers with tactical skills to integrate advanced AI agents into the scientific method. From literature review to experiment automation. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -870,9 +870,7 @@ export default function AcceleratingScienceCourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-emerald-400 font-bold tracking-widest uppercase text-xs">Full 8-Week Access</div>
                                         </div>
 

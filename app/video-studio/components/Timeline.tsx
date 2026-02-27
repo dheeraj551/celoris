@@ -1,15 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Scissors, Trash2, SplitSquareVertical, Volume2, Maximize, Plus, Minus, Type, Music } from 'lucide-react';
 
-interface Clip {
-  id: string;
-  type: 'text' | 'video' | 'audio';
-  start: number; // in seconds
-  end: number; // in seconds
-  content: string;
-  color: string;
-  trackIndex: number;
-}
+import { Clip } from '../page';
 
 interface TimelineProps {
   isPlaying: boolean;
@@ -18,27 +10,37 @@ interface TimelineProps {
   setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
   duration: number;
   setDuration: React.Dispatch<React.SetStateAction<number>>;
+  videoName?: string;
+  clips: Clip[];
+  setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
 }
 
-export default function Timeline({ 
-  isPlaying, 
-  setIsPlaying, 
-  currentTime, 
-  setCurrentTime, 
-  duration, 
-  setDuration 
+export default function Timeline({
+  isPlaying,
+  setIsPlaying,
+  currentTime,
+  setCurrentTime,
+  duration,
+  setDuration,
+  videoName,
+  clips,
+  setClips
 }: TimelineProps) {
   const [zoom, setZoom] = useState(10); // pixels per second
-  const [clips, setClips] = useState<Clip[]>([
-    { id: '1', type: 'text', start: 0, end: 30, content: 'Celoris Web', color: '#e67e22', trackIndex: 0 },
-    { id: '2', type: 'text', start: 31, end: 60, content: 'Text', color: '#e67e22', trackIndex: 0 },
-    { id: '3', type: 'video', start: 0, end: 596, content: 'Big Buck Bunny', color: '#2c3e50', trackIndex: 1 },
-    { id: '4', type: 'audio', start: 0, end: 45, content: 'Lazy Sunday', color: '#1abc9c', trackIndex: 2 },
-  ]);
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
-  
+
   const timelineRef = useRef<HTMLDivElement>(null);
-  
+
+  // Update video clip when duration or name changes
+  useEffect(() => {
+    setClips(prev => prev.map(c => {
+      if (c.type === 'video') {
+        return { ...c, end: duration, content: videoName || c.content };
+      }
+      return c;
+    }));
+  }, [duration, videoName, setClips]);
+
   // Playback logic
   useEffect(() => {
     let interval: number;
@@ -97,10 +99,10 @@ export default function Timeline({
       const deltaT = deltaX / zoom;
       setClips(clips.map(c => {
         if (c.id === draggingClip.id) {
-          const duration = c.end - c.start;
+          const clipDuration = c.end - c.start;
           let newStart = draggingClip.initialStart + deltaT;
           newStart = Math.max(0, newStart);
-          return { ...c, start: newStart, end: newStart + duration };
+          return { ...c, start: newStart, end: newStart + clipDuration };
         }
         return c;
       }));
@@ -159,7 +161,7 @@ export default function Timeline({
         </div>
 
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => setIsPlaying(!isPlaying)}
             className="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full hover:bg-gray-200 transition-colors"
           >
@@ -173,10 +175,10 @@ export default function Timeline({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 ml-2">
             <button onClick={() => setZoom(Math.max(1, zoom - 2))} className="p-1 text-gray-400 hover:text-white"><Minus className="w-4 h-4" /></button>
-            <input 
-              type="range" 
-              min="1" max="50" 
-              value={zoom} 
+            <input
+              type="range"
+              min="1" max="50"
+              value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
               className="w-24 h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
             />
@@ -201,7 +203,7 @@ export default function Timeline({
         </div>
 
         {/* Tracks Content */}
-        <div 
+        <div
           className="flex-1 overflow-x-auto overflow-y-hidden relative bg-[#121212] custom-scrollbar"
           ref={timelineRef}
           onPointerMove={handlePointerMove}
@@ -210,7 +212,7 @@ export default function Timeline({
         >
           <div className="min-w-full relative" style={{ width: `${duration * zoom}px`, height: '100%' }}>
             {/* Time Ruler */}
-            <div 
+            <div
               className="h-6 border-b border-white/5 relative sticky top-0 bg-[#121212] z-10 cursor-text"
               onClick={handleTimelineClick}
             >
@@ -223,7 +225,7 @@ export default function Timeline({
             </div>
 
             {/* Playhead */}
-            <div 
+            <div
               className="absolute top-0 bottom-0 w-px bg-white z-20 pointer-events-none"
               style={{ left: `${currentTime * zoom}px` }}
             >
@@ -236,11 +238,11 @@ export default function Timeline({
               {/* Text Track */}
               <div className="h-8 relative w-full bg-white/5 border-y border-white/5">
                 {clips.filter(c => c.trackIndex === 0).map(clip => (
-                  <div 
+                  <div
                     key={clip.id}
                     className={`absolute h-full rounded border flex items-center px-2 text-xs font-medium text-white shadow-sm cursor-pointer ${selectedClipId === clip.id ? 'brightness-125 ring-1 ring-white z-10' : 'hover:brightness-110 opacity-90'}`}
-                    style={{ 
-                      left: `${clip.start * zoom}px`, 
+                    style={{
+                      left: `${clip.start * zoom}px`,
                       width: `${(clip.end - clip.start) * zoom}px`,
                       backgroundColor: clip.color,
                       borderColor: clip.color
@@ -249,15 +251,15 @@ export default function Timeline({
                   >
                     <Type className="w-3 h-3 mr-1.5 opacity-80 shrink-0" />
                     <span className="truncate">{clip.content}</span>
-                    
+
                     {/* Selection Handles */}
                     {selectedClipId === clip.id && (
                       <>
-                        <div 
+                        <div
                           className="absolute left-0 top-0 bottom-0 w-2 bg-white/50 hover:bg-white rounded-l cursor-ew-resize"
                           onPointerDown={(e) => handlePointerDownResize(e, clip, 'left')}
                         ></div>
-                        <div 
+                        <div
                           className="absolute right-0 top-0 bottom-0 w-2 bg-white/50 hover:bg-white rounded-r cursor-ew-resize"
                           onPointerDown={(e) => handlePointerDownResize(e, clip, 'right')}
                         ></div>
@@ -270,11 +272,11 @@ export default function Timeline({
               {/* Video Track */}
               <div className="h-12 relative w-full bg-white/5 border-y border-white/5 mt-1">
                 {clips.filter(c => c.trackIndex === 1).map(clip => (
-                  <div 
+                  <div
                     key={clip.id}
                     className={`absolute h-full rounded border flex items-center overflow-hidden cursor-pointer ${selectedClipId === clip.id ? 'brightness-125 ring-1 ring-white z-10' : 'hover:brightness-110 opacity-90'}`}
-                    style={{ 
-                      left: `${clip.start * zoom}px`, 
+                    style={{
+                      left: `${clip.start * zoom}px`,
                       width: `${(clip.end - clip.start) * zoom}px`,
                       backgroundColor: clip.color,
                       borderColor: clip.color
@@ -288,11 +290,11 @@ export default function Timeline({
                     </div>
                     {selectedClipId === clip.id && (
                       <>
-                        <div 
+                        <div
                           className="absolute left-0 top-0 bottom-0 w-2 bg-white/50 hover:bg-white rounded-l cursor-ew-resize"
                           onPointerDown={(e) => handlePointerDownResize(e, clip, 'left')}
                         ></div>
-                        <div 
+                        <div
                           className="absolute right-0 top-0 bottom-0 w-2 bg-white/50 hover:bg-white rounded-r cursor-ew-resize"
                           onPointerDown={(e) => handlePointerDownResize(e, clip, 'right')}
                         ></div>
@@ -305,11 +307,11 @@ export default function Timeline({
               {/* Audio Track */}
               <div className="h-8 relative w-full bg-white/5 border-y border-white/5 mt-1">
                 {clips.filter(c => c.trackIndex === 2).map(clip => (
-                  <div 
+                  <div
                     key={clip.id}
                     className={`absolute h-full rounded border flex items-center px-2 text-xs font-medium text-white shadow-sm cursor-pointer ${selectedClipId === clip.id ? 'brightness-125 ring-1 ring-white z-10' : 'hover:brightness-110 opacity-90'}`}
-                    style={{ 
-                      left: `${clip.start * zoom}px`, 
+                    style={{
+                      left: `${clip.start * zoom}px`,
                       width: `${(clip.end - clip.start) * zoom}px`,
                       backgroundColor: clip.color,
                       borderColor: clip.color
@@ -318,7 +320,7 @@ export default function Timeline({
                   >
                     <Music className="w-3 h-3 mr-1.5 opacity-80 shrink-0 z-10" />
                     <span className="truncate z-10">{clip.content}</span>
-                    
+
                     <div className="absolute inset-0 flex items-center justify-start opacity-30 overflow-hidden px-2 pt-3 pointer-events-none">
                       <div className="w-full h-full flex items-end gap-[1px]">
                         {[...Array(Math.max(1, Math.ceil((clip.end - clip.start) * 2)))].map((_, i) => (
@@ -329,11 +331,11 @@ export default function Timeline({
 
                     {selectedClipId === clip.id && (
                       <>
-                        <div 
+                        <div
                           className="absolute left-0 top-0 bottom-0 w-2 bg-white/50 hover:bg-white rounded-l cursor-ew-resize z-20"
                           onPointerDown={(e) => handlePointerDownResize(e, clip, 'left')}
                         ></div>
-                        <div 
+                        <div
                           className="absolute right-0 top-0 bottom-0 w-2 bg-white/50 hover:bg-white rounded-r cursor-ew-resize z-20"
                           onPointerDown={(e) => handlePointerDownResize(e, clip, 'right')}
                         ></div>

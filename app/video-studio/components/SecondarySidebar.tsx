@@ -1,21 +1,75 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Subtitles, Type, Music, Upload, LayoutTemplate, Shapes, FileText, Wand2, ArrowRightLeft, SlidersHorizontal, Plus, Search, Image as ImageIcon, Video, Folder } from 'lucide-react';
 
-export default function SecondarySidebar({ activeTab }: { activeTab: string }) {
-  
+import { Clip } from '../page';
+
+interface SecondarySidebarProps {
+  activeTab: string;
+  setVideoSrc?: React.Dispatch<React.SetStateAction<string>>;
+  setVideoName?: React.Dispatch<React.SetStateAction<string>>;
+  setDuration?: React.Dispatch<React.SetStateAction<number>>;
+  setClips?: React.Dispatch<React.SetStateAction<Clip[]>>;
+  currentTime?: number;
+}
+
+export default function SecondarySidebar({ activeTab, setVideoSrc, setVideoName, setDuration, setClips, currentTime = 0 }: SecondarySidebarProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('video/')) {
+      const url = URL.createObjectURL(file);
+      if (setVideoSrc) setVideoSrc(url);
+      if (setVideoName) setVideoName(file.name);
+
+      // We'll let the Canvas component update the duration when the video metadata loads
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAddText = () => {
+    if (setClips) {
+      setClips(prev => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          type: 'text',
+          start: currentTime,
+          end: currentTime + 5, // Default 5 seconds duration
+          content: 'New Text',
+          color: '#e67e22',
+          trackIndex: 0
+        }
+      ]);
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'upload':
         return (
           <div className="p-4 flex flex-col gap-4 h-full">
-            <button className="w-full bg-[#00a8ff] hover:bg-[#0097e6] text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept="video/*"
+              className="hidden"
+            />
+            <button
+              onClick={handleUploadClick}
+              className="w-full bg-[#00a8ff] hover:bg-[#0097e6] text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
               <Upload className="w-4 h-4" />
               Upload media
             </button>
             <div className="flex-1 border-2 border-dashed border-white/10 rounded-lg flex flex-col items-center justify-center text-center p-6 text-gray-400">
               <Folder className="w-8 h-8 mb-2 opacity-50" />
               <p className="text-sm">Drag and drop your files here</p>
-              <p className="text-xs mt-1 opacity-70">Supported formats: MP4, MOV, MP3, WAV, JPG, PNG</p>
+              <p className="text-xs mt-1 opacity-70">Supported formats: MP4, MOV</p>
             </div>
           </div>
         );
@@ -24,9 +78,9 @@ export default function SecondarySidebar({ activeTab }: { activeTab: string }) {
           <div className="p-4 flex flex-col gap-4">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search templates" 
+              <input
+                type="text"
+                placeholder="Search templates"
                 className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#00a8ff] transition-colors"
               />
             </div>
@@ -47,9 +101,9 @@ export default function SecondarySidebar({ activeTab }: { activeTab: string }) {
           <div className="p-4 flex flex-col gap-4">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search audio" 
+              <input
+                type="text"
+                placeholder="Search audio"
                 className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#00a8ff] transition-colors"
               />
             </div>
@@ -76,7 +130,10 @@ export default function SecondarySidebar({ activeTab }: { activeTab: string }) {
       case 'text':
         return (
           <div className="p-4 flex flex-col gap-4">
-            <button className="w-full bg-[#00a8ff] hover:bg-[#0097e6] text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">
+            <button
+              onClick={handleAddText}
+              className="w-full bg-[#00a8ff] hover:bg-[#0097e6] text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
               <Plus className="w-4 h-4" />
               Add heading
             </button>
@@ -97,9 +154,9 @@ export default function SecondarySidebar({ activeTab }: { activeTab: string }) {
           <div className="p-4 flex flex-col gap-4">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search elements" 
+              <input
+                type="text"
+                placeholder="Search elements"
                 className="w-full bg-[#2a2a2a] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#00a8ff] transition-colors"
               />
             </div>
@@ -187,7 +244,7 @@ export default function SecondarySidebar({ activeTab }: { activeTab: string }) {
       <div className="p-4 border-b border-white/5 shrink-0">
         <h2 className="text-base font-semibold text-white capitalize">{activeTab}</h2>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {renderContent()}
       </div>

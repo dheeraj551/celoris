@@ -17,7 +17,7 @@ export default function BuildingModelNativeAgentSystemsCourse() {
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Move from System-Centric orchestration to Model-Centric agency. Master internal planning, native tool-use, and persistent latent state for autonomous agents.";
+        const descriptionText = "Move from System-Centric orchestration to Model-Centric agency. Master internal planning, native tool-use, and persistent latent state for autonomous agents. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -895,9 +895,7 @@ export default function BuildingModelNativeAgentSystemsCourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-emerald-400 font-bold tracking-widest uppercase text-xs">Full Lifetime System Access</div>
                                         </div>
 

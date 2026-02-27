@@ -142,7 +142,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
     const balance = profile?.wallet_balance || 0
     if (balance < 100) {
       toast({
-        title: "Insufficient Wallet Balance",
+        title: "Top-up Required",
         description: `Entering a study hub requires ₹100.00. Your current balance is ₹${balance.toFixed(2)}.`,
         variant: "destructive"
       })
@@ -161,8 +161,8 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
     const balance = profile?.wallet_balance || 0
     if (balance < 1000) {
       toast({
-        title: "Insufficient Wallet Balance",
-        description: `Creating a Study Nexus requires ₹1000.00. Your current balance is ₹${balance.toFixed(2)}.`,
+        title: "Top-up Required",
+        description: `Creating a Study Group requires ₹1000.00. Your current balance is ₹${balance.toFixed(2)}.`,
         variant: "destructive"
       })
       return
@@ -204,14 +204,14 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-8"
           >
-            <Sparkles size={12} className="animate-pulse" /> The Knowledge Nexus
+            <Sparkles size={12} className="animate-pulse" /> Celoris Academy
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white italic uppercase"
           >
-            Celoris Academy & Classrooms
+            Free Online Classes — Learn Any Skill from Real Trainers
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -236,7 +236,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
       <section className="py-24 relative z-10">
         <div className="container">
           <Courses
-            title="Popular Courses"
+            title="Most Popular Free and Paid Courses"
             description="Deep-dive into our most sought-after learning experiences"
             limit={4}
             featured={true}
@@ -250,7 +250,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
         <div className="max-w-6xl mx-auto px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-4">
-              <Sparkles size={14} /> Live Synergy
+              <Sparkles size={14} /> Live Classes
             </div>
             <h2 className="text-4xl font-bold text-white tracking-tight mb-4 italic uppercase">Live Classrooms</h2>
             <p className="text-lg text-slate-400 max-w-xl mx-auto font-medium italic">
@@ -261,8 +261,8 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
             {[
               { title: "General Hub", icon: BookOpen, color: "bg-emerald-500/10", iconColor: "text-emerald-500", link: "/learn/ai-tutor/general", desc: "Collaborative space for cross-discipline knowledge sharing.", channel: "room:classroom_general", hasAi: false },
-              { title: "Quantum Science", icon: Calculator, color: "bg-blue-500/10", iconColor: "text-blue-500", link: "/learn/ai-tutor/quantum-science", desc: "Unified hub for Physics, Chemistry, and Advanced Mathematics.", channel: "room:classroom_quantum-science", hasAi: true },
-              { title: "AI ROOM", icon: Bot, color: "bg-purple-500/10", iconColor: "text-purple-500", link: "/learn/ai-tutor/ai-courses", desc: "Explore AI technology courses and find your perfect learning path.", channel: "room:classroom_ai-courses", hasAi: true }
+              { title: "Science Hub", icon: Calculator, color: "bg-blue-500/10", iconColor: "text-blue-500", link: "/learn/ai-tutor/quantum-science", desc: "Unified hub for Physics, Chemistry, and Advanced Mathematics.", channel: "room:classroom_quantum-science", hasAi: true },
+              { title: "Learn AI", icon: Bot, color: "bg-purple-500/10", iconColor: "text-purple-500", link: "/learn/ai-tutor/ai-courses", desc: "Explore AI technology courses and find your perfect learning path.", channel: "room:classroom_ai-courses", hasAi: true }
             ].map((room, idx) => (
               <Card key={idx} className="bg-white/5 border-white/5 hover:border-emerald-500/30 transition-all rounded-[2rem] overflow-hidden shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 group">
                 <CardContent className="pt-10 pb-8 px-8 flex flex-col h-full text-center md:text-left">
@@ -283,7 +283,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
                   >
                     <div className="flex flex-col items-center">
                       <span className="flex items-center gap-2">Enter Room <ArrowRight className="h-4 w-4" /></span>
-                      <span className="text-[8px] opacity-60 mt-0.5">₹100 Required</span>
+                      <span className="text-[8px] opacity-60 mt-0.5">Entry Fee: ₹100</span>
                     </div>
                   </Button>
                 </CardContent>
@@ -299,8 +299,8 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
                 <Sparkles className="h-8 w-8 text-emerald-400 animate-pulse" />
               </div>
               <div className="text-center md:text-left">
-                <h4 className="text-2xl font-bold tracking-tight mb-1 text-white italic uppercase">Create Your Own Study Nexus</h4>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Invite peers • End-to-end Focus • Always Online</p>
+                <h4 className="text-2xl font-bold tracking-tight mb-1 text-white italic uppercase">Create Your Own Study Group</h4>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Invite friends • Better Focus • Always Online</p>
               </div>
             </div>
             <Button
@@ -308,8 +308,8 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
               className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-10 h-14 font-bold text-sm shadow-xl shadow-emerald-500/20 relative z-10 transition-all border-none"
             >
               <div className="flex flex-col items-center">
-                <span>Initialize Room</span>
-                <span className="text-[8px] opacity-80 mt-0.5 tracking-widest uppercase">₹1000 Required</span>
+                <span>Create Room</span>
+                <span className="text-[8px] opacity-80 mt-0.5 tracking-widest uppercase">Setup Fee: ₹1000</span>
               </div>
             </Button>
           </div>

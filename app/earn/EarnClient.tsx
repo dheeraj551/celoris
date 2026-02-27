@@ -158,7 +158,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white italic uppercase"
           >
-            Find Your IT Project
+            Earn Online — Fresh Freelance Opportunities Every Day
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}

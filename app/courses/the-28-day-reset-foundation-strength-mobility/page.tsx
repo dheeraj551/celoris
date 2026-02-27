@@ -322,7 +322,7 @@ export default function FoundationStrengthMobilityCourse() {
                                 <CardContent className="p-6">
                                     <div className="text-center mb-6">
                                         <div className="text-4xl font-bold text-text-primary mb-2">
-                                            ₹{courseData.price}
+                                            
                                         </div>
                                         <div className="text-text-secondary">One-time Investment</div>
                                     </div>

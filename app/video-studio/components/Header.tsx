@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Undo, Redo, MousePointer2, Hand, Share, CheckCircle, HelpCircle, Settings, User, ChevronDown, Cloud } from 'lucide-react';
+import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, CircleHelp, Settings, User, ChevronDown, Cloud } from 'lucide-react';
 
 interface HeaderProps {
   activeTool: 'pointer' | 'hand';
@@ -94,10 +94,10 @@ export default function Header({
           Share
         </button>
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
-          <CheckCircle className="w-5 h-5" />
+          <CircleCheck className="w-5 h-5" />
         </button>
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
-          <HelpCircle className="w-5 h-5" />
+          <CircleHelp className="w-5 h-5" />
         </button>
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
           <Settings className="w-5 h-5" />

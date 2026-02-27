@@ -15,7 +15,7 @@ export default function ArjunaIntegratedCourse() {
         document.title = "Arjuna Integrated: The SSC-JEE Bridge | Mathematics Mastery for SSC & JEE";
 
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Master Algebra, Trigonometry, Geometry, and Statistics for both SSC and JEE. Integrated dual-value learning strategy at Celoris Designs.";
+        const descriptionText = "Master Algebra, Trigonometry, Geometry, and Statistics for both SSC and JEE. Integrated dual-value learning strategy at Celoris Designs. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -500,7 +500,7 @@ export default function ArjunaIntegratedCourse() {
                                     <div className="text-center mb-8">
                                         <div className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] mb-4">Limited Enrollment</div>
                                         <div className="text-6xl font-black text-white italic tracking-tighter mb-2">
-                                            ₹{courseData.price}
+                                            
                                         </div>
                                         <div className="text-xs text-slate-500 italic uppercase tracking-widest font-bold">Full Bridge Access</div>
                                     </div>

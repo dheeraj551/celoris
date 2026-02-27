@@ -1110,10 +1110,7 @@ export default function CoursesDisplay({
               </div>
             )}
 
-            <div className="flex items-center justify-between">
-              <div className="text-2xl font-bold text-green-600">
-                {course.price > 0 ? `₹${course.price}` : 'Free'}
-              </div>
+            <div className="flex items-center justify-end">
               <Link href={getCourseUrl(course.id)}>
                 <Button className="bg-green-600 hover:bg-green-700" size="sm">
                   <Play className="w-4 h-4 mr-2" />
@@ -1177,9 +1174,6 @@ export default function CoursesDisplay({
                 </div>
               </div>
               <div className="ml-6 text-right">
-                <div className="text-2xl font-bold text-green-600 mb-2">
-                  {course.price > 0 ? `₹${course.price}` : 'Free'}
-                </div>
                 <Link href={getCourseUrl(course.id)}>
                   <Button className="bg-green-600 hover:bg-green-700" size="sm">
                     View Course

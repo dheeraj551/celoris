@@ -499,9 +499,7 @@ export default function LLMPromptEngineeringCourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-cyan-400 font-bold tracking-widest uppercase text-xs">Full Lifetime Access</div>
                                         </div>
 

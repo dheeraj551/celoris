@@ -16,7 +16,7 @@ export default function ArchitectingTrustCourse() {
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Master the frameworks, tools, and legal requirements necessary to deploy predictable, compliant, and ethical AI systems for the modern enterprise.";
+        const descriptionText = "Master the frameworks, tools, and legal requirements necessary to deploy predictable, compliant, and ethical AI systems for the modern enterprise. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -821,9 +821,7 @@ export default function ArchitectingTrustCourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-gold-400 font-bold tracking-widest uppercase text-xs">Professional Excellence Tier</div>
                                         </div>
 

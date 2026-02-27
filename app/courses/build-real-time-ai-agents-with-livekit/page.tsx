@@ -437,7 +437,7 @@ export default function LiveKitAIAgentsCourse() {
                                 <CardContent className="p-6">
                                     <div className="text-center mb-6">
                                         <div className="text-4xl font-bold text-primary-600 mb-2">
-                                            ₹{courseData.price}
+                                            
                                         </div>
                                         <div className="text-text-secondary">Professional Certification</div>
                                     </div>

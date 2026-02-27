@@ -4,19 +4,9 @@ import React, { useState } from 'react';
 import {
     Video,
     Image as ImageIcon,
-    Plus,
-    AtSign,
-    MapPin,
-    Layout,
-    Languages,
-    Calendar,
     ArrowRight,
     Search,
-    ChevronRight,
-    TrendingUp,
-    Camera,
     PlayCircle,
-    ShoppingBag,
     Star,
     Sparkles,
     Zap,
@@ -24,19 +14,7 @@ import {
     Clock,
     BrainCircuit,
     Globe,
-    Bot,
-    Hexagon,
-    Flame,
-    Infinity,
-    Asterisk,
-    Moon,
-    Activity,
-    Rocket,
-    Cpu,
-    PawPrint,
-    UserCircle,
     Lock,
-    Command
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -589,11 +567,15 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                     <div className="flex-shrink-0 w-64 bg-transparent border border-white/10 rounded-2xl p-4 hover:border-emerald-500/30 transition-all cursor-pointer group relative overflow-hidden">
                                         <div className="absolute top-4 right-4"><Lock className="w-4 h-4 text-slate-500 group-hover:text-amber-500 transition-colors" /></div>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-[10px] font-black">K</div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/kimi-color.svg" alt="Kimi" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-slate-300">Kimi K2.5</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-emerald-500"><Sparkles className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" alt="OpenAI" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-emerald-400">GPT-5.2 <span className="opacity-70 font-medium">(High)</span></span>
                                         </div>
                                     </div>
@@ -601,11 +583,15 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                     <div className="flex-shrink-0 w-64 bg-transparent border border-white/10 rounded-2xl p-4 hover:border-blue-500/30 transition-all cursor-pointer group relative overflow-hidden">
                                         <div className="absolute top-4 right-4"><Lock className="w-4 h-4 text-slate-500 group-hover:text-amber-500 transition-colors" /></div>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-blue-400"><Sparkles className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/google-color.svg" alt="Google" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-slate-300">Google Imagen 4</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-white"><ImageIcon className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/bfl.svg" alt="FLUX" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-slate-200 group-hover:text-white">FLUX1.1 Pro</span>
                                         </div>
                                     </div>
@@ -613,11 +599,15 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                     <div onClick={() => { setSelectedModel({ name: 'Groq Llama 3.1', provider: 'Meta', isPremium: false }); setShowModelSelect(false); }} className="flex-shrink-0 w-64 bg-transparent border border-white/10 rounded-2xl p-4 hover:border-purple-500/30 transition-all cursor-pointer group relative overflow-hidden">
                                         {selectedModel.name === 'Groq Llama 3.1' && <div className="absolute top-0 right-0 p-2 opacity-50"><Zap className="w-6 h-6 text-purple-500" /></div>}
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-purple-500"><BrainCircuit className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen-color.svg" alt="Qwen" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-slate-300">Qwen3.5 397B A17B</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-cyan-500"><Sparkles className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg" alt="Gemini" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-cyan-400">Gemini 3.1 Pro</span>
                                         </div>
                                     </div>
@@ -625,11 +615,15 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                     <div className="flex-shrink-0 w-64 bg-transparent border border-white/10 rounded-2xl p-4 hover:border-indigo-500/30 transition-all cursor-pointer group relative overflow-hidden">
                                         <div className="absolute top-4 right-4"><Lock className="w-4 h-4 text-slate-500 group-hover:text-amber-500 transition-colors" /></div>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-slate-400"><Clock className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/xai.svg" alt="Grok" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-slate-300">Grok 4.1 Fast</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center text-blue-500"><BrainCircuit className="w-3 h-3" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg" alt="DeepSeek" className="w-full h-full object-contain" />
+                                            </div>
                                             <span className="text-sm font-bold text-blue-400">DeepSeek V3.2 <span className="text-[10px] text-amber-500 ml-1 font-black">$$</span></span>
                                         </div>
                                     </div>
@@ -639,24 +633,24 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                             {/* All Models Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pb-8">
                                 {[
-                                    { title: 'GPT', by: 'OpenAI', icon: Bot, color: 'text-white' },
-                                    { title: 'Qwen', by: 'Alibaba', icon: Hexagon, color: 'text-indigo-500' },
-                                    { title: 'Mistral', by: 'Mistral AI', icon: Flame, color: 'text-orange-500' },
-                                    { title: 'DeepSeek', by: 'DeepSeek', icon: BrainCircuit, color: 'text-blue-500', premium: 'PRO' },
-                                    { title: 'Llama', by: 'Meta', icon: Infinity, color: 'text-blue-400' },
-                                    { title: 'Gemini', by: 'Google', icon: Sparkles, color: 'text-cyan-500', premium: 'MAX' },
-                                    { title: 'Claude', by: 'Anthropic', icon: Asterisk, color: 'text-orange-400', premium: 'MAX' },
-                                    { title: 'GLM', by: 'Z.ai', icon: Zap, color: 'text-slate-200' },
-                                    { title: 'Kimi', by: 'Moonshot AI', icon: Moon, color: 'text-slate-300' },
-                                    { title: 'MiniMax', by: 'MiniMax AI', icon: Activity, color: 'text-pink-500' },
-                                    { title: 'FLUX', by: 'Black Forest Labs', icon: ImageIcon, color: 'text-slate-300' },
-                                    { title: 'Grok', by: 'xAI', icon: X, color: 'text-slate-200', premium: 'PRO' },
-                                    { title: 'Gemma', by: 'Google', icon: Sparkles, color: 'text-cyan-400' },
-                                    { title: 'Nova', by: 'Amazon', icon: Rocket, color: 'text-purple-500' },
-                                    { title: 'Command', by: 'Cohere', icon: Command, color: 'text-emerald-600' },
-                                    { title: 'Nemotron', by: 'NVIDIA', icon: Cpu, color: 'text-green-500', premium: 'PRO' },
-                                    { title: 'ERNIE', by: 'Baidu', icon: PawPrint, color: 'text-blue-600' },
-                                    { title: 'Imagen', by: 'Google', icon: Camera, color: 'text-cyan-500' },
+                                    { title: 'GPT', by: 'OpenAI', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg' },
+                                    { title: 'Qwen', by: 'Alibaba', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen-color.svg' },
+                                    { title: 'Mistral', by: 'Mistral AI', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/mistral-color.svg' },
+                                    { title: 'DeepSeek', by: 'DeepSeek', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg', premium: 'PRO' },
+                                    { title: 'Llama', by: 'Meta', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta-color.svg' },
+                                    { title: 'Gemini', by: 'Google', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg', premium: 'MAX' },
+                                    { title: 'Claude', by: 'Anthropic', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude-color.svg', premium: 'MAX' },
+                                    { title: 'GLM', by: 'Z.ai', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/glmv-color.svg' },
+                                    { title: 'Kimi', by: 'Moonshot AI', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/kimi-color.svg' },
+                                    { title: 'MiniMax', by: 'MiniMax AI', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/minimax-color.svg' },
+                                    { title: 'FLUX', by: 'Black Forest Labs', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/bfl.svg' },
+                                    { title: 'Grok', by: 'xAI', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/xai.svg', premium: 'PRO' },
+                                    { title: 'Gemma', by: 'Google', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemma-color.svg' },
+                                    { title: 'Nova', by: 'Amazon', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/bedrock-color.svg' },
+                                    { title: 'Command', by: 'Cohere', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/commanda-color.svg' },
+                                    { title: 'Nemotron', by: 'NVIDIA', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/nvidia-color.svg', premium: 'PRO' },
+                                    { title: 'ERNIE', by: 'Baidu', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/baidu-color.svg' },
+                                    { title: 'Imagen', by: 'Google', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/google-color.svg' },
                                 ].map((provider, i) => (
                                     <button
                                         key={i}
@@ -664,8 +658,8 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                         className="flex items-center justify-between px-4 py-3 rounded-2xl bg-transparent border border-white/5 hover:bg-white/5 hover:border-white/10 transition-colors group"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full bg-[#151618] flex items-center justify-center ${provider.color}`}>
-                                                <provider.icon className="w-4 h-4" />
+                                            <div className="w-8 h-8 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-1.5">
+                                                <img src={provider.iconUrl} alt={provider.title} className="w-full h-full object-contain" />
                                             </div>
                                             <div className="text-left flex flex-col items-start leading-tight">
                                                 <div className="flex items-center gap-2">

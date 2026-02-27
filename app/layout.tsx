@@ -14,7 +14,7 @@ const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-  description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
+  description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. Free to start. No credit card. celoris.in 🇮🇳",
   keywords: [
     "Celoris",
     "AI ecosystem",
@@ -40,11 +40,11 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "en_IN",
     url: "https://www.celorisdesigns.com",
     title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
-    siteName: "Celoris Platform",
+    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. Free to start. No credit card. celoris.in 🇮🇳",
+    siteName: "Celoris",
     images: [
       {
         url: "/og-image.jpg",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
+    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. Free to start. No credit card. celoris.in 🇮🇳",
     images: ["/og-image.jpg"],
     creator: "@celoris",
   },

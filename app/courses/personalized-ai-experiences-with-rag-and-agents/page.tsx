@@ -16,7 +16,7 @@ export default function PersonalizedAICourse() {
 
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
-        const descriptionText = "Build AI that knows your users, remembers their history, and anticipates their needs. Master RAG, memory systems, and agentic workflows for hyper-personalization.";
+        const descriptionText = "Build AI that knows your users, remembers their history, and anticipates their needs. Master RAG, memory systems, and agentic workflows for hyper-personalization. Free to start. No credit card. celoris.in 🇮🇳";
         if (metaDescription) {
             metaDescription.setAttribute('content', descriptionText);
         } else {
@@ -815,9 +815,7 @@ export default function PersonalizedAICourse() {
                                 <Card className="relative bg-slate-900 border-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <CardContent className="p-8">
                                         <div className="text-center mb-8">
-                                            <div className="text-5xl font-extrabold text-white mb-2 tracking-tighter">
-                                                ₹{courseData.price}
-                                            </div>
+                                            
                                             <div className="text-purple-400 font-bold tracking-widest uppercase text-xs">Self-Paced Mastery</div>
                                         </div>
 

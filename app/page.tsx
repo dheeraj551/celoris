@@ -1,7 +1,18 @@
+import { type Metadata } from "next"
 import { DashboardShell } from "@/components/home-new/DashboardShell"
 import { DashboardContent } from "@/components/home-new/DashboardContent"
 import { createServerClient } from "@/lib/supabase-server"
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+  description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed. Free to start. No credit card. celoris.in 🇮🇳",
+  keywords: "free video editor India, free AI tools India, online classes India, earn online India, teach online India, Celoris",
+  openGraph: {
+    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+    description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed. Free to start. No credit card. celoris.in 🇮🇳",
+  }
+}
 
 export default async function HomePage() {
   const supabase = createServerClient()

@@ -38,26 +38,19 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                     <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg uppercase tracking-widest italic">{category}</span>
                     <div className="flex items-center gap-1 text-emerald-500">
                         <Star size={10} fill="currentColor" />
-                        <span className="text-[10px] font-black tracking-widest">4.9 SYNC</span>
+                        <span className="text-[10px] font-black tracking-widest">4.9 Rating</span>
                     </div>
                 </div>
 
                 <h3 className="text-xl font-black text-white leading-tight mb-4 group-hover:text-emerald-400 transition-colors uppercase italic tracking-tighter line-clamp-2">{title}</h3>
 
                 <div className="flex items-center gap-6 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6 italic">
-                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/50" /> {instructor || 'Celoris Node'}</div>
-                    <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/50" /> {duration || 'AUTO-SYNC'}</div>
+                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/50" /> {instructor || 'Celoris Trainer'}</div>
+                    <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/50" /> {duration || 'Lifetime Access'}</div>
                 </div>
             </div>
 
-            <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5 italic">Protocol Cost</span>
-                    <span className="text-2xl font-black text-white italic tracking-tighter">
-                        {price && price.toString().startsWith('$') ? price : `₹${price}`}
-                    </span>
-                </div>
-
+            <div className="flex items-center justify-end pt-6 border-t border-white/5">
                 {id ? (
                     <Link
                         href={
@@ -117,7 +110,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                         }
                         className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
                     >
-                        Initialize <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                        Learn More <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                 ) : (
                     <button className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl">
@@ -130,22 +123,22 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
-    { id: 'sovereign-intelligence-static', title: 'Sovereign Intelligence: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
+    { id: 'sovereign-intelligence-static', title: 'Learn AI Basics Free: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
     { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ZwqAdQsXy3A/maxresdefault.jpg' },
-    { id: 'architecting-trust-static', title: 'Architecting Trust: AI Safety, Ethics & Compliance', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/CdCAuee0qyI/maxresdefault.jpg' },
-    { id: 'agentic-ai-cybersecurity-static', title: 'Agentic AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/Y72t0L4wdsE/maxresdefault.jpg' },
-    { id: 'accelerating-science-static', title: 'Accelerating Science: AI for Research & Innovation', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-Week Intensive', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/57LQCUE2FWk/maxresdefault.jpg' },
-    { id: 'mastering-multimodal-ai-static', title: 'Mastering Multimodal AI: Vision, Audio & Fusion', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/G_eFurGI3Go/maxresdefault.jpg' },
-    { id: 'building-model-native-agent-systems-static', title: 'Building Model-Native Agent Systems (End-to-End)', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8 Weeks (Accelerated)', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/MoZQeCYorns/maxresdefault.jpg' },
-    { id: 'vibe-coding-mastery-static', title: 'Vibe Coding Mastery: AI-First Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
-    { id: 'agentic-ai-systems-static', title: 'Agentic AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
+    { id: 'architecting-trust-static', title: 'AI Safety, Ethics & Compliance Mastery', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/CdCAuee0qyI/maxresdefault.jpg' },
+    { id: 'agentic-ai-cybersecurity-static', title: 'AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/Y72t0L4wdsE/maxresdefault.jpg' },
+    { id: 'accelerating-science-static', title: 'AI for Science: Research & Innovation', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-Week Intensive', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/57LQCUE2FWk/maxresdefault.jpg' },
+    { id: 'mastering-multimodal-ai-static', title: 'Mastering Multi-Tool AI: Vision & Audio', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/G_eFurGI3Go/maxresdefault.jpg' },
+    { id: 'building-model-native-agent-systems-static', title: 'Building Intelligent AI Systems (Full Guide)', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8 Weeks (Accelerated)', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/MoZQeCYorns/maxresdefault.jpg' },
+    { id: 'vibe-coding-mastery-static', title: 'AI Coding for Beginners: Simple Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
+    { id: 'agentic-ai-systems-static', title: 'AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
     { id: 'livekit-ai-agents-static', title: 'Build Real-Time AI Agents with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '10 hours', price: 14999, is_featured: true, course_image_url: '/livekit-ai-agents-cover.png' },
     { id: 'langchain-real-static', title: 'LangChain in Action: Real Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris', course_duration: '12 hours', price: 13500, is_featured: true, course_image_url: 'https://img.youtube.com/vi/Fvf5k_jocUk/maxresdefault.jpg' }
 ];
 
 export const Courses: React.FC<any> = ({
     title = "Our Latest Courses",
-    description = "Explore our newest AI knowledge nodes and master the digital future.",
+    description = "Explore our newest AI courses and start your career.",
     limit = 6,
     showBrowseAll = true,
     featured = false,
@@ -189,7 +182,7 @@ export const Courses: React.FC<any> = ({
                 className="mb-16 px-4"
             >
                 <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
-                    <Sparkles size={12} /> Knowledge Nodes
+                    <Sparkles size={12} /> Featured Lessons
                 </div>
                 <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-none">{title}</h2>
                 <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-5 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
@@ -206,7 +199,7 @@ export const Courses: React.FC<any> = ({
                         instructor={course.instructor_name}
                         duration={course.course_duration}
                         price={course.price}
-                        tag={course.is_featured ? 'Elite' : undefined}
+                        tag={course.is_featured ? 'Featured' : undefined}
                         image={course.course_image_url}
                     />
                 ))}

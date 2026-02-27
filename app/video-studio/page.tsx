@@ -12,6 +12,16 @@ import Canvas from './components/Canvas';
 import Timeline from './components/Timeline';
 import PropertiesPanel from './components/PropertiesPanel';
 
+export interface Clip {
+    id: string;
+    type: 'text' | 'video' | 'audio';
+    start: number; // in seconds
+    end: number; // in seconds
+    content: string;
+    color: string;
+    trackIndex: number;
+}
+
 export interface TextElement {
     text: string;
     fontSize: number;
@@ -43,7 +53,9 @@ const initialTextElement: TextElement = {
 };
 
 export default function VideoStudio() {
-    const { user, profile, loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
+
     const [activeTab, setActiveTab] = useState('captions');
     const [textElement, setTextElement] = useState<TextElement>(initialTextElement);
 
@@ -55,6 +67,18 @@ export default function VideoStudio() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(596); // Big Buck Bunny duration
+
+    // Video state
+    const [videoSrc, setVideoSrc] = useState<string>("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+    const [videoName, setVideoName] = useState<string>("Big Buck Bunny");
+
+    // Timeline clips
+    const [clips, setClips] = useState<Clip[]>([
+        { id: '1', type: 'text', start: 0, end: 30, content: 'Celoris Web', color: '#e67e22', trackIndex: 0 },
+        { id: '2', type: 'text', start: 31, end: 60, content: 'Text', color: '#e67e22', trackIndex: 0 },
+        { id: '3', type: 'video', start: 0, end: 596, content: 'Big Buck Bunny', color: '#2c3e50', trackIndex: 1 },
+        { id: '4', type: 'audio', start: 0, end: 45, content: 'Lazy Sunday', color: '#1abc9c', trackIndex: 2 },
+    ]);
 
     // History state for undo/redo
     const [history, setHistory] = useState<TextElement[]>([initialTextElement]);
@@ -115,8 +139,6 @@ export default function VideoStudio() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [historyIndex, history]);
 
-    const router = useRouter();
-
     useEffect(() => {
         if (!authLoading && !user) {
             router.push('/login');
@@ -146,26 +168,41 @@ export default function VideoStudio() {
 
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-                <SecondarySidebar activeTab={activeTab} />
+                <SecondarySidebar
+                    activeTab={activeTab}
+                    setVideoSrc={setVideoSrc}
+                    setVideoName={setVideoName}
+                    setDuration={setDuration}
+                    setClips={setClips}
+                    currentTime={currentTime}
+                />
 
-                <div className="flex flex-col flex-1 overflow-hidden relative">
-                    <Canvas
-                        textElement={textElement}
-                        setTextElement={handleSetTextElement}
-                        activeTool={activeTool}
-                        canvasZoom={canvasZoom}
-                        isPlaying={isPlaying}
-                        currentTime={currentTime}
-                        setCurrentTime={setCurrentTime}
-                    />
-                    <Timeline
-                        isPlaying={isPlaying}
-                        setIsPlaying={setIsPlaying}
-                        currentTime={currentTime}
-                        setCurrentTime={setCurrentTime}
-                        duration={duration}
-                        setDuration={setDuration}
-                    />
+                <div className="flex-1 flex overflow-hidden relative">
+                    <div className="flex flex-col flex-1 overflow-hidden">
+                        <Canvas
+                            textElement={textElement}
+                            setTextElement={handleSetTextElement}
+                            activeTool={activeTool}
+                            canvasZoom={canvasZoom}
+                            setCanvasZoom={setCanvasZoom}
+                            isPlaying={isPlaying}
+                            currentTime={currentTime}
+                            setCurrentTime={setCurrentTime}
+                            videoSrc={videoSrc}
+                            setDuration={setDuration}
+                        />
+                        <Timeline
+                            isPlaying={isPlaying}
+                            setIsPlaying={setIsPlaying}
+                            currentTime={currentTime}
+                            setCurrentTime={setCurrentTime}
+                            duration={duration}
+                            setDuration={setDuration}
+                            videoName={videoName}
+                            clips={clips}
+                            setClips={setClips}
+                        />
+                    </div>
                     <PropertiesPanel textElement={textElement} setTextElement={handleSetTextElement} />
                 </div>
             </div>

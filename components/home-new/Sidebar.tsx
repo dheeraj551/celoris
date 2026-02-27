@@ -26,7 +26,6 @@ const MENU_GROUPS = [
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
-            { name: "Blog", icon: Lightbulb, href: "/blog" },
             { name: "Avatars and voices", icon: UserCircle, href: "/social" },
         ]
     },
@@ -35,6 +34,7 @@ const MENU_GROUPS = [
         items: [
             { name: "Analytics", icon: BarChart3, href: "/" },
             { name: "Publisher", icon: UploadCloud, href: "/social" },
+            { name: "Blog", icon: Lightbulb, href: "/blog" },
         ]
     },
     {

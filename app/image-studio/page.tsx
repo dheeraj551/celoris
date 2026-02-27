@@ -469,9 +469,9 @@ export default function ImageStudio() {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col relative min-w-0" onClick={() => setSelectedId(null)}>
+            <div className="flex-1 flex flex-col relative min-w-0" onPointerDown={() => setSelectedId(null)}>
                 {/* Top Bar */}
-                <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10 shrink-0" onClick={e => e.stopPropagation()}>
+                <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10 shrink-0" onPointerDown={e => e.stopPropagation()}>
                     <div className="flex items-center gap-2">
                         <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
                             <Cloud size={14} className="text-gray-600" />
@@ -504,7 +504,11 @@ export default function ImageStudio() {
                         <div className="w-[1px] h-4 bg-gray-300 mx-1"></div>
                         <button className="text-gray-500 hover:text-gray-800"><Settings size={18} /></button>
                         <button className="text-gray-500 hover:text-gray-800"><HelpCircle size={18} /></button>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 border-2 border-white shadow-sm cursor-pointer" />
+                        {user?.email && (
+                            <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium cursor-pointer">
+                                {user.email[0].toUpperCase()}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -831,8 +835,12 @@ export default function ImageStudio() {
                                     <button
                                         onClick={() => {
                                             setObjects(prev => {
-                                                const maxZ = Math.max(...prev.map(o => o.zIndex ?? 0), 0);
-                                                return prev.map(o => o.id === selectedId ? { ...o, zIndex: maxZ + 1 } : o);
+                                                const objIndex = prev.findIndex(o => o.id === selectedId);
+                                                if (objIndex === -1) return prev;
+                                                const newObjects = [...prev];
+                                                const [obj] = newObjects.splice(objIndex, 1);
+                                                newObjects.push(obj);
+                                                return newObjects.map((o, i) => ({ ...o, zIndex: i }));
                                             });
                                         }}
                                         className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-[#00C4CC] text-sm text-gray-700 font-medium text-left transition-colors"
@@ -842,8 +850,12 @@ export default function ImageStudio() {
                                     <button
                                         onClick={() => {
                                             setObjects(prev => {
-                                                const minZ = Math.min(...prev.map(o => o.zIndex ?? 0), 0);
-                                                return prev.map(o => o.id === selectedId ? { ...o, zIndex: minZ - 1 } : o);
+                                                const objIndex = prev.findIndex(o => o.id === selectedId);
+                                                if (objIndex === -1) return prev;
+                                                const newObjects = [...prev];
+                                                const [obj] = newObjects.splice(objIndex, 1);
+                                                newObjects.unshift(obj);
+                                                return newObjects.map((o, i) => ({ ...o, zIndex: i }));
                                             });
                                         }}
                                         className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-[#00C4CC] text-sm text-gray-700 font-medium text-left transition-colors"
@@ -911,13 +923,13 @@ export default function ImageStudio() {
 
                 {/* Layer thumbnails */}
                 <div className="flex flex-col gap-3 w-full px-2 mb-6">
-                    {objects.map(obj => (
+                    {[...objects].reverse().map(obj => (
                         <div
                             key={obj.id}
                             onClick={() => setSelectedId(obj.id)}
                             className={`aspect-video bg-white rounded border-2 overflow-hidden relative cursor-pointer flex items-center justify-center ${selectedId === obj.id ? 'border-[#00C4CC]' : 'border-transparent hover:border-gray-300'}`}
                         >
-                            {obj.type === 'image' && <img src={obj.src} alt="Layer" className="w-full h-full object-cover" style={{ filter: obj.filter }} />}
+                            {obj.type === 'image' && <img src={obj.src} alt="Layer" className="w-full h-full object-cover" style={{ filter: getFilterString(obj) }} />}
                             {obj.type === 'shape' && (
                                 <div className="w-8 h-8" style={{ backgroundColor: obj.backgroundColor, borderRadius: obj.shapeType === 'circle' ? '50%' : '0%' }} />
                             )}
