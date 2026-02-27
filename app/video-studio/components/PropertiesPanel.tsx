@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Type, Palette, Layout, Animation, Sliders, ChevronDown, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline } from 'lucide-react';
+import { Settings, ChevronDown, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline } from 'lucide-react';
 
 import { TextElement } from '../page';
 
