@@ -25,8 +25,20 @@ export const Footer: React.FC = () => {
                         <a href="#" className="p-2 bg-slate-50 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"><Github size={18} /></a>
                     </div>
                 </div>
-                <div className="mt-8 text-center text-xs text-slate-400">
-                    © 2026 Celoris Designs AI. All rights reserved.
+                <div className="mt-8 pt-8 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="text-left space-y-1">
+                        <p className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">Celoris Designs LLP</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-tight">LLP Identification No: AAP-3965</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-tight">GST No: 09AAOFC5435B1ZJ</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-tight">Incorporated: 23rd May 2019</p>
+                    </div>
+                    <div className="text-left md:text-right space-y-1">
+                        <p className="text-[10px] text-slate-500 uppercase tracking-tight">Incorporated under the Limited Liability Partnership Act, 2008</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-tight">Registered with Ministry of Corporate Affairs, Government of India</p>
+                        <div className="pt-2 text-[10px] font-medium text-slate-400">
+                            © 2019–2026 Celoris Designs LLP. All rights reserved.
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>

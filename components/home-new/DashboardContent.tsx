@@ -256,99 +256,22 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                         </div>
                     </Link>
 
-                    {/* Item 3 */}
-                    <button className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
-                        <div className="flex-1 text-left">
-                            <span className="text-base font-bold text-white block leading-tight">AI Legends</span>
-                            <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded mt-2 inline-block uppercase tracking-tight">New</span>
-                        </div>
-                        <div className="w-32 h-full flex items-center justify-center translate-x-4">
-                            <img
-                                src="/images/homepage/ai-legends.png"
-                                className="w-full h-full object-contain scale-[1.3] group-hover:scale-[1.4] transition-transform duration-500"
-                                alt="AI Legends"
-                            />
-                        </div>
-                    </button>
-
-                    {/* Item 4 */}
-                    <button className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
-                        <div className="flex-1 text-left">
-                            <span className="text-base font-bold text-white block leading-tight">Finding ideas with AI</span>
-                            <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded mt-2 inline-block uppercase tracking-tight">New</span>
-                        </div>
-                        <div className="w-32 h-full flex items-center justify-center translate-x-4">
-                            <img
-                                src="/images/homepage/finding-ideas-ai.png"
-                                className="w-full h-full object-contain scale-[1.3] group-hover:scale-[1.4] transition-transform duration-500"
-                                alt="Finding ideas with AI"
-                            />
-                        </div>
-                    </button>
-
                     {/* Item 5 */}
                     <button className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
                         <div className="flex-1 text-left">
-                            <span className="text-base font-bold text-white block leading-tight truncate pr-2">Long video in short videos</span>
+                            <span className="text-base font-bold text-white block leading-tight truncate pr-2">Celoris 3D</span>
                         </div>
                         <div className="w-32 h-full flex items-center justify-center translate-x-4">
                             <img
-                                src="/images/homepage/long-to-short.png"
+                                src="/images/homepage/celoris-3d-character.png"
                                 className="w-full h-full object-contain scale-[1.3] group-hover:scale-[1.4] transition-transform duration-500"
-                                alt="Long video in short videos"
+                                alt="Celoris 3D Character"
                             />
                         </div>
                     </button>
                 </div>
             </div>
 
-            {/* Suggestions Section 2 */}
-            <div className="mb-20">
-                <h2 className="text-xl font-bold text-white tracking-tight mb-6">Create AI voiceovers from text or audio content</h2>
-                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
-
-                    {/* Create New Project */}
-                    <button className="flex-shrink-0 w-64 h-40 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 transition-colors flex flex-col items-center justify-center gap-4 group relative overflow-hidden">
-                        <div className="w-24 h-24 relative flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                            <img
-                                src="/images/homepage/create-new-voiceover.png"
-                                className="w-full h-full object-contain"
-                                alt="Create new project"
-                            />
-                        </div>
-                        <span className="text-sm font-bold text-white relative z-10">Create a new project</span>
-                    </button>
-
-                    {[
-                        { title: "Podcast", image: "/images/homepage/podcast-thumbnail.jpg" },
-                        { title: "Story", image: "/images/homepage/story-thumbnail.png" },
-                        { title: "Advertisement", image: "/images/homepage/ad-thumbnail.png" },
-                        { title: "Meditation", image: "https://images.unsplash.com/photo-1518241353349-e85dfbb059a4?w=600&h=400&fit=crop&q=80" },
-                        { title: "Audio Book", image: "https://images.unsplash.com/photo-1491841573634-28140fc7ced7?w=600&h=400&fit=crop&q=80" }
-                    ].map((item, idx) => (
-                        <Link key={idx} href="/social">
-                            <div className="flex-shrink-0 w-64 h-40 rounded-3xl overflow-hidden relative group cursor-pointer border border-white/5">
-                                <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                                <div className="absolute inset-0 p-4 flex flex-col justify-between">
-                                    <div className="flex items-center gap-1.5 opacity-80">
-                                        <div className="w-4 h-4 rounded bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                            <span className="text-[8px] font-bold text-white">T</span>
-                                        </div>
-                                        <span className="text-xs font-bold text-white">{item.title}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                                        <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-black">
-                                            <PlayCircle className="w-4 h-4" />
-                                        </div>
-                                        <span className="text-xs font-bold text-white">Try it now</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </div>
 
             {/* Feed Section */}
             <div>

@@ -22,23 +22,17 @@ import { Capacitor } from '@capacitor/core'
 import { useEffect } from "react"
 
 const publicNavigation = [
-  { name: "Home", href: "/" },
-  { name: "AI Explorer", href: "/ai-explorer" },
   { name: "Learn", href: "/learn" },
   { name: "Earn", href: "/earn" },
   { name: "Play", href: "/social" },
-  { name: "Apps", href: "/apps" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ]
 
 const authenticatedNavigation = [
-  { name: "Dashboard", href: "/" },
-  { name: "AI Explorer", href: "/ai-explorer" },
   { name: "Learn", href: "/learn" },
   { name: "Earn", href: "/earn" },
   { name: "Play", href: "/social" },
-  { name: "Apps", href: "/apps" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ]

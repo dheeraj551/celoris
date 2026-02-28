@@ -12,9 +12,12 @@ import {
     Sparkles,
     FolderOpen,
     Zap,
-    ChevronRight,
     Search,
-    MessageCircle
+    MessageCircle,
+    Info,
+    Mail,
+    GraduationCap,
+    HardDrive
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -26,22 +29,22 @@ const MENU_GROUPS = [
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
-            { name: "Avatars and voices", icon: UserCircle, href: "/social" },
+            { name: "Celoris 3D", icon: UserCircle, href: "/social" },
         ]
     },
     {
         title: "Management",
         items: [
-            { name: "Analytics", icon: BarChart3, href: "/" },
-            { name: "Publisher", icon: UploadCloud, href: "/social" },
+            { name: "About Us", icon: Info, href: "/about" },
+            { name: "Contact us", icon: Mail, href: "/contact" },
             { name: "Blog", icon: Lightbulb, href: "/blog" },
         ]
     },
     {
         title: "Space",
         items: [
-            { name: "Smart creation", icon: Sparkles, href: "/ai-explorer" },
-            { name: "Assets", icon: FolderOpen, href: "/earn" },
+            { name: "Classrooms", icon: GraduationCap, href: "/learn" },
+            { name: "Celoris Drive", icon: HardDrive, href: "/earn" },
         ]
     }
 ];

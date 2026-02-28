@@ -250,6 +250,68 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
             </motion.div>
           </section>
 
+          {/* Corporate Information */}
+          <section>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-[2.5rem]" />
+              <div className="relative bg-[#0d1321]/40 border border-white/5 backdrop-blur-3xl rounded-[2.5rem] p-8 md:p-12 overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest">
+                      <Award size={10} /> Corporate Identity
+                    </div>
+                    <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter leading-none">
+                      Legal <br /><span className="text-emerald-500">Foundation</span>
+                    </h2>
+                    <p className="text-sm text-slate-400 font-bold uppercase tracking-wide leading-relaxed">
+                      Celoris is operated by Celoris Designs LLP,<br />
+                      a legally registered Indian company since 2019.
+                    </p>
+                    <div className="flex items-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-widest pt-4 border-t border-white/5">
+                      Verifiable at: <Link href="https://mca.gov.in" target="_blank" className="text-emerald-400 hover:text-emerald-300 transition-colors underline decoration-emerald-500/30">mca.gov.in</Link>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/5 rounded-3xl p-6 border border-white/5">
+                    <div className="space-y-1">
+                      <p className="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">Legal Name</p>
+                      <p className="text-xs font-bold text-white uppercase italic">Celoris Designs LLP</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">LLP ID No</p>
+                      <p className="text-xs font-bold text-white uppercase italic">AAP-3965</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">GST Reg No</p>
+                      <p className="text-xs font-bold text-white uppercase italic">09AAOFC5435B1ZJ</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">Incorporated</p>
+                      <p className="text-xs font-bold text-white uppercase italic">23rd May 2019</p>
+                    </div>
+                    <div className="sm:col-span-2 space-y-1 pt-4 border-t border-white/5">
+                      <p className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em]">Registered Under</p>
+                      <p className="text-[10px] font-bold text-slate-300 uppercase italic leading-tight">
+                        Limited Liability Partnership Act, 2008<br />
+                        Ministry of Corporate Affairs, Government of India
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative background logo/brand element */}
+                <div className="absolute -bottom-12 -right-12 text-[#10b981]/5 select-none pointer-events-none transform rotate-12">
+                  <Target scale={10} size={240} />
+                </div>
+              </div>
+            </motion.div>
+          </section>
+
           {/* Testimonials Section - Balanced Layout */}
           <section>
             <div className="text-center mb-16 px-4">

@@ -918,6 +918,29 @@ export default function CoursesDisplay({
           ]
         }
       ]
+    },
+    {
+      id: "excel-expert-master-static",
+      title: "Be an Excel Expert — From Beginner to Macro Master",
+      subject: "Business",
+      grade_level: "All Levels",
+      description: "The same course that has trained 682+ students and earned 229 verified reviews — now available on Celoris. Taught by Dheeraj Kushwaha.",
+      target_audience: "Working Professionals, Students, Entrepreneurs",
+      instructor_name: "Dheeraj Kushwaha",
+      course_duration: "10 Hours",
+      price: 0,
+      course_image_url: "/artifacts/excel_expert_course_cover_1772287193177.png",
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(4).fill(null).map((_, i) => ({
+        id: `excel-m${i}`,
+        module_number: i + 1,
+        title: `Level ${i + 1}`,
+        description: "",
+        estimated_duration: 150,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1006,6 +1029,7 @@ export default function CoursesDisplay({
     if (id === 'personalized-ai-experiences-static') return '/courses/personalized-ai-experiences-with-rag-and-agents'
     if (id === 'sovereign-intelligence-static') return '/courses/sovereign-intelligence'
     if (id === 'arjuna-ssc-jee-bridge-static') return '/courses/arjuna-ssc-jee-bridge'
+    if (id === 'excel-expert-master-static') return '/learn/be-an-excel-expert'
     return `/learn/course/${id}`
   }
 

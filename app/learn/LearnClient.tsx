@@ -219,8 +219,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             transition={{ delay: 0.2 }}
             className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-slate-400 font-medium leading-relaxed italic"
           >
-            Access legendary courses designed by industry disruptors. Learn at your own pace
-            and bridge the gap to your future self.
+            Free classes with real trainers. Learn video editing, AI tools, Excel, spoken English and more. First session free — no credit card needed.
           </motion.p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-10 h-14 font-bold text-sm shadow-xl shadow-emerald-500/20" asChild>

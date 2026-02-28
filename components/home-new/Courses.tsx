@@ -54,59 +54,38 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                 {id ? (
                     <Link
                         href={
-                            id === 'vibe-coding-mastery-static'
-                                ? '/courses/vibe-coding-mastery'
-                                : id === 'class-11-physics-static'
-                                    ? '/courses/cbse-class-11-physics-comprehensive-course'
-                                    : id === 'class-12-physics-static'
-                                        ? '/courses/cbse-class-12-physics-complete-course'
-                                        : id === 'class-10-physics-static'
-                                            ? '/courses/cbse-class-10-physics-light-electricity-magnetism-energy'
-                                            : id === 'class-9-chemistry-static'
-                                                ? '/courses/cbse-class-9-chemistry-complete-course'
-                                                : id === 'b65a0bc8-2e86-4170-9a3c-91c4050de31f'
-                                                    ? '/courses/cbse-class-9-physics-motion-force-energy-sound'
-                                                    : id === 'class-10-chemistry-static'
-                                                        ? '/courses/cbse-class-10-chemistry-complete-course'
-                                                        : id === 'class-11-chemistry-static'
-                                                            ? '/courses/cbse-class-11-chemistry-complete-course'
-                                                            : id === 'class-12-chemistry-static'
-                                                                ? '/courses/cbse-class-12-chemistry-complete-course'
-                                                                : id === 'yoga-mastery-2025-static'
-                                                                    ? '/courses/complete-2025-yoga-mastery-course'
-                                                                    : id === '28-day-reset-static'
-                                                                        ? '/courses/the-28-day-reset-foundation-strength-mobility'
-                                                                        : id === 'class-9-maths-static'
-                                                                            ? '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
-                                                                            : id === 'livekit-ai-agents-static'
-                                                                                ? '/courses/build-real-time-ai-agents-with-livekit'
-                                                                                : id === 'agentic-ai-systems-static'
-                                                                                    ? '/courses/agentic-ai-systems-design-build-deploy'
-                                                                                    : id === 'rag-unlocked-static'
-                                                                                        ? '/courses/rag-unlocked-production-grade-search-answer-systems'
-                                                                                        : id === 'llm-prompt-engineering-static'
-                                                                                            ? '/courses/llm-prompt-engineering-for-real-results'
-                                                                                            : id === 'deploy-scale-ai-static'
-                                                                                                ? '/courses/deploy-scale-ai-apps-serverless-edge'
-                                                                                                : id === 'langchain-real-static'
-                                                                                                    ? '/courses/langchain-in-action-real-workflows'
-                                                                                                    : id === 'build-ai-products-static'
-                                                                                                        ? '/courses/build-ai-products-that-make-money-practical-guide'
-                                                                                                        : id === 'mastering-multimodal-ai-static'
-                                                                                                            ? '/courses/mastering-multimodal-ai'
-                                                                                                            : id === 'building-model-native-agent-systems-static'
-                                                                                                                ? '/courses/building-model-native-agent-systems'
-                                                                                                                : id === 'architecting-trust-static'
-                                                                                                                    ? '/courses/architecting-trust-ai-safety-ethics-compliance'
-                                                                                                                    : id === 'agentic-ai-cybersecurity-static'
-                                                                                                                        ? '/courses/agentic-ai-for-cybersecurity'
-                                                                                                                        : id === 'accelerating-science-static'
-                                                                                                                            ? '/courses/accelerating-science-generative-ai-for-research-innovation'
-                                                                                                                            : id === 'personalized-ai-experiences-static'
-                                                                                                                                ? '/courses/personalized-ai-experiences-with-rag-and-agents'
-                                                                                                                                : id === 'sovereign-intelligence-static'
-                                                                                                                                    ? '/courses/sovereign-intelligence'
-                                                                                                                                    : `/learn/course/${id}`
+                            (() => {
+                                const routes: Record<string, string> = {
+                                    'vibe-coding-mastery-static': '/courses/vibe-coding-mastery',
+                                    'class-11-physics-static': '/courses/cbse-class-11-physics-comprehensive-course',
+                                    'class-12-physics-static': '/courses/cbse-class-12-physics-complete-course',
+                                    'class-10-physics-static': '/courses/cbse-class-10-physics-light-electricity-magnetism-energy',
+                                    'class-9-chemistry-static': '/courses/cbse-class-9-chemistry-complete-course',
+                                    'b65a0bc8-2e86-4170-9a3c-91c4050de31f': '/courses/cbse-class-9-physics-motion-force-energy-sound',
+                                    'class-10-chemistry-static': '/courses/cbse-class-10-chemistry-complete-course',
+                                    'class-11-chemistry-static': '/courses/cbse-class-11-chemistry-complete-course',
+                                    'class-12-chemistry-static': '/courses/cbse-class-12-chemistry-complete-course',
+                                    'yoga-mastery-2025-static': '/courses/complete-2025-yoga-mastery-course',
+                                    '28-day-reset-static': '/courses/the-28-day-reset-foundation-strength-mobility',
+                                    'class-9-maths-static': '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
+                                    'livekit-ai-agents-static': '/courses/build-real-time-ai-agents-with-livekit',
+                                    'agentic-ai-systems-static': '/courses/agentic-ai-systems-design-build-deploy',
+                                    'rag-unlocked-static': '/courses/rag-unlocked-production-grade-search-answer-systems',
+                                    'llm-prompt-engineering-static': '/courses/llm-prompt-engineering-for-real-results',
+                                    'deploy-scale-ai-static': '/courses/deploy-scale-ai-apps-serverless-edge',
+                                    'langchain-real-static': '/courses/langchain-in-action-real-workflows',
+                                    'build-ai-products-static': '/courses/build-ai-products-that-make-money-practical-guide',
+                                    'mastering-multimodal-ai-static': '/courses/mastering-multimodal-ai',
+                                    'building-model-native-agent-systems-static': '/courses/building-model-native-agent-systems',
+                                    'architecting-trust-static': '/courses/architecting-trust-ai-safety-ethics-compliance',
+                                    'agentic-ai-cybersecurity-static': '/courses/agentic-ai-for-cybersecurity',
+                                    'accelerating-science-static': '/courses/accelerating-science-generative-ai-for-research-innovation',
+                                    'personalized-ai-experiences-static': '/courses/personalized-ai-experiences-with-rag-and-agents',
+                                    'sovereign-intelligence-static': '/courses/sovereign-intelligence',
+                                    'excel-expert-master-static': '/learn/be-an-excel-expert'
+                                };
+                                return routes[id] || `/learn/course/${id}`;
+                            })()
                         }
                         className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
                     >
@@ -123,6 +102,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
+    { id: 'excel-expert-master-static', title: 'Be an Excel Expert — From Beginner to Macro Master', subject: 'Microsoft Excel', instructor_name: 'Dheeraj Kushwaha', course_duration: '10 Hours', price: 999, is_featured: true, course_image_url: '/artifacts/excel_expert_course_cover_1772287193177.png' },
     { id: 'sovereign-intelligence-static', title: 'Learn AI Basics Free: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
     { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ZwqAdQsXy3A/maxresdefault.jpg' },
     { id: 'architecting-trust-static', title: 'AI Safety, Ethics & Compliance Mastery', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/CdCAuee0qyI/maxresdefault.jpg' },

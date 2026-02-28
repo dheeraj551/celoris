@@ -228,28 +228,54 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className={cn(
-          "border-t pt-12 flex flex-col sm:flex-row justify-between items-center gap-6",
-          isDarkPage ? "border-white/5" : "border-border"
+          "border-t pt-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-start",
+          isDarkPage ? "border-slate-200" : "border-border"
         )}>
-          <p className={cn(
-            "text-[10px] font-black uppercase tracking-widest italic",
-            isDarkPage ? "text-slate-600" : "text-text-secondary"
-          )}>
-            © 2026 Celoris Designs LLP. Protocol Active.
-          </p>
-          <div className="flex space-x-8 text-[10px] font-black uppercase tracking-widest italic">
-            {['Privacy', 'Terms', 'Cookies'].map((item) => (
-              <Link
-                key={item}
-                href={`/${item.toLowerCase()}`}
-                className={cn(
-                  "transition-colors",
-                  isDarkPage ? "text-slate-600 hover:text-emerald-500" : "text-text-secondary hover:text-primary-500"
-                )}
-              >
-                {item}
-              </Link>
-            ))}
+          <div className="space-y-2">
+            <p className={cn(
+              "text-[10px] font-black uppercase tracking-widest italic",
+              isDarkPage ? "text-slate-900" : "text-text-primary"
+            )}>
+              Celoris Designs LLP
+            </p>
+            <div className={cn(
+              "text-[9px] font-bold uppercase tracking-wider space-y-1 italic",
+              isDarkPage ? "text-slate-500" : "text-text-secondary"
+            )}>
+              <p>LLP Identification No: AAP-3965</p>
+              <p>GST No: 09AAOFC5435B1ZJ</p>
+              <p>Established: 23rd May 2019</p>
+            </div>
+            <p className={cn(
+              "text-[10px] font-black uppercase tracking-widest italic pt-4",
+              isDarkPage ? "text-slate-400" : "text-text-secondary"
+            )}>
+              © 2019–2026 Celoris Designs LLP. All rights reserved.
+            </p>
+          </div>
+
+          <div className="space-y-4 md:text-right">
+            <div className={cn(
+              "text-[9px] font-bold uppercase tracking-wider space-y-1 italic",
+              isDarkPage ? "text-slate-500" : "text-text-secondary"
+            )}>
+              <p>Incorporated under the Limited Liability Partnership Act, 2008</p>
+              <p>Registered with Ministry of Corporate Affairs, Government of India</p>
+            </div>
+            <div className="flex sm:justify-end space-x-8 text-[10px] font-black uppercase tracking-widest italic pt-2">
+              {['Privacy', 'Terms', 'Cookies'].map((item) => (
+                <Link
+                  key={item}
+                  href={`/${item.toLowerCase()}`}
+                  className={cn(
+                    "transition-colors",
+                    isDarkPage ? "text-slate-600 hover:text-emerald-500" : "text-text-secondary hover:text-primary-500"
+                  )}
+                >
+                  {item}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
