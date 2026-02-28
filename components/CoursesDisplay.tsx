@@ -929,7 +929,7 @@ export default function CoursesDisplay({
       instructor_name: "Dheeraj Kushwaha",
       course_duration: "10 Hours",
       price: 0,
-      course_image_url: "/artifacts/excel_expert_course_cover_1772287193177.png",
+      course_image_url: "/excel-expert-cover.png",
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(4).fill(null).map((_, i) => ({

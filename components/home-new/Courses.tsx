@@ -102,7 +102,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
-    { id: 'excel-expert-master-static', title: 'Be an Excel Expert — From Beginner to Macro Master', subject: 'Microsoft Excel', instructor_name: 'Dheeraj Kushwaha', course_duration: '10 Hours', price: 999, is_featured: true, course_image_url: '/artifacts/excel_expert_course_cover_1772287193177.png' },
+    { id: 'excel-expert-master-static', title: 'Be an Excel Expert — From Beginner to Macro Master', subject: 'Microsoft Excel', instructor_name: 'Dheeraj Kushwaha', course_duration: '10 Hours', price: 999, is_featured: true, course_image_url: '/excel-expert-cover.png' },
     { id: 'sovereign-intelligence-static', title: 'Learn AI Basics Free: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
     { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ZwqAdQsXy3A/maxresdefault.jpg' },
     { id: 'architecting-trust-static', title: 'AI Safety, Ethics & Compliance Mastery', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/CdCAuee0qyI/maxresdefault.jpg' },

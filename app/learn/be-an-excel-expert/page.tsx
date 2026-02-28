@@ -37,7 +37,15 @@ export default function ExcelExpertPage() {
                                     "name": "Is this Excel course free on Celoris?",
                                     "acceptedAnswer": {
                                         "@type": "Answer",
-                                        "text": "Your first live demo session is completely free. After that each module is available at an affordable price."
+                                        "text": "Your first live demo session is completely free. After that each module is available at an affordable price — significantly lower than similar courses elsewhere. Self-paced recorded content is available free."
+                                    }
+                                },
+                                {
+                                    "@type": "Question",
+                                    "name": "Is this the same course available on UrbanPro?",
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": "Yes — this is the exact same curriculum by Dheeraj Kushwaha that has 229 verified reviews and 682 students on UrbanPro."
                                     }
                                 },
                                 {
@@ -45,7 +53,23 @@ export default function ExcelExpertPage() {
                                     "name": "Will I get a certificate?",
                                     "acceptedAnswer": {
                                         "@type": "Answer",
-                                        "text": "Yes — a Celoris Certificate of Completion after each module and a full course certificate signed by the trainer."
+                                        "text": "Yes — a Celoris Certificate of Completion after each module and a full course certificate signed by the trainer on completing all 4 modules."
+                                    }
+                                },
+                                {
+                                    "@type": "Question",
+                                    "name": "Does this course cover Excel interview questions?",
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": "Absolutely — this course was specifically designed to help students crack Excel interview questions asked in KPO, banking and corporate jobs. VLOOKUP, PivotTables and IF formulas are covered in depth."
+                                    }
+                                },
+                                {
+                                    "@type": "Question",
+                                    "name": "How is this better than free YouTube tutorials?",
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": "YouTube gives you videos with no feedback. This course gives you a real trainer who knows the Indian workplace, answers your specific questions, and prepares you for actual job interviews."
                                     }
                                 }
                             ]

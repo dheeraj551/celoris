@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 import { DashboardShell } from "@/components/home-new/DashboardShell"
 import {
     Sparkles,
@@ -29,6 +31,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export default function ExcelExpertClient() {
+    const [showTrailer, setShowTrailer] = useState(false)
     const fadeIn = {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
@@ -117,25 +120,15 @@ export default function ExcelExpertClient() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="aspect-video rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl shadow-emerald-500/5 relative group"
+                            className="aspect-video rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl shadow-emerald-500/5 relative"
                         >
-                            <img
-                                src="/artifacts/excel_expert_course_cover_1772287193177.png"
-                                alt="Excel Expert Course"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-60" />
-                            <div className="absolute bottom-12 left-12">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-xl">
-                                        <PlayCircle size={32} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <div className="text-white font-black text-lg uppercase italic">Watch Trailer</div>
-                                        <div className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Available on Celoris</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <iframe
+                                className="w-full h-full"
+                                src="https://www.youtube.com/embed/rJsGIRdM-o8"
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            ></iframe>
                         </motion.div>
                     </div>
                 </section>
