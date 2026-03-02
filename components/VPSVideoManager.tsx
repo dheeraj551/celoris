@@ -79,8 +79,8 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
       const uploadResult = await uploadResponse.json();
 
       // Update video status
-      setVideos(prev => prev.map(v => 
-        v.id === videoUpload.id 
+      setVideos((prev: any[]) => prev.map((v: any) =>
+        v.id === videoUpload.id
           ? { ...v, progress: 50, status: 'processing', vpsUrl: uploadResult.vps_url }
           : v
       ));
@@ -112,8 +112,8 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
       if (error) throw error;
 
       // Final update
-      setVideos(prev => prev.map(v => 
-        v.id === videoUpload.id 
+      setVideos((prev: any[]) => prev.map((v: any) =>
+        v.id === videoUpload.id
           ? { ...v, progress: 100, status: 'completed' }
           : v
       ));
@@ -124,8 +124,8 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
 
     } catch (error) {
       console.error('Video upload error:', error);
-      setVideos(prev => prev.map(v => 
-        v.id === videoUpload.id 
+      setVideos((prev: any[]) => prev.map((v: any) =>
+        v.id === videoUpload.id
           ? { ...v, status: 'error', error: error instanceof Error ? error.message : 'Unknown error' }
           : v
       ));
@@ -143,7 +143,7 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
       video.onloadedmetadata = () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        
+
         video.currentTime = Math.min(2, video.duration / 4); // Capture at 2 seconds or 1/4 of duration
       };
 
@@ -164,7 +164,7 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
   };
 
   const removeVideo = (videoId: string) => {
-    setVideos(prev => prev.filter(v => v.id !== videoId));
+    setVideos((prev: any[]) => prev.filter((v: any) => v.id !== videoId));
   };
 
   const getStatusIcon = (status: VideoUpload['status']) => {
@@ -191,7 +191,7 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
             Upload Videos to VPS Storage
           </CardTitle>
           <CardDescription>
-            Upload videos directly to our high-performance VPS storage. 
+            Upload videos directly to our high-performance VPS storage.
             Videos are stored on dedicated servers with unlimited bandwidth.
           </CardDescription>
         </CardHeader>
@@ -262,7 +262,7 @@ export default function VPSVideoManager({ user, onUploadComplete }: VPSVideoMana
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {videos.map((video) => (
+              {videos.map((video: VideoUpload) => (
                 <div key={video.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                   <div className="flex-shrink-0">
                     {getStatusIcon(video.status)}

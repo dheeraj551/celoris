@@ -27,9 +27,9 @@ interface WhatsAppIntegrationProps {
   onMessageSent?: (success: boolean, messageId?: string) => void
 }
 
-export default function WhatsAppIntegration({ 
-  userPhone, 
-  onMessageSent 
+export default function WhatsAppIntegration({
+  userPhone,
+  onMessageSent
 }: WhatsAppIntegrationProps) {
   const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -41,7 +41,7 @@ export default function WhatsAppIntegration({
   useState(() => {
     // Get current user
     const supabase = createClientForBrowser()
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
       setUser(user)
     })
   })
@@ -72,7 +72,7 @@ export default function WhatsAppIntegration({
       }
 
       toast.success('WhatsApp message sent successfully!')
-      
+
       // Add to message history
       const newMessage = {
         id: data.messageId,
@@ -81,10 +81,10 @@ export default function WhatsAppIntegration({
         status: 'sent',
         timestamp: new Date().toISOString()
       }
-      
+
       setMessageHistory(prev => [newMessage, ...prev])
       setMessage('')
-      
+
       if (onMessageSent) {
         onMessageSent(true, data.messageId)
       }
@@ -92,7 +92,7 @@ export default function WhatsAppIntegration({
     } catch (error: any) {
       console.error('Error sending WhatsApp message:', error)
       toast.error(error.message || 'Failed to send WhatsApp message')
-      
+
       if (onMessageSent) {
         onMessageSent(false)
       }
@@ -128,7 +128,7 @@ export default function WhatsAppIntegration({
       }
 
       toast.success('Test WhatsApp message sent!')
-      
+
     } catch (error: any) {
       console.error('Error sending test message:', error)
       toast.error(error.message || 'Failed to send test message')
@@ -140,7 +140,7 @@ export default function WhatsAppIntegration({
   const formatPhoneNumber = (phone: string) => {
     // Remove all non-digits
     const cleaned = phone.replace(/\D/g, '')
-    
+
     // Add country code if not present (assuming US/Canada)
     if (cleaned.length === 10) {
       return `+1${cleaned}`
@@ -162,14 +162,13 @@ export default function WhatsAppIntegration({
         <CardTitle className="flex items-center space-x-2">
           <MessageCircle className="w-5 h-5 text-green-600" />
           <span>WhatsApp Integration</span>
-          <div className={`w-2 h-2 rounded-full ${
-            integrationStatus === 'configured' ? 'bg-green-500' :
-            integrationStatus === 'error' ? 'bg-red-500' :
-            'bg-yellow-500'
-          }`} />
+          <div className={`w-2 h-2 rounded-full ${integrationStatus === 'configured' ? 'bg-green-500' :
+              integrationStatus === 'error' ? 'bg-red-500' :
+                'bg-yellow-500'
+            }`} />
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Phone Number Input */}
         <div className="space-y-2">
@@ -201,7 +200,7 @@ export default function WhatsAppIntegration({
 
         {/* Action Buttons */}
         <div className="space-y-2">
-          <Button 
+          <Button
             onClick={sendWhatsAppMessage}
             disabled={!message.trim() || !validatePhoneNumber(phoneNumber) || isLoading}
             className="w-full bg-green-600 hover:bg-green-700"
@@ -218,8 +217,8 @@ export default function WhatsAppIntegration({
               </>
             )}
           </Button>
-          
-          <Button 
+
+          <Button
             onClick={sendTestMessage}
             disabled={!validatePhoneNumber(phoneNumber) || isLoading}
             variant="outline"
@@ -238,16 +237,16 @@ export default function WhatsAppIntegration({
               {integrationStatus === 'error' && <XCircle className="w-4 h-4 text-red-600" />}
               <span className={
                 integrationStatus === 'configured' ? 'text-green-600' :
-                integrationStatus === 'error' ? 'text-red-600' :
-                'text-yellow-600'
+                  integrationStatus === 'error' ? 'text-red-600' :
+                    'text-yellow-600'
               }>
                 {integrationStatus === 'configured' ? 'Configured' :
-                 integrationStatus === 'error' ? 'Error' :
-                 'Not Configured'}
+                  integrationStatus === 'error' ? 'Error' :
+                    'Not Configured'}
               </span>
             </div>
           </div>
-          
+
           {integrationStatus === 'not_configured' && (
             <p className="text-sm text-gray-600">
               WhatsApp integration is not configured. Contact administrator to set up WhatsApp Business API.

@@ -28,8 +28,8 @@ interface PushNotificationManagerProps {
   onNotificationReceived?: (notification: any) => void
 }
 
-export default function PushNotificationManager({ 
-  onNotificationReceived 
+export default function PushNotificationManager({
+  onNotificationReceived
 }: PushNotificationManagerProps) {
   const [user, setUser] = useState<any>(null)
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | null>(null)
@@ -40,7 +40,7 @@ export default function PushNotificationManager({
   useEffect(() => {
     // Get current user
     const supabase = createClientForBrowser()
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
       setUser(user)
     })
 
@@ -70,12 +70,12 @@ export default function PushNotificationManager({
     try {
       // Generate a mock FCM token for demo purposes
       const mockToken = `mock_fcm_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      
+
       setFcmToken(mockToken)
-      
+
       // Register token with backend
       await registerToken(mockToken)
-      
+
       // Simulate notification listener
       setTimeout(() => {
         const mockNotification = {
@@ -85,14 +85,14 @@ export default function PushNotificationManager({
           },
           data: { type: 'demo' }
         }
-        
+
         if (onNotificationReceived) {
           onNotificationReceived(mockNotification)
         }
-        
+
         showNotification(mockNotification)
       }, 1000)
-      
+
       toast.success('Push notifications enabled!')
     } catch (error) {
       console.error('Error initializing FCM:', error)
@@ -128,7 +128,7 @@ export default function PushNotificationManager({
     if (typeof window === 'undefined' || !('Notification' in window)) return
 
     const { title, body, icon, badge } = payload.notification || {}
-    
+
     const notification = new Notification(title || 'New Message', {
       body: body || 'You have a new notification',
       icon: icon || '/logo-default (2).png',
@@ -211,30 +211,29 @@ export default function PushNotificationManager({
           <span>Push Notifications</span>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">Status</span>
-            <div className={`flex items-center space-x-1 text-sm ${
-              notificationPermission?.granted 
-                ? 'text-green-600' 
+            <div className={`flex items-center space-x-1 text-sm ${notificationPermission?.granted
+                ? 'text-green-600'
                 : notificationPermission?.denied
-                ? 'text-red-600'
-                : 'text-yellow-600'
-            }`}>
+                  ? 'text-red-600'
+                  : 'text-yellow-600'
+              }`}>
               {notificationPermission?.granted && <Check className="w-4 h-4" />}
               {notificationPermission?.denied && <X className="w-4 h-4" />}
               <span>
-                {notificationPermission?.granted 
-                  ? 'Enabled' 
+                {notificationPermission?.granted
+                  ? 'Enabled'
                   : notificationPermission?.denied
-                  ? 'Blocked'
-                  : 'Not Granted'}
+                    ? 'Blocked'
+                    : 'Not Granted'}
               </span>
             </div>
           </div>
-          
+
           {fcmToken && (
             <div className="text-xs text-gray-500 break-all">
               Token: {fcmToken.substring(0, 20)}...
@@ -244,7 +243,7 @@ export default function PushNotificationManager({
 
         <div className="space-y-2">
           {!notificationPermission?.granted ? (
-            <Button 
+            <Button
               onClick={initializeFCM}
               disabled={isLoading}
               className="w-full"
@@ -263,15 +262,15 @@ export default function PushNotificationManager({
             </Button>
           ) : (
             <div className="space-y-2">
-              <Button 
+              <Button
                 onClick={sendTestNotification}
                 variant="outline"
                 className="w-full"
               >
                 Send Test Notification
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={disableNotifications}
                 variant="destructive"
                 size="sm"
