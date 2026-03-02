@@ -107,7 +107,7 @@ export default function DiscoverPage() {
         )
         setProfiles(profilesWithAvatars)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading profiles:', error)
     } finally {
       setLoading(false)

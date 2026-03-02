@@ -283,7 +283,7 @@ export default function EnhancedChatPage() {
       .channel(`presence:${matchId}`)
       .on('presence', { event: 'sync' }, () => {
         const state = presenceSubscription.presenceState()
-        const onlineUsers = Object.keys(state).map(userId => ({
+        const onlineUsers = Object.keys(state).map((userId: string) => ({
           userId,
           status: 'online' as const,
           lastSeen: new Date().toISOString()
@@ -295,7 +295,7 @@ export default function EnhancedChatPage() {
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }: any) => {
         console.log('User left:', key, leftPresences)
-        setUserPresence(prev => prev.filter(p => p.userId !== key))
+        setUserPresence(prev => prev.filter((p: any) => p.userId !== key))
       })
       .subscribe(async (status: any) => {
         if (status === 'SUBSCRIBED') {

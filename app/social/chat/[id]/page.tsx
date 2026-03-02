@@ -214,7 +214,7 @@ export default function ChatPage() {
         filter: `match_id=eq.${matchId}`
       }, (payload: any) => {
         setMessages(prev => {
-          if (prev.some(m => m.id === payload.new.id)) return prev
+          if (prev.some((m: any) => m.id === payload.new.id)) return prev
           if (payload.new.sender_id !== currentUser?.id) {
             new Audio(MSG_SOUND).play().catch(() => { })
           }

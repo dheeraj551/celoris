@@ -111,13 +111,13 @@ export default function EarningsPage() {
 
       setEarnings(earningsData || [])
 
-      const totalEarnings = (earningsData || []).filter(e => e.is_completed)
-        .reduce((sum, e) => sum + e.amount, 0)
+      const totalEarnings = (earningsData || []).filter((e: any) => e.is_completed)
+        .reduce((sum: number, e: any) => sum + e.amount, 0)
 
       setStats({
         totalEarnings,
         monthlyEarnings: totalEarnings * 0.4, // Mock
-        totalTips: (earningsData || []).filter(e => e.earning_type === 'tip').length,
+        totalTips: (earningsData || []).filter((e: any) => e.earning_type === 'tip').length,
         totalSubscribers: 12, // Mock
         totalContent: 5, // Mock
         averageTip: totalEarnings / ((earningsData || []).length || 1),

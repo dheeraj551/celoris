@@ -79,7 +79,7 @@ export default function SocialPage() {
         ...prev,
         social: {
           count: presences.length,
-          users: presences.map(p => p.user).filter(Boolean).slice(0, 4)
+          users: presences.map((p: any) => p.user).filter(Boolean).slice(0, 4)
         }
       }))
     }).subscribe()
@@ -92,7 +92,7 @@ export default function SocialPage() {
         ...prev,
         networking: {
           count: presences.length,
-          users: presences.map(p => p.user).filter(Boolean).slice(0, 4)
+          users: presences.map((p: any) => p.user).filter(Boolean).slice(0, 4)
         }
       }))
     }).subscribe()
@@ -105,7 +105,7 @@ export default function SocialPage() {
         ...prev,
         tech: {
           count: presences.length,
-          users: presences.map(p => p.user).filter(Boolean).slice(0, 4)
+          users: presences.map((p: any) => p.user).filter(Boolean).slice(0, 4)
         }
       }))
     }).subscribe()
@@ -118,7 +118,7 @@ export default function SocialPage() {
         ...prev,
         lobby: {
           count: presences.length,
-          users: presences.map(p => p.user).filter(Boolean).slice(0, 10)
+          users: presences.map((p: any) => p.user).filter(Boolean).slice(0, 10)
         }
       }))
     }).subscribe()
@@ -128,22 +128,22 @@ export default function SocialPage() {
       const state = tracker.presenceState()
       const roomsMap: Record<string, any[]> = {}
       Object.values(state).forEach((presences: any) => {
-        (presences as any[]).forEach(presence => {
+        (presences as any[]).forEach((presence: any) => {
           if (presence?.roomId && presence.roomId.startsWith('private-')) {
             if (!roomsMap[presence.roomId]) {
               roomsMap[presence.roomId] = []
             }
-            if (!roomsMap[presence.roomId].some(u => u?.id === presence.user?.id)) {
+            if (!roomsMap[presence.roomId].some((u: any) => u?.id === presence.user?.id)) {
               roomsMap[presence.roomId].push(presence.user)
             }
           }
         })
       })
 
-      const rooms = Object.entries(roomsMap).map(([id, users]) => ({
+      const rooms = Object.entries(roomsMap).map(([id, users]: [string, any[]]) => ({
         id,
         users
-      })).sort((a, b) => a.id.localeCompare(b.id))
+      })).sort((a: any, b: any) => a.id.localeCompare(b.id))
 
       setActivePrivateRooms(rooms)
     }).subscribe()

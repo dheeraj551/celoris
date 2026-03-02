@@ -32,7 +32,7 @@ export default async function StudyRoomPage({ params }: { params: Promise<{ room
         if (profile) {
             userName = profile.full_name || profile.username || userName;
         }
-    } catch (e) {
+    } catch (e: any) {
         console.error("Error fetching profile", e);
     }
 

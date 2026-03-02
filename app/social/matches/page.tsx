@@ -164,7 +164,7 @@ export default function MatchesPage() {
           m.user1_id === user.id ? m.user2_id : m.user1_id
         ) || [])
 
-        const pendingSwipes = (incomingSwipes as any[])?.filter(s => !matchedUserIds.has(s.swiper_id)) || []
+        const pendingSwipes = (incomingSwipes as any[])?.filter((s: any) => !matchedUserIds.has(s.swiper_id)) || []
         const pendingRequests: Request[] = []
 
         for (const swipe of pendingSwipes) {
@@ -232,7 +232,7 @@ export default function MatchesPage() {
 
       if (matchError) throw matchError
 
-      setRequests(prev => prev.filter(r => r.swiper_id !== request.swiper_id))
+      setRequests(prev => prev.filter((r: any) => r.swiper_id !== request.swiper_id))
 
       if (matchData) {
         const newMatch: Match = {
@@ -264,7 +264,7 @@ export default function MatchesPage() {
         target_user_id: request.swiper_id,
         direction: 'left'
       } as any)
-      setRequests(prev => prev.filter(r => r.swiper_id !== request.swiper_id))
+      setRequests(prev => prev.filter((r: any) => r.swiper_id !== request.swiper_id))
     } catch (error) {
       console.error('Error declining request:', error)
     } finally {

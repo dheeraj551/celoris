@@ -115,7 +115,7 @@ export default function GlobalLobbyPage() {
         channel
             .on('broadcast', { event: 'message' }, ({ payload }: { payload: ChatMessage }) => {
                 setMessages((prev) => {
-                    if (prev.some(m => m.id === payload.id)) return prev
+                    if (prev.some((m: ChatMessage) => m.id === payload.id)) return prev
                     if (payload.sender.id !== user.id) {
                         new Audio(MSG_SOUND).play().catch(() => { })
                     }
@@ -196,10 +196,10 @@ export default function GlobalLobbyPage() {
                     }
                 })
 
-                const rooms = Object.entries(roomsMap).map(([id, users]) => ({
+                const rooms = Object.entries(roomsMap).map(([id, users]: [string, UserProfile[]]) => ({
                     id,
                     users
-                })).sort((a, b) => a.id.localeCompare(b.id))
+                })).sort((a: any, b: any) => a.id.localeCompare(b.id))
 
                 setPrivateRoomsCount(rooms.length)
                 setActivePrivateRooms(rooms)
