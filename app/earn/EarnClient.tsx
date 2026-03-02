@@ -87,7 +87,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
           schema: 'public',
           table: 'jobs'
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Jobs table changed, refreshing...', payload)
           loadJobs()
         }

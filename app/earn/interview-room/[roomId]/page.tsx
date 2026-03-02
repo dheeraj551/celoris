@@ -243,7 +243,7 @@ export default function InterviewRoomPage() {
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'room_messages', filter: `room_id=eq.${roomId}` },
-                async (payload) => {
+                async (payload: any) => {
                     // Fetch user profile for the new message
                     const { data: userProfile } = await supabase
                         .from('users')
