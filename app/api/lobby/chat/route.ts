@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
             await new Promise<void>((resolve) => {
                 let resolved = false;
 
-                channel.subscribe(async (status) => {
+                channel.subscribe(async (status: any) => {
                     if (status === 'SUBSCRIBED' && !resolved) {
                         await channel.send({
                             type: 'broadcast',

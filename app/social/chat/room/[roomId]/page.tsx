@@ -177,7 +177,7 @@ export default function PublicRoomPage() {
                 setPrivateRoomsCount(rooms.length)
                 setActivePrivateRooms(rooms)
             })
-            .subscribe(async (status) => {
+            .subscribe(async (status: any) => {
                 if (status === 'SUBSCRIBED') {
                     await tracker.track({
                         user,

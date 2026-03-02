@@ -182,10 +182,10 @@ export default function GeneralHubPage() {
         })
 
         channel
-            .on('broadcast', { event: 'chat-message' }, ({ payload }) => {
+            .on('broadcast', { event: 'chat-message' }, ({ payload }: any) => {
                 setMessages(prev => [...prev, payload])
             })
-            .on('broadcast', { event: 'raise-hand' }, ({ payload }) => {
+            .on('broadcast', { event: 'raise-hand' }, ({ payload }: any) => {
                 if (role === 'host') {
                     toast({
                         title: "✋ Hand Raised",
@@ -198,7 +198,7 @@ export default function GeneralHubPage() {
                     })
                 }
             })
-            .on('broadcast', { event: 'promote-user' }, async ({ payload }) => {
+            .on('broadcast', { event: 'promote-user' }, async ({ payload }: any) => {
                 if (payload.userId === currentUser?.id) {
                     toast({ title: "🎤 You're Live!", description: "The teacher has enabled your microphone." })
                     await promoteSelfToSpeaker()
@@ -218,16 +218,16 @@ export default function GeneralHubPage() {
                     leaveAgoraOnly()
                 }
             })
-            .on('presence', { event: 'join' }, ({ newPresences }) => {
+            .on('presence', { event: 'join' }, ({ newPresences }: any) => {
                 const someHost = Object.values(newPresences).flat().some((p: any) => p.role === 'host')
                 if (someHost && role === 'audience' && !isAgoraJoined) {
                     initAgoraInternal('audience')
                 }
             })
-            .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+            .on('presence', { event: 'leave' }, ({ leftPresences }: any) => {
                 // Check if the host left
             })
-            .subscribe(async (status) => {
+            .subscribe(async (status: any) => {
                 if (status === 'SUBSCRIBED') {
                     await channel.track({
                         id: currentUser?.id,

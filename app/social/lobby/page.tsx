@@ -169,7 +169,7 @@ export default function GlobalLobbyPage() {
                 }
                 prevOnlineCount.current = newUsers.length
             })
-            .subscribe(async (status) => {
+            .subscribe(async (status: any) => {
                 if (status === 'SUBSCRIBED') {
                     await channel.track({
                         user: user,

@@ -232,7 +232,7 @@ export default function EnhancedChatPage() {
         schema: 'public',
         table: 'messages',
         filter: `match_id=eq.${matchId}`
-      }, (payload) => {
+      }, (payload: any) => {
         const newMessage = payload.new as Message
         setMessages(prev => [...prev, newMessage])
 
@@ -250,7 +250,7 @@ export default function EnhancedChatPage() {
           sendPushNotification(newMessage)
         }
       })
-      .subscribe((status) => {
+      .subscribe((status: any) => {
         if (status === 'SUBSCRIBED') {
           setOnlineStatus('connected')
         } else if (status === 'CHANNEL_ERROR') {
@@ -263,7 +263,7 @@ export default function EnhancedChatPage() {
       .channel(`typing:${matchId}`)
       .on('broadcast', {
         event: 'typing'
-      }, (payload) => {
+      }, (payload: any) => {
         const { userId, isTyping } = payload.payload as { userId: string, isTyping: boolean }
 
         if (userId !== user?.id) {
@@ -290,14 +290,14 @@ export default function EnhancedChatPage() {
         }))
         setUserPresence(onlineUsers)
       })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
         console.log('User joined:', key, newPresences)
       })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }: any) => {
         console.log('User left:', key, leftPresences)
         setUserPresence(prev => prev.filter(p => p.userId !== key))
       })
-      .subscribe(async (status) => {
+      .subscribe(async (status: any) => {
         if (status === 'SUBSCRIBED') {
           await presenceSubscription.track({
             userId: user?.id,
