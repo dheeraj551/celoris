@@ -8,6 +8,7 @@ import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -187,6 +188,7 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ReCaptchaProvider>
+        <Analytics />
       </body>
     </html>
   )
