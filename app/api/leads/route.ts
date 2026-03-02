@@ -2,7 +2,7 @@ import { createRouteClient } from "@/lib/supabase-server"
 import { NextResponse } from "next/server"
 
 export async function GET() {
-    const supabase = createRouteClient()
+    const supabase = (await createRouteClient()) as any
     const { data, error } = await supabase
         .from('leads')
         .select('*')
@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    const supabase = createRouteClient()
+    const supabase = (await createRouteClient()) as any
     const body = await request.json()
     const { action, payload } = body
 
