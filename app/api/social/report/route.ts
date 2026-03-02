@@ -1,12 +1,11 @@
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createRouteClient } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 
 export async function POST(req: Request) {
     try {
-        const supabase = createRouteHandlerClient({ cookies })
+        const supabase = (await createRouteClient()) as any
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {

@@ -16,7 +16,7 @@ const getSupabaseConfig = () => {
 
 // Create Supabase client for client-side components
 export const createClientForBrowser = () => {
-  return createClientComponentClient<Database>()
+  return createClientComponentClient<Database>() as any
 }
 
 // Create Supabase client for API routes (with service role)
@@ -35,13 +35,12 @@ export const createSupabaseClientForServer = () => {
   // Trim keys to remove any accidental whitespace
   const cleanUrl = supabaseUrl.trim()
   const cleanKey = serviceRoleKey.trim()
-
   return createSupabaseClient<Database>(cleanUrl, cleanKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
-  })
+  }) as any
 }
 
 // Backward compatibility - keep createClient for existing code

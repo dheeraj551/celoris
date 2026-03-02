@@ -1,6 +1,5 @@
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase-server";
 import { getOrCreateRoom, generateAppToken } from "@/lib/hms";
 import StudyRoomClient from "@/components/study-room/StudyRoomClient";
 import { redirect } from "next/navigation";
@@ -9,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function StudyRoomPage({ params }: { params: Promise<{ roomName: string }> }) {
     const { roomName } = await params;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = (await createServerClient()) as any;
 
     const {
         data: { session },

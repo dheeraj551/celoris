@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
 // COURSE API - Admin course creation with proper authentication
@@ -10,14 +10,13 @@ export async function POST(request: NextRequest) {
     console.log('ADMIN: Processing course creation request')
 
     // Create service client using centralized helper (handles trimming of keys)
-    const serviceClient = createSupabaseClientForServer()
+    const serviceClient = createSupabaseClientForServer() as any
     console.log('ADMIN: Service client created successfully')
 
     // Attempt to get the authenticated user
     let userId = null
     try {
-      const cookieStore = cookies()
-      const authClient = createRouteHandlerClient({ cookies: () => cookieStore })
+      const authClient = (await createRouteClient()) as any
       const { data: { user } } = await authClient.auth.getUser()
       if (user) {
         userId = user.id
@@ -115,7 +114,7 @@ export async function GET(request: NextRequest) {
       throw new Error('Missing environment variables')
     }
 
-    const serviceClient = createClient(supabaseUrl, serviceRoleKey)
+    const serviceClient = createClient(supabaseUrl, serviceRoleKey) as any
 
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
