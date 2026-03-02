@@ -125,7 +125,7 @@ export const Blog = ({ initialVideos = null }: { initialVideos?: any[] | null })
                     image: v.thumbnail_url || `https://img.youtube.com/vi/${v.youtube_url.split('v=')[1]?.split('?')[0]}/maxresdefault.jpg`,
                     youtube_url: v.youtube_url
                 }))
-                .filter(p => !p.youtube_url.includes("-Z1P-ebnfwQ") && !p.title.toLowerCase().includes("excel"));
+                .filter((p: any) => !p.youtube_url.includes("-Z1P-ebnfwQ") && !p.title.toLowerCase().includes("excel"));
 
             setPosts([hardcodedPosts[0], ...dbPosts].slice(0, 6));
         }
@@ -158,7 +158,7 @@ export const Blog = ({ initialVideos = null }: { initialVideos?: any[] | null })
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {posts.map((post, idx) => (
+                {posts.map((post: any, idx: number) => (
                     <VideoCard key={idx} {...post} />
                 ))}
             </div>

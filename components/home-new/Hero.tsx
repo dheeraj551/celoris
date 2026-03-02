@@ -47,7 +47,7 @@ function TickerLine({ items, duration = 30, reverse = false }: { items: string[]
                 }}
                 className="flex whitespace-nowrap gap-12 items-center"
             >
-                {[...items, ...items].map((text, i) => (
+                {[...items, ...items].map((text: string, i: number) => (
                     <div key={i} className="flex items-center gap-3">
                         <div className={`w-1.5 h-1.5 rounded-full ${reverse ? 'bg-blue-500' : 'bg-emerald-500'} animate-pulse`} />
                         <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${reverse ? 'text-blue-400/60' : 'text-emerald-400/60'} italic`}>
@@ -94,16 +94,16 @@ export const Hero: React.FC = () => {
             { id: 'ai', name: 'room:classroom_ai-courses', label: 'AI Classroom', hasAi: true }
         ];
 
-        const subs = channels.map(ch => {
+        const subs = channels.map((ch: any) => {
             const channel = supabase.channel(ch.name);
 
             const update = () => {
                 const state = channel.presenceState();
                 const presences = Object.values(state).flat() as any[];
                 const uniqueUsers = presences
-                    .map(p => p.user || p)
+                    .map((p: any) => p.user || p)
                     .filter(Boolean)
-                    .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+                    .filter((v: any, i: number, a: any[]) => a.findIndex(t => t.id === v.id) === i);
 
                 setPresenceData((prev: any) => ({
                     ...prev,
@@ -128,7 +128,7 @@ export const Hero: React.FC = () => {
         }, 5000);
 
         return () => {
-            subs.forEach(s => s.unsubscribe());
+            subs.forEach((s: any) => s.unsubscribe());
             clearInterval(interval);
         };
     }, []);

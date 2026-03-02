@@ -162,7 +162,7 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
 
     const RadioGroup = ({ options, selected, onChange }: { options: string[], selected: string, onChange: (val: string) => void }) => (
         <div className="flex flex-wrap gap-3">
-            {options.map(opt => (
+            {options.map((opt: string) => (
                 <label key={opt} className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-all ${selected === opt ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/10'}`}>
                     <div className={`w-3 h-3 rounded-full border ${selected === opt ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500'}`} />
                     <input type="radio" className="hidden" checked={selected === opt} onChange={() => onChange(opt)} />
@@ -174,7 +174,7 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
 
     const CheckboxGroup = ({ options, selected, onChange }: { options: string[], selected: string[], onChange: (val: string) => void }) => (
         <div className="grid grid-cols-2 gap-3">
-            {options.map(opt => (
+            {options.map((opt: string) => (
                 <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selected?.includes(opt) ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}>
                     <div className={`w-4 h-4 rounded border flex items-center justify-center ${selected?.includes(opt) ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500'}`}>
                         {selected?.includes(opt) && <CheckCircle size={10} className="text-white" />}
@@ -306,7 +306,7 @@ export default function JobApplicationForm({ jobId, jobTitle, isOpen, onClose }:
                             {/* 4. Education Details */}
                             <SectionTitle number="04" title="Education Details" />
                             <div className="space-y-8">
-                                {['tenth', 'twelfth', 'graduation', 'postGraduation'].map((level) => (
+                                {['tenth', 'twelfth', 'graduation', 'postGraduation'].map((level: string) => (
                                     <div key={level} className="bg-white/5 p-4 rounded-xl border border-white/5">
                                         <div className="mb-3">
                                             <span className="text-emerald-400 font-bold uppercase tracking-wider text-xs">{(formData.education as any)[level].qualification}</span>

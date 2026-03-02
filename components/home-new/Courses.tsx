@@ -142,7 +142,7 @@ export const Courses: React.FC<any> = ({
 
             if (data && data.length > 0) {
                 const testCourseTitles = ['agentic ai for beginners: from prompts to action', 'mastering nano banana pro', 'my new ai course will be here'];
-                const filteredDbCourses = data.filter(c => !testCourseTitles.includes((c.title || '').toLowerCase()));
+                const filteredDbCourses = data.filter((c: any) => !testCourseTitles.includes((c.title || '').toLowerCase()));
                 const combined = [...staticCourses, ...filteredDbCourses].slice(0, limit);
                 setCourses(combined);
             } else {
@@ -170,7 +170,7 @@ export const Courses: React.FC<any> = ({
             </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {courses.map((course) => (
+                {courses.map((course: any) => (
                     <CourseCard
                         key={course.id}
                         id={course.id}

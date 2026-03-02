@@ -969,17 +969,17 @@ export default function CoursesDisplay({
       let filteredStatic = staticCourses
       if (subject) {
         const subLower = subject.toLowerCase()
-        filteredStatic = filteredStatic.filter(c => c.subject.toLowerCase().includes(subLower))
+        filteredStatic = filteredStatic.filter((c: Course) => c.subject.toLowerCase().includes(subLower))
       }
       if (grade_level) {
         const levelLower = grade_level.toLowerCase()
-        filteredStatic = filteredStatic.filter(c => c.grade_level.toLowerCase().includes(levelLower))
+        filteredStatic = filteredStatic.filter((c: Course) => c.grade_level.toLowerCase().includes(levelLower))
       }
-      if (featured) filteredStatic = filteredStatic.filter(c => c.is_featured)
+      if (featured) filteredStatic = filteredStatic.filter((c: Course) => c.is_featured)
 
       if (search) {
         const searchLower = search.toLowerCase()
-        filteredStatic = filteredStatic.filter(c =>
+        filteredStatic = filteredStatic.filter((c: Course) =>
           c.title.toLowerCase().includes(searchLower) ||
           c.description.toLowerCase().includes(searchLower) ||
           c.subject.toLowerCase().includes(searchLower)
@@ -1056,7 +1056,7 @@ export default function CoursesDisplay({
 
   const renderGrid = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {courses.map((course) => (
+      {courses.map((course: Course) => (
         <Card key={course.id} className={`hover:shadow-lg transition-shadow ${className}`}>
           <CardHeader className="pb-4">
             <div className="flex items-start justify-between mb-2">
@@ -1151,7 +1151,7 @@ export default function CoursesDisplay({
 
   const renderList = () => (
     <div className="space-y-4">
-      {courses.map((course) => (
+      {courses.map((course: Course) => (
         <Card key={course.id} className={`hover:shadow-md transition-shadow ${className}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">

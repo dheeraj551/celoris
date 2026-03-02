@@ -114,7 +114,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
             {/* Chat History Section */}
             {messages.length > 0 && (
                 <div className="max-w-4xl mx-auto mb-8 space-y-6">
-                    {messages.map((m, idx) => (
+                    {messages.map((m: any, idx: number) => (
                         <div key={idx} className={cn(
                             "flex flex-col gap-2 p-6 rounded-[2rem] border",
                             m.role === 'user'
@@ -376,7 +376,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                             { title: "Business Propaganda Large...", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=400&fit=crop" },
                             { title: "Chinese Food Dimsum...", image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=400&fit=crop" },
                             { title: "Food Fried Chicken Display...", image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop" }
-                        ].map((item, i) => (
+                        ].map((item: any, i: number) => (
                             <div key={i} className="flex flex-col gap-2">
                                 <div className="aspect-square bg-white/5 rounded-2xl overflow-hidden relative group cursor-pointer border border-white/5 shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 transition-all">
                                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col justify-end p-3">
@@ -574,7 +574,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                                     { title: 'Nemotron', by: 'NVIDIA', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/nvidia-color.svg', premium: 'PRO' },
                                     { title: 'ERNIE', by: 'Baidu', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/baidu-color.svg' },
                                     { title: 'Imagen', by: 'Google', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/google-color.svg' },
-                                ].map((provider, i) => (
+                                ].map((provider: any, i: number) => (
                                     <button
                                         key={i}
                                         onClick={() => { setSelectedModel({ name: provider.title, provider: provider.by, isPremium: !!provider.premium }); setShowModelSelect(false); }}

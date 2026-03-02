@@ -84,7 +84,7 @@ export default function StudentInquiryForm({ isOpen, onClose }: StudentInquiryFo
         setFormData(prev => {
             const array = prev[field] as string[]
             if (array.includes(value)) {
-                return { ...prev, [field]: array.filter(item => item !== value) }
+                return { ...prev, [field]: array.filter((item: string) => item !== value) }
             } else {
                 return { ...prev, [field]: [...array, value] }
             }
@@ -177,7 +177,7 @@ export default function StudentInquiryForm({ isOpen, onClose }: StudentInquiryFo
 
     const RadioGroup = ({ options, selected, onChange }: { options: string[], selected: string, onChange: (val: string) => void }) => (
         <div className="flex flex-wrap gap-3">
-            {options.map(opt => (
+            {options.map((opt: string) => (
                 <label key={opt} className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-all ${selected === opt ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400' : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/10'}`}>
                     <div className={`w-3 h-3 rounded-full border ${selected === opt ? 'bg-indigo-500 border-indigo-500' : 'border-slate-500'}`} />
                     <input type="radio" className="hidden" checked={selected === opt} onChange={() => onChange(opt)} />
@@ -189,7 +189,7 @@ export default function StudentInquiryForm({ isOpen, onClose }: StudentInquiryFo
 
     const CheckboxGroup = ({ options, selected, onChange }: { options: string[], selected: string[], onChange: (val: string) => void }) => (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {options.map(opt => (
+            {options.map((opt: string) => (
                 <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selected?.includes(opt) ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}>
                     <div className={`w-4 h-4 rounded border flex items-center justify-center ${selected?.includes(opt) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-500'}`}>
                         {selected?.includes(opt) && <CheckCircle size={10} className="text-white" />}
