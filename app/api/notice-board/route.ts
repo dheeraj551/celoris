@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     // Use the browser client (Anon key) for public read access
     // This avoids potential issues with the Service Role client on the server
     // and aligns with the RLS policy "Public can view active notices"
-    const supabase = createClientForBrowser()
+    const supabase = (createClientForBrowser() as any)
 
     let query = supabase
       .from('notice_board')
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       throw new Error('Missing Supabase environment variables')
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = (createClient(supabaseUrl, supabaseKey)) as any
 
     // Debug logging
     console.log('Debug - Using Anon Key')
@@ -184,7 +184,7 @@ export async function DELETE(request: NextRequest) {
       throw new Error('Missing Supabase environment variables')
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = (createClient(supabaseUrl, supabaseKey)) as any
 
     const { error } = await supabase
       .from('notice_board')
@@ -226,7 +226,7 @@ export async function PATCH(request: NextRequest) {
       throw new Error('Missing Supabase environment variables')
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = (createClient(supabaseUrl, supabaseKey)) as any
 
     const { data, error } = await supabase
       .from('notice_board')

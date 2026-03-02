@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       throw new Error('Missing Supabase environment variables')
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = (createClient(supabaseUrl, supabaseKey)) as any
 
     // Check if this is a request for featured posts
     if (request.nextUrl.pathname.endsWith('/featured')) {

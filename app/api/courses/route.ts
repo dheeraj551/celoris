@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     console.log('Courses API request:', { page, limit, subject, featured, search, grade_level })
 
     // Initialize Supabase client (automatically reads from environment variables)
-    const supabase = createClient()
+    const supabase = (createClient() as any)
 
     // Build query
     let query = supabase

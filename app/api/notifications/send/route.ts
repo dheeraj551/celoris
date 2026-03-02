@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+const supabase = (createClient(supabaseUrl, supabaseServiceKey)) as any
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     // For demo purposes, simulate notification sending
     // In a real implementation, you would integrate with Firebase Admin SDK
-    
+
     let notificationTokens: string[] = []
 
     if (tokens) {
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      notificationTokens = tokenData?.map(t => t.token) || []
+      notificationTokens = tokenData?.map((t: any) => t.token) || []
     }
 
     if (notificationTokens.length === 0) {

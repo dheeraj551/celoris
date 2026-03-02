@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabase-client';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = (createClient() as any)
     const { searchParams } = new URL(request.url)
-    
+
     const type = searchParams.get('type')
     const featured = searchParams.get('featured')
     const page = searchParams.get('page')
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = (createClient() as any)
     const body = await request.json()
 
     const {
@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure target_pages is an array
-    const processedTargetPages = Array.isArray(target_pages) 
-      ? target_pages 
+    const processedTargetPages = Array.isArray(target_pages)
+      ? target_pages
       : (typeof target_pages === 'string' ? target_pages.split(',').map(p => p.trim()).filter(p => p) : ['homepage'])
 
     console.log('Creating testimonial with data:', {
@@ -144,10 +144,10 @@ export async function POST(request: NextRequest) {
     console.error('Error creating testimonial:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     const errorDetails = error instanceof Error && error.message ? error.message : 'Database operation failed'
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: errorMessage,
         details: errorDetails
       },
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = (createClient() as any)
     const body = await request.json()
 
     const {
@@ -237,11 +237,11 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = (createClient() as any)
     const { searchParams } = new URL(request.url)
-    
+
     const id = searchParams.get('id')
-    
+
     if (!id) {
       return NextResponse.json(
         { success: false, error: 'Testimonial ID is required' },

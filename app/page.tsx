@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const supabase = await createServerClient()
+  const supabase = (await createServerClient()) as any
 
   // Fetch courses on server
   const { data: dbCourses } = await supabase
@@ -26,7 +26,7 @@ export default async function HomePage() {
     .limit(12);
 
   const testCourseTitles = ['my new ai course will be here', 'agentic ai for beginners: from prompts to action', 'mastering nano banana pro'];
-  const filteredCourses = (dbCourses || []).filter(course =>
+  const filteredCourses = (dbCourses || []).filter((course: any) =>
     !testCourseTitles.includes(course.title.toLowerCase())
   );
 

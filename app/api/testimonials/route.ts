@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       }
 
       const { createClient } = await import('@supabase/supabase-js')
-      const supabase = createClient(supabaseUrl, supabaseKey)
+      const supabase = (createClient(supabaseUrl, supabaseKey)) as any
 
       let query = supabase
         .from('testimonials')
@@ -100,8 +100,8 @@ export async function GET(request: NextRequest) {
 
       if (!error && dbTestimonials && dbTestimonials.length > 0) {
         // Remove duplicates based on client_name and testimonial_text
-        const uniqueTestimonials = dbTestimonials.filter((testimonial, index, self) =>
-          index === self.findIndex(t =>
+        const uniqueTestimonials = dbTestimonials.filter((testimonial: any, index: any, self: any) =>
+          index === self.findIndex((t: any) =>
             t.client_name === testimonial.client_name &&
             t.testimonial_text === testimonial.testimonial_text
           )

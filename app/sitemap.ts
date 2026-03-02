@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ]
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = (createClient(supabaseUrl, supabaseKey)) as any
 
     // Fetch all necessary data in parallel
     // We use Promise.allSettled to handle potential failures in one query without breaking others
@@ -45,21 +45,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const jobs = results[1].status === 'fulfilled' && results[1].value.data ? results[1].value.data : []
     const courses = results[2].status === 'fulfilled' && results[2].value.data ? results[2].value.data : []
 
-    const blogRoutes = posts.map((post) => ({
+    const blogRoutes = posts.map((post: any) => ({
         url: `${baseUrl}/blog/${post.slug}`,
         lastModified: new Date(post.updated_at),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
     }))
 
-    const jobRoutes = jobs.map((job) => ({
+    const jobRoutes = jobs.map((job: any) => ({
         url: `${baseUrl}/earn/jobs/${job.id}`,
         lastModified: new Date(job.updated_at),
         changeFrequency: 'daily' as const,
         priority: 0.9,
     }))
 
-    const courseRoutes = courses.map((course) => ({
+    const courseRoutes = courses.map((course: any) => ({
         url: `${baseUrl}/learn/course/${course.id}`,
         lastModified: new Date(course.updated_at),
         changeFrequency: 'weekly' as const,

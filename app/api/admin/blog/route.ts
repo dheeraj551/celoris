@@ -7,11 +7,11 @@ export async function GET(request: NextRequest) {
   try {
     // Check if this is an admin request (with session header)
     const auth = await authenticateAdmin(request);
-    
+
     // For non-admin requests, only return published posts
     let isAdminRequest = auth.success;
-    
-    const supabase = createClient()
+
+    const supabase = (createClient() as any)
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       return createUnauthorizedResponse('Admin authentication required');
     }
 
-    const supabase = createClient()
+    const supabase = (createClient() as any)
     const body = await request.json();
     const {
       title,

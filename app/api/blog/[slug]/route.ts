@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const supabase = createClientForBrowser()
+    const supabase = (createClientForBrowser() as any)
     let { slug } = await params;
 
     console.log('Blog API - Requested slug:', slug);
