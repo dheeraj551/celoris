@@ -920,6 +920,29 @@ export default function CoursesDisplay({
       ]
     },
     {
+      id: "content-creation-social-media-static",
+      title: "Content Creation on Social Media — From Creator to Income",
+      subject: "Marketing",
+      grade_level: "Intermediate",
+      description: "Stop posting for likes. Start creating for money. Master Instagram and YouTube content creation, growth, and monetisation in this comprehensive 19-hour course.",
+      target_audience: "Creators, Influencers, Businesses, Freelancers",
+      instructor_name: "Dheeraj Kushwaha",
+      course_duration: "19 Hours",
+      price: 4999,
+      course_image_url: "/content-creation-cover.png",
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `ccsm-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: "",
+        estimated_duration: 228,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: "excel-expert-master-static",
       title: "Be an Excel Expert — From Beginner to Macro Master",
       subject: "Business",
@@ -1030,6 +1053,7 @@ export default function CoursesDisplay({
     if (id === 'sovereign-intelligence-static') return '/courses/sovereign-intelligence'
     if (id === 'arjuna-ssc-jee-bridge-static') return '/courses/arjuna-ssc-jee-bridge'
     if (id === 'excel-expert-master-static') return '/learn/be-an-excel-expert'
+    if (id === 'content-creation-social-media-static') return '/learn/content-creation-social-media'
     return `/learn/course/${id}`
   }
 

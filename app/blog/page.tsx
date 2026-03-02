@@ -21,6 +21,17 @@ export default async function BlogPage() {
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-free-online-video-editor-india-2026',
+      title: 'Best Free Online Video Editor India 2026 — No Watermark, No Download',
+      slug: 'best-free-online-video-editor-india-2026',
+      excerpt: "Looking for the best free online video editor in India 2026? Edit videos without downloading software — no watermark, no fees.",
+      featured_image_url: '/blog-video-editor-india-2026.png',
+      author_name: 'Celoris',
+      category: 'Technology',
+      reading_time: 8,
+      published_at: '2026-03-02T12:00:00Z',
+    },
+    {
       id: 'create-professional-videos-free',
       title: 'How to Create Professional Videos Without Expensive Software in 2025',
       slug: 'create-professional-videos-free',

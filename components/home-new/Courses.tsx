@@ -82,7 +82,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     'accelerating-science-static': '/courses/accelerating-science-generative-ai-for-research-innovation',
                                     'personalized-ai-experiences-static': '/courses/personalized-ai-experiences-with-rag-and-agents',
                                     'sovereign-intelligence-static': '/courses/sovereign-intelligence',
-                                    'excel-expert-master-static': '/learn/be-an-excel-expert'
+                                    'excel-expert-master-static': '/learn/be-an-excel-expert',
+                                    'content-creation-social-media-static': '/learn/content-creation-social-media'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -102,6 +103,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
+    { id: 'content-creation-social-media-static', title: 'Content Creation on Social Media — From Creator to Income', subject: 'Social Media Marketing', instructor_name: 'Dheeraj Kushwaha', course_duration: '19 Hours', price: 4999, is_featured: true, course_image_url: '/content-creation-cover.png' },
     { id: 'excel-expert-master-static', title: 'Be an Excel Expert — From Beginner to Macro Master', subject: 'Microsoft Excel', instructor_name: 'Dheeraj Kushwaha', course_duration: '10 Hours', price: 999, is_featured: true, course_image_url: '/excel-expert-cover.png' },
     { id: 'sovereign-intelligence-static', title: 'Learn AI Basics Free: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
     { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ZwqAdQsXy3A/maxresdefault.jpg' },
