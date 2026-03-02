@@ -86,7 +86,7 @@ const tools: any[] = [
 export async function POST(req: NextRequest) {
     try {
         const { messages } = await req.json();
-        const supabase = createRouteClient();
+        const supabase = (await createRouteClient()) as any;
 
         if (!process.env.GROQ_API_KEY) {
             console.error("GROQ_API_KEY is missing from environment variables.");

@@ -1,36 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteClient } from '@/lib/supabase-server';
 
-// Create Supabase client for API routes
-const supabase = createRouteClient();
-
 export async function GET(request: NextRequest) {
   try {
+    const supabase = (await createRouteClient()) as any;
     // Get session from headers
     const sessionHeader = request.headers.get('x-admin-session');
-    
+
     let sessionData = null;
     let isAuthenticated = false;
     let userId = null;
     let sessionEmail = null;
-    
+
     if (sessionHeader) {
       try {
         sessionData = JSON.parse(sessionHeader);
         sessionEmail = sessionData.email;
         userId = sessionData.id;
-        
+
         // Validate session format
         if (!sessionEmail || !sessionData.timestamp) {
           return NextResponse.json({ error: 'Invalid session format' }, { status: 401 });
         }
-        
+
         // Check session age (24 hours)
         const sessionAge = Date.now() - sessionData.timestamp;
         if (sessionAge > 24 * 60 * 60 * 1000) {
           return NextResponse.json({ error: 'Session expired' }, { status: 401 });
         }
-        
+
         // Check if it's an admin email
         if (['support@celorisdesigns.com', 'admin@celorisdesigns.com'].includes(sessionEmail)) {
           isAuthenticated = true;
@@ -44,7 +42,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid session JSON' }, { status: 401 });
       }
     }
-    
+
     // If not authenticated via session, try Supabase auth
     if (!isAuthenticated) {
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
@@ -54,7 +52,7 @@ export async function GET(request: NextRequest) {
         sessionEmail = authUser.email;
       }
     }
-    
+
     if (!isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -81,31 +79,32 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = (await createRouteClient()) as any;
     // Get session from headers
     const sessionHeader = request.headers.get('x-admin-session');
-    
+
     let sessionData = null;
     let isAuthenticated = false;
     let userId = null;
     let sessionEmail = null;
-    
+
     if (sessionHeader) {
       try {
         sessionData = JSON.parse(sessionHeader);
         sessionEmail = sessionData.email;
         userId = sessionData.id;
-        
+
         // Validate session format
         if (!sessionEmail || !sessionData.timestamp) {
           return NextResponse.json({ error: 'Invalid session format' }, { status: 401 });
         }
-        
+
         // Check session age (24 hours)
         const sessionAge = Date.now() - sessionData.timestamp;
         if (sessionAge > 24 * 60 * 60 * 1000) {
           return NextResponse.json({ error: 'Session expired' }, { status: 401 });
         }
-        
+
         // Check if it's an admin email
         if (['support@celorisdesigns.com', 'admin@celorisdesigns.com'].includes(sessionEmail)) {
           isAuthenticated = true;
@@ -119,7 +118,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid session JSON' }, { status: 401 });
       }
     }
-    
+
     // If not authenticated via session, try Supabase auth
     if (!isAuthenticated) {
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
@@ -129,7 +128,7 @@ export async function POST(request: NextRequest) {
         sessionEmail = authUser.email;
       }
     }
-    
+
     if (!isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -137,7 +136,7 @@ export async function POST(request: NextRequest) {
     // Get request data
     const body = await request.json();
     const { postUrl } = body;
-    
+
     if (!postUrl) {
       return NextResponse.json({ error: 'Instagram URL is required' }, { status: 400 });
     }
@@ -158,10 +157,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: data.error || 'Failed to create Instagram post' }, { status: 500 });
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       post: data,
-      message: 'Instagram post created successfully' 
+      message: 'Instagram post created successfully'
     });
 
   } catch (error) {
@@ -172,31 +171,32 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const supabase = (await createRouteClient()) as any;
     // Get session from headers (similar to GET and POST)
     const sessionHeader = request.headers.get('x-admin-session');
-    
+
     let sessionData = null;
     let isAuthenticated = false;
     let userId = null;
     let sessionEmail = null;
-    
+
     if (sessionHeader) {
       try {
         sessionData = JSON.parse(sessionHeader);
         sessionEmail = sessionData.email;
         userId = sessionData.id;
-        
+
         // Validate session format
         if (!sessionEmail || !sessionData.timestamp) {
           return NextResponse.json({ error: 'Invalid session format' }, { status: 401 });
         }
-        
+
         // Check session age (24 hours)
         const sessionAge = Date.now() - sessionData.timestamp;
         if (sessionAge > 24 * 60 * 60 * 1000) {
           return NextResponse.json({ error: 'Session expired' }, { status: 401 });
         }
-        
+
         // Check if it's an admin email
         if (['support@celorisdesigns.com', 'admin@celorisdesigns.com'].includes(sessionEmail)) {
           isAuthenticated = true;
@@ -210,7 +210,7 @@ export async function DELETE(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid session JSON' }, { status: 401 });
       }
     }
-    
+
     // If not authenticated via session, try Supabase auth
     if (!isAuthenticated) {
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
@@ -220,7 +220,7 @@ export async function DELETE(request: NextRequest) {
         sessionEmail = authUser.email;
       }
     }
-    
+
     if (!isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -228,7 +228,7 @@ export async function DELETE(request: NextRequest) {
     // Get the post ID from URL params
     const { searchParams } = new URL(request.url);
     const postId = searchParams.get('id');
-    
+
     if (!postId) {
       return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
     }

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const severity = searchParams.get('severity');
 
-    const supabase = createRouteClient() as any;
+    const supabase = await createRouteClient() as any;
 
     // Build query
     let query = supabase
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { notification_id, mark_all_read = false } = body;
 
-    const supabase = createRouteClient() as any;
+    const supabase = await createRouteClient() as any;
 
     if (mark_all_read) {
       // Mark all notifications as read

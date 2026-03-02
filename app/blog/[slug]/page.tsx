@@ -13,7 +13,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = createServerClient();
+  const supabase = (await createServerClient()) as any;
 
   const { data: post } = await supabase
     .from('blog_posts')
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const supabase = createServerClient();
+  const supabase = (await createServerClient()) as any;
   const { slug } = await params;
 
   // Fetch the post

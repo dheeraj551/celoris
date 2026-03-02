@@ -5,7 +5,7 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client';
 
 export async function GET(request: NextRequest) {
     try {
-        const supabase = createRouteClient();
+        const supabase = await createRouteClient();
 
         const { data: videos, error } = await supabase
             .from('featured_videos')

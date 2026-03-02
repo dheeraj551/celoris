@@ -7,7 +7,7 @@ import { createRouteClient } from '@/lib/supabase-server'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteClient() as any
+    const supabase = await createRouteClient() as any
     const { searchParams } = new URL(request.url)
 
     const taskType = searchParams.get('type')
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteClient() as any
+    const supabase = await createRouteClient() as any
     const body = await request.json()
 
     const {

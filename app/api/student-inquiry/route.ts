@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const supabase = createRouteClient()
+        const supabase = await createRouteClient()
         const { data: { user } } = await supabase.auth.getUser()
 
         // We allow anonymous inquiries, but if logged in, link it.

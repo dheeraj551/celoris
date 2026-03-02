@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize Supabase client
-    const supabase = createRouteClient();
+    const supabase = (await createRouteClient()) as any;
 
     // Create slug from title
     const slug = title
@@ -160,9 +160,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error in blog publish endpoint:', error);
-    
+
     // Log error
-    const supabase = createRouteClient();
+    const supabase = (await createRouteClient()) as any;
     await supabase
       .from('automation_logs')
       .insert([{
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
       }]);
 
     return NextResponse.json(
-      { 
+      {
         error: 'Internal server error',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -186,8 +186,8 @@ export async function POST(request: NextRequest) {
 // GET /api/admin/blog/publish - List published posts
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteClient();
-    
+    const supabase = (await createRouteClient()) as any;
+
     const { data: blogPosts, error } = await supabase
       .from('blog_posts')
       .select(`

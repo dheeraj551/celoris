@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Fetch courses on server
   const { data: dbCourses } = await supabase

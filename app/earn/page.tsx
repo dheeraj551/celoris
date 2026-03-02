@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 }
 
 export default async function EarnPage() {
-    const supabase = createServerClient()
+    const supabase = (await createServerClient()) as any
 
     // Fetch jobs on server
     const { data: dbJobs } = await supabase

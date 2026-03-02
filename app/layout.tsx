@@ -1,5 +1,6 @@
 import { type Metadata } from "next"
 import { Inter, Outfit } from "next/font/google"
+import Script from "next/script"
 import "./globals.css"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
@@ -8,6 +9,7 @@ import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -93,21 +95,28 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7NFKQBTPHZ"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-7NFKQBTPHZ');
-            `,
-          }}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-7NFKQBTPHZ"
+          strategy="afterInteractive"
         />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-7NFKQBTPHZ');
+          `}
+        </Script>
+
         {/* Google AdSense - Managed via Dashboard and AdUnit component */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2389622666573829"
-          crossOrigin="anonymous"></script>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2389622666573829"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         {/* Note: To stop scattered ads, disable "Auto ads" (Anchor, Vignette, Side rails) in your Google AdSense Dashboard */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -186,6 +195,7 @@ export default function RootLayout({
             </PresenceProvider>
           </AuthProvider>
           <Toaster />
+          <Analytics />
         </ReCaptchaProvider>
       </body>
     </html>

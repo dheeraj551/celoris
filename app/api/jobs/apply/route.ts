@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const supabase = createRouteClient()
+        const supabase = await createRouteClient()
         const { data: { user } } = await supabase.auth.getUser()
 
         const adminSupabase = createSupabaseClientForServer() as any

@@ -4,7 +4,7 @@ import { createRouteClient } from '@/lib/supabase-server';
 // POST /api/admin/automation/test-run
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteClient() as any;
+    const supabase = (await createRouteClient()) as any;
 
     // Log the test run start
     const { data: logEntry, error: logError } = await supabase

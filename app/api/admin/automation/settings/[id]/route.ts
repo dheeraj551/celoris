@@ -17,7 +17,7 @@ export async function PATCH(
       );
     }
 
-    const supabase = createRouteClient();
+    const supabase = (await createRouteClient()) as any;
 
     // Update the settings
     const { data, error } = await supabase
@@ -80,7 +80,7 @@ export async function DELETE(
       );
     }
 
-    const supabase = createRouteClient();
+    const supabase = (await createRouteClient()) as any;
 
     // Delete the settings
     const { error } = await supabase

@@ -17,7 +17,7 @@ interface BlogPost {
 }
 
 export default async function BlogPage() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const STATIC_POSTS: BlogPost[] = [
     {
