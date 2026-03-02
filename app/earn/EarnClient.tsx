@@ -44,7 +44,7 @@ function ScrollingTicker() {
         }}
         className="flex whitespace-nowrap gap-12 items-center"
       >
-        {[...HIRING_FEEDS, ...HIRING_FEEDS].map((text, i) => (
+        {[...HIRING_FEEDS, ...HIRING_FEEDS].map((text: string, i: number) => (
           <div key={i} className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-400 italic">
@@ -207,7 +207,7 @@ export default function EarnClient({ initialJobs = [] }: { initialJobs?: any[] }
               viewport={{ once: true }}
               className="space-y-12"
             >
-              {jobs.map((job) => (
+              {jobs.map((job: any) => (
                 <div key={job.id} className="transition-all">
                   <Card className="bg-white/5 border-white/5 hover:border-emerald-500/30 transition-all rounded-[2rem] overflow-hidden group shadow-none hover:shadow-2xl hover:shadow-emerald-500/10">
                     <CardContent className="p-8 md:p-10">

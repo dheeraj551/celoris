@@ -138,21 +138,21 @@ const jobCategories = [
 
 const experienceLevels = [
   { name: "All Levels", count: jobListings.length },
-  { name: "Entry-level", count: jobListings.filter(j => j.experienceLevel === "Entry-level").length },
-  { name: "Mid-level", count: jobListings.filter(j => j.experienceLevel === "Mid-level").length },
-  { name: "Senior", count: jobListings.filter(j => j.experienceLevel === "Senior").length }
+  { name: "Entry-level", count: jobListings.filter((j: any) => j.experienceLevel === "Entry-level").length },
+  { name: "Mid-level", count: jobListings.filter((j: any) => j.experienceLevel === "Mid-level").length },
+  { name: "Senior", count: jobListings.filter((j: any) => j.experienceLevel === "Senior").length }
 ]
 
 const employmentTypes = [
   { name: "All Types", count: jobListings.length },
-  { name: "Full-time", count: jobListings.filter(j => j.employmentType === "Full-time").length },
-  { name: "Part-time", count: jobListings.filter(j => j.employmentType === "Part-time").length },
-  { name: "Freelance", count: jobListings.filter(j => j.employmentType === "Freelance").length },
-  { name: "Contract", count: jobListings.filter(j => j.employmentType === "Contract").length }
+  { name: "Full-time", count: jobListings.filter((j: any) => j.employmentType === "Full-time").length },
+  { name: "Part-time", count: jobListings.filter((j: any) => j.employmentType === "Part-time").length },
+  { name: "Freelance", count: jobListings.filter((j: any) => j.employmentType === "Freelance").length },
+  { name: "Contract", count: jobListings.filter((j: any) => j.employmentType === "Contract").length }
 ]
 
 export default function AllJobsPage() {
-  const [jobs, setJobs] = useState([])
+  const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [filters, setFilters] = useState({

@@ -35,9 +35,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let mounted = true
 
-        // Check active session
         supabase.auth.getSession()
-            .then(({ data: { session } }) => {
+            .then(({ data: { session } }: any) => {
                 if (!mounted) return
                 setSession(session)
                 setUser(session?.user ?? null)

@@ -59,7 +59,7 @@ export default function TransactionsPage() {
         }
     }
 
-    const filteredTransactions = transactions.filter(t =>
+    const filteredTransactions = transactions.filter((t: Transaction) =>
         t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.users?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.users?.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -120,7 +120,7 @@ export default function TransactionsPage() {
                                                     </TableCell>
                                                 </TableRow>
                                             ) : (
-                                                filteredTransactions.map((transaction) => (
+                                                filteredTransactions.map((transaction: Transaction) => (
                                                     <TableRow key={transaction.id} className="border-slate-700 hover:bg-slate-750">
                                                         <TableCell className="text-slate-300">
                                                             {new Date(transaction.created_at).toLocaleString()}
