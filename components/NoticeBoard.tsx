@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -83,17 +83,21 @@ function getTimeAgo(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
   const diffInMs = now.getTime() - date.getTime()
+  const diffInMins = Math.floor(diffInMs / (1000 * 60))
   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60))
   const diffInDays = Math.floor(diffInHours / 24)
 
-  if (diffInHours < 1) {
+  if (diffInMins < 1) {
     return 'Just now'
+  } else if (diffInMins < 60) {
+    return `${diffInMins} min${diffInMins > 1 ? 's' : ''} ago`
   } else if (diffInHours < 24) {
     return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
   } else if (diffInDays < 7) {
     return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
   } else {
-    return date.toLocaleDateString()
+    // Use a fixed locale so server and client render identically
+    return date.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 }
 
@@ -101,6 +105,9 @@ export default function NoticeBoard({ limit = 6, initialNotices = null }: { limi
   const [notices, setNotices] = useState<NoticeBoardItem[]>(initialNotices || [])
   const [loading, setLoading] = useState(!initialNotices)
   const [error, setError] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (initialNotices) return;
@@ -274,7 +281,7 @@ export default function NoticeBoard({ limit = 6, initialNotices = null }: { limi
                     )}
 
                     <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-6 flex items-center gap-2">
-                      <Clock size={10} /> {getTimeAgo(notice.created_at)}
+                      <Clock size={10} /> {mounted ? getTimeAgo(notice.created_at) : ''}
                     </div>
                   </div>
                 </CardContent>
