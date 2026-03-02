@@ -66,7 +66,7 @@ export default async function BlogPostPage({ params }: Props) {
     .from('blog_posts')
     .update({ views_count: (post.views_count || 0) + 1 })
     .eq('id', post.id)
-    .then(({ error: updateError }) => {
+    .then(({ error: updateError }: any) => {
       if (updateError) console.error('Error incrementing views:', updateError);
     });
 

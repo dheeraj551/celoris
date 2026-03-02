@@ -233,7 +233,7 @@ export default function InterviewRoomPage() {
             .eq('room_id', roomId)
             .order('created_at', { ascending: true })
             .limit(50)
-            .then(({ data }) => {
+            .then(({ data }: any) => {
                 if (data) setMessages(data)
             })
 
