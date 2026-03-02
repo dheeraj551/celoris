@@ -46,14 +46,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setLoading(false)
                 }
             })
-            .catch((error) => {
+            .catch((error: any) => {
                 console.error("Error getting session:", error)
                 if (mounted) setLoading(false)
             })
 
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
+        } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
             if (!mounted) return
             setSession(session)
             setUser(session?.user ?? null)
