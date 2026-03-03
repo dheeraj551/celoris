@@ -65,7 +65,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     'class-10-chemistry-static': '/courses/cbse-class-10-chemistry-complete-course',
                                     'class-11-chemistry-static': '/courses/cbse-class-11-chemistry-complete-course',
                                     'class-12-chemistry-static': '/courses/cbse-class-12-chemistry-complete-course',
-                                    'yoga-mastery-2025-static': '/courses/complete-2025-yoga-mastery-course',
+                                    'online-hatha-yoga-classes-beginners-static': '/learn/online-hatha-yoga-classes-beginners',
                                     '28-day-reset-static': '/courses/the-28-day-reset-foundation-strength-mobility',
                                     'class-9-maths-static': '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
                                     'livekit-ai-agents-static': '/courses/build-real-time-ai-agents-with-livekit',
@@ -83,7 +83,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     'personalized-ai-experiences-static': '/courses/personalized-ai-experiences-with-rag-and-agents',
                                     'sovereign-intelligence-static': '/courses/sovereign-intelligence',
                                     'excel-expert-master-static': '/learn/be-an-excel-expert',
-                                    'content-creation-social-media-static': '/learn/content-creation-social-media'
+                                    'content-creation-social-media-static': '/learn/content-creation-social-media',
+                                    'blender-3d-modelling-beginners-static': '/learn/blender-3d-modelling-beginners'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -103,6 +104,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
+    { id: 'online-hatha-yoga-classes-beginners-static', title: 'Online Hatha Yoga Classes for Beginners — Live Sessions with Certified Trainer', subject: 'Yoga', instructor_name: 'Celoris Certified Trainer', course_duration: '8 Weeks', price: 4999, is_featured: true, course_image_url: '/hatha-yoga-foundation.png' },
+    { id: 'blender-3d-modelling-beginners-static', title: 'Blender 3D Modelling — Complete Beginner Course', subject: 'Design', instructor_name: 'Dheeraj Kushwaha', course_duration: '15 Hours', price: 5999, is_featured: true, course_image_url: '/blender-course-cover.png' },
     { id: 'content-creation-social-media-static', title: 'Content Creation on Social Media — From Creator to Income', subject: 'Social Media Marketing', instructor_name: 'Dheeraj Kushwaha', course_duration: '19 Hours', price: 4999, is_featured: true, course_image_url: '/content-creation-cover.png' },
     { id: 'excel-expert-master-static', title: 'Be an Excel Expert — From Beginner to Macro Master', subject: 'Microsoft Excel', instructor_name: 'Dheeraj Kushwaha', course_duration: '10 Hours', price: 999, is_featured: true, course_image_url: '/excel-expert-cover.png' },
     { id: 'sovereign-intelligence-static', title: 'Learn AI Basics Free: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },

@@ -659,16 +659,16 @@ export default function CoursesDisplay({
       }))
     },
     {
-      id: 'yoga-mastery-2025-static',
-      title: 'The Complete 2025 Yoga Mastery Course: From Beginner Poses to Advanced Mindfulness',
-      subject: 'Yoga',
-      grade_level: 'All Levels',
-      description: 'This comprehensive yoga program bridges traditional Vedic wisdom with modern functional movement. Designed for all levels, it covers physical asanas, breathwork (Pranayama), and restorative techniques for stress relief.',
-      target_audience: 'Yoga Practitioners',
-      instructor_name: 'Celoris Designs llp',
-      course_duration: '12 Weeks',
-      price: 6000,
-      course_image_url: 'https://img.youtube.com/vi/eGBQv8_DipU/hqdefault.jpg',
+      id: "online-hatha-yoga-classes-beginners-static",
+      title: "Online Hatha Yoga Classes for Beginners — Live Sessions with Certified Trainer",
+      subject: "Yoga",
+      grade_level: "Beginner",
+      description: "Learn authentic Hatha Yoga from a certified trainer — live online sessions, small batches, beginner friendly. Complete 8-week foundation programme.",
+      target_audience: "Working Professionals, Homemakers, Students",
+      instructor_name: "Celoris Certified Trainer",
+      course_duration: "8 Weeks",
+      price: 4999,
+      course_image_url: "/hatha-yoga-foundation.png",
       is_featured: true,
       created_at: new Date().toISOString(),
       course_modules: Array(4).fill(null).map((_, i) => ({
@@ -678,16 +678,7 @@ export default function CoursesDisplay({
         description: '',
         estimated_duration: 180,
         is_published: true,
-        course_topics: Array(3).fill(null).map((_, j) => ({
-          id: `yoga-m${i}-t${j}`,
-          order_in_module: j + 1,
-          title: `Topic ${j + 1}`,
-          short_description: '',
-          content_type: 'video',
-          estimated_duration: 60,
-          status: 'published',
-          is_free_preview: false
-        }))
+        course_topics: []
       }))
     },
     {
@@ -964,6 +955,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: "blender-3d-modelling-beginners-static",
+      title: "Blender 3D Modelling — Complete Beginner Course",
+      subject: "Design",
+      grade_level: "Beginner",
+      description: "From zero to your first 3D model — no experience needed. Build real 3D models confidently for ecommerce, architecture, and social media.",
+      target_audience: "Complete Beginners, Designers, Freelancers",
+      instructor_name: "Dheeraj Kushwaha",
+      course_duration: "15 Hours",
+      price: 5999,
+      course_image_url: "/blender-course-cover.png",
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `blender-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: "",
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1034,7 +1048,7 @@ export default function CoursesDisplay({
     if (id === 'class-10-chemistry-static') return '/courses/cbse-class-10-chemistry-complete-course'
     if (id === 'class-11-chemistry-static') return '/courses/cbse-class-11-chemistry-complete-course'
     if (id === 'class-12-chemistry-static') return '/courses/cbse-class-12-chemistry-complete-course'
-    if (id === 'yoga-mastery-2025-static') return '/courses/complete-2025-yoga-mastery-course'
+    if (id === 'online-hatha-yoga-classes-beginners-static') return '/learn/online-hatha-yoga-classes-beginners'
     if (id === '28-day-reset-static') return '/courses/the-28-day-reset-foundation-strength-mobility'
     if (id === 'class-9-maths-static') return '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide'
     if (id === 'livekit-ai-agents-static') return '/courses/build-real-time-ai-agents-with-livekit'
@@ -1054,6 +1068,7 @@ export default function CoursesDisplay({
     if (id === 'arjuna-ssc-jee-bridge-static') return '/courses/arjuna-ssc-jee-bridge'
     if (id === 'excel-expert-master-static') return '/learn/be-an-excel-expert'
     if (id === 'content-creation-social-media-static') return '/learn/content-creation-social-media'
+    if (id === 'blender-3d-modelling-beginners-static') return '/learn/blender-3d-modelling-beginners'
     return `/learn/course/${id}`
   }
 

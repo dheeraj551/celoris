@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Smartphone, RotateCw } from 'lucide-react';
-import { TextElement, Clip } from '../page';
+import { TextElement, Clip } from '../App';
 
 interface CanvasProps {
   textElement: TextElement;
@@ -16,10 +16,10 @@ interface CanvasProps {
   clips?: Clip[];
 }
 
-export default function Canvas({
-  textElement,
-  setTextElement,
-  activeTool,
+export default function Canvas({ 
+  textElement, 
+  setTextElement, 
+  activeTool, 
   canvasZoom,
   setCanvasZoom,
   isPlaying,
@@ -72,7 +72,7 @@ export default function Canvas({
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!containerRef.current) return;
-
+    
     if (activeTool === 'hand') {
       setIsPanning(true);
       setDragStart({ x: e.clientX, y: e.clientY });
@@ -80,7 +80,7 @@ export default function Canvas({
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       return;
     }
-
+    
     e.stopPropagation();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
@@ -92,12 +92,12 @@ export default function Canvas({
     if (activeTool === 'hand') return;
     e.stopPropagation();
     setIsRotating(true);
-
+    
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + (rect.width * textElement.x) / 100;
       const centerY = rect.top + (rect.height * textElement.y) / 100;
-
+      
       const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
       setDragStart({ x: angle, y: 0 }); // store initial angle in x
       setInitialRotation(textElement.rotation);
@@ -117,7 +117,7 @@ export default function Canvas({
       const rect = containerRef.current.getBoundingClientRect();
       const deltaX = ((e.clientX - dragStart.x) / rect.width) * 100 / (canvasZoom / 100);
       const deltaY = ((e.clientY - dragStart.y) / rect.height) * 100 / (canvasZoom / 100);
-
+      
       setTextElement(prev => ({
         ...prev,
         x: initialPos.x + deltaX,
@@ -127,10 +127,10 @@ export default function Canvas({
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + (rect.width * textElement.x) / 100;
       const centerY = rect.top + (rect.height * textElement.y) / 100;
-
+      
       const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
       const angleDiff = currentAngle - dragStart.x;
-
+      
       setTextElement(prev => ({
         ...prev,
         rotation: initialRotation + (angleDiff * 180 / Math.PI)
@@ -168,7 +168,7 @@ export default function Canvas({
   };
 
   return (
-    <div
+    <div 
       className={`flex-1 bg-[#0e0e0e] relative flex items-center justify-center overflow-hidden ${activeTool === 'hand' ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''}`}
       onPointerDown={activeTool === 'hand' ? handlePointerDown : undefined}
       onPointerMove={activeTool === 'hand' ? handlePointerMove : undefined}
@@ -177,7 +177,7 @@ export default function Canvas({
     >
       {/* Aspect Ratio Selector */}
       <div className="absolute top-4 left-4 bg-[#1a1a1a] rounded-md border border-white/10 p-1 flex flex-col gap-1 z-10">
-        <button
+        <button 
           className="p-2 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors"
           onClick={handleFitToScreen}
           title="Fit to Screen"
@@ -193,13 +193,13 @@ export default function Canvas({
       </div>
 
       {/* Video Preview Area */}
-      <div
+      <div 
         className="relative w-full h-full flex items-center justify-center p-8 transition-transform duration-200 ease-out"
-        style={{
-          transform: `scale(${canvasZoom / 100}) translate(${panOffset.x / (canvasZoom / 100)}px, ${panOffset.y / (canvasZoom / 100)}px)`
+        style={{ 
+          transform: `scale(${canvasZoom / 100}) translate(${panOffset.x / (canvasZoom / 100)}px, ${panOffset.y / (canvasZoom / 100)}px)` 
         }}
       >
-        <div
+        <div 
           ref={containerRef}
           className="relative bg-black rounded overflow-hidden shadow-2xl ring-1 ring-white/10"
           style={{
@@ -209,9 +209,9 @@ export default function Canvas({
             maxWidth: '100%'
           }}
         >
-          <video
+          <video 
             ref={videoRef}
-            src={videoSrc || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}
+            src={videoSrc || "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"} 
             className={`w-full h-full object-cover pointer-events-none select-none ${activeVideoClip ? 'opacity-100' : 'opacity-0'}`}
             style={activeVideoClip ? {
               filter: `
@@ -229,10 +229,10 @@ export default function Canvas({
             muted
             playsInline
           />
-
+          
           {/* Text Overlay */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div
+            <div 
               className="absolute pointer-events-auto cursor-move group"
               style={{
                 left: `${textElement.x}%`,
@@ -251,19 +251,19 @@ export default function Canvas({
                 <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-nesw-resize"></div>
                 <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-swne-resize"></div>
                 <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-nwse-resize"></div>
-
+                
                 {/* Rotate handle */}
-                <div
+                <div 
                   className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md cursor-grab text-black pointer-events-auto"
                   onPointerDown={handleRotatePointerDown}
                 >
                   <RotateCw className="w-3 h-3 pointer-events-none" />
                 </div>
               </div>
-
-              <h1
-                className={`font-bold whitespace-nowrap px-2 select-none ${getAnimationClass()}`}
-                style={{
+              
+              <h1 
+                className={`font-bold whitespace-nowrap px-2 select-none ${getAnimationClass()}`} 
+                style={{ 
                   fontFamily: textElement.fontFamily,
                   fontSize: `${textElement.fontSize / 3}px`, // Scale down for preview
                   color: textElement.fill,

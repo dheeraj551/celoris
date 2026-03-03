@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 
@@ -20,6 +20,20 @@ export interface Clip {
     content: string;
     color: string;
     trackIndex: number;
+    transition?: string;
+    mediaOffset?: number; // in seconds, how much of the source media is skipped
+
+    // Video Effects
+    blur?: number;
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+    hueRotate?: number;
+    sepia?: number;
+    grayscale?: number;
+    scaleX?: number;
+    scaleY?: number;
+    rotation?: number;
 }
 
 export interface TextElement {
@@ -35,6 +49,19 @@ export interface TextElement {
     x: number;
     y: number;
     rotation: number;
+    animation?: string;
+    hasStroke?: boolean;
+    strokeColor?: string;
+    strokeWidth?: number;
+    hasBackground?: boolean;
+    backgroundColor?: string;
+    backgroundPadding?: number;
+    backgroundRadius?: number;
+    hasShadow?: boolean;
+    shadowColor?: string;
+    shadowBlur?: number;
+    shadowOffsetX?: number;
+    shadowOffsetY?: number;
 }
 
 const initialTextElement: TextElement = {
@@ -50,6 +77,19 @@ const initialTextElement: TextElement = {
     x: 50, // percentage
     y: 50, // percentage
     rotation: 0,
+    animation: 'none',
+    hasStroke: false,
+    strokeColor: '#000000',
+    strokeWidth: 2,
+    hasBackground: false,
+    backgroundColor: '#000000',
+    backgroundPadding: 10,
+    backgroundRadius: 8,
+    hasShadow: false,
+    shadowColor: '#000000',
+    shadowBlur: 10,
+    shadowOffsetX: 5,
+    shadowOffsetY: 5
 };
 
 export default function VideoStudio() {
@@ -69,57 +109,77 @@ export default function VideoStudio() {
     const [duration, setDuration] = useState(596); // Big Buck Bunny duration
 
     // Video state
-    const [videoSrc, setVideoSrc] = useState<string>("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+    const [videoSrc, setVideoSrc] = useState<string>("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
     const [videoName, setVideoName] = useState<string>("Big Buck Bunny");
 
     // Timeline clips
-    const [clips, setClips] = useState<Clip[]>([
+    const initialClips: Clip[] = [
         { id: '1', type: 'text', start: 0, end: 30, content: 'Celoris Web', color: '#e67e22', trackIndex: 0 },
         { id: '2', type: 'text', start: 31, end: 60, content: 'Text', color: '#e67e22', trackIndex: 0 },
         { id: '3', type: 'video', start: 0, end: 596, content: 'Big Buck Bunny', color: '#2c3e50', trackIndex: 1 },
         { id: '4', type: 'audio', start: 0, end: 45, content: 'Lazy Sunday', color: '#1abc9c', trackIndex: 2 },
-    ]);
+    ];
+    const [clips, setClips] = useState<Clip[]>(initialClips);
+    const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
 
     // History state for undo/redo
-    const [history, setHistory] = useState<TextElement[]>([initialTextElement]);
+    const [history, setHistory] = useState<{ textElement: TextElement, clips: Clip[] }[]>([{ textElement: initialTextElement, clips: initialClips }]);
     const [historyIndex, setHistoryIndex] = useState(0);
 
-    // Custom setter that updates history
-    const handleSetTextElement = (newElementOrUpdater: React.SetStateAction<TextElement>) => {
-        setTextElement(prev => {
-            const newElement = typeof newElementOrUpdater === 'function'
-                ? (newElementOrUpdater as (prevState: TextElement) => TextElement)(prev)
-                : newElementOrUpdater;
+    // Ref to track if the current change should be added to history
+    const isInternalUpdate = useRef(false);
 
-            // Only add to history if it actually changed
-            if (JSON.stringify(prev) !== JSON.stringify(newElement)) {
-                const newHistory = history.slice(0, historyIndex + 1);
-                newHistory.push(newElement);
-                // Keep history size reasonable
-                if (newHistory.length > 50) newHistory.shift();
-                setHistory(newHistory);
-                setHistoryIndex(newHistory.length - 1);
-            }
+    // Effect to add to history when clips or textElement changes
+    useEffect(() => {
+        if (isInternalUpdate.current) {
+            isInternalUpdate.current = false;
+            return;
+        }
 
-            return newElement;
-        });
-    };
+        const timeout = setTimeout(() => {
+            setHistory(prevHistory => {
+                const current = prevHistory[historyIndex];
+                if (!current) return prevHistory;
 
-    const undo = () => {
+                const hasChanged =
+                    JSON.stringify(current.textElement) !== JSON.stringify(textElement) ||
+                    JSON.stringify(current.clips) !== JSON.stringify(clips);
+
+                if (hasChanged) {
+                    const newHistory = prevHistory.slice(0, historyIndex + 1);
+                    newHistory.push({ textElement, clips });
+                    if (newHistory.length > 50) newHistory.shift();
+
+                    // We update the index separately to avoid stale state issues
+                    setTimeout(() => setHistoryIndex(newHistory.length - 1), 0);
+                    return newHistory;
+                }
+                return prevHistory;
+            });
+        }, 500); // Debounce history entries
+
+        return () => clearTimeout(timeout);
+    }, [textElement, clips, historyIndex]);
+
+    const undo = useCallback(() => {
         if (historyIndex > 0) {
             const newIndex = historyIndex - 1;
+            isInternalUpdate.current = true;
             setHistoryIndex(newIndex);
-            setTextElement(history[newIndex]);
+            setTextElement(history[newIndex].textElement);
+            setClips(history[newIndex].clips);
         }
-    };
+    }, [historyIndex, history]);
 
-    const redo = () => {
+    const redo = useCallback(() => {
         if (historyIndex < history.length - 1) {
             const newIndex = historyIndex + 1;
+            isInternalUpdate.current = true;
             setHistoryIndex(newIndex);
-            setTextElement(history[newIndex]);
+            setTextElement(history[newIndex].textElement);
+            setClips(history[newIndex].clips);
         }
-    };
+    }, [historyIndex, history]);
 
     // Keyboard shortcuts for undo/redo
     useEffect(() => {
@@ -137,7 +197,7 @@ export default function VideoStudio() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [historyIndex, history]);
+    }, [undo, redo]);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -175,35 +235,44 @@ export default function VideoStudio() {
                     setDuration={setDuration}
                     setClips={setClips}
                     currentTime={currentTime}
+                    selectedClipId={selectedClipId}
                 />
 
-                <div className="flex-1 flex overflow-hidden relative">
-                    <div className="flex flex-col flex-1 overflow-hidden">
-                        <Canvas
-                            textElement={textElement}
-                            setTextElement={handleSetTextElement}
-                            activeTool={activeTool}
-                            canvasZoom={canvasZoom}
-                            setCanvasZoom={setCanvasZoom}
-                            isPlaying={isPlaying}
-                            currentTime={currentTime}
-                            setCurrentTime={setCurrentTime}
-                            videoSrc={videoSrc}
-                            setDuration={setDuration}
-                        />
-                        <Timeline
-                            isPlaying={isPlaying}
-                            setIsPlaying={setIsPlaying}
-                            currentTime={currentTime}
-                            setCurrentTime={setCurrentTime}
-                            duration={duration}
-                            setDuration={setDuration}
-                            videoName={videoName}
-                            clips={clips}
-                            setClips={setClips}
-                        />
-                    </div>
-                    <PropertiesPanel textElement={textElement} setTextElement={handleSetTextElement} />
+                <div className="flex flex-col flex-1 overflow-hidden relative">
+                    <Canvas
+                        textElement={textElement}
+                        setTextElement={setTextElement}
+                        activeTool={activeTool}
+                        canvasZoom={canvasZoom}
+                        setCanvasZoom={setCanvasZoom}
+                        isPlaying={isPlaying}
+                        currentTime={currentTime}
+                        setCurrentTime={setCurrentTime}
+                        videoSrc={videoSrc}
+                        setDuration={setDuration}
+                        clips={clips}
+                    />
+                    <Timeline
+                        isPlaying={isPlaying}
+                        setIsPlaying={setIsPlaying}
+                        currentTime={currentTime}
+                        setCurrentTime={setCurrentTime}
+                        duration={duration}
+                        setDuration={setDuration}
+                        videoName={videoName}
+                        clips={clips}
+                        setClips={setClips}
+                        selectedClipId={selectedClipId}
+                        setSelectedClipId={setSelectedClipId}
+                    />
+                    <PropertiesPanel
+                        textElement={textElement}
+                        setTextElement={setTextElement}
+                        clips={clips}
+                        setClips={setClips}
+                        selectedClipId={selectedClipId}
+                        duration={duration}
+                    />
                 </div>
             </div>
         </div>

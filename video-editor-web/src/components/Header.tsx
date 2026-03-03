@@ -1,5 +1,5 @@
 import React from 'react';
-import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, HelpCircle, Settings, User, ChevronDown, Cloud } from 'lucide-react';
+import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, CircleQuestionMark, Settings, User, ChevronDown, Cloud } from 'lucide-react';
 
 interface HeaderProps {
   activeTool: 'pointer' | 'hand';
@@ -12,15 +12,15 @@ interface HeaderProps {
   canRedo: boolean;
 }
 
-export default function Header({
-  activeTool,
-  setActiveTool,
-  canvasZoom,
-  setCanvasZoom,
-  undo,
-  redo,
-  canUndo,
-  canRedo
+export default function Header({ 
+  activeTool, 
+  setActiveTool, 
+  canvasZoom, 
+  setCanvasZoom, 
+  undo, 
+  redo, 
+  canUndo, 
+  canRedo 
 }: HeaderProps) {
   return (
     <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#121212] shrink-0">
@@ -29,7 +29,7 @@ export default function Header({
         <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-bold text-xl rounded-sm">
           C
         </div>
-
+        
         <div className="flex items-center gap-2 text-sm font-medium hover:bg-white/5 px-2 py-1 rounded cursor-pointer transition-colors">
           <Cloud className="w-4 h-4" />
           <span>Stunning video</span>
@@ -38,13 +38,13 @@ export default function Header({
 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 bg-white/5 rounded-md p-1">
-          <button
+          <button 
             onClick={() => setActiveTool('pointer')}
             className={`p-1.5 rounded transition-colors ${activeTool === 'pointer' ? 'bg-white/20 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`}
           >
             <MousePointer2 className="w-4 h-4" />
           </button>
-          <button
+          <button 
             onClick={() => setActiveTool('hand')}
             className={`p-1.5 rounded transition-colors ${activeTool === 'hand' ? 'bg-white/20 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`}
           >
@@ -53,7 +53,7 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-2 text-sm relative group cursor-pointer">
-          <select
+          <select 
             className="appearance-none bg-transparent text-gray-400 hover:text-white focus:outline-none cursor-pointer pr-6 py-1"
             value={canvasZoom}
             onChange={(e) => setCanvasZoom(Number(e.target.value))}
@@ -71,14 +71,14 @@ export default function Header({
         <div className="h-4 w-px bg-white/10 mx-2"></div>
 
         <div className="flex items-center gap-1">
-          <button
+          <button 
             onClick={undo}
             disabled={!canUndo}
             className={`p-1.5 rounded transition-colors ${canUndo ? 'text-gray-400 hover:bg-white/10 hover:text-white' : 'text-gray-600 cursor-not-allowed'}`}
           >
             <Undo className="w-4 h-4" />
           </button>
-          <button
+          <button 
             onClick={redo}
             disabled={!canRedo}
             className={`p-1.5 rounded transition-colors ${canRedo ? 'text-gray-400 hover:bg-white/10 hover:text-white' : 'text-gray-600 cursor-not-allowed'}`}
@@ -96,7 +96,7 @@ export default function Header({
           <CircleCheck className="w-5 h-5" />
         </button>
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
-          <HelpCircle className="w-5 h-5" />
+          <CircleQuestionMark className="w-5 h-5" />
         </button>
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
           <Settings className="w-5 h-5" />
