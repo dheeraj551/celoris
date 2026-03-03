@@ -21,6 +21,17 @@ export default async function BlogPage() {
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'free-excel-course-online-india-2026',
+      title: 'Free Excel Course Online India 2026 — Zero to Job Ready',
+      slug: 'free-excel-course-online-india-2026',
+      excerpt: "Looking for a free Excel course online in India 2026? Learn Excel from beginner to advanced with a verified trainer — 229 reviews, 682 students trained.",
+      featured_image_url: '/blog-excel-course-india-2026.png',
+      author_name: 'Celoris',
+      category: 'Education',
+      reading_time: 12,
+      published_at: '2026-03-03T12:00:00Z',
+    },
+    {
       id: 'best-free-online-video-editor-india-2026',
       title: 'Best Free Online Video Editor India 2026 — No Watermark, No Download',
       slug: 'best-free-online-video-editor-india-2026',
