@@ -84,7 +84,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     'sovereign-intelligence-static': '/courses/sovereign-intelligence',
                                     'excel-expert-master-static': '/learn/be-an-excel-expert',
                                     'content-creation-social-media-static': '/learn/content-creation-social-media',
-                                    'blender-3d-modelling-beginners-static': '/learn/blender-3d-modelling-beginners'
+                                    'blender-3d-modelling-beginners-static': '/learn/blender-3d-modelling-beginners',
+                                    'bollywood-zumba-dance-static': '/courses/bollywood-zumba-dance-for-beginners'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -104,6 +105,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
+    { id: 'bollywood-zumba-dance-static', title: 'Dance Your Way — Bollywood & Zumba for Complete Beginners', subject: 'Dance', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 999, is_featured: true, course_image_url: '/course-dance-bollywood-zumba.png' },
     { id: 'online-hatha-yoga-classes-beginners-static', title: 'Online Hatha Yoga Classes for Beginners — Live Sessions with Certified Trainer', subject: 'Yoga', instructor_name: 'Celoris Certified Trainer', course_duration: '8 Weeks', price: 4999, is_featured: true, course_image_url: '/hatha-yoga-foundation.png' },
     { id: 'blender-3d-modelling-beginners-static', title: 'Blender 3D Modelling — Complete Beginner Course', subject: 'Design', instructor_name: 'Dheeraj Kushwaha', course_duration: '15 Hours', price: 5999, is_featured: true, course_image_url: '/blender-course-cover.png' },
     { id: 'content-creation-social-media-static', title: 'Content Creation on Social Media — From Creator to Income', subject: 'Social Media Marketing', instructor_name: 'Dheeraj Kushwaha', course_duration: '19 Hours', price: 4999, is_featured: true, course_image_url: '/content-creation-cover.png' },

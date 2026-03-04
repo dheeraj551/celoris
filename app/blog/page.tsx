@@ -21,6 +21,17 @@ export default async function BlogPage() {
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'online-dance-classes-india-2026-find-the-best-dance-classes-near-you',
+      title: 'Online Dance Classes India 2026 — Find the Best Dance Classes Near You',
+      slug: 'online-dance-classes-india-2026-find-the-best-dance-classes-near-you',
+      excerpt: "Want to learn dance but can't find good classes near you? Here's why thousands of Indians are switching to online dance classes in 2026 — and how to find the best one.",
+      featured_image_url: '/blog-dance-classes-2026.png',
+      author_name: 'Celoris',
+      category: 'Lifestyle',
+      reading_time: 10,
+      published_at: '2026-03-04T19:00:00Z',
+    },
+    {
       id: 'free-excel-course-online-india-2026',
       title: 'Free Excel Course Online India 2026 — Zero to Job Ready',
       slug: 'free-excel-course-online-india-2026',
