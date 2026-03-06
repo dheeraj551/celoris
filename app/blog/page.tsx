@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Calendar, User, Clock, ChevronRight } from "lucide-react"
+import { ArrowLeft, Calendar, User, Clock, ChevronRight, ChevronLeft } from "lucide-react"
 import { createServerClient } from "@/lib/supabase-server"
 import { cn } from "@/lib/utils"
 
@@ -16,10 +16,28 @@ interface BlogPost {
   featured_image_url?: string;
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }> | { page?: string }
+}) {
+  const resolvedParams = await searchParams;
+  const currentPage = parseInt(resolvedParams.page || '1', 10);
+  const postsPerPage = 6;
   const supabase = (await createServerClient()) as any;
 
   const STATIC_POSTS: BlogPost[] = [
+    {
+      id: 'learn-guitar-online-india-2026-beginners-guide',
+      title: "Learn Guitar Online India 2026: The Complete Beginner's Guide",
+      slug: 'learn-guitar-online-india-2026-beginners-guide',
+      excerpt: "2026 is genuinely one of the best times to learn guitar online in India. This guide covers everything you need to know: which guitar to buy, how online classes work, and which platforms are worth your time.",
+      featured_image_url: '/blog-guitar-online-2026.png',
+      author_name: 'Celoris',
+      category: 'Lifestyle',
+      reading_time: 8,
+      published_at: '2026-03-06T12:00:00Z',
+    },
     {
       id: 'online-dance-classes-india-2026-find-the-best-dance-classes-near-you',
       title: 'Online Dance Classes India 2026 — Find the Best Dance Classes Near You',
@@ -95,8 +113,7 @@ export default async function BlogPage() {
       .select('id, title, slug, excerpt, featured_image_url, author_name, category, reading_time, published_at')
       .eq('status', 'published')
       .eq('is_published', true)
-      .order('published_at', { ascending: false })
-      .limit(10);
+      .order('published_at', { ascending: false });
 
     fetchedPosts = dbPosts || [];
   } catch (error) {
@@ -113,6 +130,13 @@ export default async function BlogPage() {
 
   // Sort by date descending
   allPosts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+
+  const totalPosts = allPosts.length;
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+  const paginatedPosts = allPosts.slice(
+    (currentPage - 1) * postsPerPage,
+    currentPage * postsPerPage
+  );
 
   const formatDate = (dateString: string) => {
     try {
@@ -184,7 +208,7 @@ export default async function BlogPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-10">
-              {allPosts.map((post) => (
+              {paginatedPosts.map((post) => (
                 <article
                   key={post.id}
                   className="group bg-[#0a0f1d] rounded-[2.5rem] border border-white/5 hover:border-emerald-500/30 transition-all duration-500 overflow-hidden shadow-2xl hover:shadow-emerald-500/10"
@@ -254,6 +278,57 @@ export default async function BlogPage() {
                   </div>
                 </article>
               ))}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-16 flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                className={cn(
+                  "bg-white/5 border-white/10 text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all rounded-2xl px-6 h-12 font-bold uppercase tracking-widest text-[10px] gap-2",
+                  currentPage <= 1 && "opacity-50 pointer-events-none"
+                )}
+                asChild
+              >
+                <Link href={`/blog?page=${currentPage - 1}`}>
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Link>
+              </Button>
+
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    className={cn(
+                      "w-12 h-12 rounded-2xl font-bold transition-all",
+                      currentPage === pageNum
+                        ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
+                        : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-emerald-500/50"
+                    )}
+                    asChild
+                  >
+                    <Link href={`/blog?page=${pageNum}`}>{pageNum}</Link>
+                  </Button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                className={cn(
+                  "bg-white/5 border-white/10 text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all rounded-2xl px-6 h-12 font-bold uppercase tracking-widest text-[10px] gap-2",
+                  currentPage >= totalPages && "opacity-50 pointer-events-none"
+                )}
+                asChild
+              >
+                <Link href={`/blog?page=${currentPage + 1}`}>
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           )}
         </div>

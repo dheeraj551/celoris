@@ -36,8 +36,23 @@ import {
     Type as TypeIcon,
     Circle,
     Square as SquareIcon,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Heart,
+    Users,
+    User as UserIcon,
+    Wallet,
+    ThumbsUp,
+    LogOut
 } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from 'next/image';
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -61,16 +76,20 @@ type CanvasObject = {
         saturation: number;
         tint: number;
         blur: number;
+        hue: number;
     };
 
     // Image
     src?: string;
     filter?: string;
+    isCropped?: boolean;
+    isFlippedX?: boolean;
 
     // Text
     text?: string;
     fontSize?: number;
     color?: string;
+    textShadow?: string;
 
     // Shape
     shapeType?: 'rectangle' | 'circle';
@@ -105,27 +124,36 @@ const RETRO_FILTERS: FilterDef[] = [
     { name: 'Miami', image: 'https://picsum.photos/seed/f10/200/200', css: 'hue-rotate(40deg) saturate(150%) contrast(110%)' },
 ];
 
+const CLASSIC_FILTERS: FilterDef[] = [
+    { name: 'Grayscale', image: 'https://picsum.photos/seed/f11/200/200', css: 'grayscale(100%)' },
+    { name: 'Sepia', image: 'https://picsum.photos/seed/f12/200/200', css: 'sepia(100%)' },
+    { name: 'Warm Sepia', image: 'https://picsum.photos/seed/f12b/200/200', css: 'sepia(80%) saturate(150%)' },
+    { name: 'Invert', image: 'https://picsum.photos/seed/f13/200/200', css: 'invert(100%)' },
+    { name: 'Hue Rotate', image: 'https://picsum.photos/seed/f14/200/200', css: 'hue-rotate(90deg)' },
+];
+
 const getFilterString = (obj: CanvasObject) => {
     let filterStr = '';
     if (obj.filter && obj.filter !== 'none') {
         filterStr += obj.filter + ' ';
     }
     if (obj.adjustments) {
-        const { brightness = 0, contrast = 0, saturation = 0, tint = 0, blur = 0 } = obj.adjustments;
+        const { brightness = 0, contrast = 0, saturation = 0, tint = 0, blur = 0, hue = 0 } = obj.adjustments;
         if (brightness !== 0) filterStr += `brightness(${100 + brightness}%) `;
         if (contrast !== 0) filterStr += `contrast(${100 + contrast}%) `;
         if (saturation !== 0) filterStr += `saturate(${100 + saturation}%) `;
         if (tint !== 0) filterStr += `hue-rotate(${tint}deg) `;
         if (blur !== 0) filterStr += `blur(${blur}px) `;
+        if (hue !== 0) filterStr += `hue-rotate(${hue}deg) `;
     }
-    if (obj.effect && obj.effect !== 'none') {
+    if (obj.effect && obj.effect !== 'none' && obj.effect !== 'vignette') {
         filterStr += obj.effect + ' ';
     }
     return filterStr.trim() || undefined;
 };
 
 export default function ImageStudio() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, profile, loading: authLoading, signOut } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
@@ -134,15 +162,56 @@ export default function ImageStudio() {
         }
     }, [user, authLoading, router]);
 
+    const handleSignOut = async () => {
+        try {
+            await signOut()
+        } catch (error) {
+            console.error("Error signing out:", error)
+        }
+    }
+
     const [activeTab, setActiveTab] = useState('upload');
     const [activeRightTab, setActiveRightTab] = useState('filters');
     const [objects, setObjects] = useState<CanvasObject[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [draggedLayerId, setDraggedLayerId] = useState<string | null>(null);
     const [gallery, setGallery] = useState<string[]>([
         'https://picsum.photos/seed/edit1/400/400',
         'https://picsum.photos/seed/edit2/400/400'
     ]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleLayerDragStart = (e: React.DragEvent, id: string) => {
+        setDraggedLayerId(id);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const handleLayerDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleLayerDrop = (e: React.DragEvent, targetId: string) => {
+        e.preventDefault();
+        if (!draggedLayerId || draggedLayerId === targetId) {
+            setDraggedLayerId(null);
+            return;
+        }
+
+        setObjects(prev => {
+            const visualArray = [...prev].reverse();
+            const draggedVisualIndex = visualArray.findIndex(o => o.id === draggedLayerId);
+            const targetVisualIndex = visualArray.findIndex(o => o.id === targetId);
+
+            if (draggedVisualIndex === -1 || targetVisualIndex === -1) return prev;
+
+            const [draggedObj] = visualArray.splice(draggedVisualIndex, 1);
+            visualArray.splice(targetVisualIndex, 0, draggedObj);
+
+            return visualArray.reverse().map((o, i) => ({ ...o, zIndex: i }));
+        });
+        setDraggedLayerId(null);
+    };
 
     // Keyboard shortcuts (Delete)
     useEffect(() => {
@@ -251,6 +320,18 @@ export default function ImageStudio() {
         setObjects(prev => prev.map(obj => obj.id === selectedId && obj.type === 'image' ? { ...obj, filter: filterCss } : obj));
     };
 
+    const applyEffect = (effectName: string) => {
+        if (!selectedId) return;
+        let effectCss = '';
+        if (effectName === 'Blur') effectCss = 'blur(4px)';
+        else if (effectName === 'Drop Shadow') effectCss = 'drop-shadow(4px 4px 4px rgba(0,0,0,0.5))';
+        else if (effectName === 'Glow') effectCss = 'drop-shadow(0 0 8px rgba(0,196,204,0.8))';
+        else if (effectName === 'Outline') effectCss = 'drop-shadow(2px 0 0 #00C4CC) drop-shadow(-2px 0 0 #00C4CC) drop-shadow(0 2px 0 #00C4CC) drop-shadow(0 -2px 0 #00C4CC)';
+        else if (effectName === 'Vignette') effectCss = 'vignette';
+
+        setObjects(prev => prev.map(obj => obj.id === selectedId ? { ...obj, effect: obj.effect === effectCss ? 'none' : effectCss } : obj));
+    };
+
     const handleDragStart = (e: React.PointerEvent, id: string) => {
         e.stopPropagation();
         setSelectedId(id);
@@ -330,6 +411,25 @@ export default function ImageStudio() {
 
     const handleTextChange = (id: string, newText: string) => {
         setObjects(prev => prev.map(o => o.id === id ? { ...o, text: newText } : o));
+    };
+
+    const toggleCrop = (id: string) => {
+        setObjects(prev => prev.map(o => {
+            if (o.id === id && o.type === 'image') {
+                if (!o.isCropped) {
+                    const el = document.getElementById(`obj-${id}`);
+                    const currentHeight = el ? el.offsetHeight : o.height;
+                    return { ...o, isCropped: true, height: currentHeight };
+                } else {
+                    return { ...o, isCropped: false };
+                }
+            }
+            return o;
+        }));
+    };
+
+    const toggleFlipX = (id: string) => {
+        setObjects(prev => prev.map(o => o.id === id && o.type === 'image' ? { ...o, isFlippedX: !o.isFlippedX } : o));
     };
 
     const selectedObject = objects.find(obj => obj.id === selectedId);
@@ -504,10 +604,71 @@ export default function ImageStudio() {
                         <div className="w-[1px] h-4 bg-gray-300 mx-1"></div>
                         <button className="text-gray-500 hover:text-gray-800"><Settings size={18} /></button>
                         <button className="text-gray-500 hover:text-gray-800"><HelpCircle size={18} /></button>
-                        {user?.email && (
-                            <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium cursor-pointer">
-                                {user.email[0].toUpperCase()}
-                            </div>
+                        {user && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="relative h-8 w-8 rounded-full p-0 outline-none focus:ring-2 focus:ring-[#00C4CC] focus:ring-offset-2">
+                                        <Avatar className="h-8 w-8" key={profile?.avatar_url || 'default'}>
+                                            <AvatarImage
+                                                src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=6366f1&color=fff`}
+                                                alt={profile?.full_name || 'User'}
+                                            />
+                                            <AvatarFallback className="bg-blue-500 text-white">
+                                                {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">
+                                                {profile?.full_name || user.email}
+                                            </p>
+                                            {profile?.full_name && (
+                                                <p className="text-xs leading-none text-muted-foreground">
+                                                    {user.email}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/social/swipe" className="cursor-pointer">
+                                            <Heart className="mr-2 h-4 w-4" />
+                                            <span>Discover</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/social/matches" className="cursor-pointer">
+                                            <Users className="mr-2 h-4 w-4" />
+                                            <span>Matches</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/social/likes" className="cursor-pointer">
+                                            <ThumbsUp className="mr-2 h-4 w-4" />
+                                            <span>Likes</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/social/profile" className="cursor-pointer">
+                                            <UserIcon className="mr-2 h-4 w-4" />
+                                            <span>Profile</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="cursor-default focus:bg-transparent">
+                                        <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
+                                        <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Sign out</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         )}
                     </div>
                 </div>
@@ -541,26 +702,32 @@ export default function ImageStudio() {
                         {objects.map(obj => (
                             <div
                                 key={obj.id}
+                                id={`obj-${obj.id}`}
                                 onPointerDown={(e) => handleDragStart(e, obj.id)}
                                 className={`absolute cursor-move ${selectedId === obj.id ? 'ring-2 ring-[#00C4CC]' : ''}`}
                                 style={{
                                     left: obj.x,
                                     top: obj.y,
                                     width: obj.width,
-                                    height: obj.type === 'image' ? 'auto' : obj.height,
+                                    height: obj.type === 'image' && !obj.isCropped ? 'auto' : obj.height,
                                     minHeight: obj.type === 'text' ? 'auto' : undefined,
                                     opacity: obj.opacity ?? 1,
                                     zIndex: obj.zIndex ?? 0
                                 }}
                             >
                                 {obj.type === 'image' && (
-                                    <img
-                                        src={obj.src}
-                                        alt="Canvas layer"
-                                        className="w-full h-auto pointer-events-none"
-                                        style={{ filter: getFilterString(obj) }}
-                                        draggable={false}
-                                    />
+                                    <div className="relative w-full h-full">
+                                        <img
+                                            src={obj.src}
+                                            alt="Canvas layer"
+                                            className={`w-full pointer-events-none ${obj.isCropped ? 'h-full object-cover' : 'h-auto'} ${obj.isFlippedX ? '-scale-x-100' : ''}`}
+                                            style={{ filter: getFilterString(obj) }}
+                                            draggable={false}
+                                        />
+                                        {obj.effect === 'vignette' && (
+                                            <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 100px rgba(0,0,0,0.9)' }}></div>
+                                        )}
+                                    </div>
                                 )}
 
                                 {obj.type === 'shape' && (
@@ -596,7 +763,8 @@ export default function ImageStudio() {
                                             color: obj.color,
                                             lineHeight: 1.2,
                                             fontFamily: 'inherit',
-                                            filter: getFilterString(obj)
+                                            filter: getFilterString(obj),
+                                            textShadow: obj.textShadow
                                         }}
                                         onPointerDown={e => e.stopPropagation()}
                                         onClick={e => { e.stopPropagation(); setSelectedId(obj.id); }}
@@ -623,8 +791,20 @@ export default function ImageStudio() {
                                         >
                                             {obj.type === 'image' && (
                                                 <>
-                                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-700" title="Crop"><Crop size={16} /></button>
-                                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-700" title="Flip"><FlipHorizontal size={16} /></button>
+                                                    <button
+                                                        className={`p-1.5 rounded text-gray-700 ${obj.isCropped ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+                                                        title={obj.isCropped ? "Uncrop" : "Crop"}
+                                                        onClick={() => toggleCrop(obj.id)}
+                                                    >
+                                                        <Crop size={16} />
+                                                    </button>
+                                                    <button
+                                                        className={`p-1.5 rounded text-gray-700 ${obj.isFlippedX ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+                                                        title="Flip Horizontal"
+                                                        onClick={() => toggleFlipX(obj.id)}
+                                                    >
+                                                        <FlipHorizontal size={16} />
+                                                    </button>
                                                 </>
                                             )}
                                             {obj.type === 'text' && (
@@ -717,20 +897,42 @@ export default function ImageStudio() {
                                         onSelect={applyFilter}
                                         activeFilter={selectedObject.filter || 'none'}
                                     />
+
+                                    <FilterSection
+                                        title="Classic"
+                                        filters={CLASSIC_FILTERS}
+                                        onSelect={applyFilter}
+                                        activeFilter={selectedObject.filter || 'none'}
+                                    />
                                 </>
                             )}
 
                             {activeRightTab === 'effects' && (
                                 <div className="flex flex-col gap-4">
                                     <div className="grid grid-cols-2 gap-2">
-                                        {['Blur', 'Drop Shadow', 'Glow', 'Outline'].map(effect => (
-                                            <button key={effect} className="p-4 border border-gray-200 rounded-lg hover:border-[#00C4CC] hover:bg-gray-50 flex flex-col items-center gap-3 transition-colors">
-                                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                                                    <Sparkles size={20} className="text-gray-500" />
-                                                </div>
-                                                <span className="text-xs font-medium text-gray-700">{effect}</span>
-                                            </button>
-                                        ))}
+                                        {['Blur', 'Drop Shadow', 'Glow', 'Outline', 'Vignette'].map(effect => {
+                                            let effectCss = '';
+                                            if (effect === 'Blur') effectCss = 'blur(4px)';
+                                            else if (effect === 'Drop Shadow') effectCss = 'drop-shadow(4px 4px 4px rgba(0,0,0,0.5))';
+                                            else if (effect === 'Glow') effectCss = 'drop-shadow(0 0 8px rgba(0,196,204,0.8))';
+                                            else if (effect === 'Outline') effectCss = 'drop-shadow(2px 0 0 #00C4CC) drop-shadow(-2px 0 0 #00C4CC) drop-shadow(0 2px 0 #00C4CC) drop-shadow(0 -2px 0 #00C4CC)';
+                                            else if (effect === 'Vignette') effectCss = 'vignette';
+
+                                            const isActive = selectedObject.effect === effectCss;
+
+                                            return (
+                                                <button
+                                                    key={effect}
+                                                    onClick={() => applyEffect(effect)}
+                                                    className={`p-4 border rounded-lg flex flex-col items-center gap-3 transition-colors ${isActive ? 'border-[#00C4CC] bg-[#E5F9FA]' : 'border-gray-200 hover:border-[#00C4CC] hover:bg-gray-50'}`}
+                                                >
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isActive ? 'bg-white' : 'bg-gray-100'}`}>
+                                                        <Sparkles size={20} className={isActive ? 'text-[#00C4CC]' : 'text-gray-500'} />
+                                                    </div>
+                                                    <span className={`text-xs font-medium ${isActive ? 'text-[#00C4CC]' : 'text-gray-700'}`}>{effect}</span>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
@@ -754,6 +956,7 @@ export default function ImageStudio() {
                                         { id: 'contrast', label: 'Contrast', min: -100, max: 100 },
                                         { id: 'saturation', label: 'Saturation', min: -100, max: 100 },
                                         { id: 'tint', label: 'Tint', min: -100, max: 100 },
+                                        { id: 'hue', label: 'Hue', min: -180, max: 180 },
                                         { id: 'blur', label: 'Blur', min: 0, max: 100 }
                                     ].map(adj => {
                                         const val = selectedObject.adjustments?.[adj.id as keyof typeof selectedObject.adjustments] ?? 0;
@@ -775,7 +978,7 @@ export default function ImageStudio() {
                                                                 return {
                                                                     ...o,
                                                                     adjustments: {
-                                                                        ...(o.adjustments || { brightness: 0, contrast: 0, saturation: 0, tint: 0, blur: 0 }),
+                                                                        ...(o.adjustments || { brightness: 0, contrast: 0, saturation: 0, tint: 0, blur: 0, hue: 0 }),
                                                                         [adj.id]: newVal
                                                                     }
                                                                 };
@@ -880,16 +1083,49 @@ export default function ImageStudio() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-medium text-gray-700 mb-1 block">Color</label>
-                                        <div className="flex gap-2">
+                                        <label className="text-xs font-medium text-gray-700 mb-2 block">Color</label>
+                                        <div className="flex flex-wrap gap-2 items-center">
+                                            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 focus-within:border-[#00C4CC]">
+                                                <input
+                                                    type="color"
+                                                    value={selectedObject.color || '#000000'}
+                                                    onChange={(e) => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, color: e.target.value } : o))}
+                                                    className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer"
+                                                    title="Custom Color"
+                                                />
+                                            </div>
+                                            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
                                             {['#000000', '#FFFFFF', '#EF4444', '#3B82F6', '#10B981', '#F59E0B'].map(color => (
                                                 <button
                                                     key={color}
                                                     onClick={() => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, color } : o))}
                                                     className={`w-8 h-8 rounded-full border-2 ${selectedObject.color === color ? 'border-[#00C4CC]' : 'border-gray-200'}`}
                                                     style={{ backgroundColor: color }}
+                                                    title={color}
                                                 />
                                             ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-700 mb-2 block">Text Shadow</label>
+                                        <div className="flex gap-2">
+                                            {[
+                                                { label: 'None', value: 'none' },
+                                                { label: 'Soft', value: '2px 2px 4px rgba(0,0,0,0.3)' },
+                                                { label: 'Strong', value: '3px 3px 6px rgba(0,0,0,0.6)' },
+                                                { label: 'Glow', value: '0 0 8px rgba(0,196,204,0.8)' }
+                                            ].map(shadow => {
+                                                const isActive = (selectedObject.textShadow || 'none') === shadow.value;
+                                                return (
+                                                    <button
+                                                        key={shadow.label}
+                                                        onClick={() => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, textShadow: shadow.value } : o))}
+                                                        className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${isActive ? 'border-[#00C4CC] bg-[#E5F9FA] text-[#00C4CC]' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                                    >
+                                                        {shadow.label}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </div>
@@ -898,14 +1134,25 @@ export default function ImageStudio() {
                             {activeRightTab === 'filters' && selectedObject.type === 'shape' && (
                                 <div className="flex flex-col gap-4">
                                     <div>
-                                        <label className="text-xs font-medium text-gray-700 mb-1 block">Fill Color</label>
-                                        <div className="flex flex-wrap gap-2">
+                                        <label className="text-xs font-medium text-gray-700 mb-2 block">Fill Color</label>
+                                        <div className="flex flex-wrap gap-2 items-center">
+                                            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 focus-within:border-gray-800">
+                                                <input
+                                                    type="color"
+                                                    value={selectedObject.backgroundColor || '#00C4CC'}
+                                                    onChange={(e) => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, backgroundColor: e.target.value } : o))}
+                                                    className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer"
+                                                    title="Custom Color"
+                                                />
+                                            </div>
+                                            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
                                             {['#00C4CC', '#000000', '#FFFFFF', '#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'].map(color => (
                                                 <button
                                                     key={color}
                                                     onClick={() => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, backgroundColor: color } : o))}
                                                     className={`w-8 h-8 rounded-full border-2 ${selectedObject.backgroundColor === color ? 'border-gray-800' : 'border-gray-200'}`}
                                                     style={{ backgroundColor: color }}
+                                                    title={color}
                                                 />
                                             ))}
                                         </div>
@@ -922,23 +1169,27 @@ export default function ImageStudio() {
                 <div className="text-xs font-semibold text-gray-800 mb-4">Layers</div>
 
                 {/* Layer thumbnails */}
-                <div className="flex flex-col gap-3 w-full px-2 mb-6">
+                <div className="flex flex-col gap-3 w-full px-2 mb-6 text-gray-400">
                     {[...objects].reverse().map(obj => (
                         <div
                             key={obj.id}
+                            draggable
+                            onDragStart={(e) => handleLayerDragStart(e, obj.id)}
+                            onDragOver={handleLayerDragOver}
+                            onDrop={(e) => handleLayerDrop(e, obj.id)}
                             onClick={() => setSelectedId(obj.id)}
-                            className={`aspect-video bg-white rounded border-2 overflow-hidden relative cursor-pointer flex items-center justify-center ${selectedId === obj.id ? 'border-[#00C4CC]' : 'border-transparent hover:border-gray-300'}`}
+                            className={`aspect-video bg-white rounded border-2 overflow-hidden relative cursor-pointer flex items-center justify-center ${selectedId === obj.id ? 'border-[#00C4CC]' : 'border-transparent hover:border-gray-300'} ${draggedLayerId === obj.id ? 'opacity-50' : ''}`}
                         >
-                            {obj.type === 'image' && <img src={obj.src} alt="Layer" className="w-full h-full object-cover" style={{ filter: getFilterString(obj) }} />}
+                            {obj.type === 'image' && <img src={obj.src} alt="Layer" className="w-full h-full object-cover pointer-events-none" style={{ filter: getFilterString(obj) }} />}
                             {obj.type === 'shape' && (
-                                <div className="w-8 h-8" style={{ backgroundColor: obj.backgroundColor, borderRadius: obj.shapeType === 'circle' ? '50%' : '0%' }} />
+                                <div className="w-8 h-8 pointer-events-none" style={{ backgroundColor: obj.backgroundColor, borderRadius: obj.shapeType === 'circle' ? '50%' : '0%' }} />
                             )}
                             {obj.type === 'frame' && (
-                                <div className="w-8 h-8 bg-gray-100 flex items-center justify-center" style={{ borderRadius: obj.frameType === 'circle' ? '50%' : '0%' }}>
+                                <div className="w-8 h-8 bg-gray-100 flex items-center justify-center pointer-events-none" style={{ borderRadius: obj.frameType === 'circle' ? '50%' : '0%' }}>
                                     <ImageIcon size={16} className="text-gray-300" />
                                 </div>
                             )}
-                            {obj.type === 'text' && <TypeIcon size={20} className="text-gray-400" />}
+                            {obj.type === 'text' && <TypeIcon size={20} className="text-gray-400 pointer-events-none" />}
                         </div>
                     ))}
                     <div className="aspect-video bg-white rounded border border-gray-200 flex items-center justify-center relative cursor-pointer hover:bg-gray-50">

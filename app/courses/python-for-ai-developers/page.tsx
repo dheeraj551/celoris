@@ -160,18 +160,136 @@ export default function PythonForAIDevelopersCourse() {
                 duration: "4 Hours"
             }
         ],
-        faqs: [
+        faq_categories: [
             {
-                question: "Do I need math expertise for this course?",
-                answer: "We cover the essential math needed for ML (linear algebra, calculus basics) within the context of the code. You don't need to be a math expert, but a willingness to learn the concepts is required."
+                title: "Prerequisites & Getting Started",
+                icon: "Lightbulb",
+                questions: [
+                    {
+                        question: "Do I need to know Python before taking this course?",
+                        answer: "No prior Python knowledge is required. Module 1 is dedicated entirely to Python foundations for AI — covering syntax, data structures, OOP, type hints, and environment setup from scratch. If you have experience in any other programming language (JavaScript, Java, C++), you'll move through Module 1 quickly. The course is designed so that a motivated beginner with zero Python experience can start at M1 and arrive at building real AI systems by M8.",
+                        source: "Trending on r/learnpython, r/learnmachinelearning & DeepLearning.AI community forums"
+                    },
+                    {
+                        question: "How much math do I need to know for this course?",
+                        answer: "You need a high school–level comfort with algebra and basic statistics (mean, variance, percentages). You do NOT need a degree in mathematics. Concepts like linear algebra, calculus derivatives, and probability are introduced contextually where needed — for example, when explaining gradient descent or attention mechanisms — with intuitive explanations before the equations. The course is engineering-first, not research-first.",
+                        source: "Top recurring questions on Quora: 'How much math do I need for ML?'"
+                    },
+                    {
+                        question: "I'm a software developer but not a data scientist. Is this course for me?",
+                        answer: "This course was built specifically for software developers making the AI transition. The curriculum mirrors how a backend or full-stack engineer thinks: it emphasises APIs, pipelines, deployment, and system design — not statistical theory. You'll be writing FastAPI services, building Docker containers, and calling LLM APIs using patterns that feel natural if you already build software.",
+                        source: "r/cscareerquestions, r/learnmachinelearning common threads"
+                    },
+                    {
+                        question: "Is it too late to learn Python and AI in 2025?",
+                        answer: "Absolutely not. The AI job market is expanding rapidly — the global ML market was valued at $19.2 billion in 2022 and is projected to reach over $225 billion by 2030. Job postings for AI and ML engineers grew over 70% from 2022 to 2025. Python remains the #1 language for AI by every major survey.",
+                        source: "Quora: 'Am I too late to learn Python for AI?'"
+                    }
+                ]
             },
             {
-                question: "Can I run the projects on a standard laptop?",
-                answer: "Yes, most modules use CPU-efficient libraries or external APIs (OpenAI/Claude). For Deep Learning (Module 5), we recommend using Google Colab or Kaggle (free GPUs) which we will show you how to set up."
+                title: "Course Content & Curriculum",
+                icon: "BookOpen",
+                questions: [
+                    {
+                        question: "Why does the course use PyTorch instead of TensorFlow?",
+                        answer: "PyTorch is now the dominant framework across research, startups, and increasingly in production. Most modern LLMs, diffusion models, and open-source AI models (Llama, Mistral, Stable Diffusion) are built in PyTorch. Hugging Face's entire ecosystem runs on PyTorch by default. Learning PyTorch also gives you a more intuitive, Pythonic experience.",
+                        source: "r/MachineLearning, r/learnmachinelearning — 'PyTorch vs TensorFlow 2025'"
+                    },
+                    {
+                        question: "What is RAG and why is there a whole module on it?",
+                        answer: "RAG stands for Retrieval-Augmented Generation. It's the technique of giving an LLM access to your own documents or knowledge base at query time, rather than relying on what the model memorised during training. This solves two critical LLM problems: hallucination and knowledge cutoff. RAG is currently the most widely deployed production pattern for LLM applications.",
+                        source: "r/LocalLLaMA, r/MachineLearning — top asked topic"
+                    },
+                    {
+                        question: "What's the difference between using an LLM API and fine-tuning a model?",
+                        answer: "Using an LLM API (like OpenAI) means calling a hosted model via HTTP — no training required, instant results. Fine-tuning means taking a pre-trained model and continuing to train it on your own data to specialise its behaviour. This course focuses primarily on API usage and prompt engineering (Module 7), which is what 90% of real-world AI applications use.",
+                        source: "r/LocalLLaMA, Quora — 'API vs Fine-tuning'"
+                    },
+                    {
+                        question: "Does this course teach AI agents? What exactly is an AI agent?",
+                        answer: "Yes — Module 8 is dedicated entirely to agentic AI systems. An AI agent is a program that uses an LLM to reason about a goal, decide which tools to use, execute those tools, and iterate until the task is complete. Unlike a simple chatbot, an agent can handle multi-step workflows autonomously.",
+                        source: "r/MachineLearning, r/artificial — 'What are AI agents?'"
+                    },
+                    {
+                        question: "Is scikit-learn still worth learning with LLMs everywhere?",
+                        answer: "Absolutely. Scikit-learn is the backbone of classical ML. Not every problem needs an LLM — anomaly detection, churn prediction, fraud detection, and recommendation systems are typically solved with scikit-learn. LLMs are expensive and slow for tabular/numerical problems where scikit-learn excels.",
+                        source: "r/datascience — 'Is ML still relevant with LLMs?'"
+                    }
+                ]
             },
             {
-                question: "Will I get access to API keys?",
-                answer: "The course provides guidance on setting up your own API keys. We use free-tier options wherever possible, and for the capstone, a small budget ($5-$10) for API usage is recommended for a realistic experience."
+                title: "Tools, Hardware & Setup",
+                icon: "Terminal",
+                questions: [
+                    {
+                        question: "Do I need a powerful GPU to take this course?",
+                        answer: "No. The vast majority of the course runs perfectly fine on a standard laptop CPU. For Deep Learning (Module 5), the labs are designed to run on free GPU resources via Google Colab. For LLM modules, you're calling external APIs rather than running models locally, so no GPU is needed.",
+                        source: "r/learnmachinelearning common question"
+                    },
+                    {
+                        question: "Should I use Jupyter Notebooks or VS Code for this course?",
+                        answer: "Both are used. Jupyter Lab is ideal for exploratory data analysis (Modules 2–4). VS Code is better for writing application code, building APIs, and working on larger codebases (Modules 7–9). Most AI developers use both, and the course reflects this workflow.",
+                        source: "r/learnpython — 'Jupyter vs VS Code for ML'"
+                    },
+                    {
+                        question: "What Python version should I use?",
+                        answer: "Python 3.11 or 3.12 is recommended. Python 3.11 introduced significant performance improvements and is currently the most battle-tested version for AI libraries. The course walks you through installing Python 3.11 via pyenv to manage versions cleanly.",
+                        source: "r/Python, r/learnpython version confusion questions"
+                    }
+                ]
+            },
+            {
+                title: "Career, Jobs & Salary",
+                icon: "Award",
+                questions: [
+                    {
+                        question: "What jobs can I get after completing this course?",
+                        answer: "This course prepares you for roles like: AI/ML Engineer, LLM Application Developer, Applied Data Scientist, AI Backend Engineer, and MLOps Engineer. The curriculum focuses on production-ready skills that employers in 2025 are actively seeking.",
+                        source: "r/cscareerquestions, r/datascience role analysis"
+                    },
+                    {
+                        question: "How long will it take to complete the course and be job-ready?",
+                        answer: "The course contains 40+ hours of instruction. At 10 hours/week, you can complete it in 5–6 weeks. Being 'job-ready' depends on your background; entry-level LLM dev roles may be accessible after 3–4 months of focused practice and building a portfolio using the course projects.",
+                        source: "Quora experts & Coursera 2025 data"
+                    },
+                    {
+                        question: "Is Python still the right language to learn for AI in 2025?",
+                        answer: "Python's position is stronger than ever. Every major AI framework (PyTorch, LangChain, etc.) uses Python as its primary interface. While Rust/C++ are used for performance runtimes, the application layer where most jobs live is overwhelmingly Python.",
+                        source: "Stack Overflow 2025 Survey"
+                    },
+                    {
+                        question: "Do I need a degree in computer science to get an AI job?",
+                        answer: "Not necessarily. While research labs may require advanced degrees, most AI engineering jobs — building applications and deploying models — value demonstrated skills and portfolio projects over credentials. What you've built matters most.",
+                        source: "Quora: 'Do I need a degree to work in AI/ML?'"
+                    }
+                ]
+            },
+            {
+                title: "Technical Concepts Explained",
+                icon: "Cpu",
+                questions: [
+                    {
+                        question: "What's the difference between AI, Machine Learning, and Deep Learning?",
+                        answer: "They are nested concepts: AI is anything that makes machines appear intelligent. Machine Learning is a subset where models learn from data. Deep Learning is a subset of ML using neural networks — it powers Modern LLMs and image recognition.",
+                        source: "Top searched AI question on Google"
+                    },
+                    {
+                        question: "What is overfitting and how do I know if my model is overfitting?",
+                        answer: "Overfitting happens when your model learns training noise rather than general patterns, causing it to fail on new data. Signs include high training accuracy but poor validation performance. We cover solutions like regularisation and dropout in Module 4.",
+                        source: "r/learnmachinelearning beginner FAQ"
+                    },
+                    {
+                        question: "What is a Large Language Model (LLM) and how is it different from traditional ML?",
+                        answer: "A traditional ML model makes specific predictions on structured data. An LLM is trained on vast amounts of text to generate coherent language and follow complex instructions. LLMs are general-purpose intelligence layers controlled via prompts.",
+                        source: "r/MachineLearning explanation request"
+                    },
+                    {
+                        question: "How does overfitting relate to bias and variance?",
+                        answer: "Bias is error from being too simple (underfitting); variance is error from being too complex (overfitting). AI engineering is about balancing both to capture real signal without memorising noise.",
+                        source: "r/learnmachinelearning perennial topic"
+                    }
+                ]
             }
         ],
         projects: [
@@ -390,6 +508,47 @@ export default function PythonForAIDevelopersCourse() {
                                                 </div>
                                             </CardContent>
                                         </Card>
+                                    )
+                                })}
+                            </div>
+                        </section>
+
+                        <section className="space-y-12 bg-[#0d1321]/20 p-12 rounded-[3rem] border border-white/5 shadow-inner">
+                            <div className="text-center space-y-4">
+                                <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">Everything You Need to Know</h2>
+                                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs italic">Sourced from Reddit, Quora & Developer Communities — 2025</p>
+                            </div>
+
+                            <div className="space-y-16">
+                                {courseData.faq_categories.map((category, catIndex) => {
+                                    const CatIcon = category.icon === "Lightbulb" ? Lightbulb :
+                                        category.icon === "BookOpen" ? BookOpen :
+                                            category.icon === "Terminal" ? Terminal :
+                                                category.icon === "Award" ? Award : Cpu;
+                                    return (
+                                        <div key={catIndex} className="space-y-8">
+                                            <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+                                                <CatIcon className="h-6 w-6 text-emerald-500" />
+                                                <h3 className="text-xl font-black text-emerald-400 italic uppercase tracking-widest">{category.title}</h3>
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-6">
+                                                {category.questions.map((faq, faqIndex) => (
+                                                    <div key={faqIndex} className="group bg-[#0d1321]/40 p-8 rounded-[2.5rem] border border-white/5 hover:border-emerald-500/20 transition-all shadow-lg hover:shadow-emerald-500/5">
+                                                        <div className="flex gap-6">
+                                                            <div className="text-2xl font-black text-white/10 group-hover:text-emerald-500/20 transition-colors italic">Q{faqIndex + 1}</div>
+                                                            <div className="space-y-4">
+                                                                <h4 className="text-lg font-black text-white italic uppercase tracking-tight leading-tight group-hover:text-emerald-400 transition-colors">{faq.question}</h4>
+                                                                <p className="text-slate-400 text-sm leading-relaxed font-medium">{faq.answer}</p>
+                                                                <div className="flex items-center gap-2 pt-2">
+                                                                    <div className="h-1 w-1 rounded-full bg-slate-700" />
+                                                                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Source: {faq.source}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     )
                                 })}
                             </div>

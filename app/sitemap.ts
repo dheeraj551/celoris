@@ -78,6 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/learn',
         '/learn/courses',
         '/blog',
+        '/blog/learn-guitar-online-india-2026-beginners-guide',
         '/blog/free-excel-course-online-india-2026',
         '/blog/best-free-online-video-editor-india-2026',
         '/blog/best-free-video-editor-india',

@@ -114,6 +114,20 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'bollywood-guitar-beginners-static',
+      title: '🎸 BOLLYWOOD GUITAR — Complete Beginners 8-Week Course (India 2026)',
+      subject: 'Music',
+      grade_level: 'Beginner',
+      description: 'Master Bollywood and Hindi film songs on acoustic guitar. Designed for complete beginners with 30 minutes of daily practice.',
+      target_audience: 'Complete beginners, Students, Professionals',
+      instructor_name: 'Celoris Team',
+      course_duration: '8 Weeks',
+      price: 1999,
+      course_image_url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=800',
+      is_featured: true,
+      created_at: new Date().toISOString()
+    },
+    {
       id: 'personalized-ai-experiences-static',
       title: 'Personalized AI Experiences with RAG & Agents',
       subject: 'Artificial Intelligence',
@@ -1069,6 +1083,7 @@ export default function CoursesDisplay({
     if (id === 'excel-expert-master-static') return '/learn/be-an-excel-expert'
     if (id === 'content-creation-social-media-static') return '/learn/content-creation-social-media'
     if (id === 'blender-3d-modelling-beginners-static') return '/learn/blender-3d-modelling-beginners'
+    if (id === 'bollywood-guitar-beginners-static') return '/courses/bollywood-guitar-for-beginners'
     return `/learn/course/${id}`
   }
 
