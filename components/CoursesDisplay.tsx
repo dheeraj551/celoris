@@ -128,6 +128,20 @@ export default function CoursesDisplay({
       created_at: new Date().toISOString()
     },
     {
+      id: 'speak-with-confidence-static',
+      title: '🗣️ SPEAK WITH CONFIDENCE — A Complete Spoken English Course for Beginners',
+      subject: 'Soft Skills',
+      grade_level: 'Beginner',
+      description: 'Master Spoken English in 8 weeks. Comprehensive program covering Pronunciation, Grammar, Fluency, and Business English for absolute beginners.',
+      target_audience: 'Students, Working Professionals, Beginners',
+      instructor_name: 'Celoris Team',
+      course_duration: '8 Weeks',
+      price: 2999,
+      course_image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800',
+      is_featured: true,
+      created_at: new Date().toISOString()
+    },
+    {
       id: 'personalized-ai-experiences-static',
       title: 'Personalized AI Experiences with RAG & Agents',
       subject: 'Artificial Intelligence',
@@ -1084,6 +1098,7 @@ export default function CoursesDisplay({
     if (id === 'content-creation-social-media-static') return '/learn/content-creation-social-media'
     if (id === 'blender-3d-modelling-beginners-static') return '/learn/blender-3d-modelling-beginners'
     if (id === 'bollywood-guitar-beginners-static') return '/courses/bollywood-guitar-for-beginners'
+    if (id === 'speak-with-confidence-static') return '/learn/speak-with-confidence'
     return `/learn/course/${id}`
   }
 

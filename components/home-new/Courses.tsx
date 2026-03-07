@@ -87,7 +87,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     'blender-3d-modelling-beginners-static': '/learn/blender-3d-modelling-beginners',
                                     'bollywood-zumba-dance-static': '/courses/bollywood-zumba-dance-for-beginners',
                                     'python-ai-developers-static': '/courses/python-for-ai-developers',
-                                    'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners'
+                                    'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
+                                    'speak-with-confidence-static': '/learn/speak-with-confidence'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -108,6 +109,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 
 const staticCourses = [
     { id: 'python-ai-developers-static', title: '🐍 Python for AI Developers — Comprehensive Course in Applied Python for ML & AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '40+ Hours', price: 19999, is_featured: true, course_image_url: '/python-ai-course.png' },
+    { id: 'speak-with-confidence-static', title: '🗣️ SPEAK WITH CONFIDENCE — A Complete Spoken English Course for Beginners', subject: 'Soft Skills', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, course_image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800' },
     { id: 'bollywood-guitar-beginners-static', title: '🎸 BOLLYWOOD GUITAR — Complete Beginners 8-Week Course (India 2026)', subject: 'Music', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 1999, is_featured: true, course_image_url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=800' },
     { id: 'bollywood-zumba-dance-static', title: 'Dance Your Way — Bollywood & Zumba for Complete Beginners', subject: 'Dance', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 999, is_featured: true, course_image_url: '/course-dance-bollywood-zumba.png' },
     { id: 'online-hatha-yoga-classes-beginners-static', title: 'Online Hatha Yoga Classes for Beginners — Live Sessions with Certified Trainer', subject: 'Yoga', instructor_name: 'Celoris Certified Trainer', course_duration: '8 Weeks', price: 4999, is_featured: true, course_image_url: '/hatha-yoga-foundation.png' },

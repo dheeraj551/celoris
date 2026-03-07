@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'online-teaching-jobs-delhi-2026',
+      title: "Online Teaching Jobs in Delhi: How to Start Teaching Dance, Excel & Content Creation Online in 2026",
+      slug: 'online-teaching-jobs-delhi-2026',
+      excerpt: "Looking for online teaching jobs in Delhi? Discover how to start teaching dance, Excel, and content creation online in 2026 with a sustainable income.",
+      featured_image_url: '/blog-online-teaching-delhi-2026.png',
+      author_name: 'Celoris',
+      category: 'Education',
+      reading_time: 10,
+      published_at: '2026-03-07T12:00:00Z',
+    },
+    {
       id: 'learn-guitar-online-india-2026-beginners-guide',
       title: "Learn Guitar Online India 2026: The Complete Beginner's Guide",
       slug: 'learn-guitar-online-india-2026-beginners-guide',
