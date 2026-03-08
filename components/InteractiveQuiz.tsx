@@ -110,7 +110,7 @@ export function InteractiveQuiz({
 
     if (!quizStarted) {
         return (
-            <Card className="w-full max-w-2xl mx-auto overflow-hidden border-none shadow-2xl bg-gradient-to-br from-surface to-background">
+            <Card className="w-full max-w-2xl mx-auto overflow-hidden border-border bg-card shadow-2xl">
                 <CardHeader className="text-center pt-12 pb-8">
                     <div className="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <Trophy className="w-10 h-10 text-primary-600" />
@@ -118,16 +118,16 @@ export function InteractiveQuiz({
                     <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400">
                         {quizTitle}
                     </CardTitle>
-                    <CardDescription className="text-lg mt-2 px-4">
+                    <CardDescription className="text-lg mt-2 px-4 text-muted-foreground">
                         {quizDescription}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="px-8 pb-12">
                     <div className="grid grid-cols-1 gap-3 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                         {quizUnits.map((unit, idx) => (
-                            <div key={idx} className="flex items-center space-x-3 p-3 rounded-lg bg-white/50 border border-primary-50">
-                                <BookOpen className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                                <span className="text-sm font-medium line-clamp-1">{unit.title}</span>
+                            <div key={idx} className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 border border-primary-500/20">
+                                <BookOpen className="w-5 h-5 text-primary-400 flex-shrink-0" />
+                                <span className="text-sm font-medium text-foreground line-clamp-1">{unit.title}</span>
                             </div>
                         ))}
                     </div>
@@ -144,7 +144,7 @@ export function InteractiveQuiz({
 
     if (quizCompleted) {
         return (
-            <Card className="w-full max-w-2xl mx-auto overflow-hidden border-none shadow-2xl bg-gradient-to-br from-surface to-background">
+            <Card className="w-full max-w-2xl mx-auto overflow-hidden border-border bg-card shadow-2xl">
                 <CardHeader className="text-center pt-12 pb-8">
                     <motion.div
                         initial={{ scale: 0 }}
@@ -203,8 +203,8 @@ export function InteractiveQuiz({
                     transition={{ duration: 0.3 }}
                 >
                     <Card className="border-none shadow-xl overflow-hidden">
-                        <CardHeader className="bg-surface/50 border-b">
-                            <CardTitle className="text-xl md:text-2xl leading-relaxed">
+                        <CardHeader className="bg-card/50 border-b border-border">
+                            <CardTitle className="text-xl md:text-2xl leading-relaxed text-foreground">
                                 {currentQuestion.question}
                             </CardTitle>
                         </CardHeader>
@@ -217,11 +217,11 @@ export function InteractiveQuiz({
                                         onClick={() => handleOptionSelect(idx)}
                                         className={cn(
                                             "group flex items-center justify-between p-4 rounded-xl border-2 text-left transition-all duration-200",
-                                            !isAnswered && selectedOption === idx && "border-primary-500 bg-primary-50",
-                                            !isAnswered && selectedOption !== idx && "border-slate-100 hover:border-primary-200 hover:bg-slate-50",
-                                            isAnswered && idx === currentQuestion.correctIndex && "border-green-500 bg-green-50",
-                                            isAnswered && selectedOption === idx && idx !== currentQuestion.correctIndex && "border-red-500 bg-red-50",
-                                            isAnswered && idx !== currentQuestion.correctIndex && selectedOption !== idx && "opacity-50 border-slate-100"
+                                            !isAnswered && selectedOption === idx && "border-primary-500 bg-primary-500/10",
+                                            !isAnswered && selectedOption !== idx && "border-border hover:border-primary-500/50 hover:bg-slate-500/5",
+                                            isAnswered && idx === currentQuestion.correctIndex && "border-green-500 bg-green-500/10",
+                                            isAnswered && selectedOption === idx && idx !== currentQuestion.correctIndex && "border-red-500 bg-red-500/10",
+                                            isAnswered && idx !== currentQuestion.correctIndex && selectedOption !== idx && "opacity-50 border-border"
                                         )}
                                     >
                                         <span className={cn(

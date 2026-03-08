@@ -6,51 +6,54 @@ import { createClient } from '@/lib/supabase-client';
 import { CourseCardProps } from './types';
 import { motion } from 'framer-motion';
 
-export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, instructor, duration, price, tag, image }) => (
+export const CourseCard: React.FC<CourseCardProps & { description?: string, image?: string }> = ({ id, title, category, instructor, duration, price, tag, description, image }) => (
     <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        whileHover={{ y: -5 }}
-        className="flex flex-col sm:flex-row bg-[#0d1321]/40 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-3xl hover:border-emerald-500/30 transition-all duration-500 group"
+        whileHover={{ scale: 1.02 }}
+        className="flex bg-[#0d1321]/60 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-2xl hover:border-emerald-500/30 transition-all duration-500 group h-[220px]"
     >
-        <div className="w-full sm:w-56 bg-[#00120d] relative h-56 sm:h-auto overflow-hidden">
+        {/* Left Side: Image Sidebar */}
+        <div className="relative w-[40%] h-full overflow-hidden bg-slate-900">
             <img
-                src={image || `https://picsum.photos/400/400?random=${Math.random()}`}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100"
+                src={image || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800"}
                 alt={title}
-                onError={(e) => {
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800";
-                }}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0d1321]/80" />
+
             {tag && (
-                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500 px-3 py-1 rounded-full shadow-3xl shadow-emerald-500/50">
-                    <Sparkles size={10} className="text-white" />
-                    <span className="text-white text-[9px] font-black uppercase tracking-widest italic">{tag}</span>
+                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-lg shadow-lg shadow-emerald-500/40">
+                    <Sparkles size={8} className="text-white" />
+                    <span className="text-white text-[8px] font-black uppercase tracking-widest italic">{tag}</span>
                 </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0d1321]/80 to-transparent sm:block hidden pointer-events-none" />
         </div>
 
-        <div className="p-8 flex-1 flex flex-col justify-between">
+        {/* Right Side: Content */}
+        <div className="p-6 md:p-8 flex-1 flex flex-col justify-between overflow-hidden">
             <div>
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg uppercase tracking-widest italic">{category}</span>
+                <div className="flex items-center justify-between mb-4">
+                    <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg uppercase tracking-widest italic truncate">{category}</span>
                     <div className="flex items-center gap-1 text-emerald-500">
                         <Star size={10} fill="currentColor" />
                         <span className="text-[10px] font-black tracking-widest">4.9 Rating</span>
                     </div>
                 </div>
 
-                <h3 className="text-xl font-black text-white leading-tight mb-4 group-hover:text-emerald-400 transition-colors uppercase italic tracking-tighter line-clamp-2">{title}</h3>
+                <h3 className="text-base md:text-lg font-black text-white leading-tight mb-4 group-hover:text-emerald-400 transition-colors uppercase italic tracking-tighter line-clamp-2">
+                    {title}
+                </h3>
 
-                <div className="flex items-center gap-6 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6 italic">
-                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/50" /> {instructor || 'Celoris Trainer'}</div>
-                    <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/50" /> {duration || 'Lifetime Access'}</div>
+                <div className="flex items-center gap-4 text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none">
+                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/60" /> {instructor || 'Celoris Team'}</div>
+                    <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/60" /> {duration}</div>
                 </div>
             </div>
 
-            <div className="flex items-center justify-end pt-6 border-t border-white/5">
+            <div className="flex items-center justify-between mt-4">
+                <div />
                 {id ? (
                     <Link
                         href={
@@ -69,6 +72,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                     '28-day-reset-static': '/courses/the-28-day-reset-foundation-strength-mobility',
                                     'class-9-maths-static': '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
                                     'livekit-ai-agents-static': '/courses/build-real-time-ai-agents-with-livekit',
+                                    '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
                                     'agentic-ai-systems-static': '/courses/agentic-ai-systems-design-build-deploy',
                                     'rag-unlocked-static': '/courses/rag-unlocked-production-grade-search-answer-systems',
                                     'llm-prompt-engineering-static': '/courses/llm-prompt-engineering-for-real-results',
@@ -93,13 +97,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
                                 return routes[id] || `/learn/course/${id}`;
                             })()
                         }
-                        className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl hover:bg-emerald-500 transition-all shadow-3xl shadow-emerald-500/30 flex items-center gap-2 group/btn"
+                        className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase italic rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2 group/btn"
                     >
-                        Learn More <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                        LEARN MORE <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                 ) : (
-                    <button className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-2xl">
-                        Locked
+                    <button className="px-6 py-3 bg-white/5 text-slate-500 text-[10px] font-black uppercase italic rounded-2xl border border-white/5">
+                        LOCKED
                     </button>
                 )}
             </div>
@@ -108,25 +112,15 @@ export const CourseCard: React.FC<CourseCardProps> = ({ id, title, category, ins
 );
 
 const staticCourses = [
-    { id: 'python-ai-developers-static', title: '🐍 Python for AI Developers — Comprehensive Course in Applied Python for ML & AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '40+ Hours', price: 19999, is_featured: true, course_image_url: '/python-ai-course.png' },
-    { id: 'speak-with-confidence-static', title: '🗣️ SPEAK WITH CONFIDENCE — A Complete Spoken English Course for Beginners', subject: 'Soft Skills', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, course_image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800' },
-    { id: 'bollywood-guitar-beginners-static', title: '🎸 BOLLYWOOD GUITAR — Complete Beginners 8-Week Course (India 2026)', subject: 'Music', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 1999, is_featured: true, course_image_url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=800' },
-    { id: 'bollywood-zumba-dance-static', title: 'Dance Your Way — Bollywood & Zumba for Complete Beginners', subject: 'Dance', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 999, is_featured: true, course_image_url: '/course-dance-bollywood-zumba.png' },
-    { id: 'online-hatha-yoga-classes-beginners-static', title: 'Online Hatha Yoga Classes for Beginners — Live Sessions with Certified Trainer', subject: 'Yoga', instructor_name: 'Celoris Certified Trainer', course_duration: '8 Weeks', price: 4999, is_featured: true, course_image_url: '/hatha-yoga-foundation.png' },
-    { id: 'blender-3d-modelling-beginners-static', title: 'Blender 3D Modelling — Complete Beginner Course', subject: 'Design', instructor_name: 'Dheeraj Kushwaha', course_duration: '15 Hours', price: 5999, is_featured: true, course_image_url: '/blender-course-cover.png' },
-    { id: 'content-creation-social-media-static', title: 'Content Creation on Social Media — From Creator to Income', subject: 'Social Media Marketing', instructor_name: 'Dheeraj Kushwaha', course_duration: '19 Hours', price: 4999, is_featured: true, course_image_url: '/content-creation-cover.png' },
-    { id: 'excel-expert-master-static', title: 'Be an Excel Expert — From Beginner to Macro Master', subject: 'Microsoft Excel', instructor_name: 'Dheeraj Kushwaha', course_duration: '10 Hours', price: 999, is_featured: true, course_image_url: '/excel-expert-cover.png' },
-    { id: 'sovereign-intelligence-static', title: 'Learn AI Basics Free: Private, Local, & Uncensored AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6 Weeks (Intensive)', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ynZOXVGFjyA/maxresdefault.jpg' },
-    { id: 'personalized-ai-experiences-static', title: 'Personalized AI Experiences with RAG & Agents', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-Week Self-Paced', price: 19999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/ZwqAdQsXy3A/maxresdefault.jpg' },
-    { id: 'architecting-trust-static', title: 'AI Safety, Ethics & Compliance Mastery', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 21999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/CdCAuee0qyI/maxresdefault.jpg' },
-    { id: 'agentic-ai-cybersecurity-static', title: 'AI for Cybersecurity: Building Autonomous Defense', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '6-8 Weeks', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/Y72t0L4wdsE/maxresdefault.jpg' },
-    { id: 'accelerating-science-static', title: 'AI for Science: Research & Innovation', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-Week Intensive', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/57LQCUE2FWk/maxresdefault.jpg' },
-    { id: 'mastering-multimodal-ai-static', title: 'Mastering Multi-Tool AI: Vision & Audio', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8-10 Weeks', price: 24999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/G_eFurGI3Go/maxresdefault.jpg' },
-    { id: 'building-model-native-agent-systems-static', title: 'Building Intelligent AI Systems (Full Guide)', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '8 Weeks (Accelerated)', price: 29999, is_featured: true, course_image_url: 'https://img.youtube.com/vi/MoZQeCYorns/maxresdefault.jpg' },
-    { id: 'vibe-coding-mastery-static', title: 'AI Coding for Beginners: Simple Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs', course_duration: '4-6 Weeks', price: 19999, is_featured: true, course_image_url: '/vibe-coding-mastery-cover.png' },
-    { id: 'agentic-ai-systems-static', title: 'AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '15 hours', price: 15000, is_featured: true, course_image_url: '/agentic-ai-systems-cover.png' },
-    { id: 'livekit-ai-agents-static', title: 'Build Real-Time AI Agents with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Designs llp', course_duration: '10 hours', price: 14999, is_featured: true, course_image_url: '/livekit-ai-agents-cover.png' },
-    { id: 'langchain-real-static', title: 'LangChain in Action: Real Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris', course_duration: '12 hours', price: 13500, is_featured: true, course_image_url: 'https://img.youtube.com/vi/Fvf5k_jocUk/maxresdefault.jpg' }
+    { id: 'python-ai-developers-static', title: '🐍 Python for AI Developers — Applied Python for ML & AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '40+ Hours', price: 19999, is_featured: true, description: 'Master the core language behind AI. From async processing to deep-level matrix manipulation with NumPy.', course_image_url: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&q=80&w=800' },
+    { id: 'speak-with-confidence-static', title: '🗣️ SPEAK WITH CONFIDENCE — Spoken English for Beginners', subject: 'Soft Skills', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, description: 'Break the language barrier. Learn active listening, phonetic clarity, and conversational flow.', course_image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800' },
+    { id: 'bollywood-guitar-beginners-static', title: '🎸 BOLLYWOOD GUITAR — Beginners 8-Week Course (2026)', subject: 'Music', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 1999, is_featured: true, description: 'Learn your favorite Bollywood hits from scratch. Master basic chords and strumming patterns.', course_image_url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=800' },
+    { id: 'bollywood-zumba-dance-static', title: 'Dance Your Way — Bollywood & Zumba for Beginners', subject: 'Dance', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 999, is_featured: true, description: 'High-energy fitness meets Bollywood style. Fun workouts for complete beginners.', course_image_url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=800' },
+    { id: 'online-hatha-yoga-classes-beginners-static', title: 'Online Hatha Yoga — Foundations for Beginners', subject: 'Yoga', instructor_name: 'Celoris Trainer', course_duration: '8 Weeks', price: 4999, is_featured: true, description: 'Traditional Hatha practices focused on alignment, breath, and mental clarity.', course_image_url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800' },
+    { id: 'blender-3d-modelling-beginners-static', title: 'Blender 3D Modelling — Complete Beginner Course', subject: 'Design', instructor_name: 'Dheeraj Kushwaha', course_duration: '15 Hours', price: 5999, is_featured: true, description: 'Build your first 3D world. From basic shapes to high-poly modelling and rendering.', course_image_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800' },
+    { id: 'livekit-ai-agents-static', title: 'Building Real-Time Voice AI with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '28.5 hours', price: 3000, is_featured: true, description: 'Build production-grade voice agents, real-time transcription pipelines, and multi-modal AI apps using LiveKit.', course_image_url: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&q=80&w=800' },
+    { id: 'vibe-coding-mastery-static', title: 'AI Coding for Beginners: Simple Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '4-6 Weeks', price: 19999, is_featured: true, description: 'Modern development workflows using AI assistants to build products faster than ever.', course_image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800' },
+    { id: 'agentic-ai-systems-static', title: 'AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '15 hours', price: 15000, is_featured: true, description: 'Advanced look at autonomous agents, tool orchestration, and multi-agent systems.', course_image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800' }
 ];
 
 export const Courses: React.FC<any> = ({
@@ -138,33 +132,71 @@ export const Courses: React.FC<any> = ({
     initialCourses = null
 }) => {
 
-    const [courses, setCourses] = useState<any[]>(initialCourses ? [...staticCourses, ...initialCourses].slice(0, limit) : []);
+    const [courses, setCourses] = useState<any[]>(initialCourses ? initialCourses.slice(0, limit) : []);
     const [loading, setLoading] = useState(!initialCourses);
 
     useEffect(() => {
-        if (initialCourses) return;
+        const prepareCourses = async () => {
+            let dbPool = [];
 
-        const fetchCourses = async () => {
-            const supabase = createClient();
-            const { data } = await supabase
-                .from('courses')
-                .select('*')
-                .eq('is_published', true)
-                .order('created_at', { ascending: false })
-                .limit(limit);
-
-            if (data && data.length > 0) {
-                const testCourseTitles = ['agentic ai for beginners: from prompts to action', 'mastering nano banana pro', 'my new ai course will be here'];
-                const filteredDbCourses = data.filter((c: any) => !testCourseTitles.includes((c.title || '').toLowerCase()));
-                const combined = [...staticCourses, ...filteredDbCourses].slice(0, limit);
-                setCourses(combined);
+            if (initialCourses && initialCourses.length > 0) {
+                dbPool = initialCourses;
             } else {
-                setCourses(staticCourses.slice(0, limit));
+                setLoading(true);
+                const supabase = createClient();
+                const { data } = await supabase
+                    .from('courses')
+                    .select('*')
+                    .eq('is_published', true);
+                dbPool = data || [];
             }
+
+            const excludedTitles = [
+                'agentic ai for beginners',
+                'mastering nano banana pro',
+                'my new ai course',
+                'my new ai course will be here',
+                'nana banana bootcamp',
+                'building real-time voice ai with livekit',
+                'build real-time ai agents with livekit'
+            ];
+            const filteredDbCourses = dbPool.filter((c: any) => {
+                const normalizedTitle = (c.title || '').toLowerCase().trim();
+                return !excludedTitles.some(ex => normalizedTitle === ex || normalizedTitle.includes('my new ai course') || normalizedTitle.includes('banana'));
+            });
+
+            // Pool both static and database courses
+            const allAvailable = [...staticCourses, ...filteredDbCourses];
+
+            // Daily Randomizer
+            const today = new Date();
+            const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+            const random = (seed: number) => {
+                const x = Math.sin(seed) * 10000;
+                return x - Math.floor(x);
+            };
+
+            const shuffled = [...allAvailable].sort((a, b) => {
+                const getHash = (str: string) => {
+                    let hash = 0;
+                    for (let i = 0; i < str.length; i++) {
+                        hash = (hash << 5) - hash + str.charCodeAt(i);
+                        hash |= 0;
+                    }
+                    return hash;
+                };
+                const seedA = dateSeed + getHash(a.id || a.title);
+                const seedB = dateSeed + getHash(b.id || b.title);
+                return random(seedA) - random(seedB);
+            });
+
+            setCourses(shuffled.slice(0, limit));
             setLoading(false);
         };
-        fetchCourses();
-    }, [limit, featured, initialCourses]);
+
+        prepareCourses();
+    }, [initialCourses, limit]);
 
     return (
         <div className="mt-24 md:mt-32 mb-32">
@@ -174,25 +206,26 @@ export const Courses: React.FC<any> = ({
                 viewport={{ once: true }}
                 className="mb-16 px-4"
             >
-                <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
-                    <Sparkles size={12} /> Featured Lessons
+                <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+                    <Sparkles size={12} fill="currentColor" /> FEATURED LESSONS
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-none">{title}</h2>
-                <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-5 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
-                {description && <p className="text-slate-500 text-xs md:text-sm mt-6 font-bold uppercase tracking-widest italic">{description}</p>}
+                <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-tight max-w-4xl">{title}</h2>
+                <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-6 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+                {description && <p className="text-slate-500 text-xs md:text-sm mt-8 font-black uppercase tracking-[0.1em] italic leading-relaxed max-w-3xl border-l border-emerald-500/20 pl-6">{description}</p>}
             </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {courses.map((course: any) => (
                     <CourseCard
                         key={course.id}
                         id={course.id}
                         title={course.title}
+                        description={course.description}
                         category={course.subject}
                         instructor={course.instructor_name}
                         duration={course.course_duration}
                         price={course.price}
-                        tag={course.is_featured ? 'Featured' : undefined}
+                        tag={course.is_featured ? 'FEATURED' : undefined}
                         image={course.course_image_url}
                     />
                 ))}

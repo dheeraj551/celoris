@@ -502,7 +502,7 @@ export default function CBSEClass9PhysicsCourse() {
                     <span>/</span>
                     <Link href="/learn/courses" className="hover:text-primary-500">Courses</Link>
                     <span>/</span>
-                    <span className="text-text-primary line-clamp-1">{courseData.title}</span>
+                    <span className="text-foreground line-clamp-1">{courseData.title}</span>
                 </div>
 
                 {/* Back Button */}
@@ -517,13 +517,13 @@ export default function CBSEClass9PhysicsCourse() {
                         {/* Course Header */}
                         <div>
                             <div className="flex items-center space-x-2 mb-4">
-                                <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">Physics</span>
-                                <span className="bg-surface px-3 py-1 rounded-full text-sm font-medium">Class 9th</span>
+                                <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Physics</span>
+                                <span className="bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Class 9th</span>
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
+                            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                                 {courseData.title}
                             </h1>
-                            <p className="text-lg text-text-secondary mb-6">
+                            <p className="text-lg text-muted-foreground mb-6">
                                 {courseData.description}
                             </p>
                         </div>
@@ -543,10 +543,10 @@ export default function CBSEClass9PhysicsCourse() {
                         </Card>
 
                         {/* What You'll Learn */}
-                        <Card id="curriculum">
+                        <Card id="curriculum" className="bg-white border-slate-200">
                             <CardHeader>
-                                <CardTitle className="flex items-center space-x-2">
-                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                <CardTitle className="flex items-center space-x-2 text-slate-900">
+                                    <CheckCircle className="h-5 w-5 text-green-600" />
                                     <span>What You Will Master</span>
                                 </CardTitle>
                             </CardHeader>
@@ -554,8 +554,8 @@ export default function CBSEClass9PhysicsCourse() {
                                 <ul className="space-y-4">
                                     {courseData.learning_outcomes.map((item, index) => (
                                         <li key={index} className="flex items-start space-x-3">
-                                            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                            <span className="text-text-secondary">{item}</span>
+                                            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-slate-700 font-medium leading-relaxed">{item}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -563,16 +563,16 @@ export default function CBSEClass9PhysicsCourse() {
                         </Card>
 
                         {/* Requirements */}
-                        <Card>
+                        <Card className="bg-white border-slate-200">
                             <CardHeader>
-                                <CardTitle>Requirements</CardTitle>
+                                <CardTitle className="text-slate-900">Requirements</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <ul className="space-y-2">
                                     {courseData.requirements.map((req, index) => (
                                         <li key={index} className="flex items-start space-x-2">
-                                            <span className="text-text-secondary">•</span>
-                                            <span className="text-text-secondary">{req}</span>
+                                            <span className="text-slate-400 font-bold">•</span>
+                                            <span className="text-slate-700 font-medium">{req}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -606,8 +606,8 @@ export default function CBSEClass9PhysicsCourse() {
                                                 "{review.content}"
                                             </p>
                                             <div className="pt-3 border-t border-border/50">
-                                                <p className="font-bold text-text-primary text-sm">{review.name}</p>
-                                                <p className="text-xs text-text-secondary font-medium">{review.occupation}</p>
+                                                <p className="font-bold text-foreground text-sm">{review.name}</p>
+                                                <p className="text-xs text-muted-foreground font-medium">{review.occupation}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -616,19 +616,19 @@ export default function CBSEClass9PhysicsCourse() {
                         </Card>
 
                         {/* FAQ Section */}
-                        <Card>
+                        <Card className="text-slate-900">
                             <CardHeader>
                                 <CardTitle className="flex items-center space-x-2">
                                     <HelpCircle className="h-5 w-5 text-blue-500" />
-                                    <span>Frequently Asked Questions</span>
+                                    <span className="font-bold">Frequently Asked Questions</span>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <Accordion type="single" collapsible className="w-full">
                                     {courseData.faqs.map((faq, index) => (
-                                        <AccordionItem key={index} value={`item-${index}`}>
-                                            <AccordionTrigger>{faq.question}</AccordionTrigger>
-                                            <AccordionContent>
+                                        <AccordionItem key={index} value={`item-${index}`} className="border-slate-200">
+                                            <AccordionTrigger className="text-slate-900 font-bold text-left">{faq.question}</AccordionTrigger>
+                                            <AccordionContent className="text-slate-700 leading-relaxed italic">
                                                 {faq.answer}
                                             </AccordionContent>
                                         </AccordionItem>
@@ -640,8 +640,8 @@ export default function CBSEClass9PhysicsCourse() {
                         {/* Interactive Quiz Section */}
                         <div id="quiz" className="pt-8">
                             <div className="mb-6">
-                                <h2 className="text-2xl font-bold text-text-primary mb-2">Test Your Knowledge</h2>
-                                <p className="text-text-secondary">Take our interactive quiz to validate your understanding of Class 9 Physics concepts.</p>
+                                <h2 className="text-2xl font-bold text-foreground mb-2">Test Your Knowledge</h2>
+                                <p className="text-muted-foreground">Take our interactive quiz to validate your understanding of Class 9 Physics concepts.</p>
                             </div>
                             <InteractiveQuiz
                                 quizTitle="Class 9 Physics Mastery Quiz"
@@ -655,13 +655,13 @@ export default function CBSEClass9PhysicsCourse() {
                     <div className="lg:col-span-1">
                         <div className="sticky top-8 space-y-6">
                             {/* Enrollment Card */}
-                            <Card>
+                            <Card className="bg-white border-slate-200 shadow-xl shadow-primary-900/10">
                                 <CardContent className="p-6">
                                     <div className="text-center mb-6">
-                                        <div className="text-4xl font-bold text-text-primary mb-2">
-                                            
+                                        <div className="text-4xl font-bold text-slate-900 mb-2">
+                                            ₹{courseData.price}
                                         </div>
-                                        <div className="text-text-secondary">One-time payment</div>
+                                        <div className="text-slate-500 font-medium">One-time payment</div>
                                     </div>
                                     <CourseInquiryDialog
                                         courseTitle={courseData.title}
@@ -692,36 +692,35 @@ export default function CBSEClass9PhysicsCourse() {
                                 </CardContent>
                             </Card>
 
-                            {/* Instructor */}
-                            <Card>
+                            <Card className="bg-white border-slate-200">
                                 <CardHeader>
-                                    <CardTitle>Your Instructor</CardTitle>
+                                    <CardTitle className="text-slate-900">Your Instructor</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex items-center space-x-4 mb-4">
-                                        <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-gray-200">
+                                        <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-slate-100">
                                             <img src="/celoris-logo.png" alt="Celoris" className="w-12 h-12 object-contain" />
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-text-primary">{courseData.provider}</h3>
-                                            <p className="text-sm text-text-secondary">Course Instructor</p>
+                                            <h3 className="font-semibold text-slate-900">{courseData.provider}</h3>
+                                            <p className="text-xs text-slate-500 font-medium">Course Instructor</p>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-text-secondary mb-4">
+                                    <p className="text-sm text-slate-600 mb-4 leading-relaxed font-medium">
                                         Passionate about teaching and helping others break into tech. This course is designed to provide you with the best learning experience.
                                     </p>
-                                    <div className="space-y-3 text-sm text-text-secondary">
+                                    <div className="space-y-3 text-sm text-slate-600 font-semibold">
                                         <div className="flex items-center space-x-2">
-                                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            <span className="font-medium text-text-primary">{courseData.rating}</span>
-                                            <span>({courseData.students} ratings)</span>
+                                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-500" />
+                                            <span className="text-slate-900">{courseData.rating}</span>
+                                            <span className="text-slate-400 font-normal">({courseData.students} ratings)</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <Clock className="h-4 w-4" />
+                                            <Clock className="h-4 w-4 text-primary-600" />
                                             <span>{courseData.duration}</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <Users className="h-4 w-4" />
+                                            <Users className="h-4 w-4 text-primary-600" />
                                             <span>{courseData.students} enrolled</span>
                                         </div>
                                     </div>

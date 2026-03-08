@@ -15,13 +15,12 @@ export const metadata: Metadata = {
 export default async function LearnPage() {
     const supabase = (await createServerClient()) as any
 
-    // Fetch courses on server
+    // Fetch courses on server for featured and daily live sections
     const { data: dbCourses } = await supabase
         .from('courses')
         .select('*')
         .eq('is_published', true)
-        .order('created_at', { ascending: false })
-        .limit(4);
+        .order('created_at', { ascending: false });
 
     // Fetch notices on server
     const { data: dbNotices } = await supabase

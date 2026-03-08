@@ -9,6 +9,7 @@ import { Courses } from "@/components/home-new/Courses"
 import NoticeBoard from "@/components/NoticeBoard"
 import StudentInquiries from "@/components/StudentInquiries"
 import LeadCenter from "@/components/learn/LeadCenter"
+import { FreeOnlineClasses } from "@/components/learn/FreeOnlineClasses"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/AuthProvider"
@@ -228,6 +229,13 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
               </Link>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Free Online Classes - Upcoming Section */}
+      <section className="py-24 relative z-10 border-b border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <FreeOnlineClasses initialCourses={initialCourses} />
         </div>
       </section>
 

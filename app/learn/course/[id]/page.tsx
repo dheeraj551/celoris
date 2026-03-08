@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 
 interface Course {
@@ -43,6 +43,7 @@ interface CourseModule {
 
 export default function CourseDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const id = params.id as string
 
   const [course, setCourse] = useState<Course | null>(null)
@@ -50,10 +51,20 @@ export default function CourseDetailPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    // Redirect specific courses to their premium static pages
+    const staticRedirects: Record<string, string> = {
+      '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit'
+    };
+
+    if (id && staticRedirects[id]) {
+      router.replace(staticRedirects[id]);
+      return;
+    }
+
     if (id) {
       loadCourse()
     }
-  }, [id])
+  }, [id, router])
 
   const loadCourse = async () => {
     try {
@@ -139,7 +150,7 @@ export default function CourseDetailPage() {
         </div>
 
         {/* Back Button */}
-        <Link href="/learn/courses" className="inline-flex items-center text-text-secondary hover:text-primary-500 mb-6">
+        <Link href="/learn/courses" className="inline-flex items-center text-muted-foreground hover:text-primary-500 mb-6 font-medium">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Courses
         </Link>
@@ -183,17 +194,17 @@ export default function CourseDetailPage() {
             {/* Course Header */}
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                   {course.subject}
                 </span>
-                <span className="bg-surface px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                   {course.grade_level}
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 {course.title}
               </h1>
-              <p className="text-lg text-text-secondary mb-6">
+              <p className="text-lg text-muted-foreground mb-6">
                 {course.description}
               </p>
 
@@ -224,10 +235,10 @@ export default function CourseDetailPage() {
             </Card>
 
             {/* What You'll Learn */}
-            <Card>
+            <Card className="bg-white border-slate-200">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                <CardTitle className="flex items-center space-x-2 text-slate-900">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
                   <span>What You'll Learn</span>
                 </CardTitle>
               </CardHeader>
@@ -235,8 +246,8 @@ export default function CourseDetailPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {whatYouWillLearn.map((item, index) => (
                     <div key={index} className="flex items-start space-x-3">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-text-secondary">{item}</span>
+                      <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-700 font-medium leading-relaxed">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -244,16 +255,16 @@ export default function CourseDetailPage() {
             </Card>
 
             {/* Requirements */}
-            <Card>
+            <Card className="bg-white border-slate-200">
               <CardHeader>
-                <CardTitle>Requirements</CardTitle>
+                <CardTitle className="text-slate-900">Requirements</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
                   {requirements.map((req, index) => (
                     <li key={index} className="flex items-start space-x-2">
-                      <span className="text-text-secondary">•</span>
-                      <span className="text-text-secondary">{req}</span>
+                      <span className="text-slate-400 font-bold">•</span>
+                      <span className="text-slate-700 font-medium">{req}</span>
                     </li>
                   ))}
                 </ul>
@@ -265,20 +276,20 @@ export default function CourseDetailPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
               {/* Enrollment Card */}
-              <Card>
+              <Card className="bg-white border-slate-200 shadow-xl shadow-primary-900/10">
                 <CardContent className="p-6">
                   <div className="text-center mb-6">
-                    <div className="text-4xl font-bold text-text-primary mb-2">
+                    <div className="text-4xl font-bold text-slate-900 mb-2">
                       {course.price === 0 ? "Free" : `₹${course.price}`}
                     </div>
-                    <div className="text-text-secondary">One-time payment</div>
+                    <div className="text-slate-500 font-medium">One-time payment</div>
                   </div>
                   <CourseInquiryDialog
                     courseTitle={course.title}
                     buttonClassName="w-full mb-4 h-14 text-lg font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-2xl shadow-lg"
                   />
 
-                  <div className="mt-6 text-center text-sm text-text-secondary">
+                  <div className="mt-6 text-center text-sm text-slate-500 font-medium">
                     <div className="flex items-center justify-center space-x-4">
                       <span>• Opportunity to work with us</span>
                     </div>
@@ -292,39 +303,37 @@ export default function CourseDetailPage() {
                 </CardContent>
               </Card>
 
-              {/* Instructor */}
-              <Card>
+              <Card className="bg-white border-slate-200">
                 <CardHeader>
-                  <CardTitle>Your Instructor</CardTitle>
+                  <CardTitle className="text-slate-900">Your Instructor</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-gray-200">
+                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-slate-100">
                       <img src="/celoris-logo.svg" alt="Celoris" className="w-12 h-12 object-contain" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-text-primary">{course.instructor_name || "Expert Instructor"}</h3>
-                      <p className="text-sm text-text-secondary">Course Instructor</p>
+                      <h3 className="font-semibold text-slate-900">{course.instructor_name || "Expert Instructor"}</h3>
+                      <p className="text-xs text-slate-500 font-medium">Course Instructor</p>
                     </div>
                   </div>
-                  <p className="text-sm text-text-secondary mb-4">
+                  <p className="text-sm text-slate-600 mb-4 leading-relaxed font-medium">
                     {course.instructor_bio || "Passionate about teaching and helping others break into tech."}
                   </p>
-                  <div className="space-y-3 text-sm text-text-secondary">
+                  <div className="space-y-3 text-sm text-slate-600 font-semibold">
                     <div className="flex items-center space-x-2">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium text-text-primary">{course.rating || 4.8}</span>
-                      <span>({(course.students_count || 120).toLocaleString()} ratings)</span>
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-500" />
+                      <span className="text-slate-900">{course.rating || 4.8}</span>
+                      <span className="text-slate-400 font-normal">({(course.students_count || 120).toLocaleString()} ratings)</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4" />
+                      <Clock className="h-4 w-4 text-primary-600" />
                       <span>{durationDisplay}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4" />
+                      <Users className="h-4 w-4 text-primary-600" />
                       <span>{(course.students_count || 120).toLocaleString()} enrolled</span>
                     </div>
-                    {/* kept existing badges if any, slightly modified to match request */}
                   </div>
                 </CardContent>
               </Card>
