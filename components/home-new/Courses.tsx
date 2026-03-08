@@ -92,7 +92,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'bollywood-zumba-dance-static': '/courses/bollywood-zumba-dance-for-beginners',
                                     'python-ai-developers-static': '/courses/python-for-ai-developers',
                                     'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
-                                    'speak-with-confidence-static': '/learn/speak-with-confidence'
+                                    'speak-with-confidence-static': '/learn/speak-with-confidence',
+                                    '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()

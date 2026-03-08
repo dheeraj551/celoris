@@ -53,7 +53,8 @@ export default function CourseDetailPage() {
   useEffect(() => {
     // Redirect specific courses to their premium static pages
     const staticRedirects: Record<string, string> = {
-      '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit'
+      '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
+      '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners'
     };
 
     if (id && staticRedirects[id]) {
