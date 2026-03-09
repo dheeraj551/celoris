@@ -129,7 +129,7 @@ const ClassCard = ({ item }: { item: ClassItem }) => {
                         <div className="flex flex-wrap items-center gap-3">
                             <div className="bg-rose-600/90 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-black text-white flex items-center gap-1.5 uppercase tracking-widest shadow-xl">
                                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                                Live Today
+                                Live this Wed
                             </div>
                             {item.category && (
                                 <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-[9px] font-black text-emerald-400 uppercase tracking-widest italic">
@@ -204,15 +204,21 @@ export const FreeOnlineClasses = ({ initialCourses = [] }: { initialCourses?: an
     const selectedClasses = useMemo(() => {
         if (!initialCourses || initialCourses.length === 0) return [];
 
-        const dateSeed = new Date().toDateString();
+        const targetDate = new Date('2026-03-11T00:00:00');
+        const dateSeed = targetDate.toDateString();
         let hash = 0;
         for (let i = 0; i < dateSeed.length; i++) {
             hash = (hash << 5) - hash + dateSeed.charCodeAt(i);
             hash |= 0;
         }
 
-        const rand = mulberry32(Math.abs(hash));
-        const courses = [...initialCourses];
+        const rand = mulberry32(Math.abs(hash) + 5); // Added offset to rotate entire selection
+
+        const excludedTitles = ['my new ai course will be here', 'nana banana bootcamp', 'agentic ai for beginners', 'mastering nano banana pro', 'class 9 physics', 'maths 12th'];
+        const courses = [...initialCourses].filter(c => {
+            const t = (c.title || '').toLowerCase().trim();
+            return !excludedTitles.some(ex => t.includes(ex) || t.includes('banana'));
+        });
         const selected: any[] = [];
 
         const timeSlots = [12, 15, 21];
@@ -222,7 +228,7 @@ export const FreeOnlineClasses = ({ initialCourses = [] }: { initialCourses?: an
             const course = courses.splice(index, 1)[0];
 
             // Set specific time slots: 12pm, 3pm, 9pm
-            const startTime = new Date();
+            const startTime = new Date(targetDate);
             startTime.setHours(timeSlots[i], 0, 0, 0);
 
             selected.push({
@@ -255,7 +261,7 @@ export const FreeOnlineClasses = ({ initialCourses = [] }: { initialCourses?: an
                     className="mb-20 text-center md:text-left"
                 >
                     <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] mb-6 italic">
-                        <Sparkles size={12} className="animate-pulse" /> Live Now
+                        <Sparkles size={12} className="animate-pulse" /> Live this Wed
                     </div>
                     <h2 className="text-4xl md:text-7xl font-black text-white italic uppercase tracking-tighter leading-[0.85] mb-6">
                         Free Online <br />

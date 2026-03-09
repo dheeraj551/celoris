@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'building-real-time-voice-ai-livekit',
+      title: "Building Real-Time Voice AI with LiveKit: The Complete Guide",
+      slug: 'building-real-time-voice-ai-livekit',
+      excerpt: "How to build production-grade voice agents using LiveKit Agents, Whisper, and LLMs — from WebRTC basics to deployment.",
+      featured_image_url: '/livekit-ai-agents-cover.png',
+      author_name: 'Celoris',
+      category: 'Deep Dive • Voice AI',
+      reading_time: 15,
+      published_at: '2026-03-08T12:00:00Z',
+    },
+    {
       id: 'online-teaching-jobs-delhi-2026',
       title: "Online Teaching Jobs in Delhi: How to Start Teaching Dance, Excel & Content Creation Online in 2026",
       slug: 'online-teaching-jobs-delhi-2026',
