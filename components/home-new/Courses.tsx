@@ -94,6 +94,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
                                     'speak-with-confidence-static': '/learn/speak-with-confidence',
                                     'professional-retouching-photoshop-static': '/courses/professional-retouching-in-photoshop',
+                                    'digital-marketing-ai-static': '/courses/digital-marketing-using-ai-tools',
                                     '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
@@ -113,7 +114,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
     </motion.div>
 );
 
-const staticCourses = [
+export const staticCourses = [
+    { id: 'digital-marketing-ai-static', title: '📈 Digital Marketing using AI Tools — Mastery Course (2026)', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '12 Hours', price: 4999, is_featured: true, description: 'Master AI-powered content, SEO, social media, and ads. Build high-converting funnels with ChatGPT, Claude, and more.', course_image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800' },
     { id: 'python-ai-developers-static', title: '🐍 Python for AI Developers — Applied Python for ML & AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '40+ Hours', price: 19999, is_featured: true, description: 'Master the core language behind AI. From async processing to deep-level matrix manipulation with NumPy.', course_image_url: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&q=80&w=800' },
     { id: 'speak-with-confidence-static', title: '🗣️ SPEAK WITH CONFIDENCE — Spoken English for Beginners', subject: 'Soft Skills', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, description: 'Break the language barrier. Learn active listening, phonetic clarity, and conversational flow.', course_image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800' },
     { id: 'bollywood-guitar-beginners-static', title: '🎸 BOLLYWOOD GUITAR — Beginners 8-Week Course (2026)', subject: 'Music', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 1999, is_featured: true, description: 'Learn your favorite Bollywood hits from scratch. Master basic chords and strumming patterns.', course_image_url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=800' },
@@ -193,6 +195,13 @@ export const Courses: React.FC<any> = ({
                 const seedB = dateSeed + getHash(b.id || b.title);
                 return random(seedA) - random(seedB);
             });
+
+            // Ensure Digital Marketing is always at the top since it's the new featured course
+            const digitalMarketingIndex = shuffled.findIndex(c => c.id === 'digital-marketing-ai-static');
+            if (digitalMarketingIndex !== -1) {
+                const [dg] = shuffled.splice(digitalMarketingIndex, 1);
+                shuffled.unshift(dg);
+            }
 
             setCourses(shuffled.slice(0, limit));
             setLoading(false);

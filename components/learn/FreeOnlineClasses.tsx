@@ -5,6 +5,8 @@ import { Calendar, Star, PlayCircle, Clock, ArrowRight, MessageCircle, Sparkles,
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
+import { WheelOfLuck } from './WheelOfLuck';
+import { staticCourses } from '../home-new/Courses';
 
 interface ClassItem {
     id: string;
@@ -277,6 +279,11 @@ export const FreeOnlineClasses = ({ initialCourses = [] }: { initialCourses?: an
                     {selectedClasses.map((item) => (
                         <ClassCard key={item.id} item={item} />
                     ))}
+                </div>
+
+                {/* Wheel of Luck Section */}
+                <div className="mt-24 border-t border-white/5 pt-12">
+                    <WheelOfLuck courses={[...(initialCourses || []), ...staticCourses]} />
                 </div>
 
                 <motion.div

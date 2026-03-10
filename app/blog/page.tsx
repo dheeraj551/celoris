@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'kya-ai-replace-kar-dega-digital-marketers-ko',
+      title: "Kya AI Replace Kar Dega Digital Marketers Ko?",
+      slug: 'kya-ai-replace-kar-dega-digital-marketers-ko',
+      excerpt: "The Real Answer — Bina Bakwaas Ke. Find out if AI will honestly replace digital marketers and how to future-proof your career in 2026.",
+      featured_image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800',
+      author_name: 'Celoris',
+      category: 'Digital Marketing',
+      reading_time: 8,
+      published_at: '2026-03-10T12:00:00Z',
+    },
+    {
       id: 'building-real-time-voice-ai-livekit',
       title: "Building Real-Time Voice AI with LiveKit: The Complete Guide",
       slug: 'building-real-time-voice-ai-livekit',
