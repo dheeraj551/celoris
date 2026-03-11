@@ -20,16 +20,16 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 
 const TRANSACTIONS = [
-  "Aarav Sharma paid For The Python Basics Course – Tutor: Ritika Malhotra",
-  "Meera Iyer paid For The Digital Marketing Bootcamp – Tutor: Sahil Khanna",
-  "Rohan Patel paid For The Data Science Program – Tutor: Ananya Desai",
-  "Simran Kaur paid For The Spoken English Training – Tutor: Neha Collins",
-  "Aditya Verma paid For The Full Stack Web Development – Tutor: Kunal Mehta",
-  "Pooja Nair paid For The UI/UX Design Course – Tutor: Sneha Roy",
-  "Vikram Singh paid For The Cybersecurity Fundamentals – Tutor: Arjun Rao",
-  "Neel Joshi paid For The AI & Machine Learning Track – Tutor: Priyanka Bose",
-  "Ishita Banerjee paid For The Content Writing Masterclass – Tutor: Rahul Sen",
-  "Manav Kapoor paid For The Fitness & Nutrition Coaching – Tutor: Rhea Mathur"
+  "Rohan Sharma paid for the Advanced Excel Masterclass – Trainer: Neha Verma",
+  "Ananya Gupta enrolled in the Social Media Marketing Course – Mentor: Arjun Mehta",
+  "Vikram Patel paid for the Python for Data Science Program – Instructor: Kavita Rao",
+  "Sneha Kapoor registered for the Graphic Design Bootcamp – Trainer: Rahul Bansal",
+  "Aditya Nair paid for the SEO Optimization Course – Mentor: Pooja Sharma",
+  "Priya Desai enrolled in the Web Development Bootcamp – Instructor: Aman Khanna",
+  "Karan Malhotra paid for the AI & Machine Learning Course – Trainer: Ritu Agarwal",
+  "Megha Chatterjee registered for the Content Writing Masterclass – Mentor: Sandeep Verma",
+  "Arjun Singh paid for the YouTube Growth & Monetization Course – Instructor: Deepika Nair",
+  "Nisha Iqbal enrolled in the Professional Video Editing Bootcamp – Trainer: Rohit Malhotra"
 ]
 
 function ScrollingTicker() {

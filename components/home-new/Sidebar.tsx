@@ -29,7 +29,7 @@ const MENU_GROUPS = [
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
-            { name: "Celoris 3D", icon: UserCircle, href: "/social" },
+            { name: "Celoris 3D", icon: UserCircle, href: "/celoris-3d" },
         ]
     },
     {

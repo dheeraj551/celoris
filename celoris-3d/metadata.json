@@ -1,0 +1,5 @@
+{
+  "name": "Celoris 3D",
+  "description": "Text and Image to 3D generation prototype using Gemini Image generation and React Three Fiber.",
+  "requestFramePermissions": []
+}

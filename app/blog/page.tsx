@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'bollywood-zumba-dance-course-for-beginners-dheeraj-kushwaha',
+      title: "Dance Your Way — Bollywood & Zumba for Complete Beginners",
+      slug: 'bollywood-zumba-dance-course-for-beginners-dheeraj-kushwaha',
+      excerpt: "Have you always wanted to dance like your favourite Bollywood stars but never knew where to start? Join Dheeraj Kushwaha in this 6-week Bollywood & Zumba transformation.",
+      featured_image_url: '/blog-bollywood-dance.png',
+      author_name: 'Celoris',
+      category: 'Dance & Fitness',
+      reading_time: 10,
+      published_at: '2026-03-11T12:00:00Z',
+    },
+    {
       id: 'kya-ai-replace-kar-dega-digital-marketers-ko',
       title: "Kya AI Replace Kar Dega Digital Marketers Ko?",
       slug: 'kya-ai-replace-kar-dega-digital-marketers-ko',

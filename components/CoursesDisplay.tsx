@@ -114,6 +114,29 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'social-media-marketing-ai-static',
+      title: '📱 Social Media Marketing with AI — 2025 Mastery Course',
+      subject: 'Marketing',
+      grade_level: 'Beginner to Pro',
+      description: 'Master AI-powered content, strategy, and ads for social media. Build high-converting funnels with 10+ AI tools.',
+      target_audience: 'Marketers, Entrepreneurs, Creators, Business Owners',
+      instructor_name: 'Celoris Team',
+      course_duration: '40 Hours',
+      price: 1999,
+      course_image_url: '/social-media-ai-hero.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `smmai-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 300,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'bollywood-guitar-beginners-static',
       title: '🎸 BOLLYWOOD GUITAR — Complete Beginners 8-Week Course (India 2026)',
       subject: 'Music',
@@ -1099,6 +1122,7 @@ export default function CoursesDisplay({
     if (id === 'blender-3d-modelling-beginners-static') return '/learn/blender-3d-modelling-beginners'
     if (id === 'bollywood-guitar-beginners-static') return '/courses/bollywood-guitar-for-beginners'
     if (id === 'speak-with-confidence-static') return '/learn/speak-with-confidence'
+    if (id === 'social-media-marketing-ai-static') return '/courses/social-media-marketing-with-ai'
     return `/learn/course/${id}`
   }
 
