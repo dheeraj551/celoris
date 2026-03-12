@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'online-teaching-jobs-india-2025-26',
+      title: "Online Teaching Jobs in India: How to Earn from Home by Teaching What You Know",
+      slug: 'online-teaching-jobs-india-2025-26',
+      excerpt: "Discover everything you need to know about online teaching in India: who is hiring, how much you can earn, and how platforms like Celoris make it easy to start today.",
+      featured_image_url: '/blog-online-teaching-india-2025.png',
+      author_name: 'Celoris',
+      category: 'Career Guide',
+      reading_time: 15,
+      published_at: '2026-03-12T12:00:00Z',
+    },
+    {
       id: 'bollywood-zumba-dance-course-for-beginners-dheeraj-kushwaha',
       title: "Dance Your Way — Bollywood & Zumba for Complete Beginners",
       slug: 'bollywood-zumba-dance-course-for-beginners-dheeraj-kushwaha',

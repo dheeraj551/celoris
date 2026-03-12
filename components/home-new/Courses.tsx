@@ -96,6 +96,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'professional-retouching-photoshop-static': '/courses/professional-retouching-in-photoshop',
                                     'digital-marketing-ai-static': '/courses/digital-marketing-using-ai-tools',
                                     'social-media-marketing-ai-static': '/courses/social-media-marketing-with-ai',
+                                    'agentic-ai-beginners-static': '/courses/agentic-ai-for-beginners',
                                     '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
@@ -127,7 +128,7 @@ export const staticCourses = [
     { id: 'professional-retouching-photoshop-static', title: 'Professional Retouching in Photoshop Using AI Tools', subject: 'Design', instructor_name: 'Celoris Team', course_duration: '16+ Hours', price: 4999, is_featured: true, description: 'Master skin retouching, compositing, AI-powered editing & studio-grade output.', course_image_url: 'https://images.unsplash.com/photo-1561715276-a2d087060f1d?auto=format&fit=crop&q=80&w=800' },
     { id: 'livekit-ai-agents-static', title: 'Building Real-Time Voice AI with LiveKit', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '28.5 hours', price: 3000, is_featured: true, description: 'Build production-grade voice agents, real-time transcription pipelines, and multi-modal AI apps using LiveKit.', course_image_url: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&q=80&w=800' },
     { id: 'vibe-coding-mastery-static', title: 'AI Coding for Beginners: Simple Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '4-6 Weeks', price: 19999, is_featured: true, description: 'Modern development workflows using AI assistants to build products faster than ever.', course_image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800' },
-    { id: 'agentic-ai-systems-static', title: 'AI Systems: Design, Build & Deploy', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '15 hours', price: 15000, is_featured: true, description: 'Advanced look at autonomous agents, tool orchestration, and multi-agent systems.', course_image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800' }
+    { id: 'agentic-ai-beginners-static', title: '🤖 Agentic AI for Beginners: From Prompts to Action', subject: 'Computer Science', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 1500, is_featured: true, description: 'Learn how AI agents think, plan, and act. Build your first AI agent using no-code tools.', course_image_url: '/agentic-ai-beginners-cover.png' }
 ];
 
 export const Courses: React.FC<any> = ({
@@ -160,6 +161,7 @@ export const Courses: React.FC<any> = ({
 
             const excludedTitles = [
                 'agentic ai for beginners',
+                'agentic ai for beginners: from prompts to action',
                 'mastering nano banana pro',
                 'my new ai course',
                 'my new ai course will be here',
