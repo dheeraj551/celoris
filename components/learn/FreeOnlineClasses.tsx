@@ -182,7 +182,7 @@ const ClassCard = ({ item }: { item: ClassItem }) => {
                             </Link>
 
                             <a
-                                href={`https://wa.me/919643579101?text=I%20want%20to%20book%20the%20free%20class:%20${encodeURIComponent(item.title)}`}
+                                href={`https://wa.me/919084718101?text=I%20want%20to%20book%20the%20free%20class:%20${encodeURIComponent(item.title)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-full sm:w-auto"
@@ -301,7 +301,7 @@ export const FreeOnlineClasses = ({ initialCourses = [] }: { initialCourses?: an
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] italic mb-8">
                             Join 2000+ students getting daily session updates on WhatsApp.
                         </p>
-                        <a href="https://wa.me/919643579101?text=Add%20me%20to%20the%20live%20class%20updates" className="inline-block">
+                        <a href="https://wa.me/919084718101?text=Add%20me%20to%20the%20live%20class%20updates" className="inline-block">
                             <Button className="h-14 px-10 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-widest italic transition-all">
                                 Get Daily Alerts
                             </Button>

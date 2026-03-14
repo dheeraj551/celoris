@@ -88,7 +88,7 @@ export default function BlenderBeginnerClient() {
                             className="flex flex-col sm:flex-row gap-6 justify-center"
                         >
                             <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-12 h-16 font-black text-sm shadow-2xl shadow-emerald-500/30 group" asChild>
-                                <Link href="https://wa.me/919643579101" className="flex items-center gap-3">
+                                <Link href="https://wa.me/919084718101" className="flex items-center gap-3">
                                     BOOK FREE DEMO <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </Button>
@@ -120,7 +120,7 @@ export default function BlenderBeginnerClient() {
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-60"
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <Link href="https://wa.me/919643579101" className="p-8 bg-emerald-600/20 backdrop-blur-xl rounded-full border border-emerald-500/40 group-hover:scale-110 transition-transform">
+                                <Link href="https://wa.me/919084718101" className="p-8 bg-emerald-600/20 backdrop-blur-xl rounded-full border border-emerald-500/40 group-hover:scale-110 transition-transform">
                                     <PlayCircle size={48} className="text-white fill-emerald-500/20" />
                                 </Link>
                             </div>
@@ -396,7 +396,7 @@ export default function BlenderBeginnerClient() {
                                         </div>
                                     ))}
                                     <Button className="w-full mt-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-14 font-black text-xs italic tracking-widest uppercase" asChild>
-                                        <Link href="https://wa.me/919643579101">ENROLL FOR BATCH</Link>
+                                        <Link href="https://wa.me/919084718101">ENROLL FOR BATCH</Link>
                                     </Button>
                                 </div>
                             </div>
@@ -408,7 +408,7 @@ export default function BlenderBeginnerClient() {
                                     Complete Session 1 of Module 1 absolutely free. No credit card required. Experience the teaching style first-hand.
                                 </p>
                                 <Button variant="outline" className="w-full border-white/10 hover:bg-emerald-600 hover:text-white rounded-xl h-14 font-black text-xs italic tracking-widest uppercase" asChild>
-                                    <Link href="https://wa.me/919643579101">BOOK FREE DEMO</Link>
+                                    <Link href="https://wa.me/919084718101">BOOK FREE DEMO</Link>
                                 </Button>
                                 <div className="mt-6 flex items-center justify-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -498,10 +498,10 @@ export default function BlenderBeginnerClient() {
                             </p>
                             <div className="flex justify-center flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl h-16 font-black text-xs px-10 italic uppercase tracking-widest" asChild>
-                                    <Link href="https://wa.me/919643579101">ENROLL NOW</Link>
+                                    <Link href="https://wa.me/919084718101">ENROLL NOW</Link>
                                 </Button>
                                 <Button size="lg" variant="ghost" className="bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl h-16 font-black text-xs px-10 italic uppercase tracking-widest backdrop-blur-3xl" asChild>
-                                    <Link href="https://wa.me/919643579101">WHATSAPP SUPPORT</Link>
+                                    <Link href="https://wa.me/919084718101">WHATSAPP SUPPORT</Link>
                                 </Button>
                             </div>
                         </div>

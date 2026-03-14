@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
 import { Analytics } from "@vercel/analytics/next"
+import { LazyMotion, domAnimation } from "framer-motion"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -146,7 +147,7 @@ export default function RootLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+91 9643579101",
+                "telephone": "+91 90847 18101",
                 "contactType": "customer service",
                 "email": "support@celorisdesigns.com",
                 "availableLanguage": ["English", "Hindi"]
@@ -184,14 +185,16 @@ export default function RootLayout({
         <ReCaptchaProvider siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
           <AuthProvider>
             <PresenceProvider>
-              <div className="min-h-screen flex flex-col">
-                <Header />
-                <main className="flex-1">
-                  {children}
-                </main>
-                <GlobalAd />
-                <Footer />
-              </div>
+              <LazyMotion features={domAnimation}>
+                <div className="min-h-screen flex flex-col">
+                  <Header />
+                  <main className="flex-1">
+                    {children}
+                  </main>
+                  <GlobalAd />
+                  <Footer />
+                </div>
+              </LazyMotion>
             </PresenceProvider>
           </AuthProvider>
           <Toaster />

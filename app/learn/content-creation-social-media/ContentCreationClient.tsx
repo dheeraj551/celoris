@@ -530,12 +530,12 @@ export default function ContentCreationClient() {
                             </p>
                             <div className="flex flex-col sm:flex-row justify-center gap-6">
                                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl px-12 h-16 font-black text-xs shadow-2xl shadow-emerald-500/40" asChild>
-                                    <Link href="https://wa.me/919643579101" target="_blank" className="flex items-center gap-3 no-underline">
+                                    <Link href="https://wa.me/919084718101" target="_blank" className="flex items-center gap-3 no-underline">
                                         BOOK FREE DEMO <ArrowRight size={16} />
                                     </Link>
                                 </Button>
                                 <Button size="lg" variant="ghost" className="bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl px-12 h-16 font-black text-xs backdrop-blur-3xl" asChild>
-                                    <Link href="https://wa.me/919643579101" target="_blank" className="flex items-center gap-2 no-underline">
+                                    <Link href="https://wa.me/919084718101" target="_blank" className="flex items-center gap-2 no-underline">
                                         <MessageSquare size={16} className="text-emerald-500" /> WHATSAPP SUPPORT
                                     </Link>
                                 </Button>

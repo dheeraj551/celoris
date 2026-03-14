@@ -66,7 +66,7 @@ export default function HathaYogaClient() {
                         </motion.p>
 
                         <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center gap-6">
-                            <a href="https://wa.me/919643579101?text=I%20want%20to%20book%20a%20free%20demo%20for%20Hatha%20Yoga">
+                            <a href="https://wa.me/919084718101?text=I%20want%20to%20book%20a%20free%20demo%20for%20Hatha%20Yoga">
                                 <Button className="h-16 px-10 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-emerald-500/20 active:scale-95 transition-all italic">
                                     Book Free Demo Session
                                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -322,7 +322,7 @@ export default function HathaYogaClient() {
                                         </li>
                                     ))}
                                 </ul>
-                                <a href="https://wa.me/919643579101?text=I%20want%20to%20enroll%20in%20Hatha%20Yoga%208-week%20programme">
+                                <a href="https://wa.me/919084718101?text=I%20want%20to%20enroll%20in%20Hatha%20Yoga%208-week%20programme">
                                     <Button className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs italic">Enroll For Batch</Button>
                                 </a>
                             </CardContent>
@@ -350,7 +350,7 @@ export default function HathaYogaClient() {
                                         </li>
                                     ))}
                                 </ul>
-                                <a href="https://wa.me/919643579101?text=I%20want%20to%20book%20private%201-on-1%20yoga%20sessions">
+                                <a href="https://wa.me/919084718101?text=I%20want%20to%20book%20private%201-on-1%20yoga%20sessions">
                                     <Button variant="outline" className="w-full h-16 bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs italic">Book Private Session</Button>
                                 </a>
                             </CardContent>
@@ -375,7 +375,7 @@ export default function HathaYogaClient() {
                                         </li>
                                     ))}
                                 </ul>
-                                <a href="https://wa.me/919643579101?text=I%20want%20to%20book%20my%20free%20demo%20yoga%20session">
+                                <a href="https://wa.me/919084718101?text=I%20want%20to%20book%20my%20free%20demo%20yoga%20session">
                                     <Button variant="outline" className="w-full h-16 bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs italic">Book Free Demo</Button>
                                 </a>
                             </CardContent>
@@ -396,7 +396,7 @@ export default function HathaYogaClient() {
                             <p className="text-lg text-slate-400 font-bold italic uppercase tracking-tight mb-10 leading-relaxed">
                                 Join Celoris and connect with genuine students across India and internationally. No fake leads. No commission on first contact. No monthly subscription fees.
                             </p>
-                            <a href="https://wa.me/919643579101?text=I%20am%20a%20certified%20yoga%20trainer%20and%20want%20to%20join%20Celoris">
+                            <a href="https://wa.me/919084718101?text=I%20am%20a%20certified%20yoga%20trainer%20and%20want%20to%20join%20Celoris">
                                 <Button className="h-16 px-10 bg-white text-black hover:bg-emerald-500 rounded-2xl font-black uppercase tracking-widest text-xs italic">
                                     Register as Yoga Trainer
                                 </Button>
@@ -495,7 +495,7 @@ export default function HathaYogaClient() {
                             <p className="text-xl text-emerald-100 font-bold italic uppercase tracking-tight mb-12 max-w-2xl mx-auto">
                                 No commitments. No risk. Experience one complete session live for free.
                             </p>
-                            <a href="https://wa.me/919643579101?text=I%20want%20to%20start%20my%20Hatha%20Yoga%20journey%20with%20a%20free%20demo">
+                            <a href="https://wa.me/919084718101?text=I%20want%20to%20start%20my%20Hatha%20Yoga%20journey%20with%20a%20free%20demo">
                                 <Button className="h-20 px-12 bg-white text-black hover:bg-emerald-50 rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl active:scale-95 transition-all italic">
                                     Book Free Demo Session
                                     <ArrowRight className="ml-2 h-5 w-5" />

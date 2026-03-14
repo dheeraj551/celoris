@@ -412,14 +412,14 @@ export default function SpeakWithConfidenceClient() {
                             </p>
                             <div className="flex justify-center">
                                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-12 h-16 font-black text-xs shadow-2xl shadow-emerald-500/30 flex items-center gap-3 group" asChild>
-                                    <Link href="https://wa.me/919643579101" target="_blank">
+                                    <Link href="https://wa.me/919084718101" target="_blank">
                                         BOOK A FREE DEMO <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                     </Link>
                                 </Button>
                             </div>
                             <div className="mt-8">
                                 <Button size="sm" variant="ghost" className="text-slate-500 hover:text-white font-black text-[10px] uppercase tracking-widest italic" asChild>
-                                    <Link href="https://wa.me/919643579101" target="_blank">
+                                    <Link href="https://wa.me/919084718101" target="_blank">
                                         <MessageSquare size={14} className="mr-2" /> CHAT WITH A COUNSELOR
                                     </Link>
                                 </Button>

@@ -99,10 +99,10 @@ export default function ContactPage() {
       "@type": "Organization",
       "name": "Celoris AI-Powered Ecosystem",
       "email": "support@celorisdesigns.com",
-      "telephone": "+91 9643579101",
+      "telephone": "+91 90847 18101",
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+91 9643579101",
+        "telephone": "+91 90847 18101",
         "contactType": "customer service",
         "email": "support@celorisdesigns.com",
         "availableLanguage": ["English", "Hindi"]
@@ -160,7 +160,7 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {[
             { icon: Mail, label: 'Email Us', value: 'support@celorisdesigns.com', color: 'text-emerald-500' },
-            { icon: Phone, label: 'Call Us', value: '+91 9643579101', color: 'text-teal-500' },
+            { icon: Phone, label: 'Call Us', value: '+91 90847 18101', color: 'text-teal-500' },
             { icon: MessageSquare, label: 'WhatsApp', value: 'Instant Chat Support', color: 'text-green-500' }
           ].map((item, idx) => (
             <motion.div

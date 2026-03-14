@@ -360,7 +360,7 @@ export const WheelOfLuck = ({ courses }: WheelOfLuckProps) => {
                                     </div>
 
                                     <a
-                                        href={`https://wa.me/919643579101?text=I%20won%20the%20Wheel%20of%20Luck!%20I%20want%20to%20book%20my%20free%20masterclass%20for%20${encodeURIComponent(selectedCourse.title)}`}
+                                        href={`https://wa.me/919084718101?text=I%20won%20the%20Wheel%20of%20Luck!%20I%20want%20to%20book%20my%20free%20masterclass%20for%20${encodeURIComponent(selectedCourse.title)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="block mb-4"

@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { m } from "framer-motion"
 
 interface PageWrapperProps {
     children: React.ReactNode
@@ -9,7 +9,7 @@ interface PageWrapperProps {
 
 export const PageWrapper = ({ children, className }: PageWrapperProps) => {
     return (
-        <motion.div
+        <m.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
@@ -17,6 +17,6 @@ export const PageWrapper = ({ children, className }: PageWrapperProps) => {
             className={className}
         >
             {children}
-        </motion.div>
+        </m.div>
     )
 }

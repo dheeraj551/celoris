@@ -486,7 +486,7 @@ export default function DigitalMarketingAICourse() {
                                             buttonClassName="w-full h-16 text-xs font-black bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-[0.3em] rounded-2xl shadow-3xl shadow-emerald-600/30 transition-all active:scale-95 italic"
                                         />
                                         <Link
-                                            href="https://wa.me/919643579101"
+                                            href="https://wa.me/919084718101"
                                             target="_blank"
                                             className="w-full h-14 border border-white/10 hover:bg-white/5 text-slate-300 font-black uppercase tracking-widest text-[9px] rounded-2xl flex items-center justify-center gap-3 group transition-all italic"
                                         >

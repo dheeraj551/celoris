@@ -39,23 +39,54 @@ const MENU_GROUPS = [
             { name: "Contact us", icon: Mail, href: "/contact" },
             { name: "Blog", icon: Lightbulb, href: "/blog" },
         ]
-    },
-    {
-        title: "Space",
-        items: [
-            { name: "Classrooms", icon: GraduationCap, href: "/learn" },
-            { name: "Celoris Drive", icon: HardDrive, href: "/earn" },
-        ]
     }
 ];
 
 export function Sidebar() {
     const pathname = usePathname();
 
+    const [isNewbeeMode, setIsNewbeeMode] = React.useState(true);
+
+    React.useEffect(() => {
+        const checkNewbeeStatus = async () => {
+            // Check if specifically disabled by user
+            const manualSetting = localStorage.getItem('celoris_newbee_mode');
+            if (manualSetting !== null) {
+                setIsNewbeeMode(manualSetting === 'true');
+                return;
+            }
+
+            // Default logic: joined less than 24h ago
+            const joinedAt = localStorage.getItem('celoris_joined_at');
+            if (!joinedAt) {
+                const now = new Date().toISOString();
+                localStorage.setItem('celoris_joined_at', now);
+                setIsNewbeeMode(true);
+            } else {
+                const joinedDate = new Date(joinedAt);
+                const diffHours = (new Date().getTime() - joinedDate.getTime()) / (1000 * 60 * 60);
+                if (diffHours > 24) {
+                    setIsNewbeeMode(false);
+                }
+            }
+        };
+        checkNewbeeStatus();
+    }, []);
+
+    const toggleNewbeeMode = () => {
+        const newValue = !isNewbeeMode;
+        setIsNewbeeMode(newValue);
+        localStorage.setItem('celoris_newbee_mode', String(newValue));
+    };
+
     const isActive = (href: string) => {
         if (href === '/' && pathname !== '/') return false;
         return pathname.startsWith(href);
     };
+
+    const displayGroups = isNewbeeMode 
+        ? MENU_GROUPS.filter(g => g.title === "Creation") 
+        : MENU_GROUPS;
 
     return (
         <aside className="hidden md:flex w-64 flex-shrink-0 bg-[#050810] border-r border-white/5 flex-col h-screen sticky top-0 overflow-y-auto custom-scrollbar">
@@ -126,7 +157,7 @@ export function Sidebar() {
             </div>
 
             <div className="flex-1 px-3 py-4 mt-4 space-y-8">
-                {MENU_GROUPS.map((group, idx) => (
+                {displayGroups.map((group, idx) => (
                     <div key={idx} className="space-y-1">
                         <h3 className="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
                             {group.title}
@@ -148,9 +179,44 @@ export function Sidebar() {
                 ))}
             </div>
 
-            <div className="px-6 mb-8 mt-auto">
+            {/* Banner */}
+            <div className="px-6 mt-8 w-full mb-8">
+                <a href="#" className="block w-full rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all relative group">
+                    <img 
+                        src="/images/sidebar-banner.jpg" 
+                        alt="Seekho Smart Badho Fast" 
+                        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                </a>
+            </div>
+
+            <div className="px-6 mb-8 mt-auto space-y-3">
+                <button
+                    onClick={toggleNewbeeMode}
+                    className={cn(
+                        "w-full flex items-center justify-between px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border",
+                        isNewbeeMode 
+                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
+                            : "bg-white/5 border-white/10 text-slate-500 hover:text-slate-300"
+                    )}
+                >
+                    <div className="flex items-center gap-2">
+                        <Zap className={cn("w-3 h-3", isNewbeeMode ? "fill-emerald-400" : "")} />
+                        Newbee Mode
+                    </div>
+                    <div className={cn(
+                        "w-6 h-3 rounded-full relative transition-all",
+                        isNewbeeMode ? "bg-emerald-500" : "bg-slate-700"
+                    )}>
+                        <div className={cn(
+                            "absolute top-0.5 w-2 h-2 rounded-full bg-white transition-all",
+                            isNewbeeMode ? "right-0.5" : "left-0.5"
+                        )} />
+                    </div>
+                </button>
+
                 <a
-                    href="https://wa.me/919643579101"
+                    href="https://wa.me/919084718101"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1e1f20] border border-white/5 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-[#282a2d] transition-all group/wa shadow-xl"

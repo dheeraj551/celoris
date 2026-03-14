@@ -25,6 +25,10 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 158 94% 30%;
     --radius: 1rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 2rem;
+    --radius-xl: 3rem;
   }
 
   .dark {
@@ -77,6 +81,12 @@
   .text-gradient {
     @apply bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent;
   }
+
+  /* Utility classes for standardized radii */
+  .rounded-card-sm { border-radius: var(--radius-sm); }
+  .rounded-card-md { border-radius: var(--radius-md); }
+  .rounded-card-lg { border-radius: var(--radius-lg); }
+  .rounded-card-xl { border-radius: var(--radius-xl); }
 }
 
 /* Custom scrollbar */

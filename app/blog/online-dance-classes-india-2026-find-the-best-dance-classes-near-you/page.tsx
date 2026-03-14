@@ -268,7 +268,7 @@ export default function BlogPost() {
             {/* Sticky CTA */}
             <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
                 <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-2xl shadow-emerald-500/40 border-4 border-black/20" asChild>
-                    <Link href="https://wa.me/919643579101?text=Hi%20Celoris%2C%20I%20saw%20your%20blog%20about%20Online%20Dance%20Classes%20and%20I'd%20like%20to%20book%20a%20free%20demo%20session.">
+                    <Link href="https://wa.me/919084718101?text=Hi%20Celoris%2C%20I%20saw%20your%20blog%20about%20Online%20Dance%20Classes%20and%20I'd%20like%20to%20book%20a%20free%20demo%20session.">
                         Book Free Demo via WhatsApp
                     </Link>
                 </Button>

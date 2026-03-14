@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { YouTubeFeed } from './YouTubeFeed';
 
 interface DashboardContentProps {
     courses?: any[];
@@ -29,7 +30,6 @@ interface DashboardContentProps {
 
 export function DashboardContent({ courses }: DashboardContentProps) {
     const [activeTab, setActiveTab] = useState<'video' | 'image'>('video');
-    const [feedTab, setFeedTab] = useState<'trending' | 'inspiration'>('trending');
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -222,7 +222,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                 <h2 className="text-xl font-bold text-white tracking-tight mb-6">You might want to try</h2>
                 <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                     {/* Item 1 */}
-                    <Link href="/video-studio" className="flex-shrink-0 w-[400px] h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-8 rounded-[2rem] transition-all relative overflow-hidden group flex items-center justify-between">
+                    <Link href="/video-studio" className="flex-shrink-0 w-[400px] h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-8 rounded-card-lg transition-all relative overflow-hidden group flex items-center justify-between">
                         <span className="text-2xl font-bold text-white">Video Studio</span>
                         <div className="relative w-48 h-full flex items-center justify-center translate-x-4">
                             <img
@@ -234,7 +234,7 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                     </Link>
 
                     {/* Item 2 */}
-                    <Link href="/image-studio" className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
+                    <Link href="/image-studio" className="flex-shrink-0 w-80 h-32 bg-white/5 hover:bg-white/10 border border-white/5 p-4 pl-6 rounded-card-lg transition-all relative overflow-hidden group flex items-center justify-between">
                         <div className="flex-1 text-left">
                             <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-2 uppercase tracking-tight">New</span>
                             <div className="mt-1">
@@ -272,137 +272,8 @@ export function DashboardContent({ courses }: DashboardContentProps) {
                 </div>
             </div>
 
-
-            {/* Feed Section */}
-            <div>
-                <div className="flex items-center gap-8 border-b border-white/5 mb-8">
-                    <button
-                        onClick={() => setFeedTab('trending')}
-                        className={cn(
-                            "pb-4 text-sm font-bold uppercase italic transition-all",
-                            feedTab === 'trending' ? "border-b-2 border-emerald-500 text-white" : "text-slate-500 hover:text-white"
-                        )}
-                    >
-                        Trending on Internet
-                    </button>
-                    <button
-                        onClick={() => setFeedTab('inspiration')}
-                        className={cn(
-                            "pb-4 text-sm font-bold uppercase italic transition-all",
-                            feedTab === 'inspiration' ? "border-b-2 border-emerald-500 text-white" : "text-slate-500 hover:text-white"
-                        )}
-                    >
-                        Image inspiration
-                    </button>
-                    <div className="ml-auto">
-                        <button className="text-[11px] font-bold text-emerald-500 border border-emerald-500/20 px-4 py-1.5 rounded-full hover:bg-emerald-500/10 transition-colors uppercase italic">More inspirations</button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {feedTab === 'trending' ? (
-                        ((courses && courses.length > 0) ? courses : [1, 2, 3, 4, 5, 6]).map((item: any, i) => (
-                            <div key={i} className="aspect-[3/4] bg-white/5 rounded-2xl overflow-hidden relative group cursor-pointer border border-white/5 shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 transition-all">
-                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col justify-end p-3">
-                                    <p className="text-[10px] text-white font-bold mb-1 truncate">{item.title || "AI Generated Marvel"}</p>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                            <span className="text-[6px] text-emerald-500 font-bold">C</span>
-                                        </div>
-                                        <span className="text-[8px] text-white font-medium">@celoris_official</span>
-                                    </div>
-                                </div>
-                                {i === 0 ? (
-                                    <iframe
-                                        src="https://www.youtube.com/embed/4eJcMyJFJnk?autoplay=1&mute=1&loop=1&playlist=4eJcMyJFJnk&controls=0"
-                                        className="w-full h-full object-cover pointer-events-none"
-                                        allow="autoplay; encrypted-media"
-                                        title="AI Video Sample 1"
-                                    />
-                                ) : i === 1 ? (
-                                    <iframe
-                                        src="https://www.youtube.com/embed/nm2heuHYNM0?autoplay=1&mute=1&loop=1&playlist=nm2heuHYNM0&controls=0"
-                                        className="w-full h-full object-cover pointer-events-none"
-                                        allow="autoplay; encrypted-media"
-                                        title="AI Video Sample 2"
-                                    />
-                                ) : i === 2 ? (
-                                    <iframe
-                                        src="https://www.youtube.com/embed/hQs4kJ00Rm4?autoplay=1&mute=1&loop=1&playlist=hQs4kJ00Rm4&controls=0"
-                                        className="w-full h-full object-cover pointer-events-none"
-                                        allow="autoplay; encrypted-media"
-                                        title="AI Video Sample 3"
-                                    />
-                                ) : i === 3 ? (
-                                    <iframe
-                                        src="https://www.youtube.com/embed/zUoOvsjw4Bk?autoplay=1&mute=1&loop=1&playlist=zUoOvsjw4Bk&controls=0"
-                                        className="w-full h-full object-cover pointer-events-none"
-                                        allow="autoplay; encrypted-media"
-                                        title="AI Video Sample 4"
-                                    />
-                                ) : i === 4 ? (
-                                    <iframe
-                                        src="https://www.youtube.com/embed/mZ-zhxOtzoI?autoplay=1&mute=1&loop=1&playlist=mZ-zhxOtzoI&controls=0"
-                                        className="w-full h-full object-cover pointer-events-none"
-                                        allow="autoplay; encrypted-media"
-                                        title="AI Video Sample 5"
-                                    />
-                                ) : i === 5 ? (
-                                    <iframe
-                                        src="https://www.youtube.com/embed/OmGoSgGV7CM?autoplay=1&mute=1&loop=1&playlist=OmGoSgGV7CM&controls=0"
-                                        className="w-full h-full object-cover pointer-events-none"
-                                        allow="autoplay; encrypted-media"
-                                        title="AI Video Sample 6"
-                                    />
-                                ) : (
-                                    <img
-                                        src={`https://images.unsplash.com/photo-${1600000000000 + (i * 100000)}?w=400&h=600&fit=crop`}
-                                        className="w-full h-full object-cover"
-                                        alt="sample"
-                                    />
-                                )}
-                                <div className="absolute top-2 left-2 z-20">
-                                    <span className="bg-black/50 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full flex items-center gap-1">
-                                        <Video className="w-2 h-2" /> AI Video
-                                    </span>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        [
-                            { title: "Services nonprofit...", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" },
-                            { title: "Classic Delicious Burger...", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop" },
-                            { title: "Grand Opening Cocktail Ca...", image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=400&fit=crop" },
-                            { title: "Business Propaganda Large...", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=400&fit=crop" },
-                            { title: "Chinese Food Dimsum...", image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=400&fit=crop" },
-                            { title: "Food Fried Chicken Display...", image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop" }
-                        ].map((item: any, i: number) => (
-                            <div key={i} className="flex flex-col gap-2">
-                                <div className="aspect-square bg-white/5 rounded-2xl overflow-hidden relative group cursor-pointer border border-white/5 shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 transition-all">
-                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col justify-end p-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 rounded-full bg-white/20" />
-                                            <span className="text-[8px] text-white font-medium">Design Template</span>
-                                        </div>
-                                    </div>
-                                    <img
-                                        src={item.image}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                        alt={item.title}
-                                    />
-                                    <div className="absolute top-2 left-2 z-20">
-                                        <span className="bg-black/50 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full flex items-center gap-1">
-                                            <ImageIcon className="w-2 h-2" /> AI Template
-                                        </span>
-                                    </div>
-                                </div>
-                                <p className="text-[10px] text-slate-400 font-medium px-1 truncate">{item.title}</p>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
-
+            {/* YouTube Feed Layout */}
+            <YouTubeFeed />
 
             <style jsx global>{`
                 .no-scrollbar::-webkit-scrollbar {
