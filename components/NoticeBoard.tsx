@@ -69,7 +69,7 @@ const priorityConfig = {
   }
 }
 
-const categoryIcons: { [key: string]: React.ElementType } = {
+const categoryIcons: Record<string, any> = {
   tutoring: BookOpen,
   group_classes: Users,
   online: BookOpen,
