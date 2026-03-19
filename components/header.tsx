@@ -59,6 +59,7 @@ export default function Header() {
     pathname?.startsWith("/image-studio") ||
     pathname?.startsWith("/celoris-3d") ||
     pathname?.startsWith("/courses") ||
+    pathname?.startsWith("/teach") ||
     pathname === "/login" ||
     pathname === "/register";
 

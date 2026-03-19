@@ -58,12 +58,12 @@ export const Features: React.FC = () => {
             link: "/learn"
         },
         {
-            title: "Earn",
+            title: "Teach",
             description: "Pivot your career or find elite freelance opportunities in our curated talent ecosystem.",
             tag: "Capital Grid",
             icon: Wallet,
             actionText: "Launch Career",
-            link: "/earn"
+            link: "/teach"
         },
         {
             title: "Social",

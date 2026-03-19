@@ -130,16 +130,16 @@ export function Sidebar() {
                 </Link>
 
                 <Link
-                    href="/earn"
+                    href="/teach"
                     className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
-                        pathname.startsWith('/earn')
+                        pathname.startsWith('/teach')
                             ? "bg-emerald-500/10 text-emerald-400 font-bold"
                             : "text-slate-400 hover:bg-white/5 hover:text-white"
                     )}
                 >
-                    <Sparkles className={cn("w-4 h-4", pathname.startsWith('/earn') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
-                    <span className="text-sm font-bold uppercase tracking-tight">EARN</span>
+                    <Sparkles className={cn("w-4 h-4", pathname.startsWith('/teach') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
+                    <span className="text-sm font-bold uppercase tracking-tight">TEACH</span>
                 </Link>
 
                 <Link

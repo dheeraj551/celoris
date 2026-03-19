@@ -75,6 +75,7 @@ export default function Footer() {
     pathname?.startsWith("/image-studio") ||
     pathname?.startsWith("/celoris-3d") ||
     pathname?.startsWith("/courses") ||
+    pathname?.startsWith("/teach") ||
     pathname === "/login" ||
     pathname === "/register";
 
