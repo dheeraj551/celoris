@@ -37,9 +37,6 @@ export function TrainerCourses() {
           <h1 className="text-2xl font-bold text-gray-900">My Courses</h1>
           <p className="text-gray-500 mt-1">Manage your online courses and curriculum</p>
         </div>
-        <Link to="/dashboard/trainer/courses/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 flex items-center gap-2">
-          <Plus className="h-4 w-4" /> Create Course
-        </Link>
       </div>
 
       {/* Filters and Search */}

@@ -435,47 +435,169 @@ export default function ImageStudio() {
     const selectedObject = objects.find(obj => obj.id === selectedId);
 
     return (
-        <div className="flex h-screen w-full bg-[#F3F4F6] text-[13px] overflow-hidden font-sans selection:bg-blue-500/30">
-            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
+        <DashboardShell>
+            <div className="flex h-[calc(100vh-64px)] w-full bg-[#F3F4F6] text-[13px] overflow-hidden font-sans selection:bg-blue-500/30">
+                <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
 
-            {/* Left Sidebar - Icon Strip */}
-            <div className="w-[72px] bg-[#111111] flex flex-col items-center py-4 border-r border-white/10 z-20 shrink-0">
-                <Link href="/" className="w-10 h-10 mb-6 flex items-center justify-center hover:opacity-80 transition-opacity">
-                    <img src="/celoris-logo.png" alt="Celoris" className="w-8 h-8 object-contain" />
-                </Link>
+                {/* Left Sidebar - Icon Strip */}
+                <div className="w-[72px] bg-[#111111] flex flex-col items-center py-4 border-r border-white/10 z-20 shrink-0">
+                    <Link href="/" className="w-10 h-10 mb-6 flex items-center justify-center hover:opacity-80 transition-opacity">
+                        <img src="/celoris-logo.png" alt="Celoris" className="w-8 h-8 object-contain" />
+                    </Link>
 
-                <div className="flex flex-col gap-4 w-full">
-                    <NavItem icon={<LayoutTemplate size={20} />} label="Templates" active={activeTab === 'templates'} onClick={() => setActiveTab('templates')} />
-                    <NavItem icon={<Wand2 size={20} />} label="Design" active={activeTab === 'design'} onClick={() => setActiveTab('design')} />
-                    <NavItem icon={<UploadCloud size={20} />} label="Uploads" active={activeTab === 'upload'} onClick={() => setActiveTab('upload')} />
-                    <NavItem icon={<Type size={20} />} label="Text" active={activeTab === 'text'} onClick={() => setActiveTab('text')} />
-                    <NavItem icon={<Shapes size={20} />} label="Elements" active={activeTab === 'shapes'} onClick={() => setActiveTab('shapes')} />
-                    <NavItem icon={<Sticker size={20} />} label="Stickers" active={activeTab === 'stickers'} onClick={() => setActiveTab('stickers')} />
-                    <NavItem icon={<Square size={20} />} label="Frames" active={activeTab === 'frames'} onClick={() => setActiveTab('frames')} />
-                    <NavItem icon={<Group size={20} />} label="Group" active={activeTab === 'group'} onClick={() => setActiveTab('group')} />
-                    <NavItem icon={<Palette size={20} />} label="Brand Kit" active={activeTab === 'brand'} onClick={() => setActiveTab('brand')} />
-                    <NavItem icon={<Blocks size={20} />} label="Apps" active={activeTab === 'extensions'} onClick={() => setActiveTab('extensions')} />
-                </div>
-            </div>
-
-            {/* Left Sidebar - Content Panel */}
-            <div className="w-[300px] bg-[#18191B] flex flex-col border-r border-white/10 text-white z-10 shrink-0">
-                <div className="flex border-b border-white/10">
-                    <button className="flex-1 py-4 text-center font-medium relative text-white">
-                        Project
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-[#00C4CC]"></div>
-                    </button>
-                    <button className="flex-1 py-4 text-center font-medium text-gray-400 hover:text-white transition-colors">
-                        Workspace
-                    </button>
+                    <div className="flex flex-col gap-4 w-full">
+                        <NavItem icon={<LayoutTemplate size={20} />} label="Templates" active={activeTab === 'templates'} onClick={() => setActiveTab('templates')} />
+                        <NavItem icon={<Wand2 size={20} />} label="Design" active={activeTab === 'design'} onClick={() => setActiveTab('design')} />
+                        <NavItem icon={<UploadCloud size={20} />} label="Uploads" active={activeTab === 'upload'} onClick={() => setActiveTab('upload')} />
+                        <NavItem icon={<Type size={20} />} label="Text" active={activeTab === 'text'} onClick={() => setActiveTab('text')} />
+                        <NavItem icon={<Shapes size={20} />} label="Elements" active={activeTab === 'shapes'} onClick={() => setActiveTab('shapes')} />
+                        <NavItem icon={<Sticker size={20} />} label="Stickers" active={activeTab === 'stickers'} onClick={() => setActiveTab('stickers')} />
+                        <NavItem icon={<Square size={20} />} label="Frames" active={activeTab === 'frames'} onClick={() => setActiveTab('frames')} />
+                        <NavItem icon={<Group size={20} />} label="Group" active={activeTab === 'group'} onClick={() => setActiveTab('group')} />
+                        <NavItem icon={<Palette size={20} />} label="Brand Kit" active={activeTab === 'brand'} onClick={() => setActiveTab('brand')} />
+                        <NavItem icon={<Blocks size={20} />} label="Apps" active={activeTab === 'extensions'} onClick={() => setActiveTab('extensions')} />
+                    </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
-                    {activeTab === 'upload' && (
-                        <div className="p-4 flex flex-col gap-4">
+                {/* Left Sidebar - Content Panel */}
+                <div className="w-[300px] bg-[#18191B] flex flex-col border-r border-white/10 text-white z-10 shrink-0">
+                    <div className="flex border-b border-white/10">
+                        <button className="flex-1 py-4 text-center font-medium relative text-white">
+                            Project
+                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-[#00C4CC]"></div>
+                        </button>
+                        <button className="flex-1 py-4 text-center font-medium text-gray-400 hover:text-white transition-colors">
+                            Workspace
+                        </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto">
+                        {activeTab === 'upload' && (
+                            <div className="p-4 flex flex-col gap-4">
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-2.5 flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <UploadCloud size={18} />
+                                    <span className="font-medium">Upload</span>
+                                    <div className="ml-auto mr-2">
+                                        <div className="w-4 h-6 border border-white/30 rounded-sm flex items-center justify-center">
+                                            <span className="text-[10px]">📱</span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                    {gallery.map((url, i) => (
+                                        <div
+                                            key={i}
+                                            onClick={() => addImageToCanvas(url)}
+											className="relative aspect-square bg-gray-800 rounded-lg overflow-hidden border border-white/20 group cursor-pointer hover:border-[#00C4CC] transition-colors"
+                                        >
+                                            <img src={url} alt="Gallery item" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                                <span className="text-white opacity-0 group-hover:opacity-100 font-medium text-xs bg-black/50 px-2 py-1 rounded">Add</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'text' && (
+                            <div className="p-4 flex flex-col gap-4">
+                                <button onClick={() => addTextToCanvas('Add a heading', 48)} className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-4 font-bold text-2xl transition-colors">
+                                    Add a heading
+                                </button>
+                                <button onClick={() => addTextToCanvas('Add a subheading', 32)} className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 font-semibold text-xl transition-colors">
+                                    Add a subheading
+                                </button>
+                                <button onClick={() => addTextToCanvas('Add a little bit of body text', 20)} className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 text-base transition-colors">
+                                    Add a little bit of body text
+                                </button>
+                            </div>
+                        )}
+
+                        {activeTab === 'shapes' && (
+                            <div className="p-4 grid grid-cols-3 gap-3">
+                                <button onClick={() => addShapeToCanvas('rectangle')} className="aspect-square bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors">
+                                    <SquareIcon size={32} className="text-white" fill="currentColor" />
+                                </button>
+                                <button onClick={() => addShapeToCanvas('circle')} className="aspect-square bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors">
+                                    <Circle size={32} className="text-white" fill="currentColor" />
+                                </button>
+                            </div>
+                        )}
+
+                        {activeTab === 'templates' && (
+                            <div className="p-4 grid grid-cols-2 gap-2">
+                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} onClick={() => addImageToCanvas(`https://picsum.photos/seed/tpl${i}/400/600`)} className="aspect-[3/4] bg-gray-800 rounded-lg overflow-hidden border border-white/20 cursor-pointer hover:border-[#00C4CC]">
+                                        <img src={`https://picsum.photos/seed/tpl${i}/200/300`} className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {activeTab === 'stickers' && (
+                            <div className="p-4 grid grid-cols-3 gap-2">
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+                                    <div key={i} onClick={() => addImageToCanvas(`https://picsum.photos/seed/stk${i}/200/200`)} className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-[#00C4CC] flex items-center justify-center p-2">
+                                        <img src={`https://picsum.photos/seed/stk${i}/200/200`} className="w-full h-full object-contain drop-shadow-md rounded-md" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {activeTab === 'frames' && (
+                            <div className="p-4 grid grid-cols-2 gap-2">
+                                <div onClick={() => addFrameToCanvas('square')} className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-[#00C4CC] flex items-center justify-center">
+                                    <Square size={40} className="text-gray-400" />
+                                </div>
+                                <div onClick={() => addFrameToCanvas('circle')} className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-[#00C4CC] flex items-center justify-center">
+                                    <Circle size={40} className="text-gray-400" />
+                                </div>
+                            </div>
+                        )}
+
+                        {['design', 'group', 'brand', 'extensions'].includes(activeTab) && (
+                            <div className="p-8 text-center text-gray-400 flex flex-col items-center gap-4">
+                                <Wand2 size={32} className="opacity-50" />
+                                <p>This feature will be available soon.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col relative min-w-0" onPointerDown={() => setSelectedId(null)}>
+                    {/* Top Bar */}
+                    <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10 shrink-0" onPointerDown={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                                <Cloud size={14} className="text-gray-600" />
+                            </div>
+                            <span className="font-medium text-gray-700">Untitled image</span>
+                            <ChevronDown size={16} className="text-gray-400" />
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                            <ToolButton icon={<MousePointer2 size={18} />} active />
+                            <ToolButton icon={<Hand size={18} />} />
+                            <div className="w-[1px] h-4 bg-gray-300 mx-2"></div>
+                            <ToolButton icon={<Square size={18} />} />
+                            <div className="flex items-center gap-1 px-2 text-gray-600 font-medium cursor-pointer hover:bg-gray-50 rounded py-1">
+                                68% <ChevronDown size={14} />
+                            </div>
+                            <div className="w-[1px] h-4 bg-gray-300 mx-2"></div>
+                            <ToolButton icon={<Undo size={18} />} />
+                            <ToolButton icon={<Redo size={18} className="text-gray-300" />} />
+                        </div>
+
+                        <div className="flex items-center gap-3">
                             <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-2.5 flex items-center justify-center gap-2 transition-colors"
+                                onClick={() => alert('Download mockup triggered!')}
+                                className="bg-[#00C4CC] hover:bg-[#00B3BA] text-white px-4 py-1.5 rounded-md font-medium flex items-center gap-2 transition-colors"
                             >
                                 <UploadCloud size={18} />
                                 <span className="font-medium">Upload</span>

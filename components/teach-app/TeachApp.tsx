@@ -12,6 +12,8 @@ import { TrainerOverview } from './pages/dashboard/TrainerOverview';
 import { TrainerCourses } from './pages/dashboard/TrainerCourses';
 import { TrainerEnquiries } from './pages/dashboard/TrainerEnquiries';
 import { CreateCourse } from './pages/dashboard/CreateCourse';
+import { TrainerCalendar } from './pages/dashboard/TrainerCalendar';
+import { TrainerEarnings } from './pages/dashboard/TrainerEarnings';
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +45,8 @@ export default function TeachApp() {
           <Route path="courses" element={<TrainerCourses />} />
           <Route path="courses/create" element={<CreateCourse />} />
           <Route path="enquiries" element={<TrainerEnquiries />} />
+          <Route path="calendar" element={<TrainerCalendar />} />
+          <Route path="earnings" element={<TrainerEarnings />} />
         </Route>
       </Routes>
     </BrowserRouter>

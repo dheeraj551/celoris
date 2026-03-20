@@ -10,6 +10,8 @@ export function TrainerDashboard() {
   const getPageTitle = () => {
     if (location.pathname.includes('/courses')) return 'My Courses';
     if (location.pathname.includes('/enquiries')) return 'Enquiries';
+    if (location.pathname.includes('/calendar')) return 'Calendar';
+    if (location.pathname.includes('/earnings')) return 'Earnings';
     return 'Dashboard Overview';
   };
 
@@ -63,12 +65,18 @@ export function TrainerDashboard() {
             >
               <BookOpen className="h-5 w-5" /> My Courses
             </NavLink>
-            <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">
+            <NavLink 
+              to="/dashboard/trainer/calendar" 
+              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
               <Calendar className="h-5 w-5" /> Calendar
-            </a>
-            <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">
+            </NavLink>
+            <NavLink 
+              to="/dashboard/trainer/earnings" 
+              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
               <DollarSign className="h-5 w-5" /> Earnings
-            </a>
+            </NavLink>
           </nav>
         </div>
 
@@ -91,11 +99,6 @@ export function TrainerDashboard() {
       <main className="flex-1 overflow-y-auto">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
           <h1 className="text-xl font-bold text-gray-900">{getPageTitle()}</h1>
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard/trainer/courses/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700">
-              Create Course
-            </Link>
-          </div>
         </header>
 
         <Outlet />

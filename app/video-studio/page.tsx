@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { DashboardShell } from "@/components/home-new/DashboardShell";
+
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -214,67 +216,69 @@ export default function VideoStudio() {
     }
 
     return (
-        <div className="flex flex-col h-screen w-full bg-[#0e0e0e] text-gray-300 font-sans overflow-hidden">
-            <Header
-                activeTool={activeTool}
-                setActiveTool={setActiveTool}
-                canvasZoom={canvasZoom}
-                setCanvasZoom={setCanvasZoom}
-                undo={undo}
-                redo={redo}
-                canUndo={historyIndex > 0}
-                canRedo={historyIndex < history.length - 1}
-            />
-
-            <div className="flex flex-1 overflow-hidden">
-                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-                <SecondarySidebar
-                    activeTab={activeTab}
-                    setVideoSrc={setVideoSrc}
-                    setVideoName={setVideoName}
-                    setDuration={setDuration}
-                    setClips={setClips}
-                    currentTime={currentTime}
-                    selectedClipId={selectedClipId}
+        <DashboardShell>
+            <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-[#0e0e0e] text-gray-300 font-sans overflow-hidden">
+                <Header
+                    activeTool={activeTool}
+                    setActiveTool={setActiveTool}
+                    canvasZoom={canvasZoom}
+                    setCanvasZoom={setCanvasZoom}
+                    undo={undo}
+                    redo={redo}
+                    canUndo={historyIndex > 0}
+                    canRedo={historyIndex < history.length - 1}
                 />
 
-                <div className="flex flex-col flex-1 overflow-hidden relative">
-                    <Canvas
-                        textElement={textElement}
-                        setTextElement={setTextElement}
-                        activeTool={activeTool}
-                        canvasZoom={canvasZoom}
-                        setCanvasZoom={setCanvasZoom}
-                        isPlaying={isPlaying}
-                        currentTime={currentTime}
-                        setCurrentTime={setCurrentTime}
-                        videoSrc={videoSrc}
+                <div className="flex flex-1 overflow-hidden">
+                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <SecondarySidebar
+                        activeTab={activeTab}
+                        setVideoSrc={setVideoSrc}
+                        setVideoName={setVideoName}
                         setDuration={setDuration}
-                        clips={clips}
-                    />
-                    <Timeline
-                        isPlaying={isPlaying}
-                        setIsPlaying={setIsPlaying}
+                        setClips={setClips}
                         currentTime={currentTime}
-                        setCurrentTime={setCurrentTime}
-                        duration={duration}
-                        setDuration={setDuration}
-                        videoName={videoName}
-                        clips={clips}
-                        setClips={setClips}
                         selectedClipId={selectedClipId}
-                        setSelectedClipId={setSelectedClipId}
                     />
-                    <PropertiesPanel
-                        textElement={textElement}
-                        setTextElement={setTextElement}
-                        clips={clips}
-                        setClips={setClips}
-                        selectedClipId={selectedClipId}
-                        duration={duration}
-                    />
+
+                    <div className="flex flex-col flex-1 overflow-hidden relative">
+                        <Canvas
+                            textElement={textElement}
+                            setTextElement={setTextElement}
+                            activeTool={activeTool}
+                            canvasZoom={canvasZoom}
+                            setCanvasZoom={setCanvasZoom}
+                            isPlaying={isPlaying}
+                            currentTime={currentTime}
+                            setCurrentTime={setCurrentTime}
+                            videoSrc={videoSrc}
+                            setDuration={setDuration}
+                            clips={clips}
+                        />
+                        <Timeline
+                            isPlaying={isPlaying}
+                            setIsPlaying={setIsPlaying}
+                            currentTime={currentTime}
+                            setCurrentTime={setCurrentTime}
+                            duration={duration}
+                            setDuration={setDuration}
+                            videoName={videoName}
+                            clips={clips}
+                            setClips={setClips}
+                            selectedClipId={selectedClipId}
+                            setSelectedClipId={setSelectedClipId}
+                        />
+                        <PropertiesPanel
+                            textElement={textElement}
+                            setTextElement={setTextElement}
+                            clips={clips}
+                            setClips={setClips}
+                            selectedClipId={selectedClipId}
+                            duration={duration}
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
+        </DashboardShell>
     );
 }

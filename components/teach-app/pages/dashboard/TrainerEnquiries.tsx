@@ -73,9 +73,6 @@ export function TrainerEnquiries() {
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             Refresh
           </button>
-          <button className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700">
-            Export Data
-          </button>
         </div>
       </div>
 
