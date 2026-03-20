@@ -57,6 +57,7 @@ import Image from 'next/image';
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import { DashboardShell } from '@/components/home-new/DashboardShell';
 
 type ObjectType = 'image' | 'text' | 'shape' | 'frame';
 
@@ -492,7 +493,7 @@ export default function ImageStudio() {
                                         <div
                                             key={i}
                                             onClick={() => addImageToCanvas(url)}
-											className="relative aspect-square bg-gray-800 rounded-lg overflow-hidden border border-white/20 group cursor-pointer hover:border-[#00C4CC] transition-colors"
+                                            className="relative aspect-square bg-gray-800 rounded-lg overflow-hidden border border-white/20 group cursor-pointer hover:border-[#00C4CC] transition-colors"
                                         >
                                             <img src={url} alt="Gallery item" className="w-full h-full object-cover" />
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -599,739 +600,286 @@ export default function ImageStudio() {
                                 onClick={() => alert('Download mockup triggered!')}
                                 className="bg-[#00C4CC] hover:bg-[#00B3BA] text-white px-4 py-1.5 rounded-md font-medium flex items-center gap-2 transition-colors"
                             >
-                                <UploadCloud size={18} />
-                                <span className="font-medium">Upload</span>
-                                <div className="ml-auto mr-2">
-                                    <div className="w-4 h-6 border border-white/30 rounded-sm flex items-center justify-center">
-                                        <span className="text-[10px]">📱</span>
-                                    </div>
-                                </div>
+                                <Download size={16} />
+                                Download
                             </button>
-
-                            <div className="grid grid-cols-2 gap-2 mt-2">
-                                {gallery.map((url, i) => (
-                                    <div
-                                        key={i}
-                                        onClick={() => addImageToCanvas(url)}
-                                        className="relative aspect-square bg-gray-800 rounded-lg overflow-hidden border border-white/20 group cursor-pointer hover:border-[#00C4CC] transition-colors"
-                                    >
-                                        <img src={url} alt="Gallery item" className="w-full h-full object-cover" />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                            <span className="text-white opacity-0 group-hover:opacity-100 font-medium text-xs bg-black/50 px-2 py-1 rounded">Add</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'text' && (
-                        <div className="p-4 flex flex-col gap-4">
-                            <button onClick={() => addTextToCanvas('Add a heading', 48)} className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-4 font-bold text-2xl transition-colors">
-                                Add a heading
-                            </button>
-                            <button onClick={() => addTextToCanvas('Add a subheading', 32)} className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 font-semibold text-xl transition-colors">
-                                Add a subheading
-                            </button>
-                            <button onClick={() => addTextToCanvas('Add a little bit of body text', 20)} className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg py-3 text-base transition-colors">
-                                Add a little bit of body text
-                            </button>
-                        </div>
-                    )}
-
-                    {activeTab === 'shapes' && (
-                        <div className="p-4 grid grid-cols-3 gap-3">
-                            <button onClick={() => addShapeToCanvas('rectangle')} className="aspect-square bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors">
-                                <SquareIcon size={32} className="text-white" fill="currentColor" />
-                            </button>
-                            <button onClick={() => addShapeToCanvas('circle')} className="aspect-square bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors">
-                                <Circle size={32} className="text-white" fill="currentColor" />
-                            </button>
-                        </div>
-                    )}
-
-                    {activeTab === 'templates' && (
-                        <div className="p-4 grid grid-cols-2 gap-2">
-                            {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div key={i} onClick={() => addImageToCanvas(`https://picsum.photos/seed/tpl${i}/400/600`)} className="aspect-[3/4] bg-gray-800 rounded-lg overflow-hidden border border-white/20 cursor-pointer hover:border-[#00C4CC]">
-                                    <img src={`https://picsum.photos/seed/tpl${i}/200/300`} className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {activeTab === 'stickers' && (
-                        <div className="p-4 grid grid-cols-3 gap-2">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
-                                <div key={i} onClick={() => addImageToCanvas(`https://picsum.photos/seed/stk${i}/200/200`)} className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-[#00C4CC] flex items-center justify-center p-2">
-                                    <img src={`https://picsum.photos/seed/stk${i}/200/200`} className="w-full h-full object-contain drop-shadow-md rounded-md" />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {activeTab === 'frames' && (
-                        <div className="p-4 grid grid-cols-2 gap-2">
-                            <div onClick={() => addFrameToCanvas('square')} className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-[#00C4CC] flex items-center justify-center">
-                                <Square size={40} className="text-gray-400" />
-                            </div>
-                            <div onClick={() => addFrameToCanvas('circle')} className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-[#00C4CC] flex items-center justify-center">
-                                <Circle size={40} className="text-gray-400" />
-                            </div>
-                        </div>
-                    )}
-
-                    {['design', 'group', 'brand', 'extensions'].includes(activeTab) && (
-                        <div className="p-8 text-center text-gray-400 flex flex-col items-center gap-4">
-                            <Wand2 size={32} className="opacity-50" />
-                            <p>This feature will be available soon.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col relative min-w-0" onPointerDown={() => setSelectedId(null)}>
-                {/* Top Bar */}
-                <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10 shrink-0" onPointerDown={e => e.stopPropagation()}>
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
-                            <Cloud size={14} className="text-gray-600" />
-                        </div>
-                        <span className="font-medium text-gray-700">Untitled image</span>
-                        <ChevronDown size={16} className="text-gray-400" />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                        <ToolButton icon={<MousePointer2 size={18} />} active />
-                        <ToolButton icon={<Hand size={18} />} />
-                        <div className="w-[1px] h-4 bg-gray-300 mx-2"></div>
-                        <ToolButton icon={<Square size={18} />} />
-                        <div className="flex items-center gap-1 px-2 text-gray-600 font-medium cursor-pointer hover:bg-gray-50 rounded py-1">
-                            68% <ChevronDown size={14} />
-                        </div>
-                        <div className="w-[1px] h-4 bg-gray-300 mx-2"></div>
-                        <ToolButton icon={<Undo size={18} />} />
-                        <ToolButton icon={<Redo size={18} className="text-gray-300" />} />
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => alert('Download mockup triggered!')}
-                            className="bg-[#00C4CC] hover:bg-[#00B3BA] text-white px-4 py-1.5 rounded-md font-medium flex items-center gap-2 transition-colors"
-                        >
-                            <Download size={16} />
-                            Download
-                        </button>
-                        <div className="w-[1px] h-4 bg-gray-300 mx-1"></div>
-                        <button className="text-gray-500 hover:text-gray-800"><Settings size={18} /></button>
-                        <button className="text-gray-500 hover:text-gray-800"><HelpCircle size={18} /></button>
-                        {user && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button className="relative h-8 w-8 rounded-full p-0 outline-none focus:ring-2 focus:ring-[#00C4CC] focus:ring-offset-2">
-                                        <Avatar className="h-8 w-8" key={profile?.avatar_url || 'default'}>
-                                            <AvatarImage
-                                                src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=6366f1&color=fff`}
-                                                alt={profile?.full_name || 'User'}
-                                            />
-                                            <AvatarFallback className="bg-blue-500 text-white">
-                                                {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56" align="end" forceMount>
-                                    <DropdownMenuLabel className="font-normal">
-                                        <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-medium leading-none">
-                                                {profile?.full_name || user.email}
-                                            </p>
-                                            {profile?.full_name && (
-                                                <p className="text-xs leading-none text-muted-foreground">
-                                                    {user.email}
+                            <div className="w-[1px] h-4 bg-gray-300 mx-1"></div>
+                            <button className="text-gray-500 hover:text-gray-800"><Settings size={18} /></button>
+                            <button className="text-gray-500 hover:text-gray-800"><HelpCircle size={18} /></button>
+                            {user && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="relative h-8 w-8 rounded-full p-0 outline-none focus:ring-2 focus:ring-[#00C4CC] focus:ring-offset-2">
+                                            <Avatar className="h-8 w-8" key={profile?.avatar_url || 'default'}>
+                                                <AvatarImage
+                                                    src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=6366f1&color=fff`}
+                                                    alt={profile?.full_name || 'User'}
+                                                />
+                                                <AvatarFallback className="bg-blue-500 text-white">
+                                                    {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                                        <DropdownMenuLabel className="font-normal">
+                                            <div className="flex flex-col space-y-1">
+                                                <p className="text-sm font-medium leading-none">
+                                                    {profile?.full_name || user.email}
                                                 </p>
-                                            )}
+                                                {profile?.full_name && (
+                                                    <p className="text-xs leading-none text-muted-foreground">
+                                                        {user.email}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/social/swipe" className="cursor-pointer">
+                                                <Heart className="mr-2 h-4 w-4" />
+                                                <span>Discover</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/social/matches" className="cursor-pointer">
+                                                <Users className="mr-2 h-4 w-4" />
+                                                <span>Matches</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/social/likes" className="cursor-pointer">
+                                                <ThumbsUp className="mr-2 h-4 w-4" />
+                                                <span>Likes</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/social/profile" className="cursor-pointer">
+                                                <UserIcon className="mr-2 h-4 w-4" />
+                                                <span>Profile</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="cursor-default focus:bg-transparent">
+                                            <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
+                                            <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            <span>Sign out</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Canvas Area */}
+                    <div className="flex-1 overflow-auto relative bg-[#F3F4F6] flex items-center justify-center p-12">
+                        {/* Simulated Rulers */}
+                        <div className="absolute top-0 left-0 right-0 h-4 border-b border-gray-200 bg-white flex items-center overflow-hidden z-10 px-4">
+                            {[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map(m => (
+                                <div key={m} className="absolute text-[8px] text-gray-400 border-l border-gray-200 h-full pt-1 pl-0.5" style={{ left: m + 16 }}>{m}</div>
+                            ))}
+                        </div>
+                        <div className="absolute top-0 left-0 bottom-0 w-4 border-r border-gray-200 bg-white flex flex-col items-center overflow-hidden z-10 py-4">
+                            {[0, 100, 200, 300, 400, 500, 600, 700, 800].map(m => (
+                                <div key={m} className="absolute text-[8px] text-gray-400 border-t border-gray-200 w-full pl-0.5 pt-0.5" style={{ top: m + 16 }}>{m}</div>
+                            ))}
+                        </div>
+
+                        {/* Interactive Selection Canvas */}
+                        <div
+                            id="canvas"
+                            className="bg-white shadow-2xl relative overflow-hidden"
+                            style={{ width: 800, height: 600 }}
+                            onPointerDown={() => setSelectedId(null)}
+                        >
+                            {/* Objects List */}
+                            {objects.map((obj) => (
+                                <div
+                                    key={obj.id}
+                                    id={`obj-${obj.id}`}
+                                    onPointerDown={(e) => handleDragStart(e, obj.id)}
+                                    className={`absolute cursor-move select-none transition-shadow group ${selectedId === obj.id ? 'ring-2 ring-[#00C4CC] ring-offset-0 z-50 shadow-xl' : 'z-0 hover:ring-1 hover:ring-gray-300'}`}
+                                    style={{
+                                        left: obj.x,
+                                        top: obj.y,
+                                        width: obj.width,
+                                        height: obj.type === 'text' ? 'auto' : obj.height,
+                                        zIndex: obj.zIndex || 0,
+                                        opacity: obj.opacity || 1
+                                    }}
+                                >
+                                    {obj.type === 'image' && (
+                                        <div className={`relative w-full h-full ${obj.isCropped ? 'overflow-hidden' : ''}`} style={{ filter: getFilterString(obj) }}>
+                                            <img
+                                                src={obj.src}
+                                                alt="Canvas Object"
+                                                className={`w-full h-full object-cover select-none pointer-events-none ${obj.isFlippedX ? 'scale-x-[-1]' : ''}`}
+                                            />
                                         </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/social/swipe" className="cursor-pointer">
-                                            <Heart className="mr-2 h-4 w-4" />
-                                            <span>Discover</span>
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/social/matches" className="cursor-pointer">
-                                            <Users className="mr-2 h-4 w-4" />
-                                            <span>Matches</span>
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/social/likes" className="cursor-pointer">
-                                            <ThumbsUp className="mr-2 h-4 w-4" />
-                                            <span>Likes</span>
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/social/profile" className="cursor-pointer">
-                                            <UserIcon className="mr-2 h-4 w-4" />
-                                            <span>Profile</span>
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="cursor-default focus:bg-transparent">
-                                        <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Sign out</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
-                    </div>
-                </div>
+                                    )}
 
-                {/* Canvas Area */}
-                <div className="flex-1 overflow-auto relative bg-[#F3F4F6] flex items-center justify-center p-12">
-                    {/* Simulated Rulers */}
-                    <div className="absolute top-0 left-0 right-0 h-6 bg-white border-b border-gray-200 flex items-end overflow-hidden">
-                        <div className="w-full h-full flex items-end text-[9px] text-gray-400" style={{ backgroundImage: 'linear-gradient(90deg, transparent 49px, #e5e7eb 50px)', backgroundSize: '50px 100%' }}>
-                            <span className="ml-[45px]">0</span><span className="ml-[45px]">50</span><span className="ml-[40px]">100</span><span className="ml-[40px]">150</span><span className="ml-[40px]">200</span><span className="ml-[40px]">250</span><span className="ml-[40px]">300</span><span className="ml-[40px]">350</span><span className="ml-[40px]">400</span><span className="ml-[40px]">450</span><span className="ml-[40px]">500</span><span className="ml-[40px]">550</span><span className="ml-[40px]">600</span><span className="ml-[40px]">650</span><span className="ml-[40px]">700</span>
-                        </div>
-                    </div>
-                    <div className="absolute top-0 left-0 bottom-0 w-6 bg-white border-r border-gray-200 flex flex-col items-end overflow-hidden">
-                        <div className="w-full h-full flex flex-col items-end text-[9px] text-gray-400" style={{ backgroundImage: 'linear-gradient(180deg, transparent 49px, #e5e7eb 50px)', backgroundSize: '100% 50px' }}>
-                            <span className="mt-[45px]">0</span><span className="mt-[45px]">50</span><span className="mt-[40px]">100</span><span className="mt-[40px]">150</span><span className="mt-[40px]">200</span><span className="mt-[40px]">250</span><span className="mt-[40px]">300</span><span className="mt-[40px]">350</span><span className="mt-[40px]">400</span>
-                        </div>
-                    </div>
-
-                    {/* Canvas Page */}
-                    <div className="bg-white shadow-sm w-[800px] h-[600px] relative mt-6 ml-6 overflow-hidden">
-                        <div className="absolute -top-6 left-0 text-gray-400 text-xs">Page 1</div>
-
-                        {objects.length === 0 && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 pointer-events-none">
-                                <UploadCloud size={48} className="mb-4 opacity-50" />
-                                <p>Click an option on the left to add elements to the canvas</p>
-                            </div>
-                        )}
-
-                        {/* Render Objects */}
-                        {objects.map(obj => (
-                            <div
-                                key={obj.id}
-                                id={`obj-${obj.id}`}
-                                onPointerDown={(e) => handleDragStart(e, obj.id)}
-                                className={`absolute cursor-move ${selectedId === obj.id ? 'ring-2 ring-[#00C4CC]' : ''}`}
-                                style={{
-                                    left: obj.x,
-                                    top: obj.y,
-                                    width: obj.width,
-                                    height: obj.type === 'image' && !obj.isCropped ? 'auto' : obj.height,
-                                    minHeight: obj.type === 'text' ? 'auto' : undefined,
-                                    opacity: obj.opacity ?? 1,
-                                    zIndex: obj.zIndex ?? 0
-                                }}
-                            >
-                                {obj.type === 'image' && (
-                                    <div className="relative w-full h-full">
-                                        <img
-                                            src={obj.src}
-                                            alt="Canvas layer"
-                                            className={`w-full pointer-events-none ${obj.isCropped ? 'h-full object-cover' : 'h-auto'} ${obj.isFlippedX ? '-scale-x-100' : ''}`}
-                                            style={{ filter: getFilterString(obj) }}
-                                            draggable={false}
-                                        />
-                                        {obj.effect === 'vignette' && (
-                                            <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 100px rgba(0,0,0,0.9)' }}></div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {obj.type === 'shape' && (
-                                    <div
-                                        className="w-full h-full pointer-events-none"
-                                        style={{
-                                            backgroundColor: obj.backgroundColor,
-                                            borderRadius: obj.shapeType === 'circle' ? '50%' : '0%',
-                                            filter: getFilterString(obj)
-                                        }}
-                                    />
-                                )}
-
-                                {obj.type === 'frame' && (
-                                    <div
-                                        className="w-full h-full pointer-events-none overflow-hidden bg-gray-100 flex items-center justify-center"
-                                        style={{
-                                            borderRadius: obj.frameType === 'circle' ? '50%' : '0%',
-                                            filter: getFilterString(obj)
-                                        }}
-                                    >
-                                        <ImageIcon size={48} className="text-gray-300" />
-                                    </div>
-                                )}
-
-                                {obj.type === 'text' && (
-                                    <textarea
-                                        value={obj.text}
-                                        onChange={(e) => handleTextChange(obj.id, e.target.value)}
-                                        className="w-full h-full bg-transparent outline-none resize-none overflow-hidden"
-                                        style={{
-                                            fontSize: obj.fontSize,
-                                            color: obj.color,
-                                            lineHeight: 1.2,
-                                            fontFamily: 'inherit',
-                                            filter: getFilterString(obj),
-                                            textShadow: obj.textShadow
-                                        }}
-                                        onPointerDown={e => e.stopPropagation()}
-                                        onClick={e => { e.stopPropagation(); setSelectedId(obj.id); }}
-                                    />
-                                )}
-
-                                {/* Selection Handles & Toolbar */}
-                                {selectedId === obj.id && (
-                                    <>
-                                        <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border border-[#00C4CC] rounded-full"></div>
-                                        <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border border-[#00C4CC] rounded-full"></div>
-                                        <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border border-[#00C4CC] rounded-full"></div>
-
-                                        {/* Resize Handle (Bottom Right) */}
+                                    {obj.type === 'text' && (
                                         <div
-                                            className="absolute -bottom-2 -right-2 w-4 h-4 bg-white border-2 border-[#00C4CC] rounded-full cursor-se-resize z-10"
-                                            onPointerDown={(e) => handleResizeStart(e, obj.id)}
-                                        ></div>
-
-                                        {/* Floating Toolbar */}
-                                        <div
-                                            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-md border border-gray-200 flex items-center p-1 gap-1 cursor-default whitespace-nowrap z-20"
-                                            onPointerDown={e => e.stopPropagation()}
+                                            className="w-full text-center break-words focus:outline-none"
+                                            contentEditable
+                                            suppressContentEditableWarning
+                                            onBlur={(e) => handleTextChange(obj.id, e.currentTarget.textContent || '')}
+                                            style={{
+                                                fontSize: obj.fontSize,
+                                                color: obj.color,
+                                                fontWeight: 'bold',
+                                                textShadow: obj.textShadow,
+                                                lineHeight: 1.2
+                                            }}
                                         >
-                                            {obj.type === 'image' && (
-                                                <>
-                                                    <button
-                                                        className={`p-1.5 rounded text-gray-700 ${obj.isCropped ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-                                                        title={obj.isCropped ? "Uncrop" : "Crop"}
-                                                        onClick={() => toggleCrop(obj.id)}
-                                                    >
+                                            {obj.text}
+                                        </div>
+                                    )}
+
+                                    {obj.type === 'shape' && (
+                                        <div
+                                            className="w-full h-full"
+                                            style={{
+                                                backgroundColor: obj.backgroundColor,
+                                                borderRadius: obj.shapeType === 'circle' ? '50%' : '0%'
+                                            }}
+                                        />
+                                    )}
+
+                                    {obj.type === 'frame' && (
+                                        <div
+                                            className="w-full h-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center"
+                                            style={{
+                                                borderRadius: obj.frameType === 'circle' ? '50%' : '0%'
+                                            }}
+                                        >
+                                            <ImageIcon size={32} className="text-gray-200" />
+                                        </div>
+                                    )}
+
+                                    {/* Selection Handles */}
+                                    {selectedId === obj.id && (
+                                        <>
+                                            <div
+                                                className="absolute -right-2 -bottom-2 w-4 h-4 bg-white border-2 border-[#00C4CC] rounded-full cursor-nwse-resize z-[51] shadow-md"
+                                                onPointerDown={(e) => handleResizeStart(e, obj.id)}
+                                            />
+                                            {/* Action Bar Overlay */}
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-xl border border-gray-100 p-1 flex items-center gap-1 opacity-100 transition-opacity whitespace-nowrap z-[60]">
+                                                {obj.type === 'image' && (
+                                                    <button onClick={() => toggleCrop(obj.id)} className={`p-1.5 rounded hover:bg-gray-100 ${obj.isCropped ? 'text-[#00C4CC]' : 'text-gray-600'}`}>
                                                         <Crop size={16} />
                                                     </button>
-                                                    <button
-                                                        className={`p-1.5 rounded text-gray-700 ${obj.isFlippedX ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-                                                        title="Flip Horizontal"
-                                                        onClick={() => toggleFlipX(obj.id)}
-                                                    >
+                                                )}
+                                                {obj.type === 'image' && (
+                                                    <button onClick={() => toggleFlipX(obj.id)} className={`p-1.5 rounded hover:bg-gray-100 ${obj.isFlippedX ? 'text-[#00C4CC]' : 'text-gray-600'}`}>
                                                         <FlipHorizontal size={16} />
                                                     </button>
-                                                </>
-                                            )}
-                                            {obj.type === 'text' && (
-                                                <>
-                                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-700 font-bold" title="Bold">B</button>
-                                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-700 italic" title="Italic">I</button>
-                                                </>
-                                            )}
-                                            {obj.type === 'shape' && (
-                                                <button className="p-1.5 hover:bg-gray-100 rounded text-gray-700" title="Color"><Palette size={16} /></button>
-                                            )}
-                                            <button className="p-1.5 hover:bg-gray-100 rounded text-gray-700" title="Duplicate" onClick={duplicateSelected}><Copy size={16} /></button>
-                                            <div className="w-[1px] h-4 bg-gray-200 mx-1"></div>
-                                            <button
-                                                className="p-1.5 hover:bg-red-50 text-red-600 rounded"
-                                                title="Delete"
-                                                onClick={() => {
-                                                    setObjects(prev => prev.filter(i => i.id !== obj.id));
-                                                    setSelectedId(null);
-                                                }}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    </>
+                                                )}
+                                                <button onClick={duplicateSelected} className="p-1.5 rounded hover:bg-gray-100 text-gray-600">
+                                                    <Copy size={16} />
+                                                </button>
+                                                <button onClick={() => setObjects(prev => prev.filter(o => o.id !== obj.id))} className="p-1.5 rounded hover:bg-red-50 text-red-500">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                                <div className="w-[1px] h-4 bg-gray-200 mx-0.5"></div>
+                                                <button className="p-1.5 rounded hover:bg-gray-100 text-gray-600">
+                                                    <MoreHorizontal size={16} />
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Sidebar - Icon Strip */}
+                <div className="w-[72px] bg-[#F8F9FA] border-l border-gray-200 flex flex-col items-center py-4 z-20 shrink-0">
+                    <div className="text-xs font-semibold text-gray-800 mb-4">Layers</div>
+
+                    {/* Layer thumbnails */}
+                    <div className="flex flex-col gap-3 w-full px-2 mb-6 text-gray-400 overflow-y-auto max-h-[40vh] custom-scrollbar">
+                        {[...objects].reverse().map(obj => (
+                            <div
+                                key={obj.id}
+                                draggable
+                                onDragStart={(e) => handleLayerDragStart(e, obj.id)}
+                                onDragOver={handleLayerDragOver}
+                                onDrop={(e) => handleLayerDrop(e, obj.id)}
+                                onClick={() => setSelectedId(obj.id)}
+                                className={`aspect-video bg-white rounded border-2 overflow-hidden relative cursor-pointer flex items-center justify-center ${selectedId === obj.id ? 'border-[#00C4CC]' : 'border-transparent hover:border-gray-300'} ${draggedLayerId === obj.id ? 'opacity-50' : ''}`}
+                            >
+                                {obj.type === 'image' && <img src={obj.src} alt="Layer" className="w-full h-full object-cover pointer-events-none" style={{ filter: getFilterString(obj) }} />}
+                                {obj.type === 'shape' && (
+                                    <div className="w-8 h-8 pointer-events-none" style={{ backgroundColor: obj.backgroundColor, borderRadius: obj.shapeType === 'circle' ? '50%' : '0%' }} />
                                 )}
+                                {obj.type === 'frame' && (
+                                    <div className="w-8 h-8 bg-gray-100 flex items-center justify-center pointer-events-none" style={{ borderRadius: obj.frameType === 'circle' ? '50%' : '0%' }}>
+                                        <ImageIcon size={16} className="text-gray-300" />
+                                    </div>
+                                )}
+                                {obj.type === 'text' && <TypeIcon size={20} className="text-gray-400 pointer-events-none" />}
                             </div>
                         ))}
                     </div>
-                </div>
-            </div>
 
-            {/* Right Sidebar - Properties Panel */}
-            <div className="w-[320px] bg-white border-l border-gray-200 flex flex-col z-10 shrink-0">
-                <div className="h-14 border-b border-gray-200 flex items-center justify-between px-4">
-                    <h2 className="font-semibold text-gray-800 text-base">
-                        {!selectedObject ? 'Properties' :
-                            activeRightTab === 'filters' ? 'Filters' :
-                                activeRightTab === 'effects' ? 'Effects' :
-                                    activeRightTab === 'remove_bg' ? "Remove Background" :
-                                        activeRightTab === 'adjust' ? 'Adjust' :
-                                            activeRightTab === 'smart_tools' ? 'Smart Tools' :
-                                                activeRightTab === 'opacity' ? 'Opacity' :
-                                                    activeRightTab === 'arrange' ? 'Arrange' : 'Properties'}
-                    </h2>
-                    <button className="text-gray-400 hover:text-gray-600">
-                        <X size={20} />
-                    </button>
-                </div>
+                    <div className="w-8 h-[1px] bg-gray-200 mb-4"></div>
 
-                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
-                    {!selectedObject ? (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-4 text-center mt-20">
-                            <MousePointer2 size={48} className="opacity-20" />
-                            <p>Select an element on the canvas to edit its properties.</p>
+                    <div className="flex-1 overflow-y-auto w-full">
+                        <div className="flex flex-col gap-2 w-full">
+                            <RightNavItem icon={<Wand2 size={20} />} label="Filters" active={activeRightTab === 'filters'} onClick={() => setActiveRightTab('filters')} />
+                            <RightNavItem icon={<Sparkles size={20} />} label="Effects" active={activeRightTab === 'effects'} onClick={() => setActiveRightTab('effects')} />
+                            <RightNavItem icon={<Eraser size={20} />} label="Remove BG" active={activeRightTab === 'remove_bg'} onClick={() => setActiveRightTab('remove_bg')} />
+                            <RightNavItem icon={<SlidersHorizontal size={20} />} label="Adjust" active={activeRightTab === 'adjust'} onClick={() => setActiveRightTab('adjust')} />
+                            <RightNavItem icon={<Cpu size={20} />} label="Smart Tools" active={activeRightTab === 'smart_tools'} onClick={() => setActiveRightTab('smart_tools')} />
+                            <RightNavItem icon={<Droplet size={20} />} label="Opacity" active={activeRightTab === 'opacity'} onClick={() => setActiveRightTab('opacity')} />
+                            <RightNavItem icon={<Layers size={20} />} label="Arrange" active={activeRightTab === 'arrange'} onClick={() => setActiveRightTab('arrange')} />
                         </div>
-                    ) : (
-                        <>
-                            {activeRightTab === 'filters' && selectedObject.type === 'image' && (
-                                <>
-                                    <div className="flex flex-col gap-2">
-                                        <div
-                                            onClick={() => applyFilter('none')}
-                                            className={`w-20 h-20 rounded-xl border-2 flex items-center justify-center cursor-pointer transition-colors ${selectedObject.filter === 'none' ? 'border-[#00C4CC] bg-[#E5F9FA]' : 'border-gray-200 hover:border-gray-300 bg-gray-50'}`}
-                                        >
-                                            <div className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                                                <div className="w-8 h-[2px] bg-gray-300 transform rotate-45"></div>
-                                            </div>
-                                        </div>
-                                        <span className="text-xs text-gray-600 font-medium">None</span>
-                                    </div>
-
-                                    <FilterSection
-                                        title="Quality"
-                                        filters={QUALITY_FILTERS}
-                                        onSelect={applyFilter}
-                                        activeFilter={selectedObject.filter || 'none'}
-                                    />
-
-                                    <FilterSection
-                                        title="Delicacy"
-                                        filters={DELICACY_FILTERS}
-                                        onSelect={applyFilter}
-                                        activeFilter={selectedObject.filter || 'none'}
-                                    />
-
-                                    <FilterSection
-                                        title="Retro"
-                                        filters={RETRO_FILTERS}
-                                        onSelect={applyFilter}
-                                        activeFilter={selectedObject.filter || 'none'}
-                                    />
-
-                                    <FilterSection
-                                        title="Classic"
-                                        filters={CLASSIC_FILTERS}
-                                        onSelect={applyFilter}
-                                        activeFilter={selectedObject.filter || 'none'}
-                                    />
-                                </>
-                            )}
-
-                            {activeRightTab === 'effects' && (
-                                <div className="flex flex-col gap-4">
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {['Blur', 'Drop Shadow', 'Glow', 'Outline', 'Vignette'].map(effect => {
-                                            let effectCss = '';
-                                            if (effect === 'Blur') effectCss = 'blur(4px)';
-                                            else if (effect === 'Drop Shadow') effectCss = 'drop-shadow(4px 4px 4px rgba(0,0,0,0.5))';
-                                            else if (effect === 'Glow') effectCss = 'drop-shadow(0 0 8px rgba(0,196,204,0.8))';
-                                            else if (effect === 'Outline') effectCss = 'drop-shadow(2px 0 0 #00C4CC) drop-shadow(-2px 0 0 #00C4CC) drop-shadow(0 2px 0 #00C4CC) drop-shadow(0 -2px 0 #00C4CC)';
-                                            else if (effect === 'Vignette') effectCss = 'vignette';
-
-                                            const isActive = selectedObject.effect === effectCss;
-
-                                            return (
-                                                <button
-                                                    key={effect}
-                                                    onClick={() => applyEffect(effect)}
-                                                    className={`p-4 border rounded-lg flex flex-col items-center gap-3 transition-colors ${isActive ? 'border-[#00C4CC] bg-[#E5F9FA]' : 'border-gray-200 hover:border-[#00C4CC] hover:bg-gray-50'}`}
-                                                >
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isActive ? 'bg-white' : 'bg-gray-100'}`}>
-                                                        <Sparkles size={20} className={isActive ? 'text-[#00C4CC]' : 'text-gray-500'} />
-                                                    </div>
-                                                    <span className={`text-xs font-medium ${isActive ? 'text-[#00C4CC]' : 'text-gray-700'}`}>{effect}</span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeRightTab === 'remove_bg' && (
-                                <div className="flex flex-col gap-4">
-                                    <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl font-medium flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg">
-                                        <Eraser size={20} />
-                                        Remove Background
-                                    </button>
-                                    <p className="text-xs text-gray-500 text-center px-4 leading-relaxed">
-                                        Automatically remove the background from your image in one click using AI.
-                                    </p>
-                                </div>
-                            )}
-
-                            {activeRightTab === 'adjust' && (
-                                <div className="flex flex-col gap-6">
-                                    {[
-                                        { id: 'brightness', label: 'Brightness', min: -100, max: 100 },
-                                        { id: 'contrast', label: 'Contrast', min: -100, max: 100 },
-                                        { id: 'saturation', label: 'Saturation', min: -100, max: 100 },
-                                        { id: 'tint', label: 'Tint', min: -100, max: 100 },
-                                        { id: 'hue', label: 'Hue', min: -180, max: 180 },
-                                        { id: 'blur', label: 'Blur', min: 0, max: 100 }
-                                    ].map(adj => {
-                                        const val = selectedObject.adjustments?.[adj.id as keyof typeof selectedObject.adjustments] ?? 0;
-                                        return (
-                                            <div key={adj.id}>
-                                                <div className="flex justify-between mb-2">
-                                                    <label className="text-xs font-medium text-gray-700">{adj.label}</label>
-                                                    <span className="text-xs text-gray-500">{val}</span>
-                                                </div>
-                                                <input
-                                                    type="range"
-                                                    min={adj.min}
-                                                    max={adj.max}
-                                                    value={val}
-                                                    onChange={(e) => {
-                                                        const newVal = parseInt(e.target.value);
-                                                        setObjects(prev => prev.map(o => {
-                                                            if (o.id === selectedId) {
-                                                                return {
-                                                                    ...o,
-                                                                    adjustments: {
-                                                                        ...(o.adjustments || { brightness: 0, contrast: 0, saturation: 0, tint: 0, blur: 0, hue: 0 }),
-                                                                        [adj.id]: newVal
-                                                                    }
-                                                                };
-                                                            }
-                                                            return o;
-                                                        }));
-                                                    }}
-                                                    className="w-full accent-[#00C4CC]"
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {activeRightTab === 'smart_tools' && (
-                                <div className="flex flex-col gap-4">
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {[
-                                            { name: 'Magic Eraser', icon: <Eraser size={24} /> },
-                                            { name: 'AI Upscale', icon: <Cpu size={24} /> },
-                                            { name: 'Replace', icon: <Sparkles size={24} /> },
-                                        ].map(tool => (
-                                            <button key={tool.name} className="p-4 border border-gray-200 rounded-lg hover:border-[#00C4CC] hover:bg-gray-50 flex flex-col items-center gap-3 text-center transition-colors">
-                                                <div className="text-[#00C4CC]">{tool.icon}</div>
-                                                <span className="text-xs font-medium text-gray-700">{tool.name}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeRightTab === 'opacity' && (
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <div className="flex justify-between mb-2">
-                                            <label className="text-xs font-medium text-gray-700">Transparency</label>
-                                            <span className="text-xs text-gray-500">{Math.round((selectedObject.opacity ?? 1) * 100)}%</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="100"
-                                            value={(selectedObject.opacity ?? 1) * 100}
-                                            onChange={(e) => {
-                                                const val = parseInt(e.target.value) / 100;
-                                                setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, opacity: val } : o));
-                                            }}
-                                            className="w-full accent-[#00C4CC]"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeRightTab === 'arrange' && (
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => {
-                                            setObjects(prev => {
-                                                const objIndex = prev.findIndex(o => o.id === selectedId);
-                                                if (objIndex === -1) return prev;
-                                                const newObjects = [...prev];
-                                                const [obj] = newObjects.splice(objIndex, 1);
-                                                newObjects.push(obj);
-                                                return newObjects.map((o, i) => ({ ...o, zIndex: i }));
-                                            });
-                                        }}
-                                        className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-[#00C4CC] text-sm text-gray-700 font-medium text-left transition-colors"
-                                    >
-                                        Bring to front
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setObjects(prev => {
-                                                const objIndex = prev.findIndex(o => o.id === selectedId);
-                                                if (objIndex === -1) return prev;
-                                                const newObjects = [...prev];
-                                                const [obj] = newObjects.splice(objIndex, 1);
-                                                newObjects.unshift(obj);
-                                                return newObjects.map((o, i) => ({ ...o, zIndex: i }));
-                                            });
-                                        }}
-                                        className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-[#00C4CC] text-sm text-gray-700 font-medium text-left transition-colors"
-                                    >
-                                        Send to back
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Text/Shape specific properties when filters tab is active but a text/shape is selected */}
-                            {activeRightTab === 'filters' && selectedObject.type === 'text' && (
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <label className="text-xs font-medium text-gray-700 mb-1 block">Font Size</label>
-                                        <input
-                                            type="range"
-                                            min="12"
-                                            max="120"
-                                            value={selectedObject.fontSize}
-                                            onChange={(e) => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, fontSize: parseInt(e.target.value), height: parseInt(e.target.value) * 1.5 } : o))}
-                                            className="w-full accent-[#00C4CC]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-medium text-gray-700 mb-2 block">Color</label>
-                                        <div className="flex flex-wrap gap-2 items-center">
-                                            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 focus-within:border-[#00C4CC]">
-                                                <input
-                                                    type="color"
-                                                    value={selectedObject.color || '#000000'}
-                                                    onChange={(e) => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, color: e.target.value } : o))}
-                                                    className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer"
-                                                    title="Custom Color"
-                                                />
-                                            </div>
-                                            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
-                                            {['#000000', '#FFFFFF', '#EF4444', '#3B82F6', '#10B981', '#F59E0B'].map(color => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, color } : o))}
-                                                    className={`w-8 h-8 rounded-full border-2 ${selectedObject.color === color ? 'border-[#00C4CC]' : 'border-gray-200'}`}
-                                                    style={{ backgroundColor: color }}
-                                                    title={color}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-medium text-gray-700 mb-2 block">Text Shadow</label>
-                                        <div className="flex gap-2">
-                                            {[
-                                                { label: 'None', value: 'none' },
-                                                { label: 'Soft', value: '2px 2px 4px rgba(0,0,0,0.3)' },
-                                                { label: 'Strong', value: '3px 3px 6px rgba(0,0,0,0.6)' },
-                                                { label: 'Glow', value: '0 0 8px rgba(0,196,204,0.8)' }
-                                            ].map(shadow => {
-                                                const isActive = (selectedObject.textShadow || 'none') === shadow.value;
-                                                return (
-                                                    <button
-                                                        key={shadow.label}
-                                                        onClick={() => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, textShadow: shadow.value } : o))}
-                                                        className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${isActive ? 'border-[#00C4CC] bg-[#E5F9FA] text-[#00C4CC]' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                                                    >
-                                                        {shadow.label}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeRightTab === 'filters' && selectedObject.type === 'shape' && (
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <label className="text-xs font-medium text-gray-700 mb-2 block">Fill Color</label>
-                                        <div className="flex flex-wrap gap-2 items-center">
-                                            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 focus-within:border-gray-800">
-                                                <input
-                                                    type="color"
-                                                    value={selectedObject.backgroundColor || '#00C4CC'}
-                                                    onChange={(e) => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, backgroundColor: e.target.value } : o))}
-                                                    className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer"
-                                                    title="Custom Color"
-                                                />
-                                            </div>
-                                            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
-                                            {['#00C4CC', '#000000', '#FFFFFF', '#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'].map(color => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setObjects(prev => prev.map(o => o.id === selectedId ? { ...o, backgroundColor: color } : o))}
-                                                    className={`w-8 h-8 rounded-full border-2 ${selectedObject.backgroundColor === color ? 'border-gray-800' : 'border-gray-200'}`}
-                                                    style={{ backgroundColor: color }}
-                                                    title={color}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-            </div>
-
-            {/* Right Sidebar - Icon Strip */}
-            <div className="w-[72px] bg-[#F8F9FA] border-l border-gray-200 flex flex-col items-center py-4 z-20 shrink-0">
-                <div className="text-xs font-semibold text-gray-800 mb-4">Layers</div>
-
-                {/* Layer thumbnails */}
-                <div className="flex flex-col gap-3 w-full px-2 mb-6 text-gray-400">
-                    {[...objects].reverse().map(obj => (
-                        <div
-                            key={obj.id}
-                            draggable
-                            onDragStart={(e) => handleLayerDragStart(e, obj.id)}
-                            onDragOver={handleLayerDragOver}
-                            onDrop={(e) => handleLayerDrop(e, obj.id)}
-                            onClick={() => setSelectedId(obj.id)}
-                            className={`aspect-video bg-white rounded border-2 overflow-hidden relative cursor-pointer flex items-center justify-center ${selectedId === obj.id ? 'border-[#00C4CC]' : 'border-transparent hover:border-gray-300'} ${draggedLayerId === obj.id ? 'opacity-50' : ''}`}
-                        >
-                            {obj.type === 'image' && <img src={obj.src} alt="Layer" className="w-full h-full object-cover pointer-events-none" style={{ filter: getFilterString(obj) }} />}
-                            {obj.type === 'shape' && (
-                                <div className="w-8 h-8 pointer-events-none" style={{ backgroundColor: obj.backgroundColor, borderRadius: obj.shapeType === 'circle' ? '50%' : '0%' }} />
-                            )}
-                            {obj.type === 'frame' && (
-                                <div className="w-8 h-8 bg-gray-100 flex items-center justify-center pointer-events-none" style={{ borderRadius: obj.frameType === 'circle' ? '50%' : '0%' }}>
-                                    <ImageIcon size={16} className="text-gray-300" />
-                                </div>
-                            )}
-                            {obj.type === 'text' && <TypeIcon size={20} className="text-gray-400 pointer-events-none" />}
-                        </div>
-                    ))}
-                    <div className="aspect-video bg-white rounded border border-gray-200 flex items-center justify-center relative cursor-pointer hover:bg-gray-50">
-                        <Square size={16} className="text-gray-300" />
                     </div>
                 </div>
 
-                <div className="w-8 h-[1px] bg-gray-200 mb-4"></div>
+                {/* Right Panel - Properties */}
+                <div className={`w-[260px] bg-white border-l border-gray-200 p-4 overflow-y-auto ${activeRightTab ? 'block' : 'hidden'}`}>
+                    {activeRightTab === 'filters' && (
+                        <div className="flex flex-col gap-6">
+                            <FilterSection title="Quality" filters={QUALITY_FILTERS} onSelect={applyFilter} activeFilter={selectedObject?.filter || ''} />
+                            <FilterSection title="Delicacy" filters={DELICACY_FILTERS} onSelect={applyFilter} activeFilter={selectedObject?.filter || ''} />
+                            <FilterSection title="Retro" filters={RETRO_FILTERS} onSelect={applyFilter} activeFilter={selectedObject?.filter || ''} />
+                            <FilterSection title="Classic" filters={CLASSIC_FILTERS} onSelect={applyFilter} activeFilter={selectedObject?.filter || ''} />
+                        </div>
+                    )}
 
-                <div className="flex flex-col gap-2 w-full">
-                    <RightNavItem icon={<Wand2 size={20} />} label="Filters" active={activeRightTab === 'filters'} onClick={() => setActiveRightTab('filters')} />
-                    <RightNavItem icon={<Sparkles size={20} />} label="Effects" active={activeRightTab === 'effects'} onClick={() => setActiveRightTab('effects')} />
-                    <RightNavItem icon={<Eraser size={20} />} label="Remove BG" active={activeRightTab === 'remove_bg'} onClick={() => setActiveRightTab('remove_bg')} />
-                    <RightNavItem icon={<SlidersHorizontal size={20} />} label="Adjust" active={activeRightTab === 'adjust'} onClick={() => setActiveRightTab('adjust')} />
-                    <RightNavItem icon={<Cpu size={20} />} label="Smart Tools" active={activeRightTab === 'smart_tools'} onClick={() => setActiveRightTab('smart_tools')} />
-                    <RightNavItem icon={<Droplet size={20} />} label="Opacity" active={activeRightTab === 'opacity'} onClick={() => setActiveRightTab('opacity')} />
-                    <RightNavItem icon={<Layers size={20} />} label="Arrange" active={activeRightTab === 'arrange'} onClick={() => setActiveRightTab('arrange')} />
+                    {activeRightTab === 'effects' && (
+                        <div className="flex flex-col gap-4">
+                            <h3 className="font-semibold text-gray-800 mb-2">Visual Effects</h3>
+                            {['Blur', 'Drop Shadow', 'Glow', 'Outline', 'Vignette'].map(effect => (
+                                <button
+                                    key={effect}
+                                    onClick={() => applyEffect(effect)}
+                                    className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-[#00C4CC] hover:bg-gray-50 transition-all text-gray-700"
+                                >
+                                    <span className="font-medium">{effect}</span>
+                                    <Sparkles size={16} className="text-gray-400" />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {['remove_bg', 'adjust', 'smart_tools', 'opacity', 'arrange'].includes(activeRightTab) && (
+                        <div className="flex flex-col items-center justify-center h-40 text-gray-400 text-center">
+                            <Cpu size={32} className="opacity-20 mb-2" />
+                            <p className="text-xs">Advanced processing tools are being initialized.</p>
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+        </DashboardShell>
     );
 }
 
