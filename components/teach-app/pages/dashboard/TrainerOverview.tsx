@@ -43,14 +43,14 @@ export function TrainerOverview() {
           <h3 className="text-2xl font-bold text-gray-900">0</h3>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <Link to="/dashboard/trainer/students" className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-500/50 hover:shadow-lg transition-all">
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-emerald-50 rounded-lg"><Users className="h-6 w-6 text-emerald-600" /></div>
             <span className="text-emerald-500 text-sm font-medium">+5%</span>
           </div>
           <p className="text-gray-500 text-sm font-medium">Active Students</p>
-          <h3 className="text-2xl font-bold text-gray-900">0</h3>
-        </div>
+          <h3 className="text-2xl font-bold text-gray-900">5</h3>
+        </Link>
         
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
           <div className="flex justify-between items-start mb-4">

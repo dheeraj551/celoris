@@ -8,10 +8,12 @@ export function TrainerDashboard() {
   
   // Helper to get page title based on route
   const getPageTitle = () => {
-    if (location.pathname.includes('/courses')) return 'My Courses';
+
     if (location.pathname.includes('/enquiries')) return 'Enquiries';
+    if (location.pathname.includes('/students')) return 'Students';
     if (location.pathname.includes('/calendar')) return 'Calendar';
     if (location.pathname.includes('/earnings')) return 'Earnings';
+    if (location.pathname.includes('/profile')) return 'Trainer Profile';
     return 'Dashboard Overview';
   };
 
@@ -20,11 +22,12 @@ export function TrainerDashboard() {
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-emerald-600 p-1.5 rounded-lg">
-              <BookOpen className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900 tracking-tight">Celoris</span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/celoris-logo.png"
+              alt="Celoris Logo"
+              className="h-8 w-auto object-contain transition-all hover:opacity-80"
+            />
           </Link>
         </div>
         
@@ -56,15 +59,13 @@ export function TrainerDashboard() {
             >
               <MessageSquare className="h-5 w-5" /> Enquiries <span className="ml-auto bg-emerald-100 text-emerald-600 py-0.5 px-2 rounded-full text-xs">3</span>
             </NavLink>
-            <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">
-              <Users className="h-5 w-5" /> Students
-            </a>
             <NavLink 
-              to="/dashboard/trainer/courses" 
+              to="/dashboard/trainer/students" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
-              <BookOpen className="h-5 w-5" /> My Courses
+              <Users className="h-5 w-5" /> Students
             </NavLink>
+
             <NavLink 
               to="/dashboard/trainer/calendar" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
@@ -76,6 +77,12 @@ export function TrainerDashboard() {
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <DollarSign className="h-5 w-5" /> Earnings
+            </NavLink>
+            <NavLink 
+              to="/dashboard/trainer/profile" 
+              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
+              <UserIcon className="h-5 w-5" /> Trainer Profile
             </NavLink>
           </nav>
         </div>

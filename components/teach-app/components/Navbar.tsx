@@ -10,11 +10,12 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="bg-emerald-600 p-1.5 rounded-lg">
-                <BookOpen className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900 tracking-tight">Celoris</span>
+            <Link to="/" className="flex items-center">
+              <img
+                src="/celoris-logo.png"
+                alt="Celoris Logo"
+                className="h-8 w-auto object-contain transition-all hover:opacity-80"
+              />
             </Link>
             
             <div className="hidden md:ml-10 md:flex md:space-x-8">

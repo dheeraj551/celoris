@@ -111,7 +111,7 @@ export default function VideoStudio() {
     const [duration, setDuration] = useState(596); // Big Buck Bunny duration
 
     // Video state
-    const [videoSrc, setVideoSrc] = useState<string>("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+    const [videoSrc, setVideoSrc] = useState<string>("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
     const [videoName, setVideoName] = useState<string>("Big Buck Bunny");
 
     // Timeline clips

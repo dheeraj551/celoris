@@ -67,11 +67,12 @@ export function Register() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-emerald-600 p-2 rounded-xl">
-              <BookOpen className="h-8 w-8 text-white" />
-            </div>
-            <span className="text-3xl font-bold text-gray-900 tracking-tight">Celoris</span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/celoris-logo.png"
+              alt="Celoris Logo"
+              className="h-10 w-auto object-contain transition-all hover:opacity-80"
+            />
           </Link>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
