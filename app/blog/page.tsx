@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'how-to-start-teaching-online-in-india',
+      title: "How to Start Teaching Online in India: The Complete Guide for New Trainers",
+      slug: 'how-to-start-teaching-online-in-india',
+      excerpt: "Thinking of teaching online in India? Learn how Celoris helps new trainers grow without per-lead charges, coin systems, or platform restrictions. Free to join.",
+      featured_image_url: '/blog-how-to-start-teaching-online-in-india.png',
+      author_name: 'Celoris',
+      category: 'Trainer Guide',
+      reading_time: 7,
+      published_at: '2026-03-22T12:00:00Z',
+    },
+    {
       id: 'online-teaching-jobs-india-2025-26',
       title: "Online Teaching Jobs in India: How to Earn from Home by Teaching What You Know",
       slug: 'online-teaching-jobs-india-2025-26',

@@ -16,7 +16,7 @@ export function Register() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard/trainer/overview');
+      navigate('/teach/dashboard/trainer/overview');
     }
   }, [user, loading, navigate]);
 
@@ -53,7 +53,7 @@ export function Register() {
         if (profileError) console.error('Error creating profile:', profileError);
       }
 
-      navigate('/dashboard/trainer/overview');
+      navigate('/teach/dashboard/trainer/overview');
     } catch (err: any) {
       setError(err.message || 'An error occurred during registration');
     } finally {
@@ -67,7 +67,7 @@ export function Register() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center">
+          <Link to="/teach" className="flex items-center">
             <img
               src="/celoris-logo.png"
               alt="Celoris Logo"
@@ -80,7 +80,7 @@ export function Register() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-emerald-600 hover:text-emerald-500">
+          <Link to="/teach/login" className="font-medium text-emerald-600 hover:text-emerald-500">
             Sign in
           </Link>
         </p>

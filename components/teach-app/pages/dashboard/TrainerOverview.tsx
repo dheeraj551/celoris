@@ -43,7 +43,7 @@ export function TrainerOverview() {
           <h3 className="text-2xl font-bold text-gray-900">0</h3>
         </div>
         
-        <Link to="/dashboard/trainer/students" className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-500/50 hover:shadow-lg transition-all">
+        <Link to="/teach/dashboard/trainer/students" className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-500/50 hover:shadow-lg transition-all">
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-emerald-50 rounded-lg"><Users className="h-6 w-6 text-emerald-600" /></div>
             <span className="text-emerald-500 text-sm font-medium">+5%</span>
@@ -75,7 +75,7 @@ export function TrainerOverview() {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm">
           <div className="p-6 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-900">Recent Enquiries</h2>
-            <Link to="/dashboard/trainer/enquiries" className="text-emerald-600 text-sm font-medium hover:underline">View all</Link>
+            <Link to="/teach/dashboard/trainer/enquiries" className="text-emerald-600 text-sm font-medium hover:underline">View all</Link>
           </div>
           <div className="divide-y divide-gray-100 min-h-[300px]">
             {loading ? (
@@ -104,7 +104,7 @@ export function TrainerOverview() {
                       <Clock className="h-3 w-3 inline mr-1" />
                       {lead.created_at ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true }) : 'Recently'}
                     </span>
-                    <Link to="/dashboard/trainer/enquiries" className="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-100">
+                    <Link to="/teach/dashboard/trainer/enquiries" className="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-100">
                       Reply
                     </Link>
                   </div>

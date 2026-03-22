@@ -6,10 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Courses } from "@/components/home-new/Courses"
-import NoticeBoard from "@/components/NoticeBoard"
 import StudentInquiries from "@/components/StudentInquiries"
-import LeadCenter from "@/components/learn/LeadCenter"
 import { FreeOnlineClasses } from "@/components/learn/FreeOnlineClasses"
+import { BenefitBanner } from "@/components/learn/BenefitBanner"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/AuthProvider"
@@ -19,48 +18,7 @@ import { createClient } from "@/lib/supabase-client"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 
-const TRANSACTIONS = [
-  "Rohan Sharma paid for the Advanced Excel Masterclass – Trainer: Neha Verma",
-  "Ananya Gupta enrolled in the Social Media Marketing Course – Mentor: Arjun Mehta",
-  "Vikram Patel paid for the Python for Data Science Program – Instructor: Kavita Rao",
-  "Sneha Kapoor registered for the Graphic Design Bootcamp – Trainer: Rahul Bansal",
-  "Aditya Nair paid for the SEO Optimization Course – Mentor: Pooja Sharma",
-  "Priya Desai enrolled in the Web Development Bootcamp – Instructor: Aman Khanna",
-  "Karan Malhotra paid for the AI & Machine Learning Course – Trainer: Ritu Agarwal",
-  "Megha Chatterjee registered for the Content Writing Masterclass – Mentor: Sandeep Verma",
-  "Arjun Singh paid for the YouTube Growth & Monetization Course – Instructor: Deepika Nair",
-  "Nisha Iqbal enrolled in the Professional Video Editing Bootcamp – Trainer: Rohit Malhotra"
-]
 
-function ScrollingTicker() {
-  return (
-    <div className="w-full overflow-hidden bg-emerald-500/5 border-y border-emerald-500/10 py-3 mb-16 relative">
-      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#050810] to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#050810] to-transparent z-10" />
-
-      <motion.div
-        animate={{
-          x: [0, -1000],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="flex whitespace-nowrap gap-12 items-center"
-      >
-        {[...TRANSACTIONS, ...TRANSACTIONS].map((text, i) => (
-          <div key={i} className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-400 italic">
-              {text}
-            </span>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  )
-}
 
 function RoomPresence({ channelName, hasAiAgent }: { channelName: string; hasAiAgent?: boolean }) {
   const [users, setUsers] = useState<any[]>([]);
@@ -323,26 +281,9 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
         </div>
       </section>
 
-      {/* Notice Board Section */}
-      <section className="py-24 relative z-10">
-        <div className="max-w-6xl mx-auto px-8">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-4">
-              <Zap size={14} /> Global Feed
-            </div>
-            <h2 className="text-4xl font-bold text-white tracking-tight mb-4 italic uppercase">Notice Board</h2>
-            <p className="text-lg text-slate-400 font-medium italic">
-              Current tutoring opportunities and industry requirements.
-            </p>
-          </div>
 
-          <ScrollingTicker />
+      <BenefitBanner />
 
-          <NoticeBoard limit={6} initialNotices={initialNotices} />
-        </div>
-      </section>
-
-      <LeadCenter />
       <StudentInquiries />
     </div>
   )

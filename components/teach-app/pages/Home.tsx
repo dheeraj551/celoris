@@ -21,15 +21,15 @@ export function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4">
               {user ? (
-                <Link to="/dashboard/trainer/overview" className="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
+                <Link to="/teach/dashboard/trainer/overview" className="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
                   Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               ) : (
                 <>
-                  <Link to="/register" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
+                  <Link to="/teach/register" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
                     Start Teaching for Free
                   </Link>
-                  <Link to="/login" className="bg-emerald-800/50 text-white border border-emerald-400/30 px-8 py-4 rounded-xl font-medium hover:bg-emerald-800 transition-colors flex items-center justify-center whitespace-nowrap text-lg backdrop-blur-sm">
+                  <Link to="/teach/login" className="bg-emerald-800/50 text-white border border-emerald-400/30 px-8 py-4 rounded-xl font-medium hover:bg-emerald-800 transition-colors flex items-center justify-center whitespace-nowrap text-lg backdrop-blur-sm">
                     login
                   </Link>
                 </>
@@ -147,11 +147,11 @@ export function Home() {
             Join hundreds of expert trainers in Delhi/NCR who are already building their brand and managing their students on Celoris.
           </p>
           {user ? (
-            <Link to="/dashboard/trainer/overview" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
+            <Link to="/teach/dashboard/trainer/overview" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
               Access Your Dashboard <ArrowRight className="h-5 w-5" />
             </Link>
           ) : (
-            <Link to="/register" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
+            <Link to="/teach/register" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
               Create Your Trainer Profile <ArrowRight className="h-5 w-5" />
             </Link>
           )}

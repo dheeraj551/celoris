@@ -29,19 +29,19 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
 export default function TeachApp() {
   return (
-    <BrowserRouter basename="/teach">
+    <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-        <Route path="/trainers" element={<PublicLayout><Trainers /></PublicLayout>} />
-        <Route path="/trainers/:id" element={<PublicLayout><TrainerProfile /></PublicLayout>} />
+        <Route path="/teach" element={<PublicLayout><Home /></PublicLayout>} />
+        <Route path="/teach/trainers" element={<PublicLayout><Trainers /></PublicLayout>} />
+        <Route path="/teach/trainers/:id" element={<PublicLayout><TrainerProfile /></PublicLayout>} />
         
         {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/teach/login" element={<Login />} />
+        <Route path="/teach/register" element={<Register />} />
         
         {/* Dashboard Routes */}
-        <Route path="/dashboard/trainer" element={<TrainerDashboard />}>
+        <Route path="/teach/dashboard/trainer" element={<TrainerDashboard />}>
           <Route index element={<Navigate to="overview" replace />} />
           <Route path="overview" element={<TrainerOverview />} />
           <Route path="profile" element={<DashboardTrainerProfile />} />

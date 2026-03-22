@@ -15,7 +15,7 @@ export function Login() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard/trainer/overview');
+      navigate('/teach/dashboard/trainer/overview');
     }
   }, [user, loading, navigate]);
 
@@ -31,7 +31,7 @@ export function Login() {
       });
 
       if (error) throw error;
-      navigate('/dashboard/trainer/overview');
+      navigate('/teach/dashboard/trainer/overview');
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign in');
     } finally {
@@ -45,7 +45,7 @@ export function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center">
+          <Link to="/teach" className="flex items-center">
             <img
               src="/celoris-logo.png"
               alt="Celoris Logo"
@@ -58,7 +58,7 @@ export function Login() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link to="/register" className="font-medium text-emerald-600 hover:text-emerald-500">
+          <Link to="/teach/register" className="font-medium text-emerald-600 hover:text-emerald-500">
             create a new account
           </Link>
         </p>

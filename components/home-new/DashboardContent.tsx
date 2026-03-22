@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { YouTubeFeed } from './YouTubeFeed';
+import { CommunityFeed } from './CommunityFeed';
 
 interface DashboardContentProps {
     courses?: any[];
@@ -274,6 +275,9 @@ export function DashboardContent({ courses }: DashboardContentProps) {
 
             {/* YouTube Feed Layout */}
             <YouTubeFeed />
+
+            {/* Community Feed Section */}
+            <CommunityFeed />
 
             <style jsx global>{`
                 .no-scrollbar::-webkit-scrollbar {

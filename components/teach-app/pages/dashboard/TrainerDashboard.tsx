@@ -22,7 +22,7 @@ export function TrainerDashboard() {
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <Link to="/" className="flex items-center">
+          <Link to="/teach" className="flex items-center">
             <img
               src="/celoris-logo.png"
               alt="Celoris Logo"
@@ -48,38 +48,38 @@ export function TrainerDashboard() {
 
           <nav className="space-y-1">
             <NavLink 
-              to="/dashboard/trainer/overview" 
+              to="/teach/dashboard/trainer/overview" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <LayoutDashboard className="h-5 w-5" /> Overview
             </NavLink>
             <NavLink 
-              to="/dashboard/trainer/enquiries" 
+              to="/teach/dashboard/trainer/enquiries" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <MessageSquare className="h-5 w-5" /> Enquiries <span className="ml-auto bg-emerald-100 text-emerald-600 py-0.5 px-2 rounded-full text-xs">3</span>
             </NavLink>
             <NavLink 
-              to="/dashboard/trainer/students" 
+              to="/teach/dashboard/trainer/students" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Users className="h-5 w-5" /> Students
             </NavLink>
 
             <NavLink 
-              to="/dashboard/trainer/calendar" 
+              to="/teach/dashboard/trainer/calendar" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Calendar className="h-5 w-5" /> Calendar
             </NavLink>
             <NavLink 
-              to="/dashboard/trainer/earnings" 
+              to="/teach/dashboard/trainer/earnings" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <DollarSign className="h-5 w-5" /> Earnings
             </NavLink>
             <NavLink 
-              to="/dashboard/trainer/profile" 
+              to="/teach/dashboard/trainer/profile" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <UserIcon className="h-5 w-5" /> Trainer Profile

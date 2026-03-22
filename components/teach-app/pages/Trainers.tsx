@@ -199,7 +199,7 @@ export function Trainers() {
                 <div className="flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <Link to={`/trainers/${trainer.id}`} className="text-xl font-bold text-gray-900 hover:text-emerald-600 transition-colors">
+                      <Link to={`/teach/trainers/${trainer.id}`} className="text-xl font-bold text-gray-900 hover:text-emerald-600 transition-colors">
                         {trainer.name}
                       </Link>
                       <p className="text-emerald-600 font-medium">{trainer.subject}</p>
@@ -236,7 +236,7 @@ export function Trainers() {
                   </div>
 
                   <div className="mt-auto flex gap-3">
-                    <Link to={`/trainers/${trainer.id}`} className="flex-1 bg-white border border-emerald-600 text-emerald-600 text-center py-2.5 rounded-xl font-medium hover:bg-emerald-50 transition-colors">
+                    <Link to={`/teach/trainers/${trainer.id}`} className="flex-1 bg-white border border-emerald-600 text-emerald-600 text-center py-2.5 rounded-xl font-medium hover:bg-emerald-50 transition-colors">
                       View Profile
                     </Link>
                     <button className="flex-1 bg-emerald-600 text-white text-center py-2.5 rounded-xl font-medium hover:bg-emerald-700 transition-colors">
