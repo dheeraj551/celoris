@@ -137,6 +137,38 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'social-media-marketing-pro-training-static',
+      title: '🚀 Social Media Marketing Pro — Canva, AI & Automation',
+      subject: 'Marketing',
+      grade_level: 'Professional',
+      description: 'Master AI-powered content creation, Canva design, and email automation in this comprehensive 10-hour training program.',
+      target_audience: 'Entrepreneurs, Small Business Owners, Freelancers, Digital Marketers',
+      instructor_name: 'Celoris Team',
+      course_duration: '10 Hours',
+      price: 2499,
+      course_image_url: '/smm-pro-hero.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `smmp-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 75,
+        is_published: true,
+        course_topics: Array(5).fill(null).map((_, j) => ({
+          id: `smmp-m${i}-t${j}`,
+          order_in_module: j + 1,
+          title: `Topic ${j + 1}`,
+          short_description: '',
+          content_type: 'video',
+          estimated_duration: 15,
+          status: 'published',
+          is_free_preview: false
+        }))
+      }))
+    },
+    {
       id: 'bollywood-guitar-beginners-static',
       title: '🎸 BOLLYWOOD GUITAR — Complete Beginners 8-Week Course (India 2026)',
       subject: 'Music',
@@ -1122,6 +1154,7 @@ export default function CoursesDisplay({
     if (id === 'blender-3d-modelling-beginners-static') return '/learn/blender-3d-modelling-beginners'
     if (id === 'bollywood-guitar-beginners-static') return '/courses/bollywood-guitar-for-beginners'
     if (id === 'speak-with-confidence-static') return '/learn/speak-with-confidence'
+    if (id === 'social-media-marketing-pro-training-static') return '/courses/social-media-marketing-professional-training'
     if (id === 'social-media-marketing-ai-static') return '/courses/social-media-marketing-with-ai'
     return `/learn/course/${id}`
   }

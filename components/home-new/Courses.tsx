@@ -95,6 +95,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'speak-with-confidence-static': '/learn/speak-with-confidence',
                                     'professional-retouching-photoshop-static': '/courses/professional-retouching-in-photoshop',
                                     'digital-marketing-ai-static': '/courses/digital-marketing-using-ai-tools',
+                                    'social-media-marketing-pro-training-static': '/courses/social-media-marketing-professional-training',
                                     'social-media-marketing-ai-static': '/courses/social-media-marketing-with-ai',
                                     'agentic-ai-beginners-static': '/courses/agentic-ai-for-beginners',
                                     '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners'
@@ -118,6 +119,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
 
 export const staticCourses = [
     { id: 'social-media-marketing-ai-static', title: '📱 Social Media Marketing with AI — 2025 Mastery Course', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '40 Hours', price: 1999, is_featured: true, description: 'Master AI-powered content, strategy, and ads for social media. Build high-converting funnels with 10+ AI tools.', course_image_url: '/social-media-ai-hero.png' },
+    { id: 'social-media-marketing-pro-training-static', title: '🚀 SMM Professional Training — Canva, AI & Automation', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '10 Hours', price: 2499, is_featured: true, description: 'Master AI-powered content creation, Canva design, and email automation in this professional program.', course_image_url: '/smm-pro-hero.png' },
     { id: 'digital-marketing-ai-static', title: '📈 Digital Marketing using AI Tools — Mastery Course (2026)', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '12 Hours', price: 4999, is_featured: true, description: 'Master AI-powered content, SEO, social media, and ads. Build high-converting funnels with ChatGPT, Claude, and more.', course_image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800' },
     { id: 'python-ai-developers-static', title: '🐍 Python for AI Developers — Applied Python for ML & AI', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '40+ Hours', price: 19999, is_featured: true, description: 'Master the core language behind AI. From async processing to deep-level matrix manipulation with NumPy.', course_image_url: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&q=80&w=800' },
     { id: 'speak-with-confidence-static', title: '🗣️ SPEAK WITH CONFIDENCE — Spoken English for Beginners', subject: 'Soft Skills', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, description: 'Break the language barrier. Learn active listening, phonetic clarity, and conversational flow.', course_image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800' },
@@ -201,7 +203,7 @@ export const Courses: React.FC<any> = ({
             });
 
             // Ensure New Marketing courses are at the top since they are featured
-            ['digital-marketing-ai-static', 'social-media-marketing-ai-static'].forEach(targetId => {
+            ['digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);

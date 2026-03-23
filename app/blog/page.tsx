@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'metatrader-5-python-ai-trading-automation',
+      title: "MetaTrader 5 + Python: The Ultimate Guide to AI Trading Automation",
+      slug: 'metatrader-5-python-ai-trading-automation',
+      excerpt: "How to automate Forex, Stocks, and Crypto trading using MT5 and Python AI models — The ultimate guide for Indian traders in 2026.",
+      featured_image_url: '/blog-mt5-python.png',
+      author_name: 'Celoris',
+      category: 'Trading & Tech',
+      reading_time: 12,
+      published_at: '2026-03-23T12:00:00Z',
+    },
+    {
       id: 'how-to-start-teaching-online-in-india',
       title: "How to Start Teaching Online in India: The Complete Guide for New Trainers",
       slug: 'how-to-start-teaching-online-in-india',
