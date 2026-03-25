@@ -129,7 +129,7 @@ export default function TestimonialsDisplay({
               {renderStars(testimonial.rating)}
             </div>
             <span className="ml-3 text-[10px] font-black text-slate-500 uppercase tracking-widest italic leading-none">
-              SYNC STRENGTH {testimonial.rating}/5
+              customer rating {testimonial.rating}/5
             </span>
           </div>
 
@@ -326,7 +326,7 @@ export default function TestimonialsDisplay({
               <div className="flex items-center space-x-3 mb-2">
                 {renderStars(testimonial.rating)}
                 <span className="ml-2 text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none">
-                  {testimonial.rating}/5 SYNC
+                  {testimonial.rating}/5 customer rating
                 </span>
               </div>
               <blockquote className="text-slate-300 mb-3 italic">"{testimonial.testimonial_text}"</blockquote>

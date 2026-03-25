@@ -25,6 +25,15 @@ export default async function HomePage() {
     .order('created_at', { ascending: false })
     .limit(12);
 
+  // Fetch testimonials on server
+  const { data: dbTestimonials } = await supabase
+    .from('testimonials')
+    .select('*')
+    .contains('target_pages', ['homepage'])
+    .eq('is_visible', true)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
   const testCourseTitles = ['my new ai course will be here', 'agentic ai for beginners: from prompts to action', 'mastering nano banana pro'];
   const filteredCourses = (dbCourses || []).filter((course: any) =>
     !testCourseTitles.includes(course.title.toLowerCase())
@@ -32,7 +41,10 @@ export default async function HomePage() {
 
   return (
     <DashboardShell>
-      <DashboardContent courses={filteredCourses} />
+      <DashboardContent 
+        courses={filteredCourses} 
+        initialTestimonials={dbTestimonials || []}
+      />
     </DashboardShell>
   )
 }

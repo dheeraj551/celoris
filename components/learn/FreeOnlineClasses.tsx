@@ -206,7 +206,26 @@ export const FreeOnlineClasses = ({ initialCourses = [] }: { initialCourses?: an
     const selectedClasses = useMemo(() => {
         if (!initialCourses || initialCourses.length === 0) return [];
 
-        const targetDate = new Date('2026-03-11T00:00:00');
+        // Automatically calculate the next Wednesday
+        // If today is Wednesday and before 9pm, we show today. Otherwise, next Wednesday.
+        const getNextWednesday = () => {
+            const now = new Date();
+            const nextWed = new Date(now);
+            nextWed.setHours(0, 0, 0, 0);
+            
+            const day = now.getDay();
+            let daysToAdd = (3 - day + 7) % 7;
+            
+            // If it's already Wednesday but late (past 9 PM), move to next week
+            if (day === 3 && now.getHours() >= 21) {
+                daysToAdd = 7;
+            }
+            
+            nextWed.setDate(now.getDate() + daysToAdd);
+            return nextWed;
+        };
+
+        const targetDate = getNextWednesday();
         const dateSeed = targetDate.toDateString();
         let hash = 0;
         for (let i = 0; i < dateSeed.length; i++) {

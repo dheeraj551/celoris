@@ -48,7 +48,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
             .catch((error: any) => {
                 console.error("Error getting session:", error)
-                if (mounted) setLoading(false)
+                // If it's a fatal auth error (like missing refresh token), clear the state
+                if (error.message?.includes("Refresh Token Not Found") || error.code === "refresh_token_not_found") {
+                    supabase.auth.signOut().then(() => {
+                        if (mounted) {
+                            setSession(null)
+                            setUser(null)
+                            setProfile(null)
+                            setLoading(false)
+                        }
+                    })
+                } else if (mounted) {
+                    setLoading(false)
+                }
             })
 
         const {

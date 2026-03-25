@@ -15,6 +15,7 @@ import {
     BrainCircuit,
     Globe,
     Lock,
+    ShieldCheck,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -24,12 +25,14 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { YouTubeFeed } from './YouTubeFeed';
 import { CommunityFeed } from './CommunityFeed';
+import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 
 interface DashboardContentProps {
     courses?: any[];
+    initialTestimonials?: any[];
 }
 
-export function DashboardContent({ courses }: DashboardContentProps) {
+export function DashboardContent({ courses, initialTestimonials = [] }: DashboardContentProps) {
     const [activeTab, setActiveTab] = useState<'video' | 'image'>('video');
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<any[]>([]);
@@ -278,6 +281,30 @@ export function DashboardContent({ courses }: DashboardContentProps) {
 
             {/* Community Feed Section */}
             <CommunityFeed />
+            
+            {/* Testimonials Section */}
+            <section className="mt-32 mb-16 px-4">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6">
+                  <ShieldCheck size={10} /> Verified Pulse
+                </div>
+                <h2 className="text-2xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-4">Customer Feedback</h2>
+                <p className="text-slate-500 font-black uppercase tracking-widest text-[8px] italic">
+                  Direct transmissions from our synchronized node network.
+                </p>
+              </div>
+
+              <TestimonialsDisplay
+                type="all"
+                page="all"
+                limit={3}
+                layout="grid"
+                showFeatured={false}
+                showImages={false}
+                className="mb-12"
+                initialTestimonials={initialTestimonials}
+              />
+            </section>
 
             <style jsx global>{`
                 .no-scrollbar::-webkit-scrollbar {
