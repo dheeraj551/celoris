@@ -298,7 +298,7 @@ export default function ProfilePreviewPage() {
             {/* Contact Info Card */}
             <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Contact Info</CardTitle>
+                <CardTitle className="text-lg text-slate-900 font-bold">Contact Info</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
 
@@ -325,12 +325,12 @@ export default function ProfilePreviewPage() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <ShoppingBag className="w-6 h-6 text-[#1E293B]" />
-                    <CardTitle className="text-xl">Official Store</CardTitle>
+                    <ShoppingBag className="w-6 h-6 text-slate-900" />
+                    <CardTitle className="text-xl text-slate-900 font-bold">Official Store</CardTitle>
                   </div>
-                  <p className="text-sm text-gray-500">Curated by {profile.full_name}</p>
+                  <p className="text-sm text-slate-600 font-medium uppercase tracking-tight">Curated by <span className="text-emerald-600 font-black">celoris designs</span></p>
                 </div>
-                <Button variant="ghost" className="text-xs font-bold text-gray-400 group">
+                <Button variant="ghost" className="text-xs font-black text-slate-500 hover:text-slate-900 group">
                   View All <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
                 </Button>
               </CardHeader>

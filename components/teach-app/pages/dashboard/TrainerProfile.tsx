@@ -13,29 +13,69 @@ export function TrainerProfile() {
   // Form State
   const [formData, setFormData] = useState({
     full_name: profile?.full_name || '',
-    bio: profile?.description || '',
+    bio: profile?.description || profile?.bio || '',
     expertise: profile?.specialty || '',
-    experience: '8+ Years',
-    location: 'Mumbai, India',
-    website: 'https://celoris.in',
-    linkedin: '',
-    twitter: '',
+    experience: profile?.experience || '',
+    location: profile?.location || '',
+    website: profile?.website || '',
+    linkedin: profile?.linkedin || '',
+    twitter: profile?.twitter || '',
+    youtube: profile?.youtube || '',
   });
+
+  const calculateStrength = () => {
+    let score = 0;
+    const totalFields = 9;
+    if (profile?.avatar_url || profile?.profile_pic_url) score += 1;
+    if (formData.full_name) score += 1;
+    if (formData.bio) score += 1;
+    if (formData.expertise) score += 1;
+    if (formData.experience) score += 1;
+    if (formData.location) score += 1;
+    if (formData.website) score += 1;
+    if (formData.linkedin) score += 1;
+    if (formData.twitter || formData.youtube) score += 1;
+    return Math.round((score / totalFields) * 100);
+  };
+
+  const strength = calculateStrength();
 
   const handleSave = async () => {
     setLoading(true);
     setSuccess(false);
     try {
+      // Logic for both profiles and users table (checking both as types/AuthProvider vary)
       const { error } = await supabase
         .from('profiles')
         .update({
           full_name: formData.full_name,
           description: formData.bio,
           specialty: formData.expertise,
+          experience: formData.experience,
+          location: formData.location,
+          website: formData.website,
+          linkedin: formData.linkedin,
+          twitter: formData.twitter,
+          youtube: formData.youtube,
         })
         .eq('id', user?.id);
 
-      if (error) throw error;
+      // If 'profiles' doesn't exist or fails, try 'users' table (fallback)
+      if (error) {
+        const { error: userError } = await supabase
+          .from('users')
+          .update({
+            full_name: formData.full_name,
+            bio: formData.bio,
+            location: formData.location,
+            instagram_handle: formData.twitter, // Twitter as fallback to social handles
+            facebook_handle: formData.linkedin,
+          })
+          .eq('id', user?.id);
+        
+        if (userError) throw userError;
+      }
+      
       await refreshProfile();
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -105,11 +145,11 @@ export function TrainerProfile() {
                 </div>
                 <div className="flex items-center gap-3 text-gray-500">
                   <MapPin size={16} className="text-emerald-500" />
-                  <span className="text-sm font-bold">{formData.location}</span>
+                  <span className={`text-sm font-bold ${!formData.location && 'opacity-30'}`}>{formData.location || 'Location Not Set'}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-500">
                   <Globe size={16} className="text-emerald-500" />
-                  <span className="text-sm font-bold truncate">{formData.website}</span>
+                  <span className={`text-sm font-bold truncate ${!formData.website && 'opacity-30'}`}>{formData.website || 'No Portfolio/Website'}</span>
                 </div>
               </div>
             </div>
@@ -119,21 +159,26 @@ export function TrainerProfile() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16" />
             <h4 className="font-black text-xs uppercase tracking-widest text-emerald-400 mb-6 italic">Profile Strength</h4>
             <div className="flex justify-between items-end mb-2">
-              <span className="text-3xl font-black tracking-tighter italic">85%</span>
-              <span className="text-xs font-bold text-emerald-300">Great!</span>
+              <span className="text-3xl font-black tracking-tighter italic">{strength}%</span>
+              <span className="text-xs font-bold text-emerald-300">
+                {strength < 50 ? 'Getting started' : strength < 80 ? 'Good!' : 'Great!'}
+              </span>
             </div>
             <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-8">
-              <div className="h-full bg-emerald-400 w-[85%] rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+              <div 
+                className="h-full bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)] transition-all duration-500" 
+                style={{ width: `${strength}%` }}
+              />
             </div>
             <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60">
-                <CheckCircle size={12} /> Add Bio
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.bio ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.bio ? <CheckCircle size={12} /> : <Plus size={12} />} Add Bio
               </li>
-              <li className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60">
-                <CheckCircle size={12} /> Specialization
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.expertise ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.expertise ? <CheckCircle size={12} /> : <Plus size={12} />} Specialization
               </li>
-              <li className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-                <Plus size={12} className="animate-pulse" /> Add Socials
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.linkedin || formData.twitter || formData.youtube ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.linkedin || formData.twitter || formData.youtube ? <CheckCircle size={12} /> : <Plus size={12} className="animate-pulse" />} Add Socials
               </li>
             </ul>
           </div>
@@ -165,6 +210,26 @@ export function TrainerProfile() {
                   onChange={e => setFormData({...formData, experience: e.target.value})}
                   className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
                   placeholder="e.g. 5+ Years"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Location</label>
+                <input 
+                  type="text" 
+                  value={formData.location}
+                  onChange={e => setFormData({...formData, location: e.target.value})}
+                  className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
+                  placeholder="e.g. Mumbai, India"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Website / Portfolio</label>
+                <input 
+                  type="text" 
+                  value={formData.website}
+                  onChange={e => setFormData({...formData, website: e.target.value})}
+                  className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
+                  placeholder="e.g. https://celoris.in"
                 />
               </div>
               <div className="md:col-span-2 space-y-3">
@@ -206,6 +271,8 @@ export function TrainerProfile() {
                 <input 
                   type="text" 
                   placeholder="LinkedIn URL"
+                  value={formData.linkedin}
+                  onChange={e => setFormData({...formData, linkedin: e.target.value})}
                   className="w-full bg-gray-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-blue-500/50 focus:bg-white transition-all font-bold shadow-inner"
                 />
               </div>
@@ -217,6 +284,8 @@ export function TrainerProfile() {
                 <input 
                   type="text" 
                   placeholder="Twitter URL"
+                  value={formData.twitter}
+                  onChange={e => setFormData({...formData, twitter: e.target.value})}
                   className="w-full bg-gray-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-slate-900/50 focus:bg-white transition-all font-bold shadow-inner"
                 />
               </div>
@@ -228,6 +297,8 @@ export function TrainerProfile() {
                 <input 
                   type="text" 
                   placeholder="YouTube Channel"
+                  value={formData.youtube}
+                  onChange={e => setFormData({...formData, youtube: e.target.value})}
                   className="w-full bg-gray-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-red-500/50 focus:bg-white transition-all font-bold shadow-inner"
                 />
               </div>

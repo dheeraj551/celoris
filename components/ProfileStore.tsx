@@ -54,7 +54,7 @@ const MOCK_PRODUCTS: Product[] = [
         image: "https://images.unsplash.com/photo-1549062572-544a64fb0c56?auto=format&fit=crop&q=80&w=400",
         category: "Vacation Wear",
         rating: 4.9,
-        videoUrl: "https://www.youtube.com/embed/uGSdpPj6TnA?autoplay=1&mute=1&loop=1&playlist=uGSdpPj6TnA&controls=0&modestbranding=1&rel=0"
+        videoUrl: "https://www.youtube.com/embed/IpYSQZU1ruA?autoplay=1&mute=1&loop=1&playlist=IpYSQZU1ruA&controls=0&modestbranding=1&rel=0"
     },
     {
         id: "3",
@@ -63,7 +63,8 @@ const MOCK_PRODUCTS: Product[] = [
         image: "https://images.unsplash.com/photo-1572804013427-4d7ca7268217?auto=format&fit=crop&q=80&w=400",
         category: "Summer Brunch",
         rating: 4.8,
-        isBestSeller: true
+        isBestSeller: true,
+        videoUrl: "https://www.youtube.com/embed/SV0iWTyPJk0?autoplay=1&mute=1&loop=1&playlist=SV0iWTyPJk0&controls=0&modestbranding=1&rel=0"
     }
 ]
 
