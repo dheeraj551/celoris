@@ -1061,6 +1061,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'python-mega-course-static',
+      title: '🐍 Python Mega Course: Build 20 Real-World Apps & AI Agents',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Beginner to Advanced',
+      description: 'Master Python from zero to AI Developer. Build 20 real-world apps and 5 intelligent AI agents using OpenAI, LangChain, and Ollama. 80+ hours of hands-on content.',
+      target_audience: 'Beginners, Professionals, Entrepreneurs',
+      instructor_name: 'Dheeraj Kushwaha',
+      course_duration: '80+ Hours',
+      price: 19999,
+      course_image_url: '/python-mega-course-hero.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(10).fill(null).map((_, i) => ({
+        id: `pmc-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 480,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1156,6 +1179,7 @@ export default function CoursesDisplay({
     if (id === 'speak-with-confidence-static') return '/learn/speak-with-confidence'
     if (id === 'social-media-marketing-pro-training-static') return '/courses/social-media-marketing-professional-training'
     if (id === 'social-media-marketing-ai-static') return '/courses/social-media-marketing-with-ai'
+    if (id === 'python-mega-course-static') return '/courses/python-mega-course'
     return `/learn/course/${id}`
   }
 
