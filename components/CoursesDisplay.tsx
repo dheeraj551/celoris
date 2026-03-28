@@ -1084,6 +1084,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'zumba-fitness-masterclass-static',
+      title: 'Zumba Fitness Masterclass: From Basics to Trainer-Ready',
+      subject: 'Fitness',
+      grade_level: 'Beginner to Intermediate',
+      description: 'The Zumba Fitness Masterclass is a comprehensive program designed to take you from zero fitness background to a confident Zumba practitioner — and even an aspiring trainer. Led by Jatin Arora, this course blends international Zumba rhythms with Bollywood and Indian dance fitness styles.',
+      target_audience: 'Fitness beginners, Zumba enthusiasts, aspiring Zumba trainers',
+      instructor_name: 'Jatin Arora',
+      course_duration: '30 Hours',
+      price: 1999,
+      course_image_url: '/zumba-fitness-masterclass.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(6).fill(null).map((_, i) => ({
+        id: `zfm-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 300,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1179,7 +1202,7 @@ export default function CoursesDisplay({
     if (id === 'speak-with-confidence-static') return '/learn/speak-with-confidence'
     if (id === 'social-media-marketing-pro-training-static') return '/courses/social-media-marketing-professional-training'
     if (id === 'social-media-marketing-ai-static') return '/courses/social-media-marketing-with-ai'
-    if (id === 'python-mega-course-static') return '/courses/python-mega-course'
+    if (id === 'zumba-fitness-masterclass-static') return '/courses/zumba-fitness-masterclass'
     return `/learn/course/${id}`
   }
 
