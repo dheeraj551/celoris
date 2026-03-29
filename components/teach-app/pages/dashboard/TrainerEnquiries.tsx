@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Mail, Phone, Calendar, MoreVertical, CheckCircle, XCircle, Clock, RefreshCw, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Mail, Phone, Calendar, MoreVertical, CheckCircle, XCircle, Clock, RefreshCw, Loader2, ChevronLeft, ChevronRight, ClipboardCheck } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useToast } from '@/components/ui/use-toast';
+
 
 export function TrainerEnquiries() {
   const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -12,6 +15,11 @@ export function TrainerEnquiries() {
   const PAGE_SIZE = 10;
   
   const supabase = createClient();
+  const { profile } = useAuth();
+  const { toast } = useToast();
+  const credits = profile?.wallet_balance || 0;
+  const hasMinCredits = credits >= 1000;
+
 
   const fetchLeads = async (page: number) => {
     setLoading(true);
@@ -161,10 +169,53 @@ export function TrainerEnquiries() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-2 text-gray-400 hover:text-emerald-600 transition-colors" title="Mark Contacted">
+                        <button 
+                          className={`p-2 transition-colors ${hasMinCredits ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-300 cursor-not-allowed'}`}
+                          title={hasMinCredits ? "Apply to Lead" : "Upgrade to Premium to Unlock"}
+                          onClick={() => {
+                            if (!hasMinCredits) {
+                              toast({
+                                title: "Premium Access Required",
+                                description: "You need to upgrade to a premium plan to perform this action.",
+                                variant: "destructive"
+                              });
+                              return;
+                            }
+                            // Apply logic here
+                          }}
+                        >
+                          <ClipboardCheck className="h-4 w-4" />
+                        </button>
+                        <button 
+                          className={`p-2 transition-colors ${hasMinCredits ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-300 cursor-not-allowed'}`}
+                          title={hasMinCredits ? "Mark Contacted" : "Upgrade to Premium to Unlock"}
+                          onClick={() => {
+                            if (!hasMinCredits) {
+                              toast({
+                                title: "Premium Access Required",
+                                description: "You need to upgrade to a premium plan to perform this action.",
+                                variant: "destructive"
+                              });
+                              return;
+                            }
+                          }}
+                        >
                           <CheckCircle className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-gray-400 hover:text-emerald-600 transition-colors" title="Schedule Demo">
+                        <button 
+                          className={`p-2 transition-colors ${hasMinCredits ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-300 cursor-not-allowed'}`}
+                          title={hasMinCredits ? "Schedule Demo" : "Upgrade to Premium to Unlock"}
+                          onClick={() => {
+                            if (!hasMinCredits) {
+                              toast({
+                                title: "Premium Access Required",
+                                description: "You need to upgrade to a premium plan to perform this action.",
+                                variant: "destructive"
+                              });
+                              return;
+                            }
+                          }}
+                        >
                           <Calendar className="h-4 w-4" />
                         </button>
                         <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">

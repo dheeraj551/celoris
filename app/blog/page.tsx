@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'excel-formulas-every-working-professional-must-know-2026',
+      title: "Excel Formulas Every Working Professional Must Know in 2026",
+      slug: 'excel-formulas-every-working-professional-must-know-2026',
+      excerpt: "From Basic Lookups to Dynamic Arrays — Practical Excel for India's Workforce. Master VLOOKUP, XLOOKUP, Pivot Tables and more.",
+      featured_image_url: '/blog-excel-formulas-2026.png',
+      author_name: 'Celoris Team',
+      category: 'Excel Training',
+      reading_time: 15,
+      published_at: new Date().toISOString(),
+    },
+    {
       id: 'metatrader-5-python-ai-trading-automation',
       title: "MetaTrader 5 + Python: The Ultimate Guide to AI Trading Automation",
       slug: 'metatrader-5-python-ai-trading-automation',
