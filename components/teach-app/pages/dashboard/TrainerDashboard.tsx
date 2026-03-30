@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Calendar, MessageSquare, Settings, LogOut, Users, DollarSign, LayoutDashboard, User as UserIcon } from 'lucide-react';
+import { BookOpen, Calendar, MessageSquare, Mail, Settings, LogOut, Users, DollarSign, LayoutDashboard, User as UserIcon } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 export function TrainerDashboard() {
@@ -13,6 +13,7 @@ export function TrainerDashboard() {
     if (location.pathname.includes('/students')) return 'Students';
     if (location.pathname.includes('/calendar')) return 'Calendar';
     if (location.pathname.includes('/earnings')) return 'Earnings';
+    if (location.pathname.includes('/inbox')) return 'Inbox';
     if (location.pathname.includes('/profile')) return 'Trainer Profile';
     return 'Dashboard Overview';
   };
@@ -58,6 +59,12 @@ export function TrainerDashboard() {
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <MessageSquare className="h-5 w-5" /> Enquiries <span className="ml-auto bg-emerald-100 text-emerald-600 py-0.5 px-2 rounded-full text-xs">3</span>
+            </NavLink>
+            <NavLink 
+              to="/teach/dashboard/trainer/inbox" 
+              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Mail className="h-5 w-5" /> Inbox
             </NavLink>
             <NavLink 
               to="/teach/dashboard/trainer/students" 

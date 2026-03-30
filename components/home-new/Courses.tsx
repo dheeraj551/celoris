@@ -100,7 +100,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'agentic-ai-beginners-static': '/courses/agentic-ai-for-beginners',
                                     '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
                                     'python-mega-course-static': '/courses/python-mega-course',
-                                    'zumba-fitness-masterclass-static': '/courses/zumba-fitness-masterclass'
+                                    'zumba-fitness-masterclass-static': '/courses/zumba-fitness-masterclass',
+                                    'spoken-english-sonia-sharma-static': '/learn/spoken-english-communication'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -134,7 +135,8 @@ export const staticCourses = [
     { id: 'vibe-coding-mastery-static', title: 'AI Coding for Beginners: Simple Development Workflows', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '4-6 Weeks', price: 19999, is_featured: true, description: 'Modern development workflows using AI assistants to build products faster than ever.', course_image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800' },
     { id: 'agentic-ai-beginners-static', title: '🤖 Agentic AI for Beginners: From Prompts to Action', subject: 'Computer Science', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 1500, is_featured: true, description: 'Learn how AI agents think, plan, and act. Build your first AI agent using no-code tools.', course_image_url: '/agentic-ai-beginners-cover.png' },
     { id: 'python-mega-course-static', title: '🐍 Python Mega Course — Build 20 Real-World Apps & AI Agents', subject: 'Artificial Intelligence', instructor_name: 'Dheeraj', course_duration: '80+ Hours', price: 19999, is_featured: true, description: 'From Zero to AI Developer. Build 20 apps and 5 AI agents using OpenAI, LangChain, and Ollama.', course_image_url: '/python-mega-course-hero.png' },
-    { id: 'zumba-fitness-masterclass-static', title: '💃 Zumba Fitness Masterclass — From Basics to Trainer-Ready', subject: 'Fitness', instructor_name: 'Jatin Arora', course_duration: '30 Hours', price: 1999, is_featured: true, description: 'Master Zumba rhythms and Bollywood fusion with Jatin Arora. 30 hours of high-energy training to take you from beginner to trainer-ready.', course_image_url: '/zumba-fitness-masterclass.png' }
+    { id: 'zumba-fitness-masterclass-static', title: '💃 Zumba Fitness Masterclass — From Basics to Trainer-Ready', subject: 'Fitness', instructor_name: 'Jatin Arora', course_duration: '30 Hours', price: 1999, is_featured: true, description: 'Master Zumba rhythms and Bollywood fusion with Jatin Arora. 30 hours of high-energy training to take you from beginner to trainer-ready.', course_image_url: '/zumba-fitness-masterclass.png' },
+    { id: 'spoken-english-sonia-sharma-static', title: '🗣️ Spoken English & Communication — Masterclass with Sonia Sharma', subject: 'Soft Skills', instructor_name: 'Sonia Sharma', course_duration: '6 Weeks', price: 1999, is_featured: true, description: 'Master the art of confident English communication with Sonia Sharma. Practical, real-life curriculum focusing on actual conversations.', course_image_url: '/spoken-english-sonia-sharma-hero.png' }
 ];
 
 export const Courses: React.FC<any> = ({
@@ -156,13 +158,23 @@ export const Courses: React.FC<any> = ({
             if (initialCourses && initialCourses.length > 0) {
                 dbPool = initialCourses;
             } else {
-                setLoading(true);
-                const supabase = createClient();
-                const { data } = await supabase
-                    .from('courses')
-                    .select('*')
-                    .eq('is_published', true);
-                dbPool = data || [];
+                try {
+                    const supabase = createClient();
+                    const { data, error: fetchError } = await supabase
+                        .from('courses')
+                        .select('*')
+                        .eq('is_published', true);
+                    
+                    if (fetchError) {
+                        console.error('Error fetching courses:', fetchError);
+                        dbPool = [];
+                    } else {
+                        dbPool = data || [];
+                    }
+                } catch (err) {
+                    console.error('Failed to initialize Supabase or fetch courses:', err);
+                    dbPool = [];
+                }
             }
 
             const excludedTitles = [
@@ -207,7 +219,7 @@ export const Courses: React.FC<any> = ({
             });
 
             // Ensure New Marketing courses are at the top since they are featured
-            ['social-media-marketing-ai-static', 'social-media-marketing-pro-training-static', 'digital-marketing-ai-static', 'python-mega-course-static', 'zumba-fitness-masterclass-static'].forEach(targetId => {
+            ['social-media-marketing-ai-static', 'social-media-marketing-pro-training-static', 'digital-marketing-ai-static', 'python-mega-course-static', 'zumba-fitness-masterclass-static', 'spoken-english-sonia-sharma-static'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);

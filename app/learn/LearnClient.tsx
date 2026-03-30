@@ -25,28 +25,33 @@ function RoomPresence({ channelName, hasAiAgent }: { channelName: string; hasAiA
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase.channel(channelName);
+    let channel: any = null;
+    try {
+      const supabase = createClient();
+      channel = supabase.channel(channelName);
 
-    const updatePresence = () => {
-      const state = channel.presenceState();
-      const presences = Object.values(state).flat() as any[];
-      const uniqueUsers = presences
-        .filter(Boolean)
-        .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+      const updatePresence = () => {
+        const state = channel.presenceState();
+        const presences = Object.values(state).flat() as any[];
+        const uniqueUsers = presences
+          .filter(Boolean)
+          .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
 
-      setUsers(uniqueUsers.slice(0, 3));
-      setCount(uniqueUsers.length);
-    };
+        setUsers(uniqueUsers.slice(0, 3));
+        setCount(uniqueUsers.length);
+      };
 
-    channel
-      .on('presence', { event: 'sync' }, updatePresence)
-      .on('presence', { event: 'join' }, updatePresence)
-      .on('presence', { event: 'leave' }, updatePresence)
-      .subscribe();
+      channel
+        .on('presence', { event: 'sync' }, updatePresence)
+        .on('presence', { event: 'join' }, updatePresence)
+        .on('presence', { event: 'leave' }, updatePresence)
+        .subscribe();
+    } catch (err) {
+      console.error('Failed to initialize RoomPresence subscription:', err);
+    }
 
     return () => {
-      channel.unsubscribe();
+      if (channel) channel.unsubscribe();
     };
   }, [channelName]);
 
