@@ -208,7 +208,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
           <Courses
             title="Most Popular Free and Paid Courses"
             description="Deep-dive into our most sought-after learning experiences"
-            limit={4}
+            limit={6}
             featured={true}
             initialCourses={initialCourses}
           />

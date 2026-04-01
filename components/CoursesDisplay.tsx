@@ -1107,6 +1107,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'essential-python-ai-static',
+      title: 'Essential Python for AI Development',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Beginner to Intermediate',
+      description: 'A practical 10-hour curriculum taking you from Python basics to building real AI-powered applications. Master the fundamentals, data libraries, and AI APIs.',
+      target_audience: 'Beginners, Aspiring AI Developers, Students',
+      instructor_name: 'Celoris Team',
+      course_duration: '10 Hours',
+      price: 9999,
+      course_image_url: '/essential-python-ai-cover.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(7).fill(null).map((_, i) => ({
+        id: `epai-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: i === 6 ? 60 : 90,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1168,6 +1191,7 @@ export default function CoursesDisplay({
   }
 
   const getCourseUrl = (id: string) => {
+    if (id === 'essential-python-ai-static') return '/courses/essential-python-for-ai-development'
     if (id === 'vibe-coding-mastery-static') return '/courses/vibe-coding-mastery'
     if (id === 'class-12-physics-static') return '/courses/cbse-class-12-physics-complete-course'
     if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'

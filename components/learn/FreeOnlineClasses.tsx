@@ -110,7 +110,8 @@ const ClassCard = ({ item }: { item: ClassItem }) => {
             'bollywood-zumba-dance-static': '/courses/bollywood-zumba-dance-for-beginners',
             'python-ai-developers-static': '/courses/python-for-ai-developers',
             'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
-            'speak-with-confidence-static': '/learn/speak-with-confidence'
+            'speak-with-confidence-static': '/learn/speak-with-confidence',
+            'essential-python-ai-static': '/courses/essential-python-for-ai-development'
         };
         return staticRoutes[item.id] || `/learn/course/${item.id}`;
     })();

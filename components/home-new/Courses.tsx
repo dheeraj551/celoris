@@ -101,7 +101,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
                                     'python-mega-course-static': '/courses/python-mega-course',
                                     'zumba-fitness-masterclass-static': '/courses/zumba-fitness-masterclass',
-                                    'spoken-english-sonia-sharma-static': '/learn/spoken-english-communication'
+                                    'spoken-english-sonia-sharma-static': '/learn/spoken-english-communication',
+                                    'essential-python-ai-static': '/courses/essential-python-for-ai-development'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -136,7 +137,8 @@ export const staticCourses = [
     { id: 'agentic-ai-beginners-static', title: '🤖 Agentic AI for Beginners: From Prompts to Action', subject: 'Computer Science', instructor_name: 'Celoris Team', course_duration: '6 Weeks', price: 1500, is_featured: true, description: 'Learn how AI agents think, plan, and act. Build your first AI agent using no-code tools.', course_image_url: '/agentic-ai-beginners-cover.png' },
     { id: 'python-mega-course-static', title: '🐍 Python Mega Course — Build 20 Real-World Apps & AI Agents', subject: 'Artificial Intelligence', instructor_name: 'Dheeraj', course_duration: '80+ Hours', price: 19999, is_featured: true, description: 'From Zero to AI Developer. Build 20 apps and 5 AI agents using OpenAI, LangChain, and Ollama.', course_image_url: '/python-mega-course-hero.png' },
     { id: 'zumba-fitness-masterclass-static', title: '💃 Zumba Fitness Masterclass — From Basics to Trainer-Ready', subject: 'Fitness', instructor_name: 'Jatin Arora', course_duration: '30 Hours', price: 1999, is_featured: true, description: 'Master Zumba rhythms and Bollywood fusion with Jatin Arora. 30 hours of high-energy training to take you from beginner to trainer-ready.', course_image_url: '/zumba-fitness-masterclass.png' },
-    { id: 'spoken-english-sonia-sharma-static', title: '🗣️ Spoken English & Communication — Masterclass with Sonia Sharma', subject: 'Soft Skills', instructor_name: 'Sonia Sharma', course_duration: '6 Weeks', price: 1999, is_featured: true, description: 'Master the art of confident English communication with Sonia Sharma. Practical, real-life curriculum focusing on actual conversations.', course_image_url: '/spoken-english-sonia-sharma-hero.png' }
+    { id: 'spoken-english-sonia-sharma-static', title: '🗣️ Spoken English & Communication — Masterclass with Sonia Sharma', subject: 'Soft Skills', instructor_name: 'Sonia Sharma', course_duration: '6 Weeks', price: 1999, is_featured: true, description: 'Master the art of confident English communication with Sonia Sharma. Practical, real-life curriculum focusing on actual conversations.', course_image_url: '/spoken-english-sonia-sharma-hero.png' },
+    { id: 'essential-python-ai-static', title: '🐍 Essential Python for AI Development — 10-Hour Masterclass', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '10 Hours', price: 9999, is_featured: true, description: 'A practical 10-hour curriculum taking you from Python basics to building real AI-powered applications. Master the fundamentals and AI APIs.', course_image_url: '/essential-python-ai-cover.png' }
 ];
 
 export const Courses: React.FC<any> = ({
@@ -218,8 +220,8 @@ export const Courses: React.FC<any> = ({
                 return random(seedA) - random(seedB);
             });
 
-            // Ensure New Marketing courses are at the top since they are featured
-            ['social-media-marketing-ai-static', 'social-media-marketing-pro-training-static', 'digital-marketing-ai-static', 'python-mega-course-static', 'zumba-fitness-masterclass-static', 'spoken-english-sonia-sharma-static'].forEach(targetId => {
+            // Ensure priority courses are at the top (unshifting in reverse order for final priority)
+            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);
