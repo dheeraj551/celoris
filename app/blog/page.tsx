@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'yoga-for-beginners-complete-guide',
+      title: "Yoga for beginners: your complete guide to starting a practice that actually sticks",
+      slug: 'yoga-for-beginners-complete-guide',
+      excerpt: "Everything you need to confidently roll out your mat for the first time — from essential poses to building a home routine.",
+      featured_image_url: '/blog-yoga-beginners-guide.png',
+      author_name: 'Kushum Singh',
+      category: 'Wellness · Yoga',
+      reading_time: 8,
+      published_at: '2026-04-02T12:00:00Z',
+    },
+    {
       id: 'excel-formulas-every-working-professional-must-know-2026',
       title: "Excel Formulas Every Working Professional Must Know in 2026",
       slug: 'excel-formulas-every-working-professional-must-know-2026',
@@ -36,7 +47,7 @@ export default async function BlogPage({
       author_name: 'Celoris Team',
       category: 'Excel Training',
       reading_time: 15,
-      published_at: new Date().toISOString(),
+      published_at: '2026-03-29T12:00:00Z',
     },
     {
       id: 'metatrader-5-python-ai-trading-automation',
