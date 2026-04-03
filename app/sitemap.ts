@@ -78,6 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/learn',
         '/learn/courses',
         '/blog',
+        '/blog/alok-kumar-digital-marketing-journey',
         '/blog/yoga-for-beginners-complete-guide',
         '/blog/online-teaching-jobs-delhi-2026',
         '/blog/online-dance-classes-india-2026-find-the-best-dance-classes-near-you',

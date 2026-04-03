@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'alok-kumar-digital-marketing-journey',
+      title: "From Zero to Campaign Hero: How Alok Kumar's 12-Year Digital Marketing Journey Can Transform Your Career",
+      slug: 'alok-kumar-digital-marketing-journey',
+      excerpt: "Meet Alok Kumar, a digital marketing veteran with 12 years of experience and 500+ students trained. Learn how his expertise can help you master Google Ads, SEO, and Meta Ads.",
+      featured_image_url: '/alok-kumar-digital-marketing-spotlight.png',
+      author_name: 'Celoris Editorial Team',
+      category: 'Trainer Spotlight',
+      reading_time: 8,
+      published_at: '2026-04-03T12:00:00Z',
+    },
+    {
       id: 'yoga-for-beginners-complete-guide',
       title: "Yoga for beginners: your complete guide to starting a practice that actually sticks",
       slug: 'yoga-for-beginners-complete-guide',
