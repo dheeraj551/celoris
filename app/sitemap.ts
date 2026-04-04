@@ -78,6 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/learn',
         '/learn/courses',
         '/blog',
+        '/blog/how-to-use-canva-for-the-first-time-beginner-guide',
         '/blog/alok-kumar-digital-marketing-journey',
         '/blog/yoga-for-beginners-complete-guide',
         '/blog/online-teaching-jobs-delhi-2026',

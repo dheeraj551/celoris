@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'how-to-use-canva-for-the-first-time-beginner-guide',
+      title: "CANVA MASTERY SERIES — MODULE 1: How to Use Canva for the First Time",
+      slug: 'how-to-use-canva-for-the-first-time-beginner-guide',
+      excerpt: "Everything you need to know to navigate Canva confidently — from the dashboard to your very first design. Complete beginner's guide.",
+      featured_image_url: '/blog-canva-beginner-guide.png',
+      author_name: 'Celoris Editorial',
+      category: 'Design • Canva',
+      reading_time: 8,
+      published_at: '2026-04-04T12:00:00Z',
+    },
+    {
       id: 'alok-kumar-digital-marketing-journey',
       title: "From Zero to Campaign Hero: How Alok Kumar's 12-Year Digital Marketing Journey Can Transform Your Career",
       slug: 'alok-kumar-digital-marketing-journey',
