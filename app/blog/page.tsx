@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'how-to-start-a-dropshipping-business-in-2026',
+      title: "How to Start a Dropshipping Business in 2026: A Complete Step-by-Step Guide",
+      slug: 'how-to-start-a-dropshipping-business-in-2026',
+      excerpt: "Launch your e-commerce journey in 2026 without a warehouse or inventory. Everything from picking a niche to driving traffic and scaling to your first lakh.",
+      featured_image_url: '/blog-dropshipping-guide-2026.png',
+      author_name: 'Celoris Editorial',
+      category: 'Business • E-Commerce',
+      reading_time: 15,
+      published_at: '2026-04-08T12:00:00Z',
+    },
+    {
       id: 'how-to-use-canva-for-the-first-time-beginner-guide',
       title: "CANVA MASTERY SERIES — MODULE 1: How to Use Canva for the First Time",
       slug: 'how-to-use-canva-for-the-first-time-beginner-guide',
