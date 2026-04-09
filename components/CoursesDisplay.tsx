@@ -1130,6 +1130,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'master-premiere-pro-ai-static',
+      title: 'How to Master Adobe Premiere Pro with AI in 2026',
+      subject: 'Design',
+      grade_level: 'Beginner to Intermediate',
+      description: 'Master the future of video editing. Learn AI-powered auto-cuts, smart trimming, AI B-roll generation, and automated workflows in Premiere Pro 2026.',
+      target_audience: 'Content Creators, YouTubers, Freelancers, Marketers',
+      instructor_name: 'Celoris Team',
+      course_duration: '2 Weeks (30 Hours)',
+      price: 14999,
+      course_image_url: '/premiere-pro-ai-hero.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(10).fill(null).map((_, i) => ({
+        id: `mppai-m${i}`,
+        module_number: i + 1,
+        title: `Day ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1192,6 +1215,7 @@ export default function CoursesDisplay({
 
   const getCourseUrl = (id: string) => {
     if (id === 'essential-python-ai-static') return '/courses/essential-python-for-ai-development'
+    if (id === 'master-premiere-pro-ai-static') return '/courses/master-premiere-pro-ai'
     if (id === 'vibe-coding-mastery-static') return '/courses/vibe-coding-mastery'
     if (id === 'class-12-physics-static') return '/courses/cbse-class-12-physics-complete-course'
     if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'

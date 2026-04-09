@@ -111,7 +111,8 @@ const ClassCard = ({ item }: { item: ClassItem }) => {
             'python-ai-developers-static': '/courses/python-for-ai-developers',
             'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
             'speak-with-confidence-static': '/learn/speak-with-confidence',
-            'essential-python-ai-static': '/courses/essential-python-for-ai-development'
+            'essential-python-ai-static': '/courses/essential-python-for-ai-development',
+            'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai'
         };
         return staticRoutes[item.id] || `/learn/course/${item.id}`;
     })();

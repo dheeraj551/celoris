@@ -132,7 +132,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/courses/essential-python-for-ai-development',
         '/courses/python-mega-course',
         '/courses/zumba-fitness-masterclass',
-        '/courses/bollywood-guitar-for-beginners'
+        '/courses/bollywood-guitar-for-beginners',
+        '/courses/master-premiere-pro-ai'
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
