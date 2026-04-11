@@ -17,7 +17,7 @@ function LiveBoothManager({ trainerId, trainerName }: { trainerId: string, train
     const channel = supabase.channel(channelId);
 
     channel
-      .on('broadcast', { event: 'message' }, ({ payload }) => {
+      .on('broadcast', { event: 'message' }, ({ payload }: any) => {
         setMessages((prev) => [...prev, payload]);
       })
       .subscribe();
