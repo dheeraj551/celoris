@@ -89,25 +89,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchProfile = async (userId: string) => {
         try {
-            const { data } = await supabase
+            // Fetch from 'users' table (basic sync)
+            const { data: userData } = await supabase
                 .from("users")
                 .select("*")
                 .eq("id", userId)
                 .maybeSingle()
 
-            if (data) {
-                const profileAny = data as any
-                if (profileAny.profile_pic_url) {
-                    if (!profileAny.profile_pic_url.startsWith('http')) {
+            // Fetch from 'profiles' table (detailed info)
+            const { data: profileData } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", userId)
+                .maybeSingle()
+
+            // Merge data (profiles takes precedence for shared fields like full_name)
+            if (userData || profileData) {
+                const mergedProfile = { ...userData, ...profileData }
+                
+                if (mergedProfile.profile_pic_url || mergedProfile.avatar_url) {
+                    const picPath = mergedProfile.profile_pic_url || mergedProfile.avatar_url
+                    if (picPath && !picPath.startsWith('http')) {
                         const { data: publicUrlData } = supabase.storage
                             .from('avatars')
-                            .getPublicUrl(profileAny.profile_pic_url)
-                        profileAny.profile_pic_url = publicUrlData.publicUrl
+                            .getPublicUrl(picPath)
+                        mergedProfile.profile_pic_url = publicUrlData.publicUrl
                     }
                     // Also maintain avatar_url for backward compatibility
-                    profileAny.avatar_url = profileAny.profile_pic_url
+                    mergedProfile.avatar_url = mergedProfile.profile_pic_url
                 }
-                setProfile(profileAny)
+                setProfile(mergedProfile)
             }
         } catch (e) {
             console.error("Error loading profile", e)

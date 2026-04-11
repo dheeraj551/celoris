@@ -34,16 +34,36 @@ export default async function HomePage() {
     .order('created_at', { ascending: false })
     .limit(3);
 
+  // Enrich testimonials with specialties from profiles table
+  const enrichedTestimonials = dbTestimonials ? await Promise.all(dbTestimonials.map(async (t: any) => {
+    if (t.client_title === 'USER' || t.client_title === 'ADMIN' || !t.client_title || t.client_title === 'Member') {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('specialty')
+          .eq('full_name', t.client_name)
+          .maybeSingle();
+        
+        if (profile?.specialty) {
+          return { ...t, client_title: profile.specialty };
+        }
+      } catch (err) {
+        console.error(`Error enriching testimonial for ${t.client_name}:`, err);
+      }
+    }
+    return t;
+  })) : [];
+
   const testCourseTitles = ['my new ai course will be here', 'agentic ai for beginners: from prompts to action', 'mastering nano banana pro'];
   const filteredCourses = (dbCourses || []).filter((course: any) =>
-    !testCourseTitles.includes(course.title.toLowerCase())
+    course.title && !testCourseTitles.includes(course.title.toLowerCase())
   );
 
   return (
     <DashboardShell>
       <DashboardContent 
         courses={filteredCourses} 
-        initialTestimonials={dbTestimonials || []}
+        initialTestimonials={enrichedTestimonials}
       />
     </DashboardShell>
   )

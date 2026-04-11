@@ -3,16 +3,19 @@
 import { useState } from 'react'
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Mail, Phone, Loader2, Sparkles, Send, MessageSquare } from "lucide-react"
+import { ArrowLeft, Mail, Phone, Loader2, Sparkles, Send, MessageSquare, Star, Quote } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { useReCaptcha } from "@/components/ReCaptchaProvider"
 import { motion, AnimatePresence } from 'framer-motion'
 import { PageWrapper } from '@/components/PageWrapper'
 import { cn } from '@/lib/utils'
+import TestimonialsDisplay from '@/components/TestimonialsDisplay'
+import { useAuth } from '@/components/providers/AuthProvider'
 
 export default function ContactPage() {
   const { toast } = useToast()
   const { executeRecaptcha, isReady } = useReCaptcha()
+  const { user, profile } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +24,14 @@ export default function ContactPage() {
     message: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const [feedbackForm, setFeedbackForm] = useState({
+    name: '',
+    role: '',
+    rating: 5,
+    message: ''
+  })
+  const [submittingFeedback, setSubmittingFeedback] = useState(false)
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -70,6 +81,42 @@ export default function ContactPage() {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" })
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!feedbackForm.message.trim()) {
+      toast({ title: "Feedback Incomplete", description: "Please enter your feedback message.", variant: "destructive" })
+      return
+    }
+    const clientName = profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'Anonymous'
+    if (!clientName || clientName === 'Anonymous') {
+       toast({ title: "Authentication Required", description: "Please sign in to leave feedback.", variant: "destructive" })
+       return
+    }
+    setSubmittingFeedback(true)
+    try {
+      const response = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_name: clientName,
+          client_avatar_url: profile?.profile_pic_url || '',
+          client_title: profile?.specialty || profile?.role || 'Member',
+          testimonial_text: feedbackForm.message,
+          rating: feedbackForm.rating,
+          testimonial_type: 'general'
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to submit')
+      toast({ title: "Feedback Received!", description: "Thank you for your valuable input.", variant: "default" })
+      setFeedbackForm({ name: '', role: '', rating: 5, message: '' })
+    } catch (error) {
+      toast({ title: "Submission Error", description: "We couldn't process your feedback. Please try again.", variant: "destructive" })
+    } finally {
+      setSubmittingFeedback(false)
     }
   }
 
@@ -333,6 +380,146 @@ export default function ContactPage() {
             </div>
           </motion.div>
         </div>
+
+        {/* Feedback Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-32 pt-20 border-t border-white/5"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-6 leading-tight">
+                Share Your <span className="text-emerald-500">Experience.</span>
+              </h2>
+              <p className="text-lg text-slate-400 font-bold uppercase tracking-wide leading-relaxed italic mb-10">
+                How was your journey with us? Your feedback helps us <br className="hidden md:block" />
+                refine the future of creative ecosystems.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
+                  <Quote className="text-emerald-500 mb-4" size={32} />
+                  <p className="text-xs text-slate-500 uppercase font-black italic tracking-widest leading-relaxed">
+                    "We value every voice. Your review will be shared with the community once verified."
+                  </p>
+                </div>
+                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
+                  <Star className="text-teal-500 mb-4" size={32} />
+                  <p className="text-xs text-slate-500 uppercase font-black italic tracking-widest leading-relaxed">
+                    "Your rating helps potential creators find the right path and resources."
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#0b111e]/60 border border-white/5 rounded-[3rem] p-8 md:p-12 backdrop-blur-3xl">
+              <form onSubmit={handleFeedbackSubmit} className="space-y-6">
+                <div className="flex items-center gap-2 mb-8">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFeedbackForm(prev => ({ ...prev, rating: star }))}
+                      className="transition-transform hover:scale-110"
+                    >
+                      <Star 
+                        size={32} 
+                        className={cn(
+                          "transition-colors",
+                          star <= feedbackForm.rating ? "fill-emerald-500 text-emerald-500" : "text-white/10"
+                        )}
+                      />
+                    </button>
+                  ))}
+                  <span className="ml-4 text-xs font-black text-emerald-500 uppercase italic tracking-widest">
+                    {feedbackForm.rating}/5 Rating
+                  </span>
+                </div>
+
+                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full border border-emerald-500/20 overflow-hidden bg-emerald-500/10 flex items-center justify-center">
+                      {profile?.profile_pic_url ? (
+                        <img src={profile.profile_pic_url} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <Sparkles className="text-emerald-500/40" size={20} />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic leading-none mb-1">Authenticated As</p>
+                      <h4 className="text-white font-black uppercase italic tracking-tighter">
+                        {profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'Guest Node'}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">Your Feedback</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={feedbackForm.message}
+                    onChange={(e) => setFeedbackForm(prev => ({ ...prev, message: e.target.value }))}
+                    placeholder="Share your experience with us..."
+                    className="w-full bg-white/5 border border-white/10 rounded-[2rem] px-6 py-6 text-white text-sm font-bold placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all resize-none"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={submittingFeedback}
+                  className="w-full h-16 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-[2rem] transition-all group relative overflow-hidden"
+                >
+                  <AnimatePresence mode="wait">
+                    {submittingFeedback ? (
+                      <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 uppercase font-black italic tracking-widest">
+                        <Loader2 className="animate-spin" size={18} /> Submitting
+                      </motion.div>
+                    ) : (
+                      <motion.div key="text" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 uppercase font-black italic tracking-widest group-hover:text-emerald-500 transition-colors">
+                        Submit Feedback <Sparkles size={18} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </form>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Community Voices */}
+        <motion.section 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-32 pb-24"
+        >
+          <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-16 px-2">
+            <div>
+              <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-4">
+                Community <span className="text-emerald-500">Voices.</span>
+              </h2>
+              <p className="text-slate-500 font-black uppercase tracking-widest text-xs italic">
+                Real experiences from our global creative network.
+              </p>
+            </div>
+            <div className="hidden md:flex gap-2">
+              <div className="w-12 h-1 bg-emerald-500 rounded-full" />
+              <div className="w-4 h-1 bg-emerald-500/20 rounded-full" />
+              <div className="w-2 h-1 bg-emerald-500/10 rounded-full" />
+            </div>
+          </div>
+          
+          <TestimonialsDisplay 
+            page="contact" 
+            limit={3} 
+            layout="grid" 
+            showFeatured={false}
+          />
+        </motion.section>
       </PageWrapper>
     </div>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Video,
     Image as ImageIcon,
@@ -26,6 +26,65 @@ import Link from 'next/link';
 import { YouTubeFeed } from './YouTubeFeed';
 import { CommunityFeed } from './CommunityFeed';
 import TestimonialsDisplay from "@/components/TestimonialsDisplay";
+import { createClient } from "@/lib/supabase-client";
+
+function OnlineTrainersMarquee() {
+    const [trainers, setTrainers] = useState<any[]>([]);
+
+    useEffect(() => {
+        let channel: any = null;
+        try {
+            const supabase = createClient();
+            channel = supabase.channel('booth:online_trainers');
+
+            const updatePresence = () => {
+                const state = channel.presenceState();
+                const presences = Object.values(state).flat() as any[];
+                const uniqueTrainers = presences
+                    .filter(Boolean)
+                    .filter((v, i, a) => a.findIndex(t => t.user_id === v.user_id) === i);
+
+                setTrainers(uniqueTrainers);
+            };
+
+            channel
+                .on('presence', { event: 'sync' }, updatePresence)
+                .on('presence', { event: 'join' }, updatePresence)
+                .on('presence', { event: 'leave' }, updatePresence)
+                .subscribe();
+        } catch (err) {
+            console.error('Failed to initialize OnlineTrainers Marquee:', err);
+        }
+
+        return () => {
+            if (channel) channel.unsubscribe();
+        };
+    }, []);
+
+    if (trainers.length === 0) return null;
+
+    // Duplicate list for perfect loop
+    const displayList = [...trainers, ...trainers];
+
+    return (
+        <div className="flex w-max gap-4 animate-scrollList hover:[animation-play-state:paused] pointer-events-auto items-center">
+            {displayList.map((trainer, idx) => (
+                <Link key={idx} href="/learn" className="inline-flex items-center gap-3 bg-white/5 border border-white/5 rounded-full pr-5 pl-2 py-2 hover:bg-white/10 hover:border-emerald-500/30 transition-all cursor-pointer">
+                    <div className="relative">
+                        <div className="w-10 h-10 rounded-full border-[3px] border-[#0d1321] overflow-hidden bg-neutral-800 relative z-10 shadow-lg shadow-emerald-500/10">
+                            <img src={trainer.avatar} alt={trainer.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0d1321] z-20 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                    </div>
+                    <div className="flex flex-col justify-center">
+                        <span className="text-sm font-bold text-white leading-none mb-1 tracking-tight">{trainer.name.split(' ')[0]} {trainer.name.split(' ')[1]?.[0]}.</span>
+                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none">{trainer.role}</span>
+                    </div>
+                </Link>
+            ))}
+        </div>
+    );
+}
 
 interface DashboardContentProps {
     courses?: any[];
@@ -276,6 +335,33 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 </div>
             </div>
 
+            {/* Live Trainers Teaser */}
+            <div className="mb-12 relative overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-[#0d1321]/80 backdrop-blur-md p-6 flex flex-col md:flex-row items-center gap-6 group shadow-2xl">
+                <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-[#0d1321] to-transparent z-10 pointer-events-none" />
+                <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-[#0d1321] to-transparent z-10 pointer-events-none" />
+                
+                <div className="flex-shrink-0 z-20 text-center md:text-left md:pr-4 md:border-r border-white/5 relative">
+                    <div className="absolute top-1/2 -left-10 w-24 h-24 bg-emerald-500/20 blur-[30px] rounded-full -translate-y-1/2 pointer-events-none" />
+                    <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-1">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                        Live Network
+                    </div>
+                    <span className="text-xl font-bold text-white block italic uppercase leading-tight tracking-tight relative z-10">Experts Online<br/>Right Now</span>
+                </div>
+                
+                <div className="flex-1 overflow-hidden relative z-0 flex items-center w-full min-w-0" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
+                     <OnlineTrainersMarquee />
+                </div>
+
+                <div className="flex-shrink-0 z-20 md:pl-4 md:border-l border-white/5">
+                    <Link href="/learn">
+                        <Button className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full px-8 h-12 font-bold text-[11px] uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] group-hover:scale-105 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex gap-2">
+                            <Zap size={14} /> Talk to them
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+
             {/* YouTube Feed Layout */}
             <YouTubeFeed />
 
@@ -300,7 +386,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 limit={3}
                 layout="grid"
                 showFeatured={false}
-                showImages={false}
+                showImages={true}
                 className="mb-12"
                 initialTestimonials={initialTestimonials}
               />
@@ -327,6 +413,13 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: rgba(255, 255, 255, 0.2);
+                }
+                @keyframes scrollList {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .animate-scrollList {
+                    animation: scrollList 30s linear infinite;
                 }
             `}</style>
 

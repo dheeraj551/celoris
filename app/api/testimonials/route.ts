@@ -71,9 +71,6 @@ export async function GET(request: NextRequest) {
         .select('*')
 
       // Apply filters
-      // Filter by visibility (this is enforced by RLS but we include it explicitly)
-      // Note: is_visible=true is enforced by RLS policy, so we don't need to filter
-
       // Filter by type if specified
       if (type && type !== 'all') {
         query = query.eq('testimonial_type', type)
@@ -107,11 +104,31 @@ export async function GET(request: NextRequest) {
           )
         )
 
-        // Return unique testimonials
+        // Enrich testimonials with titles from profiles if they have generic ones
+        const enrichedTestimonials = await Promise.all(uniqueTestimonials.map(async (t: any) => {
+          if (t.client_title === 'USER' || t.client_title === 'ADMIN' || !t.client_title || t.client_title === 'Member') {
+            try {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('specialty')
+                .eq('full_name', t.client_name)
+                .maybeSingle()
+              
+              if (profile?.specialty) {
+                return { ...t, client_title: profile.specialty }
+              }
+            } catch (err) {
+              console.error(`Error enriching testimonial for ${t.client_name}:`, err)
+            }
+          }
+          return t
+        }))
+
+        // Return unique enriched testimonials
         return NextResponse.json({
           success: true,
-          data: uniqueTestimonials.slice(0, limit),
-          count: uniqueTestimonials.length,
+          data: enrichedTestimonials.slice(0, limit),
+          count: enrichedTestimonials.length,
           source: 'database'
         })
       }
@@ -147,13 +164,76 @@ export async function GET(request: NextRequest) {
       success: true,
       data: limitedTestimonials,
       count: limitedTestimonials.length,
-      source: 'sample' // Indicate this is sample data
+      source: 'sample'
     })
 
   } catch (error) {
     console.error('Error fetching testimonials:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch testimonials' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase environment variables are missing')
+    }
+
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabase = (createClient(supabaseUrl, supabaseKey)) as any
+
+    const body = await request.json()
+    const { 
+      client_name, 
+      client_avatar_url = '',
+      testimonial_text, 
+      rating = 5, 
+      client_title = '',
+      testimonial_type = 'general'
+    } = body
+
+    if (!client_name || !testimonial_text) {
+      return NextResponse.json(
+        { success: false, error: 'Name and feedback are required' },
+        { status: 400 }
+      )
+    }
+
+    const { data, error } = await supabase
+      .from('testimonials')
+      .insert({
+        client_name,
+        client_avatar_url,
+        testimonial_text,
+        rating,
+        client_title,
+        testimonial_type,
+        target_pages: ['homepage', 'contact'],
+        is_visible: true, // Make visible immediately as requested
+        verification_status: 'verified', // Set to verified immediately
+        date_received: new Date().toISOString().split('T')[0]
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json({
+      success: true,
+      message: 'Feedback submitted successfully! It will be visible after review.',
+      data
+    })
+
+  } catch (error) {
+    console.error('Error submitting feedback:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to submit feedback' },
       { status: 500 }
     )
   }
