@@ -141,7 +141,7 @@ export function TrainerDashboard() {
       },
     });
 
-    channel.subscribe(async (status) => {
+    channel.subscribe(async (status: any) => {
       if (status === 'SUBSCRIBED') {
         await channel.track({
           user_id: profile.id,
