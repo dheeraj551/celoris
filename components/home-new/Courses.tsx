@@ -103,7 +103,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'zumba-fitness-masterclass-static': '/courses/zumba-fitness-masterclass',
                                     'spoken-english-sonia-sharma-static': '/learn/spoken-english-communication',
                                     'essential-python-ai-static': '/courses/essential-python-for-ai-development',
-                                    'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai'
+                                    'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai',
+                                    'agentic-ai-masterclass-static': '/courses/agentic-ai-masterclass'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -123,6 +124,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
 );
 
 export const staticCourses = [
+    { id: 'agentic-ai-masterclass-static', title: 'Celoris · 2026 Edition | Agentic AI Masterclass', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '~60 hrs', price: 4999, is_featured: true, description: 'Build, deploy, and scale real-world AI agents — from foundations to multi-agent pipelines.', course_image_url: '/agentic-ai-masterclass-feature.jpg' },
     { id: 'social-media-marketing-ai-static', title: '📱 Social Media Marketing with AI — 2025 Mastery Course', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '40 Hours', price: 1999, is_featured: true, description: 'Master AI-powered content, strategy, and ads for social media. Build high-converting funnels with 10+ AI tools.', course_image_url: '/social-media-ai-hero.png' },
     { id: 'social-media-marketing-pro-training-static', title: '🚀 SMM Professional Training — Canva, AI & Automation', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '10 Hours', price: 2499, is_featured: true, description: 'Master AI-powered content creation, Canva design, and email automation in this professional program.', course_image_url: '/smm-pro-hero.png' },
     { id: 'digital-marketing-ai-static', title: '📈 Digital Marketing using AI Tools — Mastery Course (2026)', subject: 'Marketing', instructor_name: 'Celoris Team', course_duration: '12 Hours', price: 4999, is_featured: true, description: 'Master AI-powered content, SEO, social media, and ads. Build high-converting funnels with ChatGPT, Claude, and more.', course_image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800' },
@@ -223,7 +225,7 @@ export const Courses: React.FC<any> = ({
             });
 
             // Ensure priority courses are at the top (unshifting in reverse order for final priority)
-            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static'].forEach(targetId => {
+            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);

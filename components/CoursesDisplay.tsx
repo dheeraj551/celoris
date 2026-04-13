@@ -91,6 +91,29 @@ export default function CoursesDisplay({
   // Static courses definition
   const staticCourses: Course[] = [
     {
+      id: 'agentic-ai-masterclass-static',
+      title: 'Celoris · 2026 Edition | Agentic AI Masterclass',
+      subject: 'Artificial Intelligence',
+      grade_level: 'Advanced',
+      description: 'Build, deploy, and scale real-world AI agents — from foundations to multi-agent pipelines. Designed for developers, product builders, and tech-forward professionals.',
+      target_audience: 'Developers, Product Builders, Tech-forward Professionals',
+      instructor_name: 'Celoris Team',
+      course_duration: '~60 hrs total',
+      price: 4999,
+      course_image_url: '/agentic-ai-masterclass-feature.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `aaim-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 450,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'sovereign-intelligence-static',
       title: 'Sovereign Intelligence: Building Your Private, Local, & Uncensored AI Knowledge Base',
       subject: 'Artificial Intelligence',
@@ -1214,6 +1237,7 @@ export default function CoursesDisplay({
   }
 
   const getCourseUrl = (id: string) => {
+    if (id === 'agentic-ai-masterclass-static') return '/courses/agentic-ai-masterclass'
     if (id === 'essential-python-ai-static') return '/courses/essential-python-for-ai-development'
     if (id === 'master-premiere-pro-ai-static') return '/courses/master-premiere-pro-ai'
     if (id === 'vibe-coding-mastery-static') return '/courses/vibe-coding-mastery'
