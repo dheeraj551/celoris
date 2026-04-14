@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'the-english-sound-system',
+      title: "The English Sound System — Lesson 1.1: Foundations of Pronunciation",
+      slug: 'the-english-sound-system',
+      excerpt: "English has 44 sounds but only 26 letters. Understand the foundation of English pronunciation, starting with the 5 vowels and the Magic-E rule.",
+      featured_image_url: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=800',
+      author_name: 'Celoris Editorial',
+      category: 'Spoken English • Pronunciation',
+      reading_time: 8,
+      published_at: '2026-04-14T12:00:00Z',
+    },
+    {
       id: 'how-to-start-a-dropshipping-business-in-2026',
       title: "How to Start a Dropshipping Business in 2026: A Complete Step-by-Step Guide",
       slug: 'how-to-start-a-dropshipping-business-in-2026',

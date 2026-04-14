@@ -63,11 +63,16 @@ function OnlineTrainersMarquee() {
 
     if (trainers.length === 0) return null;
 
-    // Duplicate list for perfect loop
-    const displayList = [...trainers, ...trainers];
+    // Only duplicate and animate if we have enough trainers to justify a marquee (more than 5)
+    // This fixed the issue where users saw duplicate experts when only a few were online
+    const shouldAnimate = trainers.length > 5;
+    const displayList = shouldAnimate ? [...trainers, ...trainers] : trainers;
 
     return (
-        <div className="flex w-max gap-4 animate-scrollList hover:[animation-play-state:paused] pointer-events-auto items-center">
+        <div className={cn(
+            "flex w-max gap-4 pointer-events-auto items-center",
+            shouldAnimate && "animate-scrollList hover:[animation-play-state:paused]"
+        )}>
             {displayList.map((trainer, idx) => (
                 <Link key={idx} href="/learn" className="inline-flex items-center gap-3 bg-white/5 border border-white/5 rounded-full pr-5 pl-2 py-2 hover:bg-white/10 hover:border-emerald-500/30 transition-all cursor-pointer">
                     <div className="relative">

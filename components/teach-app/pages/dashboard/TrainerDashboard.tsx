@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Calendar, MessageSquare, Mail, Settings, LogOut, Users, DollarSign, LayoutDashboard, User as UserIcon, Radio, Send } from 'lucide-react';
+import { BookOpen, Calendar, MessageSquare, Mail, Settings, LogOut, Users, DollarSign, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
@@ -9,15 +9,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 function LiveBoothManager({ trainerId, trainerName }: { trainerId: string, trainerName: string }) {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    // Preload the notification sound
+    audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+    
     const supabase = createClient();
     const channelId = `chat:${trainerId}`;
     const channel = supabase.channel(channelId);
 
     channel
       .on('broadcast', { event: 'message' }, ({ payload }: any) => {
+        // Play notification sound if message is from a student and sound is enabled
+        if (payload.sender_id !== trainerId && soundEnabled && audioRef.current) {
+          audioRef.current.play().catch(err => console.log('Notification sound block by browser:', err));
+        }
         setMessages((prev) => [...prev, payload]);
       })
       .subscribe();
@@ -25,7 +34,7 @@ function LiveBoothManager({ trainerId, trainerName }: { trainerId: string, train
     return () => {
       channel.unsubscribe();
     };
-  }, [trainerId]);
+  }, [trainerId, soundEnabled]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -68,7 +77,16 @@ function LiveBoothManager({ trainerId, trainerName }: { trainerId: string, train
           <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
           <span className="font-bold text-sm tracking-tight uppercase">Live Booth Chat</span>
         </div>
-        <div className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full uppercase">Recording</div>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="p-1 hover:bg-white/20 rounded transition-colors"
+            title={soundEnabled ? "Mute notifications" : "Unmute notifications"}
+          >
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          </button>
+          <div className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full uppercase">Recording</div>
+        </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
