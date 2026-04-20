@@ -14,7 +14,7 @@ export function StickyCTA() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (scrollY.current > 800 && !isDismissed) {
+      if (scrollY.get() > 800 && !isDismissed) {
         setIsVisible(true)
       }
     }
