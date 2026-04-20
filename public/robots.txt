@@ -1,0 +1,19 @@
+# robots.txt for celoris.in
+# Celoris — India's Free Creative Studio
+
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /api/upload/
+
+# Allow search engines to crawl all public pages
+Sitemap: https://www.celorisdesigns.com/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Host directive
+Host: https://www.celorisdesigns.com

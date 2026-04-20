@@ -9,6 +9,7 @@ import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
+import GlobalStickyCTA from "@/components/GlobalStickyCTA"
 import { Analytics } from "@vercel/analytics/next"
 import { LazyMotion, domAnimation } from "framer-motion"
 
@@ -16,20 +17,28 @@ const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-  description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. Free to start. No credit card. celoris.in 🇮🇳",
+  title: {
+    default: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+    template: "%s | Celoris - India's Free Creative Studio",
+  },
+  description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed. Free to start.",
   keywords: [
     "Celoris",
     "AI ecosystem",
     "digital transformation",
     "AI learning",
-    "AI courses",
-    "agentic AI",
-    "RAG systems",
-    "career growth",
-    "productivity tools"
+    "AI courses India",
+    "free video editor India",
+    "free image studio India",
+    "online classes India",
+    "earn online India",
+    "teach online India",
+    "skill learning marketplace India",
+    "Excel course India",
+    "Python course India",
+    "Digital Marketing course India"
   ],
-  authors: [{ name: "Celoris Designs LLP" }],
+  authors: [{ name: "Dheeraj Kushwaha", url: "https://www.celorisdesigns.com/about" }],
   creator: "Celoris Designs LLP",
   publisher: "Celoris Designs LLP",
   formatDetection: {
@@ -40,29 +49,33 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.celorisdesigns.com"),
   alternates: {
     canonical: "/",
+    languages: {
+      'en-IN': '/',
+    },
   },
   openGraph: {
     type: "website",
     locale: "en_IN",
     url: "https://www.celorisdesigns.com",
-    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. Free to start. No credit card. celoris.in 🇮🇳",
     siteName: "Celoris",
+    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
+    description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Celoris AI-Powered Ecosystem",
+        alt: "Celoris - India's Free Creative Studio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. Free to start. No credit card. celoris.in 🇮🇳",
+    description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs.",
     images: ["/og-image.jpg"],
     creator: "@celoris",
+    site: "@celoris",
   },
   robots: {
     index: true,
@@ -74,10 +87,12 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+    notranslate: true,
   },
   verification: {
     google: "your-google-verification-code",
   },
+  category: "Education",
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
@@ -192,6 +207,7 @@ export default function RootLayout({
                     {children}
                   </main>
                   <GlobalAd />
+                  <GlobalStickyCTA />
                   <Footer />
                 </div>
               </LazyMotion>

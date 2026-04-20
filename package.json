@@ -49,7 +49,7 @@
     "dotenv": "^17.2.3",
     "emoji-picker-react": "^4.16.1",
     "firebase": "^10.7.1",
-    "firebase-admin": "^13.6.0",
+    "firebase-admin": "^10.3.0",
     "framer-motion": "^12.36.0",
     "groq-sdk": "^0.37.0",
     "jsonwebtoken": "^9.0.3",
@@ -58,7 +58,7 @@
     "lucide-react": "^0.575.0",
     "marked": "^17.0.3",
     "next": "^16.1.6",
-    "nodemailer": "^7.0.11",
+    "nodemailer": "^8.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.48.2",
@@ -87,5 +87,13 @@
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.3"
-  }
+  },
+  "description": "A comprehensive digital ecosystem that brings Learn, Earn, and Fun into a single cohesive platform built with Next.js 14 and Supabase.",
+  "main": "admin_fix_verification.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
