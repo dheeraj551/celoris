@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'video-editing-trends-2026-premiere-pro-tips',
+      title: "Top 5 Video Editing Trends in 2026 (+ Premiere Pro Tips to Stay Ahead)",
+      slug: 'video-editing-trends-2026-premiere-pro-tips',
+      excerpt: "AI, vertical video, and cinematic grading are reshaping post-production. Stay ahead with these 5 trends and actionable Premiere Pro tips for 2026.",
+      featured_image_url: '/videoediting.png',
+      author_name: 'Celoris Editorial',
+      category: 'Technology • Video Editing',
+      reading_time: 10,
+      published_at: '2026-04-21T12:00:00Z',
+    },
+    {
       id: 'the-english-sound-system',
       title: "The English Sound System — Lesson 1.1: Foundations of Pronunciation",
       slug: 'the-english-sound-system',
