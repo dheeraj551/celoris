@@ -9,7 +9,7 @@ import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
-import GlobalStickyCTA from "@/components/GlobalStickyCTA"
+
 import { Analytics } from "@vercel/analytics/next"
 import { LazyMotion, domAnimation } from "framer-motion"
 
@@ -207,7 +207,7 @@ export default function RootLayout({
                     {children}
                   </main>
                   <GlobalAd />
-                  <GlobalStickyCTA />
+
                   <Footer />
                 </div>
               </LazyMotion>

@@ -1176,6 +1176,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'capcut-pro-viral-reels-static',
+      title: 'CapCut Pro: Create Viral Reels in 30 Days',
+      subject: 'Design',
+      grade_level: 'Beginner to Intermediate',
+      description: 'From zero to viral — master mobile video editing, trending effects, and content strategy.',
+      target_audience: 'Content Creators, Influencers, Beginners',
+      instructor_name: 'Celoris Team',
+      course_duration: '30 Days',
+      price: 4999,
+      course_image_url: '/capcut.jpg',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(5).fill(null).map((_, i) => ({
+        id: `ccp-m${i}`,
+        module_number: i + 1,
+        title: `Week ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1240,6 +1263,7 @@ export default function CoursesDisplay({
     if (id === 'agentic-ai-masterclass-static') return '/courses/agentic-ai-masterclass'
     if (id === 'essential-python-ai-static') return '/courses/essential-python-for-ai-development'
     if (id === 'master-premiere-pro-ai-static') return '/courses/master-premiere-pro-ai'
+    if (id === 'capcut-pro-viral-reels-static') return '/courses/capcut-pro-viral-reels'
     if (id === 'vibe-coding-mastery-static') return '/courses/vibe-coding-mastery'
     if (id === 'class-12-physics-static') return '/courses/cbse-class-12-physics-complete-course'
     if (id === 'class-11-physics-static') return '/courses/cbse-class-11-physics-comprehensive-course'
