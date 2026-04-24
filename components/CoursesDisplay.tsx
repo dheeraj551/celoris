@@ -114,6 +114,29 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'ai-tools-content-creation-static',
+      title: '🤖 AI Tools for Content Creation — 8 Weeks Mastery',
+      subject: 'Content Creation',
+      grade_level: 'Beginner to Intermediate',
+      description: 'From Zero to AI-Powered Creator — Learn how to use the most powerful free and affordable AI tools to create text, images, videos, audio, and social media content.',
+      target_audience: 'Creators, Marketers, Freelancers, Students',
+      instructor_name: 'Celoris Team',
+      course_duration: '8 Weeks',
+      price: 2999,
+      course_image_url: '/Aicontentcreation.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `ait-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 300,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'sovereign-intelligence-static',
       title: 'Sovereign Intelligence: Building Your Private, Local, & Uncensored AI Knowledge Base',
       subject: 'Artificial Intelligence',

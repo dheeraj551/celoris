@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celoris - India's Free Creative Studio | Demo Preview</title>
+    <meta name="description" content="India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Celoris - India's Free Creative Studio">
+    <meta property="og:description" content="Free video editor, AI tools, and creative studio for India">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Celoris - India's Free Creative Studio">
+    <meta name="twitter:description" content="Free video editor, AI tools, and creative studio for India">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#2C7A4F',
+                            50: '#EAF2ED',
+                            100: '#C1DBC9',
+                            500: '#2C7A4F',
+                            700: '#215B3B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #050810;
+        }
+
+        /* Glass Card Effect */
+        .glass-card {
+            background: rgba(30, 31, 32, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 4px 24px rgba(0, 0, 0, 0.2),
+                0 1px 2px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card-hover:hover {
+            background: rgba(40, 42, 45, 0.8);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 2px 4px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(16, 185, 129, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(to right, #34d399, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 15px rgba(52, 211, 153, 0.3));
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 16px rgba(16, 185, 129, 1);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .animate-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .animate-delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .animate-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        /* Premium Button */
+        .btn-premium {
+            background: linear-gradient(135deg, rgba(44, 122, 79, 0.9) 0%, rgba(33, 91, 59, 0.9) 100%);
+            box-shadow:
+                0 4px 16px rgba(44, 122, 79, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            background: linear-gradient(135deg, rgba(52, 142, 92, 1) 0%, rgba(44, 122, 79, 1) 100%);
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 24px rgba(44, 122, 79, 0.5),
+                0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Stats Badge */
+        .stats-badge {
+            background: rgba(30, 31, 32, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Urgency Banner */
+        .urgency-banner {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* Glow Effect */
+        .glow-emerald {
+            box-shadow: 0 0 60px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Card Hover Effects */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2C7A4F;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200">
+    <!-- Background Glow -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-[120px] opacity-50"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass-card border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center font-bold text-white text-lg">
+                    C
+                </div>
+                <span class="font-bold text-xl text-white">Celoris</span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Features</a>
+                <a href="#tools" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Tools</a>
+                <a href="#social-proof" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Reviews</a>
+                <a href="#contact" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Contact</a>
+            </nav>
+
+            <button class="btn-premium px-6 py-2 rounded-xl text-white font-bold text-sm uppercase tracking-wider">
+                Get Started Free
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-20 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <!-- Social Proof Stats -->
+            <div class="animate-fade-in-up animate-delay-1 stats-badge inline-flex items-center gap-6 mb-8 px-6 py-3 rounded-full">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 pulse-glow"></div>
+                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">5000+ Students Trained</span>
+                </div>
+                <div class="h-4 w-px bg-white/10"></div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest">4.8/5 Rating</span>
+                </div>
+                <div class="h-4 w-px bg-white/10"></div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">13+ Years Experience</span>
+                </div>
+            </div>
+
+            <!-- Main Headline -->
+            <h1 class="animate-fade-in-up animate-delay-2 text-4xl md:text-6xl font-medium tracking-tight text-white mb-6">
+                India's Free Creative <span class="gradient-text">Studio</span>
+            </h1>
+
+            <!-- Urgency Banner -->
+            <div class="animate-fade-in-up animate-delay-3 urgency-banner inline-flex items-center gap-3 mt-4 px-5 py-2 rounded-full">
+                <svg class="w-4 h-4 text-amber-400 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-xs font-bold text-amber-300 uppercase tracking-widest">
+                    New Batch Starting Soon — Limited Seats Available
+                </span>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="animate-fade-in-up animate-delay-4 flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+                <button class="btn-premium w-full sm:w-auto px-10 py-4 rounded-xl text-white font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Start Creating Free
+                </button>
+                <button class="w-full sm:w-auto px-10 py-4 rounded-xl text-white font-bold uppercase tracking-wider text-sm glass-card border border-white/10 hover:border-white/20 transition-all">
+                    Explore Tools
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">You might want to try</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">Explore our suite of creative tools designed for India's creators</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Video Studio Card -->
+                <div class="glass-card glass-card-hover feature-card rounded-2xl p-8 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Popular</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Video Studio</h3>
+                    <p class="text-slate-400 text-sm mb-4">Create stunning videos with AI-powered editing tools</p>
+                    <div class="flex items-center text-emerald-400 text-sm font-medium group-hover:gap-2 transition-all">
+                        <span>Explore</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Image Studio Card -->
+                <div class="glass-card glass-card-hover feature-card rounded-2xl p-8 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tight">New</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Image Studio</h3>
+                    <p class="text-slate-400 text-sm mb-4">Generate stunning images with AI creative engine</p>
+                    <div class="flex items-center text-emerald-400 text-sm font-medium group-hover:gap-2 transition-all">
+                        <span>Explore</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Celoris 3D Card -->
+                <div class="glass-card glass-card-hover feature-card rounded-2xl p-8 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Celoris 3D</h3>
+                    <p class="text-slate-400 text-sm mb-4">Design and animate in 3D with our powerful tools</p>
+                    <div class="flex items-center text-emerald-400 text-sm font-medium group-hover:gap-2 transition-all">
+                        <span>Explore</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section id="social-proof" class="py-20 px-6 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-6">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    Verified Reviews
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">What Our Students Say</h2>
+                <p class="text-slate-400">Direct feedback from our community</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Testimonial 1 -->
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold">
+                            RS
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Rahul Sharma</h4>
+                            <p class="text-xs text-slate-400">Excel Student</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 mb-4">
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    </div>
+                    <p class="text-slate-300 text-sm">"Found my Excel trainer on Celoris within a day and booked a demo session the same evening. Highly recommend!"</p>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                            PK
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Priya Kapoor</h4>
+                            <p class="text-xs text-slate-400">Digital Marketing</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 mb-4">
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    </div>
+                    <p class="text-slate-300 text-sm">"Good platform overall. The trainer profiles are detailed and it's easy to filter by category. Solid experience!"</p>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold">
+                            AJ
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Ananya Jairath</h4>
+                            <p class="text-xs text-slate-400">Blender Student</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 mb-4">
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    </div>
+                    <p class="text-slate-300 text-sm">"Celoris is different from any other learning platform. Less spammy, more focused. Started learning within 48 hours!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Why Choose Celoris?</h2>
+                <p class="text-slate-400">Everything you need to start creating and earning</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-white mb-2">100% Free</h3>
+                    <p class="text-slate-400 text-xs">No credit card required</p>
+                </div>
+
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-white mb-2">20+ AI Models</h3>
+                    <p class="text-slate-400 text-xs">Powered by Groq Llama</p>
+                </div>
+
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-white mb-2">Expert Trainers</h3>
+                    <p class="text-slate-400 text-xs">13+ years experience</p>
+                </div>
+
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-white mb-2">Daily Gigs</h3>
+                    <p class="text-slate-400 text-xs">Earn while you learn</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-emerald-500/10"></div>
+        <div class="max-w-3xl mx-auto text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Start Your Creative Journey?</h2>
+            <p class="text-slate-400 mb-8">Join thousands of creators who are already building their skills on Celoris</p>
+            <button class="btn-premium px-12 py-4 rounded-xl text-white font-bold uppercase tracking-wider">
+                Get Started Free — No Credit Card
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="glass-card border-t border-white/5 py-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center font-bold text-white text-lg">
+                            C
+                        </div>
+                        <span class="font-bold text-xl text-white">Celoris</span>
+                    </div>
+                    <p class="text-slate-400 text-sm">India's free creative studio since 2019</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4">Platform</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Learn</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Earn</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Social</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Apps</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4">Contact</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li>support@celorisdesigns.com</li>
+                        <li>+91 90847 18101</li>
+                        <li class="flex gap-4 mt-4">
+                            <a href="#" class="hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                            </a>
+                            <a href="#" class="hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
+                            </a>
+                            <a href="#" class="hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 pt-8 text-center">
+                <p class="text-slate-500 text-sm">&copy; 2024 Celoris Designs LLP. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
