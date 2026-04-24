@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'top-10-free-ai-video-editing-tools-india-2026',
+      title: "Top 10 Free AI Video Editing Tools India 2026 — Edit Like a Pro Without Spending a Rupee",
+      slug: 'top-10-free-ai-video-editing-tools-india-2026',
+      excerpt: "AI has made professional-quality content accessible to everyone. Here are the top 10 free AI video editing tools Indian creators are actually using in 2026.",
+      featured_image_url: '/topvideoedit.jpg',
+      author_name: 'Celoris Editorial',
+      category: 'Technology • AI Tools',
+      reading_time: 8,
+      published_at: '2026-04-24T12:00:00Z',
+    },
+    {
       id: 'video-editing-trends-2026-premiere-pro-tips',
       title: "Top 5 Video Editing Trends in 2026 (+ Premiere Pro Tips to Stay Ahead)",
       slug: 'video-editing-trends-2026-premiere-pro-tips',
