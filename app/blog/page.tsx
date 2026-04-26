@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'how-to-go-viral-youtube-shorts-2026',
+      title: "How to Go Viral on YouTube Shorts in 2026 – Complete Guide",
+      slug: 'how-to-go-viral-youtube-shorts-2026',
+      excerpt: "YouTube Shorts crossed 70 billion daily views in 2025, and in 2026 it's bigger than ever. Learn the structure, hooks, and algorithm secrets to go viral.",
+      featured_image_url: '/goviral.png',
+      author_name: 'Celoris Editorial',
+      category: 'Content Creation',
+      reading_time: 10,
+      published_at: '2026-04-25T12:00:00Z',
+    },
+    {
       id: 'top-10-free-ai-video-editing-tools-india-2026',
       title: "Top 10 Free AI Video Editing Tools India 2026 — Edit Like a Pro Without Spending a Rupee",
       slug: 'top-10-free-ai-video-editing-tools-india-2026',
