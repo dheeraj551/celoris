@@ -106,7 +106,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                     'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai',
                                     'capcut-pro-viral-reels-static': '/courses/capcut-pro-viral-reels',
                                     'agentic-ai-masterclass-static': '/courses/agentic-ai-masterclass',
-                                    'ai-tools-content-creation-static': '/courses/ai-tools-for-content-creation'
+                                    'ai-tools-content-creation-static': '/courses/ai-tools-for-content-creation',
+                                    'low-poly-3d-modeling-blender-static': '/courses/low-poly-3d-modeling-blender'
                                 };
                                 return routes[id] || `/learn/course/${id}`;
                             })()
@@ -146,7 +147,8 @@ export const staticCourses = [
     { id: 'essential-python-ai-static', title: '🐍 Essential Python for AI Development — 10-Hour Masterclass', subject: 'Artificial Intelligence', instructor_name: 'Celoris Team', course_duration: '10 Hours', price: 9999, is_featured: true, description: 'A practical 10-hour curriculum taking you from Python basics to building real AI-powered applications. Master the fundamentals and AI APIs.', course_image_url: '/essential-python-ai-cover.png' },
     { id: 'master-premiere-pro-ai-static', title: '🎬 Adobe Premiere Pro with AI in 2026 — 2-Week Intensive', subject: 'Design', instructor_name: 'Celoris Team', course_duration: '30 Hours', price: 14999, is_featured: true, description: 'Master AI-powered video editing, Firefly integration, and automated workflows in Premiere Pro 2026.', course_image_url: '/premiere-pro-ai-hero.png' },
     { id: 'capcut-pro-viral-reels-static', title: '🎬 CapCut Pro: Create Viral Reels in 30 Days', subject: 'Video Editing', instructor_name: 'Celoris Team', course_duration: '30 Days', price: 4999, is_featured: true, description: 'From zero to viral — master mobile video editing, trending effects, and content strategy with CapCut. A 30-day course for creators and freelancers.', course_image_url: '/capcut.jpg' },
-    { id: 'ai-tools-content-creation-static', title: '🤖 AI Tools for Content Creation — 8 Weeks Mastery', subject: 'Content Creation', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, description: 'From Zero to AI-Powered Creator — Learn how to use the most powerful free and affordable AI tools to create text, images, videos, audio, and social media content.', course_image_url: '/Aicontentcreation.png' }
+    { id: 'ai-tools-content-creation-static', title: '🤖 AI Tools for Content Creation — 8 Weeks Mastery', subject: 'Content Creation', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 2999, is_featured: true, description: 'From Zero to AI-Powered Creator — Learn how to use the most powerful free and affordable AI tools to create text, images, videos, audio, and social media content.', course_image_url: '/Aicontentcreation.png' },
+    { id: 'low-poly-3d-modeling-blender-static', title: '🎨 Learn Low Poly 3D Modeling: Using Blender — Portfolio Ready', subject: 'Design', instructor_name: 'Celoris Team', course_duration: '8 Weeks', price: 5999, is_featured: true, description: 'Master Low Poly 3D Modeling in Blender. From zero to portfolio-ready 3D artist in 8 weeks. Build games assets, environments, and characters.', course_image_url: '/blender.png' }
 ];
 
 export const Courses: React.FC<any> = ({
@@ -229,7 +231,7 @@ export const Courses: React.FC<any> = ({
             });
 
             // Ensure priority courses are at the top (unshifting in reverse order for final priority)
-            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static', 'capcut-pro-viral-reels-static', 'ai-tools-content-creation-static'].forEach(targetId => {
+            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static', 'capcut-pro-viral-reels-static', 'ai-tools-content-creation-static', 'low-poly-3d-modeling-blender-static'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);

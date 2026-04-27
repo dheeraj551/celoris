@@ -46,9 +46,9 @@ const footerSections = [
 ]
 
 const socialLinks = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/celorisdesigns/", label: "LinkedIn" },
+  { icon: Facebook, href: "https://www.facebook.com/celorisdesigns/", label: "Facebook" },
+  { icon: Youtube, href: "https://www.youtube.com/@celorisplay", label: "YouTube" },
 ]
 
 import { Capacitor } from '@capacitor/core'

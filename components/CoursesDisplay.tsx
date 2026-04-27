@@ -1222,6 +1222,29 @@ export default function CoursesDisplay({
         is_published: true,
         course_topics: []
       }))
+    },
+    {
+      id: 'low-poly-3d-modeling-blender-static',
+      title: '🎨 Learn Low Poly 3D Modeling: Using Blender — Portfolio Ready',
+      subject: 'Design',
+      grade_level: 'Beginner',
+      description: 'Master Low Poly 3D Modeling in Blender. From zero to portfolio-ready 3D artist in 8 weeks. Build games assets, environments, and characters.',
+      target_audience: 'Beginners, Game Artists, Designers',
+      instructor_name: 'Celoris Team',
+      course_duration: '8 Weeks',
+      price: 5999,
+      course_image_url: '/blender.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `lp3d-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 45,
+        is_published: true,
+        course_topics: []
+      }))
     }
   ]
 
@@ -1322,6 +1345,7 @@ export default function CoursesDisplay({
     if (id === 'social-media-marketing-pro-training-static') return '/courses/social-media-marketing-professional-training'
     if (id === 'social-media-marketing-ai-static') return '/courses/social-media-marketing-with-ai'
     if (id === 'zumba-fitness-masterclass-static') return '/courses/zumba-fitness-masterclass'
+    if (id === 'low-poly-3d-modeling-blender-static') return '/courses/low-poly-3d-modeling-blender'
     return `/learn/course/${id}`
   }
 
