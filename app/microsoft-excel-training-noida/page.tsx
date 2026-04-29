@@ -263,6 +263,21 @@ export default function ExcelTrainingNoida() {
                             <p className="text-lg text-slate-400 leading-relaxed max-w-3xl font-medium">
                                 {pageData.heroDescription}
                             </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+                                <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0d1321]/40 border border-white/5">
+                                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">Practice Files Included</span>
+                                </div>
+                                <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0d1321]/40 border border-white/5">
+                                    <Award className="h-5 w-5 text-emerald-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">Celoris Certificate</span>
+                                </div>
+                                <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0d1321]/40 border border-white/5">
+                                    <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">Lifetime Support</span>
+                                </div>
+                            </div>
                             
                             <div className="flex flex-wrap gap-4 pt-4">
                                 <Link 
@@ -294,6 +309,36 @@ export default function ExcelTrainingNoida() {
                                 </div>
                             </Card>
                         </div>
+
+                        {/* Pricing Table */}
+                        <section className="space-y-8">
+                            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">
+                                <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                                    <Zap className="h-8 w-8 text-emerald-500" />
+                                </div>
+                                Course Pricing & Batches
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {[
+                                    { name: "Basic Excel", price: "2,500", focus: "Essentials", duration: "2 Weeks" },
+                                    { name: "Advanced Excel", price: "4,999", focus: "MIS & Dashboards", duration: "4 Weeks" },
+                                    { name: "Mastery (VBA)", price: "8,000", focus: "Automation", duration: "8 Weeks" },
+                                ].map((plan, i) => (
+                                    <Card key={i} className="bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-emerald-500/30 transition-all text-center">
+                                        <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
+                                        <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
+                                        <div className="space-y-2 mb-8">
+                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.focus}</div>
+                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.duration}</div>
+                                        </div>
+                                        <CourseInquiryDialog 
+                                            courseTitle={`${pageData.title} - ${plan.name}`}
+                                            buttonClassName="w-full py-3 bg-white/5 border border-white/10 hover:bg-emerald-600 hover:text-white text-slate-300 font-black uppercase tracking-widest text-[9px] rounded-xl transition-all italic"
+                                        />
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
 
                         {/* Course Overview */}
                         <section className="space-y-8">
@@ -339,17 +384,17 @@ export default function ExcelTrainingNoida() {
                                                     </div>
                                                 </div>
                                             </AccordionTrigger>
-                                            <AccordionContent className="pb-8 px-6 text-slate-400">
+                                            <AccordionContent className="pb-8 px-6 text-slate-400 opacity-100 visible">
                                                 <div className="pl-6 sm:pl-20 space-y-4 relative">
                                                     <div className="absolute left-0 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent" />
-                                                    <ul className="grid grid-cols-1 gap-4">
+                                                    <div className="flex flex-col gap-4">
                                                         {item.topics && item.topics.map((topic, topicIndex) => (
-                                                            <li key={topicIndex} className="flex items-start gap-4 group">
+                                                            <div key={topicIndex} className="flex items-start gap-4 group">
                                                                 <div className="h-2 w-2 rounded-full bg-emerald-500/40 mt-2.5 group-hover:bg-emerald-500 transition-colors shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
-                                                                <span className="text-sm font-bold uppercase tracking-widest italic group-hover:text-emerald-400 transition-colors leading-relaxed">{topic}</span>
-                                                            </li>
+                                                                <span className="text-sm font-bold uppercase tracking-widest italic group-hover:text-emerald-400 transition-colors leading-relaxed block">{topic}</span>
+                                                            </div>
                                                         ))}
-                                                    </ul>
+                                                    </div>
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>
