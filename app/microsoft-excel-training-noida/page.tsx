@@ -162,62 +162,65 @@ export default function ExcelTrainingNoida() {
         ]
     }
 
-    const jsonLd = [
-        {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": pageData.faq.map(item => ({
-                "@type": "Question",
-                "name": item.question,
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": item.answer
-                }
-            }))
-        },
-        {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": "Celoris Microsoft Excel Training Noida",
-            "image": "https://www.celoris.in/excel noida.png",
-            "@id": "https://www.celoris.in/microsoft-excel-training-noida",
-            "url": "https://www.celoris.in/microsoft-excel-training-noida",
-            "telephone": "+91 90847 18101",
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Sector 62",
-                "addressLocality": "Noida",
-                "addressRegion": "UP",
-                "postalCode": "201301",
-                "addressCountry": "IN"
-            },
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": 28.6273,
-                "longitude": 77.3725
-            },
-            "openingHoursSpecification": {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": [
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday",
-                    "Sunday"
-                ],
-                "opens": "08:00",
-                "closes": "21:00"
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": pageData.faq.map(item => ({
+            "@type": "Question",
+            "name": item.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.answer
             }
+        }))
+    }
+
+    const businessJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Celoris Microsoft Excel Training Noida",
+        "image": "https://www.celoris.in/excel-noida.png",
+        "@id": "https://www.celoris.in/microsoft-excel-training-noida",
+        "url": "https://www.celoris.in/microsoft-excel-training-noida",
+        "telephone": "+91 90847 18101",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Sector 62",
+            "addressLocality": "Noida",
+            "addressRegion": "UP",
+            "postalCode": "201301",
+            "addressCountry": "IN"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 28.6273,
+            "longitude": 77.3725
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+            ],
+            "opens": "08:00",
+            "closes": "21:00"
         }
-    ]
+    }
 
     return (
         <div className="min-h-screen bg-[#020617] text-slate-200 py-8 selection:bg-emerald-500/30">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd) }}
             />
 
             <div className="container max-w-7xl mx-auto px-4">
@@ -283,7 +286,7 @@ export default function ExcelTrainingNoida() {
                             <Card className="relative overflow-hidden border-0 bg-[#0d1321]/40 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl">
                                 <div className="aspect-video relative overflow-hidden flex items-center justify-center bg-[#00120d]">
                                     <img
-                                        src="/excel noida.png"
+                                        src="/excel-noida.png"
                                         alt="Microsoft Excel Training Noida"
                                         className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
                                     />
@@ -337,10 +340,10 @@ export default function ExcelTrainingNoida() {
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent className="pb-8 px-6 text-slate-400">
-                                                <div className="pl-20 space-y-4 relative">
-                                                    <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent" />
+                                                <div className="pl-6 sm:pl-20 space-y-4 relative">
+                                                    <div className="absolute left-0 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent" />
                                                     <ul className="grid grid-cols-1 gap-4">
-                                                        {item.topics.map((topic, topicIndex) => (
+                                                        {item.topics && item.topics.map((topic, topicIndex) => (
                                                             <li key={topicIndex} className="flex items-start gap-4 group">
                                                                 <div className="h-2 w-2 rounded-full bg-emerald-500/40 mt-2.5 group-hover:bg-emerald-500 transition-colors shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                                                                 <span className="text-sm font-bold uppercase tracking-widest italic group-hover:text-emerald-400 transition-colors leading-relaxed">{topic}</span>
