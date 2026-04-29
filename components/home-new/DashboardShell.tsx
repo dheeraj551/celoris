@@ -2,10 +2,18 @@
 
 import React from 'react';
 import { Sidebar } from './Sidebar';
-import { Plus, ShoppingBag, Heart, Users, User as UserIcon, Wallet, LogOut, ThumbsUp, Mail, Phone } from 'lucide-react';
+import { Plus, ShoppingBag, Heart, Users, User as UserIcon, Wallet, LogOut, ThumbsUp, Mail, Phone, Menu } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+    SheetTrigger,
+} from "@/components/ui/sheet";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,12 +40,28 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
     return (
         <div className="flex bg-[#050810] min-h-screen">
-            <Sidebar />
+            <Sidebar className="hidden md:flex h-screen sticky top-0" />
             <div className="flex-1 min-h-screen text-slate-200 overflow-x-hidden">
 
 
                 {/* Top Navigation / Dashboard Header */}
-                <header className="h-16 px-8 flex items-center justify-between gap-6 border-b border-white/5 sticky top-0 bg-[#050810]/80 backdrop-blur-md z-30">
+                <header className="h-16 px-4 md:px-8 flex items-center justify-between gap-6 border-b border-white/5 sticky top-0 bg-[#050810]/80 backdrop-blur-md z-30">
+                    {/* Mobile Sidebar Trigger */}
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon" className="md:hidden text-slate-400 hover:text-white hover:bg-white/5">
+                                <Menu className="w-5 h-5" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="p-0 bg-[#050810] border-white/5 w-64">
+                            <SheetHeader className="sr-only">
+                                <SheetTitle>Navigation Menu</SheetTitle>
+                                <SheetDescription>Access different sections of the Celoris dashboard</SheetDescription>
+                            </SheetHeader>
+                            <Sidebar className="flex h-full w-full border-none" />
+                        </SheetContent>
+                    </Sheet>
+
                     {/* Centered Support Info */}
                     <motion.div 
                         initial={{ opacity: 0, y: -10 }}

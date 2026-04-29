@@ -42,7 +42,7 @@ const MENU_GROUPS = [
     }
 ];
 
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
 
     const [isNewbeeMode, setIsNewbeeMode] = React.useState(true);
@@ -89,7 +89,7 @@ export function Sidebar() {
         : MENU_GROUPS;
 
     return (
-        <aside className="hidden md:flex w-64 flex-shrink-0 bg-[#050810] border-r border-white/5 flex-col h-screen sticky top-0 overflow-y-auto custom-scrollbar">
+        <aside className={cn("w-64 flex-shrink-0 bg-[#050810] border-r border-white/5 flex-col overflow-y-auto custom-scrollbar", className)}>
             {/* Logo */}
             <div className="px-8 py-6">
                 <Link href="/" className="flex items-center gap-2">
