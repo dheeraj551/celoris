@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-microsoft-excel-training-noida',
+      title: "Best Microsoft Excel Training in Noida (2026) — Complete Guide",
+      slug: 'best-microsoft-excel-training-noida',
+      excerpt: "Looking for the best Microsoft Excel training in Noida? This guide covers top courses, fees, curriculum, and how to choose the right trainer in 2026. Includes free demo offer.",
+      featured_image_url: '/excel-noida.png',
+      author_name: 'Celoris Team',
+      category: 'Excel Training • Career Skills',
+      reading_time: 8,
+      published_at: '2026-04-30T12:00:00Z',
+    },
+    {
       id: 'how-to-go-viral-youtube-shorts-2026',
       title: "How to Go Viral on YouTube Shorts in 2026 – Complete Guide",
       slug: 'how-to-go-viral-youtube-shorts-2026',
