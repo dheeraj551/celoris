@@ -1,8 +1,12 @@
 import { createBrowserClient } from '@supabase/ssr'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
+let browserClient: any = null
+
 // Create Supabase client for client-side components (Next.js 15/16 compatible)
 export const createClientForBrowser = () => {
+  if (browserClient) return browserClient
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
@@ -14,10 +18,12 @@ export const createClientForBrowser = () => {
     })
   }
   
-  return createBrowserClient(
+  browserClient = createBrowserClient(
     url || 'https://placeholder.supabase.co', // Use placeholder to avoid crash if missing
     key || 'placeholder-key'
-  ) as any
+  )
+  
+  return browserClient
 }
 
 // Create Supabase client for API routes (with service role key — bypasses RLS)

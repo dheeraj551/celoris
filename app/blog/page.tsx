@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-digital-marketing-course-noida',
+      title: "Best Digital Marketing Course in Noida (2026) — Complete Guide",
+      slug: 'best-digital-marketing-course-noida',
+      excerpt: "Looking for the best digital marketing course in Noida? This guide covers top institutes, fees, modules, and career scope. Free demo available. Book now!",
+      featured_image_url: '/digimarck.png',
+      author_name: 'Celoris Team',
+      category: 'Digital Marketing • Career Guide',
+      reading_time: 8,
+      published_at: '2026-05-01T12:00:00Z',
+    },
+    {
       id: 'best-microsoft-excel-training-noida',
       title: "Best Microsoft Excel Training in Noida (2026) — Complete Guide",
       slug: 'best-microsoft-excel-training-noida',
