@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-web-development-course-noida',
+      title: "Best Web Development Course in Noida (2026) — Complete Guide",
+      slug: 'best-web-development-course-noida',
+      excerpt: "Looking for the best web development course in Noida? This guide covers top options, fees, curriculum, jobs, and how to choose the right trainer. Free demo available.",
+      featured_image_url: '/webdev_noida.png',
+      author_name: 'Celoris Team',
+      category: 'Web Development • Career Guide',
+      reading_time: 9,
+      published_at: '2026-05-04T12:00:00Z',
+    },
+    {
       id: 'best-digital-marketing-course-noida',
       title: "Best Digital Marketing Course in Noida (2026) — Complete Guide",
       slug: 'best-digital-marketing-course-noida',
