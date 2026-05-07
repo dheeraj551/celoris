@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-photoshop-training-noida',
+      title: "Best Adobe Photoshop Training in Noida (2026) — Complete Guide",
+      slug: 'best-photoshop-training-noida',
+      excerpt: "Looking for the best Photoshop training in Noida? This guide covers top courses, fees, curriculum, and career scope. Free demo available. Book today!",
+      featured_image_url: '/photoshop_noida.png',
+      author_name: 'Celoris Team',
+      category: 'Photoshop • Noida • Design Career',
+      reading_time: 8,
+      published_at: '2026-05-07T12:00:00Z',
+    },
+    {
       id: 'best-web-development-course-noida',
       title: "Best Web Development Course in Noida (2026) — Complete Guide",
       slug: 'best-web-development-course-noida',
