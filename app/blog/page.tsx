@@ -378,13 +378,13 @@ export default async function BlogPage({
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://www.celoris.in"
+        "item": "https://www.celorisdesigns.com"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": "https://www.celoris.in/blog"
+        "item": "https://www.celorisdesigns.com/blog"
       }
     ]
   };

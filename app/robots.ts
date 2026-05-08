@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/admin/', '/api/'],
         },
-        sitemap: 'https://celoris.com/sitemap.xml',
+        sitemap: 'https://www.celorisdesigns.com/sitemap.xml',
     }
 }

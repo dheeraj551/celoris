@@ -96,21 +96,21 @@ export default async function BlogPostPage({ params }: Props) {
     "author": {
       "@type": "Organization",
       "name": "Celoris Designs",
-      "url": "https://www.celoris.in"
+      "url": "https://www.celorisdesigns.com"
     },
     "publisher": {
       "@type": "Organization",
       "name": "Celoris",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.celoris.in/favicon.svg"
+        "url": "https://www.celorisdesigns.com/favicon.svg"
       }
     },
     "datePublished": post.published_at,
     "dateModified": post.updated_at,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.celoris.in/blog/${post.slug}`
+      "@id": `https://www.celorisdesigns.com/blog/${post.slug}`
     }
   };
 

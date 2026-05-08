@@ -13,7 +13,7 @@ export default function ShareButtons({ title, slug }: ShareButtonsProps) {
     const { toast } = useToast();
     const shareUrl = typeof window !== 'undefined'
         ? window.location.href
-        : `https://www.celoris.in/blog/${slug}`;
+        : `https://www.celorisdesigns.com/blog/${slug}`;
 
     const shareLinks = {
         twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`,
