@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'build-local-ai-with-ollama-supabase-python',
+      title: "Build a Local AI That Remembers You — Project Series Class 01",
+      slug: 'build-local-ai-with-ollama-supabase-python',
+      excerpt: "Learn how to build a private, local AI assistant using Ollama, Supabase, and Python. Runs 100% on your machine with long-term memory.",
+      featured_image_url: '/Build a Local AI That.png',
+      author_name: 'Celoris Team',
+      category: 'Project Series • Local AI • Python',
+      reading_time: 12,
+      published_at: '2026-05-10T12:00:00Z',
+    },
+    {
       id: 'best-photoshop-training-noida',
       title: "Best Adobe Photoshop Training in Noida (2026) — Complete Guide",
       slug: 'best-photoshop-training-noida',
