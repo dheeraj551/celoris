@@ -114,6 +114,29 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'python-trading-automation-static',
+      title: '🐍 Python for Trading Automation | Using ICICI Direct Breeze API',
+      subject: 'FinTech',
+      grade_level: 'Beginner to Intermediate',
+      description: 'Master automated trading with Python and ICICI Direct Breeze API. Build a live trading bot, fetch real-time data, and automate your strategies in this 10-hour practical course.',
+      target_audience: 'Traders, Investors, Developers, Finance Students',
+      instructor_name: 'Celoris Tech Team',
+      course_duration: '10 Hours',
+      price: 4999,
+      course_image_url: '/Python forautomation.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(10).fill(null).map((_, i) => ({
+        id: `pta-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 60,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'ai-tools-content-creation-static',
       title: '🤖 AI Tools for Content Creation — 8 Weeks Mastery',
       subject: 'Content Creation',
@@ -1132,6 +1155,29 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'python-trading-automation-static',
+      title: '📈 Python for Trading Automation: Using ICICI Direct Breeze API',
+      subject: 'Programming',
+      grade_level: 'Intermediate',
+      description: 'Master the art of automated trading. Learn to fetch live data, generate signals, and place orders programmatically using Python and ICICI Direct Breeze API. Complete 10-hour practical course.',
+      target_audience: 'Traders, Developers, Finance Professionals',
+      instructor_name: 'Celoris Team',
+      course_duration: '10 Hours',
+      price: 14999,
+      course_image_url: '/python-trading-automation-hero.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(10).fill(null).map((_, i) => ({
+        id: `pta-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 60,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'zumba-fitness-masterclass-static',
       title: 'Zumba Fitness Masterclass: From Basics to Trainer-Ready',
       subject: 'Fitness',
@@ -1346,6 +1392,7 @@ export default function CoursesDisplay({
     if (id === 'social-media-marketing-ai-static') return '/courses/social-media-marketing-with-ai'
     if (id === 'zumba-fitness-masterclass-static') return '/courses/zumba-fitness-masterclass'
     if (id === 'low-poly-3d-modeling-blender-static') return '/courses/low-poly-3d-modeling-blender'
+    if (id === 'python-trading-automation-static') return '/courses/python-for-trading-automation'
     return `/learn/course/${id}`
   }
 

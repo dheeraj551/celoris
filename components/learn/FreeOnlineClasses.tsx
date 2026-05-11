@@ -112,7 +112,8 @@ const ClassCard = ({ item }: { item: ClassItem }) => {
             'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
             'speak-with-confidence-static': '/learn/speak-with-confidence',
             'essential-python-ai-static': '/courses/essential-python-for-ai-development',
-            'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai'
+            'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai',
+            'python-trading-automation-static': '/courses/python-for-trading-automation'
         };
         return staticRoutes[item.id] || `/learn/course/${item.id}`;
     })();
