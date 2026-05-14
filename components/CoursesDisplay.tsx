@@ -1247,6 +1247,29 @@ export default function CoursesDisplay({
       }))
     },
     {
+      id: 'adobe-photoshop-with-ai-static',
+      title: 'Adobe Photoshop with AI — Complete Course for Designers',
+      subject: 'Design',
+      grade_level: 'Intermediate',
+      description: 'Supercharge your design workflow with Adobe Photoshop CC 2024 AI features. Master Generative Fill, Neural Filters, Firefly integration, and AI-assisted retouching.',
+      target_audience: 'Graphic Designers, Content Creators, Photographers, Marketers',
+      instructor_name: 'Celoris Expert Trainer',
+      course_duration: '24 Hours (8 Modules)',
+      price: 14999,
+      course_image_url: '/photoshop-ai-hero.png',
+      is_featured: true,
+      created_at: new Date().toISOString(),
+      course_modules: Array(8).fill(null).map((_, i) => ({
+        id: `apai-m${i}`,
+        module_number: i + 1,
+        title: `Module ${i + 1}`,
+        description: '',
+        estimated_duration: 180,
+        is_published: true,
+        course_topics: []
+      }))
+    },
+    {
       id: 'capcut-pro-viral-reels-static',
       title: 'CapCut Pro: Create Viral Reels in 30 Days',
       subject: 'Design',
@@ -1355,6 +1378,7 @@ export default function CoursesDisplay({
     if (id === 'agentic-ai-masterclass-static') return '/courses/agentic-ai-masterclass'
     if (id === 'essential-python-ai-static') return '/courses/essential-python-for-ai-development'
     if (id === 'master-premiere-pro-ai-static') return '/courses/master-premiere-pro-ai'
+    if (id === 'adobe-photoshop-with-ai-static') return '/courses/adobe-photoshop-with-ai'
     if (id === 'capcut-pro-viral-reels-static') return '/courses/capcut-pro-viral-reels'
     if (id === 'vibe-coding-mastery-static') return '/courses/vibe-coding-mastery'
     if (id === 'class-12-physics-static') return '/courses/cbse-class-12-physics-complete-course'
