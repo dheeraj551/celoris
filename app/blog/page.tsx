@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'adobe-photoshop-ai-guide-2025',
+      title: "Adobe Photoshop with AI: The Complete Guide for Designers in 2025",
+      slug: 'adobe-photoshop-ai-guide-2025',
+      excerpt: "Master Firefly, Generative Fill, and Neural Filters in Photoshop CC. Learn how AI is changing the design workflow in 2025.",
+      featured_image_url: '/photoshop-ai-hero.png',
+      author_name: 'Celoris Expert Trainer',
+      category: 'Design • AI Tools • Photoshop',
+      reading_time: 8,
+      published_at: '2026-05-15T12:00:00Z',
+    },
+    {
       id: 'build-local-ai-with-ollama-supabase-python',
       title: "Build a Local AI That Remembers You — Project Series Class 01",
       slug: 'build-local-ai-with-ollama-supabase-python',

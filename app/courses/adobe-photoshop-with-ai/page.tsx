@@ -471,6 +471,26 @@ export default function AdobePhotoshopAI() {
                                 "Photoshop has changed more in the last year than in the previous twenty. This course is your bridge to the AI-augmented future of design."
                             </p>
                         </div>
+
+                        {/* Related Reading */}
+                        <div className="pt-8 border-t border-white/5 space-y-6">
+                            <h4 className="text-white font-black italic uppercase tracking-tighter text-xl flex items-center gap-3">
+                                <FileText className="h-6 w-6 text-emerald-500" />
+                                Deep Dive: Expert Insights
+                            </h4>
+                            <div className="grid grid-cols-1 gap-4">
+                                <Link 
+                                    href="/blog/adobe-photoshop-ai-guide-2025" 
+                                    className="p-6 rounded-[2rem] bg-[#0d1321]/40 border border-white/5 hover:border-emerald-500/30 transition-all group flex items-center justify-between"
+                                >
+                                    <div className="space-y-1">
+                                        <div className="text-sm font-black text-white italic uppercase tracking-tight group-hover:text-emerald-400 transition-colors">Adobe Photoshop with AI: The 2025 Guide</div>
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">Learn how Generative Fill and Neural Filters are changing design</div>
+                                    </div>
+                                    <ArrowRight className="h-5 w-5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Sidebar */}

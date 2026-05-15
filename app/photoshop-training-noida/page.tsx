@@ -635,6 +635,8 @@ export default function PhotoshopTrainingNoida() {
                             <Link href="/adobe-illustrator-course-noida" className="hover:text-blue-400 transition-colors">Illustrator Noida</Link>
                             <Link href="/digital-marketing-course-noida" className="hover:text-blue-400 transition-colors">Digital Marketing Noida</Link>
                             <Link href="/blog/best-photoshop-training-noida" className="hover:text-blue-400 transition-colors">Best Training Blog</Link>
+                            <Link href="/blog/adobe-photoshop-ai-guide-2025" className="hover:text-blue-400 transition-colors">Photoshop AI Guide 2025</Link>
+                            <Link href="/courses/adobe-photoshop-with-ai" className="hover:text-blue-400 transition-colors">AI Course Curriculum</Link>
                             <Link href="/learn" className="hover:text-blue-400 transition-colors">Learn More</Link>
                         </div>
                     </div>
