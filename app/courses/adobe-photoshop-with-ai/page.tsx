@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, BookOpen, Zap, Lightbulb, Cpu, Radio, BarChart, Server, Bot, Database, Code, Terminal, Layers, Brain, FlaskConical, Filter, Video, Music, Type, Wand2, Languages, Image as ImageIcon, Sparkles } from "lucide-react"
+import { ArrowLeft, ArrowRight, Clock, Users, Star, Award, Play, CheckCircle, BookOpen, Zap, Lightbulb, Cpu, Radio, BarChart, Server, Bot, Database, Code, Terminal, Layers, Brain, FlaskConical, Filter, Video, Music, Type, Wand2, Languages, Image as ImageIcon, Sparkles, FileText } from "lucide-react"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
