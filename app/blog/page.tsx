@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-python-training-noida',
+      title: "Best Python Training in Noida (2026) — Complete Guide",
+      slug: 'best-python-training-noida',
+      excerpt: "Looking for the best Python training in Noida? This guide covers top courses, fees, curriculum, AI/ML scope, and career paths. Free demo available.",
+      featured_image_url: '/python_noida.png',
+      author_name: 'Celoris Team',
+      category: 'Python • Noida • AI Career',
+      reading_time: 9,
+      published_at: '2026-05-20T12:00:00Z',
+    },
+    {
       id: 'adobe-photoshop-ai-guide-2025',
       title: "Adobe Photoshop with AI: The Complete Guide for Designers in 2025",
       slug: 'adobe-photoshop-ai-guide-2025',

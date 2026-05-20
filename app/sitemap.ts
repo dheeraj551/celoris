@@ -119,6 +119,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/blog/best-python-training-noida`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/blog/adobe-photoshop-ai-guide-2025`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
