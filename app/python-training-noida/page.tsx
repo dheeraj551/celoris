@@ -5,19 +5,19 @@ import {
     ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, BookOpen, Zap, 
     Lightbulb, MapPin, Smartphone, MessageSquare, Phone, Globe, ShieldCheck, 
     TrendingUp, BarChart3, Target, Megaphone, Share2, Mail, FileText, MousePointer2, Search,
-    Image, Palette, Layers, Scissors, Type, Camera, Wand2, Briefcase
+    Code2, Layout, Database, Server, Cpu, Github, Terminal, Binary
 } from "lucide-react"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
-export default function PhotoshopTrainingNoida() {
+export default function PythonTrainingNoida() {
     useEffect(() => {
-        document.title = "Adobe Photoshop Training in Noida | Celoris — Book Free Demo"
+        document.title = "Python Training in Noida | Celoris — Book Free Demo"
 
         const metaDescription = document.querySelector('meta[name="description"]')
-        const descriptionText = "Learn Adobe Photoshop in Noida from certified trainers. Photo editing, retouching, graphic design & more. Online & offline. Free demo available. Book today!"
+        const descriptionText = "Learn Python in Noida from expert trainers. Data analysis, automation, AI/ML, web development & more. Online & offline. Free demo available. Book today!"
         if (metaDescription) {
             metaDescription.setAttribute("content", descriptionText)
         } else {
@@ -29,100 +29,127 @@ export default function PhotoshopTrainingNoida() {
     }, [])
 
     const pageData = {
-        title: "Adobe Photoshop Training in Noida",
-        subtitle: "Learn photo editing, digital retouching, graphic design, and visual content creation from certified Adobe Photoshop trainers in Noida.",
-        heroDescription: "Build a professional portfolio of real design work. Online and offline batches available across Noida, Greater Noida, and Ghaziabad. Book Your FREE Demo Class Today.",
+        title: "Python Training in Noida",
+        subtitle: "Learn Python programming from basics to advanced — data analysis, automation, web development, and AI/ML applications.",
+        heroDescription: "Taught by expert trainers with real industry experience. Online and offline batches available across Noida, Greater Noida, and Ghaziabad. Book Your FREE Demo Class Today.",
         whatsappNumber: "+91 90847 18101",
         whatsappLink: "https://wa.me/919084718101",
-        overview: "Adobe Photoshop is the world's most widely used image editing and graphic design tool — and one of the most in-demand creative skills for jobs in Noida's design, marketing, and media industries. Whether you want to work as a graphic designer, photo editor, social media manager, or freelancer, Photoshop is the first tool every creative professional needs to master.",
+        overview: "Python is the world's most popular programming language and the foundation of India's fastest-growing career fields — data science, artificial intelligence, and automation. Whether you are a complete beginner, a working professional looking to upskill, or a business owner who wants to automate repetitive tasks, Celoris Python training in Noida is designed for your specific goals.",
         courseDetails: [
-            { label: "Course Name", value: "Adobe Photoshop Training (Basic to Advanced)" },
-            { label: "Location", value: "Noida — Sector 18, 22, 62, 63, 125, Greater Noida | Also Online" },
+            { label: "Course Name", value: "Python Training (Basic to Advanced + AI/ML)" },
+            { label: "Location", value: "Noida — Sector 18, 62, 63, 125, Greater Noida | Also Online" },
             { label: "Mode", value: "At Student's Home | At Trainer's Home | Online via Zoom/Meet" },
-            { label: "Duration", value: "4–8 Weeks (flexible based on level)" },
+            { label: "Duration", value: "4–12 Weeks (Basic to Data Science/AI track)" },
             { label: "Batch Size", value: "1-on-1 or Small Group (max 5 students)" },
             { label: "Language", value: "Hindi + English (Hinglish)" },
             { label: "Certification", value: "Celoris Course Completion Certificate" },
+            { label: "Contact", value: "+91 90847 18101 | support@celorisdesigns.com" }
         ],
         curriculum: [
             {
-                module: "Module 1: Photoshop Basics (Week 1)",
+                module: "Module 1: Python Fundamentals (Week 1–2)",
                 topics: [
-                    "Photoshop interface — panels, toolbox, layers, workspace setup",
-                    "Selection tools — marquee, lasso, magic wand, quick selection",
-                    "Basic image adjustments — brightness, contrast, levels, curves",
-                    "Crop, rotate, and resize — understanding resolution and canvas size",
-                    "Saving files — PSD, JPEG, PNG, PDF export formats"
+                    "Python installation, IDE setup — VS Code, PyCharm, Jupyter Notebook",
+                    "Variables, data types, operators, and expressions",
+                    "Control flow — if/else, for loops, while loops, break/continue",
+                    "Functions — defining, calling, arguments, return values, scope",
+                    "Data structures — lists, tuples, dictionaries, sets",
+                    "String manipulation — slicing, formatting, built-in methods",
+                    "File handling — reading and writing text and CSV files",
+                    "Error handling — try/except blocks and debugging techniques"
                 ],
                 icon: Lightbulb
             },
             {
-                module: "Module 2: Layers & Masking (Week 2)",
+                module: "Module 2: Intermediate Python (Week 3–4)",
                 topics: [
-                    "Layer types — pixel, adjustment, shape, text, smart object layers",
-                    "Blend modes — multiply, screen, overlay and creative applications",
-                    "Layer masks — non-destructive editing techniques",
-                    "Clipping masks — applying textures and effects to specific layers",
-                    "Layer styles — drop shadow, glow, bevel, stroke, gradient overlay",
-                    "Smart objects — non-destructive transformations and filters"
+                    "Object-Oriented Programming — classes, objects, inheritance, polymorphism",
+                    "Modules and packages — importing, pip, virtual environments",
+                    "List comprehensions and lambda functions",
+                    "Regular expressions — pattern matching and text processing",
+                    "Working with APIs — requests library, JSON parsing",
+                    "Database basics — SQLite with Python, CRUD operations",
+                    "Introduction to NumPy — arrays, operations, broadcasting"
                 ],
-                icon: Layers
+                icon: Binary
             },
             {
-                module: "Module 3: Photo Retouching & Restoration (Week 3–4)",
+                module: "Module 3: Data Analysis with Python (Week 5–6)",
                 topics: [
-                    "Skin retouching — frequency separation technique",
-                    "Healing brush, clone stamp, spot healing — removing blemishes",
-                    "Dodge and burn — professional portrait enhancement",
-                    "Background replacement and sky replacement",
-                    "Object removal and content-aware fill",
-                    "Old photo restoration techniques",
-                    "Color grading — cinematic looks using curves and color balance"
+                    "Pandas — DataFrames, Series, importing CSV/Excel data",
+                    "Data cleaning — handling nulls, duplicates, data type conversion",
+                    "Data manipulation — groupby, merge, pivot, apply",
+                    "Data visualization — Matplotlib and Seaborn charts",
+                    "Exploratory Data Analysis (EDA) on real datasets",
+                    "Working with Excel files using openpyxl and pandas",
+                    "Exporting analysis results to reports"
                 ],
-                icon: Camera
+                icon: BarChart3
             },
             {
-                module: "Module 4: Graphic Design & Typography (Week 5–6)",
+                module: "Module 4: Automation & Web Scraping (Week 7–8)",
                 topics: [
-                    "Working with text — fonts, character panel, paragraph styles",
-                    "Creating social media graphics — Instagram posts, stories, banners",
-                    "Poster and flyer design — layout principles and visual hierarchy",
-                    "Logo design basics in Photoshop",
-                    "Business card and visiting card design",
-                    "Print design — bleed, margins, CMYK color mode for print"
+                    "Task automation — automating file operations, email sending, reports",
+                    "Web scraping — BeautifulSoup and requests for extracting web data",
+                    "Selenium basics — browser automation for testing and scraping",
+                    "Scheduling Python scripts with cron and Windows Task Scheduler",
+                    "Building automation scripts for real business use cases"
                 ],
-                icon: Type
+                icon: Cpu
             },
             {
-                module: "Module 5: Advanced Techniques & Portfolio (Week 7–8)",
+                module: "Module 5: AI/ML Introduction & Web Dev (Week 9–12)",
                 topics: [
-                    "Photo manipulation and compositing — combining multiple images",
-                    "Double exposure and creative blending effects",
-                    "Batch processing — automating repetitive tasks with Actions",
-                    "Camera Raw — non-destructive photo editing workflow",
-                    "Exporting for web — optimizing images for websites and social media",
-                    "Building a design portfolio of 10+ finished projects"
+                    "Machine learning basics — supervised, unsupervised, regression, classification",
+                    "Scikit-learn — training models, evaluation metrics, cross-validation",
+                    "Flask basics — building simple web applications with Python",
+                    "Introduction to OpenAI API and LLM integration with Python",
+                    "Building a complete data project — end-to-end from data to insight",
+                    "Deploying Python projects to cloud platforms"
                 ],
-                icon: Briefcase
+                icon: Database
             }
         ],
+        pricing: [
+            { name: "Basic Python", price: "2,500", duration: "4 Weeks", focus: "Beginners, Students", topics: "Core Python, OOP, File Handling, APIs" },
+            { name: "Data Analysis", price: "4,999", duration: "8 Weeks", focus: "Analysts, Professionals", topics: "Python + Pandas + Visualization + Automation" },
+            { name: "AI/ML Mastery", price: "8,000", duration: "12 Weeks", focus: "Career Switchers, Developers", topics: "Full stack + ML + Flask + LLM Integration" }
+        ],
         whyChooseUs: [
-            "Trainers with real-world design experience — not just software instructors",
-            "Portfolio-first approach — every student finishes with 10+ real design projects",
-            "1-on-1 attention — maximum 5 students per batch, never overcrowded",
+            "Trainers with real industry experience in data science, automation, and AI applications",
+            "Project-based learning — 10+ real Python projects across data, automation, and web",
+            "Small batches — maximum 5 students, 1-on-1 sessions available",
             "Home visit sessions across all Noida sectors and Greater Noida",
+            "Covers the exact skills demanded by Noida's IT and analytics companies",
             "Flexible timing — morning, evening, and weekend batches",
-            "Learn industry workflows — the way professional designers actually work",
-            "Lifetime WhatsApp support for doubt clearing after course completion",
-            "Free 30-minute demo — try before you pay, no pressure"
+            "Lifetime WhatsApp support — doubt clearing even after course completion",
+            "Free 30-minute demo — try before you pay, no pressure whatsoever"
         ],
         whoIsItFor: [
-            "Students pursuing design, media, fashion, or arts who need Photoshop as a core skill",
-            "Photographers who want to edit and retouch their own work professionally",
-            "Social media managers who create visual content for brands and pages",
-            "Marketing professionals who need to design campaign visuals in-house",
-            "Freelancers who want to offer photo editing and graphic design services",
-            "Business owners who want to create their own product images and marketing material"
+            "Freshers from BCA, B.Tech, MCA, B.Sc wanting Python for job placements",
+            "Working professionals in Excel/data roles who want to upgrade to Python",
+            "Business owners who want to automate repetitive manual processes",
+            "Aspiring data scientists and machine learning engineers",
+            "Developers from other languages (Java, C++) switching to Python",
+            "Digital marketers who want to automate reporting and data analysis"
+        ],
+        comparison: [
+            { feature: "Real projects built", celoris: "✅ 10+ projects", local: "⚠️ Limited", youtube: "❌ Tutorial clones" },
+            { feature: "AI/ML coverage", celoris: "✅ Yes", local: "⚠️ Extra cost", youtube: "⚠️ Separate course" },
+            { feature: "Home visit", celoris: "✅ Yes", local: "❌ No", youtube: "❌ No" },
+            { feature: "Batch size", celoris: "✅ Max 5 / 1-on-1", local: "❌ 20-40 students", youtube: "❌ No interaction" },
+            { feature: "Free demo", celoris: "✅ Yes", local: "❌ Rarely", youtube: "✅ Always free" },
+            { feature: "Lifetime support", celoris: "✅ WhatsApp", local: "❌ No", youtube: "❌ No" },
+            { feature: "Certificate", celoris: "✅ Yes", local: "✅ Yes", youtube: "⚠️ Some" },
+            { feature: "Price", celoris: "₹2,500–8,000", local: "₹15,000–60,000", youtube: "Free–₹5,000" }
+        ],
+        jobs: [
+            { role: "Python Developer", salary: "₹3.5L – ₹8L / year", skills: "Core Python, OOP, APIs, Flask/Django" },
+            { role: "Data Analyst", salary: "₹3L – ₹7L / year", skills: "Python, Pandas, SQL, Visualization" },
+            { role: "Data Scientist", salary: "₹6L – ₹15L / year", skills: "Python, ML, Statistics, Scikit-learn" },
+            { role: "Automation Engineer", salary: "₹3.5L – ₹7L / year", skills: "Python, Selenium, Scripting" },
+            { role: "ML Engineer", salary: "₹8L – ₹20L / year", skills: "Python, ML, Deep Learning, Cloud" },
+            { role: "Freelance Python Dev", salary: "₹3L – ₹15L / year", skills: "Python + any specialization" }
         ],
         areasCovered: [
             "Noida: Sector 18, 22, 37, 44, 50, 56, 62, 63, 76, 93, 100, 120, 125, 135, 137",
@@ -132,42 +159,42 @@ export default function PhotoshopTrainingNoida() {
         ],
         testimonials: [
             {
-                name: "Anjali R.",
-                location: "Noida Sector 50",
-                text: "I had zero design experience when I started. By the end of the course I had 12 finished projects in my portfolio and landed a social media designer role at a Noida startup within a month.",
+                name: "Amit R.",
+                location: "Noida Sector 62",
+                text: "I was doing manual Excel reporting for 3 hours every day. After the Python automation module, I wrote a script that does the same job in 4 minutes. My manager was amazed.",
                 rating: 5
             },
             {
-                name: "Vikram S.",
+                name: "Priyanka S.",
                 location: "Greater Noida",
-                text: "The retouching techniques I learned changed my photography business completely. My clients now get professional edited photos and I charge 3x what I used to.",
+                text: "Started from zero coding knowledge. By the end of the data analysis track I had built 3 real projects using real datasets and landed a data analyst role at a Noida startup.",
                 rating: 5
             }
         ],
         faq: [
             {
-                question: "How much does Photoshop training cost in Noida?",
-                answer: "At Celoris, Photoshop training starts at ₹2,500 for the Basic plan (4 weeks) and goes up to ₹8,000 for the Mastery 1-on-1 plan (8 weeks). All prices are transparent with no hidden fees. WhatsApp us at +91 90847 18101 for details."
+                question: "How much does Python training cost in Noida?",
+                answer: "At Celoris, Python training starts at ₹2,500 for the Basic plan (4 weeks) and goes up to ₹8,000 for the AI/ML Mastery plan (12 weeks). All prices are transparent with no hidden fees. WhatsApp us at +91 90847 18101 for details."
             },
             {
-                question: "Can I learn Photoshop with no design background?",
-                answer: "Yes. Our Basic plan is designed for complete beginners. We start with the interface and fundamental tools before moving to more advanced techniques. Many of our most successful students had zero design experience before joining."
+                question: "Can I learn Python with no programming background?",
+                answer: "Yes. Our Basic plan is designed for complete beginners. We start with variables and basic logic before progressing to data structures and functions. Many of our most successful students had never written a single line of code before joining."
             },
             {
                 question: "Can the trainer come to my home in Noida?",
-                answer: "Yes. Celoris trainers offer home-visit sessions across all Noida sectors, Greater Noida, and nearby Ghaziabad. You can also choose fully online sessions via Zoom or Google Meet."
+                answer: "Yes. Celoris trainers offer home-visit sessions across all Noida sectors, Greater Noida, and nearby Ghaziabad. Online sessions are also available via Zoom or Google Meet."
             },
             {
-                question: "Is Photoshop still relevant in 2026 with AI tools available?",
-                answer: "Absolutely. AI tools like Adobe Firefly are built INTO Photoshop — knowing Photoshop means you can use AI features effectively. Employers and clients still expect Photoshop proficiency as a baseline skill. AI enhances Photoshop; it does not replace it."
+                question: "Is Python good for getting a job in Noida in 2026?",
+                answer: "Absolutely. Python is the most in-demand programming language in Noida's IT and analytics sector. Whether you target data analysis, automation, web development, or AI/ML — Python is the entry point for all of these career paths."
             },
             {
-                question: "Do I need to buy Adobe Photoshop for the course?",
-                answer: "Adobe Photoshop requires a subscription (~₹1,675/month for single app). During the course your trainer will guide you on the most cost-effective plan. We also cover the free trial period so you can get started without immediate cost."
+                question: "How is Python different from web development courses?",
+                answer: "Python is a general-purpose language used across data science, automation, AI, and web development. Web development courses (HTML, CSS, JavaScript, React) focus on building websites and frontend applications. Python is more powerful for data, automation, and AI work — but both are valuable depending on your goal."
             },
             {
                 question: "Do I get a certificate after the course?",
-                answer: "Yes. All students receive a Celoris Course Completion Certificate. You also graduate with a portfolio of 10+ real design projects that demonstrate your skills far more effectively than any certificate alone."
+                answer: "Yes. All students receive a Celoris Course Completion Certificate. You also leave with a GitHub portfolio of 10+ real Python projects — which is what employers in Noida's data and IT sector actually look at."
             }
         ]
     }
@@ -188,14 +215,14 @@ export default function PhotoshopTrainingNoida() {
     const businessJsonLd = {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
-        "name": "Celoris Adobe Photoshop Training Noida",
-        "image": "https://www.celorisdesigns.com/photoshop_noida.png",
-        "@id": "https://www.celorisdesigns.com/photoshop-training-noida",
-        "url": "https://www.celorisdesigns.com/photoshop-training-noida",
+        "name": "Celoris Python Training Noida",
+        "image": "https://www.celorisdesigns.com/python_noida.png",
+        "@id": "https://www.celorisdesigns.com/python-training-noida",
+        "url": "https://www.celorisdesigns.com/python-training-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Sector 18",
+            "streetAddress": "Sector 62",
             "addressLocality": "Noida",
             "addressRegion": "UP",
             "postalCode": "201301",
@@ -203,8 +230,8 @@ export default function PhotoshopTrainingNoida() {
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": 28.5700,
-            "longitude": 77.3200
+            "latitude": 28.6273,
+            "longitude": 77.3725
         },
         "areaServed": {
             "@type": "City",
@@ -213,13 +240,7 @@ export default function PhotoshopTrainingNoida() {
         "openingHoursSpecification": {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
             ],
             "opens": "08:00",
             "closes": "21:00"
@@ -244,7 +265,7 @@ export default function PhotoshopTrainingNoida() {
                     <span>/</span>
                     <Link href="/learn" className="hover:text-blue-400 transition-colors">Learn</Link>
                     <span>/</span>
-                    <span className="text-slate-100 line-clamp-1 italic">Photoshop Training Noida</span>
+                    <span className="text-slate-100 line-clamp-1 italic">Python Training Noida</span>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
@@ -255,19 +276,18 @@ export default function PhotoshopTrainingNoida() {
                         <div className="space-y-8">
                             <div className="flex flex-wrap gap-3 mb-4">
                                 <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase italic transform -skew-x-12">
-                                    Certified Adobe Trainers
+                                    Noida's Best Tech Hub
                                 </span>
                                 <span className="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase italic">
-                                    10+ Portfolio Projects
+                                    AI/ML & Automation
                                 </span>
                                 <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase italic">
                                     Book Free Demo
                                 </span>
                             </div>
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white italic uppercase tracking-tighter leading-[0.9]">
-                                <span className="block">Adobe Photoshop</span>
-                                <span className="block">Training</span>
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 block tracking-normal mt-2">
+                                <span className="block">Python Training</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-500 block tracking-normal mt-2">
                                     in Noida
                                 </span>
                             </h1>
@@ -280,12 +300,12 @@ export default function PhotoshopTrainingNoida() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
                                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0d1321]/40 border border-white/5">
-                                    <Palette className="h-5 w-5 text-blue-500" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">Graphic Design</span>
+                                    <Terminal className="h-5 w-5 text-blue-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">Basic to Advanced</span>
                                 </div>
                                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0d1321]/40 border border-white/5">
-                                    <Camera className="h-5 w-5 text-blue-500" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">Photo Retouching</span>
+                                    <Github className="h-5 w-5 text-blue-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest italic text-slate-300">10+ Projects</span>
                                 </div>
                                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0d1321]/40 border border-white/5">
                                     <ShieldCheck className="h-5 w-5 text-blue-500" />
@@ -311,12 +331,12 @@ export default function PhotoshopTrainingNoida() {
 
                         {/* Hero Image */}
                         <div className="relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
                             <Card className="relative overflow-hidden border-0 bg-[#0d1321]/40 backdrop-blur-3xl rounded-[2.5rem] shadow-3xl">
                                 <div className="aspect-video relative overflow-hidden flex items-center justify-center bg-[#00120d]">
                                     <img
-                                        src="/photoshop_noida.png"
-                                        alt="Adobe Photoshop Training Noida"
+                                        src="/python_noida.png"
+                                        alt="Python Training Noida"
                                         className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60" />
@@ -330,15 +350,11 @@ export default function PhotoshopTrainingNoida() {
                                 <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
                                     <Zap className="h-8 w-8 text-blue-500" />
                                 </div>
-                                Course Fees — Photoshop Training Noida
+                                Course Fees — Python Training Noida
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {[
-                                    { name: "Basic", price: "2,500", focus: "Beginners, Students", duration: "4 Weeks", topics: "Tools, Layers, Basic Retouching, Social Media Graphics" },
-                                    { name: "Advanced", price: "4,999", focus: "Designers, Photographers", duration: "8 Weeks", topics: "Retouching + Compositing + Print Design + Portfolio" },
-                                    { name: "Mastery (1-on-1)", price: "8,000", focus: "Freelancers, Professionals", duration: "8 Weeks", topics: "Full course + Custom projects + Client workflow" },
-                                ] .map((plan, i) => (
-                                    <Card key={i} className="bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-blue-500/30 transition-all text-center flex flex-col">
+                                {pageData.pricing.map((plan, i) => (
+                                    <Card key={i} className={`bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-blue-500/30 transition-all text-center flex flex-col ${i === 2 ? 'border-blue-500/30 ring-1 ring-blue-500/20' : ''}`}>
                                         <div className="text-[10px] font-black text-blue-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
                                         <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
                                         <div className="space-y-2 mb-8 flex-1">
@@ -355,7 +371,7 @@ export default function PhotoshopTrainingNoida() {
                             </div>
                             <div className="p-6 rounded-[2rem] bg-blue-500/5 border border-blue-500/10 text-center">
                                 <p className="text-sm font-black text-blue-400 uppercase italic tracking-widest">
-                                    Every Plan Includes: ✓ 10+ design projects ✓ Print & digital ready files ✓ Celoris Certificate ✓ Lifetime WhatsApp Support
+                                    Every Plan Includes: ✓ 10+ coding projects ✓ GitHub portfolio ready ✓ Celoris Certificate ✓ Lifetime WhatsApp Support
                                 </p>
                             </div>
                         </section>
@@ -384,8 +400,8 @@ export default function PhotoshopTrainingNoida() {
                         {/* Curriculum */}
                         <section className="space-y-8">
                             <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">
-                                <div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
-                                    <TrendingUp className="h-8 w-8 text-indigo-500" />
+                                <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                                    <Terminal className="h-8 w-8 text-emerald-500" />
                                 </div>
                                 What You Will Learn — Full Curriculum
                             </h2>
@@ -429,7 +445,7 @@ export default function PhotoshopTrainingNoida() {
                                 <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
                                     <Star className="h-8 w-8 text-blue-500" />
                                 </div>
-                                Why Learn Photoshop from Celoris in Noida?
+                                Why Learn Python from Celoris in Noida?
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {pageData.whyChooseUs.map((item, index) => (
@@ -462,7 +478,7 @@ export default function PhotoshopTrainingNoida() {
                                 ))}
                             </div>
                             <p className="text-sm text-slate-500 font-bold uppercase italic tracking-widest pl-4 border-l-2 border-blue-500">
-                                No prior design experience required. We start from the very basics.
+                                No prior programming experience required for the Basic plan. We start from absolute zero.
                             </p>
                         </section>
 
@@ -472,7 +488,7 @@ export default function PhotoshopTrainingNoida() {
                                 <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20">
                                     <Share2 className="h-8 w-8 text-purple-500" />
                                 </div>
-                                Celoris vs Others in Noida
+                                Celoris vs Other Python Training Options in Noida
                             </h2>
                             <div className="overflow-x-auto">
                                 <table className="w-full border-collapse bg-[#0d1321]/40 rounded-[2.5rem] overflow-hidden">
@@ -480,21 +496,12 @@ export default function PhotoshopTrainingNoida() {
                                         <tr className="border-b border-white/5">
                                             <th className="p-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Feature</th>
                                             <th className="p-6 text-center text-[10px] font-black text-blue-500 uppercase tracking-widest italic bg-blue-500/5">Celoris</th>
-                                            <th className="p-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Local Institute</th>
-                                            <th className="p-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest italic">YouTube</th>
+                                            <th className="p-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Coding Institute</th>
+                                            <th className="p-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest italic">YouTube/Udemy</th>
                                         </tr>
                                     </thead>
                                     <tbody className="text-sm font-bold italic uppercase tracking-tight">
-                                        {[
-                                            { feature: "Real project portfolio", celoris: "✅ 10+ projects", local: "⚠️ Limited", youtube: "❌ Self-managed" },
-                                            { feature: "Home visit option", celoris: "✅ Yes", local: "❌ No", youtube: "❌ No" },
-                                            { feature: "Batch size", celoris: "✅ Max 5 / 1-on-1", local: "❌ 15-30 students", youtube: "❌ No interaction" },
-                                            { feature: "Trainer experience", celoris: "✅ Real design work", local: "⚠️ Varies", youtube: "⚠️ Unknown" },
-                                            { feature: "Free demo", celoris: "✅ Yes", local: "❌ Rarely", youtube: "✅ Free always" },
-                                            { feature: "Lifetime support", celoris: "✅ WhatsApp", local: "❌ No", youtube: "❌ No" },
-                                            { feature: "Certificate", celoris: "✅ Yes", local: "✅ Yes", youtube: "⚠️ Some" },
-                                            { feature: "Price", celoris: "₹2,500–8,000", local: "₹5,000–25,000", youtube: "Free–₹3,000" },
-                                        ].map((row, i) => (
+                                        {pageData.comparison.map((row, i) => (
                                             <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                                 <td className="p-6 text-slate-300">{row.feature}</td>
                                                 <td className="p-6 text-center text-blue-400 bg-blue-500/5">{row.celoris}</td>
@@ -507,30 +514,28 @@ export default function PhotoshopTrainingNoida() {
                             </div>
                         </section>
 
-                        {/* Jobs Section */}
+                        {/* Jobs Prospects */}
                         <section className="space-y-8">
                             <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">
-                                <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
-                                    <Briefcase className="h-8 w-8 text-emerald-500" />
+                                <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                                    <BarChart3 className="h-8 w-8 text-blue-500" />
                                 </div>
-                                Photoshop Jobs in Noida — What You Can Earn
+                                Python Jobs in Noida — What You Can Earn
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[
-                                    { role: "Graphic Designer", salary: "₹2.5L – ₹5L / year", skills: "Photoshop + Illustrator + InDesign" },
-                                    { role: "Photo Editor", salary: "₹2L – ₹4L / year", skills: "Photoshop retouching + color grading" },
-                                    { role: "Social Media Designer", salary: "₹2.5L – ₹4.5L / year", skills: "Photoshop + Canva + content strategy" },
-                                    { role: "UI/UX Designer", salary: "₹4L – ₹9L / year", skills: "Photoshop + Figma + user research" },
-                                    { role: "Video Thumbnail Designer", salary: "₹2L – ₹5L / year", skills: "Photoshop + basic video knowledge" },
-                                    { role: "Freelance Retoucher", salary: "₹2L – ₹10L / year", skills: "Advanced Photoshop + client management" },
-                                ].map((job, i) => (
-                                    <Card key={i} className="bg-[#0d1321]/40 border-white/5 rounded-[2rem] p-6 hover:border-emerald-500/30 transition-all">
-                                        <div className="text-lg font-black text-white uppercase italic tracking-tighter mb-2">{job.role}</div>
-                                        <div className="text-emerald-400 font-black text-sm mb-4 italic uppercase">{job.salary}</div>
-                                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">{job.skills}</div>
-                                    </Card>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {pageData.jobs.map((job, i) => (
+                                    <div key={i} className="p-6 rounded-[2rem] bg-[#0d1321]/40 border border-white/5 hover:border-blue-500/20 transition-all flex flex-col justify-between">
+                                        <div>
+                                            <div className="text-lg font-black text-white italic uppercase tracking-tight">{job.role}</div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">{job.skills}</div>
+                                        </div>
+                                        <div className="text-xl font-black text-blue-400 mt-4 italic">{job.salary}</div>
+                                    </div>
                                 ))}
                             </div>
+                            <p className="text-sm text-slate-500 font-bold uppercase italic tracking-widest pl-4 border-l-2 border-emerald-500">
+                                Noida's IT corridor — home to HCL, Wipro, Adobe, Info Edge, and hundreds of data-driven startups — is one of the strongest markets in India for Python professionals.
+                            </p>
                         </section>
 
                         {/* Areas Covered */}
@@ -599,13 +604,13 @@ export default function PhotoshopTrainingNoida() {
                         </section>
 
                         {/* Closing CTA banner */}
-                        <div className="p-10 rounded-[3rem] bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-white/5 relative overflow-hidden group shadow-3xl">
+                        <div className="p-10 rounded-[3rem] bg-gradient-to-br from-blue-500/10 to-emerald-500/10 border border-white/5 relative overflow-hidden group shadow-3xl">
                             <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-125 transition-transform duration-1000 group-hover:rotate-12">
-                                <Megaphone className="h-40 w-40 text-white" />
+                                <Cpu className="h-40 w-40 text-white" />
                             </div>
-                            <h3 className="text-4xl font-black text-white italic tracking-tighter uppercase mb-6 relative z-10">Start Your Photoshop Journey in Noida Today</h3>
+                            <h3 className="text-4xl font-black text-white italic tracking-tighter uppercase mb-6 relative z-10">Start Your Python Journey in Noida Today</h3>
                             <p className="text-lg text-slate-400 leading-relaxed italic font-bold uppercase tracking-wider relative z-10 mb-8">
-                                Join thousands of students who have already built real design skills with Celoris. Book your free demo class today.
+                                Join thousands of students who have already built real skills with Celoris. Book your free demo class today.
                             </p>
                             <div className="flex flex-wrap gap-4 relative z-10">
                                 <Link 
@@ -629,16 +634,13 @@ export default function PhotoshopTrainingNoida() {
                         {/* Internal Linking */}
                         <div className="pt-8 border-t border-white/5 flex flex-wrap gap-6 text-[10px] font-black uppercase tracking-[0.2em] italic text-slate-500">
                             <span>Locations:</span>
-                            <Link href="/photoshop-training-gurgaon" className="hover:text-blue-400 transition-colors">Photoshop Gurgaon</Link>
+                            <Link href="/python-training-gurgaon" className="hover:text-blue-400 transition-colors">Python Gurgaon</Link>
                             <span>Related Courses:</span>
-                            <Link href="/python-training-noida" className="hover:text-blue-400 transition-colors">Python Noida</Link>
-                            <Link href="/graphic-designing-course-noida" className="hover:text-blue-400 transition-colors">Graphic Design Noida</Link>
-                            <Link href="/adobe-illustrator-course-noida" className="hover:text-blue-400 transition-colors">Illustrator Noida</Link>
+                            <Link href="/web-development-course-noida" className="hover:text-blue-400 transition-colors">Web Development Noida</Link>
                             <Link href="/digital-marketing-course-noida" className="hover:text-blue-400 transition-colors">Digital Marketing Noida</Link>
-                            <Link href="/blog/best-photoshop-training-noida" className="hover:text-blue-400 transition-colors">Best Training Blog</Link>
-                            <Link href="/blog/adobe-photoshop-ai-guide-2025" className="hover:text-blue-400 transition-colors">Photoshop AI Guide 2025</Link>
-                            <Link href="/courses/adobe-photoshop-with-ai" className="hover:text-blue-400 transition-colors">AI Course Curriculum</Link>
-                            <Link href="/learn" className="hover:text-blue-400 transition-colors">Learn More</Link>
+                            <span>From our Blog:</span>
+                            <Link href="/blog/best-python-training-noida" className="hover:text-blue-400 transition-colors">Best Python Training Noida</Link>
+                            <Link href="/learn" className="hover:text-blue-400 transition-colors">Explore All Courses</Link>
                         </div>
                     </div>
 
@@ -650,7 +652,7 @@ export default function PhotoshopTrainingNoida() {
                                 <CardContent className="p-10">
                                     <div className="text-center mb-10">
                                         <div className="text-sm font-black text-blue-500 italic tracking-[0.3em] uppercase mb-2">Book Free Demo</div>
-                                        <div className="text-2xl font-black text-white italic tracking-tighter uppercase">Adobe Photoshop</div>
+                                        <div className="text-2xl font-black text-white italic tracking-tighter uppercase">Python Training</div>
                                     </div>
 
                                     <div className="space-y-4 mb-10 text-slate-400">
@@ -671,7 +673,7 @@ export default function PhotoshopTrainingNoida() {
                                     <div className="space-y-6 pt-10 border-t border-white/5">
                                         {[
                                             { icon: Award, text: "Celoris Certificate", color: "text-blue-500" },
-                                            { icon: Palette, text: "Portfolio Projects", color: "text-blue-500" },
+                                            { icon: Github, text: "GitHub Portfolio Ready", color: "text-emerald-500" },
                                             { icon: MapPin, text: "Home Visits Available", color: "text-blue-500" },
                                             { icon: Clock, text: "Flexible Batches", color: "text-orange-500" },
                                         ].map((item, idx) => (
@@ -688,11 +690,11 @@ export default function PhotoshopTrainingNoida() {
                             <Card className="bg-[#0d1321]/40 backdrop-blur-3xl border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
                                 <CardHeader className="pb-4 px-10 pt-10">
                                     <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">Expert Trainers</div>
-                                    <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">Celoris Design Team</CardTitle>
+                                    <CardTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">Celoris Tech Team</CardTitle>
                                 </CardHeader>
                                 <CardContent className="px-10 pb-10">
                                     <p className="text-xs text-slate-500 font-bold uppercase leading-relaxed italic mb-8">
-                                        Trainers with real-world design experience. Portfolio-first approach where every student finishes with 10+ real design projects.
+                                        Trainers with real industry experience in data science, automation, and AI applications. Learn from practitioners, not just theorists.
                                     </p>
                                     <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest italic pt-6 border-t border-white/5">
                                         <div className="flex items-center gap-2 text-blue-500">
@@ -700,7 +702,7 @@ export default function PhotoshopTrainingNoida() {
                                             <span>4.9/5 Rating</span>
                                         </div>
                                         <div className="text-slate-500">
-                                            5,000+ Students
+                                            3,000+ Students
                                         </div>
                                     </div>
                                 </CardContent>

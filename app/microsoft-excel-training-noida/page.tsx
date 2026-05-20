@@ -545,6 +545,7 @@ export default function ExcelTrainingNoida() {
                             <Link href="/microsoft-excel-training-gurgaon" className="hover:text-emerald-400 transition-colors">Gurgaon</Link>
                             <Link href="/microsoft-excel-training-delhi" className="hover:text-emerald-400 transition-colors">Delhi</Link>
                             <span>Related Courses:</span>
+                            <Link href="/python-training-noida" className="hover:text-emerald-400 transition-colors">Python Noida</Link>
                             <Link href="/digital-marketing-course-noida" className="hover:text-emerald-400 transition-colors">Digital Marketing Noida</Link>
                             <Link href="/learn" className="hover:text-emerald-400 transition-colors">Trainer Listing</Link>
                         </div>
