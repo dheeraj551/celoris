@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         images: ['/blog-mt5-python.png'],
     },
     alternates: {
-        canonical: 'https://www.celoris.in/blog/metatrader-5-python-ai-trading-automation',
+        canonical: '/blog/metatrader-5-python-ai-trading-automation',
     },
     other: {
         'article:author': 'Celoris Editorial',

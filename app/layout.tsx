@@ -48,7 +48,6 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://www.celorisdesigns.com"),
   alternates: {
-    canonical: "/",
     languages: {
       'en-IN': '/',
     },

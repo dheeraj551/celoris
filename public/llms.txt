@@ -1,13 +1,29 @@
-# Vibe Coding Mastery
-A curriculum for building apps where AI does the heavy lifting.
+# Celoris
+India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes, and daily freelance gigs. No credit card required. Built for creators and learners in India.
 
-## Key Principles
-- Syntax is secondary to intent.
-- Use Cursor/Windsurf for the 'Command Center' workflow.
-- Prioritize Spec-Driven Development.
+## Core Features & Syllabi
+- [Free Online Video Editor](https://www.celorisdesigns.com/video-studio) - High-performance timeline-based browser video editor.
+- [Creative Image Studio](https://www.celorisdesigns.com/image-studio) - Design assets, remove backgrounds, and compose graphics.
+- [AI Explorer](https://www.celorisdesigns.com/ai-explorer) - Explore 20+ state-of-the-art AI models for text, image, and video generation.
+- [Teach & Earn Platform](https://www.celorisdesigns.com/teach) - Join as a trainer, host classes, and monetize expertise.
+- [Earn Gigs Marketplace](https://www.celorisdesigns.com/earn) - Daily freelance and creation gigs for creators.
 
-## Important Links
-- [Vibe Coding Syllabus](/courses/vibe-coding-mastery)
-- [Multimodal AI Syllabus](/courses/mastering-multimodal-ai)
-- [Accelerating Science Syllabus](/courses/accelerating-science-generative-ai-for-research-innovation)
-- [Project Templates](https://github.com/celoris-designs)
+## Featured Syllabi
+
+### AI & Developer Courses
+- [Vibe Coding Mastery](https://www.celorisdesigns.com/courses/vibe-coding-mastery) - App building where AI does the heavy lifting.
+- [Mastering Multimodal AI](https://www.celorisdesigns.com/courses/mastering-multimodal-ai) - Build with Vision, Voice, and Multi-modal APIs.
+- [Accelerating Science with GenAI](https://www.celorisdesigns.com/courses/accelerating-science-generative-ai-for-research-innovation) - Generative AI for academic and industrial research.
+- [Agentic AI Systems Design](https://www.celorisdesigns.com/courses/agentic-ai-systems-design-build-deploy) - Build and scale production-ready AI agent frameworks.
+- [LangChain in Action](https://www.celorisdesigns.com/courses/langchain-in-action-real-workflows) - Orchestrate real-world LLM flows and agents.
+
+### Professional Skills & Academics
+- [Digital Marketing with AI Tools](https://www.celorisdesigns.com/courses/digital-marketing-using-ai-tools) - Lead generation, SEO, and copywriting.
+- [Adobe Photoshop with AI](https://www.celorisdesigns.com/courses/adobe-photoshop-with-ai) - Next-gen photo editing and manipulation.
+- [CBSE Class 10 Physics Master Course](https://www.celorisdesigns.com/courses/cbse-class-10-physics-light-electricity-magnetism-energy) - Complete course covering light, electricity, and energy.
+- [Microsoft Excel Advanced Training](https://www.celorisdesigns.com/microsoft-excel-training-noida) - Advanced functions, pivot tables, and VBA.
+
+## Reference Links
+- [Detailed Site Catalog](https://www.celorisdesigns.com/llms-full.txt) - Detailed courses syllabi and summaries.
+- [Developer Templates](https://github.com/celoris-designs)
+- [Official Website](https://www.celorisdesigns.com)

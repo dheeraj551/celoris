@@ -1,0 +1,14 @@
+# AI Discovery Parameters for Celoris
+# Last Updated: 2026-05-22
+
+User-agent: *
+Allow: /blog
+Allow: /courses
+Allow: /ai-tools
+Allow: /about
+
+# Indexes optimized for LLM RAG models
+Index: https://www.celorisdesigns.com/llms.txt
+Index: https://www.celorisdesigns.com/llms-full.txt
+Feed: https://www.celorisdesigns.com/api/ai-discovery
+Sitemap: https://www.celorisdesigns.com/sitemap.xml

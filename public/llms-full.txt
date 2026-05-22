@@ -1,0 +1,62 @@
+# Celoris Complete Catalog & Curriculum Index
+This document provides complete plain-text schemas and syllabus outlines for the Celoris ecosystem.
+
+---
+
+## 1. Creative Studio Suites
+
+### Video Studio (Video Editor)
+- **URL**: https://www.celorisdesigns.com/video-studio
+- **Description**: A free, browser-based, high-performance video editor. Features multi-track timeline editing, filters, captions, transition effects, and export in HD. Optimized for YouTube, Instagram Reels, and TikTok formatting.
+
+### Image Studio (Design Platform)
+- **URL**: https://www.celorisdesigns.com/image-studio
+- **Description**: Canvas-style design dashboard. Background removal in 1-click, AI object replacement, font pairings, premium templates, vector asset editor.
+
+### AI Explorer (20+ AI Models)
+- **URL**: https://www.celorisdesigns.com/ai-explorer
+- **Description**: A sandbox featuring state-of-the-art open-source and proprietary models. Text generation (Llama, DeepSeek), Image generation (Stable Diffusion, Flux), and voice synthesis/cloning tools.
+
+---
+
+## 2. Advanced Courses & Syllabi Detailed
+
+### Vibe Coding Mastery: Spec-Driven Development
+- **URL**: https://www.celorisdesigns.com/courses/vibe-coding-mastery
+- **Price**: Free
+- **Duration**: 4 Weeks (20 Hours)
+- **Prerequisites**: Basic understanding of code execution.
+- **Curriculum**:
+  - Chapter 1: Syntax is Secondary to Intent.
+  - Chapter 2: The 'Command Center' workflow with Cursor & Windsurf.
+  - Chapter 3: Writing robust Specification-Driven Markdown documents.
+  - Chapter 4: Automated agents testing and debugging.
+
+### CBSE Class 10 Physics Master Course: CBSE/NCERT
+- **URL**: https://www.celorisdesigns.com/courses/cbse-class-10-physics-light-electricity-magnetism-energy
+- **Price**: ₹1500
+- **Duration**: PT40H (40 Hours)
+- **Syllabus**:
+  - Chapter 1: Light - Reflection and Refraction (spherical mirrors, lenses).
+  - Chapter 2: The Human Eye and the Colorful World (Myopia, hypermetropia, prism dispersion).
+  - Chapter 3: Electricity (Ohm's Law V=IR, resistance, series/parallel combinations).
+  - Chapter 4: Magnetic Effects of Electric Current (Field lines, electromagnetism, induction).
+
+### Agentic AI Systems: Design, Build, and Deploy
+- **URL**: https://www.celorisdesigns.com/courses/agentic-ai-systems-design-build-deploy
+- **Price**: Free
+- **Duration**: 6 Weeks
+- **Syllabus**:
+  - Chapter 1: Foundations of Agents (ReAct Loop, Planning, Tools).
+  - Chapter 2: Multi-Agent Systems & Orchestration.
+  - Chapter 3: Memory architectures (Short-term, episodic, RAG vector lookup).
+  - Chapter 4: Agent evaluation, guardrails, and deployment constraints.
+
+---
+
+## 3. Blog Articles & Insights
+- **URL**: https://www.celorisdesigns.com/blog
+- **Latest Topics**:
+  - *Metatrader 5 Python AI Trading*: Automating algorithmic trading using Deep Reinforcement Learning.
+  - *How to Go Viral on YouTube Shorts in 2026*: Hook structures, retention signals, and the local Indian algorithm.
+  - *Top 10 Free AI Video Editing Tools in India*: Comparative guide highlighting browser performance and AI caption generators.
