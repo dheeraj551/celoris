@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-graphic-designing-course-noida',
+      title: "Best Graphic Designing Course in Noida (2026) — Complete Guide",
+      slug: 'best-graphic-designing-course-noida',
+      excerpt: "Looking for the best graphic designing course in Noida? This guide covers top options, software, fees, portfolio tips, and career scope. Free demo available.",
+      featured_image_url: '/photoshop_noida.png',
+      author_name: 'Celoris Team',
+      category: 'Graphic Design • Noida • Creative Career',
+      reading_time: 9,
+      published_at: '2026-05-24T12:00:00Z',
+    },
+    {
       id: 'best-python-training-noida',
       title: "Best Python Training in Noida (2026) — Complete Guide",
       slug: 'best-python-training-noida',
