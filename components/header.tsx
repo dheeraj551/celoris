@@ -60,6 +60,7 @@ export default function Header() {
     pathname?.startsWith("/celoris-3d") ||
     pathname?.startsWith("/courses") ||
     pathname?.startsWith("/teach") ||
+    pathname?.startsWith("/marketing") ||
     pathname === "/login" ||
     pathname === "/register";
 

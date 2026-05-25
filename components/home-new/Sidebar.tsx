@@ -17,7 +17,11 @@ import {
     Info,
     Mail,
     GraduationCap,
-    HardDrive
+    HardDrive,
+    Megaphone,
+    TrendingUp,
+    Target,
+    Share2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -30,6 +34,15 @@ const MENU_GROUPS = [
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
             { name: "Celoris 3D", icon: UserCircle, href: "/celoris-3d" },
+        ]
+    },
+    {
+        title: "Marketing",
+        items: [
+            { name: "Vibe Marketing", icon: Share2, href: "/marketing/social" },
+            { name: "Ad Campaigns", icon: Target, href: "/marketing/campaigns" },
+            { name: "Analytics", icon: TrendingUp, href: "/marketing/analytics" },
+            { name: "Promotions", icon: Megaphone, href: "/marketing/promotions" },
         ]
     },
     {
