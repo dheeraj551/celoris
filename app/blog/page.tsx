@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-social-media-marketing-course-noida',
+      title: "Best Social Media Marketing Course in Noida (2026) — Complete Guide",
+      slug: 'best-social-media-marketing-course-noida',
+      excerpt: "Looking for the best social media marketing course in Noida? This guide covers platforms, fees, scope, and how to choose the right training. Free demo available.",
+      featured_image_url: '/digimarck.png',
+      author_name: 'Celoris Team',
+      category: 'Social Media • Noida • Career Guide',
+      reading_time: 8,
+      published_at: '2026-05-26T12:00:00Z',
+    },
+    {
       id: 'best-graphic-designing-course-noida',
       title: "Best Graphic Designing Course in Noida (2026) — Complete Guide",
       slug: 'best-graphic-designing-course-noida',
