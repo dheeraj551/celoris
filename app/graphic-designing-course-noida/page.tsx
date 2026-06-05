@@ -42,6 +42,7 @@ export default function GraphicDesigningCourseNoida() {
             { label: "Batch Size", value: "1-on-1 or Small Group (max 5 students)" },
             { label: "Language", value: "Hindi + English (Hinglish)" },
             { label: "Certification", value: "Celoris Course Completion Certificate" },
+            { label: "Contact", value: "+91 90847 18101 | support@celorisdesigns.com" },
         ],
         curriculum: [
             {
@@ -214,10 +215,20 @@ export default function GraphicDesigningCourseNoida() {
             "latitude": 28.6273,
             "longitude": 77.3725
         },
-        "areaServed": {
-            "@type": "City",
-            "name": "Noida"
-        },
+        "areaServed": [
+            {
+                "@type": "City",
+                "name": "Noida"
+            },
+            {
+                "@type": "City",
+                "name": "Greater Noida"
+            },
+            {
+                "@type": "City",
+                "name": "Ghaziabad"
+            }
+        ],
         "openingHoursSpecification": {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": [
@@ -338,7 +349,7 @@ export default function GraphicDesigningCourseNoida() {
                                 <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
                                     <Zap className="h-8 w-8 text-emerald-500" />
                                 </div>
-                                Course Pricing & Plans
+                                Course Fees — Graphic Designing Course Noida
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {[
@@ -480,7 +491,7 @@ export default function GraphicDesigningCourseNoida() {
                                 <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20">
                                     <Share2 className="h-8 w-8 text-purple-500" />
                                 </div>
-                                Celoris vs Other Options in Noida
+                                Celoris vs Other Graphic Design Options in Noida
                             </h2>
                             <div className="overflow-x-auto">
                                 <table className="w-full border-collapse bg-[#0d1321]/40 rounded-[2.5rem] overflow-hidden">

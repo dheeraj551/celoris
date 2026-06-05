@@ -19,16 +19,27 @@ export default function MarketingHome() {
   };
 
   const renderAnimatedLetters = (text: string, delayOffset: number) => {
-    return text.split('').map((char, index) => (
-      <motion.span
-        key={`${text}-${index}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: delayOffset + index * 0.03, duration: 0.5, ease: "easeOut" }}
-        className="inline-block whitespace-pre"
-      >
-        {char}
-      </motion.span>
+    const words = text.split(' ');
+    let globalCharIndex = 0;
+
+    return words.map((word, wordIdx) => (
+      <span key={`${word}-${wordIdx}`} className="inline-block whitespace-nowrap">
+        {word.split('').map((char) => {
+          const index = globalCharIndex++;
+          return (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: delayOffset + index * 0.03, duration: 0.5, ease: "easeOut" }}
+              className="inline-block"
+            >
+              {char}
+            </motion.span>
+          );
+        })}
+        {wordIdx < words.length - 1 && <span className="inline-block">&nbsp;</span>}
+      </span>
     ));
   };
 
@@ -48,14 +59,14 @@ export default function MarketingHome() {
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#10B981]">Launch your business online in under 10 minutes</span>
           </span>
-          <h1 className="text-5xl md:text-[84px] font-black tracking-tighter mb-6 max-w-4xl mx-auto leading-[0.85]">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[80px] font-extrabold tracking-tight mb-8 max-w-5xl mx-auto leading-[1.15]">
             {renderAnimatedLetters("YOUR AI ", 0.1)}
             <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#34D399]">
               {renderAnimatedLetters("MARKETING TEAM", 0.34)}
             </span>
             {renderAnimatedLetters(", READY TO WORK.", 0.76)}
           </h1>
-          <p className="text-lg md:text-xl text-white/50 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
             Get a professional website, expert ad campaigns, and real leads delivered to your phone. We do the work, you grow your business.
           </p>
 

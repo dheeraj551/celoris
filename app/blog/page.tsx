@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-video-editing-course-noida',
+      title: "Best Video Editing Course in Noida (2026) — Complete Guide",
+      slug: 'best-video-editing-course-noida',
+      excerpt: "Looking for the best video editing course in Noida? This guide covers software, fees, career paths, and how to choose the right trainer. Free demo available.",
+      featured_image_url: '/vid_edit_noida.png',
+      author_name: 'Celoris Team',
+      category: 'Video Editing • Noida • Creative Career',
+      reading_time: 8,
+      published_at: '2026-06-05T12:00:00Z',
+    },
+    {
       id: 'best-social-media-marketing-course-noida',
       title: "Best Social Media Marketing Course in Noida (2026) — Complete Guide",
       slug: 'best-social-media-marketing-course-noida',
