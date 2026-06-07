@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'ai-engineer-vs-generative-ai-engineer',
+      title: "AI Engineer vs Generative AI Engineer: What's the Real Difference?",
+      slug: 'ai-engineer-vs-generative-ai-engineer',
+      excerpt: "Two of the most in-demand tech roles today share a name — but almost nothing else. Here's a clear, honest breakdown of what each actually does, what tools they use, and which career path is right for you.",
+      featured_image_url: '/any_ai.png',
+      author_name: 'Celoris Learning',
+      category: 'Career & Skill Development',
+      reading_time: 10,
+      published_at: '2026-06-07T12:00:00Z',
+    },
+    {
       id: 'best-video-editing-course-noida',
       title: "Best Video Editing Course in Noida (2026) — Complete Guide",
       slug: 'best-video-editing-course-noida',
