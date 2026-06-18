@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-wordpress-course-noida',
+      title: "Best WordPress Course in Noida (2026) — Complete Guide",
+      slug: 'best-wordpress-course-noida',
+      excerpt: "Looking for the best WordPress course in Noida? Complete guide covering fees, curriculum, WooCommerce, freelance scope, and how to choose the right trainer.",
+      featured_image_url: '/wordpress_noida.png',
+      author_name: 'Celoris Team',
+      category: 'WordPress • Noida • Web Skills',
+      reading_time: 8,
+      published_at: '2026-06-17T12:00:00Z',
+    },
+    {
       id: 'ai-engineer-vs-generative-ai-engineer',
       title: "AI Engineer vs Generative AI Engineer: What's the Real Difference?",
       slug: 'ai-engineer-vs-generative-ai-engineer',
