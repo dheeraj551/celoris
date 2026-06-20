@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteClient } from '@/lib/supabase-server';
-import Groq from 'groq-sdk';
+import {
+    zaiChatCompletion,
+    zaiChatStream,
+    createZaiStreamResponse,
+    isZaiConfigured,
+    ZAI_MODEL,
+    type ZaiTool,
+    type ZaiMessage,
+} from '@/lib/zai';
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY || '',
-});
-
-const tools: any[] = [
+const tools: ZaiTool[] = [
     {
         type: 'function',
         function: {
@@ -88,27 +92,25 @@ export async function POST(req: NextRequest) {
         const { messages } = await req.json();
         const supabase = (await createRouteClient()) as any;
 
-        if (!process.env.GROQ_API_KEY) {
-            console.error("GROQ_API_KEY is missing from environment variables.");
-            return new Response("Error: GROQ_API_KEY is not configured on the server. Please add it to your environment variables.", { status: 500 });
+        if (!isZaiConfigured()) {
+            console.error("ZAI_API_KEY is missing from environment variables.");
+            return new Response("Error: ZAI_API_KEY is not configured on the server. Please add it to your environment variables.", { status: 500 });
         }
 
-        // Format messages for Groq
-        const groqMessages = messages.map((m: any) => ({
+        // Format messages for Z.ai (GLM)
+        const zaiMessages: ZaiMessage[] = messages.map((m: any) => ({
             role: m.role,
             content: m.content,
         }));
 
         // Step 1: Tool detection
-        const completion = await groq.chat.completions.create({
-            model: "llama-3.3-70b-versatile",
-            messages: groqMessages,
-            tools: tools,
-            tool_choice: "auto",
+        const responseMessage = await zaiChatCompletion({
+            messages: zaiMessages,
+            tools,
+            tool_choice: 'auto',
             max_tokens: 1024,
         });
 
-        const responseMessage = completion.choices[0].message;
         const toolCalls = responseMessage.tool_calls;
 
         if (toolCalls && toolCalls.length > 0) {
@@ -153,70 +155,31 @@ export async function POST(req: NextRequest) {
             const toolData = { type: name, results: functionResponse };
 
             // Step 2: Final response with tool results (Streaming)
-            const secondResponseMessages = [
-                ...groqMessages,
-                responseMessage,
+            const secondResponseMessages: ZaiMessage[] = [
+                ...zaiMessages,
+                {
+                    role: 'assistant',
+                    content: responseMessage.content || '',
+                    tool_calls: responseMessage.tool_calls,
+                },
                 {
                     tool_call_id: toolCall.id,
-                    role: "tool",
-                    name: name,
+                    role: 'tool',
+                    name,
                     content: JSON.stringify(functionResponse),
-                }
+                },
             ];
 
-            const stream = await groq.chat.completions.create({
-                model: "llama-3.3-70b-versatile",
-                messages: secondResponseMessages,
-                stream: true,
-            });
-
-            return createStreamResponse(stream, toolData);
+            const stream = zaiChatStream({ messages: secondResponseMessages });
+            return createZaiStreamResponse(stream, toolData);
         } else {
             // No tool call, just stream directly
-            const stream = await groq.chat.completions.create({
-                model: "llama-3.3-70b-versatile",
-                messages: groqMessages,
-                stream: true,
-            });
-            return createStreamResponse(stream, null);
+            const stream = zaiChatStream({ messages: zaiMessages });
+            return createZaiStreamResponse(stream, null);
         }
 
     } catch (error: any) {
-        console.error('Groq Error:', error);
+        console.error(`Z.ai (${ZAI_MODEL}) Error:`, error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
-}
-
-function createStreamResponse(stream: any, toolData: any) {
-    const encoder = new TextEncoder();
-
-    const readableStream = new ReadableStream({
-        async start(controller) {
-            if (toolData) {
-                const dataStr = `__DATA__${JSON.stringify(toolData)}__END_DATA__\n`;
-                controller.enqueue(encoder.encode(dataStr));
-            }
-
-            try {
-                for await (const chunk of stream) {
-                    const content = chunk.choices[0]?.delta?.content || "";
-                    if (content) {
-                        controller.enqueue(encoder.encode(content));
-                    }
-                }
-            } catch (err) {
-                console.error("Stream processing error:", err);
-            } finally {
-                controller.close();
-            }
-        },
-    });
-
-    return new Response(readableStream, {
-        headers: {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-        },
-    });
 }

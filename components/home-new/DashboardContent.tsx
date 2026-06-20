@@ -102,7 +102,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
     const [messages, setMessages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showModelSelect, setShowModelSelect] = useState(false);
-    const [selectedModel, setSelectedModel] = useState({ name: 'Groq Llama 3.1', provider: 'Meta', isPremium: false });
+    const [selectedModel, setSelectedModel] = useState({ name: 'GLM-4.5', provider: 'Z.ai', isPremium: false });
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
@@ -232,7 +232,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 : "bg-emerald-500/5 border-emerald-500/10 mr-auto max-w-[90%]"
                         )}>
                             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                                {m.role === 'user' ? 'You' : 'Groq Llama 3.1'}
+                                {m.role === 'user' ? 'You' : 'GLM-4.5'}
                             </div>
                             <div className="text-white text-lg font-light leading-relaxed">
                                 {m.content}
@@ -242,7 +242,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                     {isLoading && (
                         <div className="flex flex-col gap-2 p-6 rounded-[2rem] border bg-emerald-500/5 border-emerald-500/10 mr-auto max-w-[90%] animate-pulse">
                             <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">
-                                Groq is thinking...
+                                GLM is thinking...
                             </div>
                             <div className="h-4 w-48 bg-white/10 rounded-full" />
                         </div>
@@ -592,13 +592,13 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                         </div>
                                     </div>
                                     {/* 3 */}
-                                    <div onClick={() => { setSelectedModel({ name: 'Groq Llama 3.1', provider: 'Meta', isPremium: false }); setShowModelSelect(false); }} className="flex-shrink-0 w-64 bg-transparent border border-white/10 rounded-2xl p-4 hover:border-purple-500/30 transition-all cursor-pointer group relative overflow-hidden">
-                                        {selectedModel.name === 'Groq Llama 3.1' && <div className="absolute top-0 right-0 p-2 opacity-50"><Zap className="w-6 h-6 text-purple-500" /></div>}
+                                    <div onClick={() => { setSelectedModel({ name: 'GLM-4.5', provider: 'Z.ai', isPremium: false }); setShowModelSelect(false); }} className="flex-shrink-0 w-64 bg-transparent border border-white/10 rounded-2xl p-4 hover:border-purple-500/30 transition-all cursor-pointer group relative overflow-hidden">
+                                        {selectedModel.name === 'GLM-4.5' && <div className="absolute top-0 right-0 p-2 opacity-50"><Zap className="w-6 h-6 text-purple-500" /></div>}
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
-                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen-color.svg" alt="Qwen" className="w-full h-full object-contain" />
+                                                <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/glmv-color.svg" alt="GLM" className="w-full h-full object-contain" />
                                             </div>
-                                            <span className="text-sm font-bold text-slate-300">Qwen3.5 397B A17B</span>
+                                            <span className="text-sm font-bold text-slate-300">GLM-4.5 Flash</span>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="w-6 h-6 rounded-full bg-[#151618] flex items-center justify-center overflow-hidden p-0.5">
@@ -633,7 +633,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                     { title: 'Qwen', by: 'Alibaba', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen-color.svg' },
                                     { title: 'Mistral', by: 'Mistral AI', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/mistral-color.svg' },
                                     { title: 'DeepSeek', by: 'DeepSeek', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg', premium: 'PRO' },
-                                    { title: 'Llama', by: 'Meta', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/meta-color.svg' },
+                                    { title: 'GLM', by: 'Z.ai', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/glmv-color.svg' },
                                     { title: 'Gemini', by: 'Google', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg', premium: 'MAX' },
                                     { title: 'Claude', by: 'Anthropic', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude-color.svg', premium: 'MAX' },
                                     { title: 'GLM', by: 'Z.ai', iconUrl: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/glmv-color.svg' },
@@ -660,7 +660,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                             <div className="text-left flex flex-col items-start leading-tight">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors">{provider.title}</span>
-                                                    {provider.title !== 'Llama' && <Lock className="w-3 h-3 text-slate-500 group-hover:text-amber-500 transition-colors" />}
+                                                    {provider.title !== 'GLM' && <Lock className="w-3 h-3 text-slate-500 group-hover:text-amber-500 transition-colors" />}
                                                 </div>
                                                 <span className="text-[10px] text-slate-500">by {provider.by}</span>
                                             </div>

@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import Groq from 'groq-sdk';
-
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY || '',
-});
+import { zaiChatStream, createZaiStreamResponse, isZaiConfigured, ZAI_MODEL } from '@/lib/zai';
 
 export async function POST(req: Request) {
     try {
         const { message, history, subject } = await req.json();
 
         const geminiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-        const groqKey = process.env.GROQ_API_KEY;
+        const zaiKey = process.env.ZAI_API_KEY;
 
         // Shared System Prompt
         let subjectScope = subject;
@@ -64,45 +60,19 @@ export async function POST(req: Request) {
             return data.message.content;
         };
 
-        if (groqKey) {
+        if (zaiKey && isZaiConfigured()) {
             try {
-                const stream = await groq.chat.completions.create({
-                    model: "llama-3.3-70b-versatile",
+                const stream = zaiChatStream({
                     messages: [
                         { role: "system", content: systemPrompt },
                         ...history,
-                        { role: "user", content: message }
+                        { role: "user", content: message },
                     ],
-                    stream: true,
                 });
 
-                const encoder = new TextEncoder();
-                const readableStream = new ReadableStream({
-                    async start(controller) {
-                        try {
-                            for await (const chunk of stream) {
-                                const content = chunk.choices[0]?.delta?.content || "";
-                                if (content) {
-                                    controller.enqueue(encoder.encode(content));
-                                }
-                            }
-                        } catch (err) {
-                            console.error("AI Tutor Groq Stream Error:", err);
-                        } finally {
-                            controller.close();
-                        }
-                    },
-                });
-
-                return new Response(readableStream, {
-                    headers: {
-                        'Content-Type': 'text/event-stream',
-                        'Cache-Control': 'no-cache',
-                        'Connection': 'keep-alive',
-                    },
-                });
-            } catch (groqErr: any) {
-                console.error("Groq Failed in Tutor, trying Gemini:", groqErr.message);
+                return createZaiStreamResponse(stream);
+            } catch (zaiErr: any) {
+                console.error(`Z.ai (${ZAI_MODEL}) failed in Tutor, trying Gemini:`, zaiErr.message);
             }
         }
 

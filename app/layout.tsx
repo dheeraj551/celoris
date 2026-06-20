@@ -9,9 +9,8 @@ import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
-
-import { Analytics } from "@vercel/analytics/next"
-import { LazyMotion, domAnimation } from "framer-motion"
+import { MotionProvider } from "@/components/providers/MotionProvider"
+import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -199,7 +198,7 @@ export default function RootLayout({
         <ReCaptchaProvider siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
           <AuthProvider>
             <PresenceProvider>
-              <LazyMotion features={domAnimation}>
+              <MotionProvider>
                 <div className="min-h-screen flex flex-col">
                   <Header />
                   <main className="flex-1">
@@ -209,11 +208,11 @@ export default function RootLayout({
 
                   <Footer />
                 </div>
-              </LazyMotion>
+              </MotionProvider>
             </PresenceProvider>
           </AuthProvider>
           <Toaster />
-          <Analytics />
+          <AnalyticsProvider />
         </ReCaptchaProvider>
       </body>
     </html>
