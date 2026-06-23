@@ -13,7 +13,11 @@ const ZAI_API_KEY = process.env.ZAI_API_KEY || '';
 
 // Default to glm-4.5-flash: it is the limited-time-free tier that works out of
 // the box. glm-4.6 requires a paid balance (error 1113 otherwise).
-export const ZAI_MODEL = process.env.ZAI_MODEL || 'glm-4.5-flash';
+export const ZAI_MODEL = (() => {
+    let model = (process.env.ZAI_MODEL || 'glm-4.5-flash').toLowerCase();
+    if (model === 'glm-4.5') model = 'glm-4.5-flash';
+    return model;
+})();
 
 export interface ZaiMessage {
     role: 'system' | 'user' | 'assistant' | 'tool';
