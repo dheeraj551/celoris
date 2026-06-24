@@ -28,6 +28,10 @@ import { CommunityFeed } from './CommunityFeed';
 import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 import { createClient } from "@/lib/supabase-client";
 
+import { VideoStudioFeature } from './VideoStudioFeature';
+import { ImageStudioFeature } from './ImageStudioFeature';
+import { Celoris3DFeature } from './Celoris3DFeature';
+
 function OnlineTrainersMarquee() {
     const [trainers, setTrainers] = useState<any[]>([]);
 
@@ -151,124 +155,204 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 </motion.div>
             </div>
 
-            {/* Uploaded Banner Section */}
-            <div className="max-w-4xl mx-auto mb-20">
-                <div className="relative group overflow-hidden rounded-[2rem] border border-white/5 shadow-2xl">
-                    {/* Add your image path below */}
-                    <img src="/banner.png" alt="Uploaded Banner" className="w-full h-auto object-cover" />
-                </div>
-            </div>
+            {/* Hero Banner Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="max-w-5xl mx-auto mb-20"
+            >
+                <div className="relative overflow-hidden rounded-[2rem] border border-white/8 bg-[#080C14] shadow-[0_0_80px_rgba(16,185,129,0.08)]">
+                    {/* Background glow effects */}
+                    <div className="absolute top-0 right-1/3 w-[500px] h-[300px] bg-emerald-500/8 rounded-full blur-[120px] pointer-events-none" />
+                    <div className="absolute bottom-0 left-1/4 w-[400px] h-[250px] bg-cyan-500/6 rounded-full blur-[100px] pointer-events-none" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,rgba(16,185,129,0.04)_0%,transparent_60%)] pointer-events-none" />
 
-            {/* Suggestions Section 1 */}
-            <div className="mb-12">
-                <motion.h2
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-xl font-bold text-white tracking-tight mb-6"
-                >
-                    You might want to try
-                </motion.h2>
-                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
-                    {/* Item 1 */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <Link href="/video-studio" className="flex-shrink-0 w-[400px] h-32 glass-card glass-card-hover p-8 rounded-card-lg transition-all relative overflow-hidden group flex items-center justify-between">
-                            <span className="text-2xl font-bold text-white">Video Studio</span>
-                            <div className="relative w-48 h-full flex items-center justify-center translate-x-4">
-                                <img
-                                    src="/images/homepage/new-video-cta-transparent.png"
-                                    className="w-full h-full object-contain scale-150 group-hover:scale-[1.6] transition-transform duration-500"
-                                    alt="Video Studio - Create videos with AI"
-                                    loading="lazy"
-                                />
+                    {/* Dot grid */}
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+                    <div className="relative z-10 p-8 md:p-12">
+                        {/* Top Label */}
+                        <div className="flex justify-center mb-8">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/8 text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">
+                                <Sparkles className="w-3 h-3" />
+                                Digital Solutions That Drive Real Growth
+                                <Sparkles className="w-3 h-3" />
                             </div>
-                        </Link>
-                    </motion.div>
+                        </div>
 
-                    {/* Item 2 */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <Link href="/image-studio" className="flex-shrink-0 w-80 h-32 glass-card glass-card-hover p-4 pl-6 rounded-card-lg transition-all relative overflow-hidden group flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                                <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-2 uppercase tracking-tight">New</span>
-                                <div className="mt-1">
-                                    <span className="text-base font-bold text-white block leading-tight">
-                                        Image Studio
-                                    </span>
-                                    <span className="text-base font-bold text-white block leading-tight">
-                                        Creative Engine
-                                        <Sparkles className="w-3 h-3 text-rose-500 inline-block ml-1" />
-                                    </span>
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                            {/* Left Content */}
+                            <div className="flex flex-col gap-6">
+                                <div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white leading-[1.1] tracking-tight mb-2">
+                                        We Build. We Market.
+                                    </h2>
+                                    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                                        You Grow.
+                                    </h2>
+                                </div>
+
+                                <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                                    Your one-stop partner for Website Development, Mobile Apps, Digital Marketing,{' '}
+                                    <span className="text-emerald-400 font-semibold">AI Solutions</span> &amp; Corporate Training.
+                                </p>
+
+                                {/* Service Icons */}
+                                <div className="grid grid-cols-3 gap-3">
+                                    {[
+                                        { icon: Globe, label: 'Web Dev' },
+                                        { icon: PlayCircle, label: 'Mobile Apps' },
+                                        { icon: Zap, label: 'Digital Mktg' },
+                                        { icon: BrainCircuit, label: 'AI Solutions' },
+                                        { icon: Star, label: 'Training' },
+                                        { icon: Sparkles, label: 'Creative' },
+                                    ].map(({ icon: Icon, label }, i) => (
+                                        <div key={i} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/3 border border-white/6 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all cursor-pointer group">
+                                            <Icon className="w-4 h-4 text-slate-400 group-hover:text-emerald-400 transition-colors" />
+                                            <span className="text-[9px] text-slate-500 group-hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors text-center">{label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* CTA Buttons */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <Link
+                                        href="/courses"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-black text-sm hover:from-emerald-400 hover:to-cyan-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] group"
+                                    >
+                                        Get Started Today
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </Link>
+                                    <Link
+                                        href="/contact"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 bg-white/4 text-white font-semibold text-sm hover:border-emerald-500/40 hover:bg-emerald-500/8 transition-all"
+                                    >
+                                        <Video className="w-4 h-4 text-emerald-400" />
+                                        Book Free Consultation
+                                    </Link>
                                 </div>
                             </div>
-                            <div className="w-32 h-full flex items-center justify-center translate-x-4">
-                                <img
-                                    src="/images/homepage/ai-video-tool-transparent.png"
-                                    className="w-full h-full object-contain scale-[1.4] group-hover:scale-[1.5] transition-transform duration-500"
-                                    alt="Image Studio - AI-powered image creation"
-                                    loading="lazy"
-                                />
-                            </div>
-                        </Link>
-                    </motion.div>
 
-                    {/* Item 3 */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <Link href="/celoris-3d" className="flex-shrink-0 w-80 h-32 glass-card glass-card-hover p-4 pl-6 rounded-3xl transition-all relative overflow-hidden group flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                                <span className="text-base font-bold text-white block leading-tight truncate pr-2">Celoris 3D</span>
-                            </div>
-                            <div className="w-32 h-full flex items-center justify-center translate-x-4">
-                                <img
-                                    src="/images/homepage/celoris-3d-character.png"
-                                    className="w-full h-full object-contain scale-[1.3] group-hover:scale-[1.4] transition-transform duration-500"
-                                    alt="Celoris 3D - 3D design tool"
-                                    loading="lazy"
-                                />
-                            </div>
-                        </Link>
-                    </motion.div>
-                </div>
-            </div>
+                            {/* Right: Hero Image + Floating Stats */}
+                            <div className="relative h-[340px] md:h-[400px] hidden lg:block">
+                                {/* Main photo */}
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.8 }}
+                                    className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
+                                >
+                                    <img
+                                        src="/any.jpg"
+                                        alt="Creative professional at work"
+                                        className="w-full h-full object-cover object-center"
+                                    />
+                                    {/* Dark gradient overlay so cards pop */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#080C14]/80 via-[#080C14]/20 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#080C14]/60" />
+                                </motion.div>
 
-            {/* Live Trainers Teaser */}
-            <div className="mb-12 relative overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-[#0d1321]/80 backdrop-blur-md p-6 flex flex-col md:flex-row items-center gap-6 group shadow-2xl">
-                <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-[#0d1321] to-transparent z-10 pointer-events-none" />
-                <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-[#0d1321] to-transparent z-10 pointer-events-none" />
-                
-                <div className="flex-shrink-0 z-20 text-center md:text-left md:pr-4 md:border-r border-white/5 relative">
-                    <div className="absolute top-1/2 -left-10 w-24 h-24 bg-emerald-500/20 blur-[30px] rounded-full -translate-y-1/2 pointer-events-none" />
-                    <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-1">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                        Live Network
+                                {/* Top-right stat: SEO */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: -12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.4 }}
+                                    className="absolute top-4 right-4 px-4 py-3 rounded-xl bg-[#0F1622]/90 backdrop-blur-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
+                                >
+                                    <div className="text-[8px] text-slate-500 uppercase tracking-widest mb-1">SEO Performance</div>
+                                    <div className="text-2xl font-black text-emerald-400">+187%</div>
+                                    <div className="text-[8px] text-slate-500">Organic Traffic</div>
+                                </motion.div>
+
+                                {/* Top-left: Website Dev card */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -12 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.5 }}
+                                    className="absolute top-4 left-4 w-[160px] rounded-xl bg-[#0F1622]/90 backdrop-blur-xl border border-cyan-500/20 overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.1)]"
+                                >
+                                    <div className="bg-[#0d1321] border-b border-white/5 px-3 py-1.5 flex items-center gap-1.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        <span className="text-[7px] text-slate-400 font-mono tracking-widest">WEBSITE DEV</span>
+                                    </div>
+                                    <div className="p-2.5 flex flex-col gap-1.5">
+                                        {[85, 62, 91].map((val, i) => (
+                                            <div key={i} className="flex items-center gap-1.5">
+                                                <div className="text-[7px] text-slate-500 w-10 shrink-0">{['Traffic', 'Leads', 'Conv.'][i]}</div>
+                                                <div className="flex-1 h-1 rounded-full bg-white/5">
+                                                    <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500" style={{ width: `${val}%` }} />
+                                                </div>
+                                                <span className="text-[7px] text-emerald-400 font-bold">{val}%</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+
+                                {/* Bottom-left: AI Assistant */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.6 }}
+                                    className="absolute bottom-4 left-4 px-4 py-3 rounded-xl bg-[#0F1622]/90 backdrop-blur-xl border border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.1)]"
+                                >
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <BrainCircuit className="w-3 h-3 text-indigo-400" />
+                                        <span className="text-[8px] text-indigo-400 font-bold uppercase tracking-widest">AI Assistant</span>
+                                    </div>
+                                    <div className="text-[9px] text-slate-400">"How can I help you<br />grow your business?"</div>
+                                </motion.div>
+
+                                {/* Bottom-right: App rating */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: 12 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.7 }}
+                                    className="absolute bottom-4 right-4 px-4 py-3 rounded-xl bg-[#0F1622]/90 backdrop-blur-xl border border-violet-500/20 shadow-[0_0_20px_rgba(139,92,246,0.1)]"
+                                >
+                                    <div className="text-[8px] text-slate-500 uppercase tracking-widest mb-1">Mobile App</div>
+                                    <div className="text-xl font-black text-violet-400">4.9★</div>
+                                    <div className="text-[8px] text-slate-500">App Store Rating</div>
+                                </motion.div>
+                            </div>
+                        </div>
+
+                        {/* Bottom Stats Row */}
+                        <div className="mt-10 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {[
+                                { icon: Star, value: '500+', label: 'Projects Delivered', color: 'text-amber-400' },
+                                { icon: BrainCircuit, value: 'AI-Powered', label: 'Solutions for Smarter Growth', color: 'text-emerald-400' },
+                                { icon: Zap, value: 'SEO & Marketing', label: 'Experts Delivering Real Results', color: 'text-cyan-400' },
+                                { icon: Globe, value: 'India Based', label: 'Serving Clients Globally', color: 'text-indigo-400' },
+                            ].map(({ icon: Icon, value, label, color }, i) => (
+                                <div key={i} className="flex items-start gap-3">
+                                    <div className={`mt-0.5 p-2 rounded-lg bg-white/4 border border-white/6`}>
+                                        <Icon className={`w-4 h-4 ${color}`} />
+                                    </div>
+                                    <div>
+                                        <div className={`text-sm font-black ${color}`}>{value}</div>
+                                        <div className="text-[10px] text-slate-500 leading-tight">{label}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    <span className="text-xl font-bold text-white block italic uppercase leading-tight tracking-tight relative z-10">Experts Online<br/>Right Now</span>
                 </div>
-                
-                <div className="flex-1 overflow-hidden relative z-0 flex items-center w-full min-w-0" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
-                     <OnlineTrainersMarquee />
-                </div>
+            </motion.div>
 
-                <div className="flex-shrink-0 z-20 md:pl-4 md:border-l border-white/5">
-                    <Link href="/learn">
-                        <Button className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full px-8 h-12 font-bold text-[11px] uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] group-hover:scale-105 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex gap-2">
-                            <Zap size={14} /> Talk to them
-                        </Button>
-                    </Link>
+            {/* Feature Sections */}
+            <div className="w-full flex flex-col gap-12 items-center mb-24">
+                <div className="w-full">
+                    <VideoStudioFeature />
+                </div>
+                <div className="flex flex-col lg:flex-row gap-8 w-full max-w-[1200px] items-stretch justify-center px-4">
+                    <div className="flex-1 w-full flex justify-center">
+                        <ImageStudioFeature />
+                    </div>
+                    <div className="flex-1 w-full flex justify-center">
+                        <Celoris3DFeature />
+                    </div>
                 </div>
             </div>
 
