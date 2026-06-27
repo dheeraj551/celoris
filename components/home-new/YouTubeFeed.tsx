@@ -148,17 +148,26 @@ export function YouTubeFeed() {
       <Script src="//www.instagram.com/embed.js" strategy="afterInteractive" />
       
       {/* Videos Section */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Box className="w-6 h-6 text-emerald-500" />
-          Celoris 3D
-        </h2>
+      <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-12 mb-12">
+        {/* Background Dot Grid */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
         
-        <div className="relative group/section">
-          <div 
-            ref={scrollRef}
-            className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth snap-x"
-          >
+        {/* Glowing Orbs */}
+        <div className="absolute top-10 right-10 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative z-10">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Box className="w-6 h-6 text-emerald-500" />
+            Celoris 3D
+          </h2>
+          
+          <div className="relative group/section">
+            <div 
+              ref={scrollRef}
+              className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth snap-x"
+            >
             {MOCK_VIDEOS.map((video) => (
               <div key={video.id} className="flex-shrink-0 w-[280px] md:w-[320px] snap-start cursor-pointer group">
                 {/* Thumbnail */}
@@ -221,26 +230,36 @@ export function YouTubeFeed() {
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>
+        </div>
       </div>
 
       {/* Divider */}
       <div className="w-full h-[1px] bg-white/10 mb-8" />
 
       {/* Shorts Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          {/* YouTube Shorts Logo SVG Path */}
-          <svg viewBox="0 0 24 24" className="w-6 h-6 text-red-500 fill-current" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17.77,10.32l-1.2-.5L18,9.06a3.74,3.74,0,0,0-1.34-5.32,3.8,3.8,0,0,0-5.18,1.43L8.13,11a3.75,3.75,0,0,0,1.35,5.32c.17.1.34.18.52.25l1.2.5-1.42.76a3.74,3.74,0,0,0,1.34,5.32,3.8,3.8,0,0,0,5.18-1.43l3.35-5.87h0A3.75,3.75,0,0,0,17.77,10.32ZM10.53,14.65V9.41l4.24,2.62Z"/>
-          </svg>
-          Animated Shorts
-        </h2>
+      <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-red-900/30 overflow-hidden shadow-[0_0_100px_rgba(239,68,68,0.05)] p-8 md:p-12 mb-12">
+        {/* Background Dot Grid */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(239,68,68,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(239,68,68,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+        
+        {/* Glowing Orbs */}
+        <div className="absolute top-10 right-10 w-64 h-64 bg-red-600/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-64 h-64 bg-orange-600/10 rounded-full blur-[80px] pointer-events-none" />
 
-        <div className="relative group/section">
-          <div 
-            ref={shortsScrollRef}
-            className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth snap-x"
-          >
+        <div className="relative z-10">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            {/* YouTube Shorts Logo SVG Path */}
+            <svg viewBox="0 0 24 24" className="w-6 h-6 text-red-500 fill-current" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.77,10.32l-1.2-.5L18,9.06a3.74,3.74,0,0,0-1.34-5.32,3.8,3.8,0,0,0-5.18,1.43L8.13,11a3.75,3.75,0,0,0,1.35,5.32c.17.1.34.18.52.25l1.2.5-1.42.76a3.74,3.74,0,0,0,1.34,5.32,3.8,3.8,0,0,0,5.18-1.43l3.35-5.87h0A3.75,3.75,0,0,0,17.77,10.32ZM10.53,14.65V9.41l4.24,2.62Z"/>
+            </svg>
+            Animated Shorts
+          </h2>
+
+          <div className="relative group/section">
+            <div 
+              ref={shortsScrollRef}
+              className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth snap-x"
+            >
             {MOCK_SHORTS.map((short) => (
               <div key={short.id} className="flex-shrink-0 w-[160px] md:w-[200px] snap-start cursor-pointer group">
                 <div className="relative w-full aspect-[9/16] rounded-xl overflow-hidden mb-3 bg-black/50 pointer-events-auto">
@@ -277,23 +296,33 @@ export function YouTubeFeed() {
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>
+        </div>
       </div>
 
       {/* Divider */}
       <div className="w-full h-[1px] bg-white/10 my-10" />
 
       {/* Instagram Reels Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Instagram className="w-6 h-6 text-pink-500" />
-          Trending Reels
-        </h2>
+      <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-pink-900/30 overflow-hidden shadow-[0_0_100px_rgba(236,72,153,0.05)] p-8 md:p-12 mb-12">
+        {/* Background Dot Grid */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(236,72,153,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(236,72,153,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+        
+        {/* Glowing Orbs */}
+        <div className="absolute top-10 right-10 w-64 h-64 bg-pink-600/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-64 h-64 bg-purple-600/10 rounded-full blur-[80px] pointer-events-none" />
 
-        <div className="relative group/section">
-          <div 
-            ref={reelsScrollRef}
-            className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth snap-x"
-          >
+        <div className="relative z-10">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Instagram className="w-6 h-6 text-pink-500" />
+            Trending Reels
+          </h2>
+
+          <div className="relative group/section">
+            <div 
+              ref={reelsScrollRef}
+              className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth snap-x"
+            >
             {MOCK_REELS.map((reel) => (
               <div key={reel.id} className="flex-shrink-0 w-[220px] md:w-[280px] snap-start cursor-pointer group">
                 <div className="relative w-full aspect-[4/5] md:aspect-[9/16] rounded-2xl overflow-hidden mb-4 bg-black/50 pointer-events-auto shadow-2xl border border-white/5">
@@ -326,6 +355,7 @@ export function YouTubeFeed() {
           >
             <ChevronRight className="w-6 h-6" />
           </button>
+        </div>
         </div>
       </div>
     </div>

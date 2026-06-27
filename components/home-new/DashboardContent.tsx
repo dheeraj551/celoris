@@ -333,27 +333,37 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
             <CommunityFeed />
             
             {/* Testimonials Section */}
-            <section className="mt-32 mb-16 px-4">
-              <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6">
-                  <ShieldCheck size={10} /> Verified Pulse
+            <section className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-emerald-900/30 overflow-hidden shadow-[0_0_100px_rgba(16,185,129,0.05)] p-8 md:p-12 mt-16 mb-16">
+              {/* Background Dot Grid */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+              
+              {/* Glowing Orbs */}
+              <div className="absolute top-10 right-10 w-64 h-64 bg-emerald-600/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute bottom-10 left-10 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] pointer-events-none" />
+              
+              <div className="relative z-10">
+                <div className="text-center mb-16">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6">
+                    <ShieldCheck size={10} /> Verified Pulse
+                  </div>
+                  <h2 className="text-2xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-4">Customer Feedback</h2>
+                  <p className="text-slate-500 font-black uppercase tracking-widest text-[8px] italic">
+                    Direct transmissions from our synchronized node network.
+                  </p>
                 </div>
-                <h2 className="text-2xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-4">Customer Feedback</h2>
-                <p className="text-slate-500 font-black uppercase tracking-widest text-[8px] italic">
-                  Direct transmissions from our synchronized node network.
-                </p>
-              </div>
 
-              <TestimonialsDisplay
-                type="all"
-                page="all"
-                limit={3}
-                layout="grid"
-                showFeatured={false}
-                showImages={true}
-                className="mb-12"
-                initialTestimonials={initialTestimonials}
-              />
+                <TestimonialsDisplay
+                  type="all"
+                  page="all"
+                  limit={3}
+                  layout="grid"
+                  showFeatured={false}
+                  showImages={true}
+                  className="mb-4"
+                  initialTestimonials={initialTestimonials}
+                />
+              </div>
             </section>
 
             <style jsx global>{`

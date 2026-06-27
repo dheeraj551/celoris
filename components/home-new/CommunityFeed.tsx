@@ -75,8 +75,17 @@ export function CommunityFeed() {
     };
 
     return (
-        <div className="w-full text-white font-sans py-12">
-            <div className="flex items-center justify-between mb-8">
+        <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-cyan-900/30 overflow-hidden shadow-[0_0_100px_rgba(6,182,212,0.05)] p-8 md:p-12 mb-12">
+            {/* Background Dot Grid */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(6,182,212,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(6,182,212,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+            
+            {/* Glowing Orbs */}
+            <div className="absolute top-10 right-10 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute bottom-10 left-10 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none" />
+            
+            <div className="relative z-10 w-full text-white font-sans">
+                <div className="flex items-center justify-between mb-8">
                 <div>
                     <h2 className="text-2xl font-bold flex items-center gap-2 mb-1">
                         <Users className="w-6 h-6 text-cyan-400" />
@@ -200,6 +209,7 @@ export function CommunityFeed() {
                         scrollbar-width: none;
                     }
                 `}</style>
+            </div>
             </div>
         </div>
     );
