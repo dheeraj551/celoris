@@ -62,31 +62,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                         </SheetContent>
                     </Sheet>
 
-                    {/* Centered Support Info */}
-                    <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-1 bg-white/5 border border-white/10 px-4 py-1.5 rounded-card-full backdrop-blur-sm"
-                    >
-                        <motion.a 
-                            whileHover={{ scale: 1.05, color: "#10b981" }}
-                            href="mailto:support@celorisdesigns.com" 
-                            className="flex items-center gap-2 text-[10px] font-bold text-slate-400 transition-colors uppercase tracking-widest italic px-2"
-                        >
-                            <Mail className="w-3.5 h-3.5" />
-                            support@celorisdesigns.com
-                        </motion.a>
-                        <div className="h-3 w-px bg-white/10 mx-1" />
-                        <motion.a 
-                            whileHover={{ scale: 1.05, color: "#10b981" }}
-                            href="tel:+919084718101" 
-                            className="flex items-center gap-2 text-[10px] font-bold text-slate-400 transition-colors uppercase tracking-widest italic px-2"
-                        >
-                            <Phone className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                            +91 90847 18101
-                        </motion.a>
-                    </motion.div>
+
+
 
                     <div className="flex-1" /> {/* Spacer to keep the user menu to the right */}
 

@@ -142,8 +142,8 @@ export function VideoStudioFeature() {
               {/* Audio Track */}
               <div className="px-4 py-2 flex items-center opacity-70">
                  <div className="w-full h-6 flex items-center justify-between gap-[2px]">
-                   {[...Array(100)].map((_, i) => (
-                     <div key={i} className="w-1 bg-blue-500/50 rounded-full" style={{ height: `${Math.random() * 100}%` }} />
+                   {[30,55,80,45,70,95,40,60,85,35,65,90,50,75,25,80,45,70,55,85,30,60,90,40,75,50,65,35,80,55,70,25,90,45,60,85,30,75,50,95,40,65,80,35,55,70,45,85,60,30,75,90,50,40,65,35,80,55,70,25,85,45,60,90,30,75,50,95,40,65,80,35,55,70,45,85,60,30,75,50,40,65,35,80,55,70,25,85,45,60,90,30,75,50,95,40,65,80,35,55].map((h, i) => (
+                     <div key={i} className="w-1 bg-blue-500/50 rounded-full" style={{ height: `${h}%` }} />
                    ))}
                  </div>
               </div>
