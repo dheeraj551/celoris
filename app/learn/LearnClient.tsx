@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import { createClient } from "@/lib/supabase-client"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { PostLearningNeedModal } from "@/components/learn/PostLearningNeedModal"
 
 
 
@@ -430,11 +431,12 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             Free classes with real trainers. Learn video editing, AI tools, Excel, spoken English and more. First session free — no credit card needed.
           </motion.p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-10 h-14 font-bold text-sm shadow-xl shadow-emerald-500/20" asChild>
+            <Button size="lg" className="bg-[#0d1321] hover:bg-white/5 border border-white/10 text-white rounded-2xl px-10 h-14 font-bold text-sm shadow-xl" asChild>
               <Link href="/learn/courses" className="flex items-center gap-2">
                 Explore Academy <ArrowRight size={16} />
               </Link>
             </Button>
+            <PostLearningNeedModal />
           </div>
         </div>
       </section>
