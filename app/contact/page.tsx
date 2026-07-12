@@ -20,7 +20,9 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: '',
+    serviceType: '',
+    preferredDate: '',
+    preferredTime: '',
     message: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -41,9 +43,11 @@ export default function ContactPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Invalid email format'
     }
-    if (!formData.subject.trim()) newErrors.subject = 'Subject is required'
+    if (!formData.serviceType.trim()) newErrors.serviceType = 'Service type is required'
+    if (!formData.preferredDate.trim()) newErrors.preferredDate = 'Date is required'
+    if (!formData.preferredTime.trim()) newErrors.preferredTime = 'Time is required'
     if (!formData.message.trim()) {
-      newErrors.message = 'Message is required'
+      newErrors.message = 'Details are required'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -75,8 +79,8 @@ export default function ContactPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Failed to send')
-      toast({ title: "Message Sent!", description: "We'll get back to you shortly.", variant: "default" })
-      setFormData({ name: '', email: '', subject: '', message: '' })
+      toast({ title: "Appointment Requested!", description: "We'll confirm your session shortly.", variant: "default" })
+      setFormData({ name: '', email: '', serviceType: '', preferredDate: '', preferredTime: '', message: '' })
     } catch (error) {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" })
     } finally {
@@ -184,51 +188,48 @@ export default function ContactPage() {
               <ArrowLeft size={14} /> Back to Dashboard
             </Link>
             <h1 className="text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter leading-none mb-6">
-              Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Touch.</span>
+              Book an <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Appointment.</span>
             </h1>
             <p className="text-lg text-slate-400 font-bold uppercase tracking-wide leading-relaxed italic">
-              Have a question or feedback? We'd love to hear from you. <br className="hidden md:block" />
-              Our team usually responds within 24 hours.
+              Ready to transform your vision? Schedule a free consultation with our experts. <br className="hidden md:block" />
+              Our team usually confirms within 24 hours.
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="hidden lg:block w-48 h-48 rounded-full border border-emerald-500/20 p-2 relative"
+          <motion.a
+            href="https://wa.me/919084718101"
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            whileHover={{ scale: 1.05, rotate: 2, boxShadow: "0 0 30px rgba(16, 185, 129, 0.2)" }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="hidden lg:flex flex-col items-center justify-center bg-white/[0.02] backdrop-blur-md border border-emerald-500/20 rounded-[2.5rem] p-8 group cursor-pointer relative overflow-hidden"
           >
-            <div className="w-full h-full rounded-full border border-emerald-500/10 flex items-center justify-center bg-emerald-500/5 animate-pulse">
-              <Sparkles className="text-emerald-500/40 w-12 h-12" />
-            </div>
-          </motion.div>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 -skew-x-12"
+              initial={{ x: "-150%" }}
+              whileHover={{ x: "150%" }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
+            />
+            <motion.div 
+              className="mb-4 p-4 rounded-2xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-lg shadow-emerald-500/20"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+              </svg>
+            </motion.div>
+            <h3 className="text-xl font-black text-white uppercase italic tracking-wide mb-2 group-hover:text-emerald-400 transition-colors">WhatsApp Us</h3>
+            <p className="text-[10px] font-black text-emerald-500/70 uppercase tracking-widest italic text-center">
+              Instant Chat Support<br/>We reply within minutes
+            </p>
+          </motion.a>
         </div>
 
-        {/* Top Info Cards - Balanced Horizontal Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {[
-            { icon: Mail, label: 'Email Us', value: 'support@celorisdesigns.com', color: 'text-emerald-500' },
-            { icon: Phone, label: 'Call Us', value: '+91 90847 18101', color: 'text-teal-500' },
-            { icon: MessageSquare, label: 'WhatsApp', value: 'Instant Chat Support', color: 'text-green-500' }
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] flex flex-col items-center text-center group hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all duration-500"
-            >
-              <div className={cn("mb-4 p-4 rounded-2xl bg-white/5 group-hover:scale-110 transition-transform", item.color)}>
-                <item.icon size={26} />
-              </div>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 italic">
-                {item.label}
-              </p>
-              <p className="text-base font-black text-white uppercase italic tracking-tighter">
-                {item.value}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
           {/* Visual Side - Interactive Image */}
@@ -239,8 +240,8 @@ export default function ContactPage() {
           >
             <div className="relative h-full rounded-[3rem] overflow-hidden border border-white/5 bg-[#0d1321]/40 shadow-3xl group">
               <img
-                src="/images/contact/interface.png"
-                alt="Contact Hub"
+                src="/any_phone.jpg"
+                alt="Book Appointment Hub"
                 className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-[#050810]/20 to-transparent" />
@@ -265,7 +266,7 @@ export default function ContactPage() {
           >
             <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/5 rounded-[3.5rem] p-8 md:p-12 shadow-3xl h-full flex flex-col">
               <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-10 px-2">
-                Send a Message
+                Schedule Your Session
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-8 flex-1">
@@ -308,25 +309,64 @@ export default function ContactPage() {
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">
-                    Subject
+                    Preferred Service
                   </label>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
+                  <select
+                    name="serviceType"
+                    value={formData.serviceType}
+                    onChange={handleChange as any}
                     className={cn(
-                      "w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-sm font-bold placeholder:text-slate-600 focus:outline-none transition-all",
-                      errors.subject ? "border-red-500/50" : "focus:border-emerald-500/50"
+                      "w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-sm font-bold placeholder:text-slate-600 focus:outline-none transition-all appearance-none cursor-pointer",
+                      errors.serviceType ? "border-red-500/50" : "focus:border-emerald-500/50"
                     )}
-                    placeholder="How can we help?"
                     disabled={isSubmitting}
-                  />
+                  >
+                    <option value="" disabled className="bg-[#0b111e] text-slate-500">Select a service...</option>
+                    <option value="AI Implementation" className="bg-[#0b111e]">AI Implementation</option>
+                    <option value="Design Consultation" className="bg-[#0b111e]">Design Consultation</option>
+                    <option value="Web Development" className="bg-[#0b111e]">Web Development</option>
+                    <option value="General Inquiry" className="bg-[#0b111e]">General Inquiry</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">
+                      Preferred Date
+                    </label>
+                    <input
+                      type="date"
+                      name="preferredDate"
+                      value={formData.preferredDate}
+                      onChange={handleChange}
+                      className={cn(
+                        "w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-sm font-bold placeholder:text-slate-600 focus:outline-none transition-all [color-scheme:dark]",
+                        errors.preferredDate ? "border-red-500/50" : "focus:border-emerald-500/50"
+                      )}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">
+                      Preferred Time
+                    </label>
+                    <input
+                      type="time"
+                      name="preferredTime"
+                      value={formData.preferredTime}
+                      onChange={handleChange}
+                      className={cn(
+                        "w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-sm font-bold placeholder:text-slate-600 focus:outline-none transition-all [color-scheme:dark]",
+                        errors.preferredTime ? "border-red-500/50" : "focus:border-emerald-500/50"
+                      )}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">
-                    Message
+                    Additional Details
                   </label>
                   <textarea
                     name="message"
@@ -337,7 +377,7 @@ export default function ContactPage() {
                       "w-full bg-white/5 border border-white/10 rounded-[2rem] px-6 py-6 text-white text-sm font-bold placeholder:text-slate-600 focus:outline-none transition-all resize-none",
                       errors.message ? "border-red-500/50" : "focus:border-emerald-500/50"
                     )}
-                    placeholder="Your message here..."
+                    placeholder="Tell us about your project or requirements..."
                     disabled={isSubmitting}
                   />
                 </div>
@@ -366,7 +406,7 @@ export default function ContactPage() {
                           animate={{ opacity: 1 }}
                           className="flex items-center gap-4 font-black text-2xl uppercase tracking-widest italic"
                         >
-                          Send Message <Send className="h-6 w-6 group-hover:translate-x-2 group-hover:-translate-y-1 transition-transform" />
+                          Book Appointment <Send className="h-6 w-6 group-hover:translate-x-2 group-hover:-translate-y-1 transition-transform" />
                         </motion.div>
                       )}
                     </AnimatePresence>

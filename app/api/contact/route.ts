@@ -4,10 +4,10 @@ import nodemailer from 'nodemailer';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, subject, message, recaptchaToken } = body;
+    const { name, email, serviceType, preferredDate, preferredTime, message, recaptchaToken } = body;
 
     // Validate required fields
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !serviceType || !preferredDate || !preferredTime || !message) {
       return NextResponse.json(
         { error: 'All fields are required' },
         { status: 400 }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     const mailOptions = {
       from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       to: 'support@celorisdesigns.com',
-      subject: `Contact Form: ${subject}`,
+      subject: `Appointment Request: ${serviceType} from ${name}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
         <body>
           <div class="container">
             <div class="header">
-              <h2>New Contact Form Submission</h2>
+              <h2>New Appointment Request</h2>
             </div>
             <div class="content">
               <div class="field">
@@ -161,17 +161,22 @@ export async function POST(request: NextRequest) {
               </div>
               
               <div class="field">
-                <div class="field-label">Subject:</div>
-                <div class="field-value">${subject}</div>
+                <div class="field-label">Requested Service:</div>
+                <div class="field-value">${serviceType}</div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Preferred Date & Time:</div>
+                <div class="field-value">${preferredDate} at ${preferredTime}</div>
               </div>
               
               <div class="field">
-                <div class="field-label">Message:</div>
+                <div class="field-label">Additional Details:</div>
                 <div class="message-box">${message}</div>
               </div>
               
               <div class="footer">
-                <p>This email was sent from the Celoris contact form</p>
+                <p>This email was sent from the Celoris appointment booking form</p>
                 <p>Received on ${new Date().toLocaleString()}</p>
               </div>
             </div>
@@ -180,17 +185,18 @@ export async function POST(request: NextRequest) {
         </html>
       `,
       text: `
-New Contact Form Submission
+New Appointment Request
 
 From: ${name}
 Email: ${email}
-Subject: ${subject}
+Requested Service: ${serviceType}
+Preferred Date & Time: ${preferredDate} at ${preferredTime}
 
-Message:
+Additional Details:
 ${message}
 
 ---
-This email was sent from the Celoris contact form
+This email was sent from the Celoris appointment booking form
 Received on ${new Date().toLocaleString()}
       `,
       replyTo: email, // Allow direct reply to the sender
@@ -203,7 +209,7 @@ Received on ${new Date().toLocaleString()}
     const confirmationMailOptions = {
       from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       to: email,
-      subject: 'Thank you for contacting Celoris',
+      subject: 'Appointment Request Received - Celoris',
       html: `
         <!DOCTYPE html>
         <html>
@@ -247,17 +253,19 @@ Received on ${new Date().toLocaleString()}
         <body>
           <div class="container">
             <div class="header">
-              <h2>Thank You for Contacting Us!</h2>
+              <h2>Appointment Request Received!</h2>
             </div>
             <div class="content">
               <p>Hi ${name},</p>
               
-              <p>Thank you for reaching out to Celoris. We have received your message and our team will get back to you as soon as possible.</p>
+              <p>Thank you for requesting an appointment with Celoris for <strong>${serviceType}</strong>.</p>
               
-              <p><strong>Your message:</strong></p>
+              <p>We have received your requested date and time (<strong>${preferredDate} at ${preferredTime}</strong>). Our team will review your request and get back to you shortly to confirm the session or propose alternatives if needed.</p>
+              
+              <p><strong>Your additional details:</strong></p>
               <p style="background-color: #f3f4f6; padding: 15px; border-radius: 4px; border-left: 3px solid #10b981;">${message}</p>
               
-              <p>We typically respond within 24-48 hours during business days.</p>
+              <p>We typically confirm appointments within 24 hours during business days.</p>
               
               <p>Best regards,<br>
               The Celoris Team</p>
@@ -271,12 +279,14 @@ Received on ${new Date().toLocaleString()}
       text: `
 Hi ${name},
 
-Thank you for reaching out to Celoris. We have received your message and our team will get back to you as soon as possible.
+Thank you for requesting an appointment with Celoris for ${serviceType}.
 
-Your message:
+We have received your requested date and time (${preferredDate} at ${preferredTime}). Our team will review your request and get back to you shortly to confirm the session.
+
+Your additional details:
 ${message}
 
-We typically respond within 24-48 hours during business days.
+We typically confirm appointments within 24 hours during business days.
 
 Best regards,
 The Celoris Team
