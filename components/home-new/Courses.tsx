@@ -8,12 +8,14 @@ import { motion } from 'framer-motion';
 
 export const CourseCard: React.FC<CourseCardProps & { description?: string, image?: string }> = ({ id, title, category, instructor, duration, price, tag, description, image }) => (
     <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        whileInView={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        whileHover={{ scale: 1.02 }}
-        className="flex bg-[#0d1321]/60 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-2xl hover:border-emerald-500/30 transition-all duration-500 group h-[220px]"
+        whileHover={{ y: -8 }}
+        className="group relative h-[220px]"
     >
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/40 to-cyan-500/40 rounded-[2.5rem] blur opacity-0 group-hover:opacity-100 transition duration-700"></div>
+        <div className="relative flex bg-[#0d1321]/80 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-2xl transition-all duration-500 h-full">
         {/* Left Side: Image Sidebar */}
         <div className="relative w-[40%] h-full overflow-hidden bg-slate-900">
             <img
@@ -24,8 +26,8 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0d1321]/80" />
 
             {tag && (
-                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-lg shadow-lg shadow-emerald-500/40">
-                    <Sparkles size={8} className="text-white" />
+                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-lg shadow-lg shadow-emerald-500/40 group-hover:scale-105 transition-transform duration-300">
+                    <Sparkles size={8} className="text-white animate-pulse" />
                     <span className="text-white text-[8px] font-black uppercase tracking-widest italic">{tag}</span>
                 </div>
             )}
@@ -42,7 +44,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                     </div>
                 </div>
 
-                <h3 className="text-base md:text-lg font-black text-white leading-tight mb-4 group-hover:text-emerald-400 transition-colors uppercase italic tracking-tighter line-clamp-2">
+                <h3 className="text-base md:text-lg font-black text-white leading-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all duration-300 uppercase italic tracking-tighter line-clamp-2">
                     {title}
                 </h3>
 
@@ -114,9 +116,10 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                                 return routes[id] || `/learn/course/${id}`;
                             })()
                         }
-                        className="px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase italic rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2 group/btn"
+                        className="px-6 py-3 bg-emerald-600/90 text-white text-[10px] font-black uppercase italic rounded-2xl hover:bg-emerald-500 border border-emerald-500/50 transition-all shadow-xl shadow-emerald-500/20 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center gap-2 group/btn relative overflow-hidden"
                     >
-                        LEARN MORE <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
+                        <span className="relative z-10 flex items-center gap-2">LEARN MORE <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" /></span>
                     </Link>
                 ) : (
                     <button className="px-6 py-3 bg-white/5 text-slate-500 text-[10px] font-black uppercase italic rounded-2xl border border-white/5">
@@ -124,6 +127,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                     </button>
                 )}
             </div>
+        </div>
         </div>
     </motion.div>
 );
@@ -251,7 +255,10 @@ export const Courses: React.FC<any> = ({
     }, [initialCourses, limit]);
 
     return (
-        <div className="mt-24 md:mt-32 mb-32">
+        <div className="mt-24 md:mt-32 mb-32 relative">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+            
             <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}

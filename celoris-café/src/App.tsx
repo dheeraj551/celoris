@@ -1,15 +1,14 @@
-"use client";
 import React, { useState, useEffect } from 'react';
-import { MOCK_ROOMS, MOCK_USERS } from '@/components/cafe/data/mockData';
-import { Room, User } from '@/components/cafe/types';
-import LandingHero from '@/components/cafe/LandingHero';
-import RoomsGrid from '@/components/cafe/RoomsGrid';
-import SafeSecure from '@/components/cafe/SafeSecure';
-import PremiumBenefits from '@/components/cafe/PremiumBenefits';
-import ChatRoom from '@/components/cafe/ChatRoom';
-import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
-import LearnTab from '@/components/cafe/LearnTab';
-import TeachTab from '@/components/cafe/TeachTab';
+import { MOCK_ROOMS, MOCK_USERS } from './data/mockData';
+import { Room, User } from './types';
+import LandingHero from './components/LandingHero';
+import RoomsGrid from './components/RoomsGrid';
+import SafeSecure from './components/SafeSecure';
+import PremiumBenefits from './components/PremiumBenefits';
+import ChatRoom from './components/ChatRoom';
+import CreationToolsDemo from './components/CreationToolsDemo';
+import LearnTab from './components/LearnTab';
+import TeachTab from './components/TeachTab';
 
 import { 
   Menu, 

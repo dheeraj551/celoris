@@ -3,6 +3,7 @@
 import React from 'react';
 import {
     Home,
+    Coffee,
     Video,
     Image as ImageIcon,
     Lightbulb,
@@ -164,8 +165,8 @@ export function Sidebar({ className }: { className?: string }) {
                             : "text-slate-400 hover:bg-white/5 hover:text-white"
                     )}
                 >
-                    <Video className={cn("w-4 h-4", pathname.startsWith('/social') ? "text-rose-500" : "text-slate-500 group-hover:text-rose-500")} />
-                    <span className="text-sm font-bold uppercase tracking-tight">PLAY</span>
+                    <Coffee className={cn("w-4 h-4", pathname.startsWith('/social') ? "text-rose-500" : "text-slate-500 group-hover:text-rose-500")} />
+                    <span className="text-sm font-bold uppercase tracking-tight">CAFE</span>
                 </Link>
             </div>
 

@@ -407,7 +407,14 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
 
       {/* Hero Section */}
       <section className="py-20 px-8 relative overflow-hidden z-10 border-b border-white/5 bg-[#0d1321]/40 backdrop-blur-3xl">
-        <div className="max-w-6xl mx-auto text-center">
+        {/* Background glow effects */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
+        <div className="absolute top-0 right-1/3 w-[500px] h-[300px] bg-emerald-500/8 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[250px] bg-cyan-500/6 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,rgba(16,185,129,0.04)_0%,transparent_60%)] pointer-events-none" />
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -418,9 +425,10 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white italic uppercase"
           >
-            Free Online Classes — Learn Any Skill from Real Trainers
+            Free Online Classes — <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Learn Any Skill</span> from Real Trainers
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -462,8 +470,9 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
       </section>
 
       {/* Trainers Online Now - Learn Booths */}
-      <section className="py-24 relative z-10 border-t border-white/5 bg-[#050810]">
-        <div className="max-w-6xl mx-auto px-8">
+      <section className="py-24 relative z-10 border-t border-white/5 bg-[#050810] overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b border-white/5 pb-8 gap-6">
             <div>
               <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-3">
@@ -492,8 +501,9 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
       </AnimatePresence>
 
       {/* Interactive Study Hubs Section */}
-      <section className="py-24 relative z-10 border-y border-white/5 bg-[#0d1321]/30">
-        <div className="max-w-6xl mx-auto px-8">
+      <section className="py-24 relative z-10 border-y border-white/5 bg-[#0d1321]/30 overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-[500px] h-[300px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-8 relative z-10">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-4">
               <Sparkles size={14} /> Live Classes
