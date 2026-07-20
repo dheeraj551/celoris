@@ -1,4 +1,4 @@
-import { Room, User, Course, ChatMessage } from '../types';
+import { Room, User, Course, ChatMessage } from './types';
 
 export const MOCK_USERS: User[] = [
   {
