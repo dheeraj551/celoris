@@ -1,5 +1,5 @@
 import React from 'react';
-import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, HelpCircle, Settings, User, ChevronDown, Cloud } from 'lucide-react';
+import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, HelpCircle, Settings, User, ChevronDown, Cloud, Download } from 'lucide-react';
 
 interface HeaderProps {
   activeTool: 'pointer' | 'hand';
@@ -10,6 +10,8 @@ interface HeaderProps {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  onDownload?: () => void;
+  isExporting?: boolean;
 }
 
 export default function Header({
@@ -20,7 +22,9 @@ export default function Header({
   undo,
   redo,
   canUndo,
-  canRedo
+  canRedo,
+  onDownload,
+  isExporting
 }: HeaderProps) {
   return (
     <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#121212] shrink-0">
@@ -89,7 +93,15 @@ export default function Header({
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="bg-[#00a8ff] hover:bg-[#0097e6] text-white px-4 py-1.5 rounded text-sm font-medium transition-colors">
+        <button 
+          onClick={onDownload}
+          disabled={isExporting}
+          className="bg-[#00a8ff] hover:bg-[#0097e6] disabled:bg-[#00a8ff]/50 text-white px-4 py-1.5 rounded text-sm font-medium flex items-center gap-1.5 transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          <span>{isExporting ? 'Exporting...' : 'Download'}</span>
+        </button>
+        <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors">
           Share
         </button>
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
