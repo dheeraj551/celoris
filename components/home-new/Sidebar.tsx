@@ -41,8 +41,7 @@ const MENU_GROUPS = [
         title: "Marketing",
         items: [
             { name: "Vibe Marketing", icon: Share2, href: "/marketing/social" },
-            { name: "Ad Campaigns", icon: Target, href: "/marketing/campaigns" },
-            { name: "Analytics", icon: TrendingUp, href: "/marketing/analytics" },
+            { name: "Affiliate Marketing", icon: Target, href: "/marketing/affiliate" },
             { name: "Promotions", icon: Megaphone, href: "/marketing/promotions" },
         ]
     },

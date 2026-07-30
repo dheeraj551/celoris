@@ -181,6 +181,124 @@ export default function ImageStudio() {
         'https://picsum.photos/seed/edit2/400/400'
     ]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const canvasAreaRef = useRef<HTMLDivElement>(null);
+
+    const handleDownload = async () => {
+        const CANVAS_W = 800;
+        const CANVAS_H = 600;
+
+        // Sort objects by zIndex so stacking order is correct
+        const sortedObjects = [...objects].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
+
+        const offscreen = document.createElement('canvas');
+        offscreen.width = CANVAS_W;
+        offscreen.height = CANVAS_H;
+        const ctx = offscreen.getContext('2d');
+        if (!ctx) return;
+
+        // White background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+        for (const obj of sortedObjects) {
+            ctx.save();
+            ctx.globalAlpha = obj.opacity ?? 1;
+
+            // Build CSS filter string and apply via canvas filter
+            const filterStr = getFilterString(obj);
+            if (filterStr) {
+                try { ctx.filter = filterStr; } catch { ctx.filter = 'none'; }
+            }
+
+            if (obj.type === 'image' && obj.src) {
+                await new Promise<void>((resolve) => {
+                    const img = new window.Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => {
+                        ctx.save();
+                        if (obj.isCropped) {
+                            ctx.beginPath();
+                            ctx.rect(obj.x, obj.y, obj.width, obj.height);
+                            ctx.clip();
+                        }
+                        if (obj.isFlippedX) {
+                            ctx.translate(obj.x + obj.width, obj.y);
+                            ctx.scale(-1, 1);
+                            ctx.drawImage(img, 0, 0, obj.width, obj.height);
+                        } else {
+                            ctx.drawImage(img, obj.x, obj.y, obj.width, obj.height);
+                        }
+                        ctx.restore();
+                        resolve();
+                    };
+                    img.onerror = () => resolve(); // skip broken images
+                    img.src = obj.src!;
+                });
+            } else if (obj.type === 'shape') {
+                ctx.fillStyle = obj.backgroundColor || '#00C4CC';
+                if (obj.shapeType === 'circle') {
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        obj.x + obj.width / 2,
+                        obj.y + obj.height / 2,
+                        obj.width / 2,
+                        obj.height / 2,
+                        0, 0, Math.PI * 2
+                    );
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+                }
+            } else if (obj.type === 'text' && obj.text) {
+                ctx.font = `bold ${obj.fontSize || 24}px sans-serif`;
+                ctx.fillStyle = obj.color || '#000000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                if (obj.textShadow) {
+                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    ctx.shadowBlur = 4;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                }
+                ctx.fillText(obj.text, obj.x + obj.width / 2, obj.y);
+            } else if (obj.type === 'frame') {
+                ctx.strokeStyle = '#d1d5db';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 4]);
+                ctx.fillStyle = '#f9fafb';
+                if (obj.frameType === 'circle') {
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        obj.x + obj.width / 2,
+                        obj.y + obj.height / 2,
+                        obj.width / 2,
+                        obj.height / 2,
+                        0, 0, Math.PI * 2
+                    );
+                    ctx.fill();
+                    ctx.stroke();
+                } else {
+                    ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+                    ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+                }
+            }
+
+            ctx.restore();
+        }
+
+        // Trigger download
+        offscreen.toBlob((blob) => {
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'celoris-design.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    };
 
     const handleLayerDragStart = (e: React.DragEvent, id: string) => {
         setDraggedLayerId(id);
@@ -597,7 +715,7 @@ export default function ImageStudio() {
 
                         <div className="flex items-center gap-3">
                             <button
-                                onClick={() => alert('Download mockup triggered!')}
+                                onClick={handleDownload}
                                 className="bg-[#00C4CC] hover:bg-[#00B3BA] text-white px-4 py-1.5 rounded-md font-medium flex items-center gap-2 transition-colors"
                             >
                                 <Download size={16} />
@@ -692,6 +810,7 @@ export default function ImageStudio() {
                         {/* Interactive Selection Canvas */}
                         <div
                             id="canvas"
+                            ref={canvasAreaRef}
                             className="bg-white shadow-2xl relative overflow-hidden"
                             style={{ width: 800, height: 600 }}
                             onPointerDown={() => setSelectedId(null)}
