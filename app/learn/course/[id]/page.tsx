@@ -1,13 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle } from "lucide-react"
+import { ArrowLeft, Clock, Users, Star, Award, Play, Download, CheckCircle, BookOpen, HelpCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
 import { useParams, useRouter } from "next/navigation"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+
+interface CourseTopic {
+  id: string
+  order_in_module: number
+  title: string
+  short_description: string | null
+}
 
 interface Course {
   id: string
@@ -34,11 +41,12 @@ interface Course {
 
 interface CourseModule {
   id: string
+  course_id: string
   module_number: number
   title: string
   description: string | null
   estimated_duration: number | null
-  course_topics?: { count: number }[]
+  course_topics?: CourseTopic[]
 }
 
 export default function CourseDetailPage() {
@@ -51,10 +59,11 @@ export default function CourseDetailPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Redirect specific courses to their premium static pages
+    // Redirect specific courses to their premium static pages or SEO friendly slugs
     const staticRedirects: Record<string, string> = {
       '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
-      '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners'
+      '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
+      'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery'
     };
 
     if (id && staticRedirects[id]) {
@@ -72,6 +81,11 @@ export default function CourseDetailPage() {
       setLoading(true)
       const supabase = createClient()
 
+      let targetId = id
+      if (id === 'digital-marketing-mastery') {
+        targetId = 'e7698318-7f57-421f-866e-0101ee239c01'
+      }
+
       const { data, error } = await supabase
         .from('courses')
         .select(`
@@ -82,10 +96,15 @@ export default function CourseDetailPage() {
             title,
             description,
             estimated_duration,
-            course_topics (count)
+            course_topics (
+              id,
+              order_in_module,
+              title,
+              short_description
+            )
           )
         `)
-        .eq('id', id)
+        .eq('id', targetId)
         .single()
 
       if (error) throw error
@@ -98,6 +117,37 @@ export default function CourseDetailPage() {
       setLoading(false)
     }
   }
+
+  const getFaqsForCourse = (courseTitle: string) => {
+    const title = courseTitle.toLowerCase();
+    if (title.includes("digital marketing")) {
+      return [
+        {
+          question: "Do I need any technical background?",
+          answer: "No. This course is beginner-friendly and builds up progressively."
+        },
+        {
+          question: "Will I get to run real ad campaigns during the course?",
+          answer: "Yes — you'll get hands-on practice with real ad platforms (Meta, Google) using either simulated or live budgets depending on batch structure."
+        },
+        {
+          question: "Is this course useful if I already run my own business?",
+          answer: "Absolutely — many students join specifically to market their own business rather than pursue a marketing job."
+        },
+        {
+          question: "What if I miss a live session?",
+          answer: "Recordings are provided so you can catch up before the next class."
+        },
+        {
+          question: "Is there a certificate?",
+          answer: "Yes, a Celoris certificate of completion is provided at the end."
+        }
+      ];
+    }
+    return [];
+  };
+
+  const faqs = course ? getFaqsForCourse(course.title) : [];
 
   const whatYouWillLearn = course?.learning_outcomes && course.learning_outcomes.length > 0
     ? course.learning_outcomes
@@ -271,6 +321,84 @@ export default function CourseDetailPage() {
                 </ul>
               </CardContent>
             </Card>
+
+            {/* Course Curriculum / Modules */}
+            {course.course_modules && course.course_modules.length > 0 && (
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900 flex items-center space-x-2">
+                    <BookOpen className="h-5 w-5 text-green-600" />
+                    <span>Course Curriculum</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {course.course_modules
+                      .sort((a, b) => a.module_number - b.module_number)
+                      .map((mod) => (
+                        <div key={mod.id} className="border border-slate-100 rounded-xl p-4 bg-slate-50/50">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-bold text-slate-800 text-base">
+                                Module {mod.module_number}: {mod.title}
+                              </h4>
+                              {mod.description && (
+                                <p className="text-sm text-slate-500 mt-1">{mod.description}</p>
+                              )}
+                            </div>
+                            {mod.estimated_duration && (
+                              <span className="text-xs bg-slate-200/80 text-slate-600 px-2 py-1 rounded font-semibold whitespace-nowrap">
+                                {mod.estimated_duration} mins
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Topics List */}
+                          {mod.course_topics && mod.course_topics.length > 0 && (
+                            <ul className="mt-3 pl-4 border-l-2 border-slate-200 space-y-2">
+                              {mod.course_topics
+                                .sort((a, b) => a.order_in_module - b.order_in_module)
+                                .map((topic) => (
+                                  <li key={topic.id} className="text-sm text-slate-700 font-medium flex items-start space-x-2">
+                                    <span className="text-green-600 font-bold">•</span>
+                                    <span>{topic.title}</span>
+                                  </li>
+                                ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* FAQs Section */}
+            {faqs.length > 0 && (
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900 flex items-center space-x-2">
+                    <HelpCircle className="h-5 w-5 text-green-600" />
+                    <span>Frequently Asked Questions</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {faqs.map((faq, index) => (
+                      <div key={index} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                        <h4 className="font-bold text-slate-800 text-sm mb-1 flex items-start space-x-2">
+                          <span className="text-green-600">Q:</span>
+                          <span>{faq.question}</span>
+                        </h4>
+                        <p className="text-sm text-slate-600 pl-5 font-medium leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
