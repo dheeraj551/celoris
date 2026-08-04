@@ -63,7 +63,8 @@ export default function CourseDetailPage() {
     const staticRedirects: Record<string, string> = {
       '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
       '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
-      'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery'
+      'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery',
+      '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp'
     };
 
     if (id && staticRedirects[id]) {
@@ -84,6 +85,9 @@ export default function CourseDetailPage() {
       let targetId = id
       if (id === 'digital-marketing-mastery') {
         targetId = 'e7698318-7f57-421f-866e-0101ee239c01'
+      }
+      if (id === 'web-development-bootcamp') {
+        targetId = '48713643-694c-491f-86d6-5b6e713c1cf3'
       }
 
       const { data, error } = await supabase
@@ -137,6 +141,34 @@ export default function CourseDetailPage() {
         {
           question: "What if I miss a live session?",
           answer: "Recordings are provided so you can catch up before the next class."
+        },
+        {
+          question: "Is there a certificate?",
+          answer: "Yes, a Celoris certificate of completion is provided at the end."
+        }
+      ];
+    }
+    if (title.includes("web development")) {
+      return [
+        {
+          question: "I have zero coding background. Can I still join?",
+          answer: "Yes — this course is designed for complete beginners and builds up step by step."
+        },
+        {
+          question: "Will I actually build a real website, or just learn theory?",
+          answer: "You'll build multiple real projects throughout the course, ending with a live, deployed capstone project."
+        },
+        {
+          question: "Do I need to buy any software?",
+          answer: "No — all tools used (VS Code, GitHub, hosting platforms) have free tiers sufficient for this course."
+        },
+        {
+          question: "What if I miss a live session?",
+          answer: "Recordings are provided so you can catch up before the next class."
+        },
+        {
+          question: "Is this course enough to get a developer job?",
+          answer: "This course gives you a strong practical foundation and portfolio. Landing a job also depends on practice and interview prep, which we guide you on, but outcomes vary per individual effort."
         },
         {
           question: "Is there a certificate?",
