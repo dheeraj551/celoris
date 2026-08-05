@@ -64,7 +64,8 @@ export default function CourseDetailPage() {
       '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
       '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
       'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery',
-      '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp'
+      '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp',
+      '879e499f-5517-413a-bd6a-76e2911b8331': '/learn/course/ai-web-development'
     };
 
     if (id && staticRedirects[id]) {
@@ -88,6 +89,9 @@ export default function CourseDetailPage() {
       }
       if (id === 'web-development-bootcamp') {
         targetId = '48713643-694c-491f-86d6-5b6e713c1cf3'
+      }
+      if (id === 'ai-web-development') {
+        targetId = '879e499f-5517-413a-bd6a-76e2911b8331'
       }
 
       const { data, error } = await supabase
@@ -169,6 +173,34 @@ export default function CourseDetailPage() {
         {
           question: "Is this course enough to get a developer job?",
           answer: "This course gives you a strong practical foundation and portfolio. Landing a job also depends on practice and interview prep, which we guide you on, but outcomes vary per individual effort."
+        },
+        {
+          question: "Is there a certificate?",
+          answer: "Yes, a Celoris certificate of completion is provided at the end."
+        }
+      ];
+    }
+    if (title.includes("ai-powered web development")) {
+      return [
+        {
+          question: "If AI builds the website, what am I actually learning?",
+          answer: "You're learning to direct AI effectively, understand and customize what it generates, and combine tools professionally — this is exactly how working developers operate today. Pure prompting without understanding gets you stuck the moment something breaks; this course prevents that."
+        },
+        {
+          question: "Do I still need to learn to code?",
+          answer: "You'll learn enough HTML/CSS/JS to read, understand, and fix code — but you won't be writing everything from scratch the old way. That's the point: work smarter, ship faster."
+        },
+        {
+          question: "I have zero coding background. Can I still join?",
+          answer: "Yes — this course is designed for complete beginners and builds up step by step."
+        },
+        {
+          question: "Will I build a real, live website?",
+          answer: "Yes — multiple projects throughout the course, ending with a live, deployed capstone project."
+        },
+        {
+          question: "What if I miss a live session?",
+          answer: "Recordings are provided so you can catch up before the next class."
         },
         {
           question: "Is there a certificate?",
