@@ -10,8 +10,10 @@ import ChatRoom from '@/components/cafe/ChatRoom';
 import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
 import LearnTab from '@/components/cafe/LearnTab';
 import TeachTab from '@/components/cafe/TeachTab';
-import ClassroomTable from '@/components/cafe/ClassroomTable';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/AuthProvider';
+
+const ClassroomTable = dynamic(() => import('@/components/cafe/ClassroomTable'), { ssr: false });
 
 import { 
   Menu, 

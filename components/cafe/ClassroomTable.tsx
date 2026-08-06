@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IRemoteAudioTrack, IRemoteVideoTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
+import type { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
 import { createClient } from '@/lib/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Send, MonitorUp, Users, ShieldAlert, CheckCircle, Hand } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Send, MonitorUp, Users, CheckCircle, Hand } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 let client: IAgoraRTCClient;
@@ -40,13 +40,17 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
   const screenShareRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+  // Holds the dynamically-loaded AgoraRTC module (browser only)
+  const AgoraRef = useRef<any>(null);
 
   // 1. Initialize Agora and join channel
   useEffect(() => {
-    client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
-    
     const init = async () => {
       if (!user) return;
+      // Lazy-load Agora SDK so it never runs on the server
+      const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
+      AgoraRef.current = AgoraRTC;
+      client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 
       client.on('user-published', handleUserPublished);
       client.on('user-unpublished', handleUserUnpublished);
@@ -90,6 +94,7 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
 
       await client.join(data.appId, channel, data.token, uid);
       
+      const AgoraRTC = AgoraRef.current;
       const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
       
       if (!isHost) {
@@ -176,6 +181,7 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
     } else {
       // Start screen sharing
       try {
+        const AgoraRTC = AgoraRef.current;
         const screenTrack = await AgoraRTC.createScreenVideoTrack({}, "auto");
         if (localVideoTrack) await client.unpublish(localVideoTrack);
         
