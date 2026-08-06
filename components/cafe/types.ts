@@ -13,7 +13,7 @@ export interface Room {
   id: string;
   name: string;
   description: string;
-  category: 'study' | 'course' | 'mixer' | 'night' | 'onboarding';
+  category: 'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom';
   onlineCount: number;
   status: 'Ready' | 'Live' | 'Full';
   tags: string[];

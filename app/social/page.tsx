@@ -10,6 +10,8 @@ import ChatRoom from '@/components/cafe/ChatRoom';
 import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
 import LearnTab from '@/components/cafe/LearnTab';
 import TeachTab from '@/components/cafe/TeachTab';
+import ClassroomTable from '@/components/cafe/ClassroomTable';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 import { 
   Menu, 
@@ -43,9 +45,11 @@ export default function App() {
   // Custom states for the custom room creation mockup
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomDesc, setNewRoomDesc] = useState('');
-  const [newRoomCat, setNewRoomCat] = useState<'study' | 'course' | 'mixer' | 'night' | 'onboarding'>('study');
+  const [newRoomCat, setNewRoomCat] = useState<'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom'>('study');
   const [newRoomTags, setNewRoomTags] = useState('');
   const [allRooms, setAllRooms] = useState<Room[]>(MOCK_ROOMS);
+
+  const { profile } = useAuth();
 
   // Current logged in user info (mocked)
   const currentUser = {
@@ -73,6 +77,14 @@ export default function App() {
   const handleCreateRoomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoomName.trim() || !newRoomDesc.trim()) return;
+
+    if (newRoomCat === 'classroom') {
+      const credits = profile?.wallet_balance || 0;
+      if (credits < 500) {
+        alert("You need at least 500 credits to host a Classroom Table. Please upgrade or earn more credits.");
+        return;
+      }
+    }
 
     const tagsArray = newRoomTags
       .split(',')
@@ -213,11 +225,20 @@ export default function App() {
             <div className="space-y-6">
               {joinedRoomId && joinedRoom ? (
                 // Seated Chat / Virtual Table View
-                <ChatRoom 
-                  room={joinedRoom} 
-                  onLeave={() => setJoinedRoomId(null)} 
-                  currentUser={currentUser}
-                />
+                joinedRoom.category === 'classroom' ? (
+                  <ClassroomTable 
+                    roomId={joinedRoom.id}
+                    roomName={joinedRoom.name}
+                    isHost={joinedRoom.participants.some(p => p.id === 'self')}
+                    onLeave={() => setJoinedRoomId(null)}
+                  />
+                ) : (
+                  <ChatRoom 
+                    room={joinedRoom} 
+                    onLeave={() => setJoinedRoomId(null)} 
+                    currentUser={currentUser}
+                  />
+                )
               ) : (
                 // Cafe Lobby Roster View
                 <div className="space-y-6">
@@ -503,6 +524,7 @@ export default function App() {
                   <option value="course">Course Lounge (Excel, Figma, Trading)</option>
                   <option value="mixer">Open Mixer (Chai Chat / Social)</option>
                   <option value="night">Night Owl (Past midnight study)</option>
+                  <option value="classroom">Classroom Table (Requires 500 Credits)</option>
                 </select>
               </div>
 
