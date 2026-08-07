@@ -82,7 +82,7 @@ export default function App() {
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        const mappedRooms: Room[] = data.map(r => ({
+        const mappedRooms: Room[] = data.map((r: any) => ({
           id: r.id,
           name: r.name,
           description: r.description || '',
