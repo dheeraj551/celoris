@@ -77,34 +77,46 @@ export default function App() {
     const fetchRooms = async () => {
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('*, host:profiles(full_name, avatar_url)')
+        .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        const mappedRooms: Room[] = data.map((r: any) => ({
-          id: r.id,
-          name: r.name,
-          description: r.description || '',
-          category: r.category as any,
-          onlineCount: 1, // Assume 1 for host initially
-          status: 'Live',
-          tags: r.tags || [],
-          host: {
-            name: r.host?.full_name || 'Host',
-            avatar: r.host?.avatar_url || '',
-            role: 'Host'
-          },
-          participants: [
-            {
-              id: r.host_id,
-              name: r.host?.full_name || 'Host',
-              avatar: r.host?.avatar_url || '',
-              skill: '',
-              isOnline: true
-            }
-          ]
-        }));
+        // Fetch profiles for the hosts manually to avoid FK relationship error
+        const hostIds = data.map(r => r.host_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', hostIds);
+
+        const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+        const mappedRooms: Room[] = data.map((r: any) => {
+          const host = profileMap.get(r.host_id) || {};
+          return {
+            id: r.id,
+            name: r.name,
+            description: r.description || '',
+            category: r.category as any,
+            onlineCount: 1, // Assume 1 for host initially
+            status: 'Live',
+            tags: r.tags || [],
+            host: {
+              name: host.full_name || 'Host',
+              avatar: host.avatar_url || '',
+              role: 'Host'
+            },
+            participants: [
+              {
+                id: r.host_id,
+                name: host.full_name || 'Host',
+                avatar: host.avatar_url || '',
+                skill: '',
+                isOnline: true
+              }
+            ]
+          };
+        });
         setAllRooms(mappedRooms);
       }
     };
