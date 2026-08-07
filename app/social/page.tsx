@@ -12,6 +12,7 @@ import LearnTab from '@/components/cafe/LearnTab';
 import TeachTab from '@/components/cafe/TeachTab';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { createClient } from '@/lib/supabase-client';
 
 const ClassroomTable = dynamic(() => import('@/components/cafe/ClassroomTable'), { ssr: false });
 
@@ -49,9 +50,9 @@ export default function App() {
   const [newRoomDesc, setNewRoomDesc] = useState('');
   const [newRoomCat, setNewRoomCat] = useState<'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom'>('study');
   const [newRoomTags, setNewRoomTags] = useState('');
-  const [allRooms, setAllRooms] = useState<Room[]>(MOCK_ROOMS);
-
-  const { profile } = useAuth();
+  const [allRooms, setAllRooms] = useState<Room[]>([]); // Initialize empty for realtime rooms
+  const supabase = createClient();
+  const { profile, user } = useAuth();
 
   // Current logged in user info (mocked)
   const currentUser = {
@@ -71,12 +72,62 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab, joinedRoomId]);
 
+  // Fetch rooms and subscribe to realtime updates
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const { data, error } = await supabase
+        .from('cafe_classrooms')
+        .select('*, host:profiles(full_name, avatar_url)')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        const mappedRooms: Room[] = data.map(r => ({
+          id: r.id,
+          name: r.name,
+          description: r.description || '',
+          category: r.category as any,
+          onlineCount: 1, // Assume 1 for host initially
+          status: 'Live',
+          tags: r.tags || [],
+          host: {
+            name: r.host?.full_name || 'Host',
+            avatar: r.host?.avatar_url || '',
+            role: 'Host'
+          },
+          participants: [
+            {
+              id: r.host_id,
+              name: r.host?.full_name || 'Host',
+              avatar: r.host?.avatar_url || '',
+              skill: '',
+              isOnline: true
+            }
+          ]
+        }));
+        setAllRooms(mappedRooms);
+      }
+    };
+
+    fetchRooms();
+
+    const channel = supabase.channel('public:cafe_classrooms')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'cafe_classrooms' }, () => {
+        fetchRooms();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleJoinRoom = (roomId: string) => {
     setJoinedRoomId(roomId);
     setActiveTab('cafe'); // force switch to cafe tab to show active session
   };
 
-  const handleCreateRoomSubmit = (e: React.FormEvent) => {
+  const handleCreateRoomSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoomName.trim() || !newRoomDesc.trim()) return;
 
@@ -93,35 +144,40 @@ export default function App() {
       .map(t => t.trim())
       .filter(t => t.length > 0);
 
-    const newRoomObj: Room = {
-      id: `room-custom-${Date.now()}`,
-      name: newRoomName,
-      description: newRoomDesc,
-      category: newRoomCat,
-      onlineCount: 1, // Current user is in
-      status: 'Ready',
-      tags: tagsArray.length > 0 ? tagsArray : ['Study Session', 'Peer Learning'],
-      participants: [
-        {
-          id: 'self',
-          name: currentUser.name,
-          avatar: currentUser.avatar,
-          skill: currentUser.skill,
-          isOnline: true,
-          isVerified: true
-        }
-      ]
-    };
+    const { data, error } = await supabase
+      .from('cafe_classrooms')
+      .insert({
+        name: newRoomName,
+        description: newRoomDesc,
+        category: newRoomCat,
+        tags: tagsArray,
+        host_id: user?.id,
+        is_active: true
+      })
+      .select()
+      .single();
 
-    setAllRooms(prev => [newRoomObj, ...prev]);
+    if (error) {
+      console.error(error);
+      alert("Failed to create room.");
+      return;
+    }
+
     setNewRoomName('');
     setNewRoomDesc('');
     setNewRoomTags('');
     setCreateRoomModalOpen(false);
     
     // Auto-join the newly created room
-    setJoinedRoomId(newRoomObj.id);
+    setJoinedRoomId(data.id);
     setActiveTab('cafe');
+  };
+
+  const loadTemplate = (template: Room) => {
+    setNewRoomName(template.name);
+    setNewRoomDesc(template.description);
+    setNewRoomCat(template.category);
+    setNewRoomTags(template.tags.join(', '));
   };
 
   const inviteUserToTable = (userName: string) => {
@@ -500,6 +556,23 @@ export default function App() {
               <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
                 Invite friends or open it up to the entire Indian campus roster to sit and study with you.
               </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block text-center">Quick Templates</label>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                {MOCK_ROOMS.map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => loadTemplate(template)}
+                    className="flex-none w-32 p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30 hover:border-emerald-500/50 hover:bg-emerald-900/40 text-left transition-all snap-start"
+                  >
+                    <div className="text-xs font-bold text-emerald-400 truncate">{template.name}</div>
+                    <div className="text-[9px] text-gray-500 truncate mt-1">{template.category}</div>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <form onSubmit={handleCreateRoomSubmit} className="space-y-4 text-left">
