@@ -56,7 +56,7 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
       client.on('user-unpublished', handleUserUnpublished);
       client.on('user-left', handleUserLeft);
 
-      await joinChannel(user.id, roomId);
+      await joinChannel(user.id, `classroom_${roomId}`);
       subscribeToSignaling();
     };
     

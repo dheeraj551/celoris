@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Log the call initiation
     // Log the call initiation only for standard matches (where channelName is a UUID match_id)
-    if (!channelName.startsWith('interview_')) {
+    if (!channelName.startsWith('interview_') && !channelName.startsWith('classroom_')) {
       await supabase
         .from('call_logs')
         .insert({
