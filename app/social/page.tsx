@@ -92,7 +92,7 @@ export default function App() {
         const profileMap = new Map(profiles?.map((p: any) => [p.id, p]) || []);
 
         const mappedRooms: Room[] = data.map((r: any) => {
-          const host = profileMap.get(r.host_id) || {};
+          const host: any = profileMap.get(r.host_id) || {};
           return {
             id: r.id,
             name: r.name,
