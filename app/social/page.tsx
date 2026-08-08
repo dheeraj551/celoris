@@ -83,13 +83,13 @@ export default function App() {
 
       if (!error && data) {
         // Fetch profiles for the hosts manually to avoid FK relationship error
-        const hostIds = data.map(r => r.host_id).filter(Boolean);
+        const hostIds = data.map((r: any) => r.host_id).filter(Boolean);
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, full_name, avatar_url')
           .in('id', hostIds);
 
-        const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+        const profileMap = new Map(profiles?.map((p: any) => [p.id, p]) || []);
 
         const mappedRooms: Room[] = data.map((r: any) => {
           const host = profileMap.get(r.host_id) || {};
