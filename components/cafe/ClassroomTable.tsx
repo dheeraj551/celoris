@@ -95,16 +95,21 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
       await client.join(data.appId, channel, data.token, uid);
       
       const AgoraRTC = AgoraRef.current;
-      const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
-      
-      if (!isHost) {
-        await audioTrack.setMuted(true); // students start muted
+      try {
+        const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
+        
+        if (!isHost) {
+          await audioTrack.setMuted(true); // students start muted
+        }
+        
+        setLocalAudioTrack(audioTrack);
+        setLocalVideoTrack(videoTrack);
+        
+        await client.publish([audioTrack, videoTrack]);
+      } catch (deviceErr) {
+        console.warn("Could not access camera or microphone (missing device or permission denied):", deviceErr);
       }
       
-      setLocalAudioTrack(audioTrack);
-      setLocalVideoTrack(videoTrack);
-      
-      await client.publish([audioTrack, videoTrack]);
       setJoined(true);
     } catch (err) {
       console.error("Failed to join Classroom Table:", err);
