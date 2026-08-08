@@ -102,6 +102,7 @@ export default function App() {
             status: 'Live',
             tags: r.tags || [],
             host: {
+              id: r.host_id,
               name: host.full_name || 'Host',
               avatar: host.avatar_url || '',
               role: 'Host'
@@ -299,7 +300,7 @@ export default function App() {
                   <ClassroomTable 
                     roomId={joinedRoom.id}
                     roomName={joinedRoom.name}
-                    isHost={joinedRoom.participants.some(p => p.id === 'self')}
+                    isHost={joinedRoom.host?.id === user?.id}
                     onLeave={() => setJoinedRoomId(null)}
                   />
                 ) : (

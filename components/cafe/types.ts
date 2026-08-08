@@ -18,6 +18,7 @@ export interface Room {
   status: 'Ready' | 'Live' | 'Full';
   tags: string[];
   host?: {
+    id?: string;
     name: string;
     avatar: string;
     role: string;
