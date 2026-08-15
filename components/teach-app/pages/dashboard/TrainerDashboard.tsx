@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Calendar, MessageSquare, Mail, Settings, LogOut, Users, DollarSign, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX } from 'lucide-react';
+import { BookOpen, Calendar, MessageSquare, Mail, LogOut, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
@@ -180,9 +180,7 @@ export function TrainerDashboard() {
   const getPageTitle = () => {
 
     if (location.pathname.includes('/enquiries')) return 'Enquiries';
-    if (location.pathname.includes('/students')) return 'Students';
     if (location.pathname.includes('/calendar')) return 'Calendar';
-    if (location.pathname.includes('/earnings')) return 'Earnings';
     if (location.pathname.includes('/inbox')) return 'Inbox';
     if (location.pathname.includes('/profile')) return 'Trainer Profile';
     return 'Dashboard Overview';
@@ -237,23 +235,10 @@ export function TrainerDashboard() {
               <Mail className="h-5 w-5" /> Inbox
             </NavLink>
             <NavLink 
-              to="/teach/dashboard/trainer/students" 
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <Users className="h-5 w-5" /> Students
-            </NavLink>
-
-            <NavLink 
               to="/teach/dashboard/trainer/calendar" 
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Calendar className="h-5 w-5" /> Calendar
-            </NavLink>
-            <NavLink 
-              to="/teach/dashboard/trainer/earnings" 
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <DollarSign className="h-5 w-5" /> Earnings
             </NavLink>
             <NavLink 
               to="/teach/dashboard/trainer/profile" 
@@ -266,9 +251,6 @@ export function TrainerDashboard() {
 
         <div className="mt-auto p-4 border-t border-gray-200">
           <nav className="space-y-1">
-            <a href="#" className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">
-              <Settings className="h-5 w-5" /> Settings
-            </a>
             <button 
               onClick={() => signOut()}
               className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-lg font-medium"

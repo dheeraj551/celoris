@@ -197,6 +197,26 @@ export default function App() {
     alert(`Invitation sent to ${userName} to sit down at your active learning table. They've received a prompt inside their lobby dashboard!`);
   };
 
+  const handleDeleteRoom = async (roomId: string) => {
+    if (!user) return;
+    const confirmed = window.confirm('Are you sure you want to delete this room? This cannot be undone.');
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from('cafe_classrooms')
+      .update({ is_active: false })
+      .eq('id', roomId)
+      .eq('host_id', user.id); // safety: only owner can delete
+
+    if (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete room.');
+    } else {
+      setAllRooms(prev => prev.filter(r => r.id !== roomId));
+      if (joinedRoomId === roomId) setJoinedRoomId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#070707] text-gray-200 font-sans flex flex-col selection:bg-emerald-500 selection:text-[#0a0a0a]">
       {/* Decorative radial body bg blur */}
@@ -256,6 +276,8 @@ export default function App() {
                   rooms={allRooms} 
                   onJoinRoom={handleJoinRoom}
                   onCreateRoom={() => setCreateRoomModalOpen(true)}
+                  currentUser={user}
+                  onDeleteRoom={handleDeleteRoom}
                 />
               </div>
 
@@ -339,6 +361,8 @@ export default function App() {
                     rooms={allRooms} 
                     onJoinRoom={handleJoinRoom}
                     onCreateRoom={() => setCreateRoomModalOpen(true)}
+                    currentUser={user}
+                    onDeleteRoom={handleDeleteRoom}
                   />
                   
                   {/* Safe secure reminder within lobby list */}

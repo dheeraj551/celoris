@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Room } from './types';
-import { Users, Lock, Sparkles, Plus, Search, MessageSquare, Flame } from 'lucide-react';
+import { Users, Lock, Sparkles, Plus, Search, MessageSquare, Flame, Trash2 } from 'lucide-react';
 
 interface RoomsGridProps {
   rooms: Room[];
   onJoinRoom: (roomId: string) => void;
   onCreateRoom?: () => void;
+  currentUser?: any;
+  onDeleteRoom?: (roomId: string) => void;
 }
 
 type FilterCategory = 'all' | 'study' | 'course' | 'mixer' | 'night' | 'onboarding';
 
-export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom }: RoomsGridProps) {
+export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser, onDeleteRoom }: RoomsGridProps) {
   const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -103,10 +105,21 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom }: RoomsGrid
                     {room.category === 'study' ? 'Silent Study' : room.category === 'course' ? 'Skill Lounge' : room.category === 'mixer' ? 'Mixer Chat' : room.category === 'night' ? 'Night Owl' : 'Onboarding'}
                   </span>
                   
-                  {/* Status Indicator */}
-                  <div className="flex items-center gap-1.5 bg-[#141414] border border-emerald-950/40 px-2 py-1 rounded-lg">
-                    <span className={`w-1.5 h-1.5 rounded-full ${room.status === 'Full' ? 'bg-red-400' : 'bg-emerald-400 animate-pulse'}`}></span>
-                    <span className="text-[11px] font-mono text-gray-400 font-semibold">{room.status}</span>
+                  <div className="flex items-center gap-2">
+                    {currentUser?.id && room.host?.id === currentUser.id && onDeleteRoom && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDeleteRoom(room.id); }}
+                        className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+                        title="Delete Room"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    {/* Status Indicator */}
+                    <div className="flex items-center gap-1.5 bg-[#141414] border border-emerald-950/40 px-2 py-1 rounded-lg">
+                      <span className={`w-1.5 h-1.5 rounded-full ${room.status === 'Full' ? 'bg-red-400' : 'bg-emerald-400 animate-pulse'}`}></span>
+                      <span className="text-[11px] font-mono text-gray-400 font-semibold">{room.status}</span>
+                    </div>
                   </div>
                 </div>
 

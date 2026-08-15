@@ -428,7 +428,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white italic uppercase"
           >
-            Free Online Classes — <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Learn Any Skill</span> from Real Trainers
+            Master Your Future — <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Learn Any Skill</span> from Real Trainers
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -449,16 +449,16 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
         </div>
       </section>
 
-      {/* Free Online Classes - Upcoming Section */}
-      <section className="py-24 relative z-10 border-b border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <FreeOnlineClasses initialCourses={initialCourses} />
-        </div>
-      </section>
-
       {/* Featured Courses */}
-      <section className="py-24 relative z-10">
-        <div className="container">
+      <motion.section 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="py-12 relative z-10 border-b border-white/5 bg-[#050810]/50"
+      >
+        <div className="container relative z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
           <Courses
             title="Most Popular Free and Paid Courses"
             description="Deep-dive into our most sought-after learning experiences"
@@ -467,110 +467,21 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             initialCourses={initialCourses}
           />
         </div>
-      </section>
+      </motion.section>
 
-      {/* Trainers Online Now - Learn Booths */}
-      <section className="py-24 relative z-10 border-t border-white/5 bg-[#050810] overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-6xl mx-auto px-8 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b border-white/5 pb-8 gap-6">
-            <div>
-              <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-3">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                Live Network
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight italic uppercase mb-2">Trainers Online Now</h2>
-              <p className="text-slate-400 font-medium italic text-lg md:text-xl">Have a quick question? Jump into a trainer's booth for instant support.</p>
-            </div>
-            <Button variant="outline" className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl h-14 px-8 text-xs uppercase tracking-widest font-bold self-start md:self-auto mb-2">
-              View All
-            </Button>
-          </div>
-
-          <OnlineTrainersList onConnect={handleConnect} />
+      {/* Free Online Classes - Upcoming Section */}
+      <motion.section 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="py-12 relative z-10 border-b border-white/5"
+      >
+        <div className="max-w-6xl mx-auto">
+          <FreeOnlineClasses initialCourses={initialCourses} />
         </div>
-      </section>
+      </motion.section>
 
-      <AnimatePresence>
-        {activeChatTrainer && (
-          <BoothChatDrawer 
-            trainer={activeChatTrainer} 
-            onClose={() => setActiveChatTrainer(null)} 
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Interactive Study Hubs Section */}
-      <section className="py-24 relative z-10 border-y border-white/5 bg-[#0d1321]/30 overflow-hidden">
-        <div className="absolute bottom-0 left-0 w-[500px] h-[300px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-6xl mx-auto px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-4">
-              <Sparkles size={14} /> Live Classes
-            </div>
-            <h2 className="text-4xl font-bold text-white tracking-tight mb-4 italic uppercase">Live Classrooms</h2>
-            <p className="text-lg text-slate-400 max-w-xl mx-auto font-medium italic">
-              Join live rooms for real-time collaboration and group mastery sessions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-            {[
-              { title: "General Hub", icon: BookOpen, color: "bg-emerald-500/10", iconColor: "text-emerald-500", link: "/learn/ai-tutor/general", desc: "Collaborative space for cross-discipline knowledge sharing.", channel: "room:classroom_general", hasAi: false },
-              { title: "Science Hub", icon: Calculator, color: "bg-blue-500/10", iconColor: "text-blue-500", link: "/learn/ai-tutor/quantum-science", desc: "Unified hub for Physics, Chemistry, and Advanced Mathematics.", channel: "room:classroom_quantum-science", hasAi: true },
-              { title: "Learn AI", icon: Bot, color: "bg-purple-500/10", iconColor: "text-purple-500", link: "/learn/ai-tutor/ai-courses", desc: "Explore AI technology courses and find your perfect learning path.", channel: "room:classroom_ai-courses", hasAi: true }
-            ].map((room, idx) => (
-              <Card key={idx} className="bg-white/5 border-white/5 hover:border-emerald-500/30 transition-all rounded-[2rem] overflow-hidden shadow-none hover:shadow-2xl hover:shadow-emerald-500/10 group">
-                <CardContent className="pt-10 pb-8 px-8 flex flex-col h-full text-center md:text-left">
-                  <div className="flex justify-center md:justify-start mb-6">
-                    <div className={`w-16 h-16 ${room.color} rounded-2xl flex items-center justify-center border border-white/5 group-hover:scale-110 transition-transform`}>
-                      <room.icon size={28} className={room.iconColor} />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2 truncate italic uppercase tracking-tight">{room.title}</h3>
-                  <p className="text-slate-400 mb-6 text-sm font-medium leading-relaxed italic flex-1">
-                    {room.desc}
-                  </p>
-
-                  <RoomPresence channelName={room.channel} hasAiAgent={room.hasAi} />
-                  <Button
-                    onClick={() => handleRoomEntry(room.link)}
-                    className="w-full bg-white/5 hover:bg-emerald-600 text-white rounded-xl h-12 font-bold text-xs transition-all border border-white/5"
-                  >
-                    <div className="flex flex-col items-center">
-                      <span className="flex items-center gap-2">Enter Room <ArrowRight className="h-4 w-4" /></span>
-                      <span className="text-[8px] opacity-60 mt-0.5">Entry Fee: ₹100</span>
-                    </div>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Footer Banner */}
-          <div className="bg-white/5 border border-white/5 rounded-[2rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-emerald-500/5 to-transparent pointer-events-none" />
-            <div className="flex items-center gap-8 relative z-10">
-              <div className="p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 shadow-sm">
-                <Sparkles className="h-8 w-8 text-emerald-400 animate-pulse" />
-              </div>
-              <div className="text-center md:text-left">
-                <h4 className="text-2xl font-bold tracking-tight mb-1 text-white italic uppercase">Create Your Own Study Group</h4>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Invite friends • Better Focus • Always Online</p>
-              </div>
-            </div>
-            <Button
-              onClick={handleInitializeRoom}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-10 h-14 font-bold text-sm shadow-xl shadow-emerald-500/20 relative z-10 transition-all border-none"
-            >
-              <div className="flex flex-col items-center">
-                <span>Create Room</span>
-                <span className="text-[8px] opacity-80 mt-0.5 tracking-widest uppercase">Setup Fee: ₹1000</span>
-              </div>
-            </Button>
-          </div>
-        </div>
-      </section>
 
 
       <BenefitBanner />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Mail, Phone, Calendar, MoreVertical, CheckCircle, XCircle, Clock, RefreshCw, Loader2, ChevronLeft, ChevronRight, ClipboardCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Filter, Mail, Phone, Calendar, MoreVertical, CheckCircle, XCircle, Clock, RefreshCw, Loader2, ChevronLeft, ChevronRight, ClipboardCheck, X, PartyPopper } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -13,12 +14,15 @@ export function TrainerEnquiries() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const PAGE_SIZE = 10;
-  
+
+  // Success popup state
+  const [successPopup, setSuccessPopup] = useState<{ show: boolean; action: string; studentName: string } | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null); // leadId of loading action
+
   const supabase = createClient();
   const { profile } = useAuth();
   const { toast } = useToast();
-  const credits = profile?.wallet_balance || 0;
-  const hasMinCredits = credits >= 1000;
+  const navigate = useNavigate();
 
 
   const fetchLeads = async (page: number) => {
@@ -65,8 +69,72 @@ export function TrainerEnquiries() {
     }
   };
 
+  const handleAction = async (actionName: string, enquiry: any) => {
+    const studentName = enquiry.name || 'Anonymous';
+    const course = enquiry.course || 'General Inquiry';
+
+    setActionLoading(enquiry.id);
+    try {
+      await fetch('/api/leads/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: actionName,
+          trainerName: profile?.full_name || profile?.username || 'Trainer',
+          trainerEmail: profile?.email || '',
+          studentName,
+          studentEmail: enquiry.email || '',
+          course,
+          leadId: enquiry.id,
+        }),
+      });
+    } catch (err) {
+      console.error('Notification failed:', err);
+    } finally {
+      setActionLoading(null);
+    }
+
+    // Show success popup regardless of notification result
+    setSuccessPopup({ show: true, action: actionName, studentName });
+    setTimeout(() => setSuccessPopup(null), 4000);
+  };
+
   return (
-    <div className="p-8">
+    <div className="p-8 relative">
+      {/* Success Popup */}
+      {successPopup?.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }}>
+          <div
+            className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center"
+            style={{ animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}
+          >
+            <style>{`
+              @keyframes popIn {
+                from { transform: scale(0.7); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+              }
+            `}</style>
+            <button
+              onClick={() => setSuccessPopup(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              style={{ position: 'absolute', top: '16px', right: '16px' }}
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="h-10 w-10 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Action Applied!</h2>
+            <p className="text-gray-500 text-sm mb-1">
+              <span className="font-semibold text-emerald-600">{successPopup.action}</span> was successfully applied
+            </p>
+            <p className="text-gray-700 font-medium mb-5">for <span className="text-gray-900">{successPopup.studentName}</span></p>
+            <div className="bg-emerald-50 rounded-xl px-4 py-3 text-sm text-emerald-700 font-medium">
+              ✉️ Our support team has been notified
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Enquiries</h1>
@@ -180,58 +248,36 @@ export function TrainerEnquiries() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button 
-                          className={`p-2 transition-colors ${hasMinCredits ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-300 cursor-not-allowed'}`}
-                          title={hasMinCredits ? "Apply to Lead" : "Upgrade to Premium to Unlock"}
-                          onClick={() => {
-                            if (!hasMinCredits) {
-                              toast({
-                                title: "Premium Access Required",
-                                description: "You need to upgrade to a premium plan to perform this action.",
-                                variant: "destructive"
-                              });
-                              return;
-                            }
-                            // Apply logic here
-                          }}
-                        >
-                          <ClipboardCheck className="h-4 w-4" />
-                        </button>
-                        <button 
-                          className={`p-2 transition-colors ${hasMinCredits ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-300 cursor-not-allowed'}`}
-                          title={hasMinCredits ? "Mark Contacted" : "Upgrade to Premium to Unlock"}
-                          onClick={() => {
-                            if (!hasMinCredits) {
-                              toast({
-                                title: "Premium Access Required",
-                                description: "You need to upgrade to a premium plan to perform this action.",
-                                variant: "destructive"
-                              });
-                              return;
-                            }
-                          }}
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </button>
-                        <button 
-                          className={`p-2 transition-colors ${hasMinCredits ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-300 cursor-not-allowed'}`}
-                          title={hasMinCredits ? "Schedule Demo" : "Upgrade to Premium to Unlock"}
-                          onClick={() => {
-                            if (!hasMinCredits) {
-                              toast({
-                                title: "Premium Access Required",
-                                description: "You need to upgrade to a premium plan to perform this action.",
-                                variant: "destructive"
-                              });
-                              return;
-                            }
-                          }}
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                          <MoreVertical className="h-4 w-4" />
-                        </button>
+                        {actionLoading === enquiry.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
+                        ) : (
+                          <>
+                            <button 
+                              className="p-2 text-gray-400 hover:text-emerald-600 transition-colors rounded-lg hover:bg-emerald-50"
+                              title="Apply to Lead"
+                              onClick={() => handleAction('Apply to Lead', enquiry)}
+                            >
+                              <ClipboardCheck className="h-4 w-4" />
+                            </button>
+                            <button 
+                              className="p-2 text-gray-400 hover:text-emerald-600 transition-colors rounded-lg hover:bg-emerald-50"
+                              title="Mark Contacted"
+                              onClick={() => handleAction('Mark Contacted', enquiry)}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button 
+                              className="p-2 text-gray-400 hover:text-indigo-600 transition-colors rounded-lg hover:bg-indigo-50"
+                              title="Schedule Demo"
+                              onClick={() => navigate('/teach/dashboard/trainer/calendar')}
+                            >
+                              <Calendar className="h-4 w-4" />
+                            </button>
+                            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100">
+                              <MoreVertical className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

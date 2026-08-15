@@ -93,7 +93,7 @@ export default function StudentInquiries() {
     }
 
     return (
-        <section className="py-24 relative z-10">
+        <section className="py-12 relative z-10">
             {/* ... existing Render ... */}
             <div className="container max-w-7xl mx-auto px-4">
                 <div className="text-center mb-20">

@@ -8,7 +8,7 @@ import Link from "next/link"
 
 export function BenefitBanner() {
     return (
-        <section className="py-24 relative overflow-hidden z-10 px-8">
+        <section className="py-12 relative overflow-hidden z-10 px-8">
             <div className="max-w-6xl mx-auto">
                 <div className="bg-[#0d1321] rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl relative group">
                     {/* Background Glow */}
