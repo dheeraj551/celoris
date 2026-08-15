@@ -36,8 +36,8 @@ export function TrainerEarnings() {
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
 
-        const thisMonthLeads = allLeads.filter((l) => new Date(l.created_at) >= startOfMonth).length;
-        const convertedLeads = allLeads.filter((l) => l.status?.toLowerCase() === 'converted').length;
+        const thisMonthLeads = allLeads.filter((l: any) => new Date(l.created_at) >= startOfMonth).length;
+        const convertedLeads = allLeads.filter((l: any) => l.status?.toLowerCase() === 'converted').length;
 
         setStats({
           walletBalance,

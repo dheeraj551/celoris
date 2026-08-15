@@ -35,14 +35,14 @@ export function TrainerOverview() {
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
         const newThisMonth = (allLeads || []).filter(
-          (l) => new Date(l.created_at) >= startOfMonth
+          (l: any) => new Date(l.created_at) >= startOfMonth
         ).length;
 
         // Recent 3 leads
         const recent = (allLeads || []).slice(0, 3);
 
         // --- Unique students from leads ---
-        const uniqueEmails = new Set((allLeads || []).map((l) => l.email).filter(Boolean));
+        const uniqueEmails = new Set((allLeads || []).map((l: any) => l.email).filter(Boolean));
         const totalStudents = uniqueEmails.size || (allLeads?.length ?? 0);
 
         // --- Calendar events for today ---
@@ -59,7 +59,7 @@ export function TrainerOverview() {
             .limit(20);
 
           if (events) {
-            todayEvents = events.filter((e) => e.event_date?.startsWith(todayStr));
+            todayEvents = events.filter((e: any) => e.event_date?.startsWith(todayStr));
             upcomingSessions = events.length;
           }
         } catch (_) {

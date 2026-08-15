@@ -62,15 +62,15 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
 
     if (!error && activeBooths) {
       // Fetch profiles
-      const trainerIds = activeBooths.map(b => b.trainer_id)
+      const trainerIds = activeBooths.map((b: any) => b.trainer_id)
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, first_name, last_name, avatar_url')
         .in('id', trainerIds)
 
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
+      const profileMap = new Map(profiles?.map((p: any) => [p.id, p]) || [])
 
-      const enrichedBooths = activeBooths.map(b => ({
+      const enrichedBooths = activeBooths.map((b: any) => ({
         ...b,
         trainer: profileMap.get(b.trainer_id) || {
           first_name: "Expert",
