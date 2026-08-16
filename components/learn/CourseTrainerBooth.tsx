@@ -91,20 +91,15 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
 
     setClaiming(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-
-      const response = await fetch('/api/booths/claim', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || ''}`
-        },
-        body: JSON.stringify({ courseId })
+      const { data, error } = await supabase.rpc('claim_trainer_booth', {
+        p_course_id: courseId,
+        p_trainer_id: currentUser.id
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "Failed to claim booth")
-
+      if (error) {
+        throw new Error(error.message)
+      }
+      
       toast({ title: "Booth Claimed!", description: "You are now a featured trainer for this course." })
       loadData()
     } catch (err: any) {
