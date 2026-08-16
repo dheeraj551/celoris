@@ -91,9 +91,14 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
 
     setClaiming(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+
       const response = await fetch('/api/booths/claim', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`
+        },
         body: JSON.stringify({ courseId })
       })
 
