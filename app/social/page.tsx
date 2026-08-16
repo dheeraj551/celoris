@@ -209,8 +209,9 @@ export default function App() {
       .eq('host_id', user.id); // safety: only owner can delete
 
     if (error) {
-      console.error('Delete error:', error);
-      alert('Failed to delete room.');
+      console.error('Delete error:', JSON.stringify(error, null, 2));
+      console.error('Delete error details:', error.message, error.code, error.hint);
+      alert(`Failed to delete room: ${error.message || 'Permission denied. You may not be the room host.'}`);
     } else {
       setAllRooms(prev => prev.filter(r => r.id !== roomId));
       if (joinedRoomId === roomId) setJoinedRoomId(null);

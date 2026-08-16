@@ -148,7 +148,7 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                   {room.host ? (
                     <div className="flex items-center gap-2">
                       <img
-                        src={room.host.avatar}
+                        src={room.host.avatar || undefined}
                         alt={room.host.name}
                         className="w-6 h-6 rounded-full border border-emerald-500/30 object-cover"
                       />
@@ -163,7 +163,7 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                         {room.participants.map((p, idx) => (
                           <img
                             key={p.id || idx}
-                            src={p.avatar}
+                            src={p.avatar || undefined}
                             alt={p.name}
                             className="inline-block h-6 w-6 rounded-full ring-2 ring-[#0f0f0f] object-cover"
                           />

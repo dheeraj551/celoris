@@ -477,9 +477,21 @@ export default function CourseDetailPage() {
               <Card className="bg-white border-slate-200 shadow-xl shadow-primary-900/10">
                 <CardContent className="p-6">
                   <div className="text-center mb-6">
-                    <div className="text-4xl font-bold text-slate-900 mb-2">
-                      {course.price === 0 ? "Free" : `₹${course.price}`}
+                    <div className="text-4xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
+                      {course.price === 0 ? (
+                        "Free"
+                      ) : (
+                        <>
+                          <span className="text-2xl text-slate-400 line-through">₹{course.price * 2}</span>
+                          <span className="text-green-600">₹{course.price}</span>
+                        </>
+                      )}
                     </div>
+                    {course.price > 0 && (
+                      <div className="inline-block bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider animate-pulse shadow-sm">
+                        🔥 50% OFF Limited Time
+                      </div>
+                    )}
                     <div className="text-slate-500 font-medium">One-time payment</div>
                   </div>
                   <CourseInquiryDialog
