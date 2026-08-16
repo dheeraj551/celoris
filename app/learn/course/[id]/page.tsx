@@ -326,35 +326,21 @@ export default function CourseDetailPage() {
               {/* Course Stats Removed (Moved to Instructor Profile) */}
             </div>
 
-            {/* Course Image or Preview */}
+            {/* Course Image */}
             <Card className="overflow-hidden border-slate-200">
-              {course.preview_video_url ? (
-                <div className="aspect-video w-full bg-black">
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src={course.preview_video_url} 
-                    title="Course Preview" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              ) : (
-                <div className="aspect-video relative overflow-hidden bg-gray-100">
-                  {course.course_image_url ? (
-                    <img
-                      src={course.course_image_url}
-                      alt={course.title}
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                      <Play className="h-16 w-16 opacity-50" />
-                    </div>
-                  )}
-                </div>
-              )}
+              <div className="aspect-video relative overflow-hidden bg-gray-100">
+                {course.course_image_url ? (
+                  <img
+                    src={course.course_image_url}
+                    alt={course.title}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">
+                    <Play className="h-16 w-16 opacity-50" />
+                  </div>
+                )}
+              </div>
             </Card>
 
             {/* What You'll Learn */}
