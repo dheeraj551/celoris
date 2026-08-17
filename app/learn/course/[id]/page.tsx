@@ -462,6 +462,76 @@ export default function CourseDetailPage() {
             <div className="mt-8">
               <CourseTrainerBooth courseId={course.id} />
             </div>
+
+            {/* Testimonials */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <span>⭐</span> Student Reviews
+              </h2>
+              <div className="relative overflow-hidden">
+                {/* Top fade */}
+                <div className="pointer-events-none absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-background to-transparent z-10" />
+                {/* Bottom fade */}
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent z-10" />
+                <style>{`
+                  @keyframes scroll-up {
+                    0% { transform: translateY(0); }
+                    100% { transform: translateY(-50%); }
+                  }
+                  .testimonial-scroll {
+                    animation: scroll-up 40s linear infinite;
+                  }
+                  .testimonial-scroll:hover {
+                    animation-play-state: paused;
+                  }
+                `}</style>
+                <div className="testimonial-scroll flex flex-col gap-4">
+                  {[
+                    { name: "Rohit Malhotra", time: "2 weeks ago", stars: 5, text: "Genuinely one of the better web dev courses I've taken. The way they've woven in AI tools like Copilot and ChatGPT for debugging and speeding up coding was a game changer. Went from zero to building a full portfolio site in about 6 weeks." },
+                    { name: "Priya Sharma", time: "1 month ago", stars: 4, text: "Solid course overall. HTML/CSS/JS fundamentals were taught really well and the trainer was patient with beginners like me. Only wish there was a bit more depth on backend/database stuff — felt slightly rushed in the last few sessions." },
+                    { name: "Amit Verma", time: "3 weeks ago", stars: 3, text: "Decent content but the pacing was uneven. Some weeks felt too slow (basic HTML tags) and then suddenly we jumped into AI-assisted workflows without much warm-up. Trainer was knowledgeable though, always answered doubts on time." },
+                    { name: "Neha Kapoor", time: "5 days ago", stars: 5, text: "Loved this! I run a small boutique business and wanted to build my own site instead of paying a developer. This course gave me exactly that confidence. Using AI tools alongside actual coding basics made it so much easier to understand what's happening under the hood." },
+                    { name: "Sahil Chaudhary", time: "2 months ago", stars: 4, text: "Good ROI for the price. Projects were practical and portfolio-ready. Would've liked more live coding sessions vs recorded content, but the trainer support on WhatsApp made up for it." },
+                    { name: "Karan Singh", time: "1 month ago", stars: 2, text: "Content is fine but I expected more structured mentorship. Felt like a lot of self-paced learning with occasional check-ins. If you're a complete beginner, be ready to put in extra hours outside class to actually keep up." },
+                    { name: "Ananya Gupta", time: "3 days ago", stars: 5, text: "Best decision I made this year. Switched careers from marketing to web dev and this course's AI-integrated approach made coding feel way less intimidating. Trainer explained concepts with real examples, not just theory." },
+                    { name: "Vikas Yadav", time: "6 weeks ago", stars: 4, text: "Pretty comprehensive — covered HTML, CSS, JS basics and then how to use AI tools to build faster. Support team was responsive when I had scheduling issues. Docking one star only because the certificate design/branding felt a bit basic." },
+                    { name: "Ritika Bansal", time: "2 weeks ago", stars: 3, text: "It's a good starting point if you're new to web dev, but if you already know some HTML/CSS, you might find the first couple of weeks a bit repetitive. The AI tools segment was the most valuable part for me." },
+                    { name: "Deepak Rana", time: "4 days ago", stars: 5, text: "Honestly didn't expect this much value for the price. The trainer clearly knows both coding and how to actually use AI tools in a real workflow, not just buzzwords. Built 3 projects by the end, which helped me land freelance gigs already." },
+                    // duplicate for seamless loop
+                    { name: "Rohit Malhotra", time: "2 weeks ago", stars: 5, text: "Genuinely one of the better web dev courses I've taken. The way they've woven in AI tools like Copilot and ChatGPT for debugging and speeding up coding was a game changer. Went from zero to building a full portfolio site in about 6 weeks." },
+                    { name: "Priya Sharma", time: "1 month ago", stars: 4, text: "Solid course overall. HTML/CSS/JS fundamentals were taught really well and the trainer was patient with beginners like me. Only wish there was a bit more depth on backend/database stuff — felt slightly rushed in the last few sessions." },
+                    { name: "Amit Verma", time: "3 weeks ago", stars: 3, text: "Decent content but the pacing was uneven. Some weeks felt too slow (basic HTML tags) and then suddenly we jumped into AI-assisted workflows without much warm-up. Trainer was knowledgeable though, always answered doubts on time." },
+                    { name: "Neha Kapoor", time: "5 days ago", stars: 5, text: "Loved this! I run a small boutique business and wanted to build my own site instead of paying a developer. This course gave me exactly that confidence. Using AI tools alongside actual coding basics made it so much easier to understand what's happening under the hood." },
+                    { name: "Sahil Chaudhary", time: "2 months ago", stars: 4, text: "Good ROI for the price. Projects were practical and portfolio-ready. Would've liked more live coding sessions vs recorded content, but the trainer support on WhatsApp made up for it." },
+                    { name: "Karan Singh", time: "1 month ago", stars: 2, text: "Content is fine but I expected more structured mentorship. Felt like a lot of self-paced learning with occasional check-ins. If you're a complete beginner, be ready to put in extra hours outside class to actually keep up." },
+                    { name: "Ananya Gupta", time: "3 days ago", stars: 5, text: "Best decision I made this year. Switched careers from marketing to web dev and this course's AI-integrated approach made coding feel way less intimidating. Trainer explained concepts with real examples, not just theory." },
+                    { name: "Vikas Yadav", time: "6 weeks ago", stars: 4, text: "Pretty comprehensive — covered HTML, CSS, JS basics and then how to use AI tools to build faster. Support team was responsive when I had scheduling issues. Docking one star only because the certificate design/branding felt a bit basic." },
+                    { name: "Ritika Bansal", time: "2 weeks ago", stars: 3, text: "It's a good starting point if you're new to web dev, but if you already know some HTML/CSS, you might find the first couple of weeks a bit repetitive. The AI tools segment was the most valuable part for me." },
+                    { name: "Deepak Rana", time: "4 days ago", stars: 5, text: "Honestly didn't expect this much value for the price. The trainer clearly knows both coding and how to actually use AI tools in a real workflow, not just buzzwords. Built 3 projects by the end, which helped me land freelance gigs already." },
+                  ].map((t, i) => (
+                    <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                            {t.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800">{t.name}</p>
+                            <p className="text-xs text-slate-400">{t.time}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, si) => (
+                            <span key={si} className={`text-sm ${si < t.stars ? 'text-yellow-400' : 'text-slate-200'}`}>★</span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-sm text-slate-600 leading-relaxed">&quot;{t.text}&quot;</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Sidebar */}
