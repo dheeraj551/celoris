@@ -61,14 +61,21 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
       .gt('expires_at', new Date().toISOString())
 
     if (!error && activeBooths) {
-      // Fetch profiles
+      // Fetch profiles from users table
       const trainerIds = activeBooths.map((b: any) => b.trainer_id)
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, avatar_url')
+      const { data: users } = await supabase
+        .from('users')
+        .select('id, full_name, profile_pic_url')
         .in('id', trainerIds)
 
-      const profileMap = new Map(profiles?.map((p: any) => [p.id, p]) || [])
+      const profileMap = new Map(users?.map((p: any) => {
+        const parts = (p.full_name || '').split(' ')
+        return [p.id, {
+          first_name: parts[0] || "Expert",
+          last_name: parts.slice(1).join(' ') || "Trainer",
+          avatar_url: p.profile_pic_url || ""
+        }]
+      }) || [])
 
       const enrichedBooths = activeBooths.map((b: any) => ({
         ...b,
