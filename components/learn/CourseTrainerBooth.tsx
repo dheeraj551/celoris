@@ -31,12 +31,34 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
   const [messageText, setMessageText] = useState("")
   const [senderName, setSenderName] = useState("")
   const [sending, setSending] = useState(false)
+  const [onlineTrainers, setOnlineTrainers] = useState<Set<string>>(new Set())
 
   const { toast } = useToast()
   const supabase = createClient()
 
   useEffect(() => {
     loadData()
+
+    // Track online trainers via presence
+    const channel = supabase.channel('booth:online_trainers')
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState()
+      const onlineIds = new Set<string>()
+      
+      // state is an object where keys are presence ids and values are arrays of presence data
+      Object.values(state).forEach((presences: any) => {
+        presences.forEach((presence: any) => {
+          if (presence.user_id) onlineIds.add(presence.user_id)
+        })
+      })
+      setOnlineTrainers(onlineIds)
+    })
+    
+    channel.subscribe()
+
+    return () => {
+      channel.unsubscribe()
+    }
   }, [courseId])
 
   const loadData = async () => {
@@ -116,33 +138,75 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
     }
   }
 
+  const [chatMessages, setChatMessages] = useState<any[]>([])
+  
+  // Track selected trainer's chat channel
+  useEffect(() => {
+    if (!selectedTrainer || !onlineTrainers.has(selectedTrainer.trainer_id)) {
+      setChatMessages([])
+      return
+    }
+
+    const channelId = `chat:${selectedTrainer.trainer_id}`
+    const channel = supabase.channel(channelId)
+
+    channel
+      .on('broadcast', { event: 'message' }, ({ payload }: any) => {
+        setChatMessages(prev => [...prev, payload])
+      })
+      .subscribe()
+
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [selectedTrainer, onlineTrainers])
+
   const handleSendMessage = async () => {
     if (!selectedTrainer || !messageText.trim() || !senderName.trim()) return
 
-    setSending(true)
-    try {
-      const response = await fetch('/api/inbox/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          trainerId: selectedTrainer.trainer_id,
-          senderName,
-          senderEmail: currentUser?.email || "anonymous@student.com",
-          subject: "Inquiry from Course Page",
-          body: messageText
-        })
+    const isOnline = onlineTrainers.has(selectedTrainer.trainer_id)
+
+    if (isOnline) {
+      // Live chat broadcast
+      const newMessage = {
+        id: Date.now(),
+        sender_id: currentUser?.id || 'anonymous_' + Date.now(),
+        sender_name: senderName,
+        text: messageText,
+        timestamp: new Date().toISOString()
+      }
+
+      await supabase.channel(`chat:${selectedTrainer.trainer_id}`).send({
+        type: 'broadcast',
+        event: 'message',
+        payload: newMessage
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "Failed to send message")
-
-      toast({ title: "Message Sent!", description: "The trainer will get back to you soon." })
-      setMessageModalOpen(false)
+      setChatMessages(prev => [...prev, newMessage])
       setMessageText("")
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" })
-    } finally {
-      setSending(false)
+    } else {
+      // Offline inquiry
+      setSending(true)
+      try {
+        const response = await fetch('/api/inbox/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            trainerId: selectedTrainer.trainer_id,
+            senderName,
+            message: messageText
+          })
+        })
+        if (!response.ok) throw new Error("Failed to send message")
+        
+        toast({ title: "Message Sent", description: "The trainer will get back to you soon." })
+        setMessageModalOpen(false)
+        setMessageText("")
+      } catch (err: any) {
+        toast({ title: "Error", description: err.message, variant: "destructive" })
+      } finally {
+        setSending(false)
+      }
     }
   }
 
@@ -168,7 +232,7 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
             <CardContent className="p-6 flex flex-col items-center text-center h-full justify-center">
               {booth ? (
                 <>
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-emerald-500/50 mb-4 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-emerald-500/50 mb-4 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative">
                     <img 
                       src={booth.trainer.avatar_url || `https://ui-avatars.com/api/?name=${booth.trainer.first_name}+${booth.trainer.last_name}&background=10b981&color=fff`} 
                       alt="Trainer" 
@@ -176,11 +240,19 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
                     />
                   </div>
                   <h4 className="text-white font-bold text-lg mb-1">{booth.trainer.first_name} {booth.trainer.last_name}</h4>
-                  <p className="text-emerald-400 text-xs font-black uppercase tracking-widest mb-6">Featured Trainer</p>
+                  
+                  {onlineTrainers.has(booth.trainer_id) ? (
+                    <div className="flex items-center gap-1.5 mb-6">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <p className="text-emerald-400 text-xs font-black uppercase tracking-widest">Online Now</p>
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest mb-6">Offline</p>
+                  )}
                   
                   <Button 
                     onClick={() => { setSelectedTrainer(booth); setMessageModalOpen(true); }}
-                    className="w-full bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/50 transition-all mt-auto"
+                    className={`w-full transition-all mt-auto border ${onlineTrainers.has(booth.trainer_id) ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500' : 'bg-white/5 hover:bg-white/10 text-white/70 border-white/10'}`}
                   >
                     <Mail size={16} className="mr-2" /> Message
                   </Button>
@@ -225,37 +297,109 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
                 <X size={24} />
               </button>
               
-              <h3 className="text-2xl font-bold text-white mb-2">Message Trainer</h3>
-              <p className="text-slate-400 text-sm mb-6">Send an inquiry to {selectedTrainer?.trainer.first_name}.</p>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Your Name</label>
-                  <input 
-                    type="text" 
-                    value={senderName}
-                    onChange={(e) => setSenderName(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                    placeholder="Enter your name"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Message</label>
-                  <textarea 
-                    value={messageText}
-                    onChange={(e) => setMessageText(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 h-32 resize-none"
-                    placeholder="What would you like to ask?"
-                  />
-                </div>
-                <Button 
-                  onClick={handleSendMessage}
-                  disabled={sending || !messageText.trim() || !senderName.trim()}
-                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl h-12 mt-4"
-                >
-                  {sending ? <Loader2 className="animate-spin" /> : 'Send Message'}
-                </Button>
-              </div>
+              {selectedTrainer && onlineTrainers.has(selectedTrainer.trainer_id) ? (
+                <>
+                  <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Live Chat with {selectedTrainer.trainer.first_name}
+                  </h3>
+                  <p className="text-slate-400 text-sm mb-6">Trainer is online now.</p>
+                  
+                  {!senderName ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Enter Your Name to Join</label>
+                        <input 
+                          type="text" 
+                          value={senderName}
+                          onChange={(e) => setSenderName(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
+                          placeholder="Your name"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col h-[300px]">
+                      <div className="flex-1 overflow-y-auto bg-white/5 rounded-xl border border-white/10 p-4 mb-4 space-y-3">
+                        {chatMessages.length === 0 ? (
+                          <div className="h-full flex items-center justify-center text-slate-500 text-sm">
+                            Say hello to {selectedTrainer.trainer.first_name}!
+                          </div>
+                        ) : (
+                          chatMessages.map((m) => {
+                            const isMe = m.sender_id === currentUser?.id || (!currentUser && m.sender_name === senderName)
+                            return (
+                              <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${
+                                  isMe 
+                                    ? 'bg-emerald-600 text-white rounded-tr-none' 
+                                    : 'bg-white/10 text-slate-200 rounded-tl-none'
+                                }`}>
+                                  {m.text}
+                                </div>
+                                <span className="text-[10px] text-slate-500 mt-1 px-1">
+                                  {isMe ? 'You' : m.sender_name}
+                                </span>
+                              </div>
+                            )
+                          })
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={messageText}
+                          onChange={(e) => setMessageText(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-white focus:outline-none focus:border-emerald-500"
+                          placeholder="Type a message..."
+                        />
+                        <Button 
+                          onClick={handleSendMessage}
+                          disabled={!messageText.trim()}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-6"
+                        >
+                          Send
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h3 className="text-2xl font-bold text-white mb-2">Message Trainer</h3>
+                  <p className="text-slate-400 text-sm mb-6">Send an inquiry to {selectedTrainer?.trainer.first_name}.</p>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Your Name</label>
+                      <input 
+                        type="text" 
+                        value={senderName}
+                        onChange={(e) => setSenderName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
+                        placeholder="Enter your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Message</label>
+                      <textarea 
+                        value={messageText}
+                        onChange={(e) => setMessageText(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 h-32 resize-none"
+                        placeholder="What would you like to ask?"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={sending || !messageText.trim() || !senderName.trim()}
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl h-12 mt-4"
+                    >
+                      {sending ? <Loader2 className="animate-spin" /> : 'Send Message'}
+                    </Button>
+                  </div>
+                </>
+              )}
             </motion.div>
           </div>
         )}
