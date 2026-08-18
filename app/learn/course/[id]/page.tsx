@@ -537,7 +537,7 @@ export default function CourseDetailPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {/* Enrollment Card */}
+              {/* Unified Sidebar Card */}
               <Card className="bg-white border-slate-200 shadow-xl shadow-primary-900/10">
                 <CardContent className="p-6">
                   <div className="text-center mb-6">
@@ -558,55 +558,52 @@ export default function CourseDetailPage() {
                     )}
                     <div className="text-slate-500 font-medium">One-time payment</div>
                   </div>
+                  
                   <CourseInquiryDialog
                     courseTitle={course.title}
-                    buttonClassName="w-full mb-4 h-14 text-lg font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-2xl shadow-lg"
+                    buttonClassName="w-full mb-6 h-14 text-lg font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-2xl shadow-lg"
                   />
 
-                  <div className="mt-6 text-center text-sm text-slate-500 font-medium">
-                    <div className="flex items-center justify-center space-x-4">
-                      <span>• Opportunity to work with us</span>
+                  {/* Course Stats */}
+                  <div className="space-y-3 py-5 border-y border-slate-100 mb-6 text-sm text-slate-600 font-semibold">
+                    <div className="flex items-center space-x-3">
+                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-500" />
+                      <div>
+                        <span className="text-slate-900 font-bold">{course.rating || 4.8}</span>
+                        <span className="text-slate-400 font-normal ml-1">({(course.students_count || 120).toLocaleString()} ratings)</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-center space-x-4 mt-2">
-                      <span>• Lifetime access</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-4 mt-2">
-                      <span>• Certificate of completion</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white border-slate-200">
-                <CardHeader>
-                  <CardTitle className="text-slate-900">Your Instructor</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-slate-100">
-                      <img src="/celoris-logo.svg" alt="Celoris" className="w-12 h-12 object-contain" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900">{course.instructor_name || "Expert Instructor"}</h3>
-                      <p className="text-xs text-slate-500 font-medium">Course Instructor</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-slate-600 mb-4 leading-relaxed font-medium">
-                    {course.instructor_bio || "Passionate about teaching and helping others break into tech."}
-                  </p>
-                  <div className="space-y-3 text-sm text-slate-600 font-semibold">
-                    <div className="flex items-center space-x-2">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-500" />
-                      <span className="text-slate-900">{course.rating || 4.8}</span>
-                      <span className="text-slate-400 font-normal">({(course.students_count || 120).toLocaleString()} ratings)</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-primary-600" />
+                    <div className="flex items-center space-x-3">
+                      <Clock className="h-5 w-5 text-emerald-600" />
                       <span>{durationDisplay}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-primary-600" />
+                    <div className="flex items-center space-x-3">
+                      <Users className="h-5 w-5 text-emerald-600" />
                       <span>{(course.students_count || 120).toLocaleString()} enrolled</span>
+                    </div>
+                  </div>
+
+                  {/* Course Features */}
+                  <div className="space-y-3 text-sm text-slate-600 font-medium px-2">
+                    <div className="flex items-start gap-3">
+                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                      <span>Opportunity to work with us</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                      <span>Lifetime access</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                      <span>Certificate of completion</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                      <span>Trainer on demand</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                      <span>Home tutor also available for this course</span>
                     </div>
                   </div>
                 </CardContent>
