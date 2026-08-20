@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase-client"
 import { useParams, useRouter } from "next/navigation"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { CourseTrainerBooth } from "@/components/learn/CourseTrainerBooth"
+import { CourseNoticeBoard } from "@/components/learn/CourseNoticeBoard"
 interface CourseTopic {
   id: string
   order_in_module: number
@@ -457,6 +458,11 @@ export default function CourseDetailPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Notice Board */}
+            <div className="mt-8">
+              <CourseNoticeBoard course={course} />
+            </div>
 
             {/* Trainer Booth */}
             <div className="mt-8">

@@ -75,6 +75,18 @@ export function TrainerEnquiries() {
 
     setActionLoading(enquiry.id);
     try {
+      if (actionName === 'Mark Contacted') {
+        const { error: updateError } = await supabase
+          .from('leads')
+          .update({ status: 'contacted' })
+          .eq('id', enquiry.id);
+        
+        if (updateError) throw updateError;
+        
+        // Update local state to reflect the change immediately
+        setEnquiries(prev => prev.map(e => e.id === enquiry.id ? { ...e, status: 'contacted' } : e));
+      }
+
       await fetch('/api/leads/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
