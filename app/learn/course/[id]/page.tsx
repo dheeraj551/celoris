@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { CourseTrainerBooth } from "@/components/learn/CourseTrainerBooth"
 import { CourseNoticeBoard } from "@/components/learn/CourseNoticeBoard"
+import { CourseNoticeBoardMini } from "@/components/learn/CourseNoticeBoardMini"
 interface CourseTopic {
   id: string
   order_in_module: number
@@ -459,11 +460,6 @@ export default function CourseDetailPage() {
               </Card>
             )}
 
-            {/* Notice Board */}
-            <div className="mt-8">
-              <CourseNoticeBoard course={course} />
-            </div>
-
             {/* Trainer Booth */}
             <div className="mt-8">
               <CourseTrainerBooth courseId={course.id} />
@@ -471,7 +467,7 @@ export default function CourseDetailPage() {
 
             {/* Testimonials */}
             <div className="mt-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                 <span>⭐</span> Student Reviews
               </h2>
               <div className="relative overflow-hidden">
@@ -543,79 +539,15 @@ export default function CourseDetailPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {/* Unified Sidebar Card */}
-              <Card className="bg-white border-slate-200 shadow-xl shadow-primary-900/10">
-                <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <div className="text-4xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
-                      {course.price === 0 ? (
-                        "Free"
-                      ) : (
-                        <>
-                          <span className="text-2xl text-slate-400 line-through">₹{course.price * 2}</span>
-                          <span className="text-green-600">₹{course.price}</span>
-                        </>
-                      )}
-                    </div>
-                    {course.price > 0 && (
-                      <div className="inline-block bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider animate-pulse shadow-sm">
-                        🔥 50% OFF Limited Time
-                      </div>
-                    )}
-                    <div className="text-slate-500 font-medium">One-time payment</div>
-                  </div>
-                  
-                  <CourseInquiryDialog
-                    courseTitle={course.title}
-                    buttonClassName="w-full mb-6 h-14 text-lg font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-2xl shadow-lg"
-                  />
-
-                  {/* Course Stats */}
-                  <div className="space-y-3 py-5 border-y border-slate-100 mb-6 text-sm text-slate-600 font-semibold">
-                    <div className="flex items-center space-x-3">
-                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-500" />
-                      <div>
-                        <span className="text-slate-900 font-bold">{course.rating || 4.8}</span>
-                        <span className="text-slate-400 font-normal ml-1">({(course.students_count || 120).toLocaleString()} ratings)</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Clock className="h-5 w-5 text-emerald-600" />
-                      <span>{durationDisplay}</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Users className="h-5 w-5 text-emerald-600" />
-                      <span>{(course.students_count || 120).toLocaleString()} enrolled</span>
-                    </div>
-                  </div>
-
-                  {/* Course Features */}
-                  <div className="space-y-3 text-sm text-slate-600 font-medium px-2">
-                    <div className="flex items-start gap-3">
-                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
-                      <span>Opportunity to work with us</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
-                      <span>Lifetime access</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
-                      <span>Certificate of completion</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
-                      <span>Trainer on demand</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-emerald-500 font-bold mt-0.5">•</span>
-                      <span>Home tutor also available for this course</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Mini Notice Board — replaces the white card and fills the sidebar */}
+              <CourseNoticeBoardMini course={course} durationDisplay={durationDisplay} />
             </div>
           </div>
+        </div>
+
+        {/* Full-Width Notice Board */}
+        <div className="mt-12">
+          <CourseNoticeBoard course={course} />
         </div>
       </div>
     </div>
