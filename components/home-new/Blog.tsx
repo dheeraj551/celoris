@@ -26,7 +26,7 @@ const VideoCard: React.FC<VideoPostProps> = ({ category, title, views, date, ima
     >
         <a href={youtube_url} target="_blank" rel="noopener noreferrer" className="block">
             {/* Thumbnail Container */}
-            <div className="relative aspect-video rounded-3xl overflow-hidden bg-[#0d1321] mb-5 border border-white/5 shadow-3xl group-hover:border-emerald-500/30 transition-all duration-500">
+            <div className="relative aspect-video rounded-3xl overflow-hidden bg-[#0d0d0d] mb-5 border border-white/5 shadow-3xl group-hover:border-emerald-500/30 transition-all duration-500">
                 <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60 group-hover:opacity-80" />
 
                 {/* Play Button Overlay */}
@@ -39,7 +39,7 @@ const VideoCard: React.FC<VideoPostProps> = ({ category, title, views, date, ima
                 </div>
 
                 {/* Duration Badge */}
-                <div className="absolute bottom-4 right-4 bg-[#050810]/80 backdrop-blur-md px-3 py-1 rounded-xl text-[10px] font-black text-white tracking-widest border border-white/5">
+                <div className="absolute bottom-4 right-4 bg-[#080808]/80 backdrop-blur-md px-3 py-1 rounded-xl text-[10px] font-black text-white tracking-widest border border-white/5">
                     {duration}
                 </div>
 

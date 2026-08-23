@@ -84,7 +84,7 @@ export default function InterviewRooms() {
     }
 
     return (
-        <section className="py-32 relative z-10 bg-[#050810]/50">
+        <section className="py-32 relative z-10 bg-[#080808]/50">
             <div className="container px-4">
                 <div className="flex flex-col md:flex-row items-center justify-between mb-24 gap-10">
                     <div className="text-center md:text-left">

@@ -159,7 +159,7 @@ export default function Celoris3D() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[#050810]">
+    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[#080808]">
       {/* Sidebar Controls */}
       <aside className="w-full lg:w-80 border-r border-white/5 bg-[#0a0f1d]/50 p-6 flex flex-col gap-8 overflow-y-auto shrink-0 custom-scrollbar">
         

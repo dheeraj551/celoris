@@ -75,7 +75,7 @@ export function CommunityFeed() {
     };
 
     return (
-        <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-cyan-900/30 overflow-hidden shadow-[0_0_100px_rgba(6,182,212,0.05)] p-8 md:p-12 mb-12">
+        <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0a] border border-cyan-900/30 overflow-hidden shadow-[0_0_100px_rgba(6,182,212,0.05)] p-8 md:p-12 mb-12">
             {/* Background Dot Grid */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(6,182,212,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(6,182,212,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />

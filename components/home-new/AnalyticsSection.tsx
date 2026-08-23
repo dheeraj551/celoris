@@ -22,7 +22,7 @@ export const AnalyticsSection: React.FC = () => {
                             alt="AI Analytics Interface"
                             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#050810] via-transparent to-transparent opacity-40" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-transparent to-transparent opacity-40" />
 
                         {/* Interactive UI Overlays */}
                         <div className="absolute top-8 left-8 p-4 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 flex items-center gap-3">
@@ -30,7 +30,7 @@ export const AnalyticsSection: React.FC = () => {
                             <div className="text-[10px] font-black text-white uppercase tracking-widest">Global Node Sync: Active</div>
                         </div>
 
-                        <div className="absolute bottom-8 right-8 p-6 bg-[#0d1321]/80 backdrop-blur-2xl rounded-2xl border border-emerald-500/20 shadow-3xl shadow-emerald-500/10">
+                        <div className="absolute bottom-8 right-8 p-6 bg-[#0d0d0d]/80 backdrop-blur-2xl rounded-2xl border border-emerald-500/20 shadow-3xl shadow-emerald-500/10">
                             <div className="flex items-center gap-4 mb-3">
                                 <Activity className="text-emerald-500 h-5 w-5" />
                                 <div className="text-xl font-black text-white italic tracking-tighter">99.9% Uptime</div>

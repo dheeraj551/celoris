@@ -5,11 +5,11 @@
 
 @layer base {
   :root {
-    --background: 225 53% 4%;
+    --background: 0 0% 0%;
     --foreground: 210 40% 98%;
-    --card: 225 53% 6.5%;
+    --card: 0 0% 3%;
     --card-foreground: 210 40% 98%;
-    --popover: 225 53% 4%;
+    --popover: 0 0% 0%;
     --popover-foreground: 210 40% 98%;
     --primary: 158 94% 30%;
     --primary-foreground: 210 40% 98%;
@@ -32,11 +32,11 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 0 0% 0%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 0 0% 3%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 0 0% 0%;
     --popover-foreground: 210 40% 98%;
     --primary: 142 69% 31%;
     --primary-foreground: 222.2 84% 4.9%;
@@ -70,6 +70,7 @@
 
   body {
     @apply bg-background text-foreground;
+    background-color: #080808;
     font-family: 'Outfit', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

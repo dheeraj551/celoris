@@ -255,7 +255,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#050810] p-0 border-white/5 rounded-[3.5rem] shadow-[0_32px_120px_rgba(0,0,0,0.8)] overflow-hidden">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#080808] p-0 border-white/5 rounded-[3.5rem] shadow-[0_32px_120px_rgba(0,0,0,0.8)] overflow-hidden">
                 <AnimatePresence mode="wait">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center p-32 space-y-6">
@@ -294,7 +294,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                                 <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-20">
                                     <motion.div
                                         whileHover={{ scale: 1.05 }}
-                                        className="w-40 h-40 rounded-[2.5rem] border-8 border-[#050810] overflow-hidden shadow-2xl bg-[#0d1321] relative group"
+                                        className="w-40 h-40 rounded-[2.5rem] border-8 border-[#080808] overflow-hidden shadow-2xl bg-[#0d1321] relative group"
                                     >
                                         <img
                                             src={profile.profile_pic_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || profile.username)}&background=10b981&color=fff&size=200`}
@@ -494,7 +494,7 @@ export function UserProfileDialog({ userId, open, onOpenChange }: UserProfileDia
                             </AnimatePresence>
 
                             {/* Premium Action HUD */}
-                            <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#050810] to-transparent flex justify-center gap-6 z-[60] md:absolute md:rounded-b-[3.5rem]">
+                            <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#080808] to-transparent flex justify-center gap-6 z-[60] md:absolute md:rounded-b-[3.5rem]">
                                 <motion.div className="flex-1 max-w-[280px]" whileHover={{ scale: 1.02, y: -5 }} whileTap={{ scale: 0.98 }}>
                                     <Button
                                         className={`w-full h-20 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl transition-all border-none ${isLiked ? 'bg-emerald-600 text-white shadow-emerald-500/30' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'}`}

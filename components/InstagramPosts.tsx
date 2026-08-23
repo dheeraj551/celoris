@@ -104,7 +104,7 @@ export default function InstagramPosts({ userId, showHeader = true, displayMode 
             )}
 
             {/* Dark Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050810]/90 via-[#050810]/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity flex flex-col justify-end p-6 gap-3">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#080808]/90 via-[#080808]/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity flex flex-col justify-end p-6 gap-3">
               <div className="flex items-center gap-2">
                 <Maximize2 size={12} className="text-blue-400" />
                 <span className="text-[9px] font-black text-white uppercase tracking-widest">EXPAND_FRAGMENT</span>
@@ -117,7 +117,7 @@ export default function InstagramPosts({ userId, showHeader = true, displayMode 
             </div>
 
             {/* Type Icon Badge */}
-            <div className="absolute top-4 right-4 bg-[#050810]/60 backdrop-blur-xl p-2.5 rounded-xl border border-white/10 shadow-3xl text-blue-400">
+            <div className="absolute top-4 right-4 bg-[#080808]/60 backdrop-blur-xl p-2.5 rounded-xl border border-white/10 shadow-3xl text-blue-400">
               {post.post_type === 'video' ? <Video className="w-4 h-4" /> : <ImageIcon className="w-4 h-4" />}
             </div>
           </div>
@@ -203,7 +203,7 @@ export default function InstagramPosts({ userId, showHeader = true, displayMode 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#050810]/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-6 md:p-12"
+            className="fixed inset-0 bg-[#080808]/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-6 md:p-12"
             onClick={() => setSelectedPost(null)}
           >
             <div className="absolute top-10 right-10 flex gap-4">

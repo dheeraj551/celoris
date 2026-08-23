@@ -15,7 +15,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
         className="group relative h-[220px]"
     >
         <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/40 to-cyan-500/40 rounded-[2.5rem] blur opacity-0 group-hover:opacity-100 transition duration-700"></div>
-        <div className="relative flex bg-[#0d1321]/80 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-2xl transition-all duration-500 h-full">
+        <div className="relative flex bg-[#0d0d0d]/80 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl shadow-2xl transition-all duration-500 h-full">
         {/* Left Side: Image Sidebar */}
         <div className="relative w-[40%] h-full overflow-hidden bg-slate-900">
             <img
@@ -23,7 +23,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                 alt={title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0d1321]/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0d0d0d]/80" />
 
             {tag && (
                 <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-lg shadow-lg shadow-emerald-500/40 group-hover:scale-105 transition-transform duration-300">

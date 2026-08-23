@@ -73,7 +73,7 @@ export function CommunityPostSkeleton() {
 
 export function PageLoader() {
   return (
-    <div className="min-h-screen bg-[#050810] flex items-center justify-center">
+    <div className="min-h-screen bg-[#080808] flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

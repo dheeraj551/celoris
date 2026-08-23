@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export const Process: React.FC = () => {
     return (
-        <div className="mt-24 md:mt-32 bg-[#0d1321]/40 rounded-[3rem] p-12 md:p-20 border border-white/5 backdrop-blur-3xl shadow-3xl relative overflow-hidden">
+        <div className="mt-24 md:mt-32 bg-[#0d0d0d]/40 rounded-[3rem] p-12 md:p-20 border border-white/5 backdrop-blur-3xl shadow-3xl relative overflow-hidden">
             {/* Ambient Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05)_0%,transparent_70%)] pointer-events-none" />
 
@@ -61,7 +61,7 @@ export const Process: React.FC = () => {
                             className="flex flex-col items-center text-center group"
                         >
                             <div className={`w-24 h-24 rounded-[2rem] bg-gradient-to-br ${item.color} flex items-center justify-center mb-8 shadow-3xl shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-500 relative`}>
-                                <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#0d1321] border border-emerald-500/30 rounded-full flex items-center justify-center text-[10px] font-black text-emerald-400 shadow-xl">
+                                <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#0d0d0d] border border-emerald-500/30 rounded-full flex items-center justify-center text-[10px] font-black text-emerald-400 shadow-xl">
                                     {item.step}
                                 </div>
                                 <item.icon size={32} className="text-white" />

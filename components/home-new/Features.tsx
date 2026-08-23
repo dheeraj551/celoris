@@ -22,7 +22,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, tag, icon
             show: { opacity: 1, y: 0 }
         }}
         whileHover={{ y: -10, scale: 1.02 }}
-        className="group bg-[#0d1321]/40 p-10 rounded-[2.5rem] border border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl transition-all duration-500 flex flex-col h-full relative overflow-hidden"
+        className="group bg-[#0d0d0d]/40 p-10 rounded-[2.5rem] border border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl transition-all duration-500 flex flex-col h-full relative overflow-hidden"
     >
         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-colors duration-500" />
 

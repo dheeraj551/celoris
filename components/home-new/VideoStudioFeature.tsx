@@ -18,7 +18,7 @@ import Link from 'next/link';
 export function VideoStudioFeature() {
   return (
     <div className="w-full max-w-5xl mx-auto my-32 px-4">
-      <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-16">
+      <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0a] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-16">
         
         {/* Background Dot Grid */}
         <div className="absolute top-1/3 right-10 w-64 h-64 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60" />
@@ -56,7 +56,7 @@ export function VideoStudioFeature() {
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
-              className="absolute md:top-10 md:left-1/2 md:-translate-x-1/2 w-[85%] md:w-[600px] h-[250px] md:h-[300px] bg-[#0F131F] rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.15)] overflow-hidden flex items-center justify-center z-20"
+              className="absolute md:top-10 md:left-1/2 md:-translate-x-1/2 w-[85%] md:w-[600px] h-[250px] md:h-[300px] bg-[#0d0d0d] rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.15)] overflow-hidden flex items-center justify-center z-20"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
               {/* Mountain Image Mock */}
@@ -81,7 +81,7 @@ export function VideoStudioFeature() {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 flex-col items-center gap-6 py-6 w-24 bg-[#0F131F]/80 backdrop-blur-xl rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.1)] z-30"
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 flex-col items-center gap-6 py-6 w-24 bg-[#0d0d0d]/80 backdrop-blur-xl rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.1)] z-30"
             >
               {[
                 { icon: LayoutTemplate, label: 'Templates' },
@@ -104,10 +104,10 @@ export function VideoStudioFeature() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 flex-col gap-4 z-30"
             >
-              <div className="w-20 h-20 bg-[#0F131F] rounded-2xl border border-blue-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:border-blue-400 transition-colors cursor-pointer group">
+              <div className="w-20 h-20 bg-[#0d0d0d] rounded-2xl border border-blue-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:border-blue-400 transition-colors cursor-pointer group">
                 <Video className="w-8 h-8 text-blue-500 group-hover:text-blue-400 group-hover:scale-110 transition-all" fill="currentColor" />
               </div>
-              <div className="w-20 h-20 bg-[#0F131F] rounded-2xl border border-indigo-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.2)] hover:border-indigo-400 transition-colors cursor-pointer group">
+              <div className="w-20 h-20 bg-[#0d0d0d] rounded-2xl border border-indigo-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.2)] hover:border-indigo-400 transition-colors cursor-pointer group">
                 <span className="text-3xl font-black bg-gradient-to-br from-indigo-400 to-purple-500 bg-clip-text text-transparent group-hover:scale-110 transition-all">AI</span>
               </div>
             </motion.div>
@@ -117,7 +117,7 @@ export function VideoStudioFeature() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="absolute bottom-0 w-[95%] md:w-[85%] h-32 bg-[#0F131F]/90 backdrop-blur-xl rounded-2xl border border-blue-500/20 shadow-[0_0_40px_rgba(37,99,235,0.15)] overflow-hidden z-30"
+              className="absolute bottom-0 w-[95%] md:w-[85%] h-32 bg-[#0d0d0d]/90 backdrop-blur-xl rounded-2xl border border-blue-500/20 shadow-[0_0_40px_rgba(37,99,235,0.15)] overflow-hidden z-30"
             >
               {/* Timeline Header */}
               <div className="flex items-center px-4 py-2 border-b border-white/5 bg-black/20">

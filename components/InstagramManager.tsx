@@ -207,7 +207,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
                       ) : (
                         <img src={mediaUrl} alt="P" className="w-full h-full object-cover" />
                       )}
-                      <div className="absolute top-6 right-6 p-4 bg-[#050810]/80 backdrop-blur-3xl rounded-2xl border border-white/10 text-white shadow-3xl hover:scale-110 transition-transform" onClick={(e) => { e.stopPropagation(); setMediaUrl(''); }}>
+                      <div className="absolute top-6 right-6 p-4 bg-[#080808]/80 backdrop-blur-3xl rounded-2xl border border-white/10 text-white shadow-3xl hover:scale-110 transition-transform" onClick={(e) => { e.stopPropagation(); setMediaUrl(''); }}>
                         <Plus className="h-4 w-4 rotate-45" />
                       </div>
                     </div>
@@ -282,7 +282,7 @@ export default function InstagramManager({ user }: InstagramManagerProps) {
                       <video src={post.media_url} className="w-full h-full object-cover" controls />
                     )}
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col justify-end p-8 gap-4">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex flex-col justify-end p-8 gap-4">
                       <p className="text-xs font-bold text-white uppercase italic tracking-tight line-clamp-2">
                         {post.caption || 'No caption'}
                       </p>

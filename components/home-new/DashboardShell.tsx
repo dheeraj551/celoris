@@ -39,13 +39,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
 
     return (
-        <div className="flex bg-[#050810] min-h-screen">
+        <div className="flex bg-[#080808] min-h-screen">
             <Sidebar className="hidden md:flex h-screen sticky top-0" />
             <div className="flex-1 min-h-screen text-slate-200 overflow-x-hidden">
 
 
                 {/* Top Navigation / Dashboard Header */}
-                <header className="h-16 px-4 md:px-8 flex items-center justify-between gap-6 border-b border-white/5 sticky top-0 bg-[#050810]/80 backdrop-blur-md z-30">
+                <header className="h-16 px-4 md:px-8 flex items-center justify-between gap-6 border-b border-white/5 sticky top-0 bg-[#080808]/80 backdrop-blur-md z-30">
                     {/* Mobile Sidebar Trigger */}
                     <Sheet>
                         <SheetTrigger asChild>
@@ -53,7 +53,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                                 <Menu className="w-5 h-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="p-0 bg-[#050810] border-white/5 w-64">
+                        <SheetContent side="left" className="p-0 bg-[#080808] border-white/5 w-64">
                             <SheetHeader className="sr-only">
                                 <SheetTitle>Navigation Menu</SheetTitle>
                                 <SheetDescription>Access different sections of the Celoris dashboard</SheetDescription>
@@ -95,7 +95,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                                             </Avatar>
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-56 bg-[#0d1321] border-white/5 text-slate-200" align="end" forceMount>
+                                    <DropdownMenuContent className="w-56 bg-[#0d0d0d] border-white/5 text-slate-200" align="end" forceMount>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
                                                 <p className="text-sm font-bold text-white leading-none italic uppercase">

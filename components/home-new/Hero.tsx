@@ -63,8 +63,8 @@ function TickerLine({ items, duration = 30, reverse = false }: { items: string[]
 function ScrollingTicker() {
     return (
         <div className="w-full bg-white/5 border-t border-white/10 relative mt-12 py-4">
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050810] via-[#050810]/80 to-transparent z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050810] via-[#050810]/80 to-transparent z-10" />
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#080808] via-[#080808]/80 to-transparent z-10" />
 
             <div className="flex flex-col gap-2">
                 <TickerLine items={TRANSACTIONS} duration={40} />
@@ -143,7 +143,7 @@ export const Hero: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-[2rem] overflow-hidden bg-[#050810] text-white shadow-2xl shadow-emerald-900/10 border border-white/5"
+            className="relative rounded-[2rem] overflow-hidden bg-[#080808] text-white shadow-2xl shadow-emerald-900/10 border border-white/5"
         >
             {/* Background Decor - Animated */}
             <motion.div
@@ -229,13 +229,13 @@ export const Hero: React.FC = () => {
                             alt="Unified AI Ecosystem"
                             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-60" />
 
                         {/* Floating Status Badge */}
                         <motion.div
                             animate={{ y: [0, -10, 0] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute bottom-8 left-8 right-8 p-6 bg-[#050810]/80 backdrop-blur-2xl rounded-[2rem] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
+                            className="absolute bottom-8 left-8 right-8 p-6 bg-[#080808]/80 backdrop-blur-2xl rounded-[2rem] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
                         >
                             <div className="text-left flex flex-col sm:flex-row gap-8 sm:items-center flex-1">
                                 {/* Rooms Status - Moved to Left */}
@@ -297,7 +297,7 @@ export const Hero: React.FC = () => {
                                                 initial={{ opacity: 0, scale: 0.5, x: 20 }}
                                                 animate={{ opacity: 1, scale: 1, x: 0 }}
                                                 exit={{ opacity: 0, scale: 0.5, x: -20 }}
-                                                className="w-10 h-10 rounded-full border-2 border-[#050810] bg-teal-500/10 overflow-hidden backdrop-blur-md relative shadow-xl"
+                                                className="w-10 h-10 rounded-full border-2 border-[#080808] bg-teal-500/10 overflow-hidden backdrop-blur-md relative shadow-xl"
                                             >
                                                 <img
                                                     src={u.avatar_url || u.profile_pic_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id || i}`}
@@ -308,7 +308,7 @@ export const Hero: React.FC = () => {
                                         ))
                                     ) : (
                                         [1, 2, 3].map(i => (
-                                            <div key={i} className="w-10 h-10 rounded-full border-2 border-[#050810] bg-white/5 flex items-center justify-center backdrop-blur-md">
+                                            <div key={i} className="w-10 h-10 rounded-full border-2 border-[#080808] bg-white/5 flex items-center justify-center backdrop-blur-md">
                                                 <Users size={14} className="text-teal-400/20" />
                                             </div>
                                         ))

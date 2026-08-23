@@ -28,7 +28,7 @@ export function MobileNavBar({ items }: MobileNavBarProps) {
     const pathname = usePathname()
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-8 pt-4 bg-gradient-to-t from-[#050810] via-[#050810]/95 to-transparent pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-8 pt-4 bg-gradient-to-t from-[#080808] via-[#080808]/95 to-transparent pointer-events-none">
             <div className="max-w-md mx-auto pointer-events-auto">
                 <nav className="relative bg-[#0d1321]/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-2 flex items-center justify-between shadow-3xl">
                     {items.map((item) => {

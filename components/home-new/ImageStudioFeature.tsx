@@ -13,7 +13,7 @@ import Link from 'next/link';
 export function ImageStudioFeature() {
   return (
     <div className="w-full max-w-md md:max-w-xl mx-auto my-16 px-4">
-      <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-12">
+      <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0a] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-12">
         
         {/* Background Dot Grid */}
         <div className="absolute top-1/4 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60" />
@@ -83,7 +83,7 @@ export function ImageStudioFeature() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="absolute bottom-[35%] left-0 md:-left-4 w-48 bg-[#0F131F]/90 backdrop-blur-xl rounded-2xl border border-blue-500/30 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-20"
+              className="absolute bottom-[35%] left-0 md:-left-4 w-48 bg-[#0d0d0d]/90 backdrop-blur-xl rounded-2xl border border-blue-500/30 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-20"
             >
               <p className="text-xs text-white mb-3 leading-relaxed">
                 A futuristic city at sunset
@@ -98,7 +98,7 @@ export function ImageStudioFeature() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.6 }}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] md:w-[110%] bg-[#0A0D14]/80 backdrop-blur-md rounded-2xl border border-white/5 shadow-2xl p-3 flex gap-2 overflow-hidden z-30"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] md:w-[110%] bg-[#0a0a0a]/80 backdrop-blur-md rounded-2xl border border-white/5 shadow-2xl p-3 flex gap-2 overflow-hidden z-30"
             >
               {[
                 "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=200&auto=format&fit=crop",
@@ -126,7 +126,7 @@ export function ImageStudioFeature() {
 
           {/* Action Button */}
           <div className="w-full">
-            <Link href="/image-studio" className="inline-flex items-center gap-3 px-8 py-3 rounded-xl border border-blue-500/40 bg-[#0A0D14] hover:bg-blue-900/20 text-blue-400 hover:text-blue-300 font-medium text-lg transition-all group w-48">
+            <Link href="/image-studio" className="inline-flex items-center gap-3 px-8 py-3 rounded-xl border border-blue-500/40 bg-[#0a0a0a] hover:bg-blue-900/20 text-blue-400 hover:text-blue-300 font-medium text-lg transition-all group w-48">
               Learn More
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>

@@ -16,7 +16,7 @@ import Link from 'next/link';
 export function Celoris3DFeature() {
   return (
     <div className="w-full max-w-md md:max-w-xl mx-auto my-16 px-4">
-      <div className="relative w-full rounded-[2.5rem] bg-[#0A0D14] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-12">
+      <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0a] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-12">
         
         {/* Background Dot Grid */}
         <div className="absolute top-1/4 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60" />
@@ -78,7 +78,7 @@ export function Celoris3DFeature() {
               initial={{ opacity: 0, x: 30, y: -20 }}
               whileInView={{ opacity: 1, x: 0, y: 0 }}
               transition={{ duration: 0.7, delay: 0.5 }}
-              className="absolute top-0 right-0 w-[70%] h-[75%] bg-[#0F131F]/80 backdrop-blur-xl rounded-2xl border border-blue-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-0 flex flex-col"
+              className="absolute top-0 right-0 w-[70%] h-[75%] bg-[#0d0d0d]/80 backdrop-blur-xl rounded-2xl border border-blue-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-0 flex flex-col"
             >
               {/* Tool Header */}
               <div className="flex items-center gap-4 px-3 py-2 border-b border-white/10 bg-black/40">
@@ -97,7 +97,7 @@ export function Celoris3DFeature() {
               </div>
               
               {/* 3D Grid Viewport */}
-              <div className="flex-1 relative bg-gradient-to-b from-[#0F131F] to-[#0A0D14] flex items-center justify-center overflow-hidden">
+              <div className="flex-1 relative bg-gradient-to-b from-[#0d0d0d] to-[#0a0a0a] flex items-center justify-center overflow-hidden">
                 {/* 3D Grid Lines */}
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(59,130,246,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.3) 1px, transparent 1px)', backgroundSize: '20px 20px', transform: 'perspective(500px) rotateX(60deg) scale(2) translateY(-50px)' }} />
                 
@@ -127,7 +127,7 @@ export function Celoris3DFeature() {
 
           {/* Action Button */}
           <div className="w-full mt-auto">
-            <Link href="/celoris-3d" className="inline-flex items-center gap-3 px-8 py-3 rounded-xl border border-blue-500/40 bg-[#0A0D14] hover:bg-blue-900/20 text-blue-400 hover:text-blue-300 font-medium text-lg transition-all group w-48">
+            <Link href="/celoris-3d" className="inline-flex items-center gap-3 px-8 py-3 rounded-xl border border-blue-500/40 bg-[#0a0a0a] hover:bg-blue-900/20 text-blue-400 hover:text-blue-300 font-medium text-lg transition-all group w-48">
               Learn More
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
