@@ -22,11 +22,19 @@ import {
     Megaphone,
     TrendingUp,
     Target,
-    Share2
+    Share2,
+    X
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import {
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+    DialogTitle
+} from "@/components/ui/dialog";
 
 const MENU_GROUPS = [
     {
@@ -59,6 +67,7 @@ export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
 
     const [isNewbeeMode, setIsNewbeeMode] = React.useState(true);
+    const [isSupportModalOpen, setIsSupportModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         const checkNewbeeStatus = async () => {
@@ -192,56 +201,29 @@ export function Sidebar({ className }: { className?: string }) {
                 ))}
             </div>
 
-            {/* Banner */}
-            <div className="px-6 mt-8 w-full mb-8">
-                <a href="#" className="block w-full rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all relative group">
-                    <img 
-                        src="/images/sidebar-banner.jpg" 
-                        alt="Seekho Smart Badho Fast" 
-                        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                </a>
-            </div>
-
-            <div className="px-6 mb-8 mt-auto space-y-3">
-                <button
-                    onClick={toggleNewbeeMode}
-                    className={cn(
-                        "w-full flex items-center justify-between px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border",
-                        isNewbeeMode 
-                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
-                            : "bg-white/5 border-white/10 text-slate-500 hover:text-slate-300"
-                    )}
-                >
-                    <div className="flex items-center gap-2">
-                        <Zap className={cn("w-3 h-3", isNewbeeMode ? "fill-emerald-400" : "")} />
-                        Newbee Mode
-                    </div>
-                    <div className={cn(
-                        "w-6 h-3 rounded-full relative transition-all",
-                        isNewbeeMode ? "bg-emerald-500" : "bg-slate-700"
-                    )}>
-                        <div className={cn(
-                            "absolute top-0.5 w-2 h-2 rounded-full bg-white transition-all",
-                            isNewbeeMode ? "right-0.5" : "left-0.5"
-                        )} />
-                    </div>
-                </button>
-
-                <a
-                    href="https://wa.me/919084718101"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1e1f20] border border-white/5 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-[#282a2d] transition-all group/wa shadow-xl"
-                >
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover/wa:scale-110 group-hover/wa:bg-emerald-500/20 transition-all">
-                        <MessageCircle className="w-4 h-4 text-emerald-500" />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest leading-none mb-1">Get support</p>
-                        <p className="text-xs font-medium text-slate-500 group-hover/wa:text-slate-400 transition-colors">WhatsApp Contact</p>
-                    </div>
-                </a>
+            {/* Support Widget */}
+            <div className="px-6 mb-8 mt-auto w-full">
+                <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
+                    <DialogTrigger asChild>
+                        <div className="w-full rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 transition-all bg-[#fff5f0] cursor-pointer group">
+                            <img 
+                                src="/support.png" 
+                                alt="Support us via QR Code" 
+                                className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity"
+                            />
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md bg-transparent border-none shadow-none flex justify-center items-center p-0">
+                        <DialogTitle className="sr-only">Support Us</DialogTitle>
+                        <div className="relative w-full max-h-[90vh] rounded-2xl overflow-hidden bg-[#fff5f0]">
+                            <img 
+                                src="/support.png" 
+                                alt="Support us via QR Code - Full Size" 
+                                className="w-full h-auto max-h-[90vh] object-contain"
+                            />
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         </aside>
     );
