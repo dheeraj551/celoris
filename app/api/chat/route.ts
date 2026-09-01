@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       temperature: 0.7,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error: any) {
     console.error('[Celo AI] Full error:', error);
     console.error('[Celo AI] Error message:', error?.message);
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
         prompt: prompt || 'Hello',
         temperature: 0.7,
       });
-      return fallbackResult.toDataStreamResponse();
+      return fallbackResult.toTextStreamResponse();
     } catch (fallbackErr) {
       return Response.json(
         { error: error?.message || 'Failed to generate AI response', cause: String(error?.cause || '') },

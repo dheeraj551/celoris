@@ -102,60 +102,53 @@ export default function App() {
           const { done, value } = await reader.read();
           if (done) break;
 
-          buffer += decoder.decode(value, { stream: true });
+          const chunkText = decoder.decode(value, { stream: true });
+          
+          // If the chunk doesn't look like Vercel Data Stream or SSE, it's raw text
+          if (!chunkText.includes('0:"') && !chunkText.includes('data: ')) {
+            accumulatedContent += chunkText;
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId
+                  ? { ...msg, content: accumulatedContent }
+                  : msg
+              )
+            );
+            continue;
+          }
+
+          // Otherwise fall back to line-by-line parsing for older formats
+          buffer += chunkText;
           const lines = buffer.split('\n');
-          // Keep the last (potentially incomplete) line in buffer
           buffer = lines.pop() || '';
 
           for (const line of lines) {
             if (!line.trim()) continue;
 
-            // Vercel AI SDK data stream format: `0:"text chunk"`
             if (line.startsWith('0:')) {
               try {
-                const jsonStr = line.slice(2); // Remove the "0:" prefix
-                const text = JSON.parse(jsonStr); // Parse the JSON string
+                const text = JSON.parse(line.slice(2));
                 if (typeof text === 'string') {
                   accumulatedContent += text;
                   setMessages((prev) =>
                     prev.map((msg) =>
-                      msg.id === assistantMessageId
-                        ? { ...msg, content: accumulatedContent }
-                        : msg
+                      msg.id === assistantMessageId ? { ...msg, content: accumulatedContent } : msg
                     )
                   );
                 }
-              } catch (e) {
-                // Ignore parse errors
-              }
-            }
-            // Also handle legacy SSE format: `data: {...}`
-            else if (line.startsWith('data: ')) {
+              } catch (e) {}
+            } else if (line.startsWith('data: ')) {
               try {
                 const data = JSON.parse(line.substring(6));
                 if (data.text) {
                   accumulatedContent += data.text;
                   setMessages((prev) =>
                     prev.map((msg) =>
-                      msg.id === assistantMessageId
-                        ? { ...msg, content: accumulatedContent }
-                        : msg
+                      msg.id === assistantMessageId ? { ...msg, content: accumulatedContent } : msg
                     )
                   );
                 }
-                if (data.error) {
-                  accumulatedContent += `\n\n*Note: ${data.error}*`;
-                  setMessages((prev) =>
-                    prev.map((msg) =>
-                      msg.id === assistantMessageId
-                        ? { ...msg, content: accumulatedContent }
-                        : msg
-                    )
-                  );
-                }
-              } catch (e) {
-                // Ignore parse errors
-              }
+              } catch (e) {}
             }
           }
         }
