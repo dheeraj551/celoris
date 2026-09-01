@@ -1,5 +1,5 @@
 "use client"
-import '@/components/celo-ai/index.css'
+import '@/components/skillverify/index.css'
 import dynamic from 'next/dynamic'
 import React from 'react'
 
@@ -9,7 +9,11 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
-const CeloAiApp = dynamic(() => import('@/components/celo-ai/App'), {
+// SkillVerify Pro — Job Alerts & Anti-Cheat Exam Hub, ported in the same
+// pattern as /celo-ai: standalone Vite/React app kept as-is under
+// components/skillverify, mounted here with next/dynamic (ssr: false)
+// since it depends on browser-only APIs (localStorage, Web Audio, webcam).
+const SkillVerifyApp = dynamic(() => import('@/components/skillverify/App'), {
     ssr: false,
     loading: () => <LoadingSpinner />
 })
@@ -17,12 +21,12 @@ const CeloAiApp = dynamic(() => import('@/components/celo-ai/App'), {
 function LoadingSpinner() {
     return (
         <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 border-4 border-purple-500/10 border-t-purple-600 rounded-full animate-spin mx-auto mb-6" />
+            <div className="h-12 w-12 border-4 border-amber-500/10 border-t-amber-600 rounded-full animate-spin mx-auto mb-6" />
         </div>
     )
 }
 
-export default function CeloAiPage() {
+export default function JobCenterPage() {
     const pathname = usePathname()
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
@@ -43,9 +47,9 @@ export default function CeloAiPage() {
     }
 
     return (
-        <DashboardShell>
-            <div key={pathname} className="h-[calc(100vh-4rem)] w-full">
-                <CeloAiApp />
+        <DashboardShell hideTopBar>
+            <div key={pathname} className="w-full">
+                <SkillVerifyApp />
             </div>
         </DashboardShell>
     )

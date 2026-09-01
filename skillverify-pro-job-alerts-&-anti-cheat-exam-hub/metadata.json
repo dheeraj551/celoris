@@ -1,0 +1,6 @@
+{
+  "name": "Job Center",
+  "description": "Smart career portal with verified job alerts, anti-cheat skill certification exams, and XP progression.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

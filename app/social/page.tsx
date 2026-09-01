@@ -202,19 +202,27 @@ export default function App() {
     const confirmed = window.confirm('Are you sure you want to delete this room? This cannot be undone.');
     if (!confirmed) return;
 
-    const { error } = await supabase
-      .from('cafe_classrooms')
-      .update({ is_active: false })
-      .eq('id', roomId)
-      .eq('host_id', user.id); // safety: only owner can delete
+    // Routed through a server API (service-role, ownership checked server-side)
+    // instead of a direct client -> Supabase update, to sidestep the RLS
+    // "new row violates row-level security policy" issue on cafe_classrooms.
+    try {
+      const response = await fetch('/api/social/cafe/delete-room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId }),
+      });
 
-    if (error) {
-      console.error('Delete error:', JSON.stringify(error, null, 2));
-      console.error('Delete error details:', error.message, error.code, error.hint);
-      alert(`Failed to delete room: ${error.message || 'Permission denied. You may not be the room host.'}`);
-    } else {
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Permission denied. You may not be the room host.');
+      }
+
       setAllRooms(prev => prev.filter(r => r.id !== roomId));
       if (joinedRoomId === roomId) setJoinedRoomId(null);
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      alert(`Failed to delete room: ${error.message || 'Permission denied. You may not be the room host.'}`);
     }
   };
 

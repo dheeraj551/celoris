@@ -25,7 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 
-export function DashboardShell({ children, headerContent }: { children: React.ReactNode, headerContent?: React.ReactNode }) {
+export function DashboardShell({ children, headerContent, hideTopBar }: { children: React.ReactNode, headerContent?: React.ReactNode, hideTopBar?: boolean }) {
     const { user, profile, loading, signOut } = useAuth();
 
     const handleSignOut = async () => {
@@ -43,8 +43,26 @@ export function DashboardShell({ children, headerContent }: { children: React.Re
             <Sidebar className="hidden md:flex h-screen sticky top-0" />
             <div className="flex-1 min-h-screen text-slate-200 overflow-x-hidden">
 
-
-                {/* Top Navigation / Dashboard Header */}
+                {hideTopBar ? (
+                    /* Top bar removed for this page — its content (mobile nav trigger)
+                       moves down into the page's own header row instead. */
+                    <div className="md:hidden fixed top-3 left-3 z-40">
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon" className="bg-[#080808]/90 backdrop-blur-md border border-white/10 text-slate-300 hover:text-white hover:bg-white/5">
+                                    <Menu className="w-5 h-5" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="left" className="p-0 bg-[#080808] border-white/5 w-64">
+                                <SheetHeader className="sr-only">
+                                    <SheetTitle>Navigation Menu</SheetTitle>
+                                    <SheetDescription>Access different sections of the Celoris dashboard</SheetDescription>
+                                </SheetHeader>
+                                <Sidebar className="flex h-full w-full border-none" />
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                ) : (
                 <header className="h-16 px-4 md:px-8 flex items-center justify-between gap-6 border-b border-white/5 sticky top-0 bg-[#080808]/80 backdrop-blur-md z-30">
                     {/* Mobile Sidebar Trigger */}
                     <Sheet>
@@ -155,7 +173,7 @@ export function DashboardShell({ children, headerContent }: { children: React.Re
                         </div>
                     </div>
                 </header>
-
+                )}
 
                 <main>
                     {children}

@@ -23,7 +23,8 @@ import {
     Target,
     Share2,
     X,
-    Brain
+    Brain,
+    Briefcase
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -186,6 +187,19 @@ export function Sidebar({ className }: { className?: string }) {
                 >
                     <Brain className={cn("w-4 h-4", pathname.startsWith('/celo-ai') ? "text-purple-500" : "text-slate-500 group-hover:text-purple-500")} />
                     <span className="text-sm font-bold uppercase tracking-tight">CELO AI</span>
+                </Link>
+
+                <Link
+                    href="/job-center"
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
+                        pathname.startsWith('/job-center')
+                            ? "bg-amber-500/10 text-amber-400 font-bold"
+                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    )}
+                >
+                    <Briefcase className={cn("w-4 h-4", pathname.startsWith('/job-center') ? "text-amber-500" : "text-slate-500 group-hover:text-amber-500")} />
+                    <span className="text-sm font-bold uppercase tracking-tight">Job Center</span>
                 </Link>
             </div>
 

@@ -62,6 +62,7 @@ export default function Header() {
     pathname?.startsWith("/teach") ||
     pathname?.startsWith("/marketing") ||
     pathname?.startsWith("/celo-ai") ||
+    pathname?.startsWith("/job-center") ||
     pathname === "/login" ||
     pathname === "/register";
 
