@@ -224,8 +224,6 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
     // Grade MCQs
     let mcqCorrect = 0;
     let mcqTotal = 0;
-    let scenarioQuestion: ExamQuestion | null = null;
-    let scenarioAnswer = '';
 
     exam.questions.forEach((q) => {
       if (q.type === 'mcq') {
@@ -233,11 +231,15 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
         if (answers[q.id] === q.correctAnswerIndex) {
           mcqCorrect++;
         }
-      } else if (q.type === 'scenario') {
-        scenarioQuestion = q;
-        scenarioAnswer = (answers[q.id] as string) || '';
       }
     });
+
+    // Using .find() (rather than reassigning a `let` inside the forEach
+    // above) keeps this a plain `ExamQuestion | undefined` — reassigning
+    // a closure-captured variable inside a callback made TypeScript's
+    // production build (stricter than `next dev`) narrow it to `never`.
+    const scenarioQuestion: ExamQuestion | undefined = exam.questions.find((q) => q.type === 'scenario');
+    const scenarioAnswer = scenarioQuestion ? ((answers[scenarioQuestion.id] as string) || '') : '';
 
     let scenarioScore = 80;
     let scenarioFeedbackText = 'Solid practical scenario architectural design with verified anti-cheat integrity.';
