@@ -39,9 +39,9 @@ export default function App() {
     setSelectedAttachments((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleSelectCapability = (capabilityPrompt: string, tag: string) => {
+  const handleSelectCapability = (capabilityPrompt: string, tag?: string) => {
     setPrompt(capabilityPrompt);
-    setActiveCapabilityTag(tag);
+    if (tag) setActiveCapabilityTag(tag);
     // Focus prompt input
     const input = document.getElementById('gemini-prompt-input');
     input?.focus();
