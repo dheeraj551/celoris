@@ -65,7 +65,6 @@ export async function POST(req: Request) {
       system: systemInstruction || DEFAULT_SYSTEM,
       prompt,
       temperature: 0.7,
-      maxTokens: 4096,
     });
 
     return result.toDataStreamResponse();
