@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'deepseek-harness-ai-trend-2026',
+      title: 'DeepSeek Harness Kya Hai? Wo AI Trend Jo Har Coder Ko Pata Hona Chahiye (2026)',
+      slug: 'deepseek-harness-ai-trend-2026',
+      excerpt: 'DeepSeek Harness ne AI coding agents ki duniya badal di hai. Janiye kya hai Agent = Model + Harness aur kyun ye MIT-licensed framework developers ke liye game-changer hai.',
+      featured_image_url: '/DeepSeek Harness Kya Hai Wo AI Trend Jo Har Coder Ko Pata Hona Chahiye (2026).png',
+      author_name: 'Celoris Team',
+      category: 'AI & Agents',
+      reading_time: 6,
+      published_at: '2026-09-01T10:00:00Z',
+    },
+    {
       id: 'best-wordpress-course-noida',
       title: "Best WordPress Course in Noida (2026) — Complete Guide",
       slug: 'best-wordpress-course-noida',
