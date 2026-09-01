@@ -1,0 +1,276 @@
+  /* RGB animated running border & pulse glow */
+  @property --rgb-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes rgbSpin {
+    0% {
+      --rgb-angle: 0deg;
+    }
+    100% {
+      --rgb-angle: 360deg;
+    }
+  }
+
+  @keyframes rgbPulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px rgba(75, 144, 255, 0.35)) drop-shadow(0 0 20px rgba(189, 95, 255, 0.25));
+    }
+    50% {
+      filter: drop-shadow(0 0 22px rgba(243, 90, 118, 0.55)) drop-shadow(0 0 35px rgba(251, 151, 9, 0.4));
+    }
+  }
+
+  /* Red animated running stroke border */
+  .red-rgb-border {
+    position: relative;
+    border-radius: 2rem;
+    background: #ffffff;
+    z-index: 1;
+  }
+
+  .red-rgb-border::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: calc(2rem + 2px);
+    padding: 2px;
+    background: conic-gradient(
+      from var(--rgb-angle),
+      #ff1744,
+      #ff5252,
+      #ff8a80,
+      #d50000,
+      #ff1744,
+      #b71c1c,
+      #ff5252,
+      #ff1744
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: rgbSpin 3s linear infinite;
+    z-index: 2;
+  }
+
+  .red-rgb-border-glow {
+    position: absolute;
+    inset: -2px;
+    border-radius: 2rem;
+    background: conic-gradient(
+      from var(--rgb-angle),
+      #ff1744,
+      #ff5252,
+      #d50000,
+      #ff1744,
+      #b71c1c,
+      #ff1744
+    );
+    filter: blur(8px);
+    opacity: 0.35;
+    animation: rgbSpin 3s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+
+  .red-rgb-border:hover .red-rgb-border-glow,
+  .red-rgb-border:focus-within .red-rgb-border-glow {
+    opacity: 0.65;
+    filter: blur(12px);
+  }
+
+  .rgb-running-border {
+    position: relative;
+    border-radius: 2rem;
+    background: #000000;
+    z-index: 1;
+  }
+
+  .rgb-running-border::before {
+    content: "";
+    position: absolute;
+    inset: -1.5px;
+    border-radius: calc(2rem + 1.5px);
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--rgb-angle),
+      #00f0ff 0%,
+      #00e599 18%,
+      #a3e635 32%,
+      #f59e0b 46%,
+      #f43f5e 60%,
+      #d946ef 74%,
+      #8b5cf6 86%,
+      #00f0ff 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: rgbSpin 4s linear infinite;
+    z-index: 2;
+  }
+
+  .rgb-running-border-glow {
+    position: absolute;
+    inset: -1px;
+    border-radius: 2rem;
+    background: conic-gradient(
+      from var(--rgb-angle),
+      #00f0ff 0%,
+      #00e599 18%,
+      #a3e635 32%,
+      #f59e0b 46%,
+      #f43f5e 60%,
+      #d946ef 74%,
+      #8b5cf6 86%,
+      #00f0ff 100%
+    );
+    filter: blur(6px);
+    opacity: 0.35;
+    animation: rgbSpin 4s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+
+  .rgb-running-border:hover .rgb-running-border-glow,
+  .rgb-running-border:focus-within .rgb-running-border-glow {
+    opacity: 0.55;
+    filter: blur(8px);
+  }
+
+  /* Glowing gradient border matching Google Gemini */
+  .gemini-gradient-border {
+    position: relative;
+    border-radius: 1.5rem;
+    background: #1e1f20;
+  }
+
+  .gemini-gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -1.5px;
+    border-radius: calc(1.5rem + 1.5px);
+    padding: 1.5px;
+    background: linear-gradient(
+      120deg,
+      #4285f4 0%,
+      #9b72cb 25%,
+      #d96570 50%,
+      #fbbc04 75%,
+      #34a853 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+    opacity: 0.85;
+  }
+
+  .gemini-gradient-border:hover::before,
+  .gemini-gradient-border:focus-within::before {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(155, 114, 203, 0.4));
+  }
+
+  .gemini-animated-border::before {
+    background: linear-gradient(
+      var(--border-angle, 120deg),
+      #4285f4 0%,
+      #9b72cb 25%,
+      #d96570 50%,
+      #fbbc04 75%,
+      #34a853 100%
+    );
+    animation: rotateBorder 8s linear infinite;
+  }
+
+  @keyframes rotateBorder {
+    0% {
+      filter: hue-rotate(0deg);
+    }
+    100% {
+      filter: hue-rotate(360deg);
+    }
+  }
+
+  /* Shimmer text effect */
+  .shimmer-text {
+    background: linear-gradient(
+      90deg,
+      #8ab4f8 0%,
+      #d2e3fc 30%,
+      #fbbc04 60%,
+      #c58af9 100%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 4s linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  /* Infinite marquee strip animations */
+  @keyframes marqueeLeft {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marqueeRight {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+
+  .animate-marquee-left {
+    display: flex;
+    width: max-content;
+    animation: marqueeLeft 42s linear infinite;
+  }
+
+  .animate-marquee-right {
+    display: flex;
+    width: max-content;
+    animation: marqueeRight 46s linear infinite;
+  }
+
+  .animate-marquee-left:hover,
+  .animate-marquee-right:hover {
+    animation-play-state: paused;
+  }
+
+  /* Custom subtle scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+/* Gemini Dark Base styles */
+body {
+  background-color: #131314;
+  color: #e3e3e3;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  overflow-x: hidden;
+}

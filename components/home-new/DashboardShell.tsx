@@ -25,7 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({ children, headerContent }: { children: React.ReactNode, headerContent?: React.ReactNode }) {
     const { user, profile, loading, signOut } = useAuth();
 
     const handleSignOut = async () => {
@@ -65,7 +65,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
 
 
-                    <div className="flex-1" /> {/* Spacer to keep the user menu to the right */}
+                    <div className="flex-1 flex items-center justify-between px-2 sm:px-4" id="dashboard-header-content">
+                        {headerContent}
+                    </div>
 
                     <div className="flex items-center gap-6">
                         {user && (

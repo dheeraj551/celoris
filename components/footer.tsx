@@ -77,6 +77,7 @@ export default function Footer() {
     pathname?.startsWith("/courses") ||
     pathname?.startsWith("/teach") ||
     pathname?.startsWith("/marketing") ||
+    pathname?.startsWith("/celo-ai") ||
     pathname === "/login" ||
     pathname === "/register";
 

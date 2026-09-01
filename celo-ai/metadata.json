@@ -1,0 +1,6 @@
+{
+  "name": "Celo AI",
+  "description": "An AI agent interface with glowing animations, interactive prompt builder, voice dictation, and full-stack generation capabilities.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

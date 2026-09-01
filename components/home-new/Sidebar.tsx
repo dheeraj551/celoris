@@ -10,20 +10,20 @@ import {
     UserCircle,
     BarChart3,
     UploadCloud,
-    Sparkles,
+    BookOpen,
     FolderOpen,
-    Zap,
+    GraduationCap,
     Search,
     MessageCircle,
     Info,
     Mail,
-    GraduationCap,
     HardDrive,
     Megaphone,
     TrendingUp,
     Target,
     Share2,
-    X
+    X,
+    Brain
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -49,8 +49,6 @@ const MENU_GROUPS = [
         title: "Marketing",
         items: [
             { name: "Vibe Marketing", icon: Share2, href: "/marketing/social" },
-            { name: "Affiliate Marketing", icon: Target, href: "/marketing/affiliate" },
-            { name: "Promotions", icon: Megaphone, href: "/marketing/promotions" },
         ]
     },
     {
@@ -143,12 +141,12 @@ export function Sidebar({ className }: { className?: string }) {
                     className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
                         pathname.startsWith('/learn')
-                            ? "bg-emerald-500/10 text-emerald-400 font-bold"
-                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                            ? "bg-emerald-500/10 text-emerald-500"
+                            : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                     )}
                 >
-                    <Zap className={cn("w-4 h-4", pathname.startsWith('/learn') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
-                    <span className="text-sm font-bold uppercase tracking-tight">LEARN</span>
+                    <BookOpen className={cn("w-4 h-4", pathname.startsWith('/learn') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
+                    <span className="text-xs font-bold uppercase tracking-widest italic">LEARN</span>
                 </Link>
 
                 <Link
@@ -156,12 +154,12 @@ export function Sidebar({ className }: { className?: string }) {
                     className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
                         pathname.startsWith('/teach')
-                            ? "bg-emerald-500/10 text-emerald-400 font-bold"
-                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                            ? "bg-emerald-500/10 text-emerald-500"
+                            : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                     )}
                 >
-                    <Sparkles className={cn("w-4 h-4", pathname.startsWith('/teach') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
-                    <span className="text-sm font-bold uppercase tracking-tight">TEACH</span>
+                    <GraduationCap className={cn("w-4 h-4", pathname.startsWith('/teach') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
+                    <span className="text-xs font-bold uppercase tracking-widest italic">TEACH</span>
                 </Link>
 
                 <Link
@@ -175,6 +173,19 @@ export function Sidebar({ className }: { className?: string }) {
                 >
                     <Coffee className={cn("w-4 h-4", pathname.startsWith('/social') ? "text-rose-500" : "text-slate-500 group-hover:text-rose-500")} />
                     <span className="text-sm font-bold uppercase tracking-tight">CAFE</span>
+                </Link>
+
+                <Link
+                    href="/celo-ai"
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
+                        pathname.startsWith('/celo-ai')
+                            ? "bg-purple-500/10 text-purple-400 font-bold"
+                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    )}
+                >
+                    <Brain className={cn("w-4 h-4", pathname.startsWith('/celo-ai') ? "text-purple-500" : "text-slate-500 group-hover:text-purple-500")} />
+                    <span className="text-sm font-bold uppercase tracking-tight">CELO AI</span>
                 </Link>
             </div>
 
