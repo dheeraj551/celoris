@@ -97,8 +97,8 @@ Agar aap Python ya Agentic AI seekh rahe ho, toh ye samajhna zaroori hai ki sirf
       `,
     };
 
-    const contentHtml = marked.parse(post.content || '');
-    return renderPost(post, contentHtml);
+    const contentHtml = await marked.parse(post.content || '');
+    return renderPost(post, contentHtml as string);
   }
 
   const supabase = (await createServerClient()) as any;
@@ -114,8 +114,8 @@ Agar aap Python ya Agentic AI seekh rahe ho, toh ye samajhna zaroori hai ki sirf
     notFound();
   }
 
-  const contentHtml = marked.parse(post.content || '');
-  return renderPost(post, contentHtml);
+  const contentHtml = await marked.parse(post.content || '');
+  return renderPost(post, contentHtml as string);
 }
 
 function renderPost(post: any, contentHtml: string) {

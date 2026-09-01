@@ -28,7 +28,7 @@ Integrate a new blog post from a Markdown file and an image into the Next.js app
   - `reading_time`: Estimated minutes.
   - `published_at`: ISO date string.
   - `views_count`: Initial view count.
-- Ensure content is passed through `marked.parse()`.
+- **Crucial:** Since `marked.parse()` can return a `Promise<string>`, always use `await marked.parse(content)` to ensure a string is passed to the rendering function and avoid build-time type errors.
 
 ### Step 3: Implementation in `app/blog/page.tsx`
 - Add the post entry to the `STATIC_POSTS` array.
