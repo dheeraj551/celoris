@@ -18,8 +18,10 @@ import Link from 'next/link';
 export function VideoStudioFeature() {
   return (
     <div className="w-full max-w-5xl mx-auto my-32 px-4">
-      <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0a] border border-blue-900/30 overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-16">
-        
+      <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as React.CSSProperties}>
+      <div className="home-rgb-border-ring">
+      <div className="relative w-full bg-[#0a0a0a] overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)] p-8 md:p-16" style={{ borderRadius: 'calc(2.5rem - 2px)' }}>
+
         {/* Background Dot Grid */}
         <div className="absolute top-1/3 right-10 w-64 h-64 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60" />
         <div className="absolute bottom-20 left-10 w-48 h-48 bg-[radial-gradient(circle,rgba(37,99,235,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60" />
@@ -158,8 +160,10 @@ export function VideoStudioFeature() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
-          
+
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Sidebar } from './Sidebar';
-import { Plus, ShoppingBag, Heart, Users, User as UserIcon, Wallet, LogOut, ThumbsUp, Mail, Phone, Menu } from 'lucide-react';
+import { Plus, ShoppingBag, Heart, Users, User as UserIcon, Wallet, LogOut, LogIn, ThumbsUp, Mail, Phone, Menu } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -165,7 +165,11 @@ export function DashboardShell({ children, headerContent, hideTopBar }: { childr
                                 </DropdownMenu>
                             ) : (
                                 <Link href="/login">
-                                    <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
+                                    <Button
+                                        size="sm"
+                                        className="h-9 px-5 gap-1.5 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-[10px] font-black uppercase tracking-widest rounded-full shadow-[0_0_18px_rgba(16,185,129,0.35)] hover:shadow-[0_0_26px_rgba(16,185,129,0.55)] transition-all duration-300 hover:scale-105"
+                                    >
+                                        <LogIn className="w-3.5 h-3.5" />
                                         Sign In
                                     </Button>
                                 </Link>

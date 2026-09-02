@@ -16,6 +16,9 @@ import {
     Globe,
     Lock,
     ShieldCheck,
+    Coffee,
+    Users,
+    Briefcase,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -23,8 +26,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { YouTubeFeed } from './YouTubeFeed';
-import { CommunityFeed } from './CommunityFeed';
 import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 import { createClient } from "@/lib/supabase-client";
 
@@ -110,12 +111,35 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
 
                 <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                        hidden: {},
+                        visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
+                    }}
                     className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-6"
                 >
-                    India's Free Creative <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Studio</span>
+                    {["India's", "Free", "Creative"].map((word, i) => (
+                        <motion.span
+                            key={i}
+                            variants={{
+                                hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+                                visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
+                            }}
+                            className="inline-block mr-[0.22em]"
+                        >
+                            {word}
+                        </motion.span>
+                    ))}
+                    <motion.span
+                        variants={{
+                            hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
+                        }}
+                        className="inline-block home-shimmer-text drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"
+                    >
+                        Studio
+                    </motion.span>
                 </motion.h1>
 
                 <motion.div
@@ -124,31 +148,34 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                     transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                     className="max-w-3xl mx-auto mt-8 relative"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-emerald-500/20 blur-2xl rounded-full opacity-50" />
-                    <div className="relative bg-[#111111]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-[0_0_40px_rgba(16,185,129,0.1)] hover:border-emerald-500/30 transition-colors duration-500">
-                        <div className="flex flex-col items-center justify-center">
-                            <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-3">
-                                Simple, Transparent &amp; Honest
-                            </h3>
-                            
-                            <p className="text-slate-400 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
-                                No hidden charges. No surprise calls from "counsellors."
-                            </p>
-                            
-                            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-6 gap-y-3 w-full border-t border-white/5 pt-6">
-                                {[
-                                    'India-based team',
-                                    'Free softwares',
-                                    'Free Education',
-                                    'Free Job Portal'
-                                ].map((text, i) => (
-                                    <div key={i} className="flex items-center gap-2">
-                                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                                            <svg className="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <div className="home-rgb-border" style={{ '--rgb-radius': '1.5rem' } as React.CSSProperties}>
+                        <div className="home-rgb-border-ring">
+                            <div className="relative bg-[#111111]/90 backdrop-blur-xl p-6 md:p-8" style={{ borderRadius: 'calc(1.5rem - 2px)' }}>
+                            <div className="flex flex-col items-center justify-center">
+                                <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-3">
+                                    Simple, Transparent &amp; Honest
+                                </h3>
+
+                                <p className="text-slate-400 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
+                                    No hidden charges. No surprise calls from "counsellors."
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-6 gap-y-3 w-full border-t border-white/5 pt-6">
+                                    {[
+                                        'India-based team',
+                                        'Free softwares',
+                                        'Free Education',
+                                        'Free Job Portal'
+                                    ].map((text, i) => (
+                                        <div key={i} className="flex items-center gap-2">
+                                            <div className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                                                <svg className="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                            </div>
+                                            <span className="text-sm font-medium text-slate-300">{text}</span>
                                         </div>
-                                        <span className="text-sm font-medium text-slate-300">{text}</span>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -162,7 +189,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 transition={{ duration: 0.7, ease: "easeOut" }}
                 className="max-w-5xl mx-auto mb-10"
             >
-                <div className="relative overflow-hidden rounded-[2rem] border border-white/8 bg-[#0a0a0a] shadow-[0_0_80px_rgba(16,185,129,0.08)]">
+                <div className="home-rgb-border" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
+                <div className="home-rgb-border-ring">
+                <div className="relative overflow-hidden bg-[#0a0a0a] shadow-[0_0_80px_rgba(16,185,129,0.08)]" style={{ borderRadius: 'calc(2rem - 2px)' }}>
                     {/* Background glow effects */}
                     <div className="absolute top-0 right-1/3 w-[500px] h-[300px] bg-emerald-500/8 rounded-full blur-[120px] pointer-events-none" />
                     <div className="absolute bottom-0 left-1/4 w-[400px] h-[250px] bg-cyan-500/6 rounded-full blur-[100px] pointer-events-none" />
@@ -229,6 +258,168 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         </div>
                     </div>
                 </div>
+                </div>
+                </div>
+            </motion.div>
+
+            {/* Cafe Promotion Banner Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="max-w-5xl mx-auto mb-10"
+            >
+                <div className="home-rgb-border" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
+                <div className="home-rgb-border-ring">
+                <div className="relative overflow-hidden bg-[#0a0a0a] shadow-[0_0_80px_rgba(244,63,94,0.08)]" style={{ borderRadius: 'calc(2rem - 2px)' }}>
+                    {/* Background glow effects */}
+                    <div className="absolute top-0 left-1/3 w-[500px] h-[300px] bg-rose-500/8 rounded-full blur-[120px] pointer-events-none" />
+                    <div className="absolute bottom-0 right-1/4 w-[400px] h-[250px] bg-amber-500/6 rounded-full blur-[100px] pointer-events-none" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_50%,rgba(244,63,94,0.04)_0%,transparent_60%)] pointer-events-none" />
+
+                    {/* Dot grid */}
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+                    <div className="relative z-10 p-8 md:p-12">
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                            {/* Left: Cafe Image */}
+                            <div className="relative h-[280px] md:h-[340px] hidden lg:block order-2 lg:order-1">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.8 }}
+                                    className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-rose-500/20 to-amber-500/20 mix-blend-overlay z-10" />
+                                    <img
+                                        src="/celoriscafe.jpg"
+                                        alt="Celoris Cafe community"
+                                        className="w-full h-full object-cover object-center"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-[#0a0a0a]/20 to-transparent z-20" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0a0a0a]/60 z-20" />
+                                </motion.div>
+                            </div>
+
+                            {/* Right Content */}
+                            <div className="flex flex-col gap-6 order-1 lg:order-2">
+                                <div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white leading-[1.1] tracking-tight mb-2">
+                                        Chill. Connect.
+                                    </h2>
+                                    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight bg-gradient-to-r from-rose-400 to-amber-400 bg-clip-text text-transparent">
+                                        Vibe Together.
+                                    </h2>
+                                </div>
+
+                                <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                                    Hang out in Celoris Cafe — live study rooms, casual voice hangouts, and a community that's always online. Take a break and <span className="text-rose-400 font-semibold">vibe with your peers</span> today.
+                                </p>
+
+                                {/* CTA Buttons */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <Link
+                                        href="/social"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_30px_rgba(16,185,129,0.55)] group"
+                                    >
+                                        <Coffee className="w-4 h-4 text-black" />
+                                        Enter the Cafe
+                                    </Link>
+                                    <Link
+                                        href="/social"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 bg-white/4 text-white font-semibold text-sm hover:border-rose-500/40 hover:bg-rose-500/8 transition-all"
+                                    >
+                                        <Users className="w-4 h-4 text-rose-400" />
+                                        Meet the Community
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </motion.div>
+
+            {/* Job Center Promotion Banner Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="max-w-5xl mx-auto mb-10"
+            >
+                <div className="home-rgb-border" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
+                <div className="home-rgb-border-ring">
+                <div className="relative overflow-hidden bg-[#0a0a0a] shadow-[0_0_80px_rgba(245,158,11,0.08)]" style={{ borderRadius: 'calc(2rem - 2px)' }}>
+                    {/* Background glow effects */}
+                    <div className="absolute top-0 right-1/3 w-[500px] h-[300px] bg-amber-500/8 rounded-full blur-[120px] pointer-events-none" />
+                    <div className="absolute bottom-0 left-1/4 w-[400px] h-[250px] bg-emerald-500/6 rounded-full blur-[100px] pointer-events-none" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,rgba(245,158,11,0.04)_0%,transparent_60%)] pointer-events-none" />
+
+                    {/* Dot grid */}
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+                    <div className="relative z-10 p-8 md:p-12">
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                            {/* Left Content */}
+                            <div className="flex flex-col gap-6">
+                                <div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white leading-[1.1] tracking-tight mb-2">
+                                        Find Work.
+                                    </h2>
+                                    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight bg-gradient-to-r from-amber-400 to-emerald-400 bg-clip-text text-transparent">
+                                        Get Hired Fast.
+                                    </h2>
+                                </div>
+
+                                <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                                    Verified job listings, AI-powered skill assessments, and anti-cheat proctored exams — all in one place. Build your profile and land your next <span className="text-amber-400 font-semibold">opportunity risk-free</span>.
+                                </p>
+
+                                {/* CTA Buttons */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <Link
+                                        href="/job-center"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(245,158,11,0.35)] hover:shadow-[0_0_30px_rgba(245,158,11,0.55)] group"
+                                    >
+                                        <Briefcase className="w-4 h-4 text-black" />
+                                        Explore Job Center
+                                    </Link>
+                                    <Link
+                                        href="/job-center"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 bg-white/4 text-white font-semibold text-sm hover:border-amber-500/40 hover:bg-amber-500/8 transition-all"
+                                    >
+                                        <Search className="w-4 h-4 text-amber-400" />
+                                        Browse Openings
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Right: Hero Image */}
+                            <div className="relative h-[280px] md:h-[340px] hidden lg:block">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.8 }}
+                                    className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-emerald-500/20 mix-blend-overlay z-10" />
+                                    <img
+                                        src="/any_phone.jpg"
+                                        alt="Job Center on mobile"
+                                        className="w-full h-full object-cover object-center"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-[#0a0a0a]/20 to-transparent z-20" />
+                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#0a0a0a]/60 z-20" />
+                                </motion.div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
             </motion.div>
 
             {/* Hero Banner Section */}
@@ -238,7 +429,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 transition={{ duration: 0.7, ease: "easeOut" }}
                 className="max-w-5xl mx-auto mb-20"
             >
-                <div className="relative overflow-hidden rounded-[2rem] border border-white/8 bg-[#0a0a0a] shadow-[0_0_80px_rgba(16,185,129,0.08)]">
+                <div className="home-rgb-border" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
+                <div className="home-rgb-border-ring">
+                <div className="relative overflow-hidden bg-[#0a0a0a] shadow-[0_0_80px_rgba(16,185,129,0.08)]" style={{ borderRadius: 'calc(2rem - 2px)' }}>
                     {/* Background glow effects */}
                     <div className="absolute top-0 right-1/3 w-[500px] h-[300px] bg-emerald-500/8 rounded-full blur-[120px] pointer-events-none" />
                     <div className="absolute bottom-0 left-1/4 w-[400px] h-[250px] bg-cyan-500/6 rounded-full blur-[100px] pointer-events-none" />
@@ -417,6 +610,8 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         </div>
                     </div>
                 </div>
+                </div>
+                </div>
             </motion.div>
 
             {/* Feature Sections */}
@@ -434,32 +629,46 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 </div>
             </div>
 
-            {/* YouTube Feed Layout */}
-            <YouTubeFeed />
-
-            {/* Community Feed Section */}
-            <CommunityFeed />
-            
             {/* Testimonials Section */}
-            <section className="relative w-full rounded-[2.5rem] bg-[#0a0a0a] border border-emerald-900/30 overflow-hidden shadow-[0_0_100px_rgba(16,185,129,0.05)] p-8 md:p-12 mt-16 mb-16">
+            <div className="w-full mt-16 mb-16">
+            <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as React.CSSProperties}>
+            <div className="home-rgb-border-ring">
+            <section className="relative w-full bg-[#0a0a0a] overflow-hidden shadow-[0_0_100px_rgba(16,185,129,0.05)] p-8 md:p-12" style={{ borderRadius: 'calc(2.5rem - 2px)' }}>
               {/* Background Dot Grid */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
-              
+
               {/* Glowing Orbs */}
               <div className="absolute top-10 right-10 w-64 h-64 bg-emerald-600/10 rounded-full blur-[80px] pointer-events-none" />
               <div className="absolute bottom-10 left-10 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] pointer-events-none" />
-              
+
               <div className="relative z-10">
-                <div className="text-center mb-16">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6">
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-100px" }}
+                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
+                  className="text-center mb-16"
+                >
+                  <motion.div
+                    variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } }}
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6"
+                  >
                     <ShieldCheck size={10} /> Verified Pulse
-                  </div>
-                  <h2 className="text-2xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-4">Customer Feedback</h2>
-                  <p className="text-slate-500 font-black uppercase tracking-widest text-[8px] italic">
+                  </motion.div>
+                  <motion.h2
+                    variants={{ hidden: { opacity: 0, y: 24, filter: "blur(6px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } } }}
+                    className="text-2xl md:text-5xl font-black uppercase tracking-tighter mb-4 home-shimmer-text drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"
+                  >
+                    Customer Feedback
+                  </motion.h2>
+                  <motion.p
+                    variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } }}
+                    className="text-slate-500 font-black uppercase tracking-widest text-[8px]"
+                  >
                     Direct transmissions from our synchronized node network.
-                  </p>
-                </div>
+                  </motion.p>
+                </motion.div>
 
                 <TestimonialsDisplay
                   type="all"
@@ -473,6 +682,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 />
               </div>
             </section>
+            </div>
+            </div>
+            </div>
 
             <style jsx global>{`
                 .no-scrollbar::-webkit-scrollbar {

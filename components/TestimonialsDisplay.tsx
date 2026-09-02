@@ -105,109 +105,120 @@ export default function TestimonialsDisplay({
     setCurrentIndex((prev) => (prev - 1 + Math.max(testimonials.length, 1)) % Math.max(testimonials.length, 1))
   }
 
-  const TestimonialCard = ({ testimonial, featured = false }: { testimonial: Testimonial, featured?: boolean }) => (
+  const TestimonialCard = ({ testimonial, index = 0, featured = false }: { testimonial: Testimonial, index?: number, featured?: boolean }) => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.6, delay: index * 0.12, ease: "easeOut" }}
       className="h-full"
     >
-      <Card className={`h-full bg-[#0d1321]/40 border-white/5 hover:border-emerald-500/30 backdrop-blur-3xl shadow-3xl rounded-[2.5rem] overflow-hidden transition-all duration-500 group ${featured ? 'ring-2 ring-emerald-500/50' : ''}`}>
-        <CardContent className="p-8 h-full flex flex-col relative">
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Quote className="h-20 w-20 text-emerald-500" />
+      <div className="home-rgb-border h-full" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
+      <div className="home-rgb-border-ring h-full">
+      <div
+        className={`relative h-full flex flex-col bg-[#0a0a0a] p-8 overflow-hidden group ${featured ? 'ring-1 ring-emerald-400/40' : ''}`}
+        style={{ borderRadius: 'calc(2rem - 2px)' }}
+      >
+        {/* Glow Orb */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-emerald-500/20 transition-colors duration-500" />
+
+        {/* Decorative Quote */}
+        <Quote className="absolute top-6 right-6 h-16 w-16 text-emerald-500/5 group-hover:text-emerald-500/10 transition-colors duration-500 pointer-events-none" />
+
+        {/* Rating */}
+        <div className="flex items-center mb-6 relative z-10">
+          <div className="flex gap-1">
+            {Array.from({ length: 5 }, (_, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, scale: 0 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: index * 0.12 + i * 0.06 }}
+              >
+                <Star
+                  className={`h-3.5 w-3.5 ${i < testimonial.rating ? 'text-emerald-400 fill-current drop-shadow-[0_0_4px_rgba(52,211,153,0.6)]' : 'text-slate-700'}`}
+                />
+              </motion.span>
+            ))}
           </div>
+          <span className="ml-3 text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">
+            {testimonial.rating}/5 rating
+          </span>
+        </div>
 
-          {/* Quote Icon */}
-          <div className="mb-6 relative z-10">
-            <Quote className="h-8 w-8 text-emerald-500/50" />
-          </div>
+        {/* Testimonial Text */}
+        <div className="flex-1 mb-8 relative z-10">
+          <p className="text-slate-300 leading-relaxed text-sm font-medium">"{testimonial.testimonial_text}"</p>
+        </div>
 
-          {/* Rating */}
-          <div className="flex items-center mb-6 relative z-10">
-            <div className="flex gap-1">
-              {renderStars(testimonial.rating)}
-            </div>
-            <span className="ml-3 text-[10px] font-black text-slate-500 uppercase tracking-widest italic leading-none">
-              customer rating {testimonial.rating}/5
-            </span>
-          </div>
-
-          {/* Testimonial Text */}
-          <div className="flex-1 mb-8 relative z-10">
-            <p className="text-slate-300 leading-relaxed text-sm font-medium italic">"{testimonial.testimonial_text}"</p>
-          </div>
-
-          {/* Client Info */}
-          <div className="flex items-start space-x-4">
-            {showImages && (
-              <div className="flex-shrink-0">
-                {testimonial.client_avatar_url ? (
-                  <img
-                    src={testimonial.client_avatar_url}
-                    alt={testimonial.client_name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                    <User className="h-6 w-6 text-emerald-500" />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Client Details */}
-            <div className="flex-1 min-w-0 relative z-10">
-              <div className="flex flex-col mb-2">
-                <h4 className="text-base font-black text-white italic uppercase tracking-tighter truncate">
-                  {testimonial.client_name}
-                </h4>
-                {testimonial.is_featured && (
-                  <div className="inline-flex mt-1 text-emerald-400 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit">
-                    ELITE NODE
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1 text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
-                {testimonial.client_title && (
-                  <div className="truncate">{testimonial.client_title}</div>
-                )}
-
-                <div className="flex items-center space-x-3">
-                  {testimonial.client_company && (
-                    <span className="flex items-center truncate">
-                      <Building className="h-3 w-3 mr-1 flex-shrink-0" />
-                      {testimonial.client_company}
-                    </span>
-                  )}
-
-                  {testimonial.client_location && (
-                    <span className="flex items-center truncate">
-                      <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
-                      {testimonial.client_location}
-                    </span>
-                  )}
+        {/* Client Info */}
+        <div className="flex items-center space-x-4 relative z-10">
+          {showImages && (
+            <div className="flex-shrink-0 p-[2px] rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-400 shadow-[0_0_16px_rgba(16,185,129,0.35)]">
+              {testimonial.client_avatar_url ? (
+                <img
+                  src={testimonial.client_avatar_url}
+                  alt={testimonial.client_name}
+                  className="w-11 h-11 rounded-[14px] object-cover block"
+                />
+              ) : (
+                <div className="w-11 h-11 rounded-[14px] bg-[#0a0a0a] flex items-center justify-center">
+                  <User className="h-5 w-5 text-emerald-400" />
                 </div>
+              )}
+            </div>
+          )}
 
-                {testimonial.client_website && (
-                  <div className="flex items-center">
-                    <Globe className="h-3 w-3 mr-1.5 flex-shrink-0 text-emerald-500" />
-                    <a
-                      href={testimonial.client_website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-500 hover:text-emerald-400 transition-colors truncate"
-                    >
-                      IDENTIFIED DOMAIN
-                    </a>
-                  </div>
-                )}
-              </div>
+          {/* Client Details */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h4 className="text-sm font-black text-white uppercase tracking-tight truncate">
+                {testimonial.client_name}
+              </h4>
+              {testimonial.is_featured && (
+                <span className="flex-shrink-0 text-emerald-400 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                  Elite
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+              {testimonial.client_title && (
+                <span className="truncate">{testimonial.client_title}</span>
+              )}
+
+              {testimonial.client_company && (
+                <span className="flex items-center truncate">
+                  <Building className="h-3 w-3 mr-1 flex-shrink-0" />
+                  {testimonial.client_company}
+                </span>
+              )}
+
+              {testimonial.client_location && (
+                <span className="flex items-center truncate">
+                  <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+                  {testimonial.client_location}
+                </span>
+              )}
+
+              {testimonial.client_website && (
+                <a
+                  href={testimonial.client_website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-emerald-500 hover:text-emerald-400 transition-colors truncate"
+                >
+                  <Globe className="h-3 w-3 mr-1 flex-shrink-0" />
+                  Website
+                </a>
+              )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      </div>
+      </div>
     </motion.div>
   )
 
@@ -216,7 +227,7 @@ export default function TestimonialsDisplay({
       <div className={`testimonials-loading ${className}`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="h-72 bg-white/5 border border-white/5 rounded-[2.5rem] p-8 animate-pulse">
+            <div key={i} className="h-72 bg-white/5 border border-white/5 rounded-[2rem] p-8 animate-pulse">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-8 h-8 bg-white/10 rounded"></div>
               </div>
@@ -350,10 +361,11 @@ export default function TestimonialsDisplay({
   // Default grid layout
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
-      {testimonials.map((testimonial) => (
+      {testimonials.map((testimonial, index) => (
         <TestimonialCard
           key={testimonial.id}
           testimonial={testimonial}
+          index={index}
           featured={testimonial.is_featured}
         />
       ))}

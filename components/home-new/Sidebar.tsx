@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {
-    Home,
     Coffee,
     Video,
     Image as ImageIcon,
@@ -124,20 +123,6 @@ export function Sidebar({ className }: { className?: string }) {
 
             <div className="px-6 py-2 space-y-1">
                 <Link
-                    href="/"
-                    className={cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-sm transition-all",
-                        pathname === '/'
-                            ? "bg-white/5 text-white shadow-sm"
-                            : "text-slate-400 hover:bg-white/5 hover:text-white"
-                    )}
-                >
-                    <Home className="w-4 h-4" />
-                    Home
-                </Link>
-                <div className="h-2" />
-
-                <Link
                     href="/learn"
                     className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
@@ -147,7 +132,7 @@ export function Sidebar({ className }: { className?: string }) {
                     )}
                 >
                     <BookOpen className={cn("w-4 h-4", pathname.startsWith('/learn') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
-                    <span className="text-xs font-bold uppercase tracking-widest italic">LEARN</span>
+                    <span className="text-sm font-bold uppercase tracking-tight">LEARN</span>
                 </Link>
 
                 <Link
@@ -160,7 +145,7 @@ export function Sidebar({ className }: { className?: string }) {
                     )}
                 >
                     <GraduationCap className={cn("w-4 h-4", pathname.startsWith('/teach') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
-                    <span className="text-xs font-bold uppercase tracking-widest italic">TEACH</span>
+                    <span className="text-sm font-bold uppercase tracking-tight">TEACH</span>
                 </Link>
 
                 <Link
