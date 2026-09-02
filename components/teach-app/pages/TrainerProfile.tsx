@@ -1,77 +1,193 @@
 import { useParams } from 'react-router-dom';
-import { Star, MapPin, Video, Users, CheckCircle2, MessageSquare, Calendar, PlayCircle, Award } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  MapPin, CheckCircle2, MessageSquare, Calendar, Award, Briefcase,
+  GraduationCap, Globe, Linkedin, Twitter, Youtube, Loader2, UserRound,
+  Copy, Printer, ShieldCheck,
+} from 'lucide-react';
+import { createClient } from '@/lib/supabase-client';
+
+interface ExperienceEntry {
+  id: string;
+  title: string;
+  organization: string;
+  duration: string;
+  description: string;
+}
+
+interface EducationEntry {
+  id: string;
+  degree: string;
+  institution: string;
+  year: string;
+}
+
+interface ResumeData {
+  full_name: string;
+  avatar_url: string | null;
+  headline: string;
+  bio: string;
+  specialty: string;
+  experience_years: string;
+  location: string;
+  website: string;
+  linkedin: string;
+  twitter: string;
+  youtube: string;
+  skills: string[];
+  languages: string[];
+  experience: ExperienceEntry[];
+  education: EducationEntry[];
+}
 
 export function TrainerProfile() {
   const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [trainer, setTrainer] = useState<ResumeData | null>(null);
 
-  // Mock data for Dheeraj K. (Persona from requirements)
-  const trainer = {
-    id: '1',
-    name: 'Dheeraj K.',
-    subject: 'Advanced Excel & Data Analytics',
-    rating: 4.9,
-    reviews: 342,
-    location: 'Gurgaon, Haryana',
-    modes: ['Online', 'Offline'],
-    image: 'https://picsum.photos/seed/dheeraj/400/400',
-    hourlyRate: 800,
-    experience: 13,
-    bio: `Hi, I'm Dheeraj! I have over 13 years of corporate experience working as a Data Analyst and BI Developer for Fortune 500 companies. 
+  useEffect(() => {
+    if (!id) return;
+    const supabase = createClient();
 
-I specialize in teaching Advanced Excel, PowerBI, SQL, and Python for Data Science. My teaching methodology is highly practical and project-based. I don't just teach formulas; I teach you how to solve real-world business problems.
+    (async () => {
+      setLoading(true);
 
-Whether you are a college student looking to start your career in data, or a working professional aiming for a promotion, my customized curriculum will help you achieve your goals.`,
-    tags: ['Excel', 'PowerBI', 'SQL', 'Data Science', 'Python', 'Tableau'],
-    stats: {
-      studentsTaught: '2,500+',
-      responseRate: '98%',
-      responseTime: '< 1 hour'
-    },
-    courses: [
-      {
-        id: 'c1',
-        title: 'Master Advanced Excel for Corporate Jobs',
-        price: 2499,
-        lessons: 42,
-        duration: '15 hours',
-        thumbnail: 'https://picsum.photos/seed/excel/300/200'
-      },
-      {
-        id: 'c2',
-        title: 'PowerBI Zero to Hero: Build Interactive Dashboards',
-        price: 3499,
-        lessons: 35,
-        duration: '12 hours',
-        thumbnail: 'https://picsum.photos/seed/powerbi/300/200'
+      const [{ data: userRow }, { data: profileRow }, { data: resumeRow }] = await Promise.all([
+        supabase.from('users').select('*').eq('id', id).maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
+        supabase.from('trainer_resumes').select('*').eq('id', id).maybeSingle(),
+      ]);
+
+      if (!resumeRow || resumeRow.is_public === false) {
+        setNotFound(true);
+        setLoading(false);
+        return;
       }
-    ]
+
+      const merged = { ...userRow, ...profileRow };
+      let avatarUrl: string | null = merged.profile_pic_url || merged.avatar_url || null;
+      if (avatarUrl && !avatarUrl.startsWith('http')) {
+        const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(avatarUrl);
+        avatarUrl = publicUrlData.publicUrl;
+      }
+
+      setTrainer({
+        full_name: merged.full_name || 'Celoris Trainer',
+        avatar_url: avatarUrl,
+        headline: resumeRow.headline || '',
+        bio: resumeRow.bio || '',
+        specialty: resumeRow.specialty || '',
+        experience_years: resumeRow.experience_years || '',
+        location: resumeRow.location || '',
+        website: resumeRow.website || '',
+        linkedin: resumeRow.linkedin || '',
+        twitter: resumeRow.twitter || '',
+        youtube: resumeRow.youtube || '',
+        skills: resumeRow.skills || [],
+        languages: resumeRow.languages || [],
+        experience: Array.isArray(resumeRow.experience) ? resumeRow.experience : [],
+        education: Array.isArray(resumeRow.education) ? resumeRow.education : [],
+      });
+      setLoading(false);
+    })();
+  }, [id]);
+
+  // Support ?print=1 to trigger the browser's print (Save as PDF) dialog automatically
+  useEffect(() => {
+    if (loading || notFound || !trainer) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === '1') {
+      const t = setTimeout(() => window.print(), 400);
+      return () => clearTimeout(t);
+    }
+  }, [loading, notFound, trainer]);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href.split('?')[0]);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
+  if (loading) {
+    return (
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+      </div>
+    );
+  }
+
+  if (notFound || !trainer) {
+    return (
+      <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center text-center px-6">
+        <UserRound className="h-14 w-14 text-gray-300 mb-4" />
+        <h1 className="text-xl font-bold text-gray-900 mb-2">This resume isn't public</h1>
+        <p className="text-gray-500 text-sm max-w-sm">
+          Either this trainer hasn't published a resume yet, or they've kept it private.
+        </p>
+      </div>
+    );
+  }
+
+  const hasSocials = trainer.website || trainer.linkedin || trainer.twitter || trainer.youtube;
+
   return (
-    <div className="bg-gray-50 min-h-screen pb-20">
+    <div className="bg-gray-50 min-h-screen pb-20 print:bg-white">
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          body { background: white !important; }
+        }
+      `}</style>
+
+      {/* Share Toolbar */}
+      <div className="no-print bg-white border-b border-gray-100 py-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end gap-2">
+          <button
+            onClick={handleCopyLink}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-xs font-bold text-gray-600 transition-all"
+          >
+            <Copy size={14} /> {copied ? 'Link Copied!' : 'Copy Link'}
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all"
+          >
+            <Printer size={14} /> Print / Save as PDF
+          </button>
+        </div>
+      </div>
+
       {/* Profile Header */}
       <div className="bg-white border-b border-gray-200 pt-10 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="w-32 h-32 md:w-48 md:h-48 flex-shrink-0 relative">
-              <img 
-                src={trainer.image} 
-                alt={trainer.name} 
-                className="w-full h-full object-cover rounded-2xl shadow-md"
-                referrerPolicy="no-referrer"
-              />
+            <div className="w-32 h-32 md:w-40 md:h-40 flex-shrink-0 relative">
+              {trainer.avatar_url ? (
+                <img
+                  src={trainer.avatar_url}
+                  alt={trainer.full_name}
+                  className="w-full h-full object-cover rounded-2xl shadow-md"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-full h-full rounded-2xl bg-emerald-100 flex items-center justify-center shadow-md">
+                  <UserRound className="h-14 w-14 text-emerald-500" />
+                </div>
+              )}
               <div className="absolute -bottom-3 -right-3 bg-emerald-100 text-emerald-700 p-2 rounded-full border-4 border-white" title="Verified Profile">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
             </div>
-            
+
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{trainer.name}</h1>
-                  <p className="text-xl text-emerald-600 font-medium">{trainer.subject}</p>
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{trainer.full_name}</h1>
+                  {trainer.headline && <p className="text-xl text-emerald-600 font-medium">{trainer.headline}</p>}
                 </div>
-                <div className="flex gap-3">
+                <div className="no-print flex gap-3">
                   <button className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
                     <MessageSquare className="h-4 w-4" /> Message
                   </button>
@@ -82,140 +198,165 @@ Whether you are a college student looking to start your career in data, or a wor
               </div>
 
               <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-6">
-                <div className="flex items-center gap-1.5 bg-amber-50 text-amber-900 px-3 py-1.5 rounded-lg font-medium">
-                  <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-                  {trainer.rating} <span className="text-amber-700 font-normal">({trainer.reviews} reviews)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-gray-400" /> {trainer.location}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Award className="h-5 w-5 text-gray-400" /> {trainer.experience} Years Exp.
-                </div>
+                {trainer.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-gray-400" /> {trainer.location}
+                  </div>
+                )}
+                {trainer.experience_years && (
+                  <div className="flex items-center gap-2">
+                    <Award className="h-5 w-5 text-gray-400" /> {trainer.experience_years} Experience
+                  </div>
+                )}
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {trainer.tags.map(tag => (
-                  <span key={tag} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {trainer.specialty && (
+                <div className="flex flex-wrap gap-2">
+                  {trainer.specialty.split(',').map((tag) => tag.trim()).filter(Boolean).map((tag) => (
+                    <span key={tag} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col lg:flex-row gap-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col lg:flex-row lg:items-start gap-8">
         {/* Main Content */}
-        <div className="flex-1 space-y-8">
+        <div className="flex-1 min-w-0 space-y-6">
           {/* About Section */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">About {trainer.name.split(' ')[0]}</h2>
-            <div className="prose max-w-none text-gray-600 whitespace-pre-line">
-              {trainer.bio}
+          {trainer.bio && (
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">About {trainer.full_name.split(' ')[0]}</h2>
+              <div className="prose max-w-none text-gray-600 whitespace-pre-line">{trainer.bio}</div>
             </div>
-          </div>
+          )}
 
-          {/* Hosted Courses */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Courses by {trainer.name.split(' ')[0]}</h2>
-              <button className="text-emerald-600 font-medium hover:text-emerald-700">View all</button>
+          {/* Skills */}
+          {trainer.skills.length > 0 && (
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {trainer.skills.map((skill) => (
+                  <span key={skill} className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-full text-sm font-bold">
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {trainer.courses.map(course => (
-                <div key={course.id} className="border border-gray-200 rounded-xl overflow-hidden group hover:shadow-md transition-shadow">
-                  <div className="relative aspect-video">
-                    <img 
-                      src={course.thumbnail} 
-                      alt={course.title} 
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <PlayCircle className="h-12 w-12 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">{course.title}</h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                      <span className="flex items-center gap-1"><Video className="h-4 w-4" /> {course.lessons} lessons</span>
-                      <span>{course.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-gray-900">₹{course.price}</span>
-                      <button className="text-emerald-600 font-medium text-sm hover:underline">View Details</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
-          {/* Reviews */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Student Reviews</h2>
-            <div className="space-y-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
-                        S{i}
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Student Name</h4>
-                        <p className="text-xs text-gray-500">2 weeks ago</p>
-                      </div>
+          {/* Work Experience */}
+          {trainer.experience.length > 0 && (
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <Briefcase className="h-6 w-6 text-emerald-600" /> Work Experience
+              </h2>
+              <div className="space-y-6">
+                {trainer.experience.map((entry, idx) => (
+                  <div key={entry.id || idx} className="border-l-2 border-emerald-100 pl-6 relative">
+                    <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full bg-emerald-500" />
+                    <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+                      <h3 className="font-bold text-gray-900">{entry.title}</h3>
+                      <span className="text-xs text-gray-400 font-medium">{entry.duration}</span>
                     </div>
-                    <div className="flex text-amber-500">
-                      <Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" /><Star className="h-4 w-4 fill-current" />
-                    </div>
+                    {entry.organization && <p className="text-sm text-emerald-600 font-medium mb-2">{entry.organization}</p>}
+                    {entry.description && <p className="text-sm text-gray-600 leading-relaxed">{entry.description}</p>}
                   </div>
-                  <p className="text-gray-600 text-sm mt-3">
-                    Dheeraj is an excellent tutor. His real-world examples made learning PowerBI so much easier. Highly recommended for anyone looking to upskill!
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Education */}
+          {trainer.education.length > 0 && (
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <GraduationCap className="h-6 w-6 text-emerald-600" /> Education
+              </h2>
+              <div className="space-y-4">
+                {trainer.education.map((entry, idx) => (
+                  <div key={entry.id || idx} className="flex items-baseline justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold text-gray-900">{entry.degree}</h3>
+                      {entry.institution && <p className="text-sm text-gray-500">{entry.institution}</p>}
+                    </div>
+                    <span className="text-xs text-gray-400 font-medium flex-shrink-0">{entry.year}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!trainer.bio && trainer.skills.length === 0 && trainer.experience.length === 0 && trainer.education.length === 0 && (
+            <div className="bg-white p-12 rounded-2xl border border-gray-200 shadow-sm text-center text-gray-400">
+              <ShieldCheck className="h-10 w-10 mx-auto mb-3 text-gray-200" />
+              <p className="font-medium">This trainer hasn't filled out their resume yet.</p>
+            </div>
+          )}
         </div>
 
-        {/* Sidebar / Booking Widget */}
+        {/* Sidebar */}
         <div className="w-full lg:w-80 flex-shrink-0">
-          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-lg sticky top-24">
-            <div className="text-center mb-6 pb-6 border-b border-gray-100">
-              <div className="text-3xl font-bold text-gray-900 mb-1">₹{trainer.hourlyRate}</div>
-              <div className="text-gray-500 text-sm">per hour for 1:1 sessions</div>
+          <div className="lg:sticky lg:top-6 bg-white rounded-2xl border border-gray-200 shadow-lg divide-y divide-gray-100 overflow-hidden">
+            <div className="no-print p-6 space-y-3">
+              <button className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors">
+                Book a Session
+              </button>
+              <button className="w-full bg-white border border-emerald-600 text-emerald-600 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors">
+                Send Enquiry
+              </button>
             </div>
 
-            <div className="space-y-4 mb-6">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Response Time</span>
-                <span className="font-medium text-gray-900">{trainer.stats.responseTime}</span>
+            {trainer.languages.length > 0 && (
+              <div className="p-6">
+                <h3 className="font-bold text-gray-900 text-sm mb-3">Languages</h3>
+                <div className="flex flex-wrap gap-2">
+                  {trainer.languages.map((lang) => (
+                    <span key={lang} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold">
+                      {lang}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Students Taught</span>
-                <span className="font-medium text-gray-900">{trainer.stats.studentsTaught}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Class Modes</span>
-                <span className="font-medium text-gray-900">{trainer.modes.join(', ')}</span>
-              </div>
-            </div>
+            )}
 
-            <button className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors mb-3">
-              Book a Session
-            </button>
-            <button className="w-full bg-white border border-emerald-600 text-emerald-600 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors">
-              Send Enquiry
-            </button>
+            {hasSocials && (
+              <div className="no-print p-6 space-y-3">
+                <h3 className="font-bold text-gray-900 text-sm mb-1">Connect</h3>
+                {trainer.website && (
+                  <a href={trainer.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
+                    <Globe className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">Website</span>
+                  </a>
+                )}
+                {trainer.linkedin && (
+                  <a href={trainer.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
+                    <Linkedin className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">LinkedIn</span>
+                  </a>
+                )}
+                {trainer.twitter && (
+                  <a href={trainer.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
+                    <Twitter className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">Twitter</span>
+                  </a>
+                )}
+                {trainer.youtube && (
+                  <a href={trainer.youtube} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
+                    <Youtube className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">YouTube</span>
+                  </a>
+                )}
+              </div>
+            )}
 
-            <p className="text-xs text-center text-gray-500 mt-4">
-              First 30-min demo session is free!
-            </p>
+            {!hasSocials && trainer.languages.length === 0 && (
+              <div className="p-6">
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  This trainer hasn't added languages or social links yet.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

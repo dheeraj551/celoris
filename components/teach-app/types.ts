@@ -43,3 +43,25 @@ export interface Review {
   comment: string;
   createdAt: string;
 }
+
+export type TrainerTierLevel = 1 | 2 | 3 | 4 | 5;
+
+export interface TrainerBadge {
+  id: string;
+  badgeTitle: string;
+  subject: string;
+  verificationHash: string; // e.g. "TV-2026-WD-77K2"
+  earnedDate: string;
+  rating: number; // e.g. 4.9 out of 5
+  sessionsCount: number;
+  badgeColor: string;
+}
+
+export interface TrainerProgress {
+  level: TrainerTierLevel;
+  currentXP: number;
+  nextLevelXP: number;
+  sessionsHosted: number;
+  trainerRating: number;
+  badges: TrainerBadge[];
+}

@@ -9,6 +9,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { TrainerDashboard } from './pages/dashboard/TrainerDashboard';
 import { TrainerOverview } from './pages/dashboard/TrainerOverview';
+import { TrainerProgression } from './pages/dashboard/TrainerProgression';
 import { TrainerProfile as DashboardTrainerProfile } from './pages/dashboard/TrainerProfile';
 import { TrainerCourses } from './pages/dashboard/TrainerCourses';
 import { TrainerEnquiries } from './pages/dashboard/TrainerEnquiries';
@@ -45,6 +46,7 @@ export default function TeachApp() {
         <Route path="/teach/dashboard/trainer" element={<TrainerDashboard />}>
           <Route index element={<Navigate to="overview" replace />} />
           <Route path="overview" element={<TrainerOverview />} />
+          <Route path="progression" element={<TrainerProgression />} />
           <Route path="profile" element={<DashboardTrainerProfile />} />
 
           <Route path="students" element={<TrainerStudents />} />

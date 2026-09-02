@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Calendar, MessageSquare, Mail, LogOut, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX } from 'lucide-react';
+import { BookOpen, Calendar, MessageSquare, Mail, LogOut, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX, Award } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
@@ -179,6 +179,7 @@ export function TrainerDashboard() {
   // Helper to get page title based on route
   const getPageTitle = () => {
 
+    if (location.pathname.includes('/progression')) return 'Progression';
     if (location.pathname.includes('/enquiries')) return 'Enquiries';
     if (location.pathname.includes('/calendar')) return 'Calendar';
     if (location.pathname.includes('/inbox')) return 'Inbox';
@@ -222,8 +223,14 @@ export function TrainerDashboard() {
             >
               <LayoutDashboard className="h-5 w-5" /> Overview
             </NavLink>
-            <NavLink 
-              to="/teach/dashboard/trainer/enquiries" 
+            <NavLink
+              to="/teach/dashboard/trainer/progression"
+              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Award className="h-5 w-5" /> Progression
+            </NavLink>
+            <NavLink
+              to="/teach/dashboard/trainer/enquiries"
               className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <MessageSquare className="h-5 w-5" /> Enquiries <span className="ml-auto bg-emerald-100 text-emerald-600 py-0.5 px-2 rounded-full text-xs">3</span>
