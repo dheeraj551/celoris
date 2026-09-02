@@ -28,6 +28,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'fish-audio-s2-1-pro-voice-ai',
+      title: "Fish Audio S2.1 Pro: The Free TTS Model That's Changing the Voice AI Game",
+      slug: 'fish-audio-s2-1-pro-voice-ai',
+      excerpt: "Fish Audio's new S2.1 Pro voice model delivers ~70ms latency, 83-language support, and zero-shot voice cloning — and it's free on Celo AI until September 18th.",
+      featured_image_url: "/Fish Audio S2.1 Pro The Free TTS Model That's Changing the Voice AI Game.png",
+      author_name: 'Celoris Team',
+      category: 'AI & Voice Tech',
+      reading_time: 5,
+      published_at: '2026-09-02T10:00:00Z',
+    },
+    {
       id: 'deepseek-harness-ai-trend-2026',
       title: 'DeepSeek Harness Kya Hai? Wo AI Trend Jo Har Coder Ko Pata Hona Chahiye (2026)',
       slug: 'deepseek-harness-ai-trend-2026',
