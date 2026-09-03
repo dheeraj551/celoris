@@ -1,8 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Calendar, User, Clock, ChevronRight, ChevronLeft } from "lucide-react"
 import { createServerClient } from "@/lib/supabase-server"
-import { cn } from "@/lib/utils"
+import { BlogHeader } from "@/components/blog/BlogHeader"
+import { BlogPostsGrid } from "@/components/blog/BlogPostsGrid"
 
 interface BlogPost {
   id: string;
@@ -468,18 +466,6 @@ export default async function BlogPage({
     currentPage * postsPerPage
   );
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch {
-      return 'Recently';
-    }
-  };
-
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -511,156 +497,10 @@ export default async function BlogPage({
       />
 
       <div className="container py-16 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
-          <div className="space-y-4">
-            <Link
-              href="/"
-              className="group flex items-center gap-2 text-sm font-bold text-emerald-500 hover:text-emerald-400 transition-colors uppercase tracking-widest"
-            >
-              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-              Back to Home
-            </Link>
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter">
-              Celoris <span className="text-emerald-500 italic">Blog</span>
-            </h1>
-          </div>
-          <div className="max-w-md text-left md:text-right">
-            <p className="text-lg text-slate-400 font-medium leading-relaxed">
-              Stay updated with the latest trends in <span className="text-white">AI</span>, <span className="text-white">creative tools</span>, and the future of <span className="text-white">digital transformation</span> in India.
-            </p>
-          </div>
-        </div>
+        <BlogHeader />
 
         <div className="max-w-6xl mx-auto">
-          {allPosts.length === 0 ? (
-            <div className="text-center py-24 bg-white/5 rounded-[2.5rem] border border-white/5 backdrop-blur-sm">
-              <p className="text-slate-500 text-xl font-medium">No insights found yet. Check back soon!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-10">
-              {paginatedPosts.map((post) => (
-                <article
-                  key={post.id}
-                  className="group bg-[#0a0f1d] rounded-[2.5rem] border border-white/5 hover:border-emerald-500/30 transition-all duration-500 overflow-hidden shadow-2xl hover:shadow-emerald-500/10"
-                >
-                  <div className="flex flex-col lg:flex-row">
-                    {/* Thumbnail */}
-                    <div className="lg:w-2/5 aspect-video overflow-hidden relative">
-                      <Link href={`/blog/${post.slug}`}>
-                        <img
-                          src={post.featured_image_url || "/images/homepage/hero.png"}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                      </Link>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors pointer-events-none" />
-                      <div className="absolute top-6 left-6">
-                        <span className="bg-black/60 backdrop-blur-md text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border border-emerald-500/30">
-                          {post.category}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
-                      <div className="flex flex-wrap items-center gap-6 text-slate-500 text-xs font-bold uppercase tracking-widest mb-6">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3.5 w-3.5 text-emerald-500" />
-                          {formatDate(post.published_at)}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-3.5 w-3.5 text-emerald-500" />
-                          {post.reading_time} min read
-                        </div>
-                      </div>
-
-                      <h3 className="text-2xl md:text-4xl font-bold text-white mb-6 group-hover:text-emerald-400 transition-colors leading-tight tracking-tight">
-                        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                      </h3>
-
-                      <p className="text-slate-400 text-lg leading-relaxed mb-8 line-clamp-2 italic">
-                        "{post.excerpt || 'Discover more insights inside...'}"
-                      </p>
-
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-600 flex items-center justify-center text-white font-black text-sm border border-white/10 shadow-lg">
-                            {post.author_name ? post.author_name.charAt(0) : 'C'}
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-white">{post.author_name || 'Celoris'}</p>
-                            <p className="text-[10px] text-emerald-500/80 font-bold uppercase tracking-tighter">Verified Creator</p>
-                          </div>
-                        </div>
-
-                        <Button
-                          variant="ghost"
-                          className="text-emerald-500 hover:text-white hover:bg-emerald-500 transition-all rounded-full px-6 font-bold uppercase tracking-widest text-[10px] gap-2 border border-emerald-500/20"
-                          asChild
-                        >
-                          <Link href={`/blog/${post.slug}`}>
-                            Read Insights
-                            <ChevronRight className="h-3 w-3" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="mt-16 flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                className={cn(
-                  "bg-white/5 border-white/10 text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all rounded-2xl px-6 h-12 font-bold uppercase tracking-widest text-[10px] gap-2",
-                  currentPage <= 1 && "opacity-50 pointer-events-none"
-                )}
-                asChild
-              >
-                <Link href={`/blog?page=${currentPage - 1}`}>
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Link>
-              </Button>
-
-              <div className="flex items-center gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                  <Button
-                    key={pageNum}
-                    variant={currentPage === pageNum ? "default" : "outline"}
-                    className={cn(
-                      "w-12 h-12 rounded-2xl font-bold transition-all",
-                      currentPage === pageNum
-                        ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
-                        : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-emerald-500/50"
-                    )}
-                    asChild
-                  >
-                    <Link href={`/blog?page=${pageNum}`}>{pageNum}</Link>
-                  </Button>
-                ))}
-              </div>
-
-              <Button
-                variant="outline"
-                className={cn(
-                  "bg-white/5 border-white/10 text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all rounded-2xl px-6 h-12 font-bold uppercase tracking-widest text-[10px] gap-2",
-                  currentPage >= totalPages && "opacity-50 pointer-events-none"
-                )}
-                asChild
-              >
-                <Link href={`/blog?page=${currentPage + 1}`}>
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          )}
+          <BlogPostsGrid posts={paginatedPosts} currentPage={currentPage} totalPages={totalPages} />
         </div>
       </div>
     </div>
