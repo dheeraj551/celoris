@@ -390,7 +390,7 @@ export default function App() {
           honor_score: nextHonorForSync,
           updated_at: new Date().toISOString(),
         })
-        .then(({ error }) => {
+        .then(({ error }: { error: any }) => {
           if (error) console.error('Error syncing job center progress:', error);
         });
 
@@ -408,7 +408,7 @@ export default function App() {
             proctor_score: badge.proctorScore,
             badge_color: badge.badgeColor,
           })
-          .then(({ error }) => {
+          .then(({ error }: { error: any }) => {
             if (error) console.error('Error syncing job center badge:', error);
           });
       }
