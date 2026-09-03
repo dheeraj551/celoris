@@ -12,7 +12,7 @@ import { INITIAL_TRAINER_PROGRESS } from '../../data/trainerProgressionData';
 
 const fadeUpItem = {
   hidden: { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } },
 };
 
 const chipVariants = {
@@ -23,8 +23,8 @@ const chipVariants = {
 
 const entryCardVariants = {
   hidden: { opacity: 0, height: 0, y: -8 },
-  visible: { opacity: 1, height: 'auto', y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
-  exit: { opacity: 0, height: 0, y: -8, transition: { duration: 0.2, ease: 'easeIn' } },
+  visible: { opacity: 1, height: 'auto', y: 0, transition: { duration: 0.3, ease: 'easeOut' as const } },
+  exit: { opacity: 0, height: 0, y: -8, transition: { duration: 0.2, ease: 'easeIn' as const } },
 };
 
 interface ExperienceEntry {
@@ -274,7 +274,7 @@ export function TrainerProfile() {
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: 'easeOut' as const }}
         className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-10"
       >
         <div>

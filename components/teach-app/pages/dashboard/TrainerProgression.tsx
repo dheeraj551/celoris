@@ -22,7 +22,7 @@ const staggerContainer = {
 
 const fadeUpItem = {
   hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } },
 };
 
 export function TrainerProgression() {
@@ -55,7 +55,7 @@ export function TrainerProgression() {
       <motion.div
         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        transition={{ duration: 0.5, ease: 'easeOut' as const }}
         className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-800/30 shadow-lg text-white space-y-6"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -112,7 +112,7 @@ export function TrainerProgression() {
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+              transition={{ duration: 1, ease: 'easeOut' as const, delay: 0.2 }}
               className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full"
             />
           </div>

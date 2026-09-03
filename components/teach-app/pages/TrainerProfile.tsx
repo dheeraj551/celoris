@@ -12,7 +12,7 @@ import { TRAINER_LEVEL_TIERS, INITIAL_TRAINER_PROGRESS } from '../data/trainerPr
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
 };
 
 const staggerContainer = {
@@ -200,13 +200,13 @@ export function TrainerProfile() {
           <motion.div
             initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: 'easeOut' as const }}
             className="flex flex-col md:flex-row gap-8 items-start"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' as const }}
               className="w-32 h-32 md:w-40 md:h-40 flex-shrink-0 relative"
             >
               {trainer.avatar_url ? (
@@ -235,7 +235,7 @@ export function TrainerProfile() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
+                  transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' as const }}
                   className="flex items-center gap-4 bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl px-5 py-4 shadow-sm print:border-gray-200 print:shadow-none"
                 >
                   <img src="/celoris-logo.png" alt="Celoris" className="h-7 w-auto flex-shrink-0" />
@@ -318,7 +318,7 @@ export function TrainerProfile() {
                   initial={{ width: 0 }}
                   whileInView={{ width: `${progressPercent}%` }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+                  transition={{ duration: 1, ease: 'easeOut' as const, delay: 0.2 }}
                   className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full"
                 />
               </div>
@@ -357,7 +357,7 @@ export function TrainerProfile() {
                   {progress.badges.map((badge) => (
                     <motion.div
                       key={badge.id}
-                      variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
+                      variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' as const } } }}
                       className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2.5"
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -429,7 +429,7 @@ export function TrainerProfile() {
                 {trainer.experience.map((entry, idx) => (
                   <motion.div
                     key={entry.id || idx}
-                    variants={{ hidden: { opacity: 0, x: -16 }, visible: { opacity: 1, x: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
+                    variants={{ hidden: { opacity: 0, x: -16 }, visible: { opacity: 1, x: 0, transition: { duration: 0.35, ease: 'easeOut' as const } } }}
                     className="border-l-2 border-emerald-100 pl-6 relative"
                   >
                     <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full bg-emerald-500" />
@@ -478,7 +478,7 @@ export function TrainerProfile() {
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
+          transition={{ duration: 0.5, ease: 'easeOut' as const, delay: 0.1 }}
           className="w-full lg:w-80 flex-shrink-0"
         >
           <div className="lg:sticky lg:top-6 bg-white rounded-2xl border border-gray-200 shadow-lg divide-y divide-gray-100 overflow-hidden">

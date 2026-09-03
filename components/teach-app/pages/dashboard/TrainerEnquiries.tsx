@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 const rowVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' as const } },
 };
 
 const tableContainerVariants = {
@@ -171,7 +171,7 @@ export function TrainerEnquiries() {
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: 'easeOut' as const }}
         className="flex justify-between items-center mb-8"
       >
         <div>
@@ -196,7 +196,7 @@ export function TrainerEnquiries() {
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+        transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' as const }}
         className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8"
       >
         <div className="relative w-full sm:w-96">
@@ -255,7 +255,7 @@ export function TrainerEnquiries() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
+        transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' as const }}
         className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6"
       >
         <div className="overflow-x-auto">
@@ -390,7 +390,7 @@ export function TrainerEnquiries() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2, ease: 'easeOut' }}
+          transition={{ duration: 0.3, delay: 0.2, ease: 'easeOut' as const }}
           className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200"
         >
           <p className="text-sm text-gray-500">
