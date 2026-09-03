@@ -3,7 +3,20 @@ import { MessageSquare, Users, Calendar, DollarSign, Clock, Loader2, TrendingUp 
 import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
+
+const MotionLink = motion.create(Link);
+
+const statCardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
+
+const statGridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
 
 export function TrainerOverview() {
   const [recentLeads, setRecentLeads] = useState<any[]>([]);
@@ -94,35 +107,62 @@ export function TrainerOverview() {
   return (
     <div className="p-8">
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={statGridVariants}
+        className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+      >
         {/* New Enquiries */}
-        <Link
+        <MotionLink
+          variants={statCardVariants}
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           to="/teach/dashboard/trainer/enquiries"
-          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-400 hover:shadow-lg transition-all"
+          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-400 hover:shadow-lg transition-colors"
         >
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-emerald-50 rounded-lg">
               <MessageSquare className="h-6 w-6 text-emerald-600" />
             </div>
             {stats.newLeadsThisMonth > 0 && (
-              <span className="text-emerald-500 text-xs font-bold bg-emerald-50 px-2 py-1 rounded-full flex items-center gap-1">
+              <motion.span
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-emerald-500 text-xs font-bold bg-emerald-50 px-2 py-1 rounded-full flex items-center gap-1"
+              >
                 <TrendingUp className="h-3 w-3" />
                 {stats.newLeadsThisMonth} new
-              </span>
+              </motion.span>
             )}
           </div>
           <p className="text-gray-500 text-sm font-medium">New Enquiries</p>
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-emerald-500 mt-1" />
-          ) : (
-            <h3 className="text-2xl font-bold text-gray-900">{stats.totalLeads}</h3>
-          )}
-        </Link>
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div key="loading" exit={{ opacity: 0 }}>
+                <Loader2 className="h-5 w-5 animate-spin text-emerald-500 mt-1" />
+              </motion.div>
+            ) : (
+              <motion.h3
+                key="value"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl font-bold text-gray-900"
+              >
+                {stats.totalLeads}
+              </motion.h3>
+            )}
+          </AnimatePresence>
+        </MotionLink>
 
         {/* Active Students */}
-        <Link
+        <MotionLink
+          variants={statCardVariants}
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           to="/teach/dashboard/trainer/students"
-          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-400 hover:shadow-lg transition-all"
+          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-400 hover:shadow-lg transition-colors"
         >
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-blue-50 rounded-lg">
@@ -130,17 +170,32 @@ export function TrainerOverview() {
             </div>
           </div>
           <p className="text-gray-500 text-sm font-medium">Students Reached</p>
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-blue-500 mt-1" />
-          ) : (
-            <h3 className="text-2xl font-bold text-gray-900">{stats.totalStudents}</h3>
-          )}
-        </Link>
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div key="loading" exit={{ opacity: 0 }}>
+                <Loader2 className="h-5 w-5 animate-spin text-blue-500 mt-1" />
+              </motion.div>
+            ) : (
+              <motion.h3
+                key="value"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl font-bold text-gray-900"
+              >
+                {stats.totalStudents}
+              </motion.h3>
+            )}
+          </AnimatePresence>
+        </MotionLink>
 
         {/* Upcoming Sessions */}
-        <Link
+        <MotionLink
+          variants={statCardVariants}
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           to="/teach/dashboard/trainer/calendar"
-          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-amber-400 hover:shadow-lg transition-all"
+          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-amber-400 hover:shadow-lg transition-colors"
         >
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-amber-50 rounded-lg">
@@ -148,17 +203,32 @@ export function TrainerOverview() {
             </div>
           </div>
           <p className="text-gray-500 text-sm font-medium">Upcoming Sessions</p>
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-amber-500 mt-1" />
-          ) : (
-            <h3 className="text-2xl font-bold text-gray-900">{stats.upcomingSessions}</h3>
-          )}
-        </Link>
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div key="loading" exit={{ opacity: 0 }}>
+                <Loader2 className="h-5 w-5 animate-spin text-amber-500 mt-1" />
+              </motion.div>
+            ) : (
+              <motion.h3
+                key="value"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl font-bold text-gray-900"
+              >
+                {stats.upcomingSessions}
+              </motion.h3>
+            )}
+          </AnimatePresence>
+        </MotionLink>
 
         {/* Wallet / Earnings */}
-        <Link
+        <MotionLink
+          variants={statCardVariants}
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           to="/teach/dashboard/trainer/earnings"
-          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-400 hover:shadow-lg transition-all"
+          className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-400 hover:shadow-lg transition-colors"
         >
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-emerald-50 rounded-lg">
@@ -166,17 +236,34 @@ export function TrainerOverview() {
             </div>
           </div>
           <p className="text-gray-500 text-sm font-medium">Wallet Balance</p>
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-emerald-500 mt-1" />
-          ) : (
-            <h3 className="text-2xl font-bold text-gray-900">{formatINR(stats.monthlyEarnings)}</h3>
-          )}
-        </Link>
-      </div>
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div key="loading" exit={{ opacity: 0 }}>
+                <Loader2 className="h-5 w-5 animate-spin text-emerald-500 mt-1" />
+              </motion.div>
+            ) : (
+              <motion.h3
+                key="value"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl font-bold text-gray-900"
+              >
+                {formatINR(stats.monthlyEarnings)}
+              </motion.h3>
+            )}
+          </AnimatePresence>
+        </MotionLink>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Enquiries */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm"
+        >
           <div className="p-6 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-900">Recent Enquiries</h2>
             <Link
@@ -199,9 +286,12 @@ export function TrainerOverview() {
                 <p className="text-sm mt-1">When students reach out, they'll appear here</p>
               </div>
             ) : (
-              recentLeads.map((lead) => (
-                <div
+              recentLeads.map((lead, idx) => (
+                <motion.div
                   key={lead.id}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: idx * 0.08 }}
                   className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
@@ -231,14 +321,19 @@ export function TrainerOverview() {
                       Reply
                     </Link>
                   </div>
-                </div>
+                </motion.div>
               ))
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Today's Schedule */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.22 }}
+          className="bg-white rounded-2xl border border-gray-200 shadow-sm"
+        >
           <div className="p-6 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-900">Today's Schedule</h2>
             <Link
@@ -267,14 +362,20 @@ export function TrainerOverview() {
               </div>
             ) : (
               <div className="space-y-4">
-                {stats.todayEvents.map((event: any) => {
+                {stats.todayEvents.map((event: any, idx: number) => {
                   const timeStr = event.start_time || event.time || '';
                   const [hour, min] = timeStr.split(':');
                   const h = parseInt(hour || '0');
                   const ampm = h >= 12 ? 'PM' : 'AM';
                   const displayHour = h > 12 ? h - 12 : h || 12;
                   return (
-                    <div key={event.id} className="flex gap-4">
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, x: 12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.35, delay: idx * 0.08 }}
+                      className="flex gap-4"
+                    >
                       <div className="flex flex-col items-center text-sm min-w-[40px]">
                         <span className="font-bold text-gray-900">
                           {String(displayHour).padStart(2, '0')}:{min || '00'}
@@ -291,13 +392,13 @@ export function TrainerOverview() {
                           </p>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

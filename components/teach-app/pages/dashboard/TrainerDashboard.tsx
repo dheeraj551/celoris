@@ -217,42 +217,37 @@ export function TrainerDashboard() {
           </div>
 
           <nav className="space-y-1">
-            <NavLink 
-              to="/teach/dashboard/trainer/overview" 
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <LayoutDashboard className="h-5 w-5" /> Overview
-            </NavLink>
-            <NavLink
-              to="/teach/dashboard/trainer/progression"
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <Award className="h-5 w-5" /> Progression
-            </NavLink>
-            <NavLink
-              to="/teach/dashboard/trainer/enquiries"
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <MessageSquare className="h-5 w-5" /> Enquiries <span className="ml-auto bg-emerald-100 text-emerald-600 py-0.5 px-2 rounded-full text-xs">3</span>
-            </NavLink>
-            <NavLink 
-              to="/teach/dashboard/trainer/inbox" 
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <Mail className="h-5 w-5" /> Inbox
-            </NavLink>
-            <NavLink 
-              to="/teach/dashboard/trainer/calendar" 
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <Calendar className="h-5 w-5" /> Calendar
-            </NavLink>
-            <NavLink 
-              to="/teach/dashboard/trainer/profile" 
-              className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
-            >
-              <UserIcon className="h-5 w-5" /> Trainer Profile
-            </NavLink>
+            {[
+              { to: '/teach/dashboard/trainer/overview', icon: LayoutDashboard, label: 'Overview' },
+              { to: '/teach/dashboard/trainer/progression', icon: Award, label: 'Progression' },
+              { to: '/teach/dashboard/trainer/enquiries', icon: MessageSquare, label: 'Enquiries', badge: '3' },
+              { to: '/teach/dashboard/trainer/inbox', icon: Mail, label: 'Inbox' },
+              { to: '/teach/dashboard/trainer/calendar', icon: Calendar, label: 'Calendar' },
+              { to: '/teach/dashboard/trainer/profile', icon: UserIcon, label: 'Trainer Profile' },
+            ].map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `relative flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive ? 'text-emerald-700' : 'text-gray-700 hover:bg-gray-50'}`}
+              >
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.div
+                        layoutId="trainerNavPill"
+                        className="absolute inset-0 bg-emerald-50 rounded-lg"
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <item.icon className="relative h-5 w-5" />
+                    <span className="relative">{item.label}</span>
+                    {item.badge && (
+                      <span className="relative ml-auto bg-emerald-100 text-emerald-600 py-0.5 px-2 rounded-full text-xs">{item.badge}</span>
+                    )}
+                  </>
+                )}
+              </NavLink>
+            ))}
           </nav>
         </div>
 
@@ -271,8 +266,19 @@ export function TrainerDashboard() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-          <h1 className="text-xl font-bold text-gray-900">{getPageTitle()}</h1>
-          
+          <AnimatePresence mode="wait">
+            <motion.h1
+              key={getPageTitle()}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.2 }}
+              className="text-xl font-bold text-gray-900"
+            >
+              {getPageTitle()}
+            </motion.h1>
+          </AnimatePresence>
+
           <div className="flex items-center gap-6">
             <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border transition-all ${isLive ? 'bg-emerald-50 border-emerald-100' : 'bg-white border-gray-200 focus-within:border-emerald-500'}`}>
                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Booth Title:</span>

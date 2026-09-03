@@ -57,6 +57,7 @@ export interface JobListing {
   applicantsCount: number;
   featured?: boolean;
   hiringManagerVerified?: boolean;
+  sourceUrl?: string; // Link back to the original posting (e.g. LinkedIn), if any
 }
 
 export interface ExamQuestion {

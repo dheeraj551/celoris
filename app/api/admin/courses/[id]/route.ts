@@ -1,5 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-client'
+import { createRouteClient } from '@/lib/supabase-server'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
+
+// Verifies the caller is actually logged in as the admin before we touch
+// anything with the service role key (which bypasses RLS entirely).
+// NOTE: previously this used the plain browser client here, which has no
+// request cookies to read a session from — auth.getUser() always came back
+// null, so this check silently failed every request. createRouteClient()
+// is the cookie-aware client and actually sees the caller's session.
+async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    const authClient = (await createRouteClient()) as any
+    const { data: { user } } = await authClient.auth.getUser()
+    if (!user || user.email !== 'support@celorisdesigns.com') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    return null
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+}
 
 // GET - Get single course with modules and topics
 export async function GET(
@@ -7,14 +27,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const authError = await requireAdmin()
+    if (authError) return authError
 
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const supabase = createSupabaseClientForServer() as any
     const { id } = await params
 
     // Get course with modules and topics
@@ -61,18 +77,14 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const authError = await requireAdmin()
+    if (authError) return authError
 
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const supabase = createSupabaseClientForServer() as any
     const { id } = await params
     const body = await request.json()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('courses')
       .update({
         ...body,
@@ -100,14 +112,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const authError = await requireAdmin()
+    if (authError) return authError
 
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const supabase = createSupabaseClientForServer() as any
     const { id } = await params
 
     const { error } = await supabase

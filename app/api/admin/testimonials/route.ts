@@ -3,11 +3,29 @@
 // ===========================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-client';
+import { createSupabaseClientForServer } from '@/lib/supabase-client';
+import { createRouteClient } from '@/lib/supabase-server';
+
+// These write straight to the DB with the service role key (which bypasses
+// row level security), so this check is what actually keeps random visitors
+// from editing/deleting testimonials — verify the caller is really the admin
+// before doing anything destructive.
+async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    const authClient = (await createRouteClient()) as any;
+    const { data: { user } } = await authClient.auth.getUser();
+    if (!user || user.email !== 'support@celorisdesigns.com') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    return null;
+  } catch {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = (createClient() as any)
+    const supabase = (createSupabaseClientForServer() as any)
     const { searchParams } = new URL(request.url)
 
     const type = searchParams.get('type')
@@ -59,7 +77,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = (createClient() as any)
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
+    const supabase = (createSupabaseClientForServer() as any)
     const body = await request.json()
 
     const {
@@ -158,7 +179,10 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = (createClient() as any)
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
+    const supabase = (createSupabaseClientForServer() as any)
     const body = await request.json()
 
     const {
@@ -237,7 +261,10 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = (createClient() as any)
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
+    const supabase = (createSupabaseClientForServer() as any)
     const { searchParams } = new URL(request.url)
 
     const id = searchParams.get('id')

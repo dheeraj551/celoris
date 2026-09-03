@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-client'
+import { createRouteClient } from '@/lib/supabase-server'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
+
+// See app/api/admin/courses/[id]/route.ts for why this uses the cookie-aware
+// route client instead of the plain browser client for the auth check.
+async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    const authClient = (await createRouteClient()) as any
+    const { data: { user } } = await authClient.auth.getUser()
+    if (!user || user.email !== 'support@celorisdesigns.com') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    return null
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+}
 
 // GET - List modules for a course
 export async function GET(
@@ -7,14 +23,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const authError = await requireAdmin()
+    if (authError) return authError
 
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const supabase = createSupabaseClientForServer() as any
     const { id } = await params;
 
     const { data, error } = await supabase
@@ -49,14 +61,10 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const authError = await requireAdmin()
+    if (authError) return authError
 
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const supabase = createSupabaseClientForServer() as any
     const { id } = await params;
     const body = await request.json()
 

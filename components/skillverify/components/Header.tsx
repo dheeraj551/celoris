@@ -16,6 +16,7 @@ import {
   Settings,
   Plus,
   LogOut,
+  UserRound,
 } from 'lucide-react';
 import { UserProfile, UserTierLevel } from '../types';
 import { LEVEL_TIERS } from '../data/mockData';
@@ -24,8 +25,8 @@ import { useAuth } from '@/components/providers/AuthProvider';
 
 interface HeaderProps {
   user: UserProfile;
-  activeView: 'jobs' | 'progression' | 'exams';
-  setActiveView: (view: 'jobs' | 'progression' | 'exams') => void;
+  activeView: 'jobs' | 'progression' | 'exams' | 'profile';
+  setActiveView: (view: 'jobs' | 'progression' | 'exams' | 'profile') => void;
   onOpenAlerts: () => void;
   unreadAlertsCount: number;
   onStartTour: () => void;
@@ -155,6 +156,22 @@ export const Header: React.FC<HeaderProps> = ({
                     {user.verifiedBadges.length}
                   </span>
                 )}
+              </button>
+
+              <button
+                id="nav-profile"
+                onClick={() => {
+                  soundFx.playClick();
+                  setActiveView('profile');
+                }}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  activeView === 'profile'
+                    ? 'bg-white text-emerald-700 shadow-xs border border-slate-200 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <UserRound className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="hidden sm:inline">Profile</span>
               </button>
             </nav>
           </div>

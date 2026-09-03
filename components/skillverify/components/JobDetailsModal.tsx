@@ -12,7 +12,8 @@ import {
   Clock, 
   Users, 
   Award,
-  Loader2
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 import { JobListing, UserProfile, UserTierLevel } from '../types';
 import { LEVEL_TIERS } from '../data/mockData';
@@ -311,6 +312,18 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
             >
               Close
             </button>
+
+            {job.sourceUrl && (
+              <a
+                href={job.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition-all"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Apply on LinkedIn</span>
+              </a>
+            )}
 
             {isApplied ? (
               <div className="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1.5">

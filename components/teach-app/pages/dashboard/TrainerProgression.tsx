@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Award,
   ShieldCheck,
@@ -11,6 +12,18 @@ import {
 } from 'lucide-react';
 import { TrainerTierLevel } from '../../types';
 import { TRAINER_LEVEL_TIERS, INITIAL_TRAINER_PROGRESS } from '../../data/trainerProgressionData';
+
+const MotionLink = motion.create(Link);
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
 
 export function TrainerProgression() {
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
@@ -39,7 +52,12 @@ export function TrainerProgression() {
   return (
     <div className="p-8 space-y-6">
       {/* TOP PROGRESSION SUMMARY HERO */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-800/30 shadow-lg text-white space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-800/30 shadow-lg text-white space-y-6"
+      >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 w-fit">
@@ -55,20 +73,25 @@ export function TrainerProgression() {
           </div>
 
           {/* Quick Metrics Capsule Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+            className="grid grid-cols-2 sm:grid-cols-3 gap-3"
+          >
+            <motion.div variants={fadeUpItem} className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center">
               <span className="text-[11px] text-slate-400 font-medium block">Total XP</span>
               <span className="text-lg font-extrabold text-emerald-400 font-mono">{progress.currentXP}</span>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center">
+            </motion.div>
+            <motion.div variants={fadeUpItem} className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center">
               <span className="text-[11px] text-slate-400 font-medium block">Sessions Hosted</span>
               <span className="text-lg font-extrabold text-emerald-400 font-mono">{progress.sessionsHosted}</span>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center col-span-2 sm:col-span-1">
+            </motion.div>
+            <motion.div variants={fadeUpItem} className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center col-span-2 sm:col-span-1">
               <span className="text-[11px] text-slate-400 font-medium block">Trainer Rating</span>
               <span className="text-lg font-extrabold text-emerald-300 font-mono">{progress.trainerRating.toFixed(1)} / 5</span>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* XP Progress Bar to Next Level */}
@@ -86,9 +109,11 @@ export function TrainerProgression() {
           </div>
 
           <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-emerald-900/40">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full transition-all duration-700"
-              style={{ width: `${progressPercent}%` }}
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercent}%` }}
+              transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+              className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full"
             />
           </div>
 
@@ -99,21 +124,32 @@ export function TrainerProgression() {
         </div>
 
         {/* How to Earn XP Action Prompts */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-          <Link
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2"
+        >
+          <MotionLink
+            variants={fadeUpItem}
+            whileHover={{ y: -3, scale: 1.01 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             to="/teach/dashboard/trainer/profile"
-            className="p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-left transition-all group block"
+            className="p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-left transition-colors group block"
           >
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-white group-hover:text-emerald-400">Verify Your Profile</span>
               <span className="text-xs font-mono font-bold text-emerald-400">+300 XP</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">Complete verification & unlock a certified trainer badge.</p>
-          </Link>
+          </MotionLink>
 
-          <Link
+          <MotionLink
+            variants={fadeUpItem}
+            whileHover={{ y: -3, scale: 1.01 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             to="/teach/dashboard/trainer/overview"
-            className="p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-left transition-all group block"
+            className="p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-left transition-colors group block"
           >
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-white group-hover:text-emerald-400 flex items-center gap-1.5">
@@ -122,20 +158,26 @@ export function TrainerProgression() {
               <span className="text-xs font-mono font-bold text-emerald-400">+100 XP</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">Go live from your dashboard and connect with students.</p>
-          </Link>
+          </MotionLink>
 
-          <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 text-left">
+          <motion.div variants={fadeUpItem} className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 text-left">
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-white">5-Star Student Reviews</span>
               <span className="text-xs font-mono font-bold text-emerald-400">+50 XP</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">Earned automatically whenever a student rates you 5 stars.</p>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
       {/* VERIFIED TRAINER BADGES */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.5 }}
+        className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4"
+      >
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="space-y-0.5">
             <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -164,10 +206,19 @@ export function TrainerProgression() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2"
+          >
             {progress.badges.map((badge) => (
-              <div
+              <motion.div
                 key={badge.id}
+                variants={fadeUpItem}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 22 }}
                 className="p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs space-y-3 relative overflow-hidden"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -219,14 +270,20 @@ export function TrainerProgression() {
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Boosts Directory Ranking
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* FACULTY TIER ROADMAP */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.5 }}
+        className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4"
+      >
         <div className="space-y-0.5">
           <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-emerald-600" />
@@ -237,16 +294,23 @@ export function TrainerProgression() {
           </p>
         </div>
 
-        <div className="space-y-3 pt-2">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={staggerContainer}
+          className="space-y-3 pt-2"
+        >
           {([1, 2, 3, 4, 5] as TrainerTierLevel[]).map((lvl) => {
             const info = TRAINER_LEVEL_TIERS[lvl];
             const isCurrent = progress.level === lvl;
             const isUnlocked = progress.level >= lvl;
 
             return (
-              <div
+              <motion.div
                 key={lvl}
-                className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                variants={{ hidden: { opacity: 0, x: -16 }, visible: { opacity: 1, x: 0, transition: { duration: 0.4 } } }}
+                className={`p-4 rounded-xl border transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                   isCurrent
                     ? 'bg-emerald-50/60 border-emerald-500 shadow-xs'
                     : isUnlocked
@@ -265,9 +329,14 @@ export function TrainerProgression() {
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-sm text-slate-900">{info.name}</h3>
                       {isCurrent && (
-                        <span className="px-2 py-0.2 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}
+                          className="px-2 py-0.2 rounded-full bg-emerald-600 text-white text-[10px] font-bold"
+                        >
                           Current Level
-                        </span>
+                        </motion.span>
                       )}
                     </div>
                     <p className="text-xs text-slate-500">{info.desc}</p>
@@ -289,11 +358,11 @@ export function TrainerProgression() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

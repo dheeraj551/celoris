@@ -11,7 +11,8 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { JobListing, JobTier, UserProfile } from '../types';
 import { AnimatedTooltip } from './AnimatedTooltip';
@@ -39,7 +40,7 @@ export const JobPortal: React.FC<JobPortalProps> = ({
   const [minSalary, setMinSalary] = useState<number>(0);
   const [unlockedOnly, setUnlockedOnly] = useState<boolean>(false);
 
-  const industries = ['All', 'AI / Machine Learning', 'Cloud & Infrastructure', 'FinTech', 'Cybersecurity', 'HealthTech', 'SaaS / Web Platforms'];
+  const industries = ['All', 'AI / Machine Learning', 'Cloud & Infrastructure', 'FinTech', 'Cybersecurity', 'HealthTech', 'SaaS / Web Platforms', 'Creative & Marketing'];
 
   // Match calculation for a job based on user skills
   const calculateMatchScore = (job: JobListing) => {
@@ -338,6 +339,18 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                   )}
 
                   <div className="flex items-center gap-2">
+                    {job.sourceUrl && (
+                      <a
+                        href={job.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-all flex items-center gap-1"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Apply on LinkedIn</span>
+                      </a>
+                    )}
                     {isApplied ? (
                       <span className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-semibold flex items-center gap-1 border border-emerald-200">
                         <CheckCircle2 className="w-3.5 h-3.5" />
