@@ -106,7 +106,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Merge data (profiles takes precedence for shared fields like full_name)
             if (userData || profileData) {
                 const mergedProfile = { ...userData, ...profileData }
-                
+
+                // wallet_balance must always come from the canonical `users` table
+                // (the same source the admin panel reads). A stray/legacy row in
+                // `profiles` — e.g. from an old tutor-signup flow — can carry its
+                // own stale wallet_balance (often 0), which would otherwise
+                // silently clobber the user's real balance above.
+                if (userData && userData.wallet_balance !== undefined && userData.wallet_balance !== null) {
+                    mergedProfile.wallet_balance = userData.wallet_balance
+                }
+
                 if (mergedProfile.profile_pic_url || mergedProfile.avatar_url) {
                     const picPath = mergedProfile.profile_pic_url || mergedProfile.avatar_url
                     if (picPath && !picPath.startsWith('http')) {
