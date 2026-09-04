@@ -63,6 +63,7 @@ export default function Header() {
     pathname?.startsWith("/marketing") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
+    pathname?.startsWith("/celoris-tv") ||
     pathname === "/login" ||
     pathname === "/register";
 
