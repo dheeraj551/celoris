@@ -23,7 +23,8 @@ import {
     Share2,
     X,
     Brain,
-    Briefcase
+    Briefcase,
+    Tv
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -133,6 +134,19 @@ export function Sidebar({ className }: { className?: string }) {
                 >
                     <BookOpen className={cn("w-4 h-4", pathname.startsWith('/learn') ? "text-emerald-500" : "text-slate-500 group-hover:text-emerald-500")} />
                     <span className="text-sm font-bold uppercase tracking-tight">LEARN</span>
+                </Link>
+
+                <Link
+                    href="/celoris-tv"
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
+                        pathname.startsWith('/celoris-tv')
+                            ? "bg-red-500/10 text-red-400 font-bold"
+                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    )}
+                >
+                    <Tv className={cn("w-4 h-4", pathname.startsWith('/celoris-tv') ? "text-red-500" : "text-slate-500 group-hover:text-red-500")} />
+                    <span className="text-sm font-bold uppercase tracking-tight">Celoris TV</span>
                 </Link>
 
                 <Link
