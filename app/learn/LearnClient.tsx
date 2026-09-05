@@ -439,11 +439,6 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
             Free classes with real trainers. Learn video editing, AI tools, Excel, spoken English and more. First session free — no credit card needed.
           </motion.p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-[#0d1321] hover:bg-white/5 border border-white/10 text-white rounded-2xl px-10 h-14 font-bold text-sm shadow-xl" asChild>
-              <Link href="/learn/courses" className="flex items-center gap-2">
-                Explore Academy <ArrowRight size={16} />
-              </Link>
-            </Button>
             <PostLearningNeedModal />
           </div>
         </div>

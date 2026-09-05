@@ -242,7 +242,7 @@ export const Courses: React.FC<any> = ({
             });
 
             // Ensure priority courses are at the top (unshifting in reverse order for final priority)
-            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static', 'capcut-pro-viral-reels-static', 'ai-tools-content-creation-static', 'low-poly-3d-modeling-blender-static', 'python-trading-automation-static', 'adobe-photoshop-with-ai-static', 'e7698318-7f57-421f-866e-0101ee239c01', '48713643-694c-491f-86d6-5b6e713c1cf3', '879e499f-5517-413a-bd6a-76e2911b8331'].forEach(targetId => {
+            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static', 'capcut-pro-viral-reels-static', 'ai-tools-content-creation-static', 'low-poly-3d-modeling-blender-static', 'python-trading-automation-static', 'adobe-photoshop-with-ai-static', 'e7698318-7f57-421f-866e-0101ee239c01', '48713643-694c-491f-86d6-5b6e713c1cf3', '879e499f-5517-413a-bd6a-76e2911b8331', 'f00459e9-20a0-4866-ba05-79aa574f7dff'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);

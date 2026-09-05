@@ -67,7 +67,8 @@ export default function CourseDetailPage() {
       '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
       'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery',
       '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp',
-      '879e499f-5517-413a-bd6a-76e2911b8331': '/learn/course/ai-web-development'
+      '879e499f-5517-413a-bd6a-76e2911b8331': '/learn/course/ai-web-development',
+      'f00459e9-20a0-4866-ba05-79aa574f7dff': '/learn/course/master-copilot-excel'
     };
 
     if (id && staticRedirects[id]) {
@@ -94,6 +95,9 @@ export default function CourseDetailPage() {
       }
       if (id === 'ai-web-development') {
         targetId = '879e499f-5517-413a-bd6a-76e2911b8331'
+      }
+      if (id === 'master-copilot-excel') {
+        targetId = 'f00459e9-20a0-4866-ba05-79aa574f7dff'
       }
 
       const { data, error } = await supabase
@@ -210,10 +214,70 @@ export default function CourseDetailPage() {
         }
       ];
     }
+    if (title.includes("copilot")) {
+      return [
+        {
+          question: "Do I need a Copilot license to take this course?",
+          answer: "You need a Microsoft 365 Copilot license to follow along inside Excel itself, but every lesson is also taught with recordings and screenshots, so you can learn the concepts even before you have access."
+        },
+        {
+          question: "I've never used Excel formulas before. Is this too advanced for me?",
+          answer: "No — the course starts from the basics of structuring a spreadsheet and builds up gradually. Basic familiarity with cells and simple formulas is enough to start."
+        },
+        {
+          question: "What's the difference between Plan mode and Agent Mode?",
+          answer: "Plan mode outlines the steps for a single task and waits for your approval before making changes. Agent Mode goes further — it can plan and execute a multi-step workflow on its own, with checkpoints for you to review. Both are covered in depth in this course."
+        },
+        {
+          question: "Will this teach me to blindly trust whatever Copilot generates?",
+          answer: "The opposite — a full module is dedicated to verifying and trusting Copilot's output, including spot-checking formulas and being mindful of what data you share with it."
+        },
+        {
+          question: "Is there a certificate?",
+          answer: "Yes, a Celoris certificate of completion is provided at the end, along with a capstone project you can show as a work sample."
+        }
+      ];
+    }
     return [];
   };
 
+  const webDevTestimonials = [
+    { name: "Rohit Malhotra", time: "2 weeks ago", stars: 5, text: "Genuinely one of the better web dev courses I've taken. The way they've woven in AI tools like Copilot and ChatGPT for debugging and speeding up coding was a game changer. Went from zero to building a full portfolio site in about 6 weeks." },
+    { name: "Priya Sharma", time: "1 month ago", stars: 4, text: "Solid course overall. HTML/CSS/JS fundamentals were taught really well and the trainer was patient with beginners like me. Only wish there was a bit more depth on backend/database stuff — felt slightly rushed in the last few sessions." },
+    { name: "Amit Verma", time: "3 weeks ago", stars: 3, text: "Decent content but the pacing was uneven. Some weeks felt too slow (basic HTML tags) and then suddenly we jumped into AI-assisted workflows without much warm-up. Trainer was knowledgeable though, always answered doubts on time." },
+    { name: "Neha Kapoor", time: "5 days ago", stars: 5, text: "Loved this! I run a small boutique business and wanted to build my own site instead of paying a developer. This course gave me exactly that confidence. Using AI tools alongside actual coding basics made it so much easier to understand what's happening under the hood." },
+    { name: "Sahil Chaudhary", time: "2 months ago", stars: 4, text: "Good ROI for the price. Projects were practical and portfolio-ready. Would've liked more live coding sessions vs recorded content, but the trainer support on WhatsApp made up for it." },
+    { name: "Karan Singh", time: "1 month ago", stars: 2, text: "Content is fine but I expected more structured mentorship. Felt like a lot of self-paced learning with occasional check-ins. If you're a complete beginner, be ready to put in extra hours outside class to actually keep up." },
+    { name: "Ananya Gupta", time: "3 days ago", stars: 5, text: "Best decision I made this year. Switched careers from marketing to web dev and this course's AI-integrated approach made coding feel way less intimidating. Trainer explained concepts with real examples, not just theory." },
+    { name: "Vikas Yadav", time: "6 weeks ago", stars: 4, text: "Pretty comprehensive — covered HTML, CSS, JS basics and then how to use AI tools to build faster. Support team was responsive when I had scheduling issues. Docking one star only because the certificate design/branding felt a bit basic." },
+    { name: "Ritika Bansal", time: "2 weeks ago", stars: 3, text: "It's a good starting point if you're new to web dev, but if you already know some HTML/CSS, you might find the first couple of weeks a bit repetitive. The AI tools segment was the most valuable part for me." },
+    { name: "Deepak Rana", time: "4 days ago", stars: 5, text: "Honestly didn't expect this much value for the price. The trainer clearly knows both coding and how to actually use AI tools in a real workflow, not just buzzwords. Built 3 projects by the end, which helped me land freelance gigs already." },
+  ];
+
+  const copilotTestimonials = [
+    { name: "Priya Ramanathan", time: "1 week ago", stars: 5, text: "I've used Excel for years but never touched Copilot until this course. The module on prompt-writing best practices alone was worth it — I went from vague one-line prompts to getting exactly what I wanted on the first try. The capstone project tied everything together nicely." },
+    { name: "Rohan Deshmukh", time: "3 weeks ago", stars: 3, text: "Solid course overall, but Module 6 on Agent Mode felt rushed compared to everything else. I had to rewatch it twice and still felt a little unsure setting checkpoints. Would love a longer walkthrough with a messier real-world example." },
+    { name: "Sneha Iyer", time: "2 weeks ago", stars: 5, text: "I kept confusing Plan mode and Agent mode before taking this course. The side-by-side comparison in Module 5 made it click immediately. Also appreciated the honesty about verifying Copilot's output instead of just trusting it blindly." },
+    { name: "Arjun Malhotra", time: "1 month ago", stars: 2, text: "The course itself is well structured, but Copilot's UI changed twice while I was going through it and some screenshots/references no longer matched what I saw in my own Excel. Not really the instructor's fault since Microsoft updates constantly, but frustrating as a learner." },
+    { name: "Ananya Krishnan", time: "4 days ago", stars: 4, text: "If you already know basic Excel, this is a great next step. The data-cleaning prompts in Module 2 saved me real time this week at work. Docked one star because I wish there were more practice files — some exercises reused the same dataset." },
+    { name: "Vikram Nair", time: "5 weeks ago", stars: 5, text: "A lot of Excel courses are just \"watch me click buttons.\" This one made me actually do the work with a messy dataset at the end, which is where the real learning happened. Highly recommend for anyone who learns by doing." },
+    { name: "Kavya Reddy", time: "2 months ago", stars: 3, text: "Wish this had been clearer upfront about licensing costs before diving into features I couldn't actually try without paying more for a Copilot add-on. The content itself is fine, just wasn't fully prepared for that." },
+    { name: "Aditya Chatterjee", time: "6 days ago", stars: 4, text: "Module 3 on natural-language formulas was excellent — I finally stopped Googling XLOOKUP syntax every time. Minor gripe: the debugging section could use one more example with a genuinely broken formula." },
+    { name: "Meera Pillai", time: "3 days ago", stars: 2, text: "I wanted more time actually watching prompts being typed and results appearing in real time. Some lessons explain concepts well but don't show enough live examples inside the spreadsheet itself." },
+    { name: "Karan Bhatia", time: "1 week ago", stars: 5, text: "I run reports every week for my team and this course cut my prep time nearly in half. The PivotTable and charting prompts in Module 4 alone paid for the course. Well organized from start to finish." },
+  ];
+
+  const getTestimonialsForCourse = (courseTitle: string) => {
+    const title = courseTitle.toLowerCase();
+    if (title.includes("copilot")) {
+      return copilotTestimonials;
+    }
+    // Preserves existing behavior for every other course (unchanged from before).
+    return webDevTestimonials;
+  };
+
   const faqs = course ? getFaqsForCourse(course.title) : [];
+  const testimonials = course ? getTestimonialsForCourse(course.title) : [];
 
   const whatYouWillLearn = course?.learning_outcomes && course.learning_outcomes.length > 0
     ? course.learning_outcomes
@@ -488,29 +552,7 @@ export default function CourseDetailPage() {
                   }
                 `}</style>
                 <div className="testimonial-marquee flex flex-row gap-4" style={{ width: 'max-content' }}>
-                  {[
-                    { name: "Rohit Malhotra", time: "2 weeks ago", stars: 5, text: "Genuinely one of the better web dev courses I've taken. The way they've woven in AI tools like Copilot and ChatGPT for debugging and speeding up coding was a game changer. Went from zero to building a full portfolio site in about 6 weeks." },
-                    { name: "Priya Sharma", time: "1 month ago", stars: 4, text: "Solid course overall. HTML/CSS/JS fundamentals were taught really well and the trainer was patient with beginners like me. Only wish there was a bit more depth on backend/database stuff — felt slightly rushed in the last few sessions." },
-                    { name: "Amit Verma", time: "3 weeks ago", stars: 3, text: "Decent content but the pacing was uneven. Some weeks felt too slow (basic HTML tags) and then suddenly we jumped into AI-assisted workflows without much warm-up. Trainer was knowledgeable though, always answered doubts on time." },
-                    { name: "Neha Kapoor", time: "5 days ago", stars: 5, text: "Loved this! I run a small boutique business and wanted to build my own site instead of paying a developer. This course gave me exactly that confidence. Using AI tools alongside actual coding basics made it so much easier to understand what's happening under the hood." },
-                    { name: "Sahil Chaudhary", time: "2 months ago", stars: 4, text: "Good ROI for the price. Projects were practical and portfolio-ready. Would've liked more live coding sessions vs recorded content, but the trainer support on WhatsApp made up for it." },
-                    { name: "Karan Singh", time: "1 month ago", stars: 2, text: "Content is fine but I expected more structured mentorship. Felt like a lot of self-paced learning with occasional check-ins. If you're a complete beginner, be ready to put in extra hours outside class to actually keep up." },
-                    { name: "Ananya Gupta", time: "3 days ago", stars: 5, text: "Best decision I made this year. Switched careers from marketing to web dev and this course's AI-integrated approach made coding feel way less intimidating. Trainer explained concepts with real examples, not just theory." },
-                    { name: "Vikas Yadav", time: "6 weeks ago", stars: 4, text: "Pretty comprehensive — covered HTML, CSS, JS basics and then how to use AI tools to build faster. Support team was responsive when I had scheduling issues. Docking one star only because the certificate design/branding felt a bit basic." },
-                    { name: "Ritika Bansal", time: "2 weeks ago", stars: 3, text: "It's a good starting point if you're new to web dev, but if you already know some HTML/CSS, you might find the first couple of weeks a bit repetitive. The AI tools segment was the most valuable part for me." },
-                    { name: "Deepak Rana", time: "4 days ago", stars: 5, text: "Honestly didn't expect this much value for the price. The trainer clearly knows both coding and how to actually use AI tools in a real workflow, not just buzzwords. Built 3 projects by the end, which helped me land freelance gigs already." },
-                    // duplicate for seamless loop
-                    { name: "Rohit Malhotra", time: "2 weeks ago", stars: 5, text: "Genuinely one of the better web dev courses I've taken. The way they've woven in AI tools like Copilot and ChatGPT for debugging and speeding up coding was a game changer. Went from zero to building a full portfolio site in about 6 weeks." },
-                    { name: "Priya Sharma", time: "1 month ago", stars: 4, text: "Solid course overall. HTML/CSS/JS fundamentals were taught really well and the trainer was patient with beginners like me. Only wish there was a bit more depth on backend/database stuff — felt slightly rushed in the last few sessions." },
-                    { name: "Amit Verma", time: "3 weeks ago", stars: 3, text: "Decent content but the pacing was uneven. Some weeks felt too slow (basic HTML tags) and then suddenly we jumped into AI-assisted workflows without much warm-up. Trainer was knowledgeable though, always answered doubts on time." },
-                    { name: "Neha Kapoor", time: "5 days ago", stars: 5, text: "Loved this! I run a small boutique business and wanted to build my own site instead of paying a developer. This course gave me exactly that confidence. Using AI tools alongside actual coding basics made it so much easier to understand what's happening under the hood." },
-                    { name: "Sahil Chaudhary", time: "2 months ago", stars: 4, text: "Good ROI for the price. Projects were practical and portfolio-ready. Would've liked more live coding sessions vs recorded content, but the trainer support on WhatsApp made up for it." },
-                    { name: "Karan Singh", time: "1 month ago", stars: 2, text: "Content is fine but I expected more structured mentorship. Felt like a lot of self-paced learning with occasional check-ins. If you're a complete beginner, be ready to put in extra hours outside class to actually keep up." },
-                    { name: "Ananya Gupta", time: "3 days ago", stars: 5, text: "Best decision I made this year. Switched careers from marketing to web dev and this course's AI-integrated approach made coding feel way less intimidating. Trainer explained concepts with real examples, not just theory." },
-                    { name: "Vikas Yadav", time: "6 weeks ago", stars: 4, text: "Pretty comprehensive — covered HTML, CSS, JS basics and then how to use AI tools to build faster. Support team was responsive when I had scheduling issues. Docking one star only because the certificate design/branding felt a bit basic." },
-                    { name: "Ritika Bansal", time: "2 weeks ago", stars: 3, text: "It's a good starting point if you're new to web dev, but if you already know some HTML/CSS, you might find the first couple of weeks a bit repetitive. The AI tools segment was the most valuable part for me." },
-                    { name: "Deepak Rana", time: "4 days ago", stars: 5, text: "Honestly didn't expect this much value for the price. The trainer clearly knows both coding and how to actually use AI tools in a real workflow, not just buzzwords. Built 3 projects by the end, which helped me land freelance gigs already." },
-                  ].map((t, i) => (
+                  {[...testimonials, ...testimonials].map((t, i) => (
                     <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex-shrink-0" style={{ width: '320px' }}>
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
