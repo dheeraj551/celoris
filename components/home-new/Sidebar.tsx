@@ -39,7 +39,7 @@ import {
 
 const MENU_GROUPS = [
     {
-        title: "Creation",
+        title: "Creative Studio",
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
@@ -47,13 +47,14 @@ const MENU_GROUPS = [
         ]
     },
     {
-        title: "Marketing",
+        title: "AI Tools",
         items: [
+            { name: "Celo AI", icon: Brain, href: "/celo-ai" },
             { name: "Vibe Marketing", icon: Share2, href: "/marketing/social" },
         ]
     },
     {
-        title: "Management",
+        title: "Company",
         items: [
             { name: "About Us", icon: Info, href: "/about" },
             { name: "Contact us", icon: Mail, href: "/contact" },
@@ -105,8 +106,8 @@ export function Sidebar({ className }: { className?: string }) {
         return pathname.startsWith(href);
     };
 
-    const displayGroups = isNewbeeMode 
-        ? MENU_GROUPS.filter(g => g.title === "Creation") 
+    const displayGroups = isNewbeeMode
+        ? MENU_GROUPS.filter(g => g.title === "Creative Studio")
         : MENU_GROUPS;
 
     return (
@@ -176,19 +177,6 @@ export function Sidebar({ className }: { className?: string }) {
                 </Link>
 
                 <Link
-                    href="/celo-ai"
-                    className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
-                        pathname.startsWith('/celo-ai')
-                            ? "bg-purple-500/10 text-purple-400 font-bold"
-                            : "text-slate-400 hover:bg-white/5 hover:text-white"
-                    )}
-                >
-                    <Brain className={cn("w-4 h-4", pathname.startsWith('/celo-ai') ? "text-purple-500" : "text-slate-500 group-hover:text-purple-500")} />
-                    <span className="text-sm font-bold uppercase tracking-tight">CELO AI</span>
-                </Link>
-
-                <Link
                     href="/job-center"
                     className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
@@ -205,9 +193,11 @@ export function Sidebar({ className }: { className?: string }) {
             <div className="flex-1 px-3 py-4 mt-4 space-y-8">
                 {displayGroups.map((group, idx) => (
                     <div key={idx} className="space-y-1">
-                        <h3 className="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
-                            {group.title}
-                        </h3>
+                        {group.title && (
+                            <h3 className="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+                                {group.title}
+                            </h3>
+                        )}
                         {group.items.map((item, i) => (
                             <Link
                                 key={i}

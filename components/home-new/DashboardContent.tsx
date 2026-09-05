@@ -19,6 +19,7 @@ import {
     Coffee,
     Users,
     Briefcase,
+    Flame,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,98 @@ import { createClient } from "@/lib/supabase-client";
 import { VideoStudioFeature } from './VideoStudioFeature';
 import { ImageStudioFeature } from './ImageStudioFeature';
 import { Celoris3DFeature } from './Celoris3DFeature';
+
+// Pixel fireworks that burst around the hero heading, plus the user's own
+// pixel-art city image used as a skyline banner beneath it.
+const FIREWORKS: { left: string; top: string; colors: string[]; delay: number; size?: number }[] = [
+    { left: '4%', top: '-18%', colors: ['#fde047', '#fb923c'], delay: 0, size: 1.1 },
+    { left: '24%', top: '78%', colors: ['#f472b6', '#e879f9'], delay: 1.7, size: 0.85 },
+    { left: '50%', top: '-24%', colors: ['#34d399', '#22d3ee'], delay: 3.2, size: 1.2 },
+    { left: '76%', top: '72%', colors: ['#60a5fa', '#818cf8'], delay: 0.9, size: 0.9 },
+    { left: '96%', top: '-12%', colors: ['#fbbf24', '#fb7185'], delay: 2.4, size: 1 },
+];
+
+// A small glowing burst — a bright flash at the center, particles that
+// streak outward in alternating colors with a neon glow, then drift down
+// slightly and fade, like a proper firework rather than a plain dot ring.
+function PixelFirework({ left, top, colors, delay, size = 1 }: { left: string; top: string; colors: string[]; delay: number; size?: number }) {
+    const particles = 14;
+    const duration = 1.5;
+    const repeatDelay = 3.0;
+
+    return (
+        <div className="absolute" style={{ left, top }}>
+            {/* center flash */}
+            <motion.div
+                className="absolute rounded-full"
+                style={{
+                    width: 7 * size,
+                    height: 7 * size,
+                    left: -3.5 * size,
+                    top: -3.5 * size,
+                    backgroundColor: '#fff',
+                    boxShadow: `0 0 14px 5px ${colors[0]}`,
+                }}
+                animate={{ scale: [0, 2.4, 0], opacity: [0, 1, 0] }}
+                transition={{ duration: duration * 0.5, repeat: Infinity, repeatDelay: repeatDelay + duration * 0.5, delay, ease: 'easeOut' }}
+            />
+
+            {Array.from({ length: particles }).map((_, i) => {
+                const angle = (i / particles) * Math.PI * 2 + (i % 2 === 0 ? 0.12 : -0.12);
+                const dist = (15 + (i % 3) * 7) * size;
+                const color = colors[i % colors.length];
+                const particleSize = (i % 3 === 0 ? 3 : 2) * size;
+                return (
+                    <motion.span
+                        key={i}
+                        className="absolute rounded-full"
+                        style={{
+                            width: particleSize,
+                            height: particleSize,
+                            backgroundColor: color,
+                            boxShadow: `0 0 6px 1.5px ${color}`,
+                        }}
+                        animate={{
+                            x: [0, Math.cos(angle) * dist * 0.55, Math.cos(angle) * dist],
+                            y: [0, Math.sin(angle) * dist * 0.55, Math.sin(angle) * dist + 8 * size],
+                            opacity: [0, 1, 0],
+                            scale: [0.3, 1, 0.4],
+                        }}
+                        transition={{ duration, repeat: Infinity, repeatDelay, delay, ease: 'easeOut' }}
+                    />
+                );
+            })}
+        </div>
+    );
+}
+
+// Overlay of firework bursts positioned over the hero heading text.
+function HeadingFireworks() {
+    return (
+        <div className="absolute inset-0 pointer-events-none select-none z-20">
+            {FIREWORKS.map((fw, i) => (
+                <PixelFirework key={i} {...fw} />
+            ))}
+        </div>
+    );
+}
+
+// The user's own pixel-art city image, shown as a skyline banner between the
+// hero heading and the "Simple, Transparent & Honest" panel.
+function CityBanner() {
+    return (
+        <div className="relative w-full max-w-3xl mx-auto mt-6 h-[238px] overflow-hidden rounded-xl pointer-events-none select-none">
+            <img
+                src="/india2.png"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+                draggable={false}
+            />
+            {/* fade the skyline's bottom edge down into the panel below so there's no hard gap */}
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[#0a0a0a]" />
+        </div>
+    );
+}
 
 function OnlineTrainersMarquee() {
     const [trainers, setTrainers] = useState<any[]>([]);
@@ -110,43 +203,48 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
             <div className="text-center mb-16 pt-10 relative">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-[600px] h-[300px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
 
-                <motion.h1
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                        hidden: {},
-                        visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
-                    }}
-                    className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-6"
-                >
-                    {["India's", "Free", "Creative"].map((word, i) => (
+                <div className="relative inline-block">
+                    <HeadingFireworks />
+                    <motion.h1
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            hidden: {},
+                            visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
+                        }}
+                        className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-6"
+                    >
+                        {["India's", "Free", "Creative"].map((word, i) => (
+                            <motion.span
+                                key={i}
+                                variants={{
+                                    hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+                                    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
+                                }}
+                                className="inline-block mr-[0.22em]"
+                            >
+                                {word}
+                            </motion.span>
+                        ))}
                         <motion.span
-                            key={i}
                             variants={{
                                 hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
                                 visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
                             }}
-                            className="inline-block mr-[0.22em]"
+                            className="inline-block home-shimmer-text drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"
                         >
-                            {word}
+                            Studio
                         </motion.span>
-                    ))}
-                    <motion.span
-                        variants={{
-                            hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
-                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
-                        }}
-                        className="inline-block home-shimmer-text drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"
-                    >
-                        Studio
-                    </motion.span>
-                </motion.h1>
+                    </motion.h1>
+                </div>
+
+                <CityBanner />
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                    className="max-w-3xl mx-auto mt-8 relative"
+                    className="max-w-3xl mx-auto -mt-8 relative z-10"
                 >
                     <div className="home-rgb-border" style={{ '--rgb-radius': '1.5rem' } as React.CSSProperties}>
                         <div className="home-rgb-border-ring">
@@ -202,7 +300,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
 
                     <div className="relative z-10 p-8 md:p-12">
                         {/* Main Content Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-10 items-center">
                             {/* Left Content */}
                             <div className="flex flex-col gap-6">
                                 <div>
@@ -241,13 +339,25 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             <div className="relative h-[280px] md:h-[340px] hidden lg:block">
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.8 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        x: [0, -2, 2, -1.5, 1.5, -1, 1, 0],
+                                        y: [0, 1.5, -1.5, 2, -1, 1, -0.5, 0],
+                                        rotate: [0, -0.4, 0.4, -0.3, 0.3, -0.2, 0.2, 0],
+                                    }}
+                                    transition={{
+                                        opacity: { duration: 0.8 },
+                                        scale: { duration: 0.8 },
+                                        x: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        rotate: { duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                    }}
                                     className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 mix-blend-overlay z-10" />
                                     <img
-                                        src="/teach.jpg"
+                                        src="/master.png"
                                         alt="Learning platform"
                                         className="w-full h-full object-cover object-center"
                                     />
@@ -256,6 +366,31 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 </motion.div>
                             </div>
                         </div>
+
+                        {/* Upcoming Batch Notification — floating badge, kept inside this
+                            div's own bounds/rounded corners so it never crosses the card border */}
+                        <Link
+                            href="/learn/course/master-copilot-excel"
+                            className="absolute bottom-6 left-6 md:left-10 z-30 group/batch-badge"
+                        >
+                            <motion.div
+                                animate={{ y: [0, -6, 0] }}
+                                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                                className="relative flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 shadow-[0_4px_24px_rgba(245,158,11,0.5)] group-hover/batch-badge:shadow-[0_4px_32px_rgba(245,158,11,0.75)] transition-shadow"
+                            >
+                                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-4 w-4 bg-rose-500 items-center justify-center text-[8px] font-black text-white">!</span>
+                                </span>
+                                <div className="w-7 h-7 rounded-full bg-black/15 flex items-center justify-center flex-shrink-0">
+                                    <Flame className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="leading-tight">
+                                    <p className="text-[9px] font-black text-black/60 uppercase tracking-widest">New Batch Alert</p>
+                                    <p className="text-xs font-black text-black">Master Copilot in Excel — Starting Soon</p>
+                                </div>
+                            </motion.div>
+                        </Link>
                     </div>
                 </div>
                 </div>

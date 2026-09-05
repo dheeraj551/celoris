@@ -1,0 +1,6 @@
+{
+  "name": "Celoris TV",
+  "description": "A modern video streaming platform for teachers and students featuring dark mode, personalized study playlists, and interactive timestamped Q&A.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

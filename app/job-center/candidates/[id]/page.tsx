@@ -28,11 +28,16 @@ function LoadingSpinner() {
 // existing app/job-center/page.tsx catch-all, which force-redirects signed
 // out visitors to /login) so a candidate's profile stays visible whether or
 // not the viewer is signed in.
-export default function CandidateProfilePage({ params }: { params: { id: string } }) {
+export default function CandidateProfilePage({ params }: { params: Promise<{ id: string }> }) {
+    // Next.js 15 passes `params` to a client page as a Promise, not a plain
+    // object — it must be unwrapped with React.use() rather than accessed
+    // directly (accessing params.id synchronously logs a console error and
+    // will break in a future Next.js version).
+    const { id } = React.use(params)
     return (
         <DashboardShell hideTopBar>
             <div className="w-full">
-                <CandidateProfile id={params.id} />
+                <CandidateProfile id={id} />
             </div>
         </DashboardShell>
     )

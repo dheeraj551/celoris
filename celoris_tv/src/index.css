@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-natural-bg: #0D0F0D;
+  --color-natural-surface: #121512;
+  --color-natural-card: #171B17;
+  --color-natural-elevated: #1F241F;
+  --color-natural-hover: #262D26;
+  --color-natural-border: #2A322A;
+  --color-natural-border-subtle: #202620;
+  --color-natural-border-active: #3E493E;
+  --color-natural-primary: #7F9172;
+  --color-natural-primary-hover: #91A582;
+  --color-natural-primary-active: #6E7F62;
+  --color-natural-sage: #8DA07F;
+  --color-natural-sage-light: #A8B89C;
+  --color-natural-sand: #D2B48C;
+  --color-natural-terracotta: #C87D55;
+  --color-natural-text-main: #E0E5E0;
+  --color-natural-text-muted: #95A395;
+  --color-natural-text-dim: #5E6C5E;
+}
+
+@layer base {
+  body {
+    background-color: #0D0F0D;
+    color: #E0E5E0;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom aesthetic scrollbar for Natural Tones */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0D0F0D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A322A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7F9172;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2A322A;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #7F9172;
+}
