@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'excel-copilot-modes-2026',
+      title: "From Chaos to Control: How Microsoft Excel's New Copilot Modes Are Redefining Spreadsheet Productivity",
+      slug: 'excel-copilot-modes-2026',
+      excerpt: "Microsoft has rebuilt Copilot in Excel into three modes — Chat, Edit, and Plan — plus a fully autonomous Agent Mode. Here's what changed, the research behind why planning beats acting, and how to master it with the Celoris course.",
+      featured_image_url: "/Master Copilot in Microsoft Excel.png",
+      author_name: 'Celoris Team',
+      category: 'AI & Excel Tools',
+      reading_time: 8,
+      published_at: '2026-09-05T10:00:00Z',
+    },
+    {
       id: 'fish-audio-s2-1-pro-voice-ai',
       title: "Fish Audio S2.1 Pro: The Free TTS Model That's Changing the Voice AI Game",
       slug: 'fish-audio-s2-1-pro-voice-ai',
@@ -459,12 +470,20 @@ export default async function BlogPage({
   // Sort by date descending
   allPosts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
 
+  // Page 1 shows a large "featured" hero post plus a postsPerPage-sized grid
+  // beneath it (see BlogPostsGrid: posts[0] becomes the hero, the rest fill
+  // the grid), so it needs one extra post pulled in to avoid an empty slot.
   const totalPosts = allPosts.length;
-  const totalPages = Math.ceil(totalPosts / postsPerPage);
-  const paginatedPosts = allPosts.slice(
-    (currentPage - 1) * postsPerPage,
-    currentPage * postsPerPage
-  );
+  const firstPageCount = postsPerPage + 1;
+  const totalPages = totalPosts <= firstPageCount
+    ? 1
+    : 1 + Math.ceil((totalPosts - firstPageCount) / postsPerPage);
+  const paginatedPosts = currentPage <= 1
+    ? allPosts.slice(0, firstPageCount)
+    : allPosts.slice(
+        firstPageCount + (currentPage - 2) * postsPerPage,
+        firstPageCount + (currentPage - 1) * postsPerPage
+      );
 
   const breadcrumbLd = {
     "@context": "https://schema.org",

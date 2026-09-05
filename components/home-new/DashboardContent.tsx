@@ -20,6 +20,7 @@ import {
     Users,
     Briefcase,
     Flame,
+    Tv,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -391,6 +392,98 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 </div>
                             </motion.div>
                         </Link>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </motion.div>
+
+            {/* Celoris TV Promotion Banner Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="max-w-5xl mx-auto mb-10"
+            >
+                <div className="home-rgb-border" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
+                <div className="home-rgb-border-ring">
+                <div className="relative overflow-hidden bg-[#0a0a0a] shadow-[0_0_80px_rgba(239,68,68,0.08)]" style={{ borderRadius: 'calc(2rem - 2px)' }}>
+                    {/* Background glow effects */}
+                    <div className="absolute top-0 right-1/3 w-[500px] h-[300px] bg-red-500/8 rounded-full blur-[120px] pointer-events-none" />
+                    <div className="absolute bottom-0 left-1/4 w-[400px] h-[250px] bg-orange-500/6 rounded-full blur-[100px] pointer-events-none" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,rgba(239,68,68,0.04)_0%,transparent_60%)] pointer-events-none" />
+
+                    {/* Dot grid */}
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+                    <div className="relative z-10 p-8 md:p-12">
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
+                            {/* Left Content */}
+                            <div className="flex flex-col gap-6">
+                                <div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white leading-[1.1] tracking-tight mb-2">
+                                        Watch. Learn.
+                                    </h2>
+                                    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                                        Stay Ahead.
+                                    </h2>
+                                </div>
+
+                                <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                                    Celoris TV is your free streaming channel for tutorials, live classes, and creator stories — no subscriptions, no downloads. Just <span className="text-red-400 font-semibold">press play</span> and start watching.
+                                </p>
+
+                                {/* CTA Buttons */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <Link
+                                        href="/celoris-tv"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_30px_rgba(16,185,129,0.55)] group"
+                                    >
+                                        <PlayCircle className="w-4 h-4 text-black" />
+                                        Watch Celoris TV
+                                    </Link>
+                                    <Link
+                                        href="/celoris-tv"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 bg-white/4 text-white font-semibold text-sm hover:border-red-500/40 hover:bg-red-500/8 transition-all"
+                                    >
+                                        <Tv className="w-4 h-4 text-red-400" />
+                                        Browse Channels
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Right: Celoris TV feature image */}
+                            <div className="relative h-[280px] md:h-[340px] hidden lg:block">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        x: [0, -2, 2, -1.5, 1.5, -1, 1, 0],
+                                        y: [0, 1.5, -1.5, 2, -1, 1, -0.5, 0],
+                                        rotate: [0, -0.4, 0.4, -0.3, 0.3, -0.2, 0.2, 0],
+                                    }}
+                                    transition={{
+                                        opacity: { duration: 0.8 },
+                                        scale: { duration: 0.8 },
+                                        x: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        rotate: { duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                    }}
+                                    className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-red-500/20 to-orange-500/20 mix-blend-overlay z-10" />
+                                    <img
+                                        src="/Celoristv.png"
+                                        alt="Celoris TV"
+                                        className="w-full h-full object-cover object-center"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-[#0a0a0a]/20 to-transparent z-20" />
+                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#0a0a0a]/60 z-20" />
+                                </motion.div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 </div>
