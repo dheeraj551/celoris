@@ -121,11 +121,52 @@ interface Props {
   durationDisplay: string;
 }
 
+// Per-course batch/seat/trainer stats for the notice board widgets. Keyed by
+// course title so each course can carry its own (still hand-entered, not
+// live) numbers instead of every course showing the same demo figures.
+function getBatchStats(courseTitle: string) {
+  const title = (courseTitle || '').toLowerCase();
+
+  if (title.includes('copilot')) {
+    return {
+      batchLabel: 'Ending Soon',
+      batchDotClass: 'soon',
+      batchBadgeClass: 'soon',
+      batchBadgeText: 'ENDING SOON',
+      batchNumber: '#1',
+      seatsOpen: 0,
+      seatsTotal: 5,
+      seatsEnrolled: 5,
+      seatsBadgeText: 'FULLY BOOKED',
+      trainersCount: 3,
+      trainerInitials: ['RM', 'PS', 'AV'],
+      trainersExtra: 0,
+    };
+  }
+
+  // Default — preserves existing behavior for every other course.
+  return {
+    batchLabel: 'Running Now',
+    batchDotClass: 'live',
+    batchBadgeClass: 'live',
+    batchBadgeText: 'LIVE',
+    batchNumber: '#42',
+    seatsOpen: 3,
+    seatsTotal: 15,
+    seatsEnrolled: 12,
+    seatsBadgeText: 'FILLING FAST',
+    trainersCount: 13,
+    trainerInitials: ['RM', 'PS', 'AV', 'NK', 'SC'],
+    trainersExtra: 8,
+  };
+}
+
 export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
   const price = course?.price ? `₹${course.price.toLocaleString('en-IN')}` : 'Free';
   const now = new Date();
   const nextBatchDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const stats = getBatchStats(course?.title);
 
   return (
     <div className="mnb-wrap">
@@ -169,13 +210,13 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
         <div className="mnb-tape" />
         <div className="mnb-pin" style={{ background: '#4c9a6a' }} />
         <div className="mnb-label">Current Batch</div>
-        <h4>Running Now</h4>
+        <h4>{stats.batchLabel}</h4>
         <div className="mnb-row">
-          <span className="mnb-dot live" />
-          <span><strong>Batch #42</strong> · Weekends</span>
+          <span className={`mnb-dot ${stats.batchDotClass}`} />
+          <span><strong>Batch {stats.batchNumber}</strong> · Weekends</span>
         </div>
         <div className="mnb-row">
-          <span className="mnb-badge live">LIVE</span>
+          <span className={`mnb-badge ${stats.batchBadgeClass}`}>{stats.batchBadgeText}</span>
           <span style={{ fontSize: 11, opacity: 0.7 }}>Online &amp; Home</span>
         </div>
       </div>
@@ -185,14 +226,14 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
         <div className="mnb-tape" />
         <div className="mnb-pin" style={{ background: '#d64541' }} />
         <div className="mnb-label">Seats Available</div>
-        <h4>Only 3 Left!</h4>
+        <h4>{stats.seatsOpen > 0 ? `Only ${stats.seatsOpen} Left!` : 'Fully Booked'}</h4>
         <div className="mnb-seats">
-          {Array.from({ length: 12 }).map((_, i) => <div key={i} className="mnb-seat" />)}
-          {Array.from({ length: 3 }).map((_, i) => <div key={i} className="mnb-seat open" />)}
+          {Array.from({ length: stats.seatsEnrolled }).map((_, i) => <div key={`f-${i}`} className="mnb-seat" />)}
+          {Array.from({ length: stats.seatsOpen }).map((_, i) => <div key={`o-${i}`} className="mnb-seat open" />)}
         </div>
-        <div className="mnb-big">3<span style={{ fontSize: 12, opacity: 0.5 }}> / 15</span></div>
-        <div className="mnb-sub">12 enrolled · 3 open</div>
-        <span className="mnb-badge urgent" style={{ marginTop: 8, display: 'inline-flex' }}>FILLING FAST</span>
+        <div className="mnb-big">{stats.seatsOpen}<span style={{ fontSize: 12, opacity: 0.5 }}> / {stats.seatsTotal}</span></div>
+        <div className="mnb-sub">{stats.seatsEnrolled} enrolled · {stats.seatsOpen} open</div>
+        <span className="mnb-badge urgent" style={{ marginTop: 8, display: 'inline-flex' }}>{stats.seatsBadgeText}</span>
       </div>
 
       {/* Card 3 — Quick Info */}

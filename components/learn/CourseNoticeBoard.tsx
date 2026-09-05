@@ -206,6 +206,46 @@ const css = `
   .nb-strip-cta:hover { background: #f0a015; }
 `;
 
+// Per-course batch/seat/trainer stats for the notice board widgets. Keyed by
+// course title so each course can carry its own (still hand-entered, not
+// live) numbers instead of every course showing the same demo figures.
+function getBatchStats(courseTitle: string) {
+  const title = (courseTitle || '').toLowerCase();
+
+  if (title.includes('copilot')) {
+    return {
+      batchLabel: 'Ending Soon',
+      batchDotClass: 'soon',
+      batchBadgeClass: 'soon',
+      batchBadgeText: 'ENDING SOON',
+      batchNumber: '#1',
+      seatsOpen: 0,
+      seatsTotal: 5,
+      seatsEnrolled: 5,
+      seatsBadgeText: 'FULLY BOOKED',
+      trainersCount: 3,
+      trainerInitials: ['RM', 'PS', 'AV'],
+      trainersExtra: 0,
+    };
+  }
+
+  // Default — preserves existing behavior for every other course.
+  return {
+    batchLabel: 'Running Now',
+    batchDotClass: 'live',
+    batchBadgeClass: 'live',
+    batchBadgeText: 'LIVE',
+    batchNumber: '#42',
+    seatsOpen: 3,
+    seatsTotal: 15,
+    seatsEnrolled: 12,
+    seatsBadgeText: 'FILLING FAST',
+    trainersCount: 13,
+    trainerInitials: ['RM', 'PS', 'AV', 'NK', 'SC'],
+    trainersExtra: 8,
+  };
+}
+
 export function CourseNoticeBoard({ course }: { course: any }) {
   const title   = course?.title || 'AI-Powered Web Development';
   const price   = course?.price ? `₹${course.price.toLocaleString('en-IN')}` : 'Free';
@@ -217,6 +257,7 @@ export function CourseNoticeBoard({ course }: { course: any }) {
   const nextMonthFirst = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const regClose       = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 17);
   const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const stats = getBatchStats(course?.title);
 
   return (
     <div className="nb-wrap">
@@ -239,13 +280,13 @@ export function CourseNoticeBoard({ course }: { course: any }) {
           <div className="nb-tape" />
           <div className="nb-pin" style={{ background: '#4c9a6a' }} />
           <div className="nb-label">Current Batch</div>
-          <h3>Running Now</h3>
+          <h3>{stats.batchLabel}</h3>
           <div className="nb-row">
-            <span className="nb-dot live" />
-            <strong>Batch #42</strong>
+            <span className={`nb-dot ${stats.batchDotClass}`} />
+            <strong>Batch {stats.batchNumber}</strong>
           </div>
           <div className="nb-row">
-            <span className="nb-badge live">LIVE</span>
+            <span className={`nb-badge ${stats.batchBadgeClass}`}>{stats.batchBadgeText}</span>
             <span style={{ fontSize: 12 }}>Weekends · Online &amp; Home</span>
           </div>
           <div className="nb-row" style={{ marginBottom: 0, opacity: 0.65, fontSize: 12 }}>
@@ -260,12 +301,12 @@ export function CourseNoticeBoard({ course }: { course: any }) {
           <div className="nb-label">Seats</div>
           <h3>Available Slots</h3>
           <div className="nb-seats">
-            {Array.from({ length: 12 }).map((_, i) => <div key={i} className="nb-seat" />)}
-            {Array.from({ length: 3 }).map((_, i) => <div key={i} className="nb-seat open" />)}
+            {Array.from({ length: stats.seatsEnrolled }).map((_, i) => <div key={`f-${i}`} className="nb-seat" />)}
+            {Array.from({ length: stats.seatsOpen }).map((_, i) => <div key={`o-${i}`} className="nb-seat open" />)}
           </div>
-          <div className="nb-big">3<span style={{ fontSize: 14, opacity: 0.55 }}> / 15</span></div>
-          <div className="nb-sub">12 enrolled · 3 seats open</div>
-          <span className="nb-badge urgent" style={{ marginTop: 10, display: 'inline-flex' }}>FILLING FAST</span>
+          <div className="nb-big">{stats.seatsOpen}<span style={{ fontSize: 14, opacity: 0.55 }}> / {stats.seatsTotal}</span></div>
+          <div className="nb-sub">{stats.seatsEnrolled} enrolled · {stats.seatsOpen} seats open</div>
+          <span className="nb-badge urgent" style={{ marginTop: 10, display: 'inline-flex' }}>{stats.seatsBadgeText}</span>
         </div>
 
         {/* Card 3 – Upcoming Batch */}
@@ -292,12 +333,14 @@ export function CourseNoticeBoard({ course }: { course: any }) {
           <div className="nb-label">Faculty</div>
           <h3>Trainers &amp; Home Tutors</h3>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-            <span className="nb-big-num">13</span>
+            <span className="nb-big-num">{String(stats.trainersCount).padStart(2, '0')}</span>
             <span style={{ fontSize: 12, opacity: 0.65 }}>verified<br/>trainers</span>
           </div>
           <div className="nb-avatars">
-            {['RM','PS','AV','NK','SC'].map(i => <div key={i} className="nb-avatar">{i}</div>)}
-            <div className="nb-avatar" style={{ background: 'linear-gradient(135deg,#f5a623,#ef6a5f)', color: '#1c2340' }}>+8</div>
+            {stats.trainerInitials.map(i => <div key={i} className="nb-avatar">{i}</div>)}
+            {stats.trainersExtra > 0 && (
+              <div className="nb-avatar" style={{ background: 'linear-gradient(135deg,#f5a623,#ef6a5f)', color: '#1c2340' }}>+{stats.trainersExtra}</div>
+            )}
           </div>
           <div style={{ fontSize: 12, opacity: 0.65, marginTop: 6 }}>
             <strong>Home Tutors:</strong> Delhi / NCR · 7 available
@@ -308,9 +351,9 @@ export function CourseNoticeBoard({ course }: { course: any }) {
 
       {/* ── Bottom strip ─────────────────────────────────── */}
       <div className="nb-strip">
-        <div className="nb-stat"><div className="nb-n">12/15</div><div className="nb-t">Seats Filled</div></div>
-        <div className="nb-stat"><div className="nb-n">3</div><div className="nb-t">Seats Left</div></div>
-        <div className="nb-stat"><div className="nb-n">13</div><div className="nb-t">Trainers</div></div>
+        <div className="nb-stat"><div className="nb-n">{stats.seatsEnrolled}/{stats.seatsTotal}</div><div className="nb-t">Seats Filled</div></div>
+        <div className="nb-stat"><div className="nb-n">{stats.seatsOpen}</div><div className="nb-t">Seats Left</div></div>
+        <div className="nb-stat"><div className="nb-n">{String(stats.trainersCount).padStart(2, '0')}</div><div className="nb-t">Trainers</div></div>
         <div className="nb-stat"><div className="nb-n">2</div><div className="nb-t">Batches Active</div></div>
         <div className="nb-stat"><div className="nb-n">{price}</div><div className="nb-t">Course Fee</div></div>
         <div className="nb-stat"><div className="nb-n">{durationDisplay}</div><div className="nb-t">Duration</div></div>
@@ -319,7 +362,7 @@ export function CourseNoticeBoard({ course }: { course: any }) {
           className="nb-strip-cta"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          Only 3 Seats Left — Enroll Now →
+          {stats.seatsOpen > 0 ? `Only ${stats.seatsOpen} Seats Left — Enroll Now →` : 'Batch Full — Reserve Next Batch →'}
         </button>
       </div>
     </div>
