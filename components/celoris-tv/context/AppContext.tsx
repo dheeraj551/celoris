@@ -89,6 +89,8 @@ interface AppContextType {
   addNote: (data: { videoId: string; title: string; text: string; timestampSec: number }) => void;
   deleteNote: (noteId: string) => void;
   uploadTeacherVideo: (data: Partial<Video> & { youtubeLink: string }) => Promise<Video | null>;
+  updateTeacherVideo: (videoId: string, data: Partial<Video> & { youtubeLink?: string }) => Promise<Video | null>;
+  deleteTeacherVideo: (videoId: string) => Promise<boolean>;
   videosLoading: boolean;
   uploadError: string | null;
   updateWatchProgress: (videoId: string, ratio: number) => void;
@@ -926,6 +928,71 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // Edits one of the signed-in teacher's own published lectures. Same field
+  // shape as uploadTeacherVideo but PATCHes the existing row; the server only
+  // changes fields that were actually sent. Updates local state in place so
+  // the Teacher Studio list reflects the edit immediately without a reload.
+  const updateTeacherVideo = async (
+    videoId: string,
+    data: Partial<Video> & { youtubeLink?: string }
+  ): Promise<Video | null> => {
+    setUploadError(null);
+    try {
+      const res = await fetch(`/api/celoris-tv/videos/${videoId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: data.title,
+          description: data.description,
+          youtubeLink: data.youtubeLink,
+          subject: data.subject,
+          gradeLevel: data.gradeLevel,
+          difficulty: data.difficulty,
+          durationMinutes: data.duration ? data.duration / 60 : undefined,
+          tags: data.tags,
+          chapters: data.chapters,
+          resources: data.resources,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        setUploadError(json.error || 'Failed to update lecture');
+        return null;
+      }
+
+      const updatedVid: Video = json.video;
+      setVideos(prev => prev.map(v => (v.id === videoId ? updatedVid : v)));
+      return updatedVid;
+    } catch (err) {
+      console.error('Failed to update lecture:', err);
+      setUploadError('Failed to update lecture. Check your connection and try again.');
+      return null;
+    }
+  };
+
+  // Deletes one of the signed-in teacher's own published lectures. Removes it
+  // from local state immediately on success; the database cascades the
+  // delete to that lecture's Q&A threads and reactions.
+  const deleteTeacherVideo = async (videoId: string): Promise<boolean> => {
+    setUploadError(null);
+    try {
+      const res = await fetch(`/api/celoris-tv/videos/${videoId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        setUploadError(json.error || 'Failed to delete lecture');
+        return false;
+      }
+
+      setVideos(prev => prev.filter(v => v.id !== videoId));
+      return true;
+    } catch (err) {
+      console.error('Failed to delete lecture:', err);
+      setUploadError('Failed to delete lecture. Check your connection and try again.');
+      return false;
+    }
+  };
+
   const updateWatchProgress = (videoId: string, ratio: number) => {
     setCurrentUser(prev => {
       const currentRatio = prev.watchProgress[videoId] ?? 0;
@@ -1026,6 +1093,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addNote,
         deleteNote,
         uploadTeacherVideo,
+        updateTeacherVideo,
+        deleteTeacherVideo,
         videosLoading,
         uploadError,
         updateWatchProgress,

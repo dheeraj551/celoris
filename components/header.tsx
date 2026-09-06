@@ -23,7 +23,7 @@ import { useEffect } from "react"
 
 const publicNavigation = [
   { name: "Learn", href: "/learn" },
-  { name: "Earn", href: "/earn" },
+  { name: "Job Center", href: "/job-center" },
   { name: "Play", href: "/social" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
@@ -31,7 +31,7 @@ const publicNavigation = [
 
 const authenticatedNavigation = [
   { name: "Learn", href: "/learn" },
-  { name: "Earn", href: "/earn" },
+  { name: "Job Center", href: "/job-center" },
   { name: "Play", href: "/social" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
@@ -63,7 +63,6 @@ export default function Header() {
     pathname?.startsWith("/marketing") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
-    pathname?.startsWith("/celoris-tv") ||
     pathname === "/login" ||
     pathname === "/register";
 

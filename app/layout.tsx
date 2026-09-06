@@ -11,6 +11,7 @@ import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
 import { GlobalAd } from "@/components/GlobalAd"
 import { MotionProvider } from "@/components/providers/MotionProvider"
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider"
+import { SupportBotGate } from "@/components/SupportBotGate"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -213,6 +214,7 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
           <AnalyticsProvider />
+          <SupportBotGate />
         </ReCaptchaProvider>
       </body>
     </html>

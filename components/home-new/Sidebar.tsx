@@ -22,7 +22,6 @@ import {
     Target,
     Share2,
     X,
-    Brain,
     Briefcase,
     Tv
 } from 'lucide-react';
@@ -49,12 +48,11 @@ const MENU_GROUPS = [
     {
         title: "AI Tools",
         items: [
-            { name: "Celo AI", icon: Brain, href: "/celo-ai" },
             { name: "Vibe Marketing", icon: Share2, href: "/marketing/social" },
         ]
     },
     {
-        title: "Company",
+        title: "Management",
         items: [
             { name: "About Us", icon: Info, href: "/about" },
             { name: "Contact us", icon: Mail, href: "/contact" },

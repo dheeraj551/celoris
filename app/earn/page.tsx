@@ -1,31 +1,11 @@
-import { type Metadata } from "next"
-import { createServerClient } from "@/lib/supabase-server"
-import EarnClient from "./EarnClient"
-import { DashboardShell } from "@/components/home-new/DashboardShell"
+import { permanentRedirect } from "next/navigation"
 
-export const metadata: Metadata = {
-    title: "Earn Online India — Daily Freelance Opportunities",
-    description: "Find fresh freelance jobs daily on Celoris. Video editing, design, content writing, teaching and AI gigs for Indian students and creators. Free to start. No credit card. celoris.in 🇮🇳",
-    openGraph: {
-        title: "Earn Online India — Daily Freelance Opportunities",
-        description: "Find fresh freelance jobs daily on Celoris. Video editing, design, content writing, teaching and AI gigs for Indian students and creators. Free to start. No credit card. celoris.in 🇮🇳",
-    }
-}
-
-export default async function EarnPage() {
-    const supabase = (await createServerClient()) as any
-
-    // Fetch jobs on server
-    const { data: dbJobs } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'open')
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-    return (
-        <DashboardShell>
-            <EarnClient initialJobs={dbJobs || []} />
-        </DashboardShell>
-    )
+// /earn (the old freelance-gigs page) has been retired in favor of
+// /job-center (SkillVerify Pro — job alerts & skill verification). Keeping
+// this route alive as a redirect means old links, bookmarks, and anything
+// already indexed by search engines still land somewhere useful instead of
+// 404ing. permanentRedirect sends a 308, telling crawlers the move is
+// permanent so they update their index instead of re-checking /earn.
+export default function EarnPage() {
+    permanentRedirect("/job-center")
 }

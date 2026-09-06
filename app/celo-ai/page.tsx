@@ -1,52 +1,10 @@
-"use client"
-import '@/components/celo-ai/index.css'
-import dynamic from 'next/dynamic'
-import React from 'react'
+import { permanentRedirect } from "next/navigation"
 
-import { DashboardShell } from "@/components/home-new/DashboardShell"
-import { useAuth } from '@/components/providers/AuthProvider'
-
-import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
-
-const CeloAiApp = dynamic(() => import('@/components/celo-ai/App'), {
-    ssr: false,
-    loading: () => <LoadingSpinner />
-})
-
-function LoadingSpinner() {
-    return (
-        <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 border-4 border-purple-500/10 border-t-purple-600 rounded-full animate-spin mx-auto mb-6" />
-        </div>
-    )
-}
-
+// Celo AI (the general-purpose AI chat) has been retired in favor of the
+// Celoris Support widget (course discovery + lead capture, see
+// components/SupportBotGate.tsx / SupportBotWidget.tsx). Keeping this route
+// alive as a redirect means old links/bookmarks land somewhere real instead
+// of 404ing. permanentRedirect sends a 308 so crawlers update their index.
 export default function CeloAiPage() {
-    const pathname = usePathname()
-    const router = useRouter()
-    const { user, loading: authLoading } = useAuth()
-    const [mounted, setMounted] = useState(false)
-
-    useEffect(() => {
-        setMounted(true)
-    }, [])
-
-    useEffect(() => {
-        if (mounted && !authLoading && !user) {
-            router.push('/login')
-        }
-    }, [mounted, authLoading, user, router])
-
-    if (!mounted || authLoading || !user) {
-        return <LoadingSpinner />
-    }
-
-    return (
-        <DashboardShell>
-            <div key={pathname} className="h-[calc(100vh-4rem)] w-full">
-                <CeloAiApp />
-            </div>
-        </DashboardShell>
-    )
+    permanentRedirect("/")
 }

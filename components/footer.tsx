@@ -11,7 +11,7 @@ const footerSections = [
     title: "Platform",
     links: [
       { name: "Learn", href: "/learn" },
-      { name: "Earn", href: "/earn" },
+      { name: "Job Center", href: "/job-center" },
       { name: "Social", href: "/social" },
       { name: "Apps", href: "/apps" },
     ],
@@ -78,7 +78,6 @@ export default function Footer() {
     pathname?.startsWith("/teach") ||
     pathname?.startsWith("/marketing") ||
     pathname?.startsWith("/celo-ai") ||
-    pathname?.startsWith("/job-center") ||
     pathname === "/login" ||
     pathname === "/register";
 
