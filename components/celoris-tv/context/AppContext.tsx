@@ -56,6 +56,7 @@ interface AppContextType {
   playNextInPlaylist: () => void;
   playPrevInPlaylist: () => void;
   toggleLike: (videoId: string) => void;
+  toggleDislike: (videoId: string) => void;
   toggleSave: (videoId: string) => void;
   addQuestion: (data: {
     videoId: string;
@@ -66,6 +67,7 @@ interface AppContextType {
     tags: string[];
     codeSnippet?: string;
   }) => void;
+  deleteQuestion: (questionId: string) => void;
   addAnswer: (questionId: string, content: string) => void;
   upvoteQuestion: (questionId: string) => void;
   upvoteAnswer: (questionId: string, answerId: string) => void;
@@ -187,8 +189,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
     const saved = getStoredItem('USER');
-    if (saved) return JSON.parse(saved);
-    return currentRole === 'teacher' ? TEACHER_USER : INITIAL_USER;
+    const user = saved ? JSON.parse(saved) : currentRole === 'teacher' ? TEACHER_USER : INITIAL_USER;
+    // A profile cached in localStorage from before dislikedVideoIds existed
+    // won't have it — backfill so later .filter()/.includes() calls on it
+    // don't throw on undefined.
+    return { ...user, dislikedVideoIds: user.dislikedVideoIds || [] };
   });
 
   // Navigation & Player state.
@@ -241,6 +246,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (cancelled) return;
         if (Array.isArray(data.videos) && data.videos.length > 0) {
           setVideos(data.videos);
+
+          // These are the real, server-tracked lectures, so the current
+          // user's liked/disliked lists for THIS set of videos should match
+          // what the server says they already reacted to (each video row
+          // carries the caller's own userReaction from the API). Videos not
+          // in this batch keep whatever the mock/local state already had.
+          const likedHere = data.videos
+            .filter((v: Video) => v.userReaction === 'like')
+            .map((v: Video) => v.id);
+          const dislikedHere = data.videos
+            .filter((v: Video) => v.userReaction === 'dislike')
+            .map((v: Video) => v.id);
+          const idsInBatch = new Set(data.videos.map((v: Video) => v.id));
+
+          setCurrentUser(prev => ({
+            ...prev,
+            likedVideoIds: [
+              ...prev.likedVideoIds.filter(id => !idsInBatch.has(id)),
+              ...likedHere,
+            ],
+            dislikedVideoIds: [
+              ...prev.dislikedVideoIds.filter(id => !idsInBatch.has(id)),
+              ...dislikedHere,
+            ],
+          }));
         }
       } catch (err) {
         console.error('Failed to load Celoris TV lectures:', err);
@@ -254,6 +284,65 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       cancelled = true;
     };
   }, []);
+
+  // The rest of currentUser (institution, bio, enrolled/liked lists, etc.)
+  // is mock filler with no real backend yet, but the NAME and AVATAR shown
+  // on things this person actually posts — Q&A questions, answers — should
+  // be their real, signed-in Celoris identity, not the "Alex Rivera" mock
+  // persona. Fetch it once and overlay just those two fields.
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch('/api/celoris-tv/profile');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !data?.name) return;
+        setCurrentUser(prev => ({ ...prev, name: data.name, avatar: data.avatar }));
+      } catch (err) {
+        console.error('Failed to load Celoris TV profile:', err);
+        // Keep the mock name/avatar rather than blocking the page.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Q&A questions/answers are now backed by real, shared Supabase rows
+  // (celoris_tv_questions / celoris_tv_answers) instead of per-browser
+  // localStorage, so fetch the current lecture's live thread whenever it
+  // changes — otherwise a teacher and their students, most likely signed in
+  // on different devices/accounts, would each only ever see their own local
+  // copy of the conversation.
+  useEffect(() => {
+    if (!currentVideo?.id) return;
+    let cancelled = false;
+    const videoId = currentVideo.id;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/celoris-tv/videos/${videoId}/questions`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !Array.isArray(data.questions)) return;
+
+        setQuestions(prev => [
+          ...prev.filter(q => q.videoId !== videoId),
+          ...data.questions,
+        ]);
+      } catch (err) {
+        console.error('Failed to load Celoris TV Q&A:', err);
+        // Keep whatever local/mock questions already exist for this video.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentVideo?.id]);
 
   // Persist state changes
   useEffect(() => {
@@ -345,23 +434,104 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSeekTargetTime(null);
   };
 
-  const toggleLike = (videoId: string) => {
-    const isLiked = currentUser.likedVideoIds.includes(videoId);
+  // Applies the authoritative counts/reaction the server returned after a
+  // like/dislike toggle, so the UI reflects what was actually persisted
+  // rather than just the optimistic guess made before the request resolved.
+  const applyReactionResult = (
+    videoId: string,
+    result: { likes: number; dislikes: number; userReaction: 'like' | 'dislike' | null }
+  ) => {
+    setVideos(prev =>
+      prev.map(v => (v.id === videoId ? { ...v, likes: result.likes, dislikes: result.dislikes } : v))
+    );
     setCurrentUser(prev => ({
       ...prev,
-      likedVideoIds: isLiked
-        ? prev.likedVideoIds.filter(id => id !== videoId)
-        : [...prev.likedVideoIds, videoId],
+      likedVideoIds:
+        result.userReaction === 'like'
+          ? [...prev.likedVideoIds.filter(id => id !== videoId), videoId]
+          : prev.likedVideoIds.filter(id => id !== videoId),
+      dislikedVideoIds:
+        result.userReaction === 'dislike'
+          ? [...prev.dislikedVideoIds.filter(id => id !== videoId), videoId]
+          : prev.dislikedVideoIds.filter(id => id !== videoId),
+    }));
+  };
+
+  // Shared by toggleLike/toggleDislike: optimistically flips the local
+  // like/dislike state right away (so the click feels instant), then asks
+  // the server to persist it. A real, Supabase-backed lecture gets its
+  // counts corrected to the server's authoritative numbers once the request
+  // resolves; a mock/demo video (no matching row in the database) has no
+  // server to persist to, so the request 404s/errors and the optimistic
+  // local toggle below is simply left standing as the whole answer.
+  const applyReactionOptimistically = (videoId: string, reaction: 'like' | 'dislike') => {
+    const wasLiked = currentUser.likedVideoIds.includes(videoId);
+    const wasDisliked = currentUser.dislikedVideoIds.includes(videoId);
+    const isSameReaction = reaction === 'like' ? wasLiked : wasDisliked;
+
+    setCurrentUser(prev => ({
+      ...prev,
+      likedVideoIds: (() => {
+        if (reaction === 'like') {
+          return isSameReaction
+            ? prev.likedVideoIds.filter(id => id !== videoId)
+            : [...prev.likedVideoIds.filter(id => id !== videoId), videoId];
+        }
+        return prev.likedVideoIds.filter(id => id !== videoId);
+      })(),
+      dislikedVideoIds: (() => {
+        if (reaction === 'dislike') {
+          return isSameReaction
+            ? prev.dislikedVideoIds.filter(id => id !== videoId)
+            : [...prev.dislikedVideoIds.filter(id => id !== videoId), videoId];
+        }
+        return prev.dislikedVideoIds.filter(id => id !== videoId);
+      })(),
     }));
 
     setVideos(prev =>
       prev.map(v => {
-        if (v.id === videoId) {
-          return { ...v, likes: isLiked ? Math.max(0, v.likes - 1) : v.likes + 1 };
+        if (v.id !== videoId) return v;
+        // A video cached in localStorage from before `dislikes` existed
+        // (or a real row fetched before the counter was backfilled) won't
+        // have a number here — treat it as 0 rather than propagating NaN.
+        let likes = v.likes || 0;
+        let dislikes = v.dislikes || 0;
+        if (reaction === 'like') {
+          likes = isSameReaction ? Math.max(0, likes - 1) : likes + 1;
+          if (!isSameReaction && wasDisliked) dislikes = Math.max(0, dislikes - 1);
+        } else {
+          dislikes = isSameReaction ? Math.max(0, dislikes - 1) : dislikes + 1;
+          if (!isSameReaction && wasLiked) likes = Math.max(0, likes - 1);
         }
-        return v;
+        return { ...v, likes, dislikes };
       })
     );
+  };
+
+  const sendReaction = async (videoId: string, reaction: 'like' | 'dislike') => {
+    applyReactionOptimistically(videoId, reaction);
+
+    try {
+      const res = await fetch(`/api/celoris-tv/videos/${videoId}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reaction }),
+      });
+      if (!res.ok) return; // Mock/demo video with no real DB row — optimistic toggle above stands.
+      const data = await res.json();
+      applyReactionResult(videoId, data);
+    } catch {
+      // Offline or a mock/demo video — keep the optimistic local toggle as-is.
+    }
+  };
+
+  const toggleLike = (videoId: string) => {
+    sendReaction(videoId, 'like');
+  };
+
+  const toggleDislike = (videoId: string) => {
+    sendReaction(videoId, 'dislike');
   };
 
   const toggleSave = (videoId: string) => {
@@ -383,8 +553,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     tags: string[];
     codeSnippet?: string;
   }) => {
+    const tempId = `qa-${Date.now()}`;
     const newQ: QAQuestion = {
-      id: `qa-${Date.now()}`,
+      id: tempId,
       videoId: data.videoId,
       videoTitle: data.videoTitle || currentVideo?.title || 'Lecture',
       author: {
@@ -401,32 +572,82 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       content: data.content,
       codeSnippet: data.codeSnippet,
       createdAt: 'Just now',
-      upvotes: 1,
+      upvotes: 0,
       isResolved: false,
       answers: [],
       tags: data.tags.length > 0 ? data.tags : ['Question'],
     };
 
     setQuestions(prev => [newQ, ...prev]);
+
+    // Questions are real, shared Supabase rows (celoris_tv_questions) so a
+    // lecture's instructor sees this regardless of device/account — save it,
+    // then swap the optimistic temp entry for the server's real row.
+    (async () => {
+      try {
+        const res = await fetch(`/api/celoris-tv/videos/${data.videoId}/questions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: data.title,
+            content: data.content,
+            timestampSec: data.timestampSec,
+            tags: data.tags,
+            codeSnippet: data.codeSnippet,
+          }),
+        });
+        if (!res.ok) throw new Error('Failed to post question');
+        const result = await res.json();
+        if (!result?.question) throw new Error('Malformed response');
+
+        setQuestions(prev => prev.map(q => (q.id === tempId ? result.question : q)));
+      } catch (err) {
+        console.error('Failed to save question to server:', err);
+        // Keep the optimistic local question — the video may be a mock/demo
+        // lecture with no real backend row yet.
+      }
+    })();
+  };
+
+  // Lets a student remove a question they posted themselves (e.g. test/demo
+  // questions asked while exploring the app), or a teacher moderate one.
+  const deleteQuestion = (questionId: string) => {
+    const target = questions.find(q => q.id === questionId);
+    if (!target) return;
+    const isOwnQuestion = target.author.id === currentUser.id;
+    if (!(isOwnQuestion || currentRole === 'teacher')) return;
+
+    setQuestions(prev => prev.filter(q => q.id !== questionId));
+
+    fetch(`/api/celoris-tv/questions/${questionId}`, { method: 'DELETE' }).catch(err => {
+      console.error('Failed to delete question on server:', err);
+    });
   };
 
   const addAnswer = (questionId: string, content: string) => {
     const isTeacher = currentRole === 'teacher';
+    // Answering as the trainer is a distinct identity from the signed-in
+    // student profile — use the instructor's own name/avatar/institution
+    // (TEACHER_USER) instead of currentUser's, otherwise a teacher-mode
+    // answer would show up under the same name/photo as the question it's
+    // replying to.
+    const answerAuthor = isTeacher ? TEACHER_USER : currentUser;
+    const tempId = `ans-${Date.now()}`;
     const newAns: QAAnswer = {
-      id: `ans-${Date.now()}`,
+      id: tempId,
       questionId,
       author: {
-        id: currentUser.id,
-        name: currentUser.name,
-        avatar: currentUser.avatar,
+        id: answerAuthor.id,
+        name: answerAuthor.name,
+        avatar: answerAuthor.avatar,
         role: isTeacher ? 'teacher' : 'student',
         title: isTeacher ? 'Faculty / Instructor' : 'Student Peer',
-        institution: currentUser.institution,
+        institution: answerAuthor.institution,
         verified: isTeacher,
       },
       content,
       createdAt: 'Just now',
-      upvotes: 1,
+      upvotes: 0,
       isEndorsedByTeacher: isTeacher, // Teacher responses are auto-endorsed
       isAccepted: false,
     };
@@ -443,6 +664,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return q;
       })
     );
+
+    // Answers are real, shared Supabase rows (celoris_tv_answers) — save it,
+    // then swap the optimistic temp entry for the server's real row (whose
+    // author is resolved from the real signed-in account, not this local
+    // role toggle).
+    (async () => {
+      try {
+        const res = await fetch(`/api/celoris-tv/questions/${questionId}/answers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content }),
+        });
+        if (!res.ok) throw new Error('Failed to post answer');
+        const result = await res.json();
+        if (!result?.answer) throw new Error('Malformed response');
+
+        setQuestions(prev =>
+          prev.map(q => {
+            if (q.id !== questionId) return q;
+            return {
+              ...q,
+              isResolved:
+                typeof result.questionIsResolved === 'boolean'
+                  ? result.questionIsResolved
+                  : q.isResolved,
+              answers: q.answers.map(a => (a.id === tempId ? result.answer : a)),
+            };
+          })
+        );
+      } catch (err) {
+        console.error('Failed to save answer to server:', err);
+        // Keep the optimistic local answer — the video may be a mock/demo
+        // lecture with no real backend row yet.
+      }
+    })();
   };
 
   const upvoteQuestion = (questionId: string) => {
@@ -482,6 +738,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return q;
       })
     );
+
+    // Enforced server-side too (celoris_tv_answers RLS) — only the real
+    // signed-in teacher who owns the lecture can actually make this stick.
+    fetch(`/api/celoris-tv/answers/${answerId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'endorse' }),
+    }).catch(err => {
+      console.error('Failed to save endorsement to server:', err);
+    });
   };
 
   const acceptAnswer = (questionId: string, answerId: string) => {
@@ -499,12 +765,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return q;
       })
     );
+
+    fetch(`/api/celoris-tv/answers/${answerId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'accept' }),
+    }).catch(err => {
+      console.error('Failed to save acceptance to server:', err);
+    });
   };
 
   const toggleResolveQuestion = (questionId: string) => {
     setQuestions(prev =>
       prev.map(q => (q.id === questionId ? { ...q, isResolved: !q.isResolved } : q))
     );
+
+    fetch(`/api/celoris-tv/questions/${questionId}`, { method: 'PATCH' }).catch(err => {
+      console.error('Failed to save resolved-state to server:', err);
+    });
   };
 
   const createPlaylist = (data: {
@@ -731,8 +1009,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         playNextInPlaylist,
         playPrevInPlaylist,
         toggleLike,
+        toggleDislike,
         toggleSave,
         addQuestion,
+        deleteQuestion,
         addAnswer,
         upvoteQuestion,
         upvoteAnswer,

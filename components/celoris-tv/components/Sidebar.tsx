@@ -7,7 +7,6 @@ import {
   PlaySquare,
   ListMusic,
   HelpCircle,
-  Bookmark,
   GraduationCap,
   Sparkles,
   BookOpen,
@@ -47,7 +46,6 @@ export const Sidebar: React.FC<Props> = ({ isOpenOnMobile, onCloseMobile }) => {
       label: 'Academic Q&A Hub',
       icon: <HelpCircle className="w-4 h-4" />,
     },
-    { id: 'notes', label: 'My Study Notes', icon: <Bookmark className="w-4 h-4" /> },
     {
       id: 'teacher-studio',
       label: 'Teacher Studio',

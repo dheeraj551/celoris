@@ -5,17 +5,11 @@ import { EduVideoPlayer } from './EduVideoPlayer';
 import { WatchProgressBar } from './WatchProgressBar';
 import { VideoInfo } from './VideoInfo';
 import { QASection } from './QASection';
-import { TranscriptView } from './TranscriptView';
-import { NotesResourcesTab } from './NotesResourcesTab';
-import { VideoQuizTab } from './VideoQuizTab';
 import { PlaylistQueueSidebar } from './PlaylistQueueSidebar';
 import { ActiveTab, Video } from '../../types';
-import { formatTime, formatViews } from '../../utils/formatters';
+import { formatTime } from '../../utils/formatters';
 import {
   MessageSquare,
-  FileText,
-  Bookmark,
-  Sparkles,
   Play,
   ListPlus,
   Compass,
@@ -63,22 +57,6 @@ export const WatchView: React.FC = () => {
       icon: <MessageSquare className="w-4 h-4" />,
       badge: `${videoQuestionsCount}`,
     },
-    {
-      id: 'transcript',
-      label: 'Interactive Transcript',
-      icon: <FileText className="w-4 h-4" />,
-    },
-    {
-      id: 'notes',
-      label: 'Notes & Slides',
-      icon: <Bookmark className="w-4 h-4" />,
-    },
-    {
-      id: 'quiz',
-      label: 'Knowledge Check',
-      icon: <Sparkles className="w-4 h-4" />,
-      badge: currentVideo.quizzes?.length ? `${currentVideo.quizzes.length}` : undefined,
-    },
   ];
 
   return (
@@ -88,10 +66,7 @@ export const WatchView: React.FC = () => {
         {/* Left Column: Player, Video Details, Interactive Q&A Tabs */}
         <div className="lg:col-span-8 space-y-6">
           {/* Video Player */}
-          <EduVideoPlayer
-            video={currentVideo}
-            onAddNoteAtTime={() => setActivePlayerTab('notes')}
-          />
+          <EduVideoPlayer video={currentVideo} />
 
           {/* Video Watch Progress Tracker */}
           <WatchProgressBar video={currentVideo} />
@@ -147,9 +122,6 @@ export const WatchView: React.FC = () => {
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {activePlayerTab === 'qa' && <QASection video={currentVideo} />}
-                  {activePlayerTab === 'transcript' && <TranscriptView video={currentVideo} />}
-                  {activePlayerTab === 'notes' && <NotesResourcesTab video={currentVideo} />}
-                  {activePlayerTab === 'quiz' && <VideoQuizTab video={currentVideo} />}
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -203,7 +175,7 @@ export const WatchView: React.FC = () => {
                       {vid.author.name}
                     </p>
                     <span className="text-[10px] text-[#5E6C5E] mt-0.5 block">
-                      {formatViews(vid.views)} • {vid.difficulty}
+                      {vid.difficulty}
                     </span>
                   </div>
                 </div>

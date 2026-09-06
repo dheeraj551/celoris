@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Video } from '../../types';
-import { formatViews, formatTime } from '../../utils/formatters';
+import { formatTime } from '../../utils/formatters';
 import {
   ThumbsUp,
-  Bookmark,
+  ThumbsDown,
   ListPlus,
   Share2,
-  Download,
   CheckCircle,
-  FileText,
-  Code,
   GraduationCap,
   Sparkles,
   ChevronDown,
@@ -19,32 +16,25 @@ import {
   Check,
 } from 'lucide-react';
 import { AddToPlaylistModal } from '../Modals/AddToPlaylistModal';
+import { CourseInquiryDialog } from '@/components/CourseInquiryDialog';
 
 interface Props {
   video: Video;
 }
 
 export const VideoInfo: React.FC<Props> = ({ video }) => {
-  const { currentUser, toggleLike, toggleSave, seekToTime } = useApp();
+  const { currentUser, toggleLike, toggleDislike, seekToTime } = useApp();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState<boolean>(false);
   const [showAddToPlaylistModal, setShowAddToPlaylistModal] = useState<boolean>(false);
-  const [showResourcesDropdown, setShowResourcesDropdown] = useState<boolean>(false);
-  const [isEnrolled, setIsEnrolled] = useState<boolean>(
-    currentUser.enrolledCourseIds.includes(video.id)
-  );
   const [copiedToast, setCopiedToast] = useState<boolean>(false);
 
   const isLiked = currentUser.likedVideoIds.includes(video.id);
-  const isSaved = currentUser.savedVideoIds.includes(video.id);
+  const isDisliked = currentUser.dislikedVideoIds.includes(video.id);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopiedToast(true);
     setTimeout(() => setCopiedToast(false), 2400);
-  };
-
-  const handleEnrollToggle = () => {
-    setIsEnrolled(!isEnrolled);
   };
 
   return (
@@ -61,7 +51,7 @@ export const VideoInfo: React.FC<Props> = ({ video }) => {
           {video.gradeLevel}
         </span>
         <span className="text-xs text-[#95A395] ml-auto">
-          {formatViews(video.views)} • Published {video.publishedAt}
+          Published {video.publishedAt}
         </span>
       </div>
 
@@ -103,16 +93,11 @@ export const VideoInfo: React.FC<Props> = ({ video }) => {
             </p>
           </div>
 
-          <button
-            onClick={handleEnrollToggle}
-            className={`ml-2 px-4 py-2 text-xs font-bold rounded-xl transition-all shadow-md ${
-              isEnrolled
-                ? 'bg-[#181D18] text-[#A8B89C] border border-[#7F9172]/40 hover:bg-[#222922]'
-                : 'bg-[#7F9172] hover:bg-[#91A582] text-[#0D0F0D] shadow-[#7F9172]/20 hover:scale-102 font-bold'
-            }`}
-          >
-            {isEnrolled ? '✓ Enrolled in Course' : '+ Enroll Course'}
-          </button>
+          <CourseInquiryDialog
+            courseTitle={video.title}
+            buttonText="+ Enroll Course"
+            buttonClassName="ml-2 px-4 py-2 text-xs font-bold rounded-xl transition-all shadow-md bg-[#7F9172] hover:bg-[#91A582] text-[#0D0F0D] shadow-[#7F9172]/20 hover:scale-102"
+          />
         </div>
 
         {/* Action Buttons */}
@@ -127,7 +112,20 @@ export const VideoInfo: React.FC<Props> = ({ video }) => {
             }`}
           >
             <ThumbsUp className={`w-4 h-4 ${isLiked ? 'fill-[#7F9172] text-[#7F9172]' : ''}`} />
-            <span>{video.likes}</span>
+            <span>{video.likes || 0}</span>
+          </button>
+
+          {/* Dislike */}
+          <button
+            onClick={() => toggleDislike(video.id)}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
+              isDisliked
+                ? 'bg-[#C87D55]/20 border-[#C87D55]/60 text-[#E0B79C]'
+                : 'bg-[#181D18] border-[#2A322A] text-[#95A395] hover:bg-[#222922] hover:text-white'
+            }`}
+          >
+            <ThumbsDown className={`w-4 h-4 ${isDisliked ? 'fill-[#C87D55] text-[#C87D55]' : ''}`} />
+            <span>{video.dislikes || 0}</span>
           </button>
 
           {/* Add to Playlist */}
@@ -138,64 +136,6 @@ export const VideoInfo: React.FC<Props> = ({ video }) => {
             <ListPlus className="w-4 h-4 text-[#7F9172]" />
             <span>Save to Playlist</span>
           </button>
-
-          {/* Save / Watchlist */}
-          <button
-            onClick={() => toggleSave(video.id)}
-            className={`p-2 rounded-xl border text-xs font-semibold transition-colors ${
-              isSaved
-                ? 'bg-[#7F9172]/25 border-[#7F9172]/60 text-[#A8B89C]'
-                : 'bg-[#181D18] border-[#2A322A] text-[#95A395] hover:bg-[#222922] hover:text-white'
-            }`}
-            title={isSaved ? 'Saved in Library' : 'Save for later'}
-          >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-[#7F9172] text-[#7F9172]' : ''}`} />
-          </button>
-
-          {/* Resources Download Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setShowResourcesDropdown(!showResourcesDropdown)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#181D18] border border-[#2A322A] text-[#95A395] hover:bg-[#222922] hover:text-white transition-colors"
-            >
-              <Download className="w-4 h-4 text-[#7F9172]" />
-              <span>Slides & Code ({video.resources.length})</span>
-            </button>
-
-            {showResourcesDropdown && (
-              <div className="absolute right-0 mt-2 w-72 bg-[#161B16] border border-[#2A322A] rounded-2xl shadow-2xl p-2 z-40 animate-fadeIn">
-                <div className="px-3 py-2 border-b border-[#242A24] text-[11px] font-bold uppercase tracking-wider text-[#95A395]">
-                  Course Materials & Attachments
-                </div>
-                <div className="py-1 space-y-1">
-                  {video.resources.map(res => (
-                    <a
-                      key={res.id}
-                      href={res.url}
-                      onClick={e => {
-                        e.preventDefault();
-                        alert(`Downloading: ${res.title}`);
-                      }}
-                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-[#1E241E] text-[#E0E5E0] transition-colors group"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        {res.type === 'slides' || res.type === 'pdf' ? (
-                          <FileText className="w-4 h-4 text-[#C87D55] flex-shrink-0" />
-                        ) : (
-                          <Code className="w-4 h-4 text-[#7F9172] flex-shrink-0" />
-                        )}
-                        <div className="truncate">
-                          <p className="text-xs font-medium text-white truncate">{res.title}</p>
-                          <span className="text-[10px] text-[#95A395]">{res.size || 'Attachment'}</span>
-                        </div>
-                      </div>
-                      <Download className="w-3.5 h-3.5 text-[#5E6C5E] group-hover:text-[#7F9172] transition-colors flex-shrink-0 ml-2" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* Share */}
           <div className="relative">

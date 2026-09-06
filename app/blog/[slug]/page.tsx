@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Calendar, User, Clock, Tag, TrendingUp, ArrowLeft, Eye } from 'lucide-react';
+import { Calendar, User, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react';
 import ShareButtons from '@/components/ShareButtons';
+import BlogEngagement from '@/components/blog/BlogEngagement';
 import { createServerClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import { Button } from "@/components/ui/button";
@@ -408,10 +409,6 @@ function renderPost(post: any, contentHtml: string) {
                   <Calendar className="h-4 w-4 text-emerald-500" />
                   <span className="text-sm uppercase tracking-widest">{formatDate(post.published_at)}</span>
                 </div>
-                <div className="flex items-center gap-2 font-bold">
-                  <Eye className="h-4 w-4 text-emerald-500" />
-                  <span className="text-sm uppercase tracking-widest">{post.views_count || 0} VIEWS</span>
-                </div>
               </div>
             </div>
           </div>
@@ -465,6 +462,10 @@ function renderPost(post: any, contentHtml: string) {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="pb-16">
+        <BlogEngagement slug={post.slug} />
       </div>
 
       <div className="container pb-32 px-4 mx-auto">

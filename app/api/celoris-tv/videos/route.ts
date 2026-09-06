@@ -43,7 +43,7 @@ function parseYouTubeId(input: string): string | null {
   return null;
 }
 
-function mapRowToVideo(row: any) {
+function mapRowToVideo(row: any, userReaction: 'like' | 'dislike' | null = null) {
   return {
     id: row.id,
     title: row.title,
@@ -54,6 +54,8 @@ function mapRowToVideo(row: any) {
     duration: row.duration_seconds || 900,
     views: row.view_count || 0,
     likes: row.like_count || 0,
+    dislikes: row.dislike_count || 0,
+    userReaction,
     publishedAt: row.created_at,
     category: row.subject,
     subject: row.subject,
@@ -100,7 +102,26 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ videos: (data || []).map(mapRowToVideo) });
+    // Attach this viewer's own like/dislike (if any) to each lecture so the
+    // client can show the button already toggled on instead of resetting to
+    // "not reacted" on every reload.
+    const videoIds = (data || []).map(row => row.id);
+    let reactionByVideoId = new Map<string, 'like' | 'dislike'>();
+    if (videoIds.length > 0) {
+      const { data: reactions, error: reactionsError } = await supabase
+        .from('celoris_tv_video_reactions')
+        .select('video_id, reaction')
+        .eq('user_id', user.id)
+        .in('video_id', videoIds);
+
+      if (!reactionsError && reactions) {
+        reactionByVideoId = new Map(reactions.map(r => [r.video_id, r.reaction]));
+      }
+    }
+
+    return NextResponse.json({
+      videos: (data || []).map(row => mapRowToVideo(row, reactionByVideoId.get(row.id) || null)),
+    });
   } catch (error) {
     console.error('Celoris TV videos list error:', error);
     return NextResponse.json({ error: 'Failed to load videos' }, { status: 500 });

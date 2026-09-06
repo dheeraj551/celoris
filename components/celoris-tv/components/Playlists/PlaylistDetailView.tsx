@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { Playlist, Video } from '../../types';
-import { formatTime, formatViews } from '../../utils/formatters';
+import { formatTime } from '../../utils/formatters';
 import {
   Play,
   ArrowLeft,
@@ -167,7 +167,7 @@ export const PlaylistDetailView: React.FC<Props> = ({ playlist }) => {
                       {vid.author.name} • {vid.author.institution}
                     </p>
                     <span className="text-[10px] text-[#5E6C5E] mt-1 block">
-                      {formatViews(vid.views)} • {vid.difficulty}
+                      {vid.difficulty}
                     </span>
                   </div>
                 </div>

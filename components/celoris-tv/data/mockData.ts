@@ -10,6 +10,7 @@ export const INITIAL_USER: UserProfile = {
   bio: 'Junior CS & Applied Math student. Focusing on Machine Learning algorithms, Graph Theory, and Quantum Computing.',
   enrolledCourseIds: ['vid-cs101-trees', 'vid-math-calc3', 'vid-phys-quantum', 'vid-cs-react-deep'],
   likedVideoIds: ['vid-cs101-trees', 'vid-math-calc3'],
+  dislikedVideoIds: [],
   savedVideoIds: ['vid-chem-organic', 'vid-phys-quantum'],
   customPlaylistIds: ['playlist-my-midterms', 'playlist-quick-refreshers'],
   watchProgress: {
@@ -30,6 +31,7 @@ export const TEACHER_USER: UserProfile = {
   bio: 'Distinguished Professor of Computer Science. Researching distributed consensus algorithms and graph indexing systems.',
   enrolledCourseIds: [],
   likedVideoIds: [],
+  dislikedVideoIds: [],
   savedVideoIds: [],
   customPlaylistIds: ['playlist-ds-mastery', 'playlist-teacher-syllabus'],
   watchProgress: {},
@@ -46,6 +48,7 @@ export const INITIAL_VIDEOS: Video[] = [
     duration: 1245, // 20:45
     views: 48920,
     likes: 3410,
+    dislikes: 51,
     publishedAt: '2026-02-14',
     category: 'Computer Science',
     subject: 'Data Structures & Algorithms',
@@ -111,6 +114,7 @@ export const INITIAL_VIDEOS: Video[] = [
     duration: 1530, // 25:30
     views: 32410,
     likes: 2890,
+    dislikes: 43,
     publishedAt: '2026-02-18',
     category: 'Mathematics',
     subject: 'Multivariable Calculus',
@@ -153,6 +157,7 @@ export const INITIAL_VIDEOS: Video[] = [
     duration: 1820, // 30:20
     views: 61200,
     likes: 5120,
+    dislikes: 77,
     publishedAt: '2026-02-10',
     category: 'Physics',
     subject: 'Quantum Physics',
@@ -193,6 +198,7 @@ export const INITIAL_VIDEOS: Video[] = [
     duration: 1110, // 18:30
     views: 41200,
     likes: 3190,
+    dislikes: 48,
     publishedAt: '2026-02-22',
     category: 'Computer Science',
     subject: 'Web Engineering & Systems',
@@ -232,6 +238,7 @@ export const INITIAL_VIDEOS: Video[] = [
     duration: 1390, // 23:10
     views: 29800,
     likes: 1980,
+    dislikes: 30,
     publishedAt: '2026-02-05',
     category: 'Chemistry',
     subject: 'Organic Chemistry',
@@ -269,6 +276,7 @@ export const INITIAL_VIDEOS: Video[] = [
     duration: 1410, // 23:30
     views: 38700,
     likes: 2940,
+    dislikes: 44,
     publishedAt: '2026-01-28',
     category: 'Biology',
     subject: 'Neuroscience',

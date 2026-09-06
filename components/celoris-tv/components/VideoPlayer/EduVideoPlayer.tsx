@@ -13,8 +13,6 @@ import {
   RotateCcw,
   RotateCw,
   Settings,
-  HelpCircle,
-  BookmarkPlus,
   SkipForward,
   SkipBack,
   Sparkles,
@@ -24,7 +22,6 @@ import {
   Gauge,
   Zap,
 } from 'lucide-react';
-import { AskQuestionModal } from '../Modals/AskQuestionModal';
 
 const CORE_SPEEDS = [0.5, 1, 1.5, 2];
 
@@ -60,10 +57,9 @@ function loadYouTubeIframeAPI(): Promise<void> {
 
 interface Props {
   video: Video;
-  onAddNoteAtTime?: (time: number) => void;
 }
 
-export const EduVideoPlayer: React.FC<Props> = ({ video, onAddNoteAtTime }) => {
+export const EduVideoPlayer: React.FC<Props> = ({ video }) => {
   const {
     videoCurrentTime,
     setVideoCurrentTime,
@@ -96,7 +92,6 @@ export const EduVideoPlayer: React.FC<Props> = ({ video, onAddNoteAtTime }) => {
   const [speedToast, setSpeedToast] = useState<number | null>(null);
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverChapter, setHoverChapter] = useState<string | null>(null);
-  const [showAskModal, setShowAskModal] = useState<boolean>(false);
   const [videoLoadError, setVideoLoadError] = useState<boolean>(false);
 
   // Active quiz overlay state
@@ -774,29 +769,8 @@ export const EduVideoPlayer: React.FC<Props> = ({ video, onAddNoteAtTime }) => {
             </div>
           </div>
 
-          {/* Right Controls: Ask Doubt at Timestamp, Note Bookmark, Speed, Fullscreen */}
+          {/* Right Controls: Speed, Fullscreen */}
           <div className="flex items-center gap-2">
-            {/* Ask Doubt at Current Timestamp Button */}
-            <button
-              onClick={() => setShowAskModal(true)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#7F9172]/20 hover:bg-[#7F9172]/35 border border-[#7F9172]/40 text-[#A8B89C] rounded-xl font-semibold text-xs transition-all hover:scale-102 shadow-xs"
-              title="Ask Question linked to this timestamp"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Ask Doubt @ {formatTime(videoCurrentTime)}</span>
-            </button>
-
-            {/* Quick Note Bookmark */}
-            {onAddNoteAtTime && (
-              <button
-                onClick={() => onAddNoteAtTime(videoCurrentTime)}
-                className="p-2 text-[#95A395] hover:text-white hover:bg-white/10 rounded-xl transition-colors"
-                title="Bookmark Note at current timestamp"
-              >
-                <BookmarkPlus className="w-4 h-4" />
-              </button>
-            )}
-
             {/* Playback Speed Selector (0.5x, 1x, 1.5x, 2x) */}
             <div className="flex items-center bg-[#161B16] border border-[#2E382E] rounded-xl p-0.5 relative">
               {/* Quick Segments: 0.5x, 1x, 1.5x, 2x */}
@@ -868,14 +842,6 @@ export const EduVideoPlayer: React.FC<Props> = ({ video, onAddNoteAtTime }) => {
           </div>
         </div>
       </div>
-
-      {/* Ask Question modal attached to video player */}
-      <AskQuestionModal
-        isOpen={showAskModal}
-        onClose={() => setShowAskModal(false)}
-        video={video}
-        defaultTimestamp={Math.floor(videoCurrentTime)}
-      />
     </div>
   );
 };

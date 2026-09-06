@@ -19,9 +19,10 @@ import { Loader2 } from "lucide-react"
 interface CourseInquiryDialogProps {
     courseTitle: string
     buttonClassName?: string
+    buttonText?: string
 }
 
-export function CourseInquiryDialog({ courseTitle, buttonClassName }: CourseInquiryDialogProps) {
+export function CourseInquiryDialog({ courseTitle, buttonClassName, buttonText = "Enroll in Course" }: CourseInquiryDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -74,7 +75,7 @@ export function CourseInquiryDialog({ courseTitle, buttonClassName }: CourseInqu
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button className={buttonClassName}>
-                    Enroll in Course
+                    {buttonText}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-[#020617] text-slate-200 border-slate-800">

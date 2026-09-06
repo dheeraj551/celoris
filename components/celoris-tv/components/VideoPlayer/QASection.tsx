@@ -6,7 +6,6 @@ import {
   MessageSquare,
   HelpCircle,
   Clock,
-  ThumbsUp,
   CheckCircle2,
   Sparkles,
   Send,
@@ -28,7 +27,7 @@ interface Props {
   video: Video;
 }
 
-type QAFilter = 'all' | 'timestamp' | 'teacher_verified' | 'unresolved' | 'my_questions';
+type QAFilter = 'all' | 'teacher_verified' | 'unresolved' | 'my_questions';
 
 export const QASection: React.FC<Props> = ({ video }) => {
   const {
@@ -38,8 +37,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
     currentUser,
     currentRole,
     addAnswer,
-    upvoteQuestion,
-    upvoteAnswer,
     endorseAnswer,
     acceptAnswer,
     toggleResolveQuestion,
@@ -60,11 +57,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
     if (searchQuery.trim()) {
       const matchText = `${q.title} ${q.content} ${q.author.name} ${q.tags.join(' ')}`.toLowerCase();
       if (!matchText.includes(searchQuery.toLowerCase())) return false;
-    }
-
-    if (activeFilter === 'timestamp') {
-      if (q.timestampSec === null) return false;
-      return Math.abs(q.timestampSec - videoCurrentTime) <= 60; // within 60s of current player position
     }
 
     if (activeFilter === 'teacher_verified') {
@@ -98,11 +90,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
       setExpandedQuestionIds(prev => [...prev, questionId]);
     }
   };
-
-  // Questions near current timestamp count
-  const timestampQuestionsCount = videoQuestions.filter(
-    q => q.timestampSec !== null && Math.abs(q.timestampSec - videoCurrentTime) <= 60
-  ).length;
 
   return (
     <div className="space-y-4">
@@ -159,25 +146,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
           </button>
 
           <button
-            onClick={() => setActiveFilter('timestamp')}
-            className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap flex items-center gap-1.5 transition-all ${
-              activeFilter === 'timestamp'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold shadow-xs'
-                : 'bg-[#161B16] border border-[#242A24] text-[#95A395] hover:bg-[#1E241E] hover:text-white'
-            }`}
-          >
-            <Clock className={`w-3.5 h-3.5 ${activeFilter === 'timestamp' ? 'text-[#0D0F0D]' : 'text-[#7F9172]'}`} />
-            Near Video Time ({formatTime(videoCurrentTime)})
-            {timestampQuestionsCount > 0 && (
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                activeFilter === 'timestamp' ? 'bg-[#0D0F0D]/20 text-[#0D0F0D]' : 'bg-[#7F9172]/20 text-[#A8B89C]'
-              }`}>
-                {timestampQuestionsCount}
-              </span>
-            )}
-          </button>
-
-          <button
             onClick={() => setActiveFilter('teacher_verified')}
             className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap flex items-center gap-1.5 transition-all ${
               activeFilter === 'teacher_verified'
@@ -223,9 +191,7 @@ export const QASection: React.FC<Props> = ({ video }) => {
             </div>
             <h4 className="text-sm font-bold text-white mb-1">No Questions Found</h4>
             <p className="text-xs text-[#95A395] max-w-sm mx-auto mb-4">
-              {activeFilter === 'timestamp'
-                ? `No questions found near timestamp ${formatTime(videoCurrentTime)}. Be the first student to ask about this segment!`
-                : 'Have a question about this lecture? Post a question to get answers from the instructor and peers.'}
+              Have a question about this lecture? Post a question to get answers from the instructor and peers.
             </p>
             <button
               onClick={() => setShowAskModal(true)}
@@ -271,9 +237,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-[#95A395]">
-                        {q.author.institution || 'University'} • {q.createdAt}
-                      </span>
                     </div>
                   </div>
 
@@ -327,7 +290,7 @@ export const QASection: React.FC<Props> = ({ video }) => {
                   </pre>
                 )}
 
-                {/* Tags and Upvote Row */}
+                {/* Tags and Actions Row */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#242A24]">
                   <div className="flex items-center gap-1.5">
                     {q.tags.map(t => (
@@ -341,15 +304,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {/* Upvote Question */}
-                    <button
-                      onClick={() => upvoteQuestion(q.id)}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#181D18] hover:bg-[#222922] border border-[#2A322A] text-[#95A395] hover:text-[#A8B89C] text-xs font-semibold transition-colors"
-                    >
-                      <ThumbsUp className="w-3.5 h-3.5" />
-                      <span>{q.upvotes}</span>
-                    </button>
-
                     {/* Replies count button */}
                     <button
                       onClick={() => toggleExpand(q.id)}
@@ -428,17 +382,9 @@ export const QASection: React.FC<Props> = ({ video }) => {
                               {ans.content}
                             </p>
 
-                            <div className="flex items-center justify-between pt-1 text-[11px]">
-                              <button
-                                onClick={() => upvoteAnswer(q.id, ans.id)}
-                                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#181D18] hover:bg-[#222922] text-[#95A395] hover:text-white transition-colors"
-                              >
-                                <ThumbsUp className="w-3 h-3" />
-                                <span>{ans.upvotes}</span>
-                              </button>
-
-                              {/* Teacher Endorse button (Teacher mode) */}
-                              {currentRole === 'teacher' && (
+                            {/* Teacher Endorse button (Teacher mode) */}
+                            {currentRole === 'teacher' && (
+                              <div className="flex items-center justify-end pt-1 text-[11px]">
                                 <button
                                   onClick={() => endorseAnswer(q.id, ans.id)}
                                   className="text-[#D2B48C] hover:text-white font-semibold flex items-center gap-1"
@@ -446,8 +392,8 @@ export const QASection: React.FC<Props> = ({ video }) => {
                                   <Award className="w-3 h-3" />
                                   {ans.isEndorsedByTeacher ? 'Remove Endorsement' : 'Endorse Answer'}
                                 </button>
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </div>
                         );
                       })

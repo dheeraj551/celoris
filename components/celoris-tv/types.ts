@@ -50,6 +50,12 @@ export interface Video {
   duration: number; // in seconds
   views: number;
   likes: number;
+  dislikes: number;
+  // The signed-in viewer's own reaction to this video, as last loaded from
+  // the server ('like' | 'dislike' | null/undefined if they haven't reacted).
+  // Not persisted client-side beyond seeding currentUser's liked/disliked
+  // lists on load — the source of truth is the server.
+  userReaction?: 'like' | 'dislike' | null;
   publishedAt: string;
   category: string;
   subject: string;
@@ -128,6 +134,7 @@ export interface UserProfile {
   bio: string;
   enrolledCourseIds: string[];
   likedVideoIds: string[];
+  dislikedVideoIds: string[];
   savedVideoIds: string[];
   customPlaylistIds: string[];
   watchProgress: Record<string, number>; // videoId -> progress ratio 0..1 or timestamp in sec

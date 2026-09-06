@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useApp } from '../../context/AppContext';
 import { Video } from '../../types';
-import { formatTime, formatViews } from '../../utils/formatters';
+import { formatTime } from '../../utils/formatters';
 import { CATEGORIES } from '../../data/mockData';
 import {
   Play,
@@ -122,7 +122,7 @@ export const ExploreView: React.FC = () => {
 
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-[#95A395] font-mono">
-                    {formatTime(featuredVideo.duration)} • {formatViews(featuredVideo.views)}
+                    {formatTime(featuredVideo.duration)}
                   </span>
                   <button
                     onClick={e => {
@@ -278,9 +278,8 @@ export const ExploreView: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-[#242A24] flex items-center justify-between text-[11px] text-[#95A395]">
+                    <div className="pt-2 border-t border-[#242A24] flex items-center text-[11px] text-[#95A395]">
                       <span className="truncate">{video.author.institution}</span>
-                      <span className="font-mono text-[#5E6C5E]">{formatViews(video.views)}</span>
                     </div>
                   </div>
                 </div>

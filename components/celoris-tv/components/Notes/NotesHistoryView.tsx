@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useApp } from '../../context/AppContext';
 import { Video, UserNote } from '../../types';
-import { formatTime, formatViews } from '../../utils/formatters';
+import { formatTime } from '../../utils/formatters';
 import {
   Bookmark,
   History,
