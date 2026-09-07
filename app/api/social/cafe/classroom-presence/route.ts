@@ -130,7 +130,7 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: error.message }, { status: 500 })
         }
 
-        const students = (data || []).filter(r => r.role === 'student')
+        const students = (data || []).filter((r: any) => r.role === 'student')
         return NextResponse.json({
             occupants: data || [],
             studentCount: students.length,
