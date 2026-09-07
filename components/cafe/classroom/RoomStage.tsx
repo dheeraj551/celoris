@@ -254,14 +254,18 @@ export default function RoomStage({ seats, className }: RoomStageProps) {
         place(host, layout.host)
         students.forEach((s, i) => place(s, layout.students[i]))
 
-        // Remove nodes for anyone who left.
-        for (const [id, node] of seatNodesRef.current.entries()) {
+        // Remove nodes for anyone who left. (.forEach instead of a for...of
+        // over .entries() — this project's TS target doesn't have
+        // downlevelIteration enabled, so iterating a Map directly fails the build.)
+        const toRemove: string[] = []
+        seatNodesRef.current.forEach((node, id) => {
             if (!seen.has(id)) {
                 layer.removeChild(node)
                 node.destroy({ children: true })
-                seatNodesRef.current.delete(id)
+                toRemove.push(id)
             }
-        }
+        })
+        toRemove.forEach(id => seatNodesRef.current.delete(id))
     }
 
     return <div ref={containerRef} className={className} style={{ position: 'absolute', inset: 0 }} />
