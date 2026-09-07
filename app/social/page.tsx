@@ -14,7 +14,7 @@ import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
-const ClassroomTable = dynamic(() => import('@/components/cafe/ClassroomTable'), { ssr: false });
+const ClassroomTable = dynamic(() => import('@/components/cafe/classroom3d/components/ClassroomRoom'), { ssr: false });
 
 import { 
   Menu, 

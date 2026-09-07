@@ -1,0 +1,6 @@
+{
+  "name": "PixiJS Creative Studio",
+  "description": "Interactive 3D University Grand Lecture Hall with tiered auditorium seating, realtime student slots, dynamic ambient lighting with procedural sky gradient, and an in-world 3D stage presentation board.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
