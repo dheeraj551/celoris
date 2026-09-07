@@ -152,8 +152,18 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
         channelRef.current = null;
       }
     };
+    // Depend on user?.id (a stable primitive), NOT the user object itself.
+    // AuthProvider's onAuthStateChange fires a fresh `session`/`user` object
+    // on every auth event — including the TOKEN_REFRESHED event Supabase's
+    // client fires automatically when a tab regains focus/visibility (e.g.
+    // switching windows or un-minimizing) — even when it's the same logged
+    // in person. Depending on the whole object made React treat "same user,
+    // refreshed token" as "user changed," tearing the effect down (which
+    // calls onLeave(), kicking them out of the room) and rebuilding it from
+    // scratch on every focus regain. This was the "kicked out when I
+    // switch screens or minimize the window" bug.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, user]);
+  }, [roomId, user?.id]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
