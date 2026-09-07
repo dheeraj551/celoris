@@ -6,7 +6,11 @@ import { Play, Pause, Link as LinkIcon } from 'lucide-react'
 declare global {
     interface Window {
         YT: any
-        onYouTubeIframeAPIReady: () => void
+        // Optional to match the existing declaration in
+        // components/celoris-tv/components/VideoPlayer/EduVideoPlayer.tsx —
+        // TS requires identical modifiers across merged declarations of the
+        // same global interface member, project-wide.
+        onYouTubeIframeAPIReady?: () => void
     }
 }
 
