@@ -3,12 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Student, ChatMessage } from '../types';
 import {
-  Play,
   Send,
   Hand,
   Volume2,
   MonitorUp,
-  Youtube,
 } from 'lucide-react';
 
 interface RightSidebarProps {
@@ -22,16 +20,16 @@ interface RightSidebarProps {
   chatMessages: ChatMessage[];
   onSendMessage: (text: string) => void;
   onCallOnStudent: (student: Student) => void;
-  /** Real live-presentation controls — the original demo's "Share screen" /
-      "Chalk notes" buttons here weren't wired to anything (the in-3D board
-      manages its own disconnected mode state). These replace them with
-      controls for the REAL Agora screen-share + YouTube watch-together,
-      which render as an overlay panel rather than on the decorative board. */
+  /** Real live-presentation control — the original demo's "Share screen"
+      button here wasn't wired to anything (the in-3D board manages its own
+      disconnected mode state). This replaces it with the REAL Agora
+      screen-share, which now texture-maps straight onto the 3D Smart Board
+      mesh. (YouTube watch-together was tried and dropped — a cross-origin
+      iframe can't be captured into a WebGL texture, so it could only ever
+      float over the scene as a separate panel; screen-share alone covers
+      "show the class whatever I want" just fine.) */
   screenSharing: boolean;
   onToggleScreenShare: () => void;
-  videoUrl: string;
-  onVideoUrlChange: (url: string) => void;
-  onPlayVideoUrl: () => void;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -47,9 +45,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   onCallOnStudent,
   screenSharing,
   onToggleScreenShare,
-  videoUrl,
-  onVideoUrlChange,
-  onPlayVideoUrl,
 }) => {
   const [inputText, setInputText] = useState('');
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -65,10 +60,15 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     setInputText('');
   };
 
+  // The trainer stands at the podium now, not in the auditorium desk grid
+  // — so they're left out of this "Auditorium Students" roster too (they
+  // still see their own name/status up in the header).
+  const auditoriumStudents = students.filter((s) => !s.isHost);
+
   // Real roster, split into two columns (left/right) purely for the layout
   // — unlike the original demo, there's no fixed name list to match against.
-  const leftColumnStudents = students.filter((_, i) => i % 2 === 0);
-  const rightColumnStudents = students.filter((_, i) => i % 2 === 1);
+  const leftColumnStudents = auditoriumStudents.filter((_, i) => i % 2 === 0);
+  const rightColumnStudents = auditoriumStudents.filter((_, i) => i % 2 === 1);
 
   return (
     <aside
@@ -77,7 +77,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     >
       <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar divide-y divide-[#1e293b]/70">
 
-        {/* Live Presentation (real Agora screen-share + YouTube watch-together) */}
+        {/* Live Presentation (real Agora screen-share, texture-mapped onto the 3D board) */}
         {isHost && (
           <section className="p-4 space-y-3">
             <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -95,27 +95,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               <MonitorUp className="w-3.5 h-3.5" />
               <span>{screenSharing ? 'Stop sharing screen' : 'Share screen'}</span>
             </button>
-
-            <div className="flex items-center space-x-1.5">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  value={videoUrl}
-                  onChange={(e) => onVideoUrlChange(e.target.value)}
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  className="w-full h-8 pl-2.5 pr-2 rounded-lg bg-[#141b2a] border border-slate-700/60 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400/80 transition-colors font-mono"
-                />
-              </div>
-              <button
-                onClick={onPlayVideoUrl}
-                className="h-8 w-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-colors shadow-sm active:scale-95 flex-shrink-0"
-                title="Play for everyone"
-              >
-                <Play className="w-3.5 h-3.5 fill-current" />
-              </button>
-            </div>
-            <p className="text-[10px] text-slate-500 flex items-center gap-1">
-              <Youtube className="w-3 h-3" /> Plays in sync for the whole room
+            <p className="text-[10px] text-slate-500">
+              Shows live on the 3D Smart Board for the whole room.
             </p>
           </section>
         )}
@@ -145,7 +126,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               Auditorium Students
             </h2>
             <span className="text-[10px] text-slate-500">
-              {students.filter((s) => s.status === 'present').length} / {students.length}
+              {auditoriumStudents.filter((s) => s.status === 'present').length} / {auditoriumStudents.length}
             </span>
           </div>
 

@@ -4,13 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { IAgoraRTCClient, IMicrophoneAudioTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
-import { Users, X } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 import { ClassroomHeader } from './ClassroomHeader';
 import { RightSidebar } from './RightSidebar';
 import { Classroom3DCanvas } from './Classroom3DCanvas';
 import { StudentActionModal } from './StudentActionModal';
-import YouTubeStage, { YouTubeRemoteCommand } from './YouTubeStage';
 import { Student, ChatMessage, CameraPreset } from '../types';
 
 let client: IAgoraRTCClient;
@@ -59,9 +58,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   const [micOn, setMicOn] = useState(isHost);
   const [screenSharing, setScreenSharing] = useState(false);
 
-  // 'idle' = nothing on the overlay, 'screen'/'youtube' = the live-presentation panel is up
-  const [videoOverlayMode, setVideoOverlayMode] = useState<'idle' | 'screen' | 'youtube'>('idle');
-
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [canSpeak, setCanSpeak] = useState(isHost);
   const [handRaisedSelf, setHandRaisedSelf] = useState(false);
@@ -73,11 +69,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   const [modalStudent, setModalStudent] = useState<Student | null>(null);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>(isHost ? 'teacher' : 'student-row1');
   const [isSoundMuted, setIsSoundMuted] = useState(false);
-
-  const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
-  const [youtubeRemoteCommand, setYoutubeRemoteCommand] = useState<YouTubeRemoteCommand | null>(null);
-  const [videoUrlInput, setVideoUrlInput] = useState('');
-  const youtubeNonceRef = useRef(0);
 
   // The live screen-share, as a raw MediaStream — texture-mapped straight
   // onto the 3D Smart Board mesh (see Classroom3DCanvas) instead of played
@@ -253,11 +244,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     setMicOn(!micOn);
   };
 
-  const setOverlayModeAndBroadcast = (mode: 'idle' | 'screen' | 'youtube') => {
-    setVideoOverlayMode(mode);
-    channelRef.current?.send({ type: 'broadcast', event: 'video_overlay_mode', payload: { mode } });
-  };
-
   const toggleScreenShare = async () => {
     if (!isHost) return;
     if (screenSharing) {
@@ -272,7 +258,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       setLocalScreenTrack(null);
       setBoardMediaStream(null);
       setScreenSharing(false);
-      setOverlayModeAndBroadcast('idle');
     } else {
       try {
         const AgoraRTC = AgoraRef.current;
@@ -286,23 +271,10 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         const rawTrack = videoTrack.getMediaStreamTrack?.();
         if (rawTrack) setBoardMediaStream(new MediaStream([rawTrack]));
         setScreenSharing(true);
-        setOverlayModeAndBroadcast('screen');
       } catch (err) {
         console.error('Failed to start screen share', err);
       }
     }
-  };
-
-  const handlePlayVideoUrl = () => {
-    if (!isHost) return;
-    const id = extractYouTubeIdLocal(videoUrlInput);
-    if (!id) {
-      alert("Couldn't find a YouTube video in that link — paste the full URL or the 11-character video ID.");
-      return;
-    }
-    setYoutubeVideoId(id);
-    channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'set', videoId: id } });
-    setOverlayModeAndBroadcast('youtube');
   };
 
   const subscribeToSignaling = () => {
@@ -333,14 +305,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       })
       .on('broadcast', { event: 'dismiss_hand' }, ({ payload }: { payload: any }) => {
         if (payload.userId === user?.id) setHandRaisedSelf(false);
-      })
-      .on('broadcast', { event: 'youtube' }, ({ payload }: { payload: any }) => {
-        if (payload.action === 'set') setYoutubeVideoId(payload.videoId);
-        youtubeNonceRef.current += 1;
-        setYoutubeRemoteCommand({ ...payload, nonce: youtubeNonceRef.current });
-      })
-      .on('broadcast', { event: 'video_overlay_mode' }, ({ payload }: { payload: any }) => {
-        setVideoOverlayMode(payload.mode);
       })
       .on('presence', { event: 'sync' }, () => {
         setPresenceState(channel.presenceState());
@@ -422,10 +386,13 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
   // Which camera views this viewer is allowed to switch between. The
   // trainer only gets Podium + Overview; each student only gets the view
-  // matching their own seating row (predicted from their position in the
-  // roster, same order the 3D scene assigns seats in) + Overview — not the
-  // full 6-angle tour, since the other angles belong to other seats/roles.
-  const myIndex = students.findIndex((s) => s.id === user?.id);
+  // matching their own seating row (predicted from their position among
+  // non-host students, the same list+order the 3D scene assigns auditorium
+  // seats from — the host doesn't take a desk, they stand at the podium)
+  // + Overview — not the full 6-angle tour, since the other angles belong
+  // to other seats/roles.
+  const seatedStudents = students.filter((s) => !s.isHost);
+  const myIndex = seatedStudents.findIndex((s) => s.id === user?.id);
   const myRow = myIndex >= 0 ? rowForSeatIndex(myIndex) : 1;
   const myRowPreset: CameraPreset = myRow <= 2 ? 'student-row1' : 'student-row3';
   const allowedPresets: CameraPreset[] = isHost ? ['teacher', 'overview'] : [myRowPreset, 'overview'];
@@ -490,43 +457,8 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
             cameraPreset={cameraPreset}
             onCameraPresetChange={setCameraPreset}
             allowedPresets={allowedPresets}
-            liveBoardStream={videoOverlayMode === 'screen' ? boardMediaStream : null}
+            liveBoardStream={boardMediaStream}
           />
-
-          {/* YouTube "watching together" — kept as a floating panel. Unlike
-              screen-share, a YouTube embed can't be captured into a WebGL
-              texture (cross-origin iframe — no browser lets you read its
-              pixels), so texture-mapping it onto the 3D board isn't
-              technically possible; this stays a panel over the scene. */}
-          {videoOverlayMode === 'youtube' && (
-            <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 w-[560px] max-w-[90%] rounded-2xl overflow-hidden border border-emerald-500/40 shadow-2xl bg-black">
-              <div className="flex items-center justify-between px-3 py-1.5 bg-[#0a0f1d]/95 border-b border-slate-800">
-                <span className="text-[11px] font-semibold text-slate-300">Watching together</span>
-                {isHost && (
-                  <button
-                    onClick={() => setOverlayModeAndBroadcast('idle')}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-              <div className="aspect-video bg-black">
-                <YouTubeStage
-                  isHost={isHost}
-                  videoId={youtubeVideoId}
-                  remoteCommand={youtubeRemoteCommand}
-                  onHostSetVideo={(videoId) => {
-                    setYoutubeVideoId(videoId);
-                    channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'set', videoId } });
-                  }}
-                  onHostPlay={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'play', time } })}
-                  onHostPause={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'pause', time } })}
-                  onHostSeek={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'seek', time } })}
-                />
-              </div>
-            </div>
-          )}
         </main>
 
         <RightSidebar
@@ -542,9 +474,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           onCallOnStudent={callOnStudent}
           screenSharing={screenSharing}
           onToggleScreenShare={toggleScreenShare}
-          videoUrl={videoUrlInput}
-          onVideoUrlChange={setVideoUrlInput}
-          onPlayVideoUrl={handlePlayVideoUrl}
         />
       </div>
 
@@ -560,11 +489,4 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       )}
     </div>
   );
-}
-
-function extractYouTubeIdLocal(input: string): string | null {
-  const trimmed = input.trim();
-  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
-  const m = trimmed.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/);
-  return m ? m[1] : null;
 }

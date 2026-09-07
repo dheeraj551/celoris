@@ -44,6 +44,11 @@ export class Classroom3DScene {
 
   private allSeats: SeatDefinition[] = [];
   private desks: Desk3DObject[] = [];
+  // Standing figure representing the host at the podium — kept separate
+  // from the auditorium desk grid so the trainer no longer occupies a
+  // student seat.
+  private teacherFigureGroup: THREE.Group | null = null;
+  private teacherFigureMaterials: THREE.Material[] = [];
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
 
@@ -1572,7 +1577,9 @@ export class Classroom3DScene {
       { rowLetter: 'E', rowNum: 5, count: 9, z: 12.3, y: 2.50, spacing: 2.6 },
     ];
 
-    // Assign initial students to seat slots
+    // Assign initial students to seat slots — the host doesn't take a
+    // desk anymore; they stand at the podium (see rebuildTeacherFigure()).
+    const seatedStudents = this.students.filter((s) => !s.isHost);
     let studentIndex = 0;
 
     rowTiers.forEach((tier) => {
@@ -1590,8 +1597,8 @@ export class Classroom3DScene {
 
         // Match student to this seat if student exists
         let student: Student | undefined;
-        if (studentIndex < this.students.length) {
-          student = this.students[studentIndex];
+        if (studentIndex < seatedStudents.length) {
+          student = seatedStudents[studentIndex];
           student.row = tier.rowNum;
           student.col = offsetIndex;
           student.seatCode = code;
@@ -1618,6 +1625,58 @@ export class Classroom3DScene {
 
     this.updateSelectionVisuals();
     this.renderPodiumConsole();
+    this.rebuildTeacherFigure();
+  }
+
+  /**
+   * Stands a simple figure for the host at the 3D podium (built in
+   * setupTeacherPodium()), labeled with their name — separate from the
+   * auditorium desk grid so the trainer doesn't occupy a student seat.
+   */
+  private rebuildTeacherFigure() {
+    if (this.teacherFigureGroup) {
+      this.scene.remove(this.teacherFigureGroup);
+      this.teacherFigureMaterials.forEach((m) => m.dispose());
+      this.teacherFigureGroup = null;
+      this.teacherFigureMaterials = [];
+    }
+
+    const teacher = this.students.find((s) => s.isHost);
+    if (!teacher) return;
+
+    const group = new THREE.Group();
+    // Standing just behind the podium (podium sits at x:-4.0, z:-9.6),
+    // angled to match the podium's turn toward the hall.
+    group.position.set(-4.0, 0, -9.95);
+    group.rotation.y = 0.14;
+
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xf5d0b0, roughness: 0.7 });
+    const clothesMat = new THREE.MeshStandardMaterial({ color: teacher.color, roughness: 0.55, metalness: 0.1 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0x2b1c12, roughness: 0.8 });
+    this.teacherFigureMaterials.push(skinMat, clothesMat, hairMat);
+
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.92, 0.38), clothesMat);
+    torso.position.set(0, 1.15, 0);
+    torso.castShadow = true;
+    torso.userData = { studentId: teacher.id, isClickable: true, isTeacherFigure: true };
+    group.add(torso);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.19, 16, 16), skinMat);
+    head.position.set(0, 1.74, 0);
+    head.castShadow = true;
+    head.userData = { studentId: teacher.id, isClickable: true, isTeacherFigure: true };
+    group.add(head);
+
+    const hair = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 14), hairMat);
+    hair.position.set(0, 1.78, -0.02);
+    group.add(hair);
+
+    const nameSprite = this.createNameSprite(teacher, 'Podium');
+    nameSprite.position.set(0, 2.2, 0);
+    group.add(nameSprite);
+
+    this.scene.add(group);
+    this.teacherFigureGroup = group;
   }
 
   private createSeatAndStudentMesh(seat: SeatDefinition): Desk3DObject {
@@ -1836,7 +1895,7 @@ export class Classroom3DScene {
       group.add(studentGroup);
 
       // 5. Floating Name Billboard with Seat Code
-      nameSprite = this.createNameSprite(student, seat.code);
+      nameSprite = this.createNameSprite(student, `Seat ${seat.code}`);
       nameSprite.position.set(0, 1.72, 0.85);
       group.add(nameSprite);
     } else {
@@ -1871,7 +1930,7 @@ export class Classroom3DScene {
     };
   }
 
-  private createNameSprite(student: Student, seatCode: string): THREE.Sprite {
+  private createNameSprite(student: Student, subtitle: string): THREE.Sprite {
     const canvas = document.createElement('canvas');
     canvas.width = 280;
     canvas.height = 70;
@@ -1915,7 +1974,7 @@ export class Classroom3DScene {
 
       ctx.font = '13px system-ui, sans-serif';
       ctx.fillStyle = '#38bdf8';
-      ctx.fillText(`Seat ${seatCode}`, 66, canvas.height / 2 + 15);
+      ctx.fillText(subtitle, 66, canvas.height / 2 + 15);
     }
 
     const texture = new THREE.CanvasTexture(canvas);
@@ -1923,6 +1982,11 @@ export class Classroom3DScene {
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.scale.set(1.5, 0.38, 1);
+    // Always render on top of the scene, regardless of depth or draw order
+    // — these are HUD-style labels, not physical objects, so they should
+    // never get lost behind another mesh from certain camera angles.
+    spriteMat.depthTest = false;
+    sprite.renderOrder = 999;
     return sprite;
   }
 
@@ -1958,6 +2022,8 @@ export class Classroom3DScene {
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.scale.set(1.1, 0.34, 1);
+    spriteMat.depthTest = false;
+    sprite.renderOrder = 999;
     return sprite;
   }
 

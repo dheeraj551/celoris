@@ -416,7 +416,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
           <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-2xl bg-[#0a101f]/90 border border-slate-700/80 shadow-2xl backdrop-blur-md text-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-slate-300 font-medium">
-              Capacity: <strong className="text-white">{students.length} / 40 Seats</strong>
+              Capacity: <strong className="text-white">{students.filter((s) => !s.isHost).length} / 40 Seats</strong>
             </span>
             {onAddNextStudent && (
               <button
