@@ -39,9 +39,28 @@ interface Classroom3DCanvasProps {
   onToggleStudentHand?: (studentId: string) => void;
   cameraPreset: CameraPreset;
   onCameraPresetChange: (preset: CameraPreset) => void;
+  /** Which camera view buttons this viewer may switch between — the
+      trainer only gets Podium + Overview, and each student only gets
+      their own seating-row view + Overview, rather than the full 6-angle
+      tour the original demo exposed to everyone. */
+  allowedPresets: CameraPreset[];
   onAddStudentToSeat?: (seatCode: string) => void;
   onAddNextStudent?: () => void;
+  /** Real live screen-share video, texture-mapped directly onto the 3D
+      Smart Board mesh instead of floated over the scene as a separate
+      panel — keeps the live feed inside the room instead of breaking
+      immersion. Pass null/undefined when nothing is being shared. */
+  liveBoardStream?: MediaStream | null;
 }
+
+const PRESET_META: Record<CameraPreset, { icon: string; label: string; title: string }> = {
+  teacher: { icon: '🎓', label: 'Podium', title: 'Teacher Podium First-Person View' },
+  board: { icon: '📋', label: 'Board Focus', title: 'Zoom directly in front of the Stage Smart Board' },
+  overview: { icon: '🦅', label: 'Overview', title: 'Grand Auditorium High-Angle Overview' },
+  balcony: { icon: '🏛️', label: 'Balcony', title: 'Rear Balcony Perspective' },
+  'student-row1': { icon: '🪑', label: 'Row 1', title: 'Front Row Student Perspective' },
+  'student-row3': { icon: '🪑', label: 'Row 3', title: 'Mid-Tier Seating Perspective' },
+};
 
 const CHALK_PALETTE = [
   { label: 'Yellow', color: '#fef08a' },
@@ -61,11 +80,15 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
   onToggleStudentHand,
   cameraPreset,
   onCameraPresetChange,
+  allowedPresets,
   onAddStudentToSeat,
   onAddNextStudent,
+  liveBoardStream,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sceneRef = useRef<Classroom3DScene | null>(null);
+  const boardVideoRef = useRef<HTMLVideoElement | null>(null);
+  const wasSharingRef = useRef(false);
 
   // Selected empty seat state
   const [selectedSeatCode, setSelectedSeatCode] = useState<string | null>(null);
@@ -159,6 +182,45 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
       sceneRef.current.setCameraPreset(preset);
     }
   };
+
+  // Live screen-share → texture-mapped directly onto the 3D Smart Board,
+  // instead of a floating panel over the scene. Automatically switches the
+  // board into 'screenshare' mode while a stream is attached, and reverts
+  // to 'ready' once it stops (only if we're the ones who put it in
+  // screenshare mode, so we don't clobber the host's own mode choice).
+  useEffect(() => {
+    const videoEl = boardVideoRef.current;
+    if (!videoEl) return;
+
+    if (liveBoardStream) {
+      videoEl.srcObject = liveBoardStream;
+      videoEl.play().catch(() => {});
+      sceneRef.current?.setBoardVideoElement(videoEl);
+      setBoardMode('screenshare');
+      sceneRef.current?.setBoardMode('screenshare', slideIndex, isVideoPlaying);
+      wasSharingRef.current = true;
+    } else {
+      videoEl.srcObject = null;
+      sceneRef.current?.setBoardVideoElement(null);
+      if (wasSharingRef.current) {
+        setBoardMode('ready');
+        sceneRef.current?.setBoardMode('ready', slideIndex, isVideoPlaying);
+      }
+      wasSharingRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveBoardStream]);
+
+  // Keep the 3D camera in sync when the desired preset changes from
+  // outside a click here — e.g. once we learn which row a student was
+  // actually seated in and correct their default view to match.
+  const prevPresetRef = useRef(cameraPreset);
+  useEffect(() => {
+    if (prevPresetRef.current !== cameraPreset) {
+      sceneRef.current?.setCameraPreset(cameraPreset);
+    }
+    prevPresetRef.current = cameraPreset;
+  }, [cameraPreset]);
 
   // Switch board mode
   const handleModeChange = (mode: SmartBoardMode) => {
@@ -274,6 +336,18 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
         className="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"
       />
 
+      {/* Hidden source element for the live screen-share — never shown
+          directly, only sampled as a Three.js VideoTexture on the 3D
+          Smart Board mesh above. */}
+      <video
+        ref={boardVideoRef}
+        muted
+        playsInline
+        autoPlay
+        className="absolute w-px h-px opacity-0 pointer-events-none"
+        aria-hidden="true"
+      />
+
       {/* 2. TOP FLOATING BAR: Camera Presets & Realtime Capacity */}
       <div className="absolute top-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
         {/* Left: Camera View Controls */}
@@ -284,82 +358,28 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
             <span className="text-[10px] text-sky-400/70 ml-1 font-normal bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-800/40">±45° bounded</span>
           </span>
 
-          <button
-            onClick={() => handlePresetSelect('teacher')}
-            className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
-              cameraPreset === 'teacher'
-                ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title="Teacher Podium First-Person View"
-          >
-            <span>🎓 Podium</span>
-          </button>
-
-          <button
-            onClick={() => handlePresetSelect('board')}
-            className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
-              cameraPreset === 'board'
-                ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title="Zoom directly in front of the Stage Smart Board"
-          >
-            <span>📋 Board Focus</span>
-          </button>
-
-          <button
-            onClick={() => handlePresetSelect('overview')}
-            className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
-              cameraPreset === 'overview'
-                ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title="Grand Auditorium High-Angle Overview"
-          >
-            <span>🦅 Overview</span>
-          </button>
-
-          <button
-            onClick={() => handlePresetSelect('balcony')}
-            className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
-              cameraPreset === 'balcony'
-                ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title="Rear Balcony Perspective"
-          >
-            <span>🏛️ Balcony</span>
-          </button>
-
-          <button
-            onClick={() => handlePresetSelect('student-row1')}
-            className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
-              cameraPreset === 'student-row1'
-                ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title="Front Row Student Perspective"
-          >
-            <span>🪑 Row 1</span>
-          </button>
-
-          <button
-            onClick={() => handlePresetSelect('student-row3')}
-            className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
-              cameraPreset === 'student-row3'
-                ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title="Mid-Tier Seating Perspective"
-          >
-            <span>🪑 Row 3</span>
-          </button>
+          {allowedPresets.map((preset) => {
+            const meta = PRESET_META[preset];
+            return (
+              <button
+                key={preset}
+                onClick={() => handlePresetSelect(preset)}
+                className={`px-2.5 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1 ${
+                  cameraPreset === preset
+                    ? 'bg-sky-600 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                }`}
+                title={meta.title}
+              >
+                <span>{meta.icon} {meta.label}</span>
+              </button>
+            );
+          })}
 
           <div className="w-[1px] h-4 bg-slate-700 mx-1" />
 
           <button
-            onClick={() => handlePresetSelect('teacher')}
+            onClick={() => handlePresetSelect(allowedPresets[0])}
             className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             title="Reset View"
           >
@@ -649,12 +669,15 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
           <div className="flex items-center space-x-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => handleModeChange('chalk')}
+              disabled={!!liveBoardStream}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all font-medium ${
-                boardMode === 'chalk'
+                liveBoardStream
+                  ? 'text-slate-600 cursor-not-allowed'
+                  : boardMode === 'chalk'
                   ? 'bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.6)]'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
-              title="Activate Chalk Drawing on 3D Stage Board"
+              title={liveBoardStream ? 'Board is showing the live screen share' : 'Activate Chalk Drawing on 3D Stage Board'}
             >
               <PenTool className="w-3.5 h-3.5 text-blue-400" />
               <span>Chalk / Draw</span>
@@ -662,12 +685,15 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
 
             <button
               onClick={() => handleModeChange('ready')}
+              disabled={!!liveBoardStream}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all font-medium ${
-                boardMode === 'ready'
+                liveBoardStream
+                  ? 'text-slate-600 cursor-not-allowed'
+                  : boardMode === 'ready'
                   ? 'bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.6)]'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
-              title="Display Lecture Slides on 3D Stage Board"
+              title={liveBoardStream ? 'Board is showing the live screen share' : 'Display Lecture Slides on 3D Stage Board'}
             >
               <Presentation className="w-3.5 h-3.5 text-sky-400" />
               <span>Slides</span>
@@ -675,12 +701,15 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
 
             <button
               onClick={() => handleModeChange('video')}
+              disabled={!!liveBoardStream}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all font-medium ${
-                boardMode === 'video'
+                liveBoardStream
+                  ? 'text-slate-600 cursor-not-allowed'
+                  : boardMode === 'video'
                   ? 'bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.6)]'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
-              title="Play Video Simulation on 3D Stage Board"
+              title={liveBoardStream ? 'Board is showing the live screen share' : 'Play Video Simulation on 3D Stage Board'}
             >
               <Tv className="w-3.5 h-3.5 text-purple-400" />
               <span>Video</span>
@@ -800,17 +829,21 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
             </div>
           )}
 
-          <div className="w-[1px] h-5 bg-slate-700" />
+          {allowedPresets.includes('board') && (
+            <>
+              <div className="w-[1px] h-5 bg-slate-700" />
 
-          {/* Quick Board Focus Camera Button */}
-          <button
-            onClick={() => handlePresetSelect('board')}
-            className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium transition-colors"
-            title="Swoop camera right in front of the 3D Stage Board"
-          >
-            <Maximize2 className="w-3.5 h-3.5 text-sky-400" />
-            <span>Focus Board</span>
-          </button>
+              {/* Quick Board Focus Camera Button */}
+              <button
+                onClick={() => handlePresetSelect('board')}
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium transition-colors"
+                title="Swoop camera right in front of the 3D Stage Board"
+              >
+                <Maximize2 className="w-3.5 h-3.5 text-sky-400" />
+                <span>Focus Board</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

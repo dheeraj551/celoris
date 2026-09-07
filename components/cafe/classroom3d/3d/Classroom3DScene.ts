@@ -58,6 +58,11 @@ export class Classroom3DScene {
   // Smart Board in 3D
   public smartBoardMesh: THREE.Mesh | null = null;
   public smartBoardTexture: THREE.CanvasTexture | null = null;
+  private smartBoardMaterial: THREE.MeshBasicMaterial | null = null;
+  /** Live screen-share/video texture, swapped in over smartBoardTexture so
+      real video renders directly on the 3D board mesh (respecting camera
+      perspective/occlusion) instead of floating over the scene. */
+  public smartBoardVideoTexture: THREE.VideoTexture | null = null;
   public boardCanvas: HTMLCanvasElement;
   public boardCtx: CanvasRenderingContext2D | null;
 
@@ -1035,6 +1040,7 @@ export class Classroom3DScene {
     const boardScreenMat = new THREE.MeshBasicMaterial({
       map: this.smartBoardTexture,
     });
+    this.smartBoardMaterial = boardScreenMat;
 
     const screenGeo = new THREE.PlaneGeometry(boardWidth, boardHeight);
     this.smartBoardMesh = new THREE.Mesh(screenGeo, boardScreenMat);
@@ -2092,6 +2098,32 @@ export class Classroom3DScene {
     this.renderBoardContent();
   }
 
+  /**
+   * Swaps the 3D Smart Board's texture to a live <video> element — real
+   * screen-share, texture-mapped directly onto the stage board mesh rather
+   * than floated over the whole hall as a separate 2D panel, so it stays
+   * inside the 3D scene (correct perspective, gets occluded like anything
+   * else on stage) instead of breaking immersion. Pass null to revert the
+   * board to its normal decorative canvas (slides/chalk/video-sim).
+   */
+  public setBoardVideoElement(videoEl: HTMLVideoElement | null) {
+    if (this.smartBoardVideoTexture) {
+      this.smartBoardVideoTexture.dispose();
+      this.smartBoardVideoTexture = null;
+    }
+    if (!this.smartBoardMaterial) return;
+    if (videoEl) {
+      const texture = new THREE.VideoTexture(videoEl);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      this.smartBoardVideoTexture = texture;
+      this.smartBoardMaterial.map = texture;
+    } else {
+      this.smartBoardMaterial.map = this.smartBoardTexture;
+    }
+    this.smartBoardMaterial.needsUpdate = true;
+  }
+
   public nextSlide() {
     this.slideIndex = (this.slideIndex + 1) % 4;
     this.renderBoardContent();
@@ -2372,6 +2404,10 @@ export class Classroom3DScene {
   public destroy() {
     if (this.animFrameId !== null) {
       cancelAnimationFrame(this.animFrameId);
+    }
+    if (this.smartBoardVideoTexture) {
+      this.smartBoardVideoTexture.dispose();
+      this.smartBoardVideoTexture = null;
     }
     this.controls.dispose();
     this.renderer.dispose();

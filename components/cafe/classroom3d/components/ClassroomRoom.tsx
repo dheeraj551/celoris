@@ -33,6 +33,21 @@ function colorForId(id: string) {
   return SEAT_PALETTE[hash % SEAT_PALETTE.length];
 }
 
+// Seat tier sizes (mirrors Classroom3DScene.rebuildAuditoriumSeats' rowTiers
+// counts: Row A=6, B=8, C=8, D=9, E=9) — used to predict which row a
+// student will land in purely from their position in the (deterministically
+// sorted) roster array, so we know which camera view to offer them before
+// the 3D scene has actually assigned seats.
+const SEAT_TIER_COUNTS = [6, 8, 8, 9, 9];
+function rowForSeatIndex(index: number): number {
+  let cumulative = 0;
+  for (let i = 0; i < SEAT_TIER_COUNTS.length; i++) {
+    cumulative += SEAT_TIER_COUNTS[i];
+    if (index < cumulative) return i + 1;
+  }
+  return SEAT_TIER_COUNTS.length;
+}
+
 export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: ClassroomRoomProps) {
   const { profile, user } = useAuth();
 
@@ -64,12 +79,18 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   const [videoUrlInput, setVideoUrlInput] = useState('');
   const youtubeNonceRef = useRef(0);
 
-  const screenShareRef = useRef<HTMLDivElement>(null);
+  // The live screen-share, as a raw MediaStream — texture-mapped straight
+  // onto the 3D Smart Board mesh (see Classroom3DCanvas) instead of played
+  // into a floating DOM panel, so it stays inside the room instead of
+  // breaking immersion. Holds either our own local share (when we're the
+  // host presenting) or the host's remote share (when we're a student
+  // watching it) — only one can ever be active at a time.
+  const [boardMediaStream, setBoardMediaStream] = useState<MediaStream | null>(null);
+
   const supabase = createClient();
   const AgoraRef = useRef<any>(null);
   const channelRef = useRef<any>(null);
   const heartbeatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pendingScreenTrackRef = useRef<any>(null);
 
   const presenceTrack = (overrides: Partial<{ handRaised: boolean; canSpeak: boolean; micOn: boolean }> = {}) => {
     if (!channelRef.current || !user) return;
@@ -157,15 +178,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, user?.id]);
 
-  // Plays the pending screen track once the overlay is actually mounted.
-  useEffect(() => {
-    if (videoOverlayMode !== 'screen' || !screenShareRef.current) return;
-    const track = pendingScreenTrackRef.current;
-    if (!track) return;
-    if (Array.isArray(track)) track[0].play(screenShareRef.current);
-    else track.play(screenShareRef.current);
-  }, [videoOverlayMode]);
-
   // Keep our Presence payload in sync with our own hand/mic state, and
   // re-broadcast once `profile` finishes loading (it's async, so the very
   // first track() call may fire before profile.full_name is available).
@@ -223,12 +235,17 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     await client.subscribe(remoteUser, mediaType);
     if (mediaType === 'audio') remoteUser.audioTrack?.play();
     if (mediaType === 'video' && remoteUser.videoTrack) {
-      pendingScreenTrackRef.current = remoteUser.videoTrack;
-      if (screenShareRef.current) remoteUser.videoTrack.play(screenShareRef.current);
+      // Pull the raw MediaStreamTrack (rather than letting Agora's SDK
+      // mount its own <video> into a DOM panel) so it can be sampled
+      // straight into a Three.js VideoTexture on the 3D board mesh.
+      const track = remoteUser.videoTrack.getMediaStreamTrack?.();
+      if (track) setBoardMediaStream(new MediaStream([track]));
     }
   };
 
-  const handleUserUnpublished = (_remoteUser: any, _mediaType: 'audio' | 'video') => {};
+  const handleUserUnpublished = (_remoteUser: any, mediaType: 'audio' | 'video') => {
+    if (mediaType === 'video') setBoardMediaStream(null);
+  };
 
   const toggleMic = async () => {
     if (!canSpeak || !localAudioTrack) return;
@@ -253,7 +270,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         localScreenTrack.close();
       }
       setLocalScreenTrack(null);
-      pendingScreenTrackRef.current = null;
+      setBoardMediaStream(null);
       setScreenSharing(false);
       setOverlayModeAndBroadcast('idle');
     } else {
@@ -262,7 +279,12 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         const screenTrack = await AgoraRTC.createScreenVideoTrack({}, 'auto');
         await client.publish(screenTrack);
         setLocalScreenTrack(screenTrack);
-        pendingScreenTrackRef.current = screenTrack;
+        // 'auto' can return either a lone video track or a [video, audio]
+        // tuple depending on whether the browser let the user share system
+        // audio — either way, the video track is what feeds the 3D board.
+        const videoTrack = Array.isArray(screenTrack) ? screenTrack[0] : screenTrack;
+        const rawTrack = videoTrack.getMediaStreamTrack?.();
+        if (rawTrack) setBoardMediaStream(new MediaStream([rawTrack]));
         setScreenSharing(true);
         setOverlayModeAndBroadcast('screen');
       } catch (err) {
@@ -398,6 +420,25 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   const presentCount = students.filter((s) => s.status === 'present').length;
   const handsCount = students.filter((s) => s.isHandRaised).length;
 
+  // Which camera views this viewer is allowed to switch between. The
+  // trainer only gets Podium + Overview; each student only gets the view
+  // matching their own seating row (predicted from their position in the
+  // roster, same order the 3D scene assigns seats in) + Overview — not the
+  // full 6-angle tour, since the other angles belong to other seats/roles.
+  const myIndex = students.findIndex((s) => s.id === user?.id);
+  const myRow = myIndex >= 0 ? rowForSeatIndex(myIndex) : 1;
+  const myRowPreset: CameraPreset = myRow <= 2 ? 'student-row1' : 'student-row3';
+  const allowedPresets: CameraPreset[] = isHost ? ['teacher', 'overview'] : [myRowPreset, 'overview'];
+
+  // Correct a student's default camera view once we know which row they
+  // actually landed in — the very first render (before Presence has come
+  // back) can't know this yet, so it starts at the row-1 default above.
+  useEffect(() => {
+    if (isHost) return;
+    setCameraPreset((prev) => (prev === 'overview' ? prev : myRowPreset));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myRowPreset, isHost]);
+
   if (roomFullError) {
     return (
       <div className="flex h-[80vh] w-full rounded-2xl overflow-hidden bg-[#070b14] border border-slate-800 shadow-2xl items-center justify-center p-8">
@@ -448,21 +489,22 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
             onToggleStudentHand={(id) => { if (id === user?.id) toggleOwnHand(); }}
             cameraPreset={cameraPreset}
             onCameraPresetChange={setCameraPreset}
+            allowedPresets={allowedPresets}
+            liveBoardStream={videoOverlayMode === 'screen' ? boardMediaStream : null}
           />
 
-          {/* Real live-presentation overlay (screen-share / YouTube) — flat
-              panel over the 3D hall, per the decision to keep the in-world
-              board purely decorative rather than texture-mapping live video
-              onto the 3D mesh. */}
-          {videoOverlayMode !== 'idle' && (
+          {/* YouTube "watching together" — kept as a floating panel. Unlike
+              screen-share, a YouTube embed can't be captured into a WebGL
+              texture (cross-origin iframe — no browser lets you read its
+              pixels), so texture-mapping it onto the 3D board isn't
+              technically possible; this stays a panel over the scene. */}
+          {videoOverlayMode === 'youtube' && (
             <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 w-[560px] max-w-[90%] rounded-2xl overflow-hidden border border-emerald-500/40 shadow-2xl bg-black">
               <div className="flex items-center justify-between px-3 py-1.5 bg-[#0a0f1d]/95 border-b border-slate-800">
-                <span className="text-[11px] font-semibold text-slate-300">
-                  {videoOverlayMode === 'screen' ? 'Screen share' : 'Watching together'}
-                </span>
+                <span className="text-[11px] font-semibold text-slate-300">Watching together</span>
                 {isHost && (
                   <button
-                    onClick={() => (videoOverlayMode === 'screen' ? toggleScreenShare() : setOverlayModeAndBroadcast('idle'))}
+                    onClick={() => setOverlayModeAndBroadcast('idle')}
                     className="text-slate-400 hover:text-white"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -470,21 +512,18 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
                 )}
               </div>
               <div className="aspect-video bg-black">
-                {videoOverlayMode === 'screen' && <div ref={screenShareRef} className="w-full h-full" />}
-                {videoOverlayMode === 'youtube' && (
-                  <YouTubeStage
-                    isHost={isHost}
-                    videoId={youtubeVideoId}
-                    remoteCommand={youtubeRemoteCommand}
-                    onHostSetVideo={(videoId) => {
-                      setYoutubeVideoId(videoId);
-                      channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'set', videoId } });
-                    }}
-                    onHostPlay={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'play', time } })}
-                    onHostPause={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'pause', time } })}
-                    onHostSeek={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'seek', time } })}
-                  />
-                )}
+                <YouTubeStage
+                  isHost={isHost}
+                  videoId={youtubeVideoId}
+                  remoteCommand={youtubeRemoteCommand}
+                  onHostSetVideo={(videoId) => {
+                    setYoutubeVideoId(videoId);
+                    channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'set', videoId } });
+                  }}
+                  onHostPlay={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'play', time } })}
+                  onHostPause={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'pause', time } })}
+                  onHostSeek={(time) => channelRef.current?.send({ type: 'broadcast', event: 'youtube', payload: { action: 'seek', time } })}
+                />
               </div>
             </div>
           )}
