@@ -23,7 +23,7 @@ export function computeSeatLayout(
     const width = Math.max(containerWidth, 1)
     const height = Math.max(containerHeight, 1)
 
-    const hostSize = Math.min(width * 0.22, height * 0.42, 140)
+    const hostSize = Math.min(width * 0.22, height * 0.42, 116)
     const host: SeatRect = {
         x: width / 2,
         y: hostSize / 2 + 16,
@@ -45,7 +45,10 @@ export function computeSeatLayout(
 
     const cellW = width / cols
     const cellH = Math.min(gridHeight / rows, cellW)
-    const seatSize = Math.max(Math.min(cellW, cellH) * 0.72, 40)
+    // Capped at 96 so a nearly-empty room doesn't balloon a lone student
+    // into a giant circle just because there's empty space to fill — seats
+    // should look like seats at any headcount, not stretch to fit the room.
+    const seatSize = Math.min(Math.max(Math.min(cellW, cellH) * 0.72, 40), 96)
 
     const students: SeatRect[] = []
     for (let i = 0; i < studentCount; i++) {

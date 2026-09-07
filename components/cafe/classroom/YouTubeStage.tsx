@@ -80,10 +80,17 @@ export default function YouTubeStage({
 }: YouTubeStageProps) {
     const mountRef = useRef<HTMLDivElement>(null)
     const playerRef = useRef<any>(null)
-    const readyRef = useRef(false)
     const suppressEventsRef = useRef(false)
     const [urlInput, setUrlInput] = useState('')
     const [playing, setPlaying] = useState(false)
+    // State, not a ref, on purpose: the video-id and remote-command effects
+    // below both need to *re-run* once the player finishes loading, in case
+    // the host's broadcast (a student's client just mounted this component
+    // and is still creating the iframe/player — which can easily take a
+    // second or more) arrived before we were ready for it. A ref flip
+    // wouldn't trigger that re-run and the video would silently never load;
+    // this is exactly the bug that made the video invisible to students.
+    const [isReady, setIsReady] = useState(false)
     const lastNonceRef = useRef<number>(-1)
 
     useEffect(() => {
@@ -95,7 +102,7 @@ export default function YouTubeStage({
                 width: '100%',
                 playerVars: { rel: 0, modestbranding: 1 },
                 events: {
-                    onReady: () => { readyRef.current = true },
+                    onReady: () => { setIsReady(true) },
                     onStateChange: (e: any) => {
                         if (!isHost || suppressEventsRef.current) return
                         const time = playerRef.current?.getCurrentTime?.() || 0
@@ -112,6 +119,7 @@ export default function YouTubeStage({
         })
         return () => {
             cancelled = true
+            setIsReady(false)
             playerRef.current?.destroy?.()
             playerRef.current = null
         }
@@ -119,19 +127,22 @@ export default function YouTubeStage({
     }, [])
 
     // Load whatever video the host has set, for everyone (host included).
+    // Re-runs on isReady too, so a videoId that arrived while the player was
+    // still loading gets picked up the moment it becomes ready instead of
+    // being silently dropped.
     useEffect(() => {
-        if (!videoId || !readyRef.current || !playerRef.current) return
+        if (!videoId || !isReady || !playerRef.current) return
         suppressEventsRef.current = true
         playerRef.current.cueVideoById(videoId)
         setTimeout(() => { suppressEventsRef.current = false }, 300)
-    }, [videoId])
+    }, [videoId, isReady])
 
     // Apply commands that came in from the host over Realtime broadcast.
     useEffect(() => {
         if (!remoteCommand || remoteCommand.nonce === lastNonceRef.current) return
-        lastNonceRef.current = remoteCommand.nonce
         if (isHost) return // host is the source of truth, don't echo its own commands back
-        if (!readyRef.current || !playerRef.current) return
+        if (!isReady || !playerRef.current) return
+        lastNonceRef.current = remoteCommand.nonce
 
         suppressEventsRef.current = true
         const p = playerRef.current
@@ -149,7 +160,7 @@ export default function YouTubeStage({
             p.seekTo(remoteCommand.time, true)
         }
         setTimeout(() => { suppressEventsRef.current = false }, 300)
-    }, [remoteCommand, isHost])
+    }, [remoteCommand, isHost, isReady])
 
     const submitUrl = (e: React.FormEvent) => {
         e.preventDefault()

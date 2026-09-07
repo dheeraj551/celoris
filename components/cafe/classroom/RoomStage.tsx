@@ -131,6 +131,14 @@ export default function RoomStage({ seats, className }: RoomStageProps) {
         node.addChild(micBadge)
         node.__micBadge = micBadge
 
+        const nameLabel = new PIXI.Text({
+            text: seat.name || '',
+            style: { fill: 0xd1d5db, fontSize: 11, fontWeight: '600', fontFamily: 'sans-serif' },
+        })
+        nameLabel.anchor.set(0.5, 0)
+        node.addChild(nameLabel)
+        node.__nameLabel = nameLabel
+
         return node
     }
 
@@ -229,6 +237,10 @@ export default function RoomStage({ seats, className }: RoomStageProps) {
             }
             node.__initials.style.fontSize = Math.max(rect.size * 0.36, 10)
             node.__initials.text = (seat.name || '?').trim().charAt(0).toUpperCase() || '?'
+
+            node.__nameLabel.text = seat.name || (seat.isHost ? 'Host' : 'Student')
+            node.__nameLabel.y = rect.size / 2 + 6
+            node.__nameLabel.style.fontSize = seat.isHost ? 12 : 10
 
             node.__handBadge.clear()
             if (seat.handRaised && !seat.canSpeak) {
