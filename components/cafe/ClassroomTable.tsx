@@ -181,11 +181,20 @@ export default function ClassroomTable({ roomId, roomName, isHost, onLeave }: Cl
     else track.play(screenShareRef.current);
   }, [stageMode]);
 
-  // Keep our Presence payload in sync whenever our own hand/mic state changes.
+  // Keep our Presence payload in sync whenever our own hand/mic state
+  // changes — and ALSO whenever `profile` itself changes. profile loads
+  // asynchronously in AuthProvider (two separate table fetches), so it's
+  // very possible for this component's initial channel.track() call (in
+  // subscribeToSignaling, below) to fire before profile has finished
+  // loading — which would broadcast our own seat with no avatar and a
+  // generic "Host"/"Student" name to everyone else, permanently, until
+  // something else happened to trigger a re-track. Re-tracking here the
+  // moment profile's fields actually arrive closes that race without
+  // relying on the user happening to toggle their hand or mic afterwards.
   useEffect(() => {
     presenceTrack();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handRaisedSelf, canSpeak, micOn]);
+  }, [handRaisedSelf, canSpeak, micOn, profile?.avatar_url, profile?.full_name]);
 
   const joinChannel = async (uid: string, channel: string) => {
     try {

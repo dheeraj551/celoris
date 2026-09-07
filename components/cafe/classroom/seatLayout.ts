@@ -30,8 +30,15 @@ export function computeSeatLayout(
         size: hostSize,
     }
 
+    // Every seat's name label is drawn *below* its circle (see RoomStage's
+    // nameLabel), so each row needs headroom for that label, not just the
+    // circle itself — otherwise a row's label bleeds into the row below it,
+    // and for the LAST row specifically, past the container's bottom edge,
+    // where the parent's overflow-hidden silently clips it. That's what was
+    // causing "some student names are visible, some aren't."
+    const LABEL_ALLOWANCE = 22
     const gridTop = hostSize + 48
-    const gridHeight = Math.max(height - gridTop - 16, 60)
+    const gridHeight = Math.max(height - gridTop - (16 + LABEL_ALLOWANCE), 60)
 
     if (studentCount === 0) {
         return { host, students: [] }
@@ -48,7 +55,9 @@ export function computeSeatLayout(
     // Capped at 96 so a nearly-empty room doesn't balloon a lone student
     // into a giant circle just because there's empty space to fill — seats
     // should look like seats at any headcount, not stretch to fit the room.
-    const seatSize = Math.min(Math.max(Math.min(cellW, cellH) * 0.72, 40), 96)
+    // Also shrunk by LABEL_ALLOWANCE so the name label always has room
+    // inside the seat's own row band instead of overlapping the next one.
+    const seatSize = Math.min(Math.max(Math.min(cellW, cellH - LABEL_ALLOWANCE) * 0.72, 40), 96)
 
     const students: SeatRect[] = []
     for (let i = 0; i < studentCount; i++) {
