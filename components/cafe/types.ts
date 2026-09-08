@@ -21,10 +21,15 @@ export interface Room {
   /** Free-text note the host can set so students see when to come back
       (e.g. "Next batch 6 PM today") — most useful once the room is Full. */
   nextBatchInfo?: string;
-  /** True when the host has set an admit code — the code ITSELF never
-      reaches the browser via this Room object; only this boolean does
-      (see app/social/page.tsx fetchRooms, which never selects admit_code). */
-  requiresAdmitCode?: boolean;
+  /** True when a student code is set on this room — the code ITSELF never
+      reaches the browser via this Room object; only this boolean does (see
+      app/social/page.tsx fetchRooms, which never selects the actual code
+      columns). Gates the join flow for ordinary students. */
+  requiresStudentCode?: boolean;
+  /** True when a separate trainer code is set on this room. Doesn't gate
+      ordinary student entry by itself (only requiresStudentCode does) — it
+      just means someone can also enter as trainer via that code. */
+  requiresTrainerCode?: boolean;
   /** Trainer-linked course — shown as a clickable cover-image preview on
       the lobby card so browsing students can jump straight to it. */
   courseUrl?: string;

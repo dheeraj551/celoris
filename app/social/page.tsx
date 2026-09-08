@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { MOCK_ROOMS, MOCK_USERS } from '@/components/cafe/data/mockData';
+import { MOCK_USERS } from '@/components/cafe/data/mockData';
 import { Room, User } from '@/components/cafe/types';
 import LandingHero from '@/components/cafe/LandingHero';
 import RoomsGrid from '@/components/cafe/RoomsGrid';
@@ -34,7 +34,6 @@ import {
   User as UserIcon,
   ShieldCheck,
   ChevronRight,
-  Plus,
   Lock
 } from 'lucide-react';
 
@@ -44,33 +43,28 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isOnlineListOpen, setIsOnlineListOpen] = useState<boolean>(false);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState<boolean>(false);
-  const [createRoomModalOpen, setCreateRoomModalOpen] = useState<boolean>(false);
-  
-  // Custom states for the custom room creation mockup
-  const [newRoomName, setNewRoomName] = useState('');
-  const [newRoomDesc, setNewRoomDesc] = useState('');
-  const [newRoomCat, setNewRoomCat] = useState<'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom'>('study');
-  const [newRoomTags, setNewRoomTags] = useState('');
-  const [newTrainerName, setNewTrainerName] = useState('');
-  const [newMaxStudents, setNewMaxStudents] = useState('15');
-  const [newClassStatus, setNewClassStatus] = useState<'Ready' | 'Live' | 'Full'>('Ready');
-  const [newNextBatchInfo, setNewNextBatchInfo] = useState('');
-  const [newAdmitCode, setNewAdmitCode] = useState('');
-  const [newCourseUrl, setNewCourseUrl] = useState('');
-  const [newCourseTitle, setNewCourseTitle] = useState('');
-  const [newCourseImageUrl, setNewCourseImageUrl] = useState('');
-  const [newCourseDescription, setNewCourseDescription] = useState('');
   const [allRooms, setAllRooms] = useState<Room[]>([]); // Initialize empty for realtime rooms
 
-  // "Admit code" gate — asked for a room the student is trying to join
-  // when the host has set one. The code itself is never fetched into this
-  // page's state; it's verified server-side (see submitAdmitCode below).
+  // Room creation now lives in the admin dashboard (Admin → Social
+  // Management → Café Rooms) instead of here — students/trainers no longer
+  // get a "Host Custom Table" button on this page at all.
+
+  // Room-entry code gate — asked when a room has a student_code and/or
+  // trainer_code set (see requiresStudentCode/requiresTrainerCode on Room).
+  // The code itself is never fetched into this page's state; it's verified
+  // server-side (see submitAdmitCode below), which also tells us whether
+  // whoever typed it in matched the trainer code or the student code.
   const [admitModalRoom, setAdmitModalRoom] = useState<Room | null>(null);
   const [admitCodeInput, setAdmitCodeInput] = useState('');
   const [admitCodeError, setAdmitCodeError] = useState<string | null>(null);
   const [verifyingAdmitCode, setVerifyingAdmitCode] = useState(false);
+  // The role resolved for whichever room we're currently seated at — 'host'
+  // for a legacy directly-owned room or 'trainer' (matched the room's
+  // trainer_code) get the full trainer experience in ClassroomTable
+  // (isHost=true: mic, podium, calling on students); 'student' does not.
+  const [joinedRoomRole, setJoinedRoomRole] = useState<'host' | 'trainer' | 'student' | null>(null);
   const supabase = createClient();
-  const { profile, user } = useAuth();
+  const { user } = useAuth();
 
   // Current logged in user info (mocked)
   const currentUser = {
@@ -93,23 +87,25 @@ export default function App() {
   // Fetch rooms and subscribe to realtime updates
   useEffect(() => {
     const fetchRooms = async () => {
-      // Explicit column list — deliberately EXCLUDES admit_code. Any room
-      // needing a code is still flagged via requires_admit_code (a
-      // generated boolean), so the lobby can show "code required" without
-      // the actual code ever reaching a student's browser. See
-      // /api/social/cafe/verify-admit-code for where it's actually checked.
+      // Explicit column list — deliberately EXCLUDES trainer_code/
+      // student_code. Any room needing a code is still flagged via
+      // requires_student_code / requires_trainer_code (generated booleans),
+      // so the lobby can show "code required" without either actual code
+      // ever reaching a student's browser. See
+      // /api/social/cafe/verify-admit-code for where they're actually checked.
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_admit_code, course_url, course_title, course_image_url, course_description, created_at')
+        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_student_code, requires_trainer_code, course_url, course_title, course_image_url, course_description, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        // Trainer name, capacity and class status are entered by the host
-        // directly on the room (see handleCreateRoomSubmit) instead of being
-        // looked up from `profiles` — that lookup was unreliable (missing
-        // full_name/avatar_url) and is what produced the "Host" placeholder
-        // and the broken avatar image on the lobby cards.
+        // Trainer name, capacity and class status are entered directly on
+        // the room (now only via the admin dashboard's Café Rooms panel)
+        // instead of being looked up from `profiles` — that lookup was
+        // unreliable (missing full_name/avatar_url) and is what produced
+        // the "Host" placeholder and the broken avatar image on the lobby
+        // cards.
         const mappedRooms: Room[] = data.map((r: any) => {
           const trainerName = r.trainer_name || 'Trainer';
           return {
@@ -124,7 +120,8 @@ export default function App() {
             maxStudents: r.max_students || 15,
             status: (r.class_status as any) || 'Ready',
             nextBatchInfo: r.next_batch_info || undefined,
-            requiresAdmitCode: !!r.requires_admit_code,
+            requiresStudentCode: !!r.requires_student_code,
+            requiresTrainerCode: !!r.requires_trainer_code,
             courseUrl: r.course_url || undefined,
             courseTitle: r.course_title || undefined,
             courseImageUrl: r.course_image_url || undefined,
@@ -168,17 +165,26 @@ export default function App() {
     const room = allRooms.find((r) => r.id === roomId);
     const isRoomHost = !!room?.host?.id && room.host.id === user?.id;
 
-    // Gate entry behind the trainer's admit code, if they've set one — the
-    // host themselves always gets straight in. The code is verified
-    // server-side (see submitAdmitCode); this page never holds the real
-    // code value.
-    if (room?.requiresAdmitCode && !isRoomHost) {
+    // Legacy rooms created directly by a user (before room creation moved
+    // to admin-only) still let their actual DB owner straight in.
+    if (isRoomHost) {
+      setJoinedRoomRole('host');
+      setJoinedRoomId(roomId);
+      setActiveTab('cafe');
+      return;
+    }
+
+    // Gate entry behind the room's trainer/student code, if either is set.
+    // The code is verified server-side (see submitAdmitCode), which also
+    // tells us which one matched — this page never holds either real code.
+    if (room?.requiresStudentCode || room?.requiresTrainerCode) {
       setAdmitModalRoom(room);
       setAdmitCodeInput('');
       setAdmitCodeError(null);
       return;
     }
 
+    setJoinedRoomRole('student');
     setJoinedRoomId(roomId);
     setActiveTab('cafe'); // force switch to cafe tab to show active session
   };
@@ -199,12 +205,13 @@ export default function App() {
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok || !result.ok) {
-        setAdmitCodeError(result.error || 'Incorrect admit code.');
+        setAdmitCodeError(result.error || 'Incorrect code.');
         setVerifyingAdmitCode(false);
         return;
       }
 
       const roomId = admitModalRoom.id;
+      setJoinedRoomRole(result.role || 'student');
       setAdmitModalRoom(null);
       setVerifyingAdmitCode(false);
       setJoinedRoomId(roomId);
@@ -214,89 +221,6 @@ export default function App() {
       setAdmitCodeError('Something went wrong. Try again.');
       setVerifyingAdmitCode(false);
     }
-  };
-
-  const handleCreateRoomSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newRoomName.trim() || !newRoomDesc.trim() || !newTrainerName.trim()) return;
-
-    if (newRoomCat === 'classroom') {
-      const credits = profile?.wallet_balance || 0;
-      if (credits < 500) {
-        alert("You need at least 500 credits to host a Classroom Table. Please upgrade or earn more credits.");
-        return;
-      }
-    }
-
-    const tagsArray = newRoomTags
-      .split(',')
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
-
-    const capacity = Math.min(200, Math.max(1, parseInt(newMaxStudents, 10) || 15));
-
-    const { data, error } = await supabase
-      .from('cafe_classrooms')
-      .insert({
-        name: newRoomName,
-        description: newRoomDesc,
-        category: newRoomCat,
-        tags: tagsArray,
-        host_id: user?.id,
-        trainer_name: newTrainerName.trim(),
-        max_students: capacity,
-        class_status: newClassStatus,
-        current_students: 1,
-        next_batch_info: newNextBatchInfo.trim() || null,
-        admit_code: newAdmitCode.trim() || null,
-        course_url: newCourseUrl.trim() || null,
-        course_title: newCourseTitle.trim() || null,
-        course_image_url: newCourseImageUrl.trim() || null,
-        course_description: newCourseDescription.trim() || null,
-        is_active: true
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error(error);
-      alert("Failed to create room.");
-      return;
-    }
-
-    setNewRoomName('');
-    setNewRoomDesc('');
-    setNewRoomTags('');
-    setNewTrainerName('');
-    setNewMaxStudents('15');
-    setNewClassStatus('Ready');
-    setNewNextBatchInfo('');
-    setNewAdmitCode('');
-    setNewCourseUrl('');
-    setNewCourseTitle('');
-    setNewCourseImageUrl('');
-    setNewCourseDescription('');
-    setCreateRoomModalOpen(false);
-
-    // Auto-join the newly created room
-    setJoinedRoomId(data.id);
-    setActiveTab('cafe');
-  };
-
-  const loadTemplate = (template: Room) => {
-    setNewRoomName(template.name);
-    setNewRoomDesc(template.description);
-    setNewRoomCat(template.category);
-    setNewRoomTags(template.tags.join(', '));
-  };
-
-  // Opens the "Host Custom Table" modal, pre-filling the trainer name with
-  // the logged-in user's own name so hosts don't have to retype it every time.
-  const openCreateRoomModal = () => {
-    if (!newTrainerName.trim() && profile?.full_name) {
-      setNewTrainerName(profile.full_name);
-    }
-    setCreateRoomModalOpen(true);
   };
 
   const inviteUserToTable = (userName: string) => {
@@ -387,10 +311,9 @@ export default function App() {
                   </p>
                 </div>
 
-                <RoomsGrid 
-                  rooms={allRooms} 
+                <RoomsGrid
+                  rooms={allRooms}
                   onJoinRoom={handleJoinRoom}
-                  onCreateRoom={() => setCreateRoomModalOpen(true)}
                   currentUser={user}
                   onDeleteRoom={handleDeleteRoom}
                 />
@@ -434,16 +357,16 @@ export default function App() {
               {joinedRoomId && joinedRoom ? (
                 // Seated Chat / Virtual Table View
                 joinedRoom.category === 'classroom' ? (
-                  <ClassroomTable 
+                  <ClassroomTable
                     roomId={joinedRoom.id}
                     roomName={joinedRoom.name}
-                    isHost={joinedRoom.host?.id === user?.id}
-                    onLeave={() => setJoinedRoomId(null)}
+                    isHost={joinedRoomRole === 'host' || joinedRoomRole === 'trainer'}
+                    onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
                   />
                 ) : (
-                  <ChatRoom 
-                    room={joinedRoom} 
-                    onLeave={() => setJoinedRoomId(null)} 
+                  <ChatRoom
+                    room={joinedRoom}
+                    onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
                     currentUser={currentUser}
                   />
                 )
@@ -462,24 +385,15 @@ export default function App() {
                         CELORIS CAFÉ TABLES
                       </h2>
                     </div>
-
-                    <button 
-                      onClick={openCreateRoomModal}
-                      className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4 stroke-[2.5]" />
-                      <span>Host Custom Table</span>
-                    </button>
                   </div>
 
-                  <RoomsGrid 
-                    rooms={allRooms} 
+                  <RoomsGrid
+                    rooms={allRooms}
                     onJoinRoom={handleJoinRoom}
-                    onCreateRoom={() => setCreateRoomModalOpen(true)}
                     currentUser={user}
                     onDeleteRoom={handleDeleteRoom}
                   />
-                  
+
                   {/* Safe secure reminder within lobby list */}
                   <div className="mt-8">
                     <SafeSecure />
@@ -684,212 +598,10 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: HOST CUSTOM THEMED ROOM */}
-      {createRoomModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            onClick={() => setCreateRoomModalOpen(false)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-          />
-
-          <div className="relative bg-[#0d0d0d] border border-emerald-950/40 rounded-3xl max-w-md w-full p-6 md:p-8 space-y-6 shadow-2xl animate-fade-in">
-            <button 
-              onClick={() => setCreateRoomModalOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-emerald-950/30 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="text-center space-y-2">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-2">
-                <Coffee className="w-5 h-5 text-emerald-400" />
-              </div>
-              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Host Custom Table</h3>
-              <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
-                Invite friends or open it up to the entire Indian campus roster to sit and study with you.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block text-center">Quick Templates</label>
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                {MOCK_ROOMS.map((template) => (
-                  <button
-                    key={template.id}
-                    type="button"
-                    onClick={() => loadTemplate(template)}
-                    className="flex-none w-32 p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30 hover:border-emerald-500/50 hover:bg-emerald-900/40 text-left transition-all snap-start"
-                  >
-                    <div className="text-xs font-bold text-emerald-400 truncate">{template.name}</div>
-                    <div className="text-[9px] text-gray-500 truncate mt-1">{template.category}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <form onSubmit={handleCreateRoomSubmit} className="space-y-4 text-left">
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Table Name</label>
-                <input 
-                  type="text"
-                  placeholder="e.g. SRCC Economics Board Room"
-                  value={newRoomName}
-                  onChange={(e) => setNewRoomName(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Trainer Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Coach Yash Verma"
-                  value={newTrainerName}
-                  onChange={(e) => setNewTrainerName(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Student Capacity</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={200}
-                    placeholder="15"
-                    value={newMaxStudents}
-                    onChange={(e) => setNewMaxStudents(e.target.value)}
-                    className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Class Status</label>
-                  <select
-                    value={newClassStatus}
-                    onChange={(e) => setNewClassStatus(e.target.value as 'Ready' | 'Live' | 'Full')}
-                    className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-gray-300 focus:outline-none"
-                  >
-                    <option value="Ready">Ready (not started)</option>
-                    <option value="Live">Live now</option>
-                    <option value="Full">Full / closed</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Next Batch Timing (optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Next batch 6:00 PM today"
-                  value={newNextBatchInfo}
-                  onChange={(e) => setNewNextBatchInfo(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-                <p className="text-[10px] text-gray-500">Shown to students if this table fills up, so they know when to come back.</p>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Admit Code (optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. PHY201 — leave blank for open entry"
-                  value={newAdmitCode}
-                  onChange={(e) => setNewAdmitCode(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-                <p className="text-[10px] text-gray-500">Students will need to enter this exact code to join. Share it with them yourself.</p>
-              </div>
-
-              <div className="space-y-2 p-3 rounded-xl bg-emerald-950/10 border border-emerald-900/30">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">Connect a Course (optional)</label>
-                <p className="text-[10px] text-gray-500 -mt-1">
-                  Drop a link to your course and it shows as a clickable preview on this table's card — great for sending browsing students straight to it.
-                </p>
-                <input
-                  type="url"
-                  placeholder="Course URL, e.g. https://celorisdesigns.com/courses/physics-201"
-                  value={newCourseUrl}
-                  onChange={(e) => setNewCourseUrl(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Course title (optional)"
-                  value={newCourseTitle}
-                  onChange={(e) => setNewCourseTitle(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-                <input
-                  type="url"
-                  placeholder="Cover image URL (optional)"
-                  value={newCourseImageUrl}
-                  onChange={(e) => setNewCourseImageUrl(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Short course description (optional)"
-                  value={newCourseDescription}
-                  onChange={(e) => setNewCourseDescription(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Category Focus</label>
-                <select 
-                  value={newRoomCat}
-                  onChange={(e) => setNewRoomCat(e.target.value as any)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-gray-300 focus:outline-none"
-                >
-                  <option value="study">Silent Study Table (Mics Off)</option>
-                  <option value="course">Course Lounge (Excel, Figma, Trading)</option>
-                  <option value="mixer">Open Mixer (Chai Chat / Social)</option>
-                  <option value="night">Night Owl (Past midnight study)</option>
-                  <option value="classroom">Classroom Table (Requires 500 Credits)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Short description / Vibe</label>
-                <input 
-                  type="text"
-                  placeholder="e.g. Solving past papers, everyone welcome to screenshare!"
-                  value={newRoomDesc}
-                  onChange={(e) => setNewRoomDesc(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Room tags (comma separated)</label>
-                <input 
-                  type="text"
-                  placeholder="e.g. Economics, Nifty, Figma, Lofi"
-                  value={newRoomTags}
-                  onChange={(e) => setNewRoomTags(e.target.value)}
-                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] cursor-pointer"
-              >
-                Launch Live Room
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: ENTER ADMIT CODE (student side, only shown for rooms the host has locked) */}
+      {/* MODAL: ENTER ROOM CODE (shown for rooms the admin has locked with a
+          trainer and/or student code — see requiresStudentCode /
+          requiresTrainerCode on Room). One input for both: the server
+          checks it against both codes and tells us which one matched. */}
       {admitModalRoom && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
@@ -910,9 +622,9 @@ export default function App() {
               <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-2">
                 <Lock className="w-5 h-5 text-emerald-400" />
               </div>
-              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Admit Code Required</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Room Code Required</h3>
               <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
-                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> is locked. Ask your trainer for the admit code to enter.
+                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> is locked. Enter your student or trainer code to get in.
               </p>
             </div>
 
@@ -920,7 +632,7 @@ export default function App() {
               <input
                 type="text"
                 autoFocus
-                placeholder="Enter admit code"
+                placeholder="Enter your code"
                 value={admitCodeInput}
                 onChange={(e) => { setAdmitCodeInput(e.target.value); setAdmitCodeError(null); }}
                 className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none text-center tracking-wider"

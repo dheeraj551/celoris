@@ -153,10 +153,10 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                   ))}
                 </div>
 
-                {room.requiresAdmitCode && (
+                {room.requiresStudentCode && (
                   <div className="flex items-center gap-1.5 mb-2 text-amber-400">
                     <Lock className="w-3 h-3" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Admit code required</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Code required to join</span>
                   </div>
                 )}
 

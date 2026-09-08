@@ -8,9 +8,6 @@ import {
   Hand,
   Volume2,
   MonitorUp,
-  Pencil,
-  Plus,
-  Minus,
 } from 'lucide-react';
 
 interface RightSidebarProps {
@@ -35,14 +32,11 @@ interface RightSidebarProps {
   screenSharing: boolean;
   onToggleScreenShare: () => void;
   /** Current class name / trainer name / capacity / status, sourced from
-      the same cafe_classrooms row the lobby card reads. */
+      the same cafe_classrooms row the lobby card reads. Read-only here —
+      editing (including the trainer/student codes) is admin-only now, done
+      from the Café Rooms panel in the admin dashboard, not from inside the
+      room. */
   classInfo: ClassInfo;
-  /** Host-only — saves an edit straight to that row so the lobby card
-      picks it up live (via the lobby's own realtime subscription). */
-  onUpdateClassInfo: (fields: ClassInfo) => Promise<{ ok: boolean; error?: string }>;
-  /** Host-only — bumps "present students" by +1/-1 without opening the
-      full edit form, since this is the field that changes most often. */
-  onAdjustPresentCount: (delta: number) => void;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -59,74 +53,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   screenSharing,
   onToggleScreenShare,
   classInfo,
-  onUpdateClassInfo,
-  onAdjustPresentCount,
 }) => {
   const [inputText, setInputText] = useState('');
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-
-  // --- Class Info editor (host only) ---
-  const [editingInfo, setEditingInfo] = useState(false);
-  const [formName, setFormName] = useState(classInfo.name);
-  const [formTrainer, setFormTrainer] = useState(classInfo.trainerName);
-  const [formCapacity, setFormCapacity] = useState(String(classInfo.maxStudents));
-  const [formStatus, setFormStatus] = useState<ClassInfo['status']>(classInfo.status);
-  const [formCurrentStudents, setFormCurrentStudents] = useState(String(classInfo.currentStudents));
-  const [formNextBatch, setFormNextBatch] = useState(classInfo.nextBatchInfo);
-  const [formAdmitCode, setFormAdmitCode] = useState(classInfo.admitCode);
-  const [formCourseUrl, setFormCourseUrl] = useState(classInfo.courseUrl);
-  const [formCourseTitle, setFormCourseTitle] = useState(classInfo.courseTitle);
-  const [formCourseImageUrl, setFormCourseImageUrl] = useState(classInfo.courseImageUrl);
-  const [formCourseDescription, setFormCourseDescription] = useState(classInfo.courseDescription);
-  const [savingInfo, setSavingInfo] = useState(false);
-  const [infoError, setInfoError] = useState<string | null>(null);
-
-  const startEditingInfo = () => {
-    setFormName(classInfo.name);
-    setFormTrainer(classInfo.trainerName);
-    setFormCapacity(String(classInfo.maxStudents));
-    setFormStatus(classInfo.status);
-    setFormCurrentStudents(String(classInfo.currentStudents));
-    setFormNextBatch(classInfo.nextBatchInfo);
-    setFormAdmitCode(classInfo.admitCode);
-    setFormCourseUrl(classInfo.courseUrl);
-    setFormCourseTitle(classInfo.courseTitle);
-    setFormCourseImageUrl(classInfo.courseImageUrl);
-    setFormCourseDescription(classInfo.courseDescription);
-    setInfoError(null);
-    setEditingInfo(true);
-  };
-
-  const handleSaveInfo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formName.trim() || !formTrainer.trim()) return;
-
-    setSavingInfo(true);
-    setInfoError(null);
-
-    const capacity = Math.min(200, Math.max(1, parseInt(formCapacity, 10) || 15));
-    const present = Math.min(capacity, Math.max(0, parseInt(formCurrentStudents, 10) || 0));
-    const result = await onUpdateClassInfo({
-      name: formName.trim(),
-      trainerName: formTrainer.trim(),
-      maxStudents: capacity,
-      status: formStatus,
-      currentStudents: present,
-      nextBatchInfo: formNextBatch,
-      admitCode: formAdmitCode,
-      courseUrl: formCourseUrl,
-      courseTitle: formCourseTitle,
-      courseImageUrl: formCourseImageUrl,
-      courseDescription: formCourseDescription,
-    });
-
-    setSavingInfo(false);
-    if (result.ok) {
-      setEditingInfo(false);
-    } else {
-      setInfoError(result.error || 'Failed to save. Try again.');
-    }
-  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -156,221 +85,60 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     >
       <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar divide-y divide-[#1e293b]/70">
 
-        {/* Class Info — lets the trainer update class name / trainer name /
-            capacity / status after the class has already started, so the
-            café lobby card students see outside the room isn't frozen at
-            whatever was typed into the creation form. */}
+        {/* Class Info — read-only for the trainer. Updating it (name,
+            capacity, status, present count, next-batch note, the trainer/
+            student codes, connected course) is admin-only now, done from
+            the Café Rooms panel in the admin dashboard — this panel just
+            shows what's currently saved, and picks up admin edits live via
+            the lobby's own realtime subscription on cafe_classrooms. */}
         {isHost && (
           <section className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Class Info
-              </h2>
-              {!editingInfo && (
-                <button
-                  onClick={startEditingInfo}
-                  className="flex items-center space-x-1 text-[10px] font-semibold text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  <Pencil className="w-3 h-3" />
-                  <span>Edit</span>
-                </button>
-              )}
-            </div>
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Class Info
+            </h2>
 
-            {!editingInfo ? (
-              <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Class</span>
-                  <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Trainer</span>
-                  <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.trainerName || '—'}</span>
-                </div>
-
-                {/* Present students — a manual count the trainer controls
-                    directly (not auto-tracked), so it can be bumped right
-                    here without opening the edit form. */}
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Present</span>
-                  <div className="flex items-center space-x-1.5">
-                    <button
-                      type="button"
-                      onClick={() => onAdjustPresentCount(-1)}
-                      disabled={classInfo.currentStudents <= 0}
-                      className="w-5 h-5 rounded flex items-center justify-center bg-[#151c2c] hover:bg-[#1e283d] disabled:opacity-30 text-slate-300 border border-slate-700/50 transition-colors"
-                      title="One fewer student present"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="text-slate-200 font-medium w-10 text-center">
-                      {classInfo.currentStudents}/{classInfo.maxStudents}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onAdjustPresentCount(1)}
-                      disabled={classInfo.currentStudents >= classInfo.maxStudents}
-                      className="w-5 h-5 rounded flex items-center justify-center bg-[#151c2c] hover:bg-[#1e283d] disabled:opacity-30 text-slate-300 border border-slate-700/50 transition-colors"
-                      title="One more student present"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Status</span>
-                  <span className="text-slate-200 font-medium">{classInfo.status}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-slate-500 flex-shrink-0">Next batch</span>
-                  <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.nextBatchInfo || '—'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Admit code</span>
-                  <span className="text-slate-200 font-medium font-mono">{classInfo.admitCode || 'Open (no code)'}</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  <span className="text-slate-500 flex-shrink-0">Connected course</span>
-                  {classInfo.courseUrl ? (
-                    <a
-                      href={classInfo.courseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300 font-medium truncate max-w-[180px] underline"
-                    >
-                      {classInfo.courseTitle || classInfo.courseUrl}
-                    </a>
-                  ) : (
-                    <span className="text-slate-200 font-medium">Not linked</span>
-                  )}
-                </div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Class</span>
+                <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.name}</span>
               </div>
-            ) : (
-              <form onSubmit={handleSaveInfo} className="space-y-2">
-                <input
-                  type="text"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Class name"
-                  className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  value={formTrainer}
-                  onChange={(e) => setFormTrainer(e.target.value)}
-                  placeholder="Trainer name"
-                  className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  required
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    max={200}
-                    value={formCapacity}
-                    onChange={(e) => setFormCapacity(e.target.value)}
-                    placeholder="Capacity"
-                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                  <select
-                    value={formStatus}
-                    onChange={(e) => setFormStatus(e.target.value as ClassInfo['status'])}
-                    className="w-full h-8 px-2 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+              <div className="flex justify-between">
+                <span className="text-slate-500">Trainer</span>
+                <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.trainerName || '—'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Present</span>
+                <span className="text-slate-200 font-medium">
+                  {classInfo.currentStudents}/{classInfo.maxStudents}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Status</span>
+                <span className="text-slate-200 font-medium">{classInfo.status}</span>
+              </div>
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 flex-shrink-0">Next batch</span>
+                <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.nextBatchInfo || '—'}</span>
+              </div>
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 flex-shrink-0">Connected course</span>
+                {classInfo.courseUrl ? (
+                  <a
+                    href={classInfo.courseUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 font-medium truncate max-w-[180px] underline"
                   >
-                    <option value="Ready">Ready</option>
-                    <option value="Live">Live</option>
-                    <option value="Full">Full</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] text-slate-500">Present students (manual)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={200}
-                    value={formCurrentStudents}
-                    onChange={(e) => setFormCurrentStudents(e.target.value)}
-                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <input
-                  type="text"
-                  value={formNextBatch}
-                  onChange={(e) => setFormNextBatch(e.target.value)}
-                  placeholder="Next batch timing (optional)"
-                  className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                />
-
-                <input
-                  type="text"
-                  value={formAdmitCode}
-                  onChange={(e) => setFormAdmitCode(e.target.value)}
-                  placeholder="Admit code (leave blank = open entry)"
-                  className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                />
-
-                <div className="space-y-1.5 pt-1 border-t border-slate-800/60">
-                  <label className="text-[10px] text-slate-500">Connect a course (shown on your lobby card)</label>
-                  <input
-                    type="url"
-                    value={formCourseUrl}
-                    onChange={(e) => setFormCourseUrl(e.target.value)}
-                    placeholder="Course URL"
-                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={formCourseTitle}
-                    onChange={(e) => setFormCourseTitle(e.target.value)}
-                    placeholder="Course title (optional)"
-                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <input
-                    type="url"
-                    value={formCourseImageUrl}
-                    onChange={(e) => setFormCourseImageUrl(e.target.value)}
-                    placeholder="Cover image URL (optional)"
-                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={formCourseDescription}
-                    onChange={(e) => setFormCourseDescription(e.target.value)}
-                    placeholder="Short description (optional)"
-                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                {infoError && <p className="text-[10px] text-red-400">{infoError}</p>}
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    type="submit"
-                    disabled={savingInfo}
-                    className="flex-1 h-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-colors"
-                  >
-                    {savingInfo ? 'Saving...' : 'Save'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditingInfo(false)}
-                    disabled={savingInfo}
-                    className="flex-1 h-8 rounded-lg bg-[#151c2c] hover:bg-[#1e283d] disabled:opacity-50 text-slate-300 text-xs font-semibold border border-slate-700/50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-                <p className="text-[10px] text-slate-500">
-                  Updates instantly for students browsing the café lobby.
-                </p>
-              </form>
-            )}
+                    {classInfo.courseTitle || classInfo.courseUrl}
+                  </a>
+                ) : (
+                  <span className="text-slate-200 font-medium">Not linked</span>
+                )}
+              </div>
+              <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-800/60">
+                Ask a Celoris admin to change any of this from the admin dashboard.
+              </p>
+            </div>
           </section>
         )}
 

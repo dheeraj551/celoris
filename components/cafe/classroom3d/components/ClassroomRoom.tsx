@@ -21,29 +21,25 @@ interface ClassroomRoomProps {
   onLeave: () => void;
 }
 
-// The fields a trainer can edit live, from inside the room, once class has
-// already started — mirrors the same 4 fields the "Host Custom Table" modal
-// captures at creation time (class name, trainer name, capacity, status),
-// so the lobby card the trainer filled in once doesn't stay frozen for the
-// whole session.
+// Read-only class info, shown in the sidebar so the trainer can see what's
+// set on their room without leaving the 3D view. Editing this (including
+// the trainer/student codes) is admin-only now — done from the Café Rooms
+// panel in the admin dashboard (app/admin/social) — so this component only
+// ever fetches and displays it, never writes to it. Mirrors the same
+// fields the admin's create/edit room form captures.
 export interface ClassInfo {
   name: string;
   trainerName: string;
   maxStudents: number;
   status: 'Ready' | 'Live' | 'Full';
-  /** Manually set by the trainer (not auto-tracked from real presence) —
-      this is what the café lobby card shows as the "X/15" headcount. */
+  /** Manually set by an admin (not auto-tracked from real presence) — this
+      is what the café lobby card shows as the "X/15" headcount. */
   currentStudents: number;
   /** Free-text note shown on the lobby card once this room is Full, e.g.
       "Next batch 6 PM today". */
   nextBatchInfo: string;
-  /** The room's join code, if any. Only ever fetched for the host
-      themselves (see the isHost-gated effect below) — never part of the
-      query every viewer's browser runs. Empty string = no code set. */
-  admitCode: string;
-  /** A course the trainer has linked — shown as a clickable preview on the
-      lobby card, driving traffic to it. All optional/public (unlike
-      admitCode, safe to include in the regular fetch). */
+  /** A course the trainer/admin has linked — shown as a clickable preview
+      on the lobby card, driving traffic to it. */
   courseUrl: string;
   courseTitle: string;
   courseImageUrl: string;
@@ -107,9 +103,10 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   // watching it) — only one can ever be active at a time.
   const [boardMediaStream, setBoardMediaStream] = useState<MediaStream | null>(null);
 
-  // Editable "class info" that also drives the café lobby card — seeded
-  // with roomName immediately so the header never shows a blank title while
-  // the real row (trainer name / capacity / status) is still loading.
+  // Read-only "class info" mirroring what also drives the café lobby card —
+  // seeded with roomName immediately so the header never shows a blank
+  // title while the real row (trainer name / capacity / status) is still
+  // loading.
   const [classInfo, setClassInfo] = useState<ClassInfo>({
     name: roomName,
     trainerName: '',
@@ -117,7 +114,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     status: 'Ready',
     currentStudents: 1,
     nextBatchInfo: '',
-    admitCode: '',
     courseUrl: '',
     courseTitle: '',
     courseImageUrl: '',
@@ -224,10 +220,12 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   }, [handRaisedSelf, canSpeak, micOn, profile?.full_name]);
 
   // Load the room's trainer name / capacity / status / present-count / next
-  // batch note once, so the trainer's "Class Info" editor in the sidebar
-  // starts from the real saved values instead of blanks. Deliberately
-  // excludes admit_code — this same query also runs for students (they need
-  // the header title etc.), and the code should never reach their browser.
+  // batch note once, so the sidebar's read-only "Class Info" panel starts
+  // from the real saved values instead of blanks. Deliberately excludes
+  // trainer_code/student_code — this same query also runs for students
+  // (they need the header title etc.), and neither code should ever reach
+  // a browser here. Editing these fields now happens only from the admin
+  // dashboard (see /api/admin/cafe/rooms), never from inside the room.
   useEffect(() => {
     let cancelled = false;
     const fetchClassInfo = async () => {
@@ -256,80 +254,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
-
-  // Host-only: fetch the trainer's own admit code separately, so it's never
-  // part of the query every student's browser also runs above.
-  useEffect(() => {
-    if (!isHost) return;
-    let cancelled = false;
-    const fetchAdmitCode = async () => {
-      const { data, error } = await supabase
-        .from('cafe_classrooms')
-        .select('admit_code')
-        .eq('id', roomId)
-        .single();
-      if (!cancelled && !error && data) {
-        setClassInfo((prev) => ({ ...prev, admitCode: data.admit_code || '' }));
-      }
-    };
-    fetchAdmitCode();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, isHost]);
-
-  // Lets the trainer update class name / trainer name / capacity / status /
-  // next-batch note / admit code while the class is already live — writes
-  // straight to the same cafe_classrooms row the lobby card reads from, so
-  // students waiting outside see the change pick up automatically via the
-  // lobby's realtime subscription (no need to leave and recreate the room).
-  const updateClassInfo = async (fields: ClassInfo): Promise<{ ok: boolean; error?: string }> => {
-    if (!isHost) return { ok: false, error: 'Only the trainer can edit class info.' };
-
-    const { error } = await supabase
-      .from('cafe_classrooms')
-      .update({
-        name: fields.name,
-        trainer_name: fields.trainerName,
-        max_students: fields.maxStudents,
-        class_status: fields.status,
-        current_students: fields.currentStudents,
-        next_batch_info: fields.nextBatchInfo.trim() || null,
-        admit_code: fields.admitCode.trim() || null,
-        course_url: fields.courseUrl.trim() || null,
-        course_title: fields.courseTitle.trim() || null,
-        course_image_url: fields.courseImageUrl.trim() || null,
-        course_description: fields.courseDescription.trim() || null,
-      })
-      .eq('id', roomId);
-
-    if (error) {
-      console.error('Failed to update class info:', error);
-      return { ok: false, error: error.message || 'Failed to save. Try again.' };
-    }
-
-    setClassInfo(fields);
-    return { ok: true };
-  };
-
-  // Quick +/- adjustment for "present students" — used by the sidebar's
-  // stepper so the trainer doesn't have to open the full edit form just to
-  // bump the count by one as students join or leave.
-  const adjustPresentCount = async (delta: number) => {
-    if (!isHost) return;
-    const next = Math.max(0, Math.min(classInfo.maxStudents, classInfo.currentStudents + delta));
-    if (next === classInfo.currentStudents) return;
-
-    setClassInfo((prev) => ({ ...prev, currentStudents: next })); // optimistic
-    const { error } = await supabase
-      .from('cafe_classrooms')
-      .update({ current_students: next })
-      .eq('id', roomId);
-
-    if (error) {
-      console.error('Failed to update present count:', error);
-      setClassInfo((prev) => ({ ...prev, currentStudents: classInfo.currentStudents })); // revert
-    }
-  };
 
   const joinChannel = async (uid: string, channel: string) => {
     try {
@@ -629,8 +553,6 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           screenSharing={screenSharing}
           onToggleScreenShare={toggleScreenShare}
           classInfo={classInfo}
-          onUpdateClassInfo={updateClassInfo}
-          onAdjustPresentCount={adjustPresentCount}
         />
       </div>
 
