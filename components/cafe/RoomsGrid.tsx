@@ -145,13 +145,16 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
               <div className="mt-auto pt-4 border-t border-emerald-950/20">
                 {/* Host or Active Members overlay */}
                 <div className="flex items-center justify-between mb-4">
-                  {room.host ? (
+                  {room.host?.name ? (
                     <div className="flex items-center gap-2">
-                      <img
-                        src={room.host.avatar || undefined}
-                        alt={room.host.name}
-                        className="w-6 h-6 rounded-full border border-emerald-500/30 object-cover"
-                      />
+                      {/* Initials badge instead of a photo — hosts don't upload a
+                          trainer avatar, so a broken/empty <img> is worse than
+                          just showing initials on a solid emerald chip. */}
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[10px] font-bold text-emerald-400">
+                          {room.host.name.trim().charAt(0).toUpperCase() || 'T'}
+                        </span>
+                      </div>
                       <div className="text-left">
                         <span className="block text-[10px] text-emerald-400 font-bold uppercase tracking-wider leading-none">Trainer Hosted</span>
                         <span className="text-xs text-gray-300 font-medium">{room.host.name}</span>
@@ -173,10 +176,12 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                     </div>
                   )}
 
-                  {/* Online user count */}
+                  {/* Student count vs the host-set capacity, e.g. "3/15" */}
                   <div className="flex items-center gap-1.5 text-gray-400">
                     <Users className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-xs font-mono font-bold text-white">{room.onlineCount}</span>
+                    <span className="text-xs font-mono font-bold text-white">
+                      {room.onlineCount}/{room.maxStudents ?? 15}
+                    </span>
                   </div>
                 </div>
 

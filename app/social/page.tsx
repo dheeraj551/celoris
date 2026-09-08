@@ -50,6 +50,9 @@ export default function App() {
   const [newRoomDesc, setNewRoomDesc] = useState('');
   const [newRoomCat, setNewRoomCat] = useState<'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom'>('study');
   const [newRoomTags, setNewRoomTags] = useState('');
+  const [newTrainerName, setNewTrainerName] = useState('');
+  const [newMaxStudents, setNewMaxStudents] = useState('15');
+  const [newClassStatus, setNewClassStatus] = useState<'Ready' | 'Live' | 'Full'>('Ready');
   const [allRooms, setAllRooms] = useState<Room[]>([]); // Initialize empty for realtime rooms
   const supabase = createClient();
   const { profile, user } = useAuth();
@@ -82,36 +85,33 @@ export default function App() {
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        // Fetch profiles for the hosts manually to avoid FK relationship error
-        const hostIds = data.map((r: any) => r.host_id).filter(Boolean);
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name, avatar_url')
-          .in('id', hostIds);
-
-        const profileMap = new Map(profiles?.map((p: any) => [p.id, p]) || []);
-
+        // Trainer name, capacity and class status are entered by the host
+        // directly on the room (see handleCreateRoomSubmit) instead of being
+        // looked up from `profiles` — that lookup was unreliable (missing
+        // full_name/avatar_url) and is what produced the "Host" placeholder
+        // and the broken avatar image on the lobby cards.
         const mappedRooms: Room[] = data.map((r: any) => {
-          const host: any = profileMap.get(r.host_id) || {};
+          const trainerName = r.trainer_name || 'Trainer';
           return {
             id: r.id,
             name: r.name,
             description: r.description || '',
             category: r.category as any,
-            onlineCount: 1, // Assume 1 for host initially
-            status: 'Live',
+            onlineCount: 1, // Assume 1 (the host) until the room has real presence tracking
+            maxStudents: r.max_students || 15,
+            status: (r.class_status as any) || 'Ready',
             tags: r.tags || [],
             host: {
               id: r.host_id,
-              name: host.full_name || 'Host',
-              avatar: host.avatar_url || '',
+              name: trainerName,
+              avatar: '',
               role: 'Host'
             },
             participants: [
               {
                 id: r.host_id,
-                name: host.full_name || 'Host',
-                avatar: host.avatar_url || '',
+                name: trainerName,
+                avatar: '',
                 skill: '',
                 isOnline: true
               }
@@ -142,7 +142,7 @@ export default function App() {
 
   const handleCreateRoomSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newRoomName.trim() || !newRoomDesc.trim()) return;
+    if (!newRoomName.trim() || !newRoomDesc.trim() || !newTrainerName.trim()) return;
 
     if (newRoomCat === 'classroom') {
       const credits = profile?.wallet_balance || 0;
@@ -157,6 +157,8 @@ export default function App() {
       .map(t => t.trim())
       .filter(t => t.length > 0);
 
+    const capacity = Math.min(200, Math.max(1, parseInt(newMaxStudents, 10) || 15));
+
     const { data, error } = await supabase
       .from('cafe_classrooms')
       .insert({
@@ -165,6 +167,9 @@ export default function App() {
         category: newRoomCat,
         tags: tagsArray,
         host_id: user?.id,
+        trainer_name: newTrainerName.trim(),
+        max_students: capacity,
+        class_status: newClassStatus,
         is_active: true
       })
       .select()
@@ -179,8 +184,11 @@ export default function App() {
     setNewRoomName('');
     setNewRoomDesc('');
     setNewRoomTags('');
+    setNewTrainerName('');
+    setNewMaxStudents('15');
+    setNewClassStatus('Ready');
     setCreateRoomModalOpen(false);
-    
+
     // Auto-join the newly created room
     setJoinedRoomId(data.id);
     setActiveTab('cafe');
@@ -191,6 +199,15 @@ export default function App() {
     setNewRoomDesc(template.description);
     setNewRoomCat(template.category);
     setNewRoomTags(template.tags.join(', '));
+  };
+
+  // Opens the "Host Custom Table" modal, pre-filling the trainer name with
+  // the logged-in user's own name so hosts don't have to retype it every time.
+  const openCreateRoomModal = () => {
+    if (!newTrainerName.trim() && profile?.full_name) {
+      setNewTrainerName(profile.full_name);
+    }
+    setCreateRoomModalOpen(true);
   };
 
   const inviteUserToTable = (userName: string) => {
@@ -358,7 +375,7 @@ export default function App() {
                     </div>
 
                     <button 
-                      onClick={() => setCreateRoomModalOpen(true)}
+                      onClick={openCreateRoomModal}
                       className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -632,6 +649,47 @@ export default function App() {
                   className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
                   required
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Trainer Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Coach Yash Verma"
+                  value={newTrainerName}
+                  onChange={(e) => setNewTrainerName(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Student Capacity</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    placeholder="15"
+                    value={newMaxStudents}
+                    onChange={(e) => setNewMaxStudents(e.target.value)}
+                    className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Class Status</label>
+                  <select
+                    value={newClassStatus}
+                    onChange={(e) => setNewClassStatus(e.target.value as 'Ready' | 'Live' | 'Full')}
+                    className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-gray-300 focus:outline-none"
+                  >
+                    <option value="Ready">Ready (not started)</option>
+                    <option value="Live">Live now</option>
+                    <option value="Full">Full / closed</option>
+                  </select>
+                </div>
               </div>
 
               <div className="space-y-1.5">

@@ -15,6 +15,8 @@ export interface Room {
   description: string;
   category: 'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom';
   onlineCount: number;
+  /** Host-set seat cap for this table (e.g. 15). Defaults to 15 when not set. */
+  maxStudents?: number;
   status: 'Ready' | 'Live' | 'Full';
   tags: string[];
   host?: {
