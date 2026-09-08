@@ -21,6 +21,18 @@ interface ClassroomRoomProps {
   onLeave: () => void;
 }
 
+// The fields a trainer can edit live, from inside the room, once class has
+// already started — mirrors the same 4 fields the "Host Custom Table" modal
+// captures at creation time (class name, trainer name, capacity, status),
+// so the lobby card the trainer filled in once doesn't stay frozen for the
+// whole session.
+export interface ClassInfo {
+  name: string;
+  trainerName: string;
+  maxStudents: number;
+  status: 'Ready' | 'Live' | 'Full';
+}
+
 // Deterministic per-user color, matching the palette style used by the old
 // PixiJS seat layer — this new UI doesn't use profile photos at all (the
 // desks render name-initial-free colored figures instead), which sidesteps
@@ -77,6 +89,16 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   // host presenting) or the host's remote share (when we're a student
   // watching it) — only one can ever be active at a time.
   const [boardMediaStream, setBoardMediaStream] = useState<MediaStream | null>(null);
+
+  // Editable "class info" that also drives the café lobby card — seeded
+  // with roomName immediately so the header never shows a blank title while
+  // the real row (trainer name / capacity / status) is still loading.
+  const [classInfo, setClassInfo] = useState<ClassInfo>({
+    name: roomName,
+    trainerName: '',
+    maxStudents: 15,
+    status: 'Ready',
+  });
 
   const supabase = createClient();
   const AgoraRef = useRef<any>(null);
@@ -176,6 +198,58 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     presenceTrack();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handRaisedSelf, canSpeak, micOn, profile?.full_name]);
+
+  // Load the room's trainer name / capacity / status once, so the trainer's
+  // "Class Info" editor in the sidebar starts from the real saved values
+  // instead of blanks.
+  useEffect(() => {
+    let cancelled = false;
+    const fetchClassInfo = async () => {
+      const { data, error } = await supabase
+        .from('cafe_classrooms')
+        .select('name, trainer_name, max_students, class_status')
+        .eq('id', roomId)
+        .single();
+      if (!cancelled && !error && data) {
+        setClassInfo({
+          name: data.name || roomName,
+          trainerName: data.trainer_name || '',
+          maxStudents: data.max_students || 15,
+          status: (data.class_status as ClassInfo['status']) || 'Ready',
+        });
+      }
+    };
+    fetchClassInfo();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId]);
+
+  // Lets the trainer update class name / trainer name / capacity / status
+  // while the class is already live — writes straight to the same
+  // cafe_classrooms row the lobby card reads from, so students waiting
+  // outside see the change pick up automatically via the lobby's realtime
+  // subscription (no need to leave and recreate the room).
+  const updateClassInfo = async (fields: ClassInfo): Promise<{ ok: boolean; error?: string }> => {
+    if (!isHost) return { ok: false, error: 'Only the trainer can edit class info.' };
+
+    const { error } = await supabase
+      .from('cafe_classrooms')
+      .update({
+        name: fields.name,
+        trainer_name: fields.trainerName,
+        max_students: fields.maxStudents,
+        class_status: fields.status,
+      })
+      .eq('id', roomId);
+
+    if (error) {
+      console.error('Failed to update class info:', error);
+      return { ok: false, error: error.message || 'Failed to save. Try again.' };
+    }
+
+    setClassInfo(fields);
+    return { ok: true };
+  };
 
   const joinChannel = async (uid: string, channel: string) => {
     try {
@@ -429,7 +503,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       <ClassroomHeader
         presentCount={presentCount}
         handsCount={handsCount}
-        courseTitle={roomName}
+        courseTitle={classInfo.name}
         isHost={isHost}
         onSoundToggle={() => setIsSoundMuted((p) => !p)}
         isMuted={isSoundMuted}
@@ -474,6 +548,8 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           onCallOnStudent={callOnStudent}
           screenSharing={screenSharing}
           onToggleScreenShare={toggleScreenShare}
+          classInfo={classInfo}
+          onUpdateClassInfo={updateClassInfo}
         />
       </div>
 
