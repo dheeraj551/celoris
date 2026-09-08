@@ -74,6 +74,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   const [formCurrentStudents, setFormCurrentStudents] = useState(String(classInfo.currentStudents));
   const [formNextBatch, setFormNextBatch] = useState(classInfo.nextBatchInfo);
   const [formAdmitCode, setFormAdmitCode] = useState(classInfo.admitCode);
+  const [formCourseUrl, setFormCourseUrl] = useState(classInfo.courseUrl);
+  const [formCourseTitle, setFormCourseTitle] = useState(classInfo.courseTitle);
+  const [formCourseImageUrl, setFormCourseImageUrl] = useState(classInfo.courseImageUrl);
+  const [formCourseDescription, setFormCourseDescription] = useState(classInfo.courseDescription);
   const [savingInfo, setSavingInfo] = useState(false);
   const [infoError, setInfoError] = useState<string | null>(null);
 
@@ -85,6 +89,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     setFormCurrentStudents(String(classInfo.currentStudents));
     setFormNextBatch(classInfo.nextBatchInfo);
     setFormAdmitCode(classInfo.admitCode);
+    setFormCourseUrl(classInfo.courseUrl);
+    setFormCourseTitle(classInfo.courseTitle);
+    setFormCourseImageUrl(classInfo.courseImageUrl);
+    setFormCourseDescription(classInfo.courseDescription);
     setInfoError(null);
     setEditingInfo(true);
   };
@@ -106,6 +114,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       currentStudents: present,
       nextBatchInfo: formNextBatch,
       admitCode: formAdmitCode,
+      courseUrl: formCourseUrl,
+      courseTitle: formCourseTitle,
+      courseImageUrl: formCourseImageUrl,
+      courseDescription: formCourseDescription,
     });
 
     setSavingInfo(false);
@@ -218,6 +230,21 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   <span className="text-slate-500">Admit code</span>
                   <span className="text-slate-200 font-medium font-mono">{classInfo.admitCode || 'Open (no code)'}</span>
                 </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-slate-500 flex-shrink-0">Connected course</span>
+                  {classInfo.courseUrl ? (
+                    <a
+                      href={classInfo.courseUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 font-medium truncate max-w-[180px] underline"
+                    >
+                      {classInfo.courseTitle || classInfo.courseUrl}
+                    </a>
+                  ) : (
+                    <span className="text-slate-200 font-medium">Not linked</span>
+                  )}
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSaveInfo} className="space-y-2">
@@ -287,6 +314,38 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   placeholder="Admit code (leave blank = open entry)"
                   className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
+
+                <div className="space-y-1.5 pt-1 border-t border-slate-800/60">
+                  <label className="text-[10px] text-slate-500">Connect a course (shown on your lobby card)</label>
+                  <input
+                    type="url"
+                    value={formCourseUrl}
+                    onChange={(e) => setFormCourseUrl(e.target.value)}
+                    placeholder="Course URL"
+                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                  <input
+                    type="text"
+                    value={formCourseTitle}
+                    onChange={(e) => setFormCourseTitle(e.target.value)}
+                    placeholder="Course title (optional)"
+                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                  <input
+                    type="url"
+                    value={formCourseImageUrl}
+                    onChange={(e) => setFormCourseImageUrl(e.target.value)}
+                    placeholder="Cover image URL (optional)"
+                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                  <input
+                    type="text"
+                    value={formCourseDescription}
+                    onChange={(e) => setFormCourseDescription(e.target.value)}
+                    placeholder="Short description (optional)"
+                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
 
                 {infoError && <p className="text-[10px] text-red-400">{infoError}</p>}
 

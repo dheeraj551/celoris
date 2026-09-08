@@ -56,6 +56,10 @@ export default function App() {
   const [newClassStatus, setNewClassStatus] = useState<'Ready' | 'Live' | 'Full'>('Ready');
   const [newNextBatchInfo, setNewNextBatchInfo] = useState('');
   const [newAdmitCode, setNewAdmitCode] = useState('');
+  const [newCourseUrl, setNewCourseUrl] = useState('');
+  const [newCourseTitle, setNewCourseTitle] = useState('');
+  const [newCourseImageUrl, setNewCourseImageUrl] = useState('');
+  const [newCourseDescription, setNewCourseDescription] = useState('');
   const [allRooms, setAllRooms] = useState<Room[]>([]); // Initialize empty for realtime rooms
 
   // "Admit code" gate — asked for a room the student is trying to join
@@ -96,7 +100,7 @@ export default function App() {
       // /api/social/cafe/verify-admit-code for where it's actually checked.
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_admit_code, created_at')
+        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_admit_code, course_url, course_title, course_image_url, course_description, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -121,6 +125,10 @@ export default function App() {
             status: (r.class_status as any) || 'Ready',
             nextBatchInfo: r.next_batch_info || undefined,
             requiresAdmitCode: !!r.requires_admit_code,
+            courseUrl: r.course_url || undefined,
+            courseTitle: r.course_title || undefined,
+            courseImageUrl: r.course_image_url || undefined,
+            courseDescription: r.course_description || undefined,
             tags: r.tags || [],
             host: {
               id: r.host_id,
@@ -241,6 +249,10 @@ export default function App() {
         current_students: 1,
         next_batch_info: newNextBatchInfo.trim() || null,
         admit_code: newAdmitCode.trim() || null,
+        course_url: newCourseUrl.trim() || null,
+        course_title: newCourseTitle.trim() || null,
+        course_image_url: newCourseImageUrl.trim() || null,
+        course_description: newCourseDescription.trim() || null,
         is_active: true
       })
       .select()
@@ -260,6 +272,10 @@ export default function App() {
     setNewClassStatus('Ready');
     setNewNextBatchInfo('');
     setNewAdmitCode('');
+    setNewCourseUrl('');
+    setNewCourseTitle('');
+    setNewCourseImageUrl('');
+    setNewCourseDescription('');
     setCreateRoomModalOpen(false);
 
     // Auto-join the newly created room
@@ -787,6 +803,41 @@ export default function App() {
                   className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
                 />
                 <p className="text-[10px] text-gray-500">Students will need to enter this exact code to join. Share it with them yourself.</p>
+              </div>
+
+              <div className="space-y-2 p-3 rounded-xl bg-emerald-950/10 border border-emerald-900/30">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">Connect a Course (optional)</label>
+                <p className="text-[10px] text-gray-500 -mt-1">
+                  Drop a link to your course and it shows as a clickable preview on this table's card — great for sending browsing students straight to it.
+                </p>
+                <input
+                  type="url"
+                  placeholder="Course URL, e.g. https://celorisdesigns.com/courses/physics-201"
+                  value={newCourseUrl}
+                  onChange={(e) => setNewCourseUrl(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="Course title (optional)"
+                  value={newCourseTitle}
+                  onChange={(e) => setNewCourseTitle(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                />
+                <input
+                  type="url"
+                  placeholder="Cover image URL (optional)"
+                  value={newCourseImageUrl}
+                  onChange={(e) => setNewCourseImageUrl(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="Short course description (optional)"
+                  value={newCourseDescription}
+                  onChange={(e) => setNewCourseDescription(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                />
               </div>
 
               <div className="space-y-1.5">

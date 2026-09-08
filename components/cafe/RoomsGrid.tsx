@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Room } from './types';
-import { Users, Lock, Sparkles, Plus, Search, MessageSquare, Flame, Trash2 } from 'lucide-react';
+import { Users, Lock, Sparkles, Plus, Search, MessageSquare, Flame, Trash2, GraduationCap, ArrowUpRight } from 'lucide-react';
 
 interface RoomsGridProps {
   rooms: Room[];
@@ -11,6 +11,19 @@ interface RoomsGridProps {
 }
 
 type FilterCategory = 'all' | 'study' | 'course' | 'mixer' | 'night' | 'onboarding';
+
+// A lookup instead of the old ternary chain — that chain had no 'classroom'
+// case, so every classroom-category room (the 3D Aula rooms) silently fell
+// through to the last branch and showed "Onboarding" on its badge no
+// matter what was actually happening in the room.
+const CATEGORY_LABELS: Record<Room['category'], string> = {
+  study: 'Silent Study',
+  course: 'Skill Lounge',
+  mixer: 'Mixer Chat',
+  night: 'Night Owl',
+  onboarding: 'Onboarding',
+  classroom: 'Live Classroom',
+};
 
 export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser, onDeleteRoom }: RoomsGridProps) {
   const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('all');
@@ -102,7 +115,7 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                 {/* Header info */}
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] bg-emerald-950/40 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider font-mono">
-                    {room.category === 'study' ? 'Silent Study' : room.category === 'course' ? 'Skill Lounge' : room.category === 'mixer' ? 'Mixer Chat' : room.category === 'night' ? 'Night Owl' : 'Onboarding'}
+                    {CATEGORY_LABELS[room.category] || 'Table'}
                   </span>
                   
                   <div className="flex items-center gap-2">
@@ -151,6 +164,39 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                   <div className="mb-2 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">
                     <span className="font-bold">Next batch:</span> {room.nextBatchInfo}
                   </div>
+                )}
+
+                {/* Connected course — the trainer links a course URL (see
+                    "Class Info" in-room, or the create form) so browsing
+                    students can jump straight to it, cover image and all,
+                    without needing to join the room first. */}
+                {room.courseUrl && (
+                  <a
+                    href={room.courseUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 mb-2 p-2.5 rounded-xl bg-[#141414] border border-emerald-950/30 hover:border-emerald-500/40 transition-colors group/course"
+                  >
+                    {room.courseImageUrl ? (
+                      <img
+                        src={room.courseImageUrl}
+                        alt={room.courseTitle || 'Connected course'}
+                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                        <GraduationCap className="w-5 h-5 text-emerald-400" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-[9px] font-bold uppercase tracking-wider text-emerald-400">Connected Course</span>
+                      <span className="block text-xs font-semibold text-white truncate">{room.courseTitle || 'View course'}</span>
+                      {room.courseDescription && (
+                        <span className="block text-[10px] text-gray-500 truncate">{room.courseDescription}</span>
+                      )}
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-emerald-400 flex-shrink-0 opacity-0 group-hover/course:opacity-100 transition-opacity" />
+                  </a>
                 )}
               </div>
 

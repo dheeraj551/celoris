@@ -25,6 +25,12 @@ export interface Room {
       reaches the browser via this Room object; only this boolean does
       (see app/social/page.tsx fetchRooms, which never selects admit_code). */
   requiresAdmitCode?: boolean;
+  /** Trainer-linked course — shown as a clickable cover-image preview on
+      the lobby card so browsing students can jump straight to it. */
+  courseUrl?: string;
+  courseTitle?: string;
+  courseImageUrl?: string;
+  courseDescription?: string;
   tags: string[];
   host?: {
     id?: string;

@@ -41,6 +41,13 @@ export interface ClassInfo {
       themselves (see the isHost-gated effect below) — never part of the
       query every viewer's browser runs. Empty string = no code set. */
   admitCode: string;
+  /** A course the trainer has linked — shown as a clickable preview on the
+      lobby card, driving traffic to it. All optional/public (unlike
+      admitCode, safe to include in the regular fetch). */
+  courseUrl: string;
+  courseTitle: string;
+  courseImageUrl: string;
+  courseDescription: string;
 }
 
 // Deterministic per-user color, matching the palette style used by the old
@@ -111,6 +118,10 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     currentStudents: 1,
     nextBatchInfo: '',
     admitCode: '',
+    courseUrl: '',
+    courseTitle: '',
+    courseImageUrl: '',
+    courseDescription: '',
   });
 
   const supabase = createClient();
@@ -222,7 +233,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     const fetchClassInfo = async () => {
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('name, trainer_name, max_students, class_status, current_students, next_batch_info')
+        .select('name, trainer_name, max_students, class_status, current_students, next_batch_info, course_url, course_title, course_image_url, course_description')
         .eq('id', roomId)
         .single();
       if (!cancelled && !error && data) {
@@ -234,6 +245,10 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           status: (data.class_status as ClassInfo['status']) || 'Ready',
           currentStudents: typeof data.current_students === 'number' ? data.current_students : 1,
           nextBatchInfo: data.next_batch_info || '',
+          courseUrl: data.course_url || '',
+          courseTitle: data.course_title || '',
+          courseImageUrl: data.course_image_url || '',
+          courseDescription: data.course_description || '',
         }));
       }
     };
@@ -280,6 +295,10 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         current_students: fields.currentStudents,
         next_batch_info: fields.nextBatchInfo.trim() || null,
         admit_code: fields.admitCode.trim() || null,
+        course_url: fields.courseUrl.trim() || null,
+        course_title: fields.courseTitle.trim() || null,
+        course_image_url: fields.courseImageUrl.trim() || null,
+        course_description: fields.courseDescription.trim() || null,
       })
       .eq('id', roomId);
 
