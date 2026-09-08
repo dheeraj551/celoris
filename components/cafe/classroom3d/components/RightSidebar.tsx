@@ -9,6 +9,8 @@ import {
   Volume2,
   MonitorUp,
   Pencil,
+  Plus,
+  Minus,
 } from 'lucide-react';
 
 interface RightSidebarProps {
@@ -38,6 +40,9 @@ interface RightSidebarProps {
   /** Host-only — saves an edit straight to that row so the lobby card
       picks it up live (via the lobby's own realtime subscription). */
   onUpdateClassInfo: (fields: ClassInfo) => Promise<{ ok: boolean; error?: string }>;
+  /** Host-only — bumps "present students" by +1/-1 without opening the
+      full edit form, since this is the field that changes most often. */
+  onAdjustPresentCount: (delta: number) => void;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -55,6 +60,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   onToggleScreenShare,
   classInfo,
   onUpdateClassInfo,
+  onAdjustPresentCount,
 }) => {
   const [inputText, setInputText] = useState('');
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -65,6 +71,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   const [formTrainer, setFormTrainer] = useState(classInfo.trainerName);
   const [formCapacity, setFormCapacity] = useState(String(classInfo.maxStudents));
   const [formStatus, setFormStatus] = useState<ClassInfo['status']>(classInfo.status);
+  const [formCurrentStudents, setFormCurrentStudents] = useState(String(classInfo.currentStudents));
+  const [formNextBatch, setFormNextBatch] = useState(classInfo.nextBatchInfo);
+  const [formAdmitCode, setFormAdmitCode] = useState(classInfo.admitCode);
   const [savingInfo, setSavingInfo] = useState(false);
   const [infoError, setInfoError] = useState<string | null>(null);
 
@@ -73,6 +82,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     setFormTrainer(classInfo.trainerName);
     setFormCapacity(String(classInfo.maxStudents));
     setFormStatus(classInfo.status);
+    setFormCurrentStudents(String(classInfo.currentStudents));
+    setFormNextBatch(classInfo.nextBatchInfo);
+    setFormAdmitCode(classInfo.admitCode);
     setInfoError(null);
     setEditingInfo(true);
   };
@@ -85,11 +97,15 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     setInfoError(null);
 
     const capacity = Math.min(200, Math.max(1, parseInt(formCapacity, 10) || 15));
+    const present = Math.min(capacity, Math.max(0, parseInt(formCurrentStudents, 10) || 0));
     const result = await onUpdateClassInfo({
       name: formName.trim(),
       trainerName: formTrainer.trim(),
       maxStudents: capacity,
       status: formStatus,
+      currentStudents: present,
+      nextBatchInfo: formNextBatch,
+      admitCode: formAdmitCode,
     });
 
     setSavingInfo(false);
@@ -150,7 +166,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
 
             {!editingInfo ? (
-              <div className="space-y-1 text-xs">
+              <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Class</span>
                   <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.name}</span>
@@ -159,13 +175,48 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   <span className="text-slate-500">Trainer</span>
                   <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.trainerName || '—'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Capacity</span>
-                  <span className="text-slate-200 font-medium">{classInfo.maxStudents}</span>
+
+                {/* Present students — a manual count the trainer controls
+                    directly (not auto-tracked), so it can be bumped right
+                    here without opening the edit form. */}
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Present</span>
+                  <div className="flex items-center space-x-1.5">
+                    <button
+                      type="button"
+                      onClick={() => onAdjustPresentCount(-1)}
+                      disabled={classInfo.currentStudents <= 0}
+                      className="w-5 h-5 rounded flex items-center justify-center bg-[#151c2c] hover:bg-[#1e283d] disabled:opacity-30 text-slate-300 border border-slate-700/50 transition-colors"
+                      title="One fewer student present"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="text-slate-200 font-medium w-10 text-center">
+                      {classInfo.currentStudents}/{classInfo.maxStudents}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onAdjustPresentCount(1)}
+                      disabled={classInfo.currentStudents >= classInfo.maxStudents}
+                      className="w-5 h-5 rounded flex items-center justify-center bg-[#151c2c] hover:bg-[#1e283d] disabled:opacity-30 text-slate-300 border border-slate-700/50 transition-colors"
+                      title="One more student present"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
+
                 <div className="flex justify-between">
                   <span className="text-slate-500">Status</span>
                   <span className="text-slate-200 font-medium">{classInfo.status}</span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-slate-500 flex-shrink-0">Next batch</span>
+                  <span className="text-slate-200 font-medium truncate max-w-[180px]">{classInfo.nextBatchInfo || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Admit code</span>
+                  <span className="text-slate-200 font-medium font-mono">{classInfo.admitCode || 'Open (no code)'}</span>
                 </div>
               </div>
             ) : (
@@ -207,6 +258,35 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                     <option value="Full">Full</option>
                   </select>
                 </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500">Present students (manual)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={200}
+                    value={formCurrentStudents}
+                    onChange={(e) => setFormCurrentStudents(e.target.value)}
+                    className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <input
+                  type="text"
+                  value={formNextBatch}
+                  onChange={(e) => setFormNextBatch(e.target.value)}
+                  placeholder="Next batch timing (optional)"
+                  className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                />
+
+                <input
+                  type="text"
+                  value={formAdmitCode}
+                  onChange={(e) => setFormAdmitCode(e.target.value)}
+                  placeholder="Admit code (leave blank = open entry)"
+                  className="w-full h-8 px-2.5 rounded-lg bg-[#141b2a] border border-slate-700/70 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                />
 
                 {infoError && <p className="text-[10px] text-red-400">{infoError}</p>}
 

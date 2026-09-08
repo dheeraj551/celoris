@@ -31,6 +31,16 @@ export interface ClassInfo {
   trainerName: string;
   maxStudents: number;
   status: 'Ready' | 'Live' | 'Full';
+  /** Manually set by the trainer (not auto-tracked from real presence) —
+      this is what the café lobby card shows as the "X/15" headcount. */
+  currentStudents: number;
+  /** Free-text note shown on the lobby card once this room is Full, e.g.
+      "Next batch 6 PM today". */
+  nextBatchInfo: string;
+  /** The room's join code, if any. Only ever fetched for the host
+      themselves (see the isHost-gated effect below) — never part of the
+      query every viewer's browser runs. Empty string = no code set. */
+  admitCode: string;
 }
 
 // Deterministic per-user color, matching the palette style used by the old
@@ -98,6 +108,9 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     trainerName: '',
     maxStudents: 15,
     status: 'Ready',
+    currentStudents: 1,
+    nextBatchInfo: '',
+    admitCode: '',
   });
 
   const supabase = createClient();
@@ -199,24 +212,29 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handRaisedSelf, canSpeak, micOn, profile?.full_name]);
 
-  // Load the room's trainer name / capacity / status once, so the trainer's
-  // "Class Info" editor in the sidebar starts from the real saved values
-  // instead of blanks.
+  // Load the room's trainer name / capacity / status / present-count / next
+  // batch note once, so the trainer's "Class Info" editor in the sidebar
+  // starts from the real saved values instead of blanks. Deliberately
+  // excludes admit_code — this same query also runs for students (they need
+  // the header title etc.), and the code should never reach their browser.
   useEffect(() => {
     let cancelled = false;
     const fetchClassInfo = async () => {
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('name, trainer_name, max_students, class_status')
+        .select('name, trainer_name, max_students, class_status, current_students, next_batch_info')
         .eq('id', roomId)
         .single();
       if (!cancelled && !error && data) {
-        setClassInfo({
+        setClassInfo((prev) => ({
+          ...prev,
           name: data.name || roomName,
           trainerName: data.trainer_name || '',
           maxStudents: data.max_students || 15,
           status: (data.class_status as ClassInfo['status']) || 'Ready',
-        });
+          currentStudents: typeof data.current_students === 'number' ? data.current_students : 1,
+          nextBatchInfo: data.next_batch_info || '',
+        }));
       }
     };
     fetchClassInfo();
@@ -224,11 +242,31 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
-  // Lets the trainer update class name / trainer name / capacity / status
-  // while the class is already live — writes straight to the same
-  // cafe_classrooms row the lobby card reads from, so students waiting
-  // outside see the change pick up automatically via the lobby's realtime
-  // subscription (no need to leave and recreate the room).
+  // Host-only: fetch the trainer's own admit code separately, so it's never
+  // part of the query every student's browser also runs above.
+  useEffect(() => {
+    if (!isHost) return;
+    let cancelled = false;
+    const fetchAdmitCode = async () => {
+      const { data, error } = await supabase
+        .from('cafe_classrooms')
+        .select('admit_code')
+        .eq('id', roomId)
+        .single();
+      if (!cancelled && !error && data) {
+        setClassInfo((prev) => ({ ...prev, admitCode: data.admit_code || '' }));
+      }
+    };
+    fetchAdmitCode();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId, isHost]);
+
+  // Lets the trainer update class name / trainer name / capacity / status /
+  // next-batch note / admit code while the class is already live — writes
+  // straight to the same cafe_classrooms row the lobby card reads from, so
+  // students waiting outside see the change pick up automatically via the
+  // lobby's realtime subscription (no need to leave and recreate the room).
   const updateClassInfo = async (fields: ClassInfo): Promise<{ ok: boolean; error?: string }> => {
     if (!isHost) return { ok: false, error: 'Only the trainer can edit class info.' };
 
@@ -239,6 +277,9 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         trainer_name: fields.trainerName,
         max_students: fields.maxStudents,
         class_status: fields.status,
+        current_students: fields.currentStudents,
+        next_batch_info: fields.nextBatchInfo.trim() || null,
+        admit_code: fields.admitCode.trim() || null,
       })
       .eq('id', roomId);
 
@@ -249,6 +290,26 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
     setClassInfo(fields);
     return { ok: true };
+  };
+
+  // Quick +/- adjustment for "present students" — used by the sidebar's
+  // stepper so the trainer doesn't have to open the full edit form just to
+  // bump the count by one as students join or leave.
+  const adjustPresentCount = async (delta: number) => {
+    if (!isHost) return;
+    const next = Math.max(0, Math.min(classInfo.maxStudents, classInfo.currentStudents + delta));
+    if (next === classInfo.currentStudents) return;
+
+    setClassInfo((prev) => ({ ...prev, currentStudents: next })); // optimistic
+    const { error } = await supabase
+      .from('cafe_classrooms')
+      .update({ current_students: next })
+      .eq('id', roomId);
+
+    if (error) {
+      console.error('Failed to update present count:', error);
+      setClassInfo((prev) => ({ ...prev, currentStudents: classInfo.currentStudents })); // revert
+    }
   };
 
   const joinChannel = async (uid: string, channel: string) => {
@@ -550,6 +611,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           onToggleScreenShare={toggleScreenShare}
           classInfo={classInfo}
           onUpdateClassInfo={updateClassInfo}
+          onAdjustPresentCount={adjustPresentCount}
         />
       </div>
 

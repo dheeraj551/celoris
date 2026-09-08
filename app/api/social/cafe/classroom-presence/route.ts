@@ -16,7 +16,21 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 // closed laptop lid doesn't hold a seat forever — the client is expected to
 // call 'heartbeat' every ~20s while seated, and 'leave' on the way out.
 const STALE_AFTER_SECONDS = 45
-const MAX_STUDENTS = 15
+const DEFAULT_MAX_STUDENTS = 15
+
+// The host can now set a per-room capacity from the lobby's create form or
+// the in-room "Class Info" editor (cafe_classrooms.max_students) — this
+// looks that up instead of enforcing a fixed 15 for every room, falling
+// back to the old default if the room predates that column or the lookup
+// fails for any reason.
+async function getRoomCapacity(admin: ReturnType<typeof createSupabaseClientForServer>, roomId: string): Promise<number> {
+    const { data } = await admin
+        .from('cafe_classrooms')
+        .select('max_students')
+        .eq('id', roomId)
+        .maybeSingle()
+    return data?.max_students || DEFAULT_MAX_STUDENTS
+}
 
 export async function POST(request: Request) {
     try {
@@ -52,22 +66,25 @@ export async function POST(request: Request) {
             // heartbeat shouldn't get locked out by their own seat.
             if (action === 'join' && role === 'student') {
                 const staleCutoff = new Date(Date.now() - STALE_AFTER_SECONDS * 1000).toISOString()
-                const { count, error: countError } = await admin
-                    .from('cafe_classroom_presence')
-                    .select('user_id', { count: 'exact', head: true })
-                    .eq('room_id', roomId)
-                    .eq('role', 'student')
-                    .neq('user_id', user.id)
-                    .gte('last_heartbeat', staleCutoff)
+                const [{ count, error: countError }, maxStudents] = await Promise.all([
+                    admin
+                        .from('cafe_classroom_presence')
+                        .select('user_id', { count: 'exact', head: true })
+                        .eq('room_id', roomId)
+                        .eq('role', 'student')
+                        .neq('user_id', user.id)
+                        .gte('last_heartbeat', staleCutoff),
+                    getRoomCapacity(admin, roomId),
+                ])
 
                 if (countError) {
                     console.error('classroom-presence count error:', countError)
                     return NextResponse.json({ error: countError.message }, { status: 500 })
                 }
 
-                if ((count || 0) >= MAX_STUDENTS) {
+                if ((count || 0) >= maxStudents) {
                     return NextResponse.json(
-                        { error: `This room is full (${MAX_STUDENTS}/${MAX_STUDENTS} students). Please try again once a seat opens up.` },
+                        { error: `This room is full (${maxStudents}/${maxStudents} students). Please try again once a seat opens up.` },
                         { status: 403 }
                     )
                 }
@@ -120,11 +137,14 @@ export async function GET(request: Request) {
         const admin = createSupabaseClientForServer()
         const staleCutoff = new Date(Date.now() - STALE_AFTER_SECONDS * 1000).toISOString()
 
-        const { data, error } = await admin
-            .from('cafe_classroom_presence')
-            .select('user_id, role, full_name, avatar_url, hand_raised, can_speak, joined_at')
-            .eq('room_id', roomId)
-            .gte('last_heartbeat', staleCutoff)
+        const [{ data, error }, maxStudents] = await Promise.all([
+            admin
+                .from('cafe_classroom_presence')
+                .select('user_id, role, full_name, avatar_url, hand_raised, can_speak, joined_at')
+                .eq('room_id', roomId)
+                .gte('last_heartbeat', staleCutoff),
+            getRoomCapacity(admin, roomId),
+        ])
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 })
@@ -134,8 +154,8 @@ export async function GET(request: Request) {
         return NextResponse.json({
             occupants: data || [],
             studentCount: students.length,
-            maxStudents: MAX_STUDENTS,
-            isFull: students.length >= MAX_STUDENTS,
+            maxStudents,
+            isFull: students.length >= maxStudents,
         })
     } catch (error: any) {
         return NextResponse.json({ error: error.message || 'Unknown error' }, { status: 500 })

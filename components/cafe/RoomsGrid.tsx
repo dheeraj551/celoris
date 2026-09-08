@@ -132,13 +132,26 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                 </p>
 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-1.5 mb-5">
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {room.tags.map((tag, i) => (
                     <span key={i} className="text-[10px] bg-[#141414] text-gray-400 px-2 py-0.5 rounded-md border border-emerald-950/10">
                       #{tag}
                     </span>
                   ))}
                 </div>
+
+                {room.requiresAdmitCode && (
+                  <div className="flex items-center gap-1.5 mb-2 text-amber-400">
+                    <Lock className="w-3 h-3" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Admit code required</span>
+                  </div>
+                )}
+
+                {room.status === 'Full' && room.nextBatchInfo && (
+                  <div className="mb-2 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">
+                    <span className="font-bold">Next batch:</span> {room.nextBatchInfo}
+                  </div>
+                )}
               </div>
 
               {/* Footer Section */}

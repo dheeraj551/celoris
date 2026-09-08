@@ -34,7 +34,8 @@ import {
   User as UserIcon,
   ShieldCheck,
   ChevronRight,
-  Plus
+  Plus,
+  Lock
 } from 'lucide-react';
 
 export default function App() {
@@ -53,7 +54,17 @@ export default function App() {
   const [newTrainerName, setNewTrainerName] = useState('');
   const [newMaxStudents, setNewMaxStudents] = useState('15');
   const [newClassStatus, setNewClassStatus] = useState<'Ready' | 'Live' | 'Full'>('Ready');
+  const [newNextBatchInfo, setNewNextBatchInfo] = useState('');
+  const [newAdmitCode, setNewAdmitCode] = useState('');
   const [allRooms, setAllRooms] = useState<Room[]>([]); // Initialize empty for realtime rooms
+
+  // "Admit code" gate — asked for a room the student is trying to join
+  // when the host has set one. The code itself is never fetched into this
+  // page's state; it's verified server-side (see submitAdmitCode below).
+  const [admitModalRoom, setAdmitModalRoom] = useState<Room | null>(null);
+  const [admitCodeInput, setAdmitCodeInput] = useState('');
+  const [admitCodeError, setAdmitCodeError] = useState<string | null>(null);
+  const [verifyingAdmitCode, setVerifyingAdmitCode] = useState(false);
   const supabase = createClient();
   const { profile, user } = useAuth();
 
@@ -78,9 +89,14 @@ export default function App() {
   // Fetch rooms and subscribe to realtime updates
   useEffect(() => {
     const fetchRooms = async () => {
+      // Explicit column list — deliberately EXCLUDES admit_code. Any room
+      // needing a code is still flagged via requires_admit_code (a
+      // generated boolean), so the lobby can show "code required" without
+      // the actual code ever reaching a student's browser. See
+      // /api/social/cafe/verify-admit-code for where it's actually checked.
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('*')
+        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_admit_code, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -97,9 +113,14 @@ export default function App() {
             name: r.name,
             description: r.description || '',
             category: r.category as any,
-            onlineCount: 1, // Assume 1 (the host) until the room has real presence tracking
+            // Host-set headcount (see the "Class Info" panel inside the
+            // room) rather than a live presence count — kept manual on
+            // purpose per the trainer's own preference.
+            onlineCount: typeof r.current_students === 'number' ? r.current_students : 1,
             maxStudents: r.max_students || 15,
             status: (r.class_status as any) || 'Ready',
+            nextBatchInfo: r.next_batch_info || undefined,
+            requiresAdmitCode: !!r.requires_admit_code,
             tags: r.tags || [],
             host: {
               id: r.host_id,
@@ -136,8 +157,55 @@ export default function App() {
   }, []);
 
   const handleJoinRoom = (roomId: string) => {
+    const room = allRooms.find((r) => r.id === roomId);
+    const isRoomHost = !!room?.host?.id && room.host.id === user?.id;
+
+    // Gate entry behind the trainer's admit code, if they've set one — the
+    // host themselves always gets straight in. The code is verified
+    // server-side (see submitAdmitCode); this page never holds the real
+    // code value.
+    if (room?.requiresAdmitCode && !isRoomHost) {
+      setAdmitModalRoom(room);
+      setAdmitCodeInput('');
+      setAdmitCodeError(null);
+      return;
+    }
+
     setJoinedRoomId(roomId);
     setActiveTab('cafe'); // force switch to cafe tab to show active session
+  };
+
+  const submitAdmitCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!admitModalRoom) return;
+
+    setVerifyingAdmitCode(true);
+    setAdmitCodeError(null);
+
+    try {
+      const response = await fetch('/api/social/cafe/verify-admit-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId: admitModalRoom.id, code: admitCodeInput }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.ok) {
+        setAdmitCodeError(result.error || 'Incorrect admit code.');
+        setVerifyingAdmitCode(false);
+        return;
+      }
+
+      const roomId = admitModalRoom.id;
+      setAdmitModalRoom(null);
+      setVerifyingAdmitCode(false);
+      setJoinedRoomId(roomId);
+      setActiveTab('cafe');
+    } catch (err) {
+      console.error('Admit code verification failed:', err);
+      setAdmitCodeError('Something went wrong. Try again.');
+      setVerifyingAdmitCode(false);
+    }
   };
 
   const handleCreateRoomSubmit = async (e: React.FormEvent) => {
@@ -170,6 +238,9 @@ export default function App() {
         trainer_name: newTrainerName.trim(),
         max_students: capacity,
         class_status: newClassStatus,
+        current_students: 1,
+        next_batch_info: newNextBatchInfo.trim() || null,
+        admit_code: newAdmitCode.trim() || null,
         is_active: true
       })
       .select()
@@ -187,6 +258,8 @@ export default function App() {
     setNewTrainerName('');
     setNewMaxStudents('15');
     setNewClassStatus('Ready');
+    setNewNextBatchInfo('');
+    setNewAdmitCode('');
     setCreateRoomModalOpen(false);
 
     // Auto-join the newly created room
@@ -693,6 +766,30 @@ export default function App() {
               </div>
 
               <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Next Batch Timing (optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Next batch 6:00 PM today"
+                  value={newNextBatchInfo}
+                  onChange={(e) => setNewNextBatchInfo(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                />
+                <p className="text-[10px] text-gray-500">Shown to students if this table fills up, so they know when to come back.</p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Admit Code (optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. PHY201 — leave blank for open entry"
+                  value={newAdmitCode}
+                  onChange={(e) => setNewAdmitCode(e.target.value)}
+                  className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                />
+                <p className="text-[10px] text-gray-500">Students will need to enter this exact code to join. Share it with them yourself.</p>
+              </div>
+
+              <div className="space-y-1.5">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Category Focus</label>
                 <select 
                   value={newRoomCat}
@@ -730,11 +827,65 @@ export default function App() {
                 />
               </div>
 
-              <button 
+              <button
                 type="submit"
                 className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] cursor-pointer"
               >
                 Launch Live Room
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ENTER ADMIT CODE (student side, only shown for rooms the host has locked) */}
+      {admitModalRoom && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            onClick={() => { if (!verifyingAdmitCode) { setAdmitModalRoom(null); setAdmitCodeError(null); } }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+          />
+
+          <div className="relative bg-[#0d0d0d] border border-emerald-950/40 rounded-3xl max-w-sm w-full p-6 md:p-8 space-y-5 shadow-2xl animate-fade-in">
+            <button
+              onClick={() => { setAdmitModalRoom(null); setAdmitCodeError(null); }}
+              disabled={verifyingAdmitCode}
+              className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-emerald-950/30 hover:text-white transition-colors disabled:opacity-40"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center space-y-2">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-2">
+                <Lock className="w-5 h-5 text-emerald-400" />
+              </div>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Admit Code Required</h3>
+              <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
+                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> is locked. Ask your trainer for the admit code to enter.
+              </p>
+            </div>
+
+            <form onSubmit={submitAdmitCode} className="space-y-3 text-left">
+              <input
+                type="text"
+                autoFocus
+                placeholder="Enter admit code"
+                value={admitCodeInput}
+                onChange={(e) => { setAdmitCodeInput(e.target.value); setAdmitCodeError(null); }}
+                className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none text-center tracking-wider"
+                required
+              />
+
+              {admitCodeError && (
+                <p className="text-[11px] text-red-400 text-center">{admitCodeError}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={verifyingAdmitCode || !admitCodeInput.trim()}
+                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] cursor-pointer"
+              >
+                {verifyingAdmitCode ? 'Checking...' : 'Enter Room'}
               </button>
             </form>
           </div>
