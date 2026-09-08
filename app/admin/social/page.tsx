@@ -140,6 +140,11 @@ export default function AdminSocialPage() {
 
       const { users: usersData } = await response.json()
 
+      // The `users` table has no followers/following/posts/totalShares
+      // columns at all — only total_likes is real. Those four are
+      // defaulted to 0 here (rather than left undefined) so the profile
+      // cards below never crash on a missing field; this was a pre-existing
+      // bug that only stayed hidden because this list was empty before.
       const processedProfiles = (usersData || []).map((u: any) => ({
         id: u.id,
         username: u.username || 'user',
@@ -150,7 +155,12 @@ export default function AdminSocialPage() {
         status: u.is_social_blocked ? 'suspended' : 'active',
         verified: u.verification_status === 'verified',
         joinedAt: u.created_at,
-        subscription: u.subscription_status
+        subscription: u.subscription_status,
+        followers: 0,
+        following: 0,
+        posts: 0,
+        totalLikes: u.total_likes ?? 0,
+        totalShares: 0,
       }))
 
       setProfiles(processedProfiles)
@@ -492,7 +502,7 @@ export default function AdminSocialPage() {
                 <div>
                   <p className="text-sm text-slate-400">Total Interactions</p>
                   <p className="text-2xl font-bold text-white">
-                    {profiles.reduce((sum, p) => sum + p.followers + p.following, 0)}
+                    {profiles.reduce((sum, p) => sum + (p.followers || 0) + (p.following || 0), 0)}
                   </p>
                 </div>
               </div>
@@ -709,15 +719,15 @@ export default function AdminSocialPage() {
 
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center">
-                      <p className="text-lg font-bold text-white">{profile.followers}</p>
+                      <p className="text-lg font-bold text-white">{profile.followers || 0}</p>
                       <p className="text-xs text-slate-400">Followers</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-bold text-white">{profile.following}</p>
+                      <p className="text-lg font-bold text-white">{profile.following || 0}</p>
                       <p className="text-xs text-slate-400">Following</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-bold text-white">{profile.posts}</p>
+                      <p className="text-lg font-bold text-white">{profile.posts || 0}</p>
                       <p className="text-xs text-slate-400">Posts</p>
                     </div>
                   </div>
@@ -725,11 +735,11 @@ export default function AdminSocialPage() {
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Total Likes</span>
-                      <span className="text-white">{profile.totalLikes.toLocaleString()}</span>
+                      <span className="text-white">{(profile.totalLikes || 0).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Total Shares</span>
-                      <span className="text-white">{profile.totalShares}</span>
+                      <span className="text-white">{profile.totalShares || 0}</span>
                     </div>
                   </div>
 
