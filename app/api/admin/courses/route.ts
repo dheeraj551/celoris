@@ -46,8 +46,12 @@ export async function POST(request: NextRequest) {
       target_audience: body.target_audience,
       instructor_name: body.instructor_name,
       instructor_bio: body.instructor_bio,
-      learning_outcomes: body.learning_outcomes ? body.learning_outcomes.split('\n').filter((s: string) => s.trim()) : [],
-      requirements: body.requirements ? body.requirements.split('\n').filter((s: string) => s.trim()) : [],
+      learning_outcomes: Array.isArray(body.learning_outcomes)
+        ? body.learning_outcomes.map((s: string) => s.trim()).filter(Boolean)
+        : (body.learning_outcomes ? String(body.learning_outcomes).split('\n').map((s: string) => s.trim()).filter(Boolean) : []),
+      requirements: Array.isArray(body.requirements)
+        ? body.requirements.map((s: string) => s.trim()).filter(Boolean)
+        : (body.requirements ? String(body.requirements).split('\n').map((s: string) => s.trim()).filter(Boolean) : []),
       preview_video_url: body.preview_video_url,
       syllabus_url: body.syllabus_url,
       course_duration: body.duration_weeks ? `${body.duration_weeks} weeks` : body.course_duration,
@@ -55,6 +59,11 @@ export async function POST(request: NextRequest) {
       course_image_url: body.course_image_url,
       is_published: body.is_published ?? false,
       is_featured: body.is_featured ?? false,
+      batch_number: body.batch_number || null,
+      seats_left: body.seats_left === '' || body.seats_left === undefined ? null : Number(body.seats_left),
+      seats_total: body.seats_total === '' || body.seats_total === undefined ? null : Number(body.seats_total),
+      batch_status: body.batch_status || null,
+      home_tutor_available: body.home_tutor_available ?? false,
       created_by: userId || body.created_by || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()

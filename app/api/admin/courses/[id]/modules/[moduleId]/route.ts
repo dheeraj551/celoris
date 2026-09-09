@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-client'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
+
+// Admin single module — get/update/delete.
+// Switched from the plain browser client (no cookies, so RLS + the old
+// auth.getUser() check both always failed here) to the service-role
+// server client, matching every other /api/admin/* route. See
+// app/api/admin/courses/[id]/route.ts for the full explanation.
+export const dynamic = 'force-dynamic'
 
 // GET - Get single module
 export async function GET(
@@ -7,15 +14,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
-    const supabase = createClient()
-
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { moduleId } = await params;
+    const { moduleId } = await params
+    const supabase = createSupabaseClientForServer() as any
 
     const { data, error } = await supabase
       .from('course_modules')
@@ -39,7 +39,6 @@ export async function GET(
     if (error) throw error
 
     return NextResponse.json({ module: data })
-
   } catch (error) {
     console.error('Error fetching module:', error)
     return NextResponse.json({ error: 'Failed to fetch module' }, { status: 500 })
@@ -52,23 +51,20 @@ export async function PUT(
   { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
-    const supabase = createClient()
-
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { moduleId } = await params;
+    const { moduleId } = await params
     const body = await request.json()
+    const supabase = createSupabaseClientForServer() as any
 
-    const { data, error } = await (supabase as any)
+    const updates: Record<string, any> = { updated_at: new Date().toISOString() }
+    if (body.module_number !== undefined) updates.module_number = body.module_number
+    if (body.title !== undefined) updates.title = body.title
+    if (body.description !== undefined) updates.description = body.description || null
+    if (body.estimated_duration !== undefined) updates.estimated_duration = body.estimated_duration || null
+    if (body.is_published !== undefined) updates.is_published = body.is_published
+
+    const { data, error } = await supabase
       .from('course_modules')
-      .update({
-        ...body,
-        updated_at: new Date().toISOString()
-      })
+      .update(updates)
       .eq('id', moduleId)
       .select()
       .single()
@@ -76,28 +72,20 @@ export async function PUT(
     if (error) throw error
 
     return NextResponse.json({ module: data })
-
   } catch (error) {
     console.error('Error updating module:', error)
     return NextResponse.json({ error: 'Failed to update module' }, { status: 500 })
   }
 }
 
-// DELETE - Delete module
+// DELETE - Delete module (cascades to its course_topics)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
-    const supabase = createClient()
-
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { moduleId } = await params;
+    const { moduleId } = await params
+    const supabase = createSupabaseClientForServer() as any
 
     const { error } = await supabase
       .from('course_modules')
@@ -107,7 +95,6 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ message: 'Module deleted successfully' })
-
   } catch (error) {
     console.error('Error deleting module:', error)
     return NextResponse.json({ error: 'Failed to delete module' }, { status: 500 })

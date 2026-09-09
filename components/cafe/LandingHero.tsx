@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coffee, Users, ChevronRight, Compass, Shield, Sparkles } from 'lucide-react';
+import { Coffee, ChevronRight, Compass, Shield, Sparkles } from 'lucide-react';
 import { Room } from './types';
 
 interface LandingHeroProps {
@@ -15,7 +15,7 @@ export default function LandingHero({ onEnterCafe, onSeeOnline, activeRooms, onJ
 
   const stats = [
     { label: 'Skill Learners', value: '12,400+' },
-    { label: 'Indian Colleges', value: '180+' },
+    { label: 'Indian Courses', value: '180+' },
     { label: 'Active Right Now', value: '430+' },
   ];
 
@@ -70,14 +70,6 @@ export default function LandingHero({ onEnterCafe, onSeeOnline, activeRooms, onJ
             <Coffee className="w-5 h-5 text-[#0a0a0a] transition-transform duration-300 group-hover:rotate-12" />
             <span>Enter Café</span>
             <ChevronRight className="w-5 h-5 stroke-[2.5] transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
-
-          <button
-            onClick={onSeeOnline}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#0f0f0f] hover:bg-emerald-950/20 text-white font-bold text-base border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 flex items-center justify-center gap-2 group"
-          >
-            <Users className="w-5 h-5 text-emerald-400 transition-transform duration-300 group-hover:scale-105" />
-            <span>See Who's Online</span>
           </button>
         </div>
 

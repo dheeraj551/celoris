@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-client'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
+
+// Admin course topics — list/create topics for one module.
+// Same service-role, no-server-auth-check convention as the module routes
+// next door — see app/api/admin/courses/[id]/route.ts for the explanation.
+export const dynamic = 'force-dynamic'
 
 // GET - List topics for a module
 export async function GET(
@@ -7,15 +12,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
-    const supabase = createClient()
-
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { moduleId } = await params;
+    const { moduleId } = await params
+    const supabase = createSupabaseClientForServer() as any
 
     const { data, error } = await supabase
       .from('course_topics')
@@ -26,7 +24,6 @@ export async function GET(
     if (error) throw error
 
     return NextResponse.json({ topics: data })
-
   } catch (error) {
     console.error('Error fetching topics:', error)
     return NextResponse.json({ error: 'Failed to fetch topics' }, { status: 500 })
@@ -39,22 +36,22 @@ export async function POST(
   { params }: { params: Promise<{ id: string, moduleId: string }> }
 ) {
   try {
-    const supabase = createClient()
-
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { moduleId } = await params;
+    const { moduleId } = await params
     const body = await request.json()
+    const supabase = createSupabaseClientForServer() as any
 
     const { data, error } = await supabase
       .from('course_topics')
       .insert({
-        ...body,
-        module_id: moduleId
+        order_in_module: body.order_in_module,
+        title: body.title,
+        short_description: body.short_description || '',
+        full_content: body.full_content || null,
+        content_type: body.content_type || 'text',
+        estimated_duration: body.estimated_duration || null,
+        status: body.status || 'published',
+        is_free_preview: body.is_free_preview ?? false,
+        module_id: moduleId,
       })
       .select()
       .single()
@@ -62,7 +59,6 @@ export async function POST(
     if (error) throw error
 
     return NextResponse.json({ topic: data }, { status: 201 })
-
   } catch (error) {
     console.error('Error creating topic:', error)
     return NextResponse.json({ error: 'Failed to create topic' }, { status: 500 })

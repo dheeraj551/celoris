@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import type { CSSProperties } from "react"
 import { motion } from "framer-motion"
 import { Calendar, Clock, ArrowUpRight, ChevronRight, ChevronLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -91,11 +92,15 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
     <div>
       {/* Featured hero post */}
       {featured && (
+        <div className="mb-10">
+        <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as CSSProperties}>
+        <div className="home-rgb-border-ring">
         <motion.article
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="group relative bg-[#0a0f1d] rounded-[2.5rem] border border-white/5 hover:border-emerald-500/30 transition-colors duration-500 overflow-hidden shadow-2xl mb-10"
+          className="group relative bg-[#0a0f1d] overflow-hidden shadow-2xl"
+          style={{ borderRadius: 'calc(2.5rem - 2px)' }}
         >
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-1/2 aspect-video lg:aspect-auto overflow-hidden relative">
@@ -143,6 +148,9 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
             </div>
           </div>
         </motion.article>
+        </div>
+        </div>
+        </div>
       )}
 
       {/* Grid of remaining posts */}

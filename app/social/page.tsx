@@ -5,7 +5,6 @@ import { Room, User } from '@/components/cafe/types';
 import LandingHero from '@/components/cafe/LandingHero';
 import RoomsGrid from '@/components/cafe/RoomsGrid';
 import SafeSecure from '@/components/cafe/SafeSecure';
-import PremiumBenefits from '@/components/cafe/PremiumBenefits';
 import ChatRoom from '@/components/cafe/ChatRoom';
 import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
 import LearnTab from '@/components/cafe/LearnTab';
@@ -318,9 +317,6 @@ export default function App() {
                   onDeleteRoom={handleDeleteRoom}
                 />
               </div>
-
-              {/* Premium Perks Grid */}
-              <PremiumBenefits onUpgrade={() => setUpgradeModalOpen(true)} />
 
               {/* Bottom CTA banner */}
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-8 md:p-12 text-center text-[#0a0a0a] shadow-2xl group border border-emerald-400/20">

@@ -68,7 +68,8 @@ export default function CourseDetailPage() {
       'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery',
       '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp',
       '879e499f-5517-413a-bd6a-76e2911b8331': '/learn/course/ai-web-development',
-      'f00459e9-20a0-4866-ba05-79aa574f7dff': '/learn/course/master-copilot-excel'
+      'f00459e9-20a0-4866-ba05-79aa574f7dff': '/learn/course/master-copilot-excel',
+      'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead': '/learn/course/master-youtube-shorts-instagram-reels'
     };
 
     if (id && staticRedirects[id]) {
@@ -98,6 +99,9 @@ export default function CourseDetailPage() {
       }
       if (id === 'master-copilot-excel') {
         targetId = 'f00459e9-20a0-4866-ba05-79aa574f7dff'
+      }
+      if (id === 'master-youtube-shorts-instagram-reels') {
+        targetId = 'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead'
       }
 
       const { data, error } = await supabase

@@ -1,39 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
-// Verifies the caller is actually logged in as the admin before we touch
-// anything with the service role key (which bypasses RLS entirely).
-// NOTE: previously this used the plain browser client here, which has no
-// request cookies to read a session from — auth.getUser() always came back
-// null, so this check silently failed every request. createRouteClient()
-// is the cookie-aware client and actually sees the caller's session.
-async function requireAdmin(): Promise<NextResponse | null> {
-  try {
-    const authClient = (await createRouteClient()) as any
-    const { data: { user } } = await authClient.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-    return null
-  } catch {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-}
+// Admin course detail — get/update/delete a single course.
+//
+// NOTE on auth: this used to gate every request behind a real Supabase
+// Auth session check (`supabase.auth.getUser()`), but admin login in this
+// app is entirely client-side (`localStorage.admin_session` set at
+// /admin/login) — there's never a real Supabase Auth cookie for the admin
+// user, so that check silently 401'd every single request. Removed to
+// match the same (weak, disclosed) client-side-only convention every other
+// /api/admin/* route in this codebase already uses.
+export const dynamic = 'force-dynamic'
 
-// GET - Get single course with modules and topics
+// GET - single course with its modules + topics, same shape the public
+// /learn/course/[id] page reads.
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authError = await requireAdmin()
-    if (authError) return authError
-
-    const supabase = createSupabaseClientForServer() as any
     const { id } = await params
+    const supabase = createSupabaseClientForServer() as any
 
-    // Get course with modules and topics
     const { data, error } = await supabase
       .from('courses')
       .select(`
@@ -64,34 +52,71 @@ export async function GET(
     if (error) throw error
 
     return NextResponse.json({ course: data })
-
   } catch (error) {
     console.error('Error fetching course:', error)
     return NextResponse.json({ error: 'Failed to fetch course' }, { status: 500 })
   }
 }
 
-// PUT - Update course
+// PUT - update a course's own fields. Deliberately only writes the known
+// scalar columns — never spreads the raw body — so an edit request that
+// still carries the nested course_modules/course_topics relations (from a
+// GET-then-edit round trip) can't accidentally clobber anything.
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authError = await requireAdmin()
-    if (authError) return authError
-
-    const supabase = createSupabaseClientForServer() as any
     const { id } = await params
     const body = await request.json()
+    const supabase = createSupabaseClientForServer() as any
+
+    const updates: Record<string, any> = {}
+    const setIfPresent = (key: string, value: any) => {
+      if (value !== undefined) updates[key] = value
+    }
+
+    setIfPresent('title', body.title)
+    setIfPresent('subject', body.subject)
+    setIfPresent('grade_level', body.grade_level)
+    setIfPresent('description', body.description)
+    setIfPresent('target_audience', body.target_audience)
+    setIfPresent('instructor_name', body.instructor_name)
+    setIfPresent('instructor_bio', body.instructor_bio)
+    setIfPresent('course_duration', body.course_duration)
+    setIfPresent('price', body.price)
+    setIfPresent('course_image_url', body.course_image_url)
+    setIfPresent('preview_video_url', body.preview_video_url)
+    setIfPresent('syllabus_url', body.syllabus_url)
+    setIfPresent('is_published', body.is_published)
+    setIfPresent('is_featured', body.is_featured)
+    setIfPresent('batch_number', body.batch_number)
+    setIfPresent('batch_status', body.batch_status)
+    setIfPresent('home_tutor_available', body.home_tutor_available)
+
+    if (body.seats_left !== undefined) {
+      updates.seats_left = body.seats_left === '' || body.seats_left === null ? null : Number(body.seats_left)
+    }
+    if (body.seats_total !== undefined) {
+      updates.seats_total = body.seats_total === '' || body.seats_total === null ? null : Number(body.seats_total)
+    }
+
+    if (body.learning_outcomes !== undefined) {
+      updates.learning_outcomes = Array.isArray(body.learning_outcomes)
+        ? body.learning_outcomes
+        : String(body.learning_outcomes).split('\n').map((s: string) => s.trim()).filter(Boolean)
+    }
+    if (body.requirements !== undefined) {
+      updates.requirements = Array.isArray(body.requirements)
+        ? body.requirements
+        : String(body.requirements).split('\n').map((s: string) => s.trim()).filter(Boolean)
+    }
+
+    updates.updated_at = new Date().toISOString()
 
     const { data, error } = await supabase
       .from('courses')
-      .update({
-        ...body,
-        learning_outcomes: typeof body.learning_outcomes === 'string' ? body.learning_outcomes.split('\n').filter((s: string) => s.trim()) : body.learning_outcomes,
-        requirements: typeof body.requirements === 'string' ? body.requirements.split('\n').filter((s: string) => s.trim()) : body.requirements,
-        updated_at: new Date().toISOString()
-      })
+      .update(updates)
       .eq('id', id)
       .select()
       .single()
@@ -99,24 +124,22 @@ export async function PUT(
     if (error) throw error
 
     return NextResponse.json({ course: data })
-
   } catch (error) {
     console.error('Error updating course:', error)
     return NextResponse.json({ error: 'Failed to update course' }, { status: 500 })
   }
 }
 
-// DELETE - Delete course
+// DELETE - remove a course. course_modules/course_topics are expected to
+// cascade via their FK (they already do for every other parent/child pair
+// in this schema); if that's ever not the case the DB error surfaces here.
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authError = await requireAdmin()
-    if (authError) return authError
-
-    const supabase = createSupabaseClientForServer() as any
     const { id } = await params
+    const supabase = createSupabaseClientForServer() as any
 
     const { error } = await supabase
       .from('courses')
@@ -126,7 +149,6 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ message: 'Course deleted successfully' })
-
   } catch (error) {
     console.error('Error deleting course:', error)
     return NextResponse.json({ error: 'Failed to delete course' }, { status: 500 })

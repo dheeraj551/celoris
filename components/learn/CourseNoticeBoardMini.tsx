@@ -121,11 +121,39 @@ interface Props {
   durationDisplay: string;
 }
 
-// Per-course batch/seat/trainer stats for the notice board widgets. Keyed by
-// course title so each course can carry its own (still hand-entered, not
-// live) numbers instead of every course showing the same demo figures.
-function getBatchStats(courseTitle: string) {
-  const title = (courseTitle || '').toLowerCase();
+// Per-course batch/seat/trainer stats for the notice board widgets. A course
+// with real batch_number/seats_total/batch_status set in the admin dashboard
+// uses those live values; everything else falls back to the previous
+// hand-entered demo numbers so existing courses keep looking the same.
+function getBatchStats(course: any) {
+  const title = (course?.title || '').toLowerCase();
+
+  const hasRealBatchData = course?.batch_number != null || course?.seats_total != null || course?.batch_status != null;
+  if (hasRealBatchData) {
+    const seatsTotal = course.seats_total ?? 0;
+    const seatsOpen = course.seats_left ?? 0;
+    const seatsEnrolled = Math.max(seatsTotal - seatsOpen, 0);
+    const status = course.batch_status || (seatsOpen > 0 ? 'Open' : 'Full');
+    const statusLower = status.toLowerCase();
+    const isFull = statusLower.includes('full') || seatsOpen <= 0;
+    const isSoon = statusLower.includes('soon');
+
+    return {
+      batchLabel: status,
+      batchDotClass: isFull || isSoon ? 'soon' : 'live',
+      batchBadgeClass: isFull ? 'urgent' : isSoon ? 'soon' : 'live',
+      batchBadgeText: status.toUpperCase(),
+      batchNumber: course.batch_number ? `#${course.batch_number}` : '—',
+      seatsOpen,
+      seatsTotal,
+      seatsEnrolled,
+      seatsBadgeText: isFull ? 'FULLY BOOKED' : seatsOpen <= 2 ? 'FILLING FAST' : 'SEATS OPEN',
+      trainersCount: 3,
+      trainerInitials: ['RM', 'PS', 'AV'],
+      trainersExtra: 0,
+      homeTutorAvailable: !!course.home_tutor_available,
+    };
+  }
 
   if (title.includes('copilot')) {
     return {
@@ -141,6 +169,7 @@ function getBatchStats(courseTitle: string) {
       trainersCount: 3,
       trainerInitials: ['RM', 'PS', 'AV'],
       trainersExtra: 0,
+      homeTutorAvailable: true,
     };
   }
 
@@ -158,6 +187,7 @@ function getBatchStats(courseTitle: string) {
     trainersCount: 13,
     trainerInitials: ['RM', 'PS', 'AV', 'NK', 'SC'],
     trainersExtra: 8,
+    homeTutorAvailable: true,
   };
 }
 
@@ -166,7 +196,7 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
   const now = new Date();
   const nextBatchDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-  const stats = getBatchStats(course?.title);
+  const stats = getBatchStats(course);
 
   return (
     <div className="mnb-wrap">
@@ -246,7 +276,9 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
           <li><span>Next batch</span><span className="val">{fmt(nextBatchDate)}</span></li>
           <li><span>Fee</span><span className="val">{price}</span></li>
           <li><span>Duration</span><span className="val">{durationDisplay}</span></li>
-          <li><span>Home Tutors</span><span className="val" style={{ color: '#35b0a0' }}>✓ NCR</span></li>
+          {stats.homeTutorAvailable && (
+            <li><span>Home Tutors</span><span className="val" style={{ color: '#35b0a0' }}>✓ NCR</span></li>
+          )}
           <li><span>Certificate</span><span className="val">Yes</span></li>
         </ul>
       </div>

@@ -6,6 +6,66 @@ import { createClient } from '@/lib/supabase-client';
 import { CourseCardProps } from './types';
 import { motion } from 'framer-motion';
 
+const courseRoutes: Record<string, string> = {
+    'vibe-coding-mastery-static': '/courses/vibe-coding-mastery',
+    'class-11-physics-static': '/courses/cbse-class-11-physics-comprehensive-course',
+    'class-12-physics-static': '/courses/cbse-class-12-physics-complete-course',
+    'class-10-physics-static': '/courses/cbse-class-10-physics-light-electricity-magnetism-energy',
+    'class-9-chemistry-static': '/courses/cbse-class-9-chemistry-complete-course',
+    'b65a0bc8-2e86-4170-9a3c-91c4050de31f': '/courses/cbse-class-9-physics-motion-force-energy-sound',
+    'class-10-chemistry-static': '/courses/cbse-class-10-chemistry-complete-course',
+    'class-11-chemistry-static': '/courses/cbse-class-11-chemistry-complete-course',
+    'class-12-chemistry-static': '/courses/cbse-class-12-chemistry-complete-course',
+    'online-hatha-yoga-classes-beginners-static': '/learn/online-hatha-yoga-classes-beginners',
+    '28-day-reset-static': '/courses/the-28-day-reset-foundation-strength-mobility',
+    'class-9-maths-static': '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
+    'livekit-ai-agents-static': '/courses/build-real-time-ai-agents-with-livekit',
+    '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
+    'agentic-ai-systems-static': '/courses/agentic-ai-systems-design-build-deploy',
+    'rag-unlocked-static': '/courses/rag-unlocked-production-grade-search-answer-systems',
+    'llm-prompt-engineering-static': '/courses/llm-prompt-engineering-for-real-results',
+    'deploy-scale-ai-static': '/courses/deploy-scale-ai-apps-serverless-edge',
+    'langchain-real-static': '/courses/langchain-in-action-real-workflows',
+    'build-ai-products-static': '/courses/build-ai-products-that-make-money-practical-guide',
+    'mastering-multimodal-ai-static': '/courses/mastering-multimodal-ai',
+    'building-model-native-agent-systems-static': '/courses/building-model-native-agent-systems',
+    'architecting-trust-static': '/courses/architecting-trust-ai-safety-ethics-compliance',
+    'agentic-ai-cybersecurity-static': '/courses/agentic-ai-for-cybersecurity',
+    'accelerating-science-static': '/courses/accelerating-science-generative-ai-for-research-innovation',
+    'personalized-ai-experiences-static': '/courses/personalized-ai-experiences-with-rag-and-agents',
+    'sovereign-intelligence-static': '/courses/sovereign-intelligence',
+    'excel-expert-master-static': '/learn/be-an-excel-expert',
+    'content-creation-social-media-static': '/learn/content-creation-social-media',
+    'blender-3d-modelling-beginners-static': '/learn/blender-3d-modelling-beginners',
+    'bollywood-zumba-dance-static': '/courses/bollywood-zumba-dance-for-beginners',
+    'python-ai-developers-static': '/courses/python-for-ai-developers',
+    'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
+    'speak-with-confidence-static': '/learn/speak-with-confidence',
+    'professional-retouching-photoshop-static': '/courses/professional-retouching-in-photoshop',
+    'digital-marketing-ai-static': '/courses/digital-marketing-using-ai-tools',
+    'social-media-marketing-pro-training-static': '/courses/social-media-marketing-professional-training',
+    'social-media-marketing-ai-static': '/courses/social-media-marketing-with-ai',
+    'agentic-ai-beginners-static': '/courses/agentic-ai-for-beginners',
+    '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
+    'python-mega-course-static': '/courses/python-mega-course',
+    'zumba-fitness-masterclass-static': '/courses/zumba-fitness-masterclass',
+    'spoken-english-sonia-sharma-static': '/learn/spoken-english-communication',
+    'essential-python-ai-static': '/courses/essential-python-for-ai-development',
+    'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai',
+    'capcut-pro-viral-reels-static': '/courses/capcut-pro-viral-reels',
+    'agentic-ai-masterclass-static': '/courses/agentic-ai-masterclass',
+    'ai-tools-content-creation-static': '/courses/ai-tools-for-content-creation',
+    'low-poly-3d-modeling-blender-static': '/courses/low-poly-3d-modeling-blender',
+    'adobe-photoshop-with-ai-static': '/courses/adobe-photoshop-with-ai',
+    'python-trading-automation-static': '/courses/python-for-trading-automation',
+    'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery',
+    '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp',
+    '879e499f-5517-413a-bd6a-76e2911b8331': '/learn/course/ai-web-development',
+    'f00459e9-20a0-4866-ba05-79aa574f7dff': '/learn/course/master-copilot-excel',
+    'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead': '/learn/course/master-youtube-shorts-instagram-reels'
+};
+const getCourseRoute = (id: string) => courseRoutes[id] || `/learn/course/${id}`;
+
 export const CourseCard: React.FC<CourseCardProps & { description?: string, image?: string }> = ({ id, title, category, instructor, duration, price, tag, description, image }) => (
     <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -58,67 +118,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
                 <div />
                 {id ? (
                     <Link
-                        href={
-                            (() => {
-                                const routes: Record<string, string> = {
-                                    'vibe-coding-mastery-static': '/courses/vibe-coding-mastery',
-                                    'class-11-physics-static': '/courses/cbse-class-11-physics-comprehensive-course',
-                                    'class-12-physics-static': '/courses/cbse-class-12-physics-complete-course',
-                                    'class-10-physics-static': '/courses/cbse-class-10-physics-light-electricity-magnetism-energy',
-                                    'class-9-chemistry-static': '/courses/cbse-class-9-chemistry-complete-course',
-                                    'b65a0bc8-2e86-4170-9a3c-91c4050de31f': '/courses/cbse-class-9-physics-motion-force-energy-sound',
-                                    'class-10-chemistry-static': '/courses/cbse-class-10-chemistry-complete-course',
-                                    'class-11-chemistry-static': '/courses/cbse-class-11-chemistry-complete-course',
-                                    'class-12-chemistry-static': '/courses/cbse-class-12-chemistry-complete-course',
-                                    'online-hatha-yoga-classes-beginners-static': '/learn/online-hatha-yoga-classes-beginners',
-                                    '28-day-reset-static': '/courses/the-28-day-reset-foundation-strength-mobility',
-                                    'class-9-maths-static': '/courses/cbse-class-9-mathematics-complete-syllabus-mastery-guide',
-                                    'livekit-ai-agents-static': '/courses/build-real-time-ai-agents-with-livekit',
-                                    '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
-                                    'agentic-ai-systems-static': '/courses/agentic-ai-systems-design-build-deploy',
-                                    'rag-unlocked-static': '/courses/rag-unlocked-production-grade-search-answer-systems',
-                                    'llm-prompt-engineering-static': '/courses/llm-prompt-engineering-for-real-results',
-                                    'deploy-scale-ai-static': '/courses/deploy-scale-ai-apps-serverless-edge',
-                                    'langchain-real-static': '/courses/langchain-in-action-real-workflows',
-                                    'build-ai-products-static': '/courses/build-ai-products-that-make-money-practical-guide',
-                                    'mastering-multimodal-ai-static': '/courses/mastering-multimodal-ai',
-                                    'building-model-native-agent-systems-static': '/courses/building-model-native-agent-systems',
-                                    'architecting-trust-static': '/courses/architecting-trust-ai-safety-ethics-compliance',
-                                    'agentic-ai-cybersecurity-static': '/courses/agentic-ai-for-cybersecurity',
-                                    'accelerating-science-static': '/courses/accelerating-science-generative-ai-for-research-innovation',
-                                    'personalized-ai-experiences-static': '/courses/personalized-ai-experiences-with-rag-and-agents',
-                                    'sovereign-intelligence-static': '/courses/sovereign-intelligence',
-                                    'excel-expert-master-static': '/learn/be-an-excel-expert',
-                                    'content-creation-social-media-static': '/learn/content-creation-social-media',
-                                    'blender-3d-modelling-beginners-static': '/learn/blender-3d-modelling-beginners',
-                                    'bollywood-zumba-dance-static': '/courses/bollywood-zumba-dance-for-beginners',
-                                    'python-ai-developers-static': '/courses/python-for-ai-developers',
-                                    'bollywood-guitar-beginners-static': '/courses/bollywood-guitar-for-beginners',
-                                    'speak-with-confidence-static': '/learn/speak-with-confidence',
-                                    'professional-retouching-photoshop-static': '/courses/professional-retouching-in-photoshop',
-                                    'digital-marketing-ai-static': '/courses/digital-marketing-using-ai-tools',
-                                    'social-media-marketing-pro-training-static': '/courses/social-media-marketing-professional-training',
-                                    'social-media-marketing-ai-static': '/courses/social-media-marketing-with-ai',
-                                    'agentic-ai-beginners-static': '/courses/agentic-ai-for-beginners',
-                                    '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
-                                    'python-mega-course-static': '/courses/python-mega-course',
-                                    'zumba-fitness-masterclass-static': '/courses/zumba-fitness-masterclass',
-                                    'spoken-english-sonia-sharma-static': '/learn/spoken-english-communication',
-                                    'essential-python-ai-static': '/courses/essential-python-for-ai-development',
-                                    'master-premiere-pro-ai-static': '/courses/master-premiere-pro-ai',
-                                    'capcut-pro-viral-reels-static': '/courses/capcut-pro-viral-reels',
-                                    'agentic-ai-masterclass-static': '/courses/agentic-ai-masterclass',
-                                    'ai-tools-content-creation-static': '/courses/ai-tools-for-content-creation',
-                                    'low-poly-3d-modeling-blender-static': '/courses/low-poly-3d-modeling-blender',
-                                    'adobe-photoshop-with-ai-static': '/courses/adobe-photoshop-with-ai',
-                                    'python-trading-automation-static': '/courses/python-for-trading-automation',
-                                    'e7698318-7f57-421f-866e-0101ee239c01': '/learn/course/digital-marketing-mastery',
-                                    '48713643-694c-491f-86d6-5b6e713c1cf3': '/learn/course/web-development-bootcamp',
-                                    '879e499f-5517-413a-bd6a-76e2911b8331': '/learn/course/ai-web-development'
-                                };
-                                return routes[id] || `/learn/course/${id}`;
-                            })()
-                        }
+                        href={getCourseRoute(id)}
                         className="px-6 py-3 bg-emerald-600/90 text-white text-[10px] font-black uppercase italic rounded-2xl hover:bg-emerald-500 border border-emerald-500/50 transition-all shadow-xl shadow-emerald-500/20 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center gap-2 group/btn relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
@@ -162,6 +162,74 @@ export const staticCourses = [
     { id: 'adobe-photoshop-with-ai-static', title: 'Adobe Photoshop with AI — Complete Course for Designers', subject: 'Design', instructor_name: 'Celoris Expert Trainer', course_duration: '24 Hours', price: 14999, is_featured: true, description: 'Supercharge your design workflow with Adobe Photoshop CC 2024 AI features. Master Generative Fill, Neural Filters, and AI-assisted retouching.', course_image_url: '/photoshop-ai-hero.png' }
 ];
 
+// Highlights whichever real, admin-published course was created most recently — sits above the
+// fixed 6-course grid (same idea as the blog page's "latest post" hero) so a brand new course is
+// always visible up top without ever needing to touch the curated grid below it.
+const LatestCourseHero: React.FC<{ course: any }> = ({ course }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mb-10 md:mb-12"
+    >
+        <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as React.CSSProperties}>
+        <div className="home-rgb-border-ring">
+        <div className="group relative flex flex-col lg:flex-row bg-[#0d0d0d] overflow-hidden shadow-2xl" style={{ borderRadius: 'calc(2.5rem - 2px)' }}>
+            <div className="relative lg:w-[45%] aspect-video lg:aspect-auto overflow-hidden bg-slate-900">
+                <img
+                    src={course.course_image_url || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800"}
+                    alt={course.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/70 via-transparent to-transparent" />
+                <div className="absolute top-6 left-6 flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg shadow-emerald-500/30">
+                        <Sparkles size={10} className="animate-pulse" /> Newly Added
+                    </span>
+                </div>
+            </div>
+
+            <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-4">
+                    {course.subject && (
+                        <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg uppercase tracking-widest italic">{course.subject}</span>
+                    )}
+                    <div className="flex items-center gap-1 text-emerald-500">
+                        <Star size={10} fill="currentColor" />
+                        <span className="text-[10px] font-black tracking-widest">4.9 Rating</span>
+                    </div>
+                </div>
+
+                <h2 className="text-2xl md:text-4xl font-black text-white leading-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all duration-300 uppercase italic tracking-tighter">
+                    <Link href={getCourseRoute(course.id)}>{course.title}</Link>
+                </h2>
+
+                {course.description && (
+                    <p className="text-slate-400 text-sm md:text-base leading-relaxed mb-6 line-clamp-3">{course.description}</p>
+                )}
+
+                <div className="flex items-center gap-5 text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none mb-8 flex-wrap">
+                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/60" /> {course.instructor_name || 'Celoris Team'}</div>
+                    {course.course_duration && (
+                        <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/60" /> {course.course_duration}</div>
+                    )}
+                </div>
+
+                <div>
+                    <Link
+                        href={getCourseRoute(course.id)}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600/90 text-white text-[10px] font-black uppercase italic rounded-2xl hover:bg-emerald-500 border border-emerald-500/50 transition-all shadow-xl shadow-emerald-500/20 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                    >
+                        LEARN MORE <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    </motion.div>
+);
+
 export const Courses: React.FC<any> = ({
     title = "Our Latest Courses",
     description = "Explore our newest AI courses and start your career.",
@@ -173,6 +241,7 @@ export const Courses: React.FC<any> = ({
 
     const [courses, setCourses] = useState<any[]>(initialCourses ? initialCourses.slice(0, limit) : []);
     const [loading, setLoading] = useState(!initialCourses);
+    const [latestCourse, setLatestCourse] = useState<any | null>(null);
 
     useEffect(() => {
         const prepareCourses = async () => {
@@ -214,6 +283,13 @@ export const Courses: React.FC<any> = ({
                 const normalizedTitle = (c.title || '').toLowerCase().trim();
                 return !excludedTitles.some(ex => normalizedTitle === ex || normalizedTitle.includes('my new ai course') || normalizedTitle.includes('banana'));
             });
+
+            // Whichever real course was published most recently gets its own hero above the grid
+            // below — this never reorders or removes anything from that fixed 6-course grid.
+            const mostRecentReal = [...filteredDbCourses]
+                .filter((c: any) => c.created_at)
+                .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0] || null;
+            setLatestCourse(mostRecentReal);
 
             // Pool both static and database courses
             const allAvailable = [...staticCourses, ...filteredDbCourses];
@@ -275,6 +351,8 @@ export const Courses: React.FC<any> = ({
                 <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-6 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
                 {description && <p className="text-slate-500 text-xs md:text-sm mt-8 font-black uppercase tracking-[0.1em] italic leading-relaxed max-w-3xl border-l border-emerald-500/20 pl-6">{description}</p>}
             </motion.div>
+
+            {latestCourse && <LatestCourseHero course={latestCourse} />}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {courses.map((course: any) => (

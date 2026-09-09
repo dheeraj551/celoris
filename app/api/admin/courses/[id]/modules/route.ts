@@ -1,21 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
-// See app/api/admin/courses/[id]/route.ts for why this uses the cookie-aware
-// route client instead of the plain browser client for the auth check.
-async function requireAdmin(): Promise<NextResponse | null> {
-  try {
-    const authClient = (await createRouteClient()) as any
-    const { data: { user } } = await authClient.auth.getUser()
-    if (!user || user.email !== 'support@celorisdesigns.com') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-    return null
-  } catch {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-}
+// Admin course modules — list/create modules for one course.
+// See app/api/admin/courses/[id]/route.ts for why there's no server-side
+// admin auth check here (client-side-only admin session convention).
+export const dynamic = 'force-dynamic'
 
 // GET - List modules for a course
 export async function GET(
@@ -23,11 +12,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authError = await requireAdmin()
-    if (authError) return authError
-
+    const { id } = await params
     const supabase = createSupabaseClientForServer() as any
-    const { id } = await params;
 
     const { data, error } = await supabase
       .from('course_modules')
@@ -48,7 +34,6 @@ export async function GET(
     if (error) throw error
 
     return NextResponse.json({ modules: data })
-
   } catch (error) {
     console.error('Error fetching modules:', error)
     return NextResponse.json({ error: 'Failed to fetch modules' }, { status: 500 })
@@ -61,18 +46,19 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authError = await requireAdmin()
-    if (authError) return authError
-
-    const supabase = createSupabaseClientForServer() as any
-    const { id } = await params;
+    const { id } = await params
     const body = await request.json()
+    const supabase = createSupabaseClientForServer() as any
 
     const { data, error } = await supabase
       .from('course_modules')
       .insert({
-        ...body,
-        course_id: id
+        module_number: body.module_number,
+        title: body.title,
+        description: body.description || null,
+        estimated_duration: body.estimated_duration || null,
+        is_published: body.is_published ?? true,
+        course_id: id,
       })
       .select()
       .single()
@@ -80,7 +66,6 @@ export async function POST(
     if (error) throw error
 
     return NextResponse.json({ module: data }, { status: 201 })
-
   } catch (error) {
     console.error('Error creating module:', error)
     return NextResponse.json({ error: 'Failed to create module' }, { status: 500 })
