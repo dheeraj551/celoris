@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User, LogOut, Heart, Users, User as UserIcon, Wallet, ThumbsUp } from "lucide-react"
+import { Menu, User, LogOut, User as UserIcon, Wallet, BookOpen, GraduationCap, Tv, Briefcase } from "lucide-react"
 import { cn } from "@/lib/utils"
 // removed createClient import as it is handled in useAuth
 import {
@@ -63,6 +63,7 @@ export default function Header() {
     pathname?.startsWith("/marketing") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
+    pathname?.startsWith("/celoris-tv") ||
     pathname === "/login" ||
     pathname === "/register";
 
@@ -160,21 +161,27 @@ export default function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/social/swipe" className="cursor-pointer">
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Discover</span>
+                  <Link href="/learn" className="cursor-pointer">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>Learn</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/social/matches" className="cursor-pointer">
-                    <Users className="mr-2 h-4 w-4" />
-                    <span>Matches</span>
+                  <Link href="/teach" className="cursor-pointer">
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    <span>Teach</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/social/likes" className="cursor-pointer">
-                    <ThumbsUp className="mr-2 h-4 w-4" />
-                    <span>Likes</span>
+                  <Link href="/celoris-tv" className="cursor-pointer">
+                    <Tv className="mr-2 h-4 w-4" />
+                    <span>Celoris TV</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/job-center" className="cursor-pointer">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    <span>Job Center</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -265,28 +272,36 @@ export default function Header() {
                 ) : user ? (
                   <>
                     <Link
-                      href="/social/swipe"
+                      href="/learn"
                       className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Heart className="h-4 w-4" />
-                      <span>Discover</span>
+                      <BookOpen className="h-4 w-4" />
+                      <span>Learn</span>
                     </Link>
                     <Link
-                      href="/social/matches"
+                      href="/teach"
                       className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Users className="h-4 w-4" />
-                      <span>Matches</span>
+                      <GraduationCap className="h-4 w-4" />
+                      <span>Teach</span>
                     </Link>
                     <Link
-                      href="/social/likes"
+                      href="/celoris-tv"
                       className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
                       onClick={() => setIsOpen(false)}
                     >
-                      <ThumbsUp className="h-4 w-4" />
-                      <span>Likes</span>
+                      <Tv className="h-4 w-4" />
+                      <span>Celoris TV</span>
+                    </Link>
+                    <Link
+                      href="/job-center"
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Briefcase className="h-4 w-4" />
+                      <span>Job Center</span>
                     </Link>
                     <Link
                       href="/social/profile"

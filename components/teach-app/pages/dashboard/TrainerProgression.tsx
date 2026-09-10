@@ -89,7 +89,9 @@ export function TrainerProgression() {
             </motion.div>
             <motion.div variants={fadeUpItem} className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center col-span-2 sm:col-span-1">
               <span className="text-[11px] text-slate-400 font-medium block">Trainer Rating</span>
-              <span className="text-lg font-extrabold text-emerald-300 font-mono">{progress.trainerRating.toFixed(1)} / 5</span>
+              <span className="text-lg font-extrabold text-emerald-300 font-mono">
+                {progress.sessionsHosted > 0 ? `${progress.trainerRating.toFixed(1)} / 5` : 'No ratings yet'}
+              </span>
             </motion.div>
           </motion.div>
         </div>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Sidebar } from './Sidebar';
-import { Plus, ShoppingBag, Heart, Users, User as UserIcon, Wallet, LogOut, LogIn, ThumbsUp, Mail, Phone, Menu } from 'lucide-react';
+import { Plus, ShoppingBag, User as UserIcon, Wallet, LogOut, LogIn, Mail, Phone, Menu, BookOpen, GraduationCap, Tv, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -128,21 +128,27 @@ export function DashboardShell({ children, headerContent, hideTopBar }: { childr
                                         </DropdownMenuLabel>
                                         <DropdownMenuSeparator className="bg-white/5" />
                                         <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
-                                            <Link href="/social/swipe" className="flex items-center">
-                                                <Heart className="mr-2 h-4 w-4 text-emerald-500" />
-                                                <span className="text-xs font-bold uppercase tracking-tight italic">Discover</span>
+                                            <Link href="/learn" className="flex items-center">
+                                                <BookOpen className="mr-2 h-4 w-4 text-emerald-500" />
+                                                <span className="text-xs font-bold uppercase tracking-tight italic">Learn</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
-                                            <Link href="/social/matches" className="flex items-center">
-                                                <Users className="mr-2 h-4 w-4 text-emerald-500" />
-                                                <span className="text-xs font-bold uppercase tracking-tight italic">Matches</span>
+                                            <Link href="/teach" className="flex items-center">
+                                                <GraduationCap className="mr-2 h-4 w-4 text-emerald-500" />
+                                                <span className="text-xs font-bold uppercase tracking-tight italic">Teach</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
-                                            <Link href="/social/likes" className="flex items-center">
-                                                <ThumbsUp className="mr-2 h-4 w-4 text-emerald-500" />
-                                                <span className="text-xs font-bold uppercase tracking-tight italic">Likes</span>
+                                            <Link href="/celoris-tv" className="flex items-center">
+                                                <Tv className="mr-2 h-4 w-4 text-emerald-500" />
+                                                <span className="text-xs font-bold uppercase tracking-tight italic">Celoris TV</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                                            <Link href="/job-center" className="flex items-center">
+                                                <Briefcase className="mr-2 h-4 w-4 text-emerald-500" />
+                                                <span className="text-xs font-bold uppercase tracking-tight italic">Job Center</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">

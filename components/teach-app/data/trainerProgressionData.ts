@@ -46,32 +46,18 @@ export const TRAINER_LEVEL_TIERS: Record<
   },
 };
 
+// This used to be sample/demo data (Level 2, 480 XP, 24 sessions, 4.8 rating,
+// two "earned" badges) left over from early development — every trainer,
+// including a brand-new one with zero sessions, was seeing the exact same
+// numbers. Until XP/sessions/ratings are actually computed per-trainer from
+// real activity, this stays at true starting values (Level 1, 0 XP, 0
+// sessions, no badges) so new trainers see an honest empty state instead of
+// fabricated stats.
 export const INITIAL_TRAINER_PROGRESS: TrainerProgress = {
-  level: 2,
-  currentXP: 480,
-  nextLevelXP: 800,
-  sessionsHosted: 24,
-  trainerRating: 4.8,
-  badges: [
-    {
-      id: 'tb1',
-      badgeTitle: 'Verified Subject Expert',
-      subject: 'Web Development',
-      verificationHash: 'TV-2026-WD-77K2',
-      earnedDate: 'This week',
-      rating: 4.9,
-      sessionsCount: 24,
-      badgeColor: '#10B981',
-    },
-    {
-      id: 'tb2',
-      badgeTitle: 'Top Rated Trainer',
-      subject: 'Digital Marketing',
-      verificationHash: 'TV-2026-TR-93F0',
-      earnedDate: '2 weeks ago',
-      rating: 5.0,
-      sessionsCount: 38,
-      badgeColor: '#059669',
-    },
-  ],
+  level: 1,
+  currentXP: 0,
+  nextLevelXP: 300,
+  sessionsHosted: 0,
+  trainerRating: 0,
+  badges: [],
 };

@@ -1,12 +1,13 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   MapPin, CheckCircle2, Award, Briefcase,
   GraduationCap, Globe, Linkedin, Twitter, Youtube, Loader2, UserRound,
-  Copy, Printer, ShieldCheck, Star,
+  Copy, Printer, ShieldCheck, Star, MessageSquarePlus, X,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { TrainerTierLevel } from '../types';
 import { TRAINER_LEVEL_TIERS, INITIAL_TRAINER_PROGRESS } from '../data/trainerProgressionData';
 
@@ -53,12 +54,30 @@ interface ResumeData {
   education: EducationEntry[];
 }
 
+interface TrainerReviewItem {
+  id: string;
+  reviewer_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
 export function TrainerProfile() {
   const { id } = useParams();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [trainer, setTrainer] = useState<ResumeData | null>(null);
+  const [reviews, setReviews] = useState<TrainerReviewItem[]>([]);
+
+  // Write a Review
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -67,10 +86,16 @@ export function TrainerProfile() {
     (async () => {
       setLoading(true);
 
-      const [{ data: userRow }, { data: profileRow }, { data: resumeRow }] = await Promise.all([
+      const [{ data: userRow }, { data: profileRow }, { data: resumeRow }, { data: reviewRows }] = await Promise.all([
         supabase.from('users').select('*').eq('id', id).maybeSingle(),
         supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
         supabase.from('trainer_resumes').select('*').eq('id', id).maybeSingle(),
+        supabase
+          .from('trainer_reviews')
+          .select('id, reviewer_name, rating, comment, created_at')
+          .eq('trainer_id', id)
+          .eq('is_approved', true)
+          .order('created_at', { ascending: false }),
       ]);
 
       if (!resumeRow || resumeRow.is_public === false) {
@@ -103,9 +128,49 @@ export function TrainerProfile() {
         experience: Array.isArray(resumeRow.experience) ? resumeRow.experience : [],
         education: Array.isArray(resumeRow.education) ? resumeRow.education : [],
       });
+      setReviews(Array.isArray(reviewRows) ? reviewRows : []);
       setLoading(false);
     })();
   }, [id]);
+
+  const handleSubmitReview = async () => {
+    if (!user || !id) return;
+    if (reviewRating < 1) {
+      setReviewError('Please select a star rating.');
+      return;
+    }
+
+    setReviewError(null);
+    setReviewSubmitting(true);
+    try {
+      const response = await fetch('/api/trainer/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trainerId: id,
+          reviewerId: user.id,
+          reviewerName: profile?.full_name || user.email?.split('@')[0] || 'Celoris User',
+          rating: reviewRating,
+          comment: reviewComment.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || 'Failed to submit review');
+      }
+
+      setShowReviewModal(false);
+      setReviewRating(0);
+      setReviewComment('');
+      setReviewSubmitted(true);
+      setTimeout(() => setReviewSubmitted(false), 6000);
+    } catch (err) {
+      setReviewError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
 
   // Support ?print=1 to trigger the browser's print (Save as PDF) dialog automatically
   useEffect(() => {
@@ -150,6 +215,9 @@ export function TrainerProfile() {
   }
 
   const hasSocials = trainer.website || trainer.linkedin || trainer.twitter || trainer.youtube;
+
+  const reviewCount = reviews.length;
+  const avgRating = reviewCount > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount : 0;
 
   // Verified Trainer Progression — mirrors the trainer's own dashboard
   // Progression tab (components/teach-app/pages/dashboard/TrainerProgression.tsx).
@@ -336,7 +404,9 @@ export function TrainerProfile() {
               </div>
               <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 text-center col-span-2 sm:col-span-1">
                 <span className="text-[11px] text-gray-500 font-medium block">Trainer Rating</span>
-                <span className="text-lg font-extrabold text-emerald-700">{progress.trainerRating.toFixed(1)} / 5</span>
+                <span className="text-lg font-extrabold text-emerald-700">
+                  {reviewCount > 0 ? `${avgRating.toFixed(1)} / 5` : 'No ratings yet'}
+                </span>
               </div>
             </div>
 
@@ -388,6 +458,69 @@ export function TrainerProfile() {
                   ))}
                 </motion.div>
               </div>
+            )}
+          </motion.div>
+
+          {/* Reviews */}
+          <motion.div variants={fadeInUp} className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                  <MessageSquarePlus className="h-6 w-6 text-emerald-600" /> Reviews
+                  {reviewCount > 0 && <span className="text-base font-medium text-gray-400">({reviewCount})</span>}
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  {reviewCount > 0
+                    ? `${avgRating.toFixed(1)} / 5 average from ${reviewCount} review${reviewCount === 1 ? '' : 's'}`
+                    : 'No reviews yet — be the first to share your experience.'}
+                </p>
+              </div>
+
+              {!user ? (
+                <Link
+                  to="/teach/login"
+                  className="no-print text-sm font-bold text-emerald-600 hover:text-emerald-700 border border-emerald-200 rounded-xl px-4 py-2.5 hover:bg-emerald-50 transition-colors whitespace-nowrap"
+                >
+                  Sign in to write a review
+                </Link>
+              ) : user.id !== id ? (
+                <button
+                  onClick={() => setShowReviewModal(true)}
+                  className="no-print flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+                >
+                  <MessageSquarePlus className="h-4 w-4" /> Write a Review
+                </button>
+              ) : null}
+            </div>
+
+            {reviewSubmitted && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
+                Thanks! Your review has been submitted and will appear once approved.
+              </div>
+            )}
+
+            {reviews.length > 0 ? (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div key={review.id} className="p-4 rounded-xl bg-gray-50 border border-gray-200">
+                    <div className="flex items-center justify-between gap-3 mb-1.5">
+                      <span className="font-bold text-sm text-gray-900">{review.reviewer_name}</span>
+                      <span className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3.5 w-3.5 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-200'}`}
+                          />
+                        ))}
+                      </span>
+                    </div>
+                    {review.comment && <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>}
+                    <p className="text-[11px] text-gray-400 mt-2">{new Date(review.created_at).toLocaleDateString()}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              !reviewSubmitted && <p className="text-sm text-gray-400">No reviews yet.</p>
             )}
           </motion.div>
 
@@ -540,6 +673,68 @@ export function TrainerProfile() {
           </div>
         </motion.div>
       </div>
+
+      {/* Write a Review Modal */}
+      {showReviewModal && (
+        <div
+          className="no-print fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={() => setShowReviewModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, ease: 'easeOut' as const }}
+            className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-bold text-gray-900">Write a Review</h3>
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">Rating</label>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button key={star} type="button" onClick={() => setReviewRating(star)} className="p-0.5">
+                      <Star className={`h-7 w-7 ${star <= reviewRating ? 'text-yellow-400 fill-current' : 'text-gray-200'}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-2">
+                  Comment (optional)
+                </label>
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  rows={4}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none focus:border-emerald-500/50 focus:bg-white transition-all"
+                  placeholder={`Share your experience with ${trainer.full_name.split(' ')[0]}...`}
+                />
+              </div>
+
+              {reviewError && <p className="text-xs text-red-600 font-medium">{reviewError}</p>}
+
+              <button
+                onClick={handleSubmitReview}
+                disabled={reviewSubmitting}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

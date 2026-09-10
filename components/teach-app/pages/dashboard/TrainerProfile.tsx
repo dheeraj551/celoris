@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  User, Mail, Globe, MapPin, Camera, Save, Pencil, Trash2, Plus, X,
-  ExternalLink, Linkedin, Twitter, Youtube, CheckCircle, Briefcase,
-  GraduationCap, Sparkles, Share2, Copy, Link as LinkIcon, Download,
+  User, Mail, MapPin, Camera, Save, Pencil, Trash2, Plus, X,
+  ExternalLink, CheckCircle,
+  Share2, Copy, Link as LinkIcon, Download,
   Eye, EyeOff, ShieldCheck, Award,
 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -13,18 +13,6 @@ import { INITIAL_TRAINER_PROGRESS } from '../../data/trainerProgressionData';
 const fadeUpItem = {
   hidden: { opacity: 0, y: 18 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } },
-};
-
-const chipVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
-  exit: { opacity: 0, scale: 0.8, transition: { duration: 0.15 } },
-};
-
-const entryCardVariants = {
-  hidden: { opacity: 0, height: 0, y: -8 },
-  visible: { opacity: 1, height: 'auto', y: 0, transition: { duration: 0.3, ease: 'easeOut' as const } },
-  exit: { opacity: 0, height: 0, y: -8, transition: { duration: 0.2, ease: 'easeIn' as const } },
 };
 
 interface ExperienceEntry {
@@ -42,29 +30,14 @@ interface EducationEntry {
   year: string;
 }
 
-const emptyExperience = (): ExperienceEntry => ({
-  id: `exp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-  title: '',
-  organization: '',
-  duration: '',
-  description: '',
-});
-
-const emptyEducation = (): EducationEntry => ({
-  id: `edu_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-  degree: '',
-  institution: '',
-  year: '',
-});
-
 export function TrainerProfile() {
   const { user, profile, refreshProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
   const [resumeLoaded, setResumeLoaded] = useState(false);
-  const [skillInput, setSkillInput] = useState('');
-  const [languageInput, setLanguageInput] = useState('');
+  const [deletionLoading, setDeletionLoading] = useState(false);
+  const [deletionRequested, setDeletionRequested] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
@@ -126,9 +99,19 @@ export function TrainerProfile() {
     return () => { cancelled = true; };
   }, [user?.id]);
 
+  // `profile` loads asynchronously from AuthProvider, after this component's
+  // initial render — so the `profile?.full_name || ''` used to seed formData
+  // above usually sees a still-empty profile and locks in ''. Sync it in once
+  // the real profile arrives, but never stomp a name the trainer already typed.
+  useEffect(() => {
+    const syncedName = profile?.full_name || (user?.user_metadata as any)?.full_name || (user?.user_metadata as any)?.name;
+    if (!syncedName) return;
+    setFormData((prev) => (prev.full_name ? prev : { ...prev, full_name: syncedName }));
+  }, [profile?.full_name, user?.user_metadata]);
+
   const calculateStrength = () => {
     let score = 0;
-    const totalFields = 11;
+    const totalFields = 7;
     if (profile?.avatar_url || profile?.profile_pic_url) score += 1;
     if (formData.full_name) score += 1;
     if (formData.headline) score += 1;
@@ -136,10 +119,6 @@ export function TrainerProfile() {
     if (formData.expertise) score += 1;
     if (formData.experience) score += 1;
     if (formData.location) score += 1;
-    if (formData.skills.length > 0) score += 1;
-    if (formData.experienceEntries.length > 0) score += 1;
-    if (formData.educationEntries.length > 0) score += 1;
-    if (formData.linkedin || formData.twitter || formData.youtube || formData.website) score += 1;
     return Math.round((score / totalFields) * 100);
   };
 
@@ -208,56 +187,35 @@ export function TrainerProfile() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const addSkill = () => {
-    const val = skillInput.trim();
-    if (!val || formData.skills.includes(val)) return;
-    setFormData({ ...formData, skills: [...formData.skills, val] });
-    setSkillInput('');
-  };
+  const handleRequestDeletion = async () => {
+    if (!user?.email) return;
+    const confirmed = window.confirm(
+      'Are you sure you want to request deletion of your trainer profile? Our team will reach out to confirm before anything is removed.'
+    );
+    if (!confirmed) return;
 
-  const removeSkill = (skill: string) => {
-    setFormData({ ...formData, skills: formData.skills.filter((s) => s !== skill) });
-  };
+    setDeletionLoading(true);
+    try {
+      const response = await fetch('/api/trainer/request-deletion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.full_name,
+          email: user.email,
+          userId: user.id,
+        }),
+      });
 
-  const addLanguage = () => {
-    const val = languageInput.trim();
-    if (!val || formData.languages.includes(val)) return;
-    setFormData({ ...formData, languages: [...formData.languages, val] });
-    setLanguageInput('');
-  };
+      if (!response.ok) throw new Error('Failed to send deletion request');
 
-  const removeLanguage = (lang: string) => {
-    setFormData({ ...formData, languages: formData.languages.filter((l) => l !== lang) });
-  };
-
-  const addExperience = () => {
-    setFormData({ ...formData, experienceEntries: [...formData.experienceEntries, emptyExperience()] });
-  };
-
-  const updateExperience = (id: string, field: keyof ExperienceEntry, value: string) => {
-    setFormData({
-      ...formData,
-      experienceEntries: formData.experienceEntries.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    });
-  };
-
-  const removeExperience = (id: string) => {
-    setFormData({ ...formData, experienceEntries: formData.experienceEntries.filter((e) => e.id !== id) });
-  };
-
-  const addEducation = () => {
-    setFormData({ ...formData, educationEntries: [...formData.educationEntries, emptyEducation()] });
-  };
-
-  const updateEducation = (id: string, field: keyof EducationEntry, value: string) => {
-    setFormData({
-      ...formData,
-      educationEntries: formData.educationEntries.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    });
-  };
-
-  const removeEducation = (id: string) => {
-    setFormData({ ...formData, educationEntries: formData.educationEntries.filter((e) => e.id !== id) });
+      setDeletionRequested(true);
+      setTimeout(() => setDeletionRequested(false), 5000);
+    } catch (err) {
+      console.error('Error requesting profile deletion:', err);
+      alert('Something went wrong sending your deletion request. Please try again later.');
+    } finally {
+      setDeletionLoading(false);
+    }
   };
 
   if (!resumeLoaded) {
@@ -336,7 +294,7 @@ export function TrainerProfile() {
             </div>
 
             <div className="mt-8 relative w-full">
-              <h3 className="text-xl font-black text-gray-900 leading-tight">{formData.full_name || 'Sonia M'}</h3>
+              <h3 className={`text-xl font-black text-gray-900 leading-tight ${!formData.full_name && 'opacity-30'}`}>{formData.full_name || user?.email?.split('@')[0] || 'Add Your Name'}</h3>
               <p className={`text-emerald-600 font-black text-[11px] uppercase tracking-[0.15em] mt-1 italic ${!formData.headline && 'opacity-30'}`}>
                 {formData.headline || 'Add a professional headline'}
               </p>
@@ -349,10 +307,6 @@ export function TrainerProfile() {
                 <div className="flex items-center gap-3 text-gray-500">
                   <MapPin size={16} className="text-emerald-500" />
                   <span className={`text-sm font-bold ${!formData.location && 'opacity-30'}`}>{formData.location || 'Location Not Set'}</span>
-                </div>
-                <div className="flex items-center gap-3 text-gray-500">
-                  <Globe size={16} className="text-emerald-500" />
-                  <span className={`text-sm font-bold truncate ${!formData.website && 'opacity-30'}`}>{formData.website || 'No Portfolio/Website'}</span>
                 </div>
               </div>
             </div>
@@ -430,14 +384,14 @@ export function TrainerProfile() {
               <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.bio ? 'text-emerald-400' : 'opacity-60'}`}>
                 {formData.bio ? <CheckCircle size={12} /> : <Plus size={12} />} Add Bio
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.skills.length > 0 ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.skills.length > 0 ? <CheckCircle size={12} /> : <Plus size={12} />} Add Skills
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.headline ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.headline ? <CheckCircle size={12} /> : <Plus size={12} />} Add Headline
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.experienceEntries.length > 0 ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.experienceEntries.length > 0 ? <CheckCircle size={12} /> : <Plus size={12} />} Add Work Experience
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.location ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.location ? <CheckCircle size={12} /> : <Plus size={12} />} Add Location
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.linkedin || formData.twitter || formData.youtube ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.linkedin || formData.twitter || formData.youtube ? <CheckCircle size={12} /> : <Plus size={12} className="animate-pulse" />} Add Socials
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.expertise ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.expertise ? <CheckCircle size={12} /> : <Plus size={12} className="animate-pulse" />} Add Specialties
               </li>
             </ul>
           </motion.div>
@@ -457,16 +411,6 @@ export function TrainerProfile() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Display Name</label>
-                <input
-                  type="text"
-                  value={formData.full_name}
-                  onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
-                  placeholder="e.g. Sonia M"
-                />
-              </div>
-              <div className="space-y-3">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Years of Experience</label>
                 <input
                   type="text"
@@ -474,16 +418,6 @@ export function TrainerProfile() {
                   onChange={e => setFormData({ ...formData, experience: e.target.value })}
                   className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
                   placeholder="e.g. 5+ Years"
-                />
-              </div>
-              <div className="md:col-span-2 space-y-3">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Professional Headline</label>
-                <input
-                  type="text"
-                  value={formData.headline}
-                  onChange={e => setFormData({ ...formData, headline: e.target.value })}
-                  className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
-                  placeholder="e.g. Advanced Excel & Data Analytics Trainer"
                 />
               </div>
               <div className="space-y-3">
@@ -496,14 +430,14 @@ export function TrainerProfile() {
                   placeholder="e.g. Mumbai, India"
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Website / Portfolio</label>
+              <div className="md:col-span-2 space-y-3">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Professional Headline</label>
                 <input
                   type="text"
-                  value={formData.website}
-                  onChange={e => setFormData({ ...formData, website: e.target.value })}
+                  value={formData.headline}
+                  onChange={e => setFormData({ ...formData, headline: e.target.value })}
                   className="w-full bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
-                  placeholder="e.g. https://celoris.in"
+                  placeholder="e.g. Advanced Excel & Data Analytics Trainer"
                 />
               </div>
               <div className="md:col-span-2 space-y-3">
@@ -527,251 +461,6 @@ export function TrainerProfile() {
                 />
               </div>
             </div>
-          </motion.div>
-
-          {/* Skills & Languages */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50">
-            <h3 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3 italic">
-              <Sparkles className="text-emerald-600" size={24} /> Skills & Languages
-            </h3>
-
-            <div className="space-y-3 mb-8">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Skills</label>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={skillInput}
-                  onChange={e => setSkillInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } }}
-                  className="flex-1 bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
-                  placeholder="e.g. Excel, Public Speaking, Curriculum Design"
-                />
-                <button
-                  type="button"
-                  onClick={addSkill}
-                  className="px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-all"
-                >
-                  Add
-                </button>
-              </div>
-              {formData.skills.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <AnimatePresence>
-                    {formData.skills.map((skill) => (
-                      <motion.span
-                        key={skill}
-                        layout
-                        variants={chipVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-full text-xs font-bold"
-                      >
-                        {skill}
-                        <button type="button" onClick={() => removeSkill(skill)} className="hover:text-emerald-950">
-                          <X size={12} />
-                        </button>
-                      </motion.span>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Languages Spoken</label>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={languageInput}
-                  onChange={e => setLanguageInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addLanguage(); } }}
-                  className="flex-1 bg-gray-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-gray-900 shadow-inner"
-                  placeholder="e.g. English, Hindi"
-                />
-                <button
-                  type="button"
-                  onClick={addLanguage}
-                  className="px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-all"
-                >
-                  Add
-                </button>
-              </div>
-              {formData.languages.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <AnimatePresence>
-                    {formData.languages.map((lang) => (
-                      <motion.span
-                        key={lang}
-                        layout
-                        variants={chipVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 border border-gray-200 px-3 py-1.5 rounded-full text-xs font-bold"
-                      >
-                        {lang}
-                        <button type="button" onClick={() => removeLanguage(lang)} className="hover:text-gray-950">
-                          <X size={12} />
-                        </button>
-                      </motion.span>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Work Experience */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3 italic">
-                <Briefcase className="text-emerald-600" size={24} /> Work Experience
-              </h3>
-              <motion.button
-                type="button"
-                onClick={addExperience}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition-all"
-              >
-                <Plus size={14} /> Add Entry
-              </motion.button>
-            </div>
-
-            {formData.experienceEntries.length === 0 ? (
-              <p className="text-sm text-gray-400 font-medium text-center py-8">No experience added yet. Add your teaching or work history.</p>
-            ) : (
-              <div className="space-y-6">
-                <AnimatePresence initial={false}>
-                  {formData.experienceEntries.map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      layout
-                      variants={entryCardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="p-6 rounded-[1.75rem] bg-gray-50 border border-gray-100 space-y-4 relative overflow-hidden"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => removeExperience(entry.id)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                        <input
-                          type="text"
-                          value={entry.title}
-                          onChange={e => updateExperience(entry.id, 'title', e.target.value)}
-                          placeholder="Role / Title (e.g. Lead Trainer)"
-                          className="bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-gray-900"
-                        />
-                        <input
-                          type="text"
-                          value={entry.organization}
-                          onChange={e => updateExperience(entry.id, 'organization', e.target.value)}
-                          placeholder="Organization"
-                          className="bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-gray-900"
-                        />
-                      </div>
-                      <input
-                        type="text"
-                        value={entry.duration}
-                        onChange={e => updateExperience(entry.id, 'duration', e.target.value)}
-                        placeholder="Duration (e.g. 2021 - Present)"
-                        className="w-full bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-gray-900"
-                      />
-                      <textarea
-                        rows={3}
-                        value={entry.description}
-                        onChange={e => updateExperience(entry.id, 'description', e.target.value)}
-                        placeholder="What did you teach or work on?"
-                        className="w-full bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-medium text-sm text-gray-700 leading-relaxed"
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Education */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3 italic">
-                <GraduationCap className="text-emerald-600" size={24} /> Education
-              </h3>
-              <motion.button
-                type="button"
-                onClick={addEducation}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition-all"
-              >
-                <Plus size={14} /> Add Entry
-              </motion.button>
-            </div>
-
-            {formData.educationEntries.length === 0 ? (
-              <p className="text-sm text-gray-400 font-medium text-center py-8">No education added yet.</p>
-            ) : (
-              <div className="space-y-4">
-                <AnimatePresence initial={false}>
-                  {formData.educationEntries.map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      layout
-                      variants={entryCardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="p-6 rounded-[1.75rem] bg-gray-50 border border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-4 relative overflow-hidden"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => removeEducation(entry.id)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors md:hidden"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                      <input
-                        type="text"
-                        value={entry.degree}
-                        onChange={e => updateEducation(entry.id, 'degree', e.target.value)}
-                        placeholder="Degree / Certification"
-                        className="bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-gray-900"
-                      />
-                      <input
-                        type="text"
-                        value={entry.institution}
-                        onChange={e => updateEducation(entry.id, 'institution', e.target.value)}
-                        placeholder="Institution"
-                        className="bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-gray-900"
-                      />
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={entry.year}
-                          onChange={e => updateEducation(entry.id, 'year', e.target.value)}
-                          placeholder="Year"
-                          className="flex-1 bg-white px-5 py-3.5 rounded-xl border border-gray-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-gray-900"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeEducation(entry.id)}
-                          className="hidden md:flex items-center justify-center w-12 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
           </motion.div>
 
           {/* Verified Certifications (from Progression) */}
@@ -807,56 +496,6 @@ export function TrainerProfile() {
             )}
           </motion.div>
 
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50">
-            <div className="flex justify-between items-center mb-10">
-              <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3 italic">
-                <ExternalLink className="text-emerald-600" size={24} /> Social Connectivity
-              </h3>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Connect with Students</span>
-            </div>
-
-            <div className="space-y-6">
-              <div className="group relative">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-blue-50 text-blue-600 rounded-xl">
-                  <Linkedin size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="LinkedIn URL"
-                  value={formData.linkedin}
-                  onChange={e => setFormData({ ...formData, linkedin: e.target.value })}
-                  className="w-full bg-gray-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-blue-500/50 focus:bg-white transition-all font-bold shadow-inner"
-                />
-              </div>
-
-              <div className="group relative">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-slate-900 text-white rounded-xl">
-                  <Twitter size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Twitter URL"
-                  value={formData.twitter}
-                  onChange={e => setFormData({ ...formData, twitter: e.target.value })}
-                  className="w-full bg-gray-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-slate-900/50 focus:bg-white transition-all font-bold shadow-inner"
-                />
-              </div>
-
-              <div className="group relative">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-red-50 text-red-600 rounded-xl">
-                  <Youtube size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="YouTube Channel"
-                  value={formData.youtube}
-                  onChange={e => setFormData({ ...formData, youtube: e.target.value })}
-                  className="w-full bg-gray-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-red-500/50 focus:bg-white transition-all font-bold shadow-inner"
-                />
-              </div>
-            </div>
-          </motion.div>
-
           <motion.div variants={fadeUpItem} className="bg-red-50 p-8 rounded-[2.5rem] border border-red-100 flex items-center justify-between group">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-red-100 text-red-600 rounded-[1.25rem] group-hover:bg-red-600 group-hover:text-white transition-all">
@@ -867,8 +506,13 @@ export function TrainerProfile() {
                 <p className="text-red-600 text-[10px] font-bold uppercase tracking-widest opacity-80">This will hide your profile from learners</p>
               </div>
             </div>
-            <button className="bg-white border border-red-200 text-red-600 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all">
-              Request Deletion
+            <button
+              type="button"
+              onClick={handleRequestDeletion}
+              disabled={deletionLoading}
+              className="bg-white border border-red-200 text-red-600 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {deletionLoading ? 'Sending...' : deletionRequested ? 'Request Sent' : 'Request Deletion'}
             </button>
           </motion.div>
         </motion.div>

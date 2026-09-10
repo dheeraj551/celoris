@@ -26,7 +26,8 @@ import {
   Eye,
   MessageCircle,
   GraduationCap,
-  Video
+  Video,
+  Star
 } from "lucide-react"
 import LeadSync from "@/components/admin/LeadSync"
 
@@ -197,6 +198,13 @@ export default function AdminDashboard() {
       icon: MessageCircle,
       href: "/admin/testimonials",
       color: "bg-purple-600 hover:bg-purple-700"
+    },
+    {
+      title: "Trainer Reviews",
+      description: "Approve or remove reviews submitted on trainer profiles",
+      icon: Star,
+      href: "/admin/trainer-reviews",
+      color: "bg-teal-600 hover:bg-teal-700"
     },
     {
       title: "Blog Management",
