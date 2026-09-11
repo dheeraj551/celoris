@@ -19,7 +19,9 @@ export interface Room {
   maxStudents?: number;
   status: 'Ready' | 'Live' | 'Full';
   /** Free-text note the host can set so students see when to come back
-      (e.g. "Next batch 6 PM today") — most useful once the room is Full. */
+      (e.g. "Next batch 6 PM today"). Always shown on the room card once
+      set — not gated on `status === 'Full'`, so a trainer's note is never
+      silently hidden just because the room still has open seats. */
   nextBatchInfo?: string;
   /** True when a student code is set on this room — the code ITSELF never
       reaches the browser via this Room object; only this boolean does (see

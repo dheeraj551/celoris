@@ -160,7 +160,7 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                   </div>
                 )}
 
-                {room.status === 'Full' && room.nextBatchInfo && (
+                {room.nextBatchInfo && (
                   <div className="mb-2 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">
                     <span className="font-bold">Next batch:</span> {room.nextBatchInfo}
                   </div>

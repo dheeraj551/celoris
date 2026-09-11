@@ -6,9 +6,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  User, Mail, Globe, MapPin, Camera, Save, Pencil, Trash2, Plus, X,
-  ExternalLink, Linkedin, Twitter, Youtube, CheckCircle, Briefcase,
-  GraduationCap, Sparkles, Share2, Copy, Link as LinkIcon,
+  User, Mail, MapPin, Camera, Save, Pencil, Plus,
+  ExternalLink, CheckCircle,
+  Share2, Copy, Link as LinkIcon,
   Eye, EyeOff, ShieldCheck, Award,
 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -19,17 +19,24 @@ const fadeUpItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } },
 };
 
-const chipVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
-  exit: { opacity: 0, scale: 0.8, transition: { duration: 0.15 } },
-};
-
-const entryCardVariants = {
-  hidden: { opacity: 0, height: 0, y: -8 },
-  visible: { opacity: 1, height: 'auto', y: 0, transition: { duration: 0.3, ease: 'easeOut' as const } },
-  exit: { opacity: 0, height: 0, y: -8, transition: { duration: 0.2, ease: 'easeIn' as const } },
-};
+// Builds the human-readable slug used in the public profile URL/QR code
+// (e.g. "prabha-singh-f93e9a8f") from the candidate's current display name
+// plus a short id suffix, so it stays unique even between candidates who
+// share a name. Recomputed on every save from the current name, so the
+// link updates if the candidate renames themselves later.
+function buildCandidateSlug(fullName: string, id: string): string {
+  // Strip combining diacritical marks (U+0300-U+036F) left behind by
+  // NFKD normalization, e.g. turning "\u00e9" into a plain "e".
+  const base = (fullName || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'candidate';
+  const shortId = id.replace(/-/g, '').slice(0, 8);
+  return `${base}-${shortId}`;
+}
 
 interface ExperienceEntry {
   id: string;
@@ -53,29 +60,12 @@ interface CandidateBadge {
   verificationHash: string;
 }
 
-const emptyExperience = (): ExperienceEntry => ({
-  id: `exp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-  title: '',
-  organization: '',
-  duration: '',
-  description: '',
-});
-
-const emptyEducation = (): EducationEntry => ({
-  id: `edu_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-  degree: '',
-  institution: '',
-  year: '',
-});
-
 export function CandidateProfileEditor() {
   const { user, profile, refreshProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
-  const [skillInput, setSkillInput] = useState('');
-  const [languageInput, setLanguageInput] = useState('');
   const [badges, setBadges] = useState<CandidateBadge[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
@@ -144,22 +134,23 @@ export function CandidateProfileEditor() {
 
   const calculateStrength = () => {
     let score = 0;
-    const totalFields = 10;
+    const totalFields = 6;
     if (profile?.avatar_url || profile?.profile_pic_url) score += 1;
     if (formData.full_name) score += 1;
     if (formData.headline) score += 1;
     if (formData.bio) score += 1;
     if (formData.specialty) score += 1;
     if (formData.location) score += 1;
-    if (formData.skills.length > 0) score += 1;
-    if (formData.experienceEntries.length > 0) score += 1;
-    if (formData.educationEntries.length > 0) score += 1;
-    if (formData.linkedin || formData.twitter || formData.youtube || formData.website) score += 1;
     return Math.round((score / totalFields) * 100);
   };
 
   const strength = calculateStrength();
-  const profileUrl = user?.id ? `${typeof window !== 'undefined' ? window.location.origin : ''}/job-center/candidates/${user.id}` : '';
+  // Live preview of the slug that will be saved — matches what handleSave
+  // below actually writes, so this always reflects the name currently in
+  // the form even before the candidate hits Save.
+  const profileUrl = user?.id
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/job-center/candidates/${buildCandidateSlug(formData.full_name, user.id)}`
+    : '';
 
   const handleSave = async () => {
     setLoading(true);
@@ -181,6 +172,7 @@ export function CandidateProfileEditor() {
         .from('job_center_candidate_profiles')
         .upsert({
           id: user?.id,
+          slug: user?.id ? buildCandidateSlug(formData.full_name, user.id) : undefined,
           headline: formData.headline,
           bio: formData.bio,
           specialty: formData.specialty,
@@ -219,58 +211,6 @@ export function CandidateProfileEditor() {
     navigator.clipboard.writeText(profileUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const addSkill = () => {
-    const val = skillInput.trim();
-    if (!val || formData.skills.includes(val)) return;
-    setFormData({ ...formData, skills: [...formData.skills, val] });
-    setSkillInput('');
-  };
-
-  const removeSkill = (skill: string) => {
-    setFormData({ ...formData, skills: formData.skills.filter((s) => s !== skill) });
-  };
-
-  const addLanguage = () => {
-    const val = languageInput.trim();
-    if (!val || formData.languages.includes(val)) return;
-    setFormData({ ...formData, languages: [...formData.languages, val] });
-    setLanguageInput('');
-  };
-
-  const removeLanguage = (lang: string) => {
-    setFormData({ ...formData, languages: formData.languages.filter((l) => l !== lang) });
-  };
-
-  const addExperience = () => {
-    setFormData({ ...formData, experienceEntries: [...formData.experienceEntries, emptyExperience()] });
-  };
-
-  const updateExperience = (id: string, field: keyof ExperienceEntry, value: string) => {
-    setFormData({
-      ...formData,
-      experienceEntries: formData.experienceEntries.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    });
-  };
-
-  const removeExperience = (id: string) => {
-    setFormData({ ...formData, experienceEntries: formData.experienceEntries.filter((e) => e.id !== id) });
-  };
-
-  const addEducation = () => {
-    setFormData({ ...formData, educationEntries: [...formData.educationEntries, emptyEducation()] });
-  };
-
-  const updateEducation = (id: string, field: keyof EducationEntry, value: string) => {
-    setFormData({
-      ...formData,
-      educationEntries: formData.educationEntries.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    });
-  };
-
-  const removeEducation = (id: string) => {
-    setFormData({ ...formData, educationEntries: formData.educationEntries.filter((e) => e.id !== id) });
   };
 
   if (!profileLoaded) {
@@ -363,10 +303,6 @@ export function CandidateProfileEditor() {
                   <MapPin size={16} className="text-emerald-500" />
                   <span className={`text-sm font-bold ${!formData.location && 'opacity-30'}`}>{formData.location || 'Location Not Set'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-500">
-                  <Globe size={16} className="text-emerald-500" />
-                  <span className={`text-sm font-bold truncate ${!formData.website && 'opacity-30'}`}>{formData.website || 'No Portfolio/Website'}</span>
-                </div>
               </div>
             </div>
           </motion.div>
@@ -433,14 +369,14 @@ export function CandidateProfileEditor() {
               <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.bio ? 'text-emerald-400' : 'opacity-60'}`}>
                 {formData.bio ? <CheckCircle size={12} /> : <Plus size={12} />} Add Bio
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.skills.length > 0 ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.skills.length > 0 ? <CheckCircle size={12} /> : <Plus size={12} />} Add Skills
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.headline ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.headline ? <CheckCircle size={12} /> : <Plus size={12} />} Add Headline
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.experienceEntries.length > 0 ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.experienceEntries.length > 0 ? <CheckCircle size={12} /> : <Plus size={12} />} Add Work Experience
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.location ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.location ? <CheckCircle size={12} /> : <Plus size={12} />} Add Location
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.linkedin || formData.twitter || formData.youtube ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.linkedin || formData.twitter || formData.youtube ? <CheckCircle size={12} /> : <Plus size={12} className="animate-pulse" />} Add Socials
+              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.specialty ? 'text-emerald-400' : 'opacity-60'}`}>
+                {formData.specialty ? <CheckCircle size={12} /> : <Plus size={12} className="animate-pulse" />} Add Specialties
               </li>
             </ul>
           </motion.div>
@@ -499,16 +435,6 @@ export function CandidateProfileEditor() {
                   placeholder="e.g. Noida, India"
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Website / Portfolio</label>
-                <input
-                  type="text"
-                  value={formData.website}
-                  onChange={e => setFormData({ ...formData, website: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
-                  placeholder="e.g. https://your-portfolio.com"
-                />
-              </div>
               <div className="md:col-span-2 space-y-3">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Desired Roles / Specialties</label>
                 <input
@@ -530,251 +456,6 @@ export function CandidateProfileEditor() {
                 />
               </div>
             </div>
-          </motion.div>
-
-          {/* Skills & Languages */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-            <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 italic">
-              <Sparkles className="text-emerald-600" size={24} /> Skills & Languages
-            </h3>
-
-            <div className="space-y-3 mb-8">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Skills</label>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={skillInput}
-                  onChange={e => setSkillInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } }}
-                  className="flex-1 bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
-                  placeholder="e.g. Premiere Pro, After Effects, Storytelling"
-                />
-                <button
-                  type="button"
-                  onClick={addSkill}
-                  className="px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-all"
-                >
-                  Add
-                </button>
-              </div>
-              {formData.skills.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <AnimatePresence>
-                    {formData.skills.map((skill) => (
-                      <motion.span
-                        key={skill}
-                        layout
-                        variants={chipVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-full text-xs font-bold"
-                      >
-                        {skill}
-                        <button type="button" onClick={() => removeSkill(skill)} className="hover:text-emerald-950">
-                          <X size={12} />
-                        </button>
-                      </motion.span>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Languages Spoken</label>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={languageInput}
-                  onChange={e => setLanguageInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addLanguage(); } }}
-                  className="flex-1 bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
-                  placeholder="e.g. English, Hindi"
-                />
-                <button
-                  type="button"
-                  onClick={addLanguage}
-                  className="px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-all"
-                >
-                  Add
-                </button>
-              </div>
-              {formData.languages.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <AnimatePresence>
-                    {formData.languages.map((lang) => (
-                      <motion.span
-                        key={lang}
-                        layout
-                        variants={chipVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-full text-xs font-bold"
-                      >
-                        {lang}
-                        <button type="button" onClick={() => removeLanguage(lang)} className="hover:text-slate-950">
-                          <X size={12} />
-                        </button>
-                      </motion.span>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Work Experience */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 italic">
-                <Briefcase className="text-emerald-600" size={24} /> Work Experience
-              </h3>
-              <motion.button
-                type="button"
-                onClick={addExperience}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition-all"
-              >
-                <Plus size={14} /> Add Entry
-              </motion.button>
-            </div>
-
-            {formData.experienceEntries.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium text-center py-8">No experience added yet. Add your work history.</p>
-            ) : (
-              <div className="space-y-6">
-                <AnimatePresence initial={false}>
-                  {formData.experienceEntries.map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      layout
-                      variants={entryCardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="p-6 rounded-[1.75rem] bg-slate-50 border border-slate-100 space-y-4 relative overflow-hidden"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => removeExperience(entry.id)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                        <input
-                          type="text"
-                          value={entry.title}
-                          onChange={e => updateExperience(entry.id, 'title', e.target.value)}
-                          placeholder="Role / Title (e.g. Video Editor)"
-                          className="bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-slate-900"
-                        />
-                        <input
-                          type="text"
-                          value={entry.organization}
-                          onChange={e => updateExperience(entry.id, 'organization', e.target.value)}
-                          placeholder="Organization"
-                          className="bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-slate-900"
-                        />
-                      </div>
-                      <input
-                        type="text"
-                        value={entry.duration}
-                        onChange={e => updateExperience(entry.id, 'duration', e.target.value)}
-                        placeholder="Duration (e.g. 2023 - Present)"
-                        className="w-full bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-slate-900"
-                      />
-                      <textarea
-                        rows={3}
-                        value={entry.description}
-                        onChange={e => updateExperience(entry.id, 'description', e.target.value)}
-                        placeholder="What did you work on?"
-                        className="w-full bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-medium text-sm text-slate-700 leading-relaxed"
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Education */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 italic">
-                <GraduationCap className="text-emerald-600" size={24} /> Education
-              </h3>
-              <motion.button
-                type="button"
-                onClick={addEducation}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition-all"
-              >
-                <Plus size={14} /> Add Entry
-              </motion.button>
-            </div>
-
-            {formData.educationEntries.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium text-center py-8">No education added yet.</p>
-            ) : (
-              <div className="space-y-4">
-                <AnimatePresence initial={false}>
-                  {formData.educationEntries.map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      layout
-                      variants={entryCardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="p-6 rounded-[1.75rem] bg-slate-50 border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4 relative overflow-hidden"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => removeEducation(entry.id)}
-                        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors md:hidden"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                      <input
-                        type="text"
-                        value={entry.degree}
-                        onChange={e => updateEducation(entry.id, 'degree', e.target.value)}
-                        placeholder="Degree / Certification"
-                        className="bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-slate-900"
-                      />
-                      <input
-                        type="text"
-                        value={entry.institution}
-                        onChange={e => updateEducation(entry.id, 'institution', e.target.value)}
-                        placeholder="Institution"
-                        className="bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-slate-900"
-                      />
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={entry.year}
-                          onChange={e => updateEducation(entry.id, 'year', e.target.value)}
-                          placeholder="Year"
-                          className="flex-1 bg-white px-5 py-3.5 rounded-xl border border-slate-200 focus:border-emerald-500/50 outline-none font-bold text-sm text-slate-900"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeEducation(entry.id)}
-                          className="hidden md:flex items-center justify-center w-12 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
           </motion.div>
 
           {/* Verified Badges (real, from Progression / Exams) */}
@@ -805,56 +486,6 @@ export function CandidateProfileEditor() {
                 ))}
               </div>
             )}
-          </motion.div>
-
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-            <div className="flex justify-between items-center mb-10">
-              <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 italic">
-                <ExternalLink className="text-emerald-600" size={24} /> Social Connectivity
-              </h3>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Connect with Employers</span>
-            </div>
-
-            <div className="space-y-6">
-              <div className="group relative">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-blue-50 text-blue-600 rounded-xl">
-                  <Linkedin size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="LinkedIn URL"
-                  value={formData.linkedin}
-                  onChange={e => setFormData({ ...formData, linkedin: e.target.value })}
-                  className="w-full bg-slate-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-blue-500/50 focus:bg-white transition-all font-bold shadow-inner"
-                />
-              </div>
-
-              <div className="group relative">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-slate-900 text-white rounded-xl">
-                  <Twitter size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Twitter URL"
-                  value={formData.twitter}
-                  onChange={e => setFormData({ ...formData, twitter: e.target.value })}
-                  className="w-full bg-slate-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-slate-900/50 focus:bg-white transition-all font-bold shadow-inner"
-                />
-              </div>
-
-              <div className="group relative">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-red-50 text-red-600 rounded-xl">
-                  <Youtube size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="YouTube / Portfolio Reel"
-                  value={formData.youtube}
-                  onChange={e => setFormData({ ...formData, youtube: e.target.value })}
-                  className="w-full bg-slate-50 pl-20 pr-6 py-5 rounded-[1.5rem] border border-transparent focus:border-red-500/50 focus:bg-white transition-all font-bold shadow-inner"
-                />
-              </div>
-            </div>
           </motion.div>
         </motion.div>
       </div>

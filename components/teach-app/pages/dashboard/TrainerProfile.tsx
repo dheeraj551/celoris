@@ -15,6 +15,25 @@ const fadeUpItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } },
 };
 
+// Builds the human-readable slug used in the public profile URL/QR code
+// (e.g. "prabha-singh-f93e9a8f") from the trainer's current display name
+// plus a short id suffix, so it stays unique even between trainers who
+// share a name. Recomputed on every save from the current name, so the
+// link updates if the trainer renames themselves later.
+function buildTrainerSlug(fullName: string, id: string): string {
+  // Strip combining diacritical marks (U+0300-U+036F) left behind by
+  // NFKD normalization, e.g. turning an accented letter into a plain one.
+  const base = (fullName || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'trainer';
+  const shortId = id.replace(/-/g, '').slice(0, 8);
+  return `${base}-${shortId}`;
+}
+
 interface ExperienceEntry {
   id: string;
   title: string;
@@ -123,21 +142,40 @@ export function TrainerProfile() {
   };
 
   const strength = calculateStrength();
-  const resumeUrl = user?.id ? `${typeof window !== 'undefined' ? window.location.origin : ''}/teach/trainers/${user.id}` : '';
+  // Live preview of the slug that will be saved — matches what handleSave
+  // below actually writes, so this always reflects the name currently in
+  // the form even before the trainer hits Save.
+  const resumeUrl = user?.id
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/teach/trainers/${buildTrainerSlug(formData.full_name, user.id)}`
+    : '';
 
   const handleSave = async () => {
     setLoading(true);
     setSuccess(false);
     try {
-      // Name still lives on the shared profiles/users tables
-      const { error } = await supabase
-        .from('profiles')
+      // Name lives primarily on the shared `users` table (what AuthProvider
+      // and the public trainer page fall back to). A `profiles` row, when one
+      // exists for this trainer, takes precedence for shared fields, so keep
+      // it in sync too — but only if that row already exists. Supabase's
+      // .update() matches zero rows silently (no error) when there's no
+      // profiles row, which previously meant the name update to `users`
+      // never ran at all, leaving the trainer's name permanently blank.
+      const { error: usersError } = await supabase
+        .from('users')
         .update({ full_name: formData.full_name })
         .eq('id', user?.id);
 
-      if (error) {
+      if (usersError) console.error('Error updating users.full_name:', usersError);
+
+      const { data: existingProfileRow } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user?.id)
+        .maybeSingle();
+
+      if (existingProfileRow) {
         await supabase
-          .from('users')
+          .from('profiles')
           .update({ full_name: formData.full_name })
           .eq('id', user?.id);
       }
@@ -147,6 +185,7 @@ export function TrainerProfile() {
         .from('trainer_resumes')
         .upsert({
           id: user?.id,
+          slug: user?.id ? buildTrainerSlug(formData.full_name, user.id) : undefined,
           headline: formData.headline,
           bio: formData.bio,
           specialty: formData.expertise,
@@ -294,7 +333,13 @@ export function TrainerProfile() {
             </div>
 
             <div className="mt-8 relative w-full">
-              <h3 className={`text-xl font-black text-gray-900 leading-tight ${!formData.full_name && 'opacity-30'}`}>{formData.full_name || user?.email?.split('@')[0] || 'Add Your Name'}</h3>
+              <input
+                type="text"
+                value={formData.full_name}
+                onChange={e => setFormData({ ...formData, full_name: e.target.value })}
+                placeholder="Add Your Name"
+                className="text-xl font-black text-gray-900 leading-tight bg-transparent border-none outline-none w-full text-center rounded-lg px-1 -mx-1 placeholder:text-gray-300 placeholder:font-black focus:ring-2 focus:ring-emerald-100"
+              />
               <p className={`text-emerald-600 font-black text-[11px] uppercase tracking-[0.15em] mt-1 italic ${!formData.headline && 'opacity-30'}`}>
                 {formData.headline || 'Add a professional headline'}
               </p>

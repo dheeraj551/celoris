@@ -52,6 +52,9 @@ interface ResumeData {
   languages: string[];
   experience: ExperienceEntry[];
   education: EducationEntry[];
+  /** Human-readable URL slug (e.g. "prabha-singh-f93e9a8f"), used to build
+      the public profile link and QR code instead of the raw trainer id. */
+  slug: string;
 }
 
 interface TrainerReviewItem {
@@ -63,13 +66,17 @@ interface TrainerReviewItem {
 }
 
 export function TrainerProfile() {
-  const { id } = useParams();
+  // The URL segment is the trainer's slug (e.g. "prabha-singh-f93e9a8f") —
+  // older shared links/QR codes may still carry the raw trainer id instead,
+  // so this is resolved to the real id below rather than used directly.
+  const { id: routeParam } = useParams();
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [trainer, setTrainer] = useState<ResumeData | null>(null);
   const [reviews, setReviews] = useState<TrainerReviewItem[]>([]);
+  const [resolvedId, setResolvedId] = useState<string | null>(null);
 
   // Write a Review
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -80,20 +87,37 @@ export function TrainerProfile() {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    if (!routeParam) return;
     const supabase = createClient();
 
     (async () => {
       setLoading(true);
 
+      // Resolve the slug to a trainer id, falling back to treating the
+      // param as a raw uuid for links shared before slugs existed.
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(routeParam);
+      const { data: slugRow } = await supabase
+        .from('trainer_resumes')
+        .select('id')
+        .eq('slug', routeParam)
+        .maybeSingle();
+      const trainerId: string | null = slugRow?.id || (isUuid ? routeParam : null);
+
+      if (!trainerId) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      setResolvedId(trainerId);
+
       const [{ data: userRow }, { data: profileRow }, { data: resumeRow }, { data: reviewRows }] = await Promise.all([
-        supabase.from('users').select('*').eq('id', id).maybeSingle(),
-        supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
-        supabase.from('trainer_resumes').select('*').eq('id', id).maybeSingle(),
+        supabase.from('users').select('*').eq('id', trainerId).maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', trainerId).maybeSingle(),
+        supabase.from('trainer_resumes').select('*').eq('id', trainerId).maybeSingle(),
         supabase
           .from('trainer_reviews')
           .select('id, reviewer_name, rating, comment, created_at')
-          .eq('trainer_id', id)
+          .eq('trainer_id', trainerId)
           .eq('is_approved', true)
           .order('created_at', { ascending: false }),
       ]);
@@ -127,14 +151,15 @@ export function TrainerProfile() {
         languages: resumeRow.languages || [],
         experience: Array.isArray(resumeRow.experience) ? resumeRow.experience : [],
         education: Array.isArray(resumeRow.education) ? resumeRow.education : [],
+        slug: resumeRow.slug || '',
       });
       setReviews(Array.isArray(reviewRows) ? reviewRows : []);
       setLoading(false);
     })();
-  }, [id]);
+  }, [routeParam]);
 
   const handleSubmitReview = async () => {
-    if (!user || !id) return;
+    if (!user || !resolvedId) return;
     if (reviewRating < 1) {
       setReviewError('Please select a star rating.');
       return;
@@ -147,7 +172,7 @@ export function TrainerProfile() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          trainerId: id,
+          trainerId: resolvedId,
           reviewerId: user.id,
           reviewerName: profile?.full_name || user.email?.split('@')[0] || 'Celoris User',
           rating: reviewRating,
@@ -183,16 +208,21 @@ export function TrainerProfile() {
   }, [loading, notFound, trainer]);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href.split('?')[0]);
+    // Always share the canonical slug link, even if this visitor arrived via
+    // an older raw-id URL.
+    navigator.clipboard.writeText(pageUrl || window.location.href.split('?')[0]);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const pageUrl = typeof window !== 'undefined' && id ? `${window.location.origin}/teach/trainers/${id}` : '';
+  // Prefer the human-readable slug for the shareable link/QR code; fall
+  // back to the raw id for a trainer whose slug hasn't been backfilled.
+  const shareSlug = trainer?.slug || resolvedId || '';
+  const pageUrl = typeof window !== 'undefined' && shareSlug ? `${window.location.origin}/teach/trainers/${shareSlug}` : '';
   const qrCodeUrl = pageUrl
     ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(pageUrl)}`
     : '';
-  const trainerIdCode = id ? id.replace(/-/g, '').slice(0, 8).toUpperCase() : '';
+  const trainerIdCode = resolvedId ? resolvedId.replace(/-/g, '').slice(0, 8).toUpperCase() : '';
 
   if (loading) {
     return (
@@ -483,7 +513,7 @@ export function TrainerProfile() {
                 >
                   Sign in to write a review
                 </Link>
-              ) : user.id !== id ? (
+              ) : user.id !== resolvedId ? (
                 <button
                   onClick={() => setShowReviewModal(true)}
                   className="no-print flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"

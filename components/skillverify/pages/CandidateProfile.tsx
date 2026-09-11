@@ -68,6 +68,9 @@ interface CandidateData {
   languages: string[];
   experience: ExperienceEntry[];
   education: EducationEntry[];
+  /** Human-readable URL slug (e.g. "prabha-singh-f93e9a8f"), used to build
+      the public profile link and QR code instead of the raw candidate id. */
+  slug: string;
 }
 
 interface ProgressData {
@@ -77,27 +80,51 @@ interface ProgressData {
   honorScore: number;
 }
 
-export function CandidateProfile({ id }: { id: string }) {
+export function CandidateProfile({ id: routeParam }: { id: string }) {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [candidate, setCandidate] = useState<CandidateData | null>(null);
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [badges, setBadges] = useState<ProfileBadge[]>([]);
+  const [hireStatus, setHireStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  // The actual candidate id, resolved from the URL slug below. Kept separate
+  // from `routeParam` because the URL segment is a human-readable slug (e.g.
+  // "prabha-singh-f93e9a8f"), not the underlying uuid — everything that
+  // needs the real id (data fetches, the hire-request API call) uses this.
+  const [resolvedId, setResolvedId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!routeParam) return;
     const supabase = createClient();
 
     (async () => {
       setLoading(true);
 
+      // Resolve the slug to a candidate id. Older shared links/QR codes may
+      // still carry the raw uuid instead of a slug — fall back to treating
+      // the param as an id so those keep working.
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(routeParam);
+      const { data: slugRow } = await supabase
+        .from('job_center_candidate_profiles')
+        .select('id')
+        .eq('slug', routeParam)
+        .maybeSingle();
+      const candidateId: string | null = slugRow?.id || (isUuid ? routeParam : null);
+
+      if (!candidateId) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      setResolvedId(candidateId);
+
       const [{ data: userRow }, { data: profileRow }, { data: candidateRow }, { data: progressRow }, { data: badgeRows }] = await Promise.all([
-        supabase.from('users').select('*').eq('id', id).maybeSingle(),
-        supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
-        supabase.from('job_center_candidate_profiles').select('*').eq('id', id).maybeSingle(),
-        supabase.from('job_center_progress').select('*').eq('id', id).maybeSingle(),
-        supabase.from('job_center_badges').select('*').eq('user_id', id).order('earned_date', { ascending: false }),
+        supabase.from('users').select('*').eq('id', candidateId).maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', candidateId).maybeSingle(),
+        supabase.from('job_center_candidate_profiles').select('*').eq('id', candidateId).maybeSingle(),
+        supabase.from('job_center_progress').select('*').eq('id', candidateId).maybeSingle(),
+        supabase.from('job_center_badges').select('*').eq('user_id', candidateId).order('earned_date', { ascending: false }),
       ]);
 
       if (!candidateRow || candidateRow.is_public === false) {
@@ -129,6 +156,7 @@ export function CandidateProfile({ id }: { id: string }) {
         languages: candidateRow.languages || [],
         experience: Array.isArray(candidateRow.experience) ? candidateRow.experience : [],
         education: Array.isArray(candidateRow.education) ? candidateRow.education : [],
+        slug: candidateRow.slug || '',
       });
 
       const currentXP = progressRow?.current_xp ?? 0;
@@ -158,19 +186,42 @@ export function CandidateProfile({ id }: { id: string }) {
 
       setLoading(false);
     })();
-  }, [id]);
+  }, [routeParam]);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href.split('?')[0]);
+    // Always share the canonical slug link, even if this visitor arrived via
+    // an older raw-id URL.
+    navigator.clipboard.writeText(pageUrl || window.location.href.split('?')[0]);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const pageUrl = typeof window !== 'undefined' && id ? `${window.location.origin}/job-center/candidates/${id}` : '';
+  const handleHireClick = async () => {
+    if (!resolvedId || hireStatus === 'sending' || hireStatus === 'sent') return;
+    setHireStatus('sending');
+    try {
+      const res = await fetch('/api/job-center/hire-candidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidateId: resolvedId }),
+      });
+      if (!res.ok) throw new Error('Request failed');
+      setHireStatus('sent');
+    } catch (err) {
+      console.error('Error sending hire request:', err);
+      setHireStatus('error');
+      setTimeout(() => setHireStatus('idle'), 3000);
+    }
+  };
+
+  // Prefer the human-readable slug for the shareable link/QR code; fall
+  // back to the raw id for a candidate whose slug hasn't been backfilled.
+  const shareSlug = candidate?.slug || resolvedId || '';
+  const pageUrl = typeof window !== 'undefined' && shareSlug ? `${window.location.origin}/job-center/candidates/${shareSlug}` : '';
   const qrCodeUrl = pageUrl
     ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(pageUrl)}`
     : '';
-  const candidateIdCode = id ? id.replace(/-/g, '').slice(0, 8).toUpperCase() : '';
+  const candidateIdCode = resolvedId ? resolvedId.replace(/-/g, '').slice(0, 8).toUpperCase() : '';
 
   if (loading) {
     return (
@@ -505,8 +556,16 @@ export function CandidateProfile({ id }: { id: string }) {
         >
           <div className="lg:sticky lg:top-6 bg-white rounded-2xl border border-slate-200 shadow-lg divide-y divide-slate-100 overflow-hidden">
             <div className="p-6 space-y-3">
-              <button className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors">
-                Contact Candidate
+              <button
+                onClick={handleHireClick}
+                disabled={hireStatus === 'sending' || hireStatus === 'sent'}
+                className={`w-full py-3 rounded-xl font-bold transition-colors ${
+                  hireStatus === 'sent'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
+                    : 'bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-70'
+                }`}
+              >
+                {hireStatus === 'sending' ? 'Sending...' : hireStatus === 'sent' ? 'Request Sent ✓' : hireStatus === 'error' ? 'Failed — Try Again' : 'HIRE ME'}
               </button>
             </div>
 
@@ -549,13 +608,6 @@ export function CandidateProfile({ id }: { id: string }) {
               </div>
             )}
 
-            {!hasSocials && candidate.languages.length === 0 && (
-              <div className="p-6">
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  This candidate hasn't added languages or social links yet.
-                </p>
-              </div>
-            )}
           </div>
         </motion.div>
       </div>
