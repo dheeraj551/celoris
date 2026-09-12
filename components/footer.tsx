@@ -78,6 +78,9 @@ export default function Footer() {
     pathname?.startsWith("/teach") ||
     pathname?.startsWith("/marketing") ||
     pathname?.startsWith("/celo-ai") ||
+    pathname?.startsWith("/job-center") ||
+    pathname?.startsWith("/celoris-tv") ||
+    pathname?.startsWith("/photolite") ||
     pathname === "/login" ||
     pathname === "/register";
 
