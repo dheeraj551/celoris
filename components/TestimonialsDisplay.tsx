@@ -26,7 +26,7 @@ interface TestimonialsDisplayProps {
   type?: 'general' | 'service' | 'product' | 'feature' | 'support' | 'all'
   page?: 'homepage' | 'about' | 'services' | 'contact' | 'blog' | 'portfolio' | 'pricing' | 'features' | 'all'
   limit?: number
-  layout?: 'grid' | 'carousel' | 'list'
+  layout?: 'grid' | 'carousel' | 'list' | 'marquee'
   showFeatured?: boolean
   showImages?: boolean
   className?: string
@@ -261,6 +261,40 @@ export default function TestimonialsDisplay({
         <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">Signal Silence</h3>
         <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Awaiting new node transmissions.</p>
       </motion.div>
+    )
+  }
+
+  if (layout === 'marquee' && testimonials.length > 0) {
+    // Continuous auto-scrolling strip so every testimonial gets shown, not
+    // just the first few that fit a grid. The track renders the list twice
+    // back-to-back and the CSS animation (home-marquee-track, in
+    // globals.css) scrolls exactly one copy's width for a seamless loop.
+    // Speed scales with how many testimonials there are so it never feels
+    // rushed with a short list or glacial with a long one.
+    const duration = Math.max(24, testimonials.length * 6)
+    return (
+      <div
+        className={`relative overflow-hidden ${className}`}
+        style={{
+          maskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
+        }}
+      >
+        <div
+          className="home-marquee-track flex items-start gap-6 w-max"
+          style={{ '--marquee-duration': `${duration}s` } as React.CSSProperties}
+        >
+          {[...testimonials, ...testimonials].map((testimonial, index) => (
+            <div key={`${testimonial.id}-${index}`} className="w-[320px] md:w-[380px] shrink-0">
+              <TestimonialCard
+                testimonial={testimonial}
+                index={index % testimonials.length}
+                featured={testimonial.is_featured}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     )
   }
 

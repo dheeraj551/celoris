@@ -1,0 +1,6 @@
+{
+  "name": "PhotoLite - Web Image Editor",
+  "description": "A browser-based image editor with layers, Canva-style editable design templates, AI image generation, blending modes, lasso, magic wand, pen tool, crop, resize, and history tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

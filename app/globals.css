@@ -578,3 +578,29 @@ html {
   color: transparent;
   animation: homeShimmerText 4s linear infinite;
 }
+
+/* Infinite horizontal auto-scroll strip (e.g. the testimonials marquee).
+   The track renders its children twice back-to-back and scrolls exactly
+   one copy's width so the loop is seamless. */
+@keyframes homeMarqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.home-marquee-track {
+  animation: homeMarqueeScroll var(--marquee-duration, 45s) linear infinite;
+}
+
+.home-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-marquee-track {
+    animation: none;
+  }
+}

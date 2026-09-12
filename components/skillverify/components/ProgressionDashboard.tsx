@@ -196,7 +196,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
             <Award className="w-10 h-10 text-slate-400 mx-auto" />
             <h3 className="text-sm font-bold text-slate-900">No verified badges yet</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Take an anti-cheat proctored exam to earn your first certified credential and unlock $150k+ roles.
+              Take an anti-cheat proctored exam to earn your first certified credential and unlock ₹150k+ roles.
             </p>
             <button
               type="button"
@@ -259,7 +259,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
                 <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1">
                   <span>Proctor Integrity: <strong className="text-emerald-700">{badge.proctorScore}%</strong></span>
                   <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Unlocks $150k+ Tier
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Unlocks ₹150k+ Tier
                   </span>
                 </div>
               </div>

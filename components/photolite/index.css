@@ -1,0 +1,202 @@
+/* Ported from the PhotoLite Web Image Editor (AI Studio) app. The
+   '@import "tailwindcss";' line from the original Tailwind v4 setup was
+   removed — Tailwind v3 is already loaded globally via app/globals.css in
+   this project, same convention as skillverify/celo-ai/teach-app.
+
+   The original '@layer base { body, html { ... } }' block has also been
+   dropped rather than rescoped: it existed only to force the whole
+   document into PhotoLite's dark, non-scrolling, non-selectable canvas
+   look, but that would leak into the rest of the Celoris site (which
+   shares this same global stylesheet). App.tsx's root element already
+   carries the equivalent classes locally
+   (`id="photolite-app-root" className="flex h-screen w-full flex-col
+   overflow-hidden bg-[#1a1a1a] text-gray-300 font-sans select-none"`), so
+   nothing is lost by removing the global reset. Note: the root's width was
+   changed from the original `w-screen` to `w-full` so it fills its parent
+   layout column (next to the Celoris sidebar) instead of the whole browser
+   viewport, which was pushing the app's right edge off-screen.
+
+   Only the scrollbar styling is kept, rescoped from bare `::-webkit-*`
+   selectors to `#photolite-app-root ::-webkit-*` so PhotoLite's dark
+   scrollbars don't apply outside the editor. */
+
+#photolite-app-root ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+#photolite-app-root ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+#photolite-app-root ::-webkit-scrollbar-thumb {
+  background: #444444;
+  border-radius: 2px;
+}
+#photolite-app-root ::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+}
+
+/* ---------------------------------------------------------------------
+   macOS-style premium window chrome, added so PhotoLite's dialogs and
+   dropdown menus read as native "app windows" rather than flat web
+   modals: translucent vibrancy background, soft multi-layer shadow,
+   a large corner radius, and a hairline highlight border instead of a
+   harsh 1px black line. Reused via the `.pl-window` / `.pl-window-overlay`
+   classes on every modal, plus `.pl-traffic-lights` for the red/yellow/
+   green window controls (see MenuBar.tsx and the Modals/*.tsx files). */
+
+#photolite-app-root .pl-window-overlay {
+  background: rgba(10, 10, 12, 0.55);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+}
+
+#photolite-app-root .pl-window {
+  background: linear-gradient(180deg, rgba(42, 42, 46, 0.96) 0%, rgba(28, 28, 31, 0.97) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 30px 70px -20px rgba(0, 0, 0, 0.7),
+    0 10px 28px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Traffic-light window controls (macOS-authentic colors + hover glyphs) */
+#photolite-app-root .pl-traffic-lights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#photolite-app-root .pl-traffic-dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border-radius: 9999px;
+  border: 0.5px solid rgba(0, 0, 0, 0.3);
+  box-shadow:
+    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.4),
+    inset 0 -0.5px 1px rgba(0, 0, 0, 0.25);
+  cursor: default;
+  transition: filter 0.15s ease, transform 0.15s ease;
+  flex: none;
+}
+
+#photolite-app-root .pl-traffic-dot::before {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+#photolite-app-root .pl-traffic-lights:hover .pl-traffic-dot::before {
+  opacity: 1;
+}
+
+#photolite-app-root .pl-dot-red { background: #ff5f57; cursor: pointer; }
+#photolite-app-root .pl-dot-red::before { content: '\2715'; }
+#photolite-app-root .pl-dot-red:hover { filter: brightness(1.12); }
+
+#photolite-app-root .pl-dot-yellow { background: #febc2e; }
+#photolite-app-root .pl-dot-yellow::before { content: '\2212'; }
+
+#photolite-app-root .pl-dot-green { background: #28c840; }
+#photolite-app-root .pl-dot-green::before { content: '\2921'; font-size: 7px; }
+
+#photolite-app-root .pl-dot-yellow[data-interactive],
+#photolite-app-root .pl-dot-green[data-interactive] {
+  cursor: pointer;
+}
+#photolite-app-root .pl-dot-yellow[data-interactive]:hover,
+#photolite-app-root .pl-dot-green[data-interactive]:hover {
+  filter: brightness(1.12);
+}
+
+/* Traffic-dot press/hover feedback — tiny, tactile, matches a real
+   macOS window control responding to the cursor. */
+#photolite-app-root .pl-traffic-dot:hover { transform: scale(1.15); }
+#photolite-app-root .pl-dot-red:active { transform: scale(0.88); }
+#photolite-app-root .pl-dot-yellow[data-interactive]:active,
+#photolite-app-root .pl-dot-green[data-interactive]:active {
+  transform: scale(0.88);
+}
+
+/* ---------------------------------------------------------------------
+   Motion. PhotoLite's windows, menus and panels animate in rather than
+   snapping into place — the same "zoom + fade" a macOS window or menu
+   uses when it opens. Applied as plain CSS animations (rather than the
+   site's tailwindcss-animate utilities) so they work identically on the
+   overlay/card pairs here regardless of Tailwind's data-state variants,
+   which only fire for Radix-driven components. */
+
+@keyframes pl-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pl-window-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes pl-menu-in {
+  from { opacity: 0; transform: scale(0.97) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes pl-panel-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pl-toast-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#photolite-app-root .pl-window-overlay {
+  animation: pl-fade-in 0.15s ease-out both;
+}
+
+/* Entrance animation lives in its own class (`.pl-window-anim`) rather
+   than on `.pl-window` itself: `.pl-window` is also applied to the
+   profile account menu, which is a Radix DropdownMenuContent that
+   already animates via tailwindcss-animate's data-state utilities —
+   stacking a second, plain-CSS `animation` on the same element would
+   fight that one unpredictably. Every hand-rolled modal/menu below adds
+   `.pl-window-anim` alongside `.pl-window` explicitly. */
+#photolite-app-root .pl-window-anim {
+  animation: pl-window-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#photolite-app-root .pl-menu-anim {
+  animation: pl-menu-in 0.14s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top left;
+}
+
+#photolite-app-root .pl-panel-anim {
+  animation: pl-panel-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#photolite-app-root .pl-toast-anim {
+  animation: pl-toast-in 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #photolite-app-root .pl-window-overlay,
+  #photolite-app-root .pl-window-anim,
+  #photolite-app-root .pl-menu-anim,
+  #photolite-app-root .pl-panel-anim,
+  #photolite-app-root .pl-toast-anim {
+    animation: none;
+  }
+}

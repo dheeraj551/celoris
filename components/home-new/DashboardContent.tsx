@@ -32,8 +32,8 @@ import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 import { createClient } from "@/lib/supabase-client";
 
 import { VideoStudioFeature } from './VideoStudioFeature';
-import { ImageStudioFeature } from './ImageStudioFeature';
 import { Celoris3DFeature } from './Celoris3DFeature';
+import { PhotoLiteFeature } from './PhotoLiteFeature';
 
 // Pixel fireworks that burst around the hero heading, plus the user's own
 // pixel-art city image used as a skyline banner beneath it.
@@ -515,8 +515,20 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             <div className="relative h-[280px] md:h-[340px] hidden lg:block order-2 lg:order-1">
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.8 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        x: [0, -2, 2, -1.5, 1.5, -1, 1, 0],
+                                        y: [0, 1.5, -1.5, 2, -1, 1, -0.5, 0],
+                                        rotate: [0, -0.4, 0.4, -0.3, 0.3, -0.2, 0.2, 0],
+                                    }}
+                                    transition={{
+                                        opacity: { duration: 0.8 },
+                                        scale: { duration: 0.8 },
+                                        x: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        rotate: { duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                    }}
                                     className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-tr from-rose-500/20 to-amber-500/20 mix-blend-overlay z-10" />
@@ -629,8 +641,20 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             <div className="relative h-[280px] md:h-[340px] hidden lg:block">
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.8 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        x: [0, -2, 2, -1.5, 1.5, -1, 1, 0],
+                                        y: [0, 1.5, -1.5, 2, -1, 1, -0.5, 0],
+                                        rotate: [0, -0.4, 0.4, -0.3, 0.3, -0.2, 0.2, 0],
+                                    }}
+                                    transition={{
+                                        opacity: { duration: 0.8 },
+                                        scale: { duration: 0.8 },
+                                        x: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        rotate: { duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                    }}
                                     className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-emerald-500/20 mix-blend-overlay z-10" />
@@ -739,8 +763,20 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 {/* Main photo */}
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.8 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        x: [0, -2, 2, -1.5, 1.5, -1, 1, 0],
+                                        y: [0, 1.5, -1.5, 2, -1, 1, -0.5, 0],
+                                        rotate: [0, -0.4, 0.4, -0.3, 0.3, -0.2, 0.2, 0],
+                                    }}
+                                    transition={{
+                                        opacity: { duration: 0.8 },
+                                        scale: { duration: 0.8 },
+                                        x: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                        rotate: { duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                                    }}
                                     className="absolute inset-0 rounded-2xl overflow-hidden border border-white/8 shadow-2xl"
                                 >
                                     <img
@@ -849,10 +885,10 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 </div>
                 <div className="flex flex-col lg:flex-row gap-8 w-full max-w-[1200px] items-stretch justify-center px-4">
                     <div className="flex-1 w-full flex justify-center">
-                        <ImageStudioFeature />
+                        <Celoris3DFeature />
                     </div>
                     <div className="flex-1 w-full flex justify-center">
-                        <Celoris3DFeature />
+                        <PhotoLiteFeature />
                     </div>
                 </div>
             </div>
@@ -901,8 +937,8 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 <TestimonialsDisplay
                   type="all"
                   page="all"
-                  limit={3}
-                  layout="grid"
+                  limit={20}
+                  layout="marquee"
                   showFeatured={false}
                   showImages={true}
                   className="mb-4"

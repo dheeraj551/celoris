@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { 
-  X, 
-  MapPin, 
-  DollarSign, 
-  Briefcase, 
+  X,
+  MapPin,
+  IndianRupee,
+  Briefcase,
   ShieldCheck, 
   Lock, 
   CheckCircle2, 
   Sparkles, 
-  Send, 
-  Clock, 
-  Users, 
+  Send,
+  Clock,
   Award,
-  Loader2,
-  ExternalLink
+  Loader2
 } from 'lucide-react';
 import { JobListing, UserProfile, UserTierLevel } from '../types';
 import { LEVEL_TIERS } from '../data/mockData';
@@ -131,7 +129,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
 
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
                 <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                  <IndianRupee className="w-3.5 h-3.5 text-emerald-600" />
                   {job.salaryRange}
                 </span>
                 <span className="flex items-center gap-1">
@@ -298,12 +296,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-4">
-          <div className="text-xs text-slate-500 flex items-center gap-2">
-            <Users className="w-4 h-4 text-slate-400" />
-            <span>{job.applicantsCount} active applicants</span>
-          </div>
-
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -312,18 +305,6 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
             >
               Close
             </button>
-
-            {job.sourceUrl && (
-              <a
-                href={job.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition-all"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Apply on LinkedIn</span>
-              </a>
-            )}
 
             {isApplied ? (
               <div className="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1.5">

@@ -4,7 +4,6 @@ import React from 'react';
 import {
     Coffee,
     Video,
-    Image as ImageIcon,
     Lightbulb,
     UserCircle,
     BarChart3,
@@ -20,10 +19,10 @@ import {
     Megaphone,
     TrendingUp,
     Target,
-    Share2,
     X,
     Briefcase,
-    Tv
+    Tv,
+    Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -41,14 +40,8 @@ const MENU_GROUPS = [
         title: "Creative Studio",
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
-            { name: "Image studio", icon: ImageIcon, href: "/image-studio" },
             { name: "Celoris 3D", icon: UserCircle, href: "/celoris-3d" },
-        ]
-    },
-    {
-        title: "AI Tools",
-        items: [
-            { name: "Vibe Marketing", icon: Share2, href: "/marketing/social" },
+            { name: "PhotoLite", icon: ImageIcon, href: "/photolite" },
         ]
     },
     {

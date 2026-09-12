@@ -32,7 +32,7 @@ export default async function HomePage() {
     .contains('target_pages', ['homepage'])
     .eq('is_visible', true)
     .order('created_at', { ascending: false })
-    .limit(3);
+    .limit(20);
 
   // Enrich testimonials with specialties from profiles table
   const enrichedTestimonials = dbTestimonials ? await Promise.all(dbTestimonials.map(async (t: any) => {

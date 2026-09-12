@@ -502,7 +502,7 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
                   <Zap className="w-4 h-4 text-[#D4A373]" />
                   <span><strong>Target Unlocks:</strong> {exam.targetRoleExamples.join(' • ')}</span>
                 </div>
-                <span className="text-[#A3B899] font-bold">$160k - $320k+ Tier</span>
+                <span className="text-[#A3B899] font-bold">₹160k - ₹320k+ Tier</span>
               </div>
 
               {/* Launch Button */}

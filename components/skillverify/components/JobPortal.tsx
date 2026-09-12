@@ -1,18 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  ShieldCheck, 
-  Lock, 
-  CheckCircle2, 
-  DollarSign, 
-  MapPin, 
+  ShieldCheck,
+  Lock,
+  CheckCircle2,
+  IndianRupee,
+  MapPin,
   Briefcase, 
   Sparkles, 
   Layers, 
   Award,
   ChevronRight,
   TrendingUp,
-  AlertCircle,
-  ExternalLink
+  AlertCircle
 } from 'lucide-react';
 import { JobListing, JobTier, UserProfile } from '../types';
 import { AnimatedTooltip } from './AnimatedTooltip';
@@ -104,7 +103,7 @@ export const JobPortal: React.FC<JobPortalProps> = ({
               <AnimatedTooltip
                 id="tooltip-portal-desc"
                 title="Dual-Tier Architecture"
-                content="Switch between open public jobs or anti-cheat verified certified roles ($150k - $340k+). Verified roles offer higher salaries and skip initial technical screens!"
+                content="Switch between open public jobs or anti-cheat verified certified roles (₹150k - ₹340k+). Verified roles offer higher salaries and skip initial technical screens!"
                 badge="Platform Innovation"
                 showPulse
               />
@@ -155,7 +154,7 @@ export const JobPortal: React.FC<JobPortalProps> = ({
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-100" />
               <span>Certified Roles</span>
               <span className="px-1.5 py-0.2 rounded-full bg-white/25 text-white text-[10px] font-bold">
-                {certifiedCount} • $150k+
+                {certifiedCount} • ₹150k+
               </span>
             </button>
           </div>
@@ -169,7 +168,7 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                 <Award className="w-4 h-4 text-emerald-600" />
               </div>
               <div>
-                <span className="font-bold text-emerald-950 block">Certified High-End Portal ($150k - $340k+)</span>
+                <span className="font-bold text-emerald-950 block">Certified High-End Portal (₹150k - ₹340k+)</span>
                 <span className="text-[11px] text-slate-600">
                   Direct recruiter access & fast-track hiring for candidates holding anti-cheat verified badges.
                 </span>
@@ -283,7 +282,7 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                   {/* Compensation & Meta */}
                   <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-600">
                     <span className="font-bold text-emerald-700 flex items-center">
-                      <DollarSign className="w-3.5 h-3.5" />
+                      <IndianRupee className="w-3.5 h-3.5" />
                       {job.salaryRange}
                     </span>
                     <span>•</span>
@@ -334,23 +333,11 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                     )
                   ) : (
                     <span className="text-[11px] text-slate-500">
-                      Open Public Role • {job.applicantsCount} applicants
+                      Open Public Role
                     </span>
                   )}
 
                   <div className="flex items-center gap-2">
-                    {job.sourceUrl && (
-                      <a
-                        href={job.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-all flex items-center gap-1"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        <span>Apply on LinkedIn</span>
-                      </a>
-                    )}
                     {isApplied ? (
                       <span className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-semibold flex items-center gap-1 border border-emerald-200">
                         <CheckCircle2 className="w-3.5 h-3.5" />
