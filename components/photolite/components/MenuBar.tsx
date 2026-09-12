@@ -398,7 +398,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               </button>
               <button
                 id="menu-image-grayscale-btn"
-                onClick={() => handleAction(onConvertToGrayscale)}
+                onClick={() => handleAction(onConvertToGrayscale || (() => {}))}
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
               >
                 <span className="flex items-center gap-2">
@@ -408,7 +408,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               </button>
               <button
                 id="menu-image-sepia-btn"
-                onClick={() => handleAction(onConvertToSepia)}
+                onClick={() => handleAction(onConvertToSepia || (() => {}))}
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
               >
                 <span className="flex items-center gap-2">
@@ -530,7 +530,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               <div className="my-1 border-t border-black" />
               <button
                 id="menu-layer-rotate-cw-btn"
-                onClick={() => handleAction(onRotateCW)}
+                onClick={() => handleAction(onRotateCW || (() => {}))}
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
               >
                 <span className="flex items-center gap-2">
@@ -540,7 +540,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               </button>
               <button
                 id="menu-layer-rotate-ccw-btn"
-                onClick={() => handleAction(onRotateCCW)}
+                onClick={() => handleAction(onRotateCCW || (() => {}))}
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
               >
                 <span className="flex items-center gap-2">
@@ -550,7 +550,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               </button>
               <button
                 id="menu-layer-reset-rot-btn"
-                onClick={() => handleAction(onResetRotation)}
+                onClick={() => handleAction(onResetRotation || (() => {}))}
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
               >
                 <span className="flex items-center gap-2">
