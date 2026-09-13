@@ -225,7 +225,7 @@ export default function ChatCafeApp() {
     supabase
       .from('chat_cafe_tables')
       .select('*, active_topic:chat_cafe_topics!chat_cafe_tables_active_topic_id_fkey(*)')
-      .then(({ data, error }) => {
+      .then(({ data, error }: any) => {
         if (error) {
           console.error(
             `Chat Café tables load failed: message="${error.message}" code="${error.code}" details="${error.details}" hint="${error.hint}"`
@@ -310,7 +310,7 @@ export default function ChatCafeApp() {
       .eq('table_id', activeTableId)
       .order('created_at', { ascending: true })
       .limit(150)
-      .then(({ data, error }) => {
+      .then(({ data, error }: any) => {
         if (cancelled || error || !data) return;
         const mapped = data.map((row: any) => {
           const sender = row.sender ? rowToUserProfile(row.sender) : profilesCacheRef.current[row.sender_id];
@@ -325,7 +325,7 @@ export default function ChatCafeApp() {
       .from('chat_cafe_message_reactions')
       .select('message_id, emoji, user_id, message:chat_cafe_messages!inner(table_id)')
       .eq('message.table_id', activeTableId)
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         if (cancelled || !data) return;
         const map: Record<string, Record<string, string[]>> = {};
         data.forEach((r: any) => {
@@ -450,7 +450,7 @@ export default function ChatCafeApp() {
       .from('chat_cafe_profiles')
       .select('id, name, is_banned, muted_until')
       .or('is_banned.eq.true,muted_until.not.is.null')
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         if (!data) return;
         const banned: string[] = [];
         const muted: Record<string, number> = {};
@@ -514,7 +514,7 @@ export default function ChatCafeApp() {
       Promise.all([
         supabase.from('chat_cafe_guestbook_entries').select('*').order('created_at', { ascending: false }).limit(200),
         supabase.from('chat_cafe_guestbook_tributes').select('entry_id, tribute_type, user_id'),
-      ]).then(([entriesRes, tributesRes]) => {
+      ]).then(([entriesRes, tributesRes]: any) => {
         if (cancelled) return;
         const tributesByEntry: Record<string, Record<string, string[]>> = {};
         (tributesRes.data || []).forEach((t: any) => {
