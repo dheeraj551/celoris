@@ -1,0 +1,6 @@
+{
+  "name": "Chat Café",
+  "description": "A retro 1990s arcade cyber lounge featuring authentic Yahoo! Chat window styling, glowing neon arcade cabinets, playable 8-bit mini-game, procedural sound effects, and real-time chat.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

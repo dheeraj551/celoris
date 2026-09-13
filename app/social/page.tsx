@@ -9,11 +9,13 @@ import ChatRoom from '@/components/cafe/ChatRoom';
 import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
 import LearnTab from '@/components/cafe/LearnTab';
 import TeachTab from '@/components/cafe/TeachTab';
+import ChatCafeSection from '@/components/cafe/ChatCafeSection';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
 const ClassroomTable = dynamic(() => import('@/components/cafe/classroom3d/components/ClassroomRoom'), { ssr: false });
+const ChatCafeApp = dynamic(() => import('@/components/chat-cafe/ChatCafeApp'), { ssr: false });
 
 import { 
   Menu, 
@@ -318,6 +320,9 @@ export default function App() {
                 />
               </div>
 
+              {/* Celoris Chat Cafe — real-time multiplayer retro chat lounge */}
+              <ChatCafeSection onEnter={() => setActiveTab('chat-cafe')} />
+
               {/* Bottom CTA banner */}
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-8 md:p-12 text-center text-[#0a0a0a] shadow-2xl group border border-emerald-400/20">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -396,6 +401,18 @@ export default function App() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'chat-cafe' && (
+            <div className="space-y-4">
+              <button
+                onClick={() => setActiveTab('home')}
+                className="text-xs font-bold text-fuchsia-400 hover:text-fuchsia-300 flex items-center gap-1.5"
+              >
+                ← Back to Café
+              </button>
+              <ChatCafeApp />
             </div>
           )}
 

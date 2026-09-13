@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Tahoma', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Fraunces', Georgia, serif;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+.font-pixel {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.font-crt {
+  font-family: 'VT323', monospace;
+}
+
+.font-silkscreen {
+  font-family: 'Silkscreen', monospace;
+}
+
+.font-retro-tahoma {
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+}
+
+/* Authentic Windows 98 / 2000 3D Bevel Borders */
+.retro-bevel-out {
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  box-shadow: inset 1px 1px 0px #dfdfdf, inset -1px -1px 0px #808080;
+}
+
+.retro-bevel-in {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: inset 1px 1px 0px #000000, inset -1px -1px 0px #dfdfdf;
+}
+
+.retro-bevel-subtle-in {
+  border-top: 1px solid #71717a;
+  border-left: 1px solid #71717a;
+  border-right: 1px solid #d4d4d8;
+  border-bottom: 1px solid #d4d4d8;
+}
+
+.retro-button {
+  background: #ece9d8;
+  color: #000000;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #5a5a5a;
+  border-bottom: 2px solid #5a5a5a;
+  box-shadow: inset 1px 1px 0px #ffffff, inset -1px -1px 0px #808080;
+}
+
+.retro-button:hover {
+  background: #f5f2e3;
+}
+
+.retro-button:active {
+  border-top: 2px solid #5a5a5a;
+  border-left: 2px solid #5a5a5a;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: inset 1px 1px 0px #000000;
+  padding-top: calc(theme('spacing.1') + 1px);
+}
+
+/* CRT Scanlines and curvature */
+.crt-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+.crt-bloom {
+  text-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+}
+
+.arcade-neon-glow {
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+/* Classic retro scrollbar */
+.retro-scrollbar::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+.retro-scrollbar::-webkit-scrollbar-track {
+  background: #e0ded0;
+  border-left: 1px solid #999;
+}
+.retro-scrollbar::-webkit-scrollbar-thumb {
+  background: #ece9d8;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #5a5a5a;
+  border-bottom: 2px solid #5a5a5a;
+}
+.retro-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ded9c4;
+}
+
+/* CRT Monitor Power-On "Flicker-In" Entrance Animation */
+@keyframes crtPowerFlickerIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) scaleY(0.008);
+    filter: brightness(6) contrast(250%) blur(1px);
+    box-shadow: 0 0 50px rgba(56, 189, 248, 0.9), inset 0 0 40px rgba(255, 255, 255, 0.8);
+  }
+  12% {
+    opacity: 0.9;
+    transform: scale(0.98) scaleY(0.03);
+    filter: brightness(8) contrast(300%) blur(0.5px);
+    box-shadow: 0 0 60px rgba(245, 158, 11, 0.9);
+  }
+  20% {
+    opacity: 0.2;
+    transform: scale(0.98) scaleY(0.35);
+    filter: brightness(0.3) contrast(150%);
+    box-shadow: none;
+  }
+  32% {
+    opacity: 0.98;
+    transform: scale(0.99) scaleY(0.85);
+    filter: brightness(2.8) contrast(180%);
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.6);
+  }
+  42% {
+    opacity: 0.45;
+    transform: scale(0.99) scaleY(0.98);
+    filter: brightness(0.7) contrast(120%);
+    box-shadow: none;
+  }
+  55% {
+    opacity: 0.98;
+    transform: scale(1) scaleY(1);
+    filter: brightness(1.7) contrast(130%);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+  }
+  68% {
+    opacity: 0.82;
+    filter: brightness(0.9) contrast(110%);
+  }
+  80% {
+    opacity: 1;
+    filter: brightness(1.2) contrast(105%);
+  }
+  90% {
+    opacity: 0.94;
+    filter: brightness(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) scaleY(1);
+    filter: brightness(1) contrast(100%) blur(0);
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.35), inset 0 0 15px rgba(0, 0, 0, 0.9);
+  }
+}
+
+.animate-flicker-in {
+  animation: crtPowerFlickerIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+  transform-origin: center center;
+}
+
+@keyframes crtBeamFlash {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.005);
+  }
+  15% {
+    opacity: 0.85;
+    transform: scaleY(0.02);
+  }
+  30% {
+    opacity: 0.35;
+    transform: scaleY(0.4);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scaleY(1);
+  }
+  75% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
+}
+
+.animate-power-flash {
+  animation: crtBeamFlash 0.75s ease-out forwards;
+}
+

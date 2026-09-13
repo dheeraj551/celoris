@@ -214,6 +214,13 @@ export default function AdminDashboard() {
       color: "bg-indigo-600 hover:bg-indigo-700"
     },
     {
+      title: "Chat Café",
+      description: "Moderate the retro chat lounge — tables, reports, bans, and patron roles",
+      icon: MessageSquare,
+      href: "/admin/chat-cafe",
+      color: "bg-fuchsia-600 hover:bg-fuchsia-700"
+    },
+    {
       title: "System Analytics",
       description: "View platform performance and usage",
       icon: BarChart3,
