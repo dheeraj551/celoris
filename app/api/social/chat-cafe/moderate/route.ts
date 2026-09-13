@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     const admin = createSupabaseClientForServer();
-    const callerProfile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+    const callerProfile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
 
     if (!isModerator(callerProfile)) {
       return NextResponse.json({ error: 'Moderator access required' }, { status: 403 });

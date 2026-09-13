@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     const admin = createSupabaseClientForServer();
-    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
 
     if (asCharacterId) {
       // Puppeting an AI character's voice — moderator/admin only.

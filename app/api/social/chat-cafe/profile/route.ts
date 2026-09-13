@@ -15,7 +15,7 @@ export async function GET() {
       (user.user_metadata?.full_name as string) ||
       (user.user_metadata?.name as string) ||
       user.email?.split('@')[0] ||
-      'New Patron';
+      'New User';
 
     const profile = await getOrCreateProfile(admin, user.id, fallbackName);
     return NextResponse.json({ profile: profileRowToUserProfile(profile) });
@@ -48,7 +48,7 @@ export async function PATCH(request: Request) {
 
     const admin = createSupabaseClientForServer();
     // Make sure the profile exists first (first save could arrive before any GET).
-    await getOrCreateProfile(admin, user.id, (user.email?.split('@')[0] as string) || 'New Patron');
+    await getOrCreateProfile(admin, user.id, (user.email?.split('@')[0] as string) || 'New User');
 
     const { data, error } = await admin
       .from('chat_cafe_profiles')

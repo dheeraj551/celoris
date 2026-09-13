@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     const admin = createSupabaseClientForServer();
-    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
 
     if (profile.is_banned) {
       return NextResponse.json({ error: 'You have been barred from Chat Café.' }, { status: 403 });

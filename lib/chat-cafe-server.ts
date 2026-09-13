@@ -50,7 +50,7 @@ export async function getCallerUser() {
 /**
  * Fetch the caller's Chat Café persona, creating one with sensible defaults
  * on first visit (mirrors the prototype's DEFAULT_USER, but seeded from
- * their real account name instead of a hardcoded "New Patron").
+ * their real account name instead of a hardcoded "New User").
  */
 export async function getOrCreateProfile(admin: ReturnType<typeof createSupabaseClientForServer>, userId: string, fallbackName: string): Promise<ChatCafeProfileRow> {
   const { data: existing, error: fetchError } = await admin
@@ -67,7 +67,7 @@ export async function getOrCreateProfile(admin: ReturnType<typeof createSupabase
     .from('chat_cafe_profiles')
     .insert({
       id: userId,
-      name: fallbackName || 'New Patron',
+      name: fallbackName || 'New User',
       avatar_id: pick.avatar_id,
       avatar_color: pick.avatar_color,
       accessory: pick.accessory,

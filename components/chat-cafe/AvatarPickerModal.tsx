@@ -30,7 +30,7 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
 
   const handleSave = () => {
     onSaveProfile({
-      name: name.trim() || 'Cozy Patron',
+      name: name.trim() || 'Cozy User',
       avatarId,
       avatarColor,
       accessory,
@@ -137,8 +137,8 @@ export const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
               onChange={(e) => setRole(e.target.value as UserRole)}
               className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-700 text-xs text-amber-100 focus:outline-none focus:border-amber-500 cursor-pointer"
             >
-              <option value="patron">Patron (Guest)</option>
-              <option value="regular">Regular Patron ⭐</option>
+              <option value="patron">User (Guest)</option>
+              <option value="regular">Regular User ⭐</option>
               <option value="barista">Barista Apprentice ☕</option>
               <option value="moderator">Staff Moderator 🛡️</option>
             </select>

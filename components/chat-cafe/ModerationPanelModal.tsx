@@ -194,7 +194,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
             }`}
           >
             <Users className="w-3.5 h-3.5 text-amber-400" />
-            <span>Patrons & Sanctions</span>
+            <span>Users & Sanctions</span>
           </button>
 
           <button
@@ -257,7 +257,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
           {activeTab === 'reports' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-stone-400">
-                <span>{pendingReports.length} pending patron report(s) require review</span>
+                <span>{pendingReports.length} pending user report(s) require review</span>
                 <span className="text-[11px] italic">Actions take effect immediately in real-time</span>
               </div>
 
@@ -367,7 +367,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
               {/* Active Patrons list */}
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-stone-300 uppercase tracking-wider">
-                  Connected Patrons in Café
+                  Connected Users in Café
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {activePatrons.map((patron, idx) => {
@@ -445,7 +445,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
                         key={`${uid}-${idx}`}
                         className="p-2.5 rounded-xl bg-rose-950/30 border border-rose-900/40 flex items-center justify-between text-xs text-rose-200"
                       >
-                        <span>Patron ID: {uid}</span>
+                        <span>User ID: {uid}</span>
                         <button
                           onClick={() => onUnbanUser(uid)}
                           className="px-2.5 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs"

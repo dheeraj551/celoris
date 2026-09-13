@@ -50,7 +50,7 @@ export const DrinkGiftModal: React.FC<DrinkGiftModalProps> = ({
                 Treat Someone to a Café Drink
               </h2>
               <p className="text-xs text-stone-400">
-                Spread warmth by gifting a drink or pastry to a patron or the whole room
+                Spread warmth by gifting a drink or pastry to a user or the whole room
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export const DrinkGiftModal: React.FC<DrinkGiftModalProps> = ({
             <option value="The Entire Table">✨ The Entire Table (Everyone here!)</option>
             {activePatrons.map((p, idx) => (
               <option key={`${p.id}-${idx}`} value={p.name}>
-                {p.name} ({p.currentDrink || 'Patron'})
+                {p.name} ({p.currentDrink || 'User'})
               </option>
             ))}
           </select>

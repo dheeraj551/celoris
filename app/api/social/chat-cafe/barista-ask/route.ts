@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         },
         {
           role: 'user',
-          content: `A patron named ${userContext?.name || 'a guest'} at the "${userContext?.table || 'café'}" table (currently enjoying a ${userContext?.currentDrink || 'warm drink'}) asks: ${question}`,
+          content: `A user named ${userContext?.name || 'a guest'} at the "${userContext?.table || 'café'}" table (currently enjoying a ${userContext?.currentDrink || 'warm drink'}) asks: ${question}`,
         },
       ],
       max_tokens: 220,

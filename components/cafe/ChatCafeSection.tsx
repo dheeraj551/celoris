@@ -47,7 +47,7 @@ export default function ChatCafeSection({ onEnter }: ChatCafeSectionProps) {
 
           <p className="text-sm md:text-base text-gray-400 leading-relaxed mb-6 max-w-lg">
             A throwback to old-school chatrooms — pull up a chair at one of four retro
-            tables, customize your avatar and chat bubble, treat fellow patrons to a
+            tables, customize your avatar and chat bubble, treat fellow users to a
             drink, host a guided discussion, and sign the permanent Wall of Fame.
             Real people, real time, 1999 Yahoo-Chat energy.
           </p>

@@ -429,8 +429,8 @@ export default function ChatCafeAdminPage() {
           <CardContent className="space-y-5">
             <p className="text-xs text-gray-500">
               Admin-curated regulars — you (or a moderator, from the café's Staff Console) type their lines
-              yourself and post them straight to the table below. Patrons see a small "AI" badge next to their
-              messages, not a bot persona. There's no auto-generated dialogue.
+              yourself and post them straight to the table below, indistinguishable from any other message.
+              There's no auto-generated dialogue.
             </p>
 
             {/* Add new character */}
@@ -636,12 +636,12 @@ export default function ChatCafeAdminPage() {
         <Card className="bg-zinc-950 border-white/10">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Ban className="w-4 h-4 text-rose-400" /> Banned & Muted Patrons
+              <Ban className="w-4 h-4 text-rose-400" /> Banned & Muted Users
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {sanctioned.length === 0 ? (
-              <p className="text-sm text-gray-500">No patrons are currently sanctioned.</p>
+              <p className="text-sm text-gray-500">No users are currently sanctioned.</p>
             ) : (
               sanctioned.map((p) => {
                 const stillMuted = p.muted_until && new Date(p.muted_until).getTime() > Date.now()
@@ -675,12 +675,12 @@ export default function ChatCafeAdminPage() {
         <Card className="bg-zinc-950 border-white/10">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Shield className="w-4 h-4 text-emerald-400" /> Patron Roles
+              <Shield className="w-4 h-4 text-emerald-400" /> User Roles
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-xs text-gray-500">
-              Search patrons who have visited Chat Café at least once to promote them to barista, moderator, or admin.
+              Search users who have visited Chat Café at least once to promote them to barista, moderator, or admin.
             </p>
             <div className="flex gap-2">
               <Input
@@ -705,7 +705,7 @@ export default function ChatCafeAdminPage() {
                       className="bg-zinc-800 border border-white/10 rounded-lg text-xs px-2 py-1.5 text-gray-200"
                     >
                       {ROLE_OPTIONS.map((r) => (
-                        <option key={r} value={r}>{r}</option>
+                        <option key={r} value={r}>{r === 'patron' ? 'user' : r}</option>
                       ))}
                     </select>
                   </div>

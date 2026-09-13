@@ -38,7 +38,7 @@ export const CafePatronsSidebar: React.FC<CafePatronsSidebarProps> = ({
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-amber-400" />
           <h2 className="font-serif font-bold text-sm text-amber-100">
-            Café Patrons ({patrons.length})
+            Café Users ({patrons.length})
           </h2>
         </div>
         <button

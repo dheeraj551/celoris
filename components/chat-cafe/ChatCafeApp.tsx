@@ -195,6 +195,13 @@ export default function ChatCafeApp() {
   const [isWallOfFameOpen, setIsWallOfFameOpen] = useState(false);
   const [guestbookEntries, setGuestbookEntries] = useState<GuestbookEntry[]>([]);
 
+  // "X is typing…" — userId -> display name, expired individually a few
+  // seconds after their last keystroke broadcast (see the typing effect).
+  const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
+  const typingChannelRef = useRef<any>(null);
+  const typingTimeoutsRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const lastTypingSentRef = useRef(0);
+
   // Chat interaction state
   const [slowModeCooldown, setSlowModeCooldown] = useState(0);
   const [notificationBanner, setNotificationBanner] = useState<string | null>(null);
@@ -717,6 +724,72 @@ export default function ChatCafeApp() {
     };
   }, [supabase, activeTableId]);
 
+  // ---------------------------------------------------------------------
+  // "X is typing…" — an ephemeral broadcast channel per table (no DB
+  // writes). Each keystroke in the input nudges handleTyping(), which is
+  // throttled and sends a broadcast; every other patron auto-expires that
+  // user out of the indicator ~3s after their last broadcast, so there's
+  // no explicit "stopped typing" event to send.
+  // ---------------------------------------------------------------------
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+    let channel: any = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const connect = () => {
+      if (cancelled) return;
+      channel = supabase
+        .channel(`chat-cafe-typing-${activeTableId}`)
+        .on('broadcast', { event: 'typing' }, ({ payload }: any) => {
+          if (!payload?.userId || payload.userId === currentUserRef.current?.id) return;
+          setTypingUsers((prev) => ({ ...prev, [payload.userId]: payload.name || 'Someone' }));
+          if (typingTimeoutsRef.current[payload.userId]) clearTimeout(typingTimeoutsRef.current[payload.userId]);
+          typingTimeoutsRef.current[payload.userId] = setTimeout(() => {
+            setTypingUsers((prev) => {
+              const next = { ...prev };
+              delete next[payload.userId];
+              return next;
+            });
+            delete typingTimeoutsRef.current[payload.userId];
+          }, 3000);
+        })
+        .subscribe((status: any) => {
+          if (cancelled) return;
+          if (status === 'SUBSCRIBED') {
+            typingChannelRef.current = channel;
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            if (typingChannelRef.current === channel) typingChannelRef.current = null;
+            supabase.removeChannel(channel);
+            retryTimer = setTimeout(connect, 3000);
+          }
+        });
+    };
+    connect();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      if (channel) supabase.removeChannel(channel);
+      typingChannelRef.current = null;
+      Object.values(typingTimeoutsRef.current).forEach(clearTimeout);
+      typingTimeoutsRef.current = {};
+      setTypingUsers({});
+    };
+  }, [supabase, activeTableId, currentUser?.id]);
+
+  const handleTyping = useCallback(() => {
+    if (!currentUserRef.current) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current < 1500) return; // throttle
+    lastTypingSentRef.current = now;
+    typingChannelRef.current?.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: currentUserRef.current.id, name: currentUserRef.current.name },
+    });
+  }, []);
+
   // Auto-scroll on new messages is handled internally by RetroYahooChatWindow.
 
   // Slow mode cooldown timer (purely cosmetic countdown on this client — the
@@ -926,7 +999,7 @@ export default function ChatCafeApp() {
         body: JSON.stringify({ action: 'unmute', targetUserId: userId }),
       });
       if (res.ok) {
-        showToast('Patron unmuted');
+        showToast('User unmuted');
         refreshSanctionLists();
       }
     },
@@ -956,7 +1029,7 @@ export default function ChatCafeApp() {
         body: JSON.stringify({ action: 'unban', targetUserId: userId }),
       });
       if (res.ok) {
-        showToast('Ban revoked for patron');
+        showToast('Ban revoked for user');
         refreshSanctionLists();
       }
     },
@@ -1230,6 +1303,8 @@ export default function ChatCafeApp() {
             onToggleSound={() => setSoundFxEnabled(!soundFxEnabled)}
             onOpenWallOfFame={() => setIsWallOfFameOpen(true)}
             guestbookCount={guestbookEntries.length}
+            typingUsers={Object.values(typingUsers)}
+            onTyping={handleTyping}
           />
         </div>
 

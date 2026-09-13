@@ -116,7 +116,7 @@ export const STATUS_PRESETS = [
 ];
 
 export const HOUSE_RULES = [
-  { title: 'Be Warm & Welcoming', description: 'Treat every patron with patience, curiosity, and courtesy. We come from all corners of the world.' },
+  { title: 'Be Warm & Welcoming', description: 'Treat every user with patience, curiosity, and courtesy. We come from all corners of the world.' },
   { title: 'Respect Topic Flow', description: 'When participating in guided discussions, listen generously and build on others\' insights.' },
   { title: 'No Harassment or Hate Speech', description: 'Zero tolerance for toxicity, discriminatory language, personal attacks, or aggressive behavior.' },
   { title: 'Keep the Space Safe & Cozy', description: 'No spamming, commercial promotions, or disruptive flooding. Respect slow mode when active.' },

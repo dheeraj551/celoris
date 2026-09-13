@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const admin = createSupabaseClientForServer();
-    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
     if (!isModerator(profile)) {
       return NextResponse.json({ error: 'Moderator access required' }, { status: 403 });
     }

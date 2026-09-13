@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const admin = createSupabaseClientForServer();
-    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
     if (!isModerator(profile)) {
       return NextResponse.json({ error: 'Moderator access required' }, { status: 403 });
     }
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     const admin = createSupabaseClientForServer();
-    const reporterProfile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+    const reporterProfile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
 
     const { data: message, error: msgError } = await admin
       .from('chat_cafe_messages')
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       message_id: messageId,
       message_preview: String(message.content || '').slice(0, 200),
       reported_user_id: message.sender_id,
-      reported_user_name: senderName || 'Unknown Patron',
+      reported_user_name: senderName || 'Unknown User',
       reported_by: user.id,
       reported_by_name: reporterProfile.name,
       reason,

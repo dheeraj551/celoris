@@ -261,7 +261,7 @@ export const WallOfFameModal: React.FC<WallOfFameModalProps> = ({
                 <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
                   type="text"
-                  placeholder="Search patron or quote..."
+                  placeholder="Search user or quote..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-8 pr-3 py-1 bg-stone-950/70 border border-stone-800 rounded-lg text-xs text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500"
@@ -282,7 +282,7 @@ export const WallOfFameModal: React.FC<WallOfFameModalProps> = ({
                   <div>
                     <h3 className="text-base font-bold text-amber-200">Etch Your Permanent Message</h3>
                     <p className="text-xs text-stone-300 mt-0.5 leading-relaxed">
-                      Your entry will be mounted on the <strong>Wall of Fame</strong> forever. Share a warm reflection, favorite quote, or blessing for fellow patrons.
+                      Your entry will be mounted on the <strong>Wall of Fame</strong> forever. Share a warm reflection, favorite quote, or blessing for fellow users.
                     </p>
                   </div>
                 </div>
@@ -479,7 +479,7 @@ export const WallOfFameModal: React.FC<WallOfFameModalProps> = ({
                   <p className="text-xs text-stone-400 max-w-sm mx-auto">
                     {searchQuery
                       ? `No permanent entries matching "${searchQuery}". Try another keyword.`
-                      : 'Be the very first patron to leave a permanent mark on the Wall of Fame!'}
+                      : 'Be the very first user to leave a permanent mark on the Wall of Fame!'}
                   </p>
                   <button
                     onClick={() => setIsSigningOpen(true)}
@@ -549,7 +549,7 @@ export const WallOfFameModal: React.FC<WallOfFameModalProps> = ({
                                       <span>{entry.origin}</span>
                                     </>
                                   ) : (
-                                    <span>Patron of Celoris Cafe</span>
+                                    <span>User of Celoris Cafe</span>
                                   )}
                                 </div>
                               </div>

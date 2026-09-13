@@ -57,6 +57,8 @@ interface RetroYahooChatWindowProps {
   onToggleSound: () => void;
   onOpenWallOfFame?: () => void;
   guestbookCount?: number;
+  typingUsers?: string[];
+  onTyping?: () => void;
 }
 
 // Retro name color palette (mimicking late 90s/early 2000s chatrooms)
@@ -105,6 +107,8 @@ export function RetroYahooChatWindow({
   onToggleSound,
   onOpenWallOfFame,
   guestbookCount,
+  typingUsers = [],
+  onTyping,
 }: RetroYahooChatWindowProps) {
   const [inputText, setInputText] = useState('');
   const [selectedPatron, setSelectedPatron] = useState<UserProfile | null>(null);
@@ -229,7 +233,7 @@ export function RetroYahooChatWindow({
             {activeTable.name}:1 -- Chat
           </span>
           <span className="text-[10px] opacity-80 font-normal hidden sm:inline">
-            ({activePatrons.length} Patrons online)
+            ({activePatrons.length} Users online)
           </span>
         </div>
 
@@ -490,12 +494,12 @@ export function RetroYahooChatWindow({
               <button
                 onClick={() => {
                   if (selectedPatron) onGiftDrinkToUser(selectedPatron);
-                  else alert('Select a patron from the right list first to gift a drink!');
+                  else alert('Select a user from the right list first to gift a drink!');
                   setActiveMenu(null);
                 }}
                 className="w-full text-left px-3 py-1 hover:bg-[#0a246a] hover:text-white flex items-center gap-2"
               >
-                <Gift className="w-3.5 h-3.5 text-purple-600" /> Gift Cafe Drink to Patron
+                <Gift className="w-3.5 h-3.5 text-purple-600" /> Gift Cafe Drink to User
               </button>
               {onOpenWallOfFame && (
                 <button
@@ -540,7 +544,7 @@ export function RetroYahooChatWindow({
               <button
                 onClick={() => {
                   alert(
-                    '📜 CHAT CAFÉ HOUSE RULES:\n1. Be kind & hospitable to all patrons.\n2. Keep discussions civil and cafe-friendly.\n3. No spam, advertising, or harassment.\n4. Enjoy the warm tea, coffee, and arcade games!'
+                    '📜 CHAT CAFÉ HOUSE RULES:\n1. Be kind & hospitable to all users.\n2. Keep discussions civil and cafe-friendly.\n3. No spam, advertising, or harassment.\n4. Enjoy the warm tea, coffee, and arcade games!'
                   );
                   setActiveMenu(null);
                 }}
@@ -738,16 +742,6 @@ export function RetroYahooChatWindow({
                     </span>
                   )}
 
-                  {/* AI character badge — an admin-curated regular, not a real account */}
-                  {msg.senderType === 'ai' && (
-                    <span
-                      className="text-[9px] font-bold px-1 rounded bg-indigo-100 text-indigo-700 border border-indigo-300"
-                      title="Played by an AI character, not a real patron"
-                    >
-                      AI
-                    </span>
-                  )}
-
                   {/* Sender Name in bold color */}
                   <button
                     onClick={() => setSelectedPatron(msg.sender)}
@@ -787,7 +781,7 @@ export function RetroYahooChatWindow({
         <div className="w-full md:w-56 flex flex-col flex-shrink-0">
           {/* Header */}
           <div className="flex items-center justify-between pb-1 text-xs text-gray-700 font-bold">
-            <span>Patrons ({activePatrons.length})</span>
+            <span>Users ({activePatrons.length})</span>
             <span className="text-[10px] text-gray-500">In this room</span>
           </div>
 
@@ -851,11 +845,11 @@ export function RetroYahooChatWindow({
                   setWhisperRecipient(selectedPatron);
                   inputRef.current?.focus();
                 } else {
-                  alert('Click on a patron in the list first to whisper!');
+                  alert('Click on a user in the list first to whisper!');
                 }
               }}
               className="retro-button py-1 px-2 text-xs font-bold flex items-center justify-center gap-1"
-              title="Instant Message / Whisper to selected patron"
+              title="Instant Message / Whisper to selected user"
             >
               IM
             </button>
@@ -866,11 +860,11 @@ export function RetroYahooChatWindow({
                 if (selectedPatron) {
                   onMuteUser(selectedPatron.id, selectedPatron.name);
                 } else {
-                  alert('Select a patron from the list to mute/ignore.');
+                  alert('Select a user from the list to mute/ignore.');
                 }
               }}
               className="retro-button py-1 px-2 text-xs font-bold"
-              title="Mute / Ignore selected patron"
+              title="Mute / Ignore selected user"
             >
               Ignore User
             </button>
@@ -1012,6 +1006,17 @@ export function RetroYahooChatWindow({
         </div>
       </div>
 
+      {/* "X is typing…" indicator, right above the input box */}
+      {typingUsers.length > 0 && (
+        <div className="px-2 pb-0.5 bg-[#ece9d8] text-[10px] italic text-gray-500">
+          {typingUsers.length === 1
+            ? `${typingUsers[0]} is typing…`
+            : typingUsers.length === 2
+            ? `${typingUsers[0]} and ${typingUsers[1]} are typing…`
+            : `${typingUsers.length} people are typing…`}
+        </div>
+      )}
+
       {/* 6. INPUT BOX & SEND BUTTON (exact match to user screenshot!) */}
       <div className="p-2 pt-0 bg-[#ece9d8] flex items-center gap-2">
         {/* Input field with optional whisper recipient badge */}
@@ -1033,7 +1038,10 @@ export function RetroYahooChatWindow({
             ref={inputRef}
             type="text"
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onChange={(e) => {
+              setInputText(e.target.value);
+              if (e.target.value.trim()) onTyping?.();
+            }}
             onKeyDown={handleKeyDown}
             placeholder={
               whisperRecipient
