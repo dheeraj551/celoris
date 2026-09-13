@@ -125,6 +125,7 @@ function rowToMessage(row: any, sender: UserProfile): ChatMessage {
     discussionData: row.discussion_data || undefined,
     senderType: row.sender_type === 'ai' ? 'ai' : 'human',
     aiCharacterId: row.ai_character_id || undefined,
+    whisperTo: row.whisper_to || undefined,
   };
 }
 
@@ -868,7 +869,7 @@ export default function ChatCafeApp() {
   // duplicate by id).
   // -----------------------------------------------------------------------
   const handleSendMessage = useCallback(
-    async (content: string, whisperTo?: string, replyTo?: ChatMessage, extra?: { drinkGift?: any; isDiscussionTopic?: boolean; discussionData?: any }) => {
+    async (content: string, whisperTo?: { id: string; name: string }, replyTo?: ChatMessage, extra?: { drinkGift?: any; isDiscussionTopic?: boolean; discussionData?: any }) => {
       if (!currentUser || !activeTable) return;
       const isMuted = mutedUsers[currentUser.id] && mutedUsers[currentUser.id] > Date.now();
       if (isMuted) {
@@ -885,6 +886,7 @@ export default function ChatCafeApp() {
         body: JSON.stringify({
           tableId: activeTableId,
           content,
+          whisperTo,
           replyTo: replyTo
             ? { id: replyTo.id, senderName: replyTo.sender.name, content: replyTo.content.slice(0, 70) }
             : undefined,
@@ -911,12 +913,12 @@ export default function ChatCafeApp() {
   // own separate way to do this — see /admin/chat-cafe.) The server
   // (messages route) re-checks isModerator and table membership itself.
   const handleSendAsCharacter = useCallback(
-    async (characterId: string, content: string) => {
+    async (characterId: string, content: string, whisperTo?: { id: string; name: string }) => {
       if (!content.trim()) return;
       const res = await fetch('/api/social/chat-cafe/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tableId: activeTableId, content, asCharacterId: characterId }),
+        body: JSON.stringify({ tableId: activeTableId, content, asCharacterId: characterId, whisperTo }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -1195,6 +1197,7 @@ export default function ChatCafeApp() {
           bannedUserIds={bannedUserIds}
           mutedUsers={mutedUsers}
           aiCharacters={aiCharacters}
+          messages={messagesWithReactions}
           onResolveReport={handleResolveReport}
           onDeleteMessage={handleDeleteMessage}
           onMuteUser={handleMuteUser}
@@ -1332,7 +1335,7 @@ export default function ChatCafeApp() {
             messages={messagesWithReactions}
             currentUser={currentUser}
             activePatrons={displayRoster}
-            onSendMessage={(text) => handleSendMessage(text)}
+            onSendMessage={(text, whisperTo) => handleSendMessage(text, whisperTo)}
             onGiftDrinkToUser={(recipient) => {
               setDrinkRecipient(recipient);
               setIsDrinkModalOpen(true);

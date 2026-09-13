@@ -38,7 +38,7 @@ interface RetroYahooChatWindowProps {
   messages: ChatMessage[];
   currentUser: UserProfile;
   activePatrons: UserProfile[];
-  onSendMessage: (text: string, whisperTo?: string) => void;
+  onSendMessage: (text: string, whisperTo?: { id: string; name: string }) => void;
   onGiftDrinkToUser: (recipient: UserProfile) => void;
   onOpenProfileModal: () => void;
   onOpenModerationModal: () => void;
@@ -79,14 +79,6 @@ function getUsernameColor(id: string): string {
     hash = id.charCodeAt(i) + ((hash << 5) - hash);
   }
   return RETRO_NAME_COLORS[Math.abs(hash) % RETRO_NAME_COLORS.length];
-}
-
-// AI characters are listed in the room roster with the synthetic `ai_<id>`
-// id (see characterToUserProfile in ChatCafeApp) — they have no real
-// chat_cafe_profiles row, so per-user actions like whisper/mute don't
-// apply to them.
-function isAiCharacterId(id: string): boolean {
-  return id.startsWith('ai_');
 }
 
 export function RetroYahooChatWindow({
@@ -168,7 +160,7 @@ export function RetroYahooChatWindow({
       cafeAudio.playKeyClick();
     }
 
-    onSendMessage(trimmed, whisperRecipient?.id);
+    onSendMessage(trimmed, whisperRecipient ? { id: whisperRecipient.id, name: whisperRecipient.name } : undefined);
     setInputText('');
     setWhisperRecipient(null);
     inputRef.current?.focus();
@@ -699,6 +691,29 @@ export function RetroYahooChatWindow({
               const isBarista = msg.sender.role === 'barista';
               const nameColor = getUsernameColor(msg.sender.id);
 
+              // 0. Private whisper — RLS already guarantees we only ever
+              // receive one of these if we're the sender, the named
+              // recipient, or staff (who can see whispers addressed to any
+              // AI-character "officer" persona, for oversight/reply).
+              if (msg.whisperTo) {
+                const sentByMe = msg.sender.id === currentUser.id;
+                const receivedByMe = msg.whisperTo.id === currentUser.id;
+                const label = sentByMe
+                  ? `You whisper to ${msg.whisperTo.name}`
+                  : receivedByMe
+                  ? `${msg.sender.name} whispers to you`
+                  : `${msg.sender.name} whispers to ${msg.whisperTo.name}`; // staff oversight view
+                return (
+                  <div
+                    key={msg.id}
+                    className="text-xs italic py-0.5 px-1.5 -mx-1.5 rounded-sm bg-purple-50 border-l-2 border-purple-400 text-purple-950"
+                  >
+                    <span className="font-bold not-italic">🔒 {label}: </span>
+                    <span className="break-words select-text">{msg.content}</span>
+                  </div>
+                );
+              }
+
               // 1. Drink gift announcement
               if (msg.drinkGift) {
                 return (
@@ -803,13 +818,7 @@ export function RetroYahooChatWindow({
                 <div
                   key={`${patron.id}-${idx}`}
                   onClick={() => setSelectedPatron(patron)}
-                  onDoubleClick={() => {
-                    if (isAiCharacterId(patron.id)) {
-                      alert(`${patron.name} is an AI café regular — direct messaging isn't available for them.`);
-                      return;
-                    }
-                    setWhisperRecipient(patron);
-                  }}
+                  onDoubleClick={() => setWhisperRecipient(patron)}
                   className={`px-1.5 py-1 text-xs flex items-center gap-1.5 cursor-pointer rounded-none transition-colors select-none ${
                     isSelected
                       ? 'bg-[#0a246a] text-white font-bold'
@@ -855,9 +864,7 @@ export function RetroYahooChatWindow({
             {/* IM Button */}
             <button
               onClick={() => {
-                if (selectedPatron && isAiCharacterId(selectedPatron.id)) {
-                  alert(`${selectedPatron.name} is an AI café regular — direct messaging isn't available for them.`);
-                } else if (selectedPatron) {
+                if (selectedPatron) {
                   setWhisperRecipient(selectedPatron);
                   inputRef.current?.focus();
                 } else {
@@ -873,9 +880,7 @@ export function RetroYahooChatWindow({
             {/* Ignore User Button */}
             <button
               onClick={() => {
-                if (selectedPatron && isAiCharacterId(selectedPatron.id)) {
-                  alert(`${selectedPatron.name} is an AI café regular — moderation actions don't apply to them.`);
-                } else if (selectedPatron) {
+                if (selectedPatron) {
                   onMuteUser(selectedPatron.id, selectedPatron.name);
                 } else {
                   alert('Select a user from the list to mute/ignore.');
@@ -891,9 +896,7 @@ export function RetroYahooChatWindow({
           {/* Gift Drink button under IM */}
           <button
             onClick={() => {
-              if (selectedPatron && isAiCharacterId(selectedPatron.id)) {
-                alert(`${selectedPatron.name} is an AI café regular — drink gifts aren't available for them.`);
-              } else if (selectedPatron) {
+              if (selectedPatron) {
                 onGiftDrinkToUser(selectedPatron);
               } else {
                 onGiftDrinkToUser(currentUser);

@@ -65,6 +65,18 @@ export interface ChatMessage {
   // or a moderator puppeting it) rather than a real patron account.
   senderType?: 'human' | 'ai';
   aiCharacterId?: string;
+  // Present only on a private whisper — a snapshot of the recipient at
+  // send time (id + display name), mirroring the replyTo convention
+  // above. The recipient id is either a real UserProfile id or the
+  // synthetic `ai_<characterId>` id used for an AI-character "officer"
+  // persona. Row-level security ensures a client only ever receives a
+  // whisper it's the sender of, the recipient of, or (for an officer
+  // recipient) staff — so if a message carries whisperTo at all, the
+  // viewer is always one of those parties.
+  whisperTo?: {
+    id: string;
+    name: string;
+  };
 }
 
 // An admin-curated character that can speak at one café table, either on

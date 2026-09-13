@@ -89,13 +89,26 @@ interface ChatCafeAiCharacter {
 
 const ROLE_OPTIONS = ['patron', 'regular', 'barista', 'moderator', 'admin']
 
+interface IncomingWhisper {
+  id: string
+  content: string
+  createdAt: string
+  senderId: string
+  senderName: string
+}
+
 // A small controlled input + send button for posting one line as an AI
 // character, straight from the dashboard. Its own component so each
 // character's draft text is independent and typing doesn't re-render the
-// whole roster.
+// whole roster. Also polls for — and can reply privately to — whispers a
+// real patron has sent to this character, so an officer persona run
+// entirely from this dashboard (never opening the live café) still gets
+// them, the same as any other patron would.
 function SendAsCharacterRow({ characterId, characterName, tableId }: { characterId: string; characterName: string; tableId: string }) {
   const [text, setText] = useState("")
   const [sending, setSending] = useState(false)
+  const [incomingWhispers, setIncomingWhispers] = useState<IncomingWhisper[]>([])
+  const [whisperTarget, setWhisperTarget] = useState<{ id: string; name: string } | null>(null)
 
   // This dashboard is a separate page from the live Chat Café room, so it
   // keeps its own tiny broadcast connection just to post "<character> is
@@ -129,6 +142,28 @@ function SendAsCharacterRow({ characterId, characterName, tableId }: { character
     })
   }
 
+  // Poll for whispers addressed to this character — there's no realtime
+  // subscription here (this page doesn't reliably have a Supabase Auth
+  // session the way the live café does, so an RLS-gated client subscription
+  // could silently see nothing; a plain admin-route poll always works).
+  useEffect(() => {
+    let cancelled = false
+    const load = () => {
+      fetch(`/api/admin/chat-cafe/ai-characters/${characterId}/whispers`)
+        .then((r) => (r.ok ? r.json() : { whispers: [] }))
+        .then((data) => {
+          if (!cancelled) setIncomingWhispers(data.whispers || [])
+        })
+        .catch(() => {})
+    }
+    load()
+    const interval = setInterval(load, 5000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
+  }, [characterId])
+
   const submit = async () => {
     const trimmed = text.trim()
     if (!trimmed || sending) return
@@ -137,10 +172,11 @@ function SendAsCharacterRow({ characterId, characterName, tableId }: { character
       const res = await fetch(`/api/admin/chat-cafe/ai-characters/${characterId}/speak`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: trimmed }),
+        body: JSON.stringify({ content: trimmed, whisperTo: whisperTarget || undefined }),
       })
       if (res.ok) {
         setText("")
+        setWhisperTarget(null)
       } else {
         const data = await res.json().catch(() => ({}))
         alert(data.error || `Could not send that as ${characterName}.`)
@@ -151,22 +187,59 @@ function SendAsCharacterRow({ characterId, characterName, tableId }: { character
   }
 
   return (
-    <div className="flex items-center gap-2 mt-2">
-      <Input
-        placeholder={`Type as ${characterName}…`}
-        value={text}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setText(e.target.value)
-          if (e.target.value.trim()) notifyTyping()
-        }}
-        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-          if (e.key === 'Enter') submit()
-        }}
-        className="bg-zinc-800 border-white/10 text-xs"
-      />
-      <Button size="sm" onClick={submit} disabled={sending || !text.trim()}>
-        <Send className="w-3.5 h-3.5" />
-      </Button>
+    <div className="space-y-1.5 mt-2">
+      {incomingWhispers.length > 0 && (
+        <div className="space-y-1 pb-1">
+          <div className="text-[10px] uppercase font-bold text-purple-400 tracking-wider">
+            🔒 Private whispers to {characterName}
+          </div>
+          {incomingWhispers.map((w) => (
+            <div
+              key={w.id}
+              className="flex items-center justify-between gap-2 text-[11px] text-purple-200 bg-purple-950/20 border border-purple-800/30 rounded-lg px-2 py-1"
+            >
+              <span className="truncate">
+                <strong>{w.senderName}:</strong> {w.content}
+              </span>
+              <button
+                onClick={() => setWhisperTarget({ id: w.senderId, name: w.senderName })}
+                className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-purple-800/40 hover:bg-purple-700/50 text-purple-200 transition-colors"
+              >
+                Reply privately
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {whisperTarget && (
+        <div className="flex items-center justify-between gap-2 text-[10px] text-purple-300 bg-purple-950/30 border border-purple-700/40 rounded px-2 py-1">
+          <span>
+            🔒 Replying privately to <strong>{whisperTarget.name}</strong>
+          </span>
+          <button onClick={() => setWhisperTarget(null)} className="text-purple-400 hover:text-purple-200 font-bold flex-shrink-0" title="Cancel private reply">
+            ✕
+          </button>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder={whisperTarget ? `Whisper to ${whisperTarget.name}…` : `Type as ${characterName}…`}
+          value={text}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setText(e.target.value)
+            if (e.target.value.trim()) notifyTyping()
+          }}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') submit()
+          }}
+          className="bg-zinc-800 border-white/10 text-xs"
+        />
+        <Button size="sm" onClick={submit} disabled={sending || !text.trim()}>
+          <Send className="w-3.5 h-3.5" />
+        </Button>
+      </div>
     </div>
   )
 }

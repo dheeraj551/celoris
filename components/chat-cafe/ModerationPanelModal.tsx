@@ -37,6 +37,7 @@ interface ModerationPanelModalProps {
   bannedUserIds: string[];
   mutedUsers: Record<string, number>;
   aiCharacters: AiCharacter[];
+  messages: ChatMessage[];
   onResolveReport: (reportId: string, status: 'resolved' | 'dismissed') => void;
   onDeleteMessage: (messageId: string, reason: string) => void;
   onMuteUser: (userId: string, userName: string, durationMin: number, reason: string) => void;
@@ -45,48 +46,65 @@ interface ModerationPanelModalProps {
   onUnbanUser: (userId: string) => void;
   onSetSlowMode: (tableId: string, seconds: number) => void;
   onBroadcastHouseRules: () => void;
-  onSendAsCharacter: (characterId: string, content: string) => void;
+  onSendAsCharacter: (characterId: string, content: string, whisperTo?: { id: string; name: string }) => void;
   onCharacterTyping?: (characterId: string, characterName: string) => void;
 }
 
 // A tiny controlled input + send button for puppeting one AI character —
 // kept as its own component so each character's draft text is independent.
+// When whisperTarget is set (via the "Reply privately" button on an
+// incoming whisper below), the line goes out as a private whisper back to
+// that sender instead of a public message.
 const SpeakAsCharacterRow: React.FC<{
   characterId: string;
   characterName: string;
-  onSend: (characterId: string, content: string) => void;
+  onSend: (characterId: string, content: string, whisperTo?: { id: string; name: string }) => void;
   onTyping?: () => void;
-}> = ({ characterId, characterName, onSend, onTyping }) => {
+  whisperTarget?: { id: string; name: string } | null;
+  onClearWhisperTarget?: () => void;
+}> = ({ characterId, characterName, onSend, onTyping, whisperTarget, onClearWhisperTarget }) => {
   const [text, setText] = useState('');
 
   const submit = () => {
     const trimmed = text.trim();
     if (!trimmed) return;
-    onSend(characterId, trimmed);
+    onSend(characterId, trimmed, whisperTarget || undefined);
     setText('');
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <input
-        value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (e.target.value.trim()) onTyping?.();
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') submit();
-        }}
-        placeholder={`Type as ${characterName}…`}
-        className="flex-1 px-2.5 py-1.5 rounded-lg bg-black/40 border border-stone-700 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-indigo-500"
-      />
-      <button
-        onClick={submit}
-        className="p-1.5 rounded-lg bg-indigo-900/50 hover:bg-indigo-800/60 text-indigo-300 border border-indigo-700/40 transition-colors"
-        title="Send as this character"
-      >
-        <Send className="w-3.5 h-3.5" />
-      </button>
+    <div className="space-y-1">
+      {whisperTarget && (
+        <div className="flex items-center justify-between gap-2 text-[10px] text-purple-300 bg-purple-950/30 border border-purple-700/40 rounded px-2 py-1">
+          <span>
+            🔒 Replying privately to <strong>{whisperTarget.name}</strong>
+          </span>
+          <button onClick={onClearWhisperTarget} className="text-purple-400 hover:text-purple-200 font-bold flex-shrink-0" title="Cancel private reply">
+            ✕
+          </button>
+        </div>
+      )}
+      <div className="flex items-center gap-2">
+        <input
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value);
+            if (e.target.value.trim()) onTyping?.();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submit();
+          }}
+          placeholder={whisperTarget ? `Whisper to ${whisperTarget.name}…` : `Type as ${characterName}…`}
+          className="flex-1 px-2.5 py-1.5 rounded-lg bg-black/40 border border-stone-700 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-indigo-500"
+        />
+        <button
+          onClick={submit}
+          className="p-1.5 rounded-lg bg-indigo-900/50 hover:bg-indigo-800/60 text-indigo-300 border border-indigo-700/40 transition-colors"
+          title={whisperTarget ? 'Send private whisper as this character' : 'Send as this character'}
+        >
+          <Send className="w-3.5 h-3.5" />
+        </button>
+      </div>
     </div>
   );
 };
@@ -101,6 +119,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
   bannedUserIds,
   mutedUsers,
   aiCharacters,
+  messages,
   onResolveReport,
   onDeleteMessage,
   onMuteUser,
@@ -115,6 +134,9 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
   const [activeTab, setActiveTab] = useState<'reports' | 'patrons' | 'tables' | 'ai_characters' | 'rules' | 'ai_guard'>('reports');
   const [analyzingReportId, setAnalyzingReportId] = useState<string | null>(null);
   const [aiAnalysisResult, setAiAnalysisResult] = useState<Record<string, any>>({});
+  // Per-character "reply privately" draft target, set by tapping "Reply
+  // privately" on one of that character's incoming whispers below.
+  const [whisperReplyTargets, setWhisperReplyTargets] = useState<Record<string, { id: string; name: string } | null>>({});
 
   if (!isOpen) return null;
 
@@ -536,29 +558,69 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {aiCharacters.map((character) => (
-                    <div key={character.id} className="p-3 rounded-2xl bg-stone-950/70 border border-stone-800 space-y-2">
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`w-8 h-8 rounded-xl bg-gradient-to-br ${character.avatarColor || 'from-amber-400 to-orange-500'} flex items-center justify-center text-sm shadow-xs flex-shrink-0`}
-                        >
-                          ☕
+                  {aiCharacters.map((character) => {
+                    const characterUserId = `ai_${character.id}`;
+                    const incomingWhispers = messages
+                      .filter((m) => m.whisperTo?.id === characterUserId)
+                      .slice(-5)
+                      .reverse();
+                    const replyTarget = whisperReplyTargets[character.id] || null;
+                    return (
+                      <div key={character.id} className="p-3 rounded-2xl bg-stone-950/70 border border-stone-800 space-y-2">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={`w-8 h-8 rounded-xl bg-gradient-to-br ${character.avatarColor || 'from-amber-400 to-orange-500'} flex items-center justify-center text-sm shadow-xs flex-shrink-0`}
+                          >
+                            ☕
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-amber-100 truncate">{character.name}</div>
+                            {character.personality && (
+                              <div className="text-[10px] text-stone-400 truncate">{character.personality}</div>
+                            )}
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold text-amber-100 truncate">{character.name}</div>
-                          {character.personality && (
-                            <div className="text-[10px] text-stone-400 truncate">{character.personality}</div>
-                          )}
-                        </div>
+
+                        {incomingWhispers.length > 0 && (
+                          <div className="space-y-1 pt-1.5 border-t border-stone-800/60">
+                            <div className="text-[10px] uppercase font-bold text-purple-400 tracking-wider">
+                              🔒 Private whispers to {character.name}
+                            </div>
+                            {incomingWhispers.map((w) => (
+                              <div
+                                key={w.id}
+                                className="flex items-center justify-between gap-2 text-[11px] text-purple-200 bg-purple-950/20 border border-purple-800/30 rounded-lg px-2 py-1"
+                              >
+                                <span className="truncate">
+                                  <strong>{w.sender.name}:</strong> {w.content}
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    setWhisperReplyTargets((prev) => ({ ...prev, [character.id]: { id: w.sender.id, name: w.sender.name } }))
+                                  }
+                                  className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-purple-800/40 hover:bg-purple-700/50 text-purple-200 transition-colors"
+                                >
+                                  Reply privately
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <SpeakAsCharacterRow
+                          characterId={character.id}
+                          characterName={character.name}
+                          onSend={(id, content, whisperTo) => {
+                            onSendAsCharacter(id, content, whisperTo);
+                            if (whisperTo) setWhisperReplyTargets((prev) => ({ ...prev, [character.id]: null }));
+                          }}
+                          onTyping={() => onCharacterTyping?.(character.id, character.name)}
+                          whisperTarget={replyTarget}
+                          onClearWhisperTarget={() => setWhisperReplyTargets((prev) => ({ ...prev, [character.id]: null }))}
+                        />
                       </div>
-                      <SpeakAsCharacterRow
-                        characterId={character.id}
-                        characterName={character.name}
-                        onSend={onSendAsCharacter}
-                        onTyping={() => onCharacterTyping?.(character.id, character.name)}
-                      />
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

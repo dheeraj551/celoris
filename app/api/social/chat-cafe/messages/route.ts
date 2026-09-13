@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { tableId, content, replyTo, drinkGift, isDiscussionTopic, discussionData, asCharacterId } = body || {};
+    const { tableId, content, replyTo, drinkGift, isDiscussionTopic, discussionData, asCharacterId, whisperTo } = body || {};
 
     if (!tableId || typeof tableId !== 'string') {
       return NextResponse.json({ error: 'tableId is required' }, { status: 400 });
@@ -28,8 +28,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'content is required' }, { status: 400 });
     }
 
+    // A whisper snapshot {id, name} of the recipient, same shape whether
+    // the sender is a real patron or a moderator/admin puppeting an AI
+    // "officer" character replying privately. Row-level security (see the
+    // chat_cafe_messages_whisper_support migration) is what actually keeps
+    // this private — it restricts SELECT to the sender, the id it names,
+    // or staff — so validating the shape here is just basic hygiene, not
+    // the privacy boundary itself.
+    let whisperToRow: { id: string; name: string } | undefined;
+    if (whisperTo && typeof whisperTo === 'object' && typeof whisperTo.id === 'string' && whisperTo.id) {
+      whisperToRow = { id: whisperTo.id, name: String(whisperTo.name || 'Someone').slice(0, 40) };
+    }
+
     const admin = createSupabaseClientForServer();
-    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New User');
+    const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
 
     if (asCharacterId) {
       // Puppeting an AI character's voice — moderator/admin only.
@@ -47,14 +59,17 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'AI character not found for this table.' }, { status: 404 });
       }
 
+      const characterInsertRow: Record<string, any> = {
+        table_id: tableId,
+        sender_type: 'ai',
+        ai_character_id: asCharacterId,
+        content: content.slice(0, 500),
+      };
+      if (whisperToRow) characterInsertRow.whisper_to = whisperToRow;
+
       const { data: inserted, error: insertError } = await admin
         .from('chat_cafe_messages')
-        .insert({
-          table_id: tableId,
-          sender_type: 'ai',
-          ai_character_id: asCharacterId,
-          content: content.slice(0, 500),
-        })
+        .insert(characterInsertRow)
         .select('*, ai_character:chat_cafe_ai_characters(*)')
         .single();
 
@@ -116,6 +131,7 @@ export async function POST(request: Request) {
     if (drinkGift && typeof drinkGift === 'object') insertRow.drink_gift = drinkGift;
     if (isDiscussionTopic) insertRow.is_discussion_topic = true;
     if (discussionData && typeof discussionData === 'object') insertRow.discussion_data = discussionData;
+    if (whisperToRow) insertRow.whisper_to = whisperToRow;
 
     const { data: inserted, error: insertError } = await admin
       .from('chat_cafe_messages')

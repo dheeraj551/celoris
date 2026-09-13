@@ -18,6 +18,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'content is required' }, { status: 400 });
     }
 
+    // A private whisper reply — {id, name} snapshot of the real patron this
+    // character is replying to. Row-level security on chat_cafe_messages
+    // is what actually keeps this private (see the
+    // chat_cafe_messages_whisper_support migration): only the named
+    // recipient, the sender, or staff can ever select the row back out.
+    let whisperToRow: { id: string; name: string } | undefined;
+    const whisperTo = body?.whisperTo;
+    if (whisperTo && typeof whisperTo === 'object' && typeof whisperTo.id === 'string' && whisperTo.id) {
+      whisperToRow = { id: whisperTo.id, name: String(whisperTo.name || 'Someone').slice(0, 40) };
+    }
+
     const admin = createSupabaseClientForServer();
 
     const { data: character, error: charError } = await admin
@@ -31,14 +42,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'AI character not found' }, { status: 404 });
     }
 
+    const insertRow: Record<string, any> = {
+      table_id: character.table_id,
+      sender_type: 'ai',
+      ai_character_id: character.id,
+      content: content.slice(0, 500),
+    };
+    if (whisperToRow) insertRow.whisper_to = whisperToRow;
+
     const { data: inserted, error: insertError } = await admin
       .from('chat_cafe_messages')
-      .insert({
-        table_id: character.table_id,
-        sender_type: 'ai',
-        ai_character_id: character.id,
-        content: content.slice(0, 500),
-      })
+      .insert(insertRow)
       .select('*, ai_character:chat_cafe_ai_characters(*)')
       .single();
 
