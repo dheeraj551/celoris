@@ -25,6 +25,7 @@ import {
   GuestbookEntry,
   CafeDrink,
   DiscussionTopic,
+  AiCharacter,
 } from './types';
 import { cafeAudio } from './utils/cafeAudio';
 import { AvatarPickerModal } from './AvatarPickerModal';
@@ -73,6 +74,39 @@ function rowToUserProfile(row: any): UserProfile {
   };
 }
 
+// AI characters don't have a real chat_cafe_profiles row — this builds a
+// UserProfile-shaped stand-in (from either a raw ai_character DB row or the
+// client-side AiCharacter shape) so every existing component that renders
+// `message.sender` / patron cards keeps working unmodified.
+function characterToUserProfile(character: any): UserProfile {
+  return {
+    id: `ai_${character.id}`,
+    name: character.name,
+    avatarId: character.avatar_id || character.avatarId,
+    avatarColor: character.avatar_color || character.avatarColor || 'from-amber-400 to-orange-500',
+    accessory: character.accessory || '',
+    role: 'regular',
+    statusText: '☕ Café regular',
+    currentDrink: '',
+    bubbleStyle: 'ceramic',
+    joinedAt: Date.now(),
+  };
+}
+
+function rowToAiCharacter(row: any): AiCharacter {
+  return {
+    id: row.id,
+    tableId: row.table_id,
+    name: row.name,
+    avatarId: row.avatar_id,
+    avatarColor: row.avatar_color,
+    accessory: row.accessory || '',
+    backstory: row.backstory || '',
+    personality: row.personality || '',
+    isActive: row.is_active,
+  };
+}
+
 function rowToMessage(row: any, sender: UserProfile): ChatMessage {
   return {
     id: row.id,
@@ -89,6 +123,8 @@ function rowToMessage(row: any, sender: UserProfile): ChatMessage {
     drinkGift: row.drink_gift || undefined,
     isDiscussionTopic: row.is_discussion_topic || undefined,
     discussionData: row.discussion_data || undefined,
+    senderType: row.sender_type === 'ai' ? 'ai' : 'human',
+    aiCharacterId: row.ai_character_id || undefined,
   };
 }
 
@@ -132,10 +168,19 @@ export default function ChatCafeApp() {
   const [bannedUserIds, setBannedUserIds] = useState<string[]>([]);
   const [mutedUsers, setMutedUsers] = useState<Record<string, number>>({});
 
+  // Admin-curated AI characters seated at the active table — powers the
+  // moderator "speak as" panel; the autopilot loop itself is entirely
+  // server-side (see /api/social/chat-cafe/ai-turn).
+  const [aiCharacters, setAiCharacters] = useState<AiCharacter[]>([]);
+
   // A cache of every patron profile we've seen (message senders, presence,
   // realtime profile updates) so newly-arrived realtime rows that only
   // carry a sender_id can be resolved to a display name/avatar.
   const profilesCacheRef = useRef<Record<string, UserProfile>>({});
+  // Same idea for AI characters, keyed by character id (not the synthetic
+  // `ai_<id>` UserProfile id) so a realtime message carrying only
+  // ai_character_id can be resolved without a network round trip.
+  const aiCharacterCacheRef = useRef<Record<string, UserProfile>>({});
 
   // UI Modals & Drawers
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -178,6 +223,20 @@ export default function ChatCafeApp() {
   const cacheProfile = useCallback((p: UserProfile) => {
     if (p?.id) profilesCacheRef.current[p.id] = p;
   }, []);
+
+  // Resolve an AI character id (from a realtime message row that only
+  // carries ai_character_id) to a display-ready UserProfile stand-in.
+  const resolveAiCharacterSender = useCallback(
+    async (characterId: string): Promise<UserProfile> => {
+      const cached = aiCharacterCacheRef.current[characterId];
+      if (cached) return cached;
+      const { data } = await supabase.from('chat_cafe_ai_characters').select('*').eq('id', characterId).maybeSingle();
+      const profile = characterToUserProfile(data || { id: characterId, name: 'AI Regular' });
+      aiCharacterCacheRef.current[characterId] = profile;
+      return profile;
+    },
+    [supabase]
+  );
 
   // ---------------------------------------------------------------------
   // 1. Load / create the caller's Chat Café persona.
@@ -306,13 +365,20 @@ export default function ChatCafeApp() {
 
     supabase
       .from('chat_cafe_messages')
-      .select('*, sender:chat_cafe_profiles(*)')
+      .select('*, sender:chat_cafe_profiles(*), ai_character:chat_cafe_ai_characters(*)')
       .eq('table_id', activeTableId)
       .order('created_at', { ascending: true })
       .limit(150)
       .then(({ data, error }: any) => {
         if (cancelled || error || !data) return;
         const mapped = data.map((row: any) => {
+          if (row.sender_type === 'ai') {
+            const senderProfile = row.ai_character
+              ? characterToUserProfile(row.ai_character)
+              : characterToUserProfile({ id: row.ai_character_id, name: 'AI Regular' });
+            if (row.ai_character_id) aiCharacterCacheRef.current[row.ai_character_id] = senderProfile;
+            return rowToMessage(row, senderProfile);
+          }
           const sender = row.sender ? rowToUserProfile(row.sender) : profilesCacheRef.current[row.sender_id];
           if (sender) cacheProfile(sender);
           return rowToMessage(row, sender || currentUser);
@@ -343,11 +409,16 @@ export default function ChatCafeApp() {
         { event: 'INSERT', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
         async (payload: any) => {
           const row: any = payload.new;
-          let sender: UserProfile | undefined = profilesCacheRef.current[row.sender_id];
-          if (!sender) {
-            const { data: senderRow } = await supabase.from('chat_cafe_profiles').select('*').eq('id', row.sender_id).maybeSingle();
-            sender = senderRow ? rowToUserProfile(senderRow) : undefined;
-            if (sender) cacheProfile(sender);
+          let sender: UserProfile | undefined;
+          if (row.sender_type === 'ai' && row.ai_character_id) {
+            sender = await resolveAiCharacterSender(row.ai_character_id);
+          } else {
+            sender = profilesCacheRef.current[row.sender_id];
+            if (!sender) {
+              const { data: senderRow } = await supabase.from('chat_cafe_profiles').select('*').eq('id', row.sender_id).maybeSingle();
+              sender = senderRow ? rowToUserProfile(senderRow) : undefined;
+              if (sender) cacheProfile(sender);
+            }
           }
           const newMsg = rowToMessage(row, sender || currentUserRef.current!);
           setMessages((prev) => (prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]));
@@ -397,7 +468,7 @@ export default function ChatCafeApp() {
       cancelled = true;
       supabase.removeChannel(channel);
     };
-  }, [supabase, activeTableId, currentUser, soundFxEnabled, cacheProfile]);
+  }, [supabase, activeTableId, currentUser, soundFxEnabled, cacheProfile, resolveAiCharacterSender]);
 
   // ---------------------------------------------------------------------
   // 4. Presence: who's currently at this table.
@@ -544,6 +615,85 @@ export default function ChatCafeApp() {
     };
   }, [supabase]);
 
+  // ---------------------------------------------------------------------
+  // 7. AI characters seated at the active table (admin-curated). RLS on
+  //    chat_cafe_ai_characters is SELECT-open to authenticated users, so
+  //    this reads directly — only writes (admin CRUD, autopilot, puppeting)
+  //    go through API routes.
+  // ---------------------------------------------------------------------
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCharacters = () => {
+      supabase
+        .from('chat_cafe_ai_characters')
+        .select('*')
+        .eq('table_id', activeTableId)
+        .eq('is_active', true)
+        .order('name')
+        .then(({ data, error }: any) => {
+          if (cancelled || error || !data) return;
+          const list = data.map(rowToAiCharacter);
+          setAiCharacters(list);
+          list.forEach((c: AiCharacter) => {
+            aiCharacterCacheRef.current[c.id] = characterToUserProfile(c);
+          });
+        });
+    };
+
+    loadCharacters();
+
+    const channel = supabase
+      .channel(`chat-cafe-ai-characters-${activeTableId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'chat_cafe_ai_characters', filter: `table_id=eq.${activeTableId}` },
+        () => loadCharacters()
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, activeTableId]);
+
+  // ---------------------------------------------------------------------
+  // 8. AI autopilot: while this patron has the table open, nudge the
+  //    ai-turn endpoint every so often so admin-curated characters keep
+  //    the conversation going on their own. The server does an atomic
+  //    claim (chat_cafe_tables.next_ai_turn_at), so it's harmless for many
+  //    patrons' tabs to all be nudging the same table at once — only one
+  //    request per turn actually generates and posts a line.
+  // ---------------------------------------------------------------------
+  useEffect(() => {
+    if (!currentUser || !activeTableId) return;
+    let cancelled = false;
+
+    const nudge = () => {
+      fetch('/api/social/chat-cafe/ai-turn', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tableId: activeTableId }),
+      }).catch(() => {});
+    };
+
+    // Stagger the first nudge, then repeat on a jittered interval, so many
+    // simultaneously-opened tabs don't all hammer the claim in lockstep.
+    const firstNudge = setTimeout(() => {
+      if (!cancelled) nudge();
+    }, 4000 + Math.random() * 4000);
+    const interval = setInterval(() => {
+      if (!cancelled) nudge();
+    }, 30000 + Math.random() * 15000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(firstNudge);
+      clearInterval(interval);
+    };
+  }, [currentUser, activeTableId]);
+
   // Auto-scroll on new messages is handled internally by RetroYahooChatWindow.
 
   // Slow mode cooldown timer (purely cosmetic countdown on this client — the
@@ -608,6 +758,32 @@ export default function ChatCafeApp() {
       }
     },
     [currentUser, activeTable, activeTableId, mutedUsers, showToast, cacheProfile]
+  );
+
+  // Moderator/admin "puppeting" — post a line as one of this table's AI
+  // characters right now, instead of waiting for autopilot. The server
+  // (messages route) re-checks isModerator and table membership itself.
+  const handleSendAsCharacter = useCallback(
+    async (characterId: string, content: string) => {
+      if (!content.trim()) return;
+      const res = await fetch('/api/social/chat-cafe/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tableId: activeTableId, content, asCharacterId: characterId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || 'Could not send as that character.');
+        return;
+      }
+      if (data.message) {
+        const known = aiCharacterCacheRef.current[characterId];
+        const sender = data.message.ai_character ? characterToUserProfile(data.message.ai_character) : known || currentUser!;
+        aiCharacterCacheRef.current[characterId] = sender;
+        setMessages((prev) => (prev.some((m) => m.id === data.message.id) ? prev : [...prev, rowToMessage(data.message, sender)]));
+      }
+    },
+    [activeTableId, currentUser, showToast]
   );
 
   const handleReaction = useCallback(
@@ -871,6 +1047,7 @@ export default function ChatCafeApp() {
           activeTableId={activeTableId}
           bannedUserIds={bannedUserIds}
           mutedUsers={mutedUsers}
+          aiCharacters={aiCharacters}
           onResolveReport={handleResolveReport}
           onDeleteMessage={handleDeleteMessage}
           onMuteUser={handleMuteUser}
@@ -879,6 +1056,7 @@ export default function ChatCafeApp() {
           onUnbanUser={handleUnbanUser}
           onSetSlowMode={handleSetSlowMode}
           onBroadcastHouseRules={handleBroadcastHouseRules}
+          onSendAsCharacter={handleSendAsCharacter}
         />
 
         <DrinkGiftModal

@@ -738,6 +738,16 @@ export function RetroYahooChatWindow({
                     </span>
                   )}
 
+                  {/* AI character badge — an admin-curated regular, not a real account */}
+                  {msg.senderType === 'ai' && (
+                    <span
+                      className="text-[9px] font-bold px-1 rounded bg-indigo-100 text-indigo-700 border border-indigo-300"
+                      title="Played by an AI character, not a real patron"
+                    >
+                      AI
+                    </span>
+                  )}
+
                   {/* Sender Name in bold color */}
                   <button
                     onClick={() => setSelectedPatron(msg.sender)}

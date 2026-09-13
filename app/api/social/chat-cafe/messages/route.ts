@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createSupabaseClientForServer } from '@/lib/supabase-client';
 import { getCallerUser, getOrCreateProfile, isMuted, isModerator } from '@/lib/chat-cafe-server';
 
+// Moderators/admins can "puppet" an AI character — write its next line
+// themselves instead of waiting for autopilot. Kept in this same route
+// (rather than a separate one) so it reuses the existing insert path.
+
 // POST: send a chat message (plain text, a drink gift, or a discussion-topic
 // announcement all flow through here). Reads happen directly from the
 // browser via Supabase + RLS + Realtime — this route only needs to handle
@@ -15,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { tableId, content, replyTo, drinkGift, isDiscussionTopic, discussionData } = body || {};
+    const { tableId, content, replyTo, drinkGift, isDiscussionTopic, discussionData, asCharacterId } = body || {};
 
     if (!tableId || typeof tableId !== 'string') {
       return NextResponse.json({ error: 'tableId is required' }, { status: 400 });
@@ -26,6 +30,37 @@ export async function POST(request: Request) {
 
     const admin = createSupabaseClientForServer();
     const profile = await getOrCreateProfile(admin, user.id, user.email?.split('@')[0] || 'New Patron');
+
+    if (asCharacterId) {
+      // Puppeting an AI character's voice — moderator/admin only.
+      if (!isModerator(profile)) {
+        return NextResponse.json({ error: 'Only moderators can speak as an AI character.' }, { status: 403 });
+      }
+      const { data: character, error: charError } = await admin
+        .from('chat_cafe_ai_characters')
+        .select('id')
+        .eq('id', asCharacterId)
+        .eq('table_id', tableId)
+        .maybeSingle();
+      if (charError) throw new Error(charError.message);
+      if (!character) {
+        return NextResponse.json({ error: 'AI character not found for this table.' }, { status: 404 });
+      }
+
+      const { data: inserted, error: insertError } = await admin
+        .from('chat_cafe_messages')
+        .insert({
+          table_id: tableId,
+          sender_type: 'ai',
+          ai_character_id: asCharacterId,
+          content: content.slice(0, 500),
+        })
+        .select('*, ai_character:chat_cafe_ai_characters(*)')
+        .single();
+
+      if (insertError) throw new Error(insertError.message);
+      return NextResponse.json({ message: inserted });
+    }
 
     if (profile.is_banned) {
       return NextResponse.json({ error: 'You have been barred from Chat Café.', banned: true }, { status: 403 });

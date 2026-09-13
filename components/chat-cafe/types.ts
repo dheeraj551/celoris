@@ -61,6 +61,24 @@ export interface ChatMessage {
     category: string;
     starterPrompts: string[];
   };
+  // 'ai' when this line came from an admin-curated AI character (autopilot
+  // or a moderator puppeting it) rather than a real patron account.
+  senderType?: 'human' | 'ai';
+  aiCharacterId?: string;
+}
+
+// An admin-curated character that can speak at one café table, either on
+// its own via the autopilot timer or puppeted by a moderator/admin.
+export interface AiCharacter {
+  id: string;
+  tableId: string;
+  name: string;
+  avatarId: string;
+  avatarColor: string;
+  accessory?: string;
+  backstory: string;
+  personality: string;
+  isActive: boolean;
 }
 
 export interface CafeTable {

@@ -16,12 +16,14 @@ import {
   Sliders,
   BookOpen,
   Send,
+  MessageCircle,
 } from 'lucide-react';
 import {
   ModerationReport,
   UserProfile,
   CafeTable,
   ChatMessage,
+  AiCharacter,
 } from './types';
 import { HOUSE_RULES } from './data/cafeData';
 
@@ -34,6 +36,7 @@ interface ModerationPanelModalProps {
   activeTableId: string;
   bannedUserIds: string[];
   mutedUsers: Record<string, number>;
+  aiCharacters: AiCharacter[];
   onResolveReport: (reportId: string, status: 'resolved' | 'dismissed') => void;
   onDeleteMessage: (messageId: string, reason: string) => void;
   onMuteUser: (userId: string, userName: string, durationMin: number, reason: string) => void;
@@ -42,7 +45,45 @@ interface ModerationPanelModalProps {
   onUnbanUser: (userId: string) => void;
   onSetSlowMode: (tableId: string, seconds: number) => void;
   onBroadcastHouseRules: () => void;
+  onSendAsCharacter: (characterId: string, content: string) => void;
 }
+
+// A tiny controlled input + send button for puppeting one AI character —
+// kept as its own component so each character's draft text is independent.
+const SpeakAsCharacterRow: React.FC<{
+  characterId: string;
+  onSend: (characterId: string, content: string) => void;
+}> = ({ characterId, onSend }) => {
+  const [text, setText] = useState('');
+
+  const submit = () => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    onSend(characterId, trimmed);
+    setText('');
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') submit();
+        }}
+        placeholder="Type their next line…"
+        className="flex-1 px-2.5 py-1.5 rounded-lg bg-black/40 border border-stone-700 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-indigo-500"
+      />
+      <button
+        onClick={submit}
+        className="p-1.5 rounded-lg bg-indigo-900/50 hover:bg-indigo-800/60 text-indigo-300 border border-indigo-700/40 transition-colors"
+        title="Send as this character"
+      >
+        <Send className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  );
+};
 
 export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
   isOpen,
@@ -53,6 +94,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
   activeTableId,
   bannedUserIds,
   mutedUsers,
+  aiCharacters,
   onResolveReport,
   onDeleteMessage,
   onMuteUser,
@@ -61,8 +103,9 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
   onUnbanUser,
   onSetSlowMode,
   onBroadcastHouseRules,
+  onSendAsCharacter,
 }) => {
-  const [activeTab, setActiveTab] = useState<'reports' | 'patrons' | 'tables' | 'rules' | 'ai_guard'>('reports');
+  const [activeTab, setActiveTab] = useState<'reports' | 'patrons' | 'tables' | 'ai_characters' | 'rules' | 'ai_guard'>('reports');
   const [analyzingReportId, setAnalyzingReportId] = useState<string | null>(null);
   const [aiAnalysisResult, setAiAnalysisResult] = useState<Record<string, any>>({});
 
@@ -164,6 +207,23 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
           >
             <Sliders className="w-3.5 h-3.5 text-amber-400" />
             <span>Table Controls (Slow Mode)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('ai_characters')}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              activeTab === 'ai_characters'
+                ? 'bg-indigo-950/60 text-indigo-200 border border-indigo-600/40'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/5'
+            }`}
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-indigo-400" />
+            <span>AI Characters</span>
+            {aiCharacters.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-indigo-700 text-white text-[10px]">
+                {aiCharacters.length}
+              </span>
+            )}
           </button>
 
           <button
@@ -447,6 +507,48 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* TAB: AI CHARACTERS — SPEAK AS */}
+          {activeTab === 'ai_characters' && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-2xl bg-indigo-950/30 border border-indigo-700/40 text-xs text-indigo-200 leading-relaxed">
+                Jump in as one of this table's AI regulars to steer the conversation — your line posts immediately
+                as them, and autopilot naturally picks things back up afterward. Add, edit, or pause characters
+                from the admin Chat Café dashboard.
+              </div>
+
+              {aiCharacters.length === 0 ? (
+                <div className="py-10 text-center rounded-2xl bg-black/20 border border-dashed border-stone-800 space-y-2">
+                  <Bot className="w-7 h-7 text-stone-600 mx-auto" />
+                  <div className="text-sm font-semibold text-stone-300">No AI characters seated here yet</div>
+                  <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                    Add some from the admin Chat Café dashboard to bring this table to life.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {aiCharacters.map((character) => (
+                    <div key={character.id} className="p-3 rounded-2xl bg-stone-950/70 border border-stone-800 space-y-2">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-8 h-8 rounded-xl bg-gradient-to-br ${character.avatarColor || 'from-amber-400 to-orange-500'} flex items-center justify-center text-sm shadow-xs flex-shrink-0`}
+                        >
+                          ☕
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-amber-100 truncate">{character.name}</div>
+                          {character.personality && (
+                            <div className="text-[10px] text-stone-400 truncate">{character.personality}</div>
+                          )}
+                        </div>
+                      </div>
+                      <SpeakAsCharacterRow characterId={character.id} onSend={onSendAsCharacter} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

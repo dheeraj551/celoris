@@ -51,10 +51,10 @@ export function RetroArcadeCabinetWrapper({
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col bg-black overflow-x-hidden select-none">
+    <div className="relative w-full flex flex-col bg-black overflow-hidden select-none rounded-2xl border border-white/10 shadow-2xl">
       {/* 1. BACKGROUND: 1990s RETRO ARCADE ROOM WALLPAPER */}
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 pointer-events-none"
         style={{
           backgroundImage: `url(/chat-cafe/retro-arcade-background.jpg)`,
           filter: viewMode === 'arcade_cabinet' ? 'brightness(0.35) blur(3px)' : 'brightness(0.65)',
@@ -62,11 +62,11 @@ export function RetroArcadeCabinetWrapper({
       />
 
       {/* Ambient Vignette & Neon Glow Overlay */}
-      <div className="fixed inset-0 bg-gradient-to-t from-black via-black/40 to-black/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/60 pointer-events-none" />
 
       {/* Global CRT Scanlines if toggled */}
       {crtScanlines && (
-        <div className="fixed inset-0 crt-scanlines pointer-events-none z-30 opacity-45" />
+        <div className="absolute inset-0 crt-scanlines pointer-events-none z-30 opacity-45" />
       )}
 
       {/* 2. RETRO ARCADE MARQUEE TOP BAR */}
@@ -172,7 +172,7 @@ export function RetroArcadeCabinetWrapper({
       </header>
 
       {/* 3. MAIN WORKSPACE */}
-      <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 flex flex-col justify-center items-center">
+      <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 flex flex-col justify-center items-center min-h-[75vh]">
         {/* If Cabinet view, wrap in physical arcade cabinet bezel */}
         {viewMode === 'arcade_cabinet' ? (
           <div

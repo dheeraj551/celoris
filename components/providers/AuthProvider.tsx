@@ -48,16 +48,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
             .catch((error: any) => {
                 console.error("Error getting session:", error)
-                // If it's a fatal auth error (like missing refresh token), clear the state
+                // "Refresh Token Not Found" is often transient, not fatal: it fires
+                // when another request (another open tab, another realtime channel
+                // reconnecting after this tab regained focus, etc.) already rotated
+                // the refresh token a moment earlier. The new token is already
+                // stored — retrying getSession() almost always finds it. Previously
+                // this branch force-called supabase.auth.signOut() immediately,
+                // which revokes the session outright and logs the user out even
+                // though their session was actually still valid. Retry once before
+                // giving up, and even then only clear local UI state (don't force a
+                // network sign-out) so a still-valid session isn't destroyed.
                 if (error.message?.includes("Refresh Token Not Found") || error.code === "refresh_token_not_found") {
-                    supabase.auth.signOut().then(() => {
-                        if (mounted) {
-                            setSession(null)
-                            setUser(null)
-                            setProfile(null)
-                            setLoading(false)
-                        }
-                    })
+                    setTimeout(() => {
+                        if (!mounted) return
+                        supabase.auth.getSession()
+                            .then(({ data: { session } }: any) => {
+                                if (!mounted) return
+                                setSession(session)
+                                setUser(session?.user ?? null)
+                                if (session?.user) {
+                                    fetchProfile(session.user.id)
+                                } else {
+                                    setProfile(null)
+                                    setLoading(false)
+                                }
+                            })
+                            .catch(() => {
+                                if (!mounted) return
+                                setSession(null)
+                                setUser(null)
+                                setProfile(null)
+                                setLoading(false)
+                            })
+                    }, 400)
                 } else if (mounted) {
                     setLoading(false)
                 }

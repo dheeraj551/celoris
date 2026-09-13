@@ -18,7 +18,14 @@ import {
   AlertTriangle,
   CheckCircle,
   ScrollText,
+  Bot,
+  Plus,
+  Trash2,
+  Pencil,
+  Pause,
+  Play,
 } from "lucide-react"
+import { AVATAR_CHARACTERS } from "@/components/chat-cafe/data/cafeData"
 
 interface ChatCafeTable {
   id: string
@@ -66,6 +73,18 @@ interface SearchedProfile {
   muted_until: string | null
 }
 
+interface ChatCafeAiCharacter {
+  id: string
+  table_id: string
+  name: string
+  avatar_id: string
+  avatar_color: string
+  accessory: string | null
+  backstory: string
+  personality: string
+  is_active: boolean
+}
+
 const ROLE_OPTIONS = ['patron', 'regular', 'barista', 'moderator', 'admin']
 
 export default function ChatCafeAdminPage() {
@@ -82,10 +101,25 @@ export default function ChatCafeAdminPage() {
   const [searchResults, setSearchResults] = useState<SearchedProfile[]>([])
   const [searching, setSearching] = useState(false)
 
+  const [aiCharacters, setAiCharacters] = useState<ChatCafeAiCharacter[]>([])
+  const [newCharTableId, setNewCharTableId] = useState("")
+  const [newCharName, setNewCharName] = useState("")
+  const [newCharAvatarId, setNewCharAvatarId] = useState(AVATAR_CHARACTERS[0].id)
+  const [newCharBackstory, setNewCharBackstory] = useState("")
+  const [newCharPersonality, setNewCharPersonality] = useState("")
+  const [savingChar, setSavingChar] = useState(false)
+  const [editingCharId, setEditingCharId] = useState<string | null>(null)
+  const [editDraft, setEditDraft] = useState<{ name: string; avatarId: string; backstory: string; personality: string } | null>(null)
+
   useEffect(() => {
     checkAdminAuth()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Default the "add character" form to the first table once tables load.
+  useEffect(() => {
+    if (!newCharTableId && tables.length) setNewCharTableId(tables[0].id)
+  }, [tables, newCharTableId])
 
   const checkAdminAuth = async () => {
     try {
@@ -119,6 +153,7 @@ export default function ChatCafeAdminPage() {
       setReports(data.reports || [])
       setSanctioned(data.sanctionedProfiles || [])
       setLogs(data.moderationLogs || [])
+      setAiCharacters(data.aiCharacters || [])
     } catch (error) {
       console.error('Failed to load Chat Café overview:', error)
     } finally {
@@ -187,6 +222,86 @@ export default function ChatCafeAdminPage() {
     setSearchResults((prev) => prev.map((p) => (p.id === targetUserId ? { ...p, role } : p)))
   }
 
+  // --- AI characters -------------------------------------------------
+  const handleCreateCharacter = async () => {
+    if (!newCharTableId || !newCharName.trim()) return
+    setSavingChar(true)
+    try {
+      const preset = AVATAR_CHARACTERS.find((a) => a.id === newCharAvatarId) || AVATAR_CHARACTERS[0]
+      const res = await fetch('/api/admin/chat-cafe/ai-characters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tableId: newCharTableId,
+          name: newCharName.trim(),
+          avatarId: preset.id,
+          avatarColor: preset.color,
+          accessory: preset.accessory,
+          backstory: newCharBackstory.trim(),
+          personality: newCharPersonality.trim(),
+        }),
+      })
+      if (res.ok) {
+        setNewCharName("")
+        setNewCharBackstory("")
+        setNewCharPersonality("")
+        loadOverview()
+      }
+    } finally {
+      setSavingChar(false)
+    }
+  }
+
+  const handleToggleCharacterActive = async (character: ChatCafeAiCharacter) => {
+    await fetch(`/api/admin/chat-cafe/ai-characters/${character.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isActive: !character.is_active }),
+    })
+    loadOverview()
+  }
+
+  const handleDeleteCharacter = async (character: ChatCafeAiCharacter) => {
+    if (!window.confirm(`Remove ${character.name}? Their past messages stay in the chat history.`)) return
+    await fetch(`/api/admin/chat-cafe/ai-characters/${character.id}`, { method: 'DELETE' })
+    loadOverview()
+  }
+
+  const handleStartEditCharacter = (character: ChatCafeAiCharacter) => {
+    setEditingCharId(character.id)
+    setEditDraft({
+      name: character.name,
+      avatarId: character.avatar_id,
+      backstory: character.backstory,
+      personality: character.personality,
+    })
+  }
+
+  const handleCancelEditCharacter = () => {
+    setEditingCharId(null)
+    setEditDraft(null)
+  }
+
+  const handleSaveEditCharacter = async (characterId: string) => {
+    if (!editDraft || !editDraft.name.trim()) return
+    const preset = AVATAR_CHARACTERS.find((a) => a.id === editDraft.avatarId) || AVATAR_CHARACTERS[0]
+    await fetch(`/api/admin/chat-cafe/ai-characters/${characterId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: editDraft.name.trim(),
+        avatarId: preset.id,
+        avatarColor: preset.color,
+        accessory: preset.accessory,
+        backstory: editDraft.backstory.trim(),
+        personality: editDraft.personality.trim(),
+      }),
+    })
+    setEditingCharId(null)
+    setEditDraft(null)
+    loadOverview()
+  }
+
   if (!isAuthenticated || loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-gray-400 text-sm">
@@ -253,6 +368,181 @@ export default function ChatCafeAdminPage() {
                 </div>
               </div>
             ))}
+          </CardContent>
+        </Card>
+
+        {/* AI Characters */}
+        <Card className="bg-zinc-950 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Bot className="w-4 h-4 text-indigo-400" /> AI Characters
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <p className="text-xs text-gray-500">
+              Admin-curated regulars that speak on their own (autopilot, while a table is open) or can be puppeted
+              live by moderators from the café's Staff Console. Patrons see a small "AI" badge next to their
+              messages, not a bot persona.
+            </p>
+
+            {/* Add new character */}
+            <div className="p-4 rounded-xl bg-zinc-900 border border-white/5 space-y-3">
+              <div className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Add a Character</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <select
+                  value={newCharTableId}
+                  onChange={(e) => setNewCharTableId(e.target.value)}
+                  className="bg-zinc-800 border border-white/10 rounded-lg text-xs px-2 py-2 text-gray-200"
+                >
+                  {tables.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.icon} {t.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={newCharAvatarId}
+                  onChange={(e) => setNewCharAvatarId(e.target.value)}
+                  className="bg-zinc-800 border border-white/10 rounded-lg text-xs px-2 py-2 text-gray-200"
+                >
+                  {AVATAR_CHARACTERS.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.icon} {a.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Input
+                placeholder="Character name…"
+                value={newCharName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewCharName(e.target.value)}
+                className="bg-zinc-900 border-white/10"
+              />
+              <textarea
+                placeholder="Backstory — who are they, why do they hang out here?"
+                value={newCharBackstory}
+                onChange={(e) => setNewCharBackstory(e.target.value)}
+                rows={2}
+                className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-indigo-500"
+              />
+              <textarea
+                placeholder="Personality & speaking style — tone, quirks, how they talk"
+                value={newCharPersonality}
+                onChange={(e) => setNewCharPersonality(e.target.value)}
+                rows={2}
+                className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-indigo-500"
+              />
+              <div className="flex justify-end">
+                <Button size="sm" onClick={handleCreateCharacter} disabled={savingChar || !newCharName.trim() || !newCharTableId}>
+                  <Plus className="w-3.5 h-3.5 mr-1.5" /> {savingChar ? 'Adding…' : 'Add Character'}
+                </Button>
+              </div>
+            </div>
+
+            {/* Roster */}
+            {aiCharacters.length === 0 ? (
+              <p className="text-sm text-gray-500">No AI characters yet — add one above to bring a table to life.</p>
+            ) : (
+              <div className="space-y-2">
+                {aiCharacters.map((character) => {
+                  const table = tables.find((t) => t.id === character.table_id)
+                  const preset = AVATAR_CHARACTERS.find((a) => a.id === character.avatar_id)
+                  const isEditing = editingCharId === character.id
+                  return (
+                    <div key={character.id} className="p-3 rounded-xl bg-zinc-900 border border-white/5 space-y-2">
+                      {isEditing && editDraft ? (
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <Input
+                              value={editDraft.name}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDraft({ ...editDraft, name: e.target.value })}
+                              className="bg-zinc-800 border-white/10"
+                            />
+                            <select
+                              value={editDraft.avatarId}
+                              onChange={(e) => setEditDraft({ ...editDraft, avatarId: e.target.value })}
+                              className="bg-zinc-800 border border-white/10 rounded-lg text-xs px-2 py-2 text-gray-200"
+                            >
+                              {AVATAR_CHARACTERS.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                  {a.icon} {a.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <textarea
+                            value={editDraft.backstory}
+                            onChange={(e) => setEditDraft({ ...editDraft, backstory: e.target.value })}
+                            rows={2}
+                            placeholder="Backstory"
+                            className="w-full bg-zinc-800 border border-white/10 rounded-lg text-xs px-3 py-2 text-gray-200 resize-none focus:outline-none focus:border-indigo-500"
+                          />
+                          <textarea
+                            value={editDraft.personality}
+                            onChange={(e) => setEditDraft({ ...editDraft, personality: e.target.value })}
+                            rows={2}
+                            placeholder="Personality & speaking style"
+                            className="w-full bg-zinc-800 border border-white/10 rounded-lg text-xs px-3 py-2 text-gray-200 resize-none focus:outline-none focus:border-indigo-500"
+                          />
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="ghost" onClick={handleCancelEditCharacter}>
+                              Cancel
+                            </Button>
+                            <Button size="sm" onClick={() => handleSaveEditCharacter(character.id)}>
+                              Save
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-2.5 min-w-0">
+                            <div
+                              className={`w-9 h-9 rounded-xl bg-gradient-to-br ${character.avatar_color} flex items-center justify-center text-base flex-shrink-0`}
+                            >
+                              {preset?.icon || '☕'}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-semibold flex items-center gap-2 flex-wrap">
+                                <span>{character.name}</span>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-gray-400 border border-white/10">
+                                  {table ? `${table.icon} ${table.name}` : character.table_id}
+                                </span>
+                                {character.is_active ? (
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-600/20 text-emerald-300 border border-emerald-600/30">
+                                    Active
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-700/50 text-gray-400 border border-white/10">
+                                    Paused
+                                  </span>
+                                )}
+                              </div>
+                              {character.personality && <p className="text-xs text-gray-500 mt-0.5 truncate">{character.personality}</p>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleToggleCharacterActive(character)}
+                              title={character.is_active ? 'Pause' : 'Resume'}
+                            >
+                              {character.is_active ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleStartEditCharacter(character)} title="Edit">
+                              <Pencil className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleDeleteCharacter(character)} title="Remove">
+                              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
 
