@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { createClient } from "@/lib/supabase-client"
 import {
   Shield,
   LogOut,
@@ -92,9 +93,41 @@ const ROLE_OPTIONS = ['patron', 'regular', 'barista', 'moderator', 'admin']
 // character, straight from the dashboard. Its own component so each
 // character's draft text is independent and typing doesn't re-render the
 // whole roster.
-function SendAsCharacterRow({ characterId, characterName }: { characterId: string; characterName: string }) {
+function SendAsCharacterRow({ characterId, characterName, tableId }: { characterId: string; characterName: string; tableId: string }) {
   const [text, setText] = useState("")
   const [sending, setSending] = useState(false)
+
+  // This dashboard is a separate page from the live Chat Café room, so it
+  // keeps its own tiny broadcast connection just to post "<character> is
+  // typing…" to whoever's actually sitting at that table — same channel
+  // name and payload shape the café room itself listens on, keyed by the
+  // same synthetic `ai_<id>` id used everywhere an AI character stands in
+  // for a real UserProfile.
+  const supabase = useMemo(() => createClient(), [])
+  const typingChannelRef = useRef<any>(null)
+  const lastTypingSentRef = useRef(0)
+
+  useEffect(() => {
+    const channel = supabase.channel(`chat-cafe-typing-${tableId}`)
+    channel.subscribe((status: string) => {
+      if (status === 'SUBSCRIBED') typingChannelRef.current = channel
+    })
+    return () => {
+      typingChannelRef.current = null
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, tableId])
+
+  const notifyTyping = () => {
+    const now = Date.now()
+    if (now - lastTypingSentRef.current < 1500) return // throttle
+    lastTypingSentRef.current = now
+    typingChannelRef.current?.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: `ai_${characterId}`, name: characterName },
+    })
+  }
 
   const submit = async () => {
     const trimmed = text.trim()
@@ -122,7 +155,10 @@ function SendAsCharacterRow({ characterId, characterName }: { characterId: strin
       <Input
         placeholder={`Type as ${characterName}…`}
         value={text}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setText(e.target.value)
+          if (e.target.value.trim()) notifyTyping()
+        }}
         onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
           if (e.key === 'Enter') submit()
         }}
@@ -586,7 +622,7 @@ export default function ChatCafeAdminPage() {
                           </div>
                         </div>
                       )}
-                      {!isEditing && <SendAsCharacterRow characterId={character.id} characterName={character.name} />}
+                      {!isEditing && <SendAsCharacterRow characterId={character.id} characterName={character.name} tableId={character.table_id} />}
                     </div>
                   )
                 })}

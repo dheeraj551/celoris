@@ -201,6 +201,7 @@ export default function ChatCafeApp() {
   const typingChannelRef = useRef<any>(null);
   const typingTimeoutsRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const lastTypingSentRef = useRef(0);
+  const lastCharTypingSentRef = useRef<Record<string, number>>({});
 
   // Chat interaction state
   const [slowModeCooldown, setSlowModeCooldown] = useState(0);
@@ -248,13 +249,28 @@ export default function ChatCafeApp() {
 
   // ---------------------------------------------------------------------
   // 1. Load / create the caller's Chat Café persona.
+  //
+  // Keyed on authUser?.id (not the authUser object itself): Supabase's
+  // client silently refreshes the auth token whenever the tab regains
+  // focus (switching tabs, un-minimizing), and AuthProvider hands back a
+  // brand-new `user` object on every one of those refreshes even though
+  // it's the same account. If this effect depended on that object
+  // directly, every tab-focus would look like a fresh sign-in, flip
+  // profileLoading back to true, and swap the whole café out for the
+  // "Brewing the café…" spinner — i.e. the room appearing to reload
+  // itself just from switching away and back. loadedAuthIdRef guards
+  // against re-fetching for an account we've already loaded.
   // ---------------------------------------------------------------------
+  const loadedAuthIdRef = useRef<string | null>(null);
   useEffect(() => {
     if (authLoading) return;
     if (!authUser) {
       setProfileLoading(false);
+      loadedAuthIdRef.current = null;
       return;
     }
+    if (loadedAuthIdRef.current === authUser.id) return;
+    loadedAuthIdRef.current = authUser.id;
     let cancelled = false;
     setProfileLoading(true);
     setProfileError(null);
@@ -275,13 +291,17 @@ export default function ChatCafeApp() {
       })
       .catch((err) => {
         console.error('Chat Café profile load failed:', err.message || err);
-        if (!cancelled) setProfileError(err.message || 'Failed to load your café profile.');
+        if (!cancelled) {
+          setProfileError(err.message || 'Failed to load your café profile.');
+          loadedAuthIdRef.current = null; // allow a retry on the next render
+        }
       })
       .finally(() => !cancelled && setProfileLoading(false));
     return () => {
       cancelled = true;
     };
-  }, [authUser, authLoading, cacheProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser?.id, authLoading, cacheProfile]);
 
   // ---------------------------------------------------------------------
   // 2. Load café tables once, then subscribe to live updates (slow mode,
@@ -790,6 +810,36 @@ export default function ChatCafeApp() {
     });
   }, []);
 
+  // Same "X is typing…" broadcast, but for a moderator/admin drafting a
+  // line as one of this table's AI characters from the Staff Console's
+  // "speak as" box — reuses the already-connected typing channel above,
+  // keyed by the same synthetic `ai_<id>` id used everywhere else an AI
+  // character stands in for a UserProfile.
+  const handleCharacterTyping = useCallback((characterId: string, characterName: string) => {
+    const now = Date.now();
+    const last = lastCharTypingSentRef.current[characterId] || 0;
+    if (now - last < 1500) return; // throttle
+    lastCharTypingSentRef.current[characterId] = now;
+    typingChannelRef.current?.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: `ai_${characterId}`, name: characterName },
+    });
+  }, []);
+
+  // AI characters seated at the table are admin-curated "regulars" that
+  // post through the same message stream as anyone else — the roster
+  // shown in the chat window should include them too, so a moderator or
+  // admin currently puppeting one doesn't disappear from the room's user
+  // list. (Moderation-sensitive surfaces — the sidebar's mute/ban and the
+  // staff console's Patrons tab — intentionally keep using the real,
+  // presence-tracked `activePatrons` list, since an AI character has no
+  // real chat_cafe_profiles row to mute or ban.)
+  const displayRoster = useMemo(
+    () => [...activePatrons, ...aiCharacters.map(characterToUserProfile)],
+    [activePatrons, aiCharacters]
+  );
+
   // Auto-scroll on new messages is handled internally by RetroYahooChatWindow.
 
   // Slow mode cooldown timer (purely cosmetic countdown on this client — the
@@ -1154,6 +1204,7 @@ export default function ChatCafeApp() {
           onSetSlowMode={handleSetSlowMode}
           onBroadcastHouseRules={handleBroadcastHouseRules}
           onSendAsCharacter={handleSendAsCharacter}
+          onCharacterTyping={handleCharacterTyping}
         />
 
         <DrinkGiftModal
@@ -1280,7 +1331,7 @@ export default function ChatCafeApp() {
             onSelectTable={(id) => setActiveTableId(id)}
             messages={messagesWithReactions}
             currentUser={currentUser}
-            activePatrons={activePatrons}
+            activePatrons={displayRoster}
             onSendMessage={(text) => handleSendMessage(text)}
             onGiftDrinkToUser={(recipient) => {
               setDrinkRecipient(recipient);

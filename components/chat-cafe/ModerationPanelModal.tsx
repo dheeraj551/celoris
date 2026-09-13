@@ -46,14 +46,17 @@ interface ModerationPanelModalProps {
   onSetSlowMode: (tableId: string, seconds: number) => void;
   onBroadcastHouseRules: () => void;
   onSendAsCharacter: (characterId: string, content: string) => void;
+  onCharacterTyping?: (characterId: string, characterName: string) => void;
 }
 
 // A tiny controlled input + send button for puppeting one AI character —
 // kept as its own component so each character's draft text is independent.
 const SpeakAsCharacterRow: React.FC<{
   characterId: string;
+  characterName: string;
   onSend: (characterId: string, content: string) => void;
-}> = ({ characterId, onSend }) => {
+  onTyping?: () => void;
+}> = ({ characterId, characterName, onSend, onTyping }) => {
   const [text, setText] = useState('');
 
   const submit = () => {
@@ -67,11 +70,14 @@ const SpeakAsCharacterRow: React.FC<{
     <div className="flex items-center gap-2">
       <input
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          setText(e.target.value);
+          if (e.target.value.trim()) onTyping?.();
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') submit();
         }}
-        placeholder="Type their next line…"
+        placeholder={`Type as ${characterName}…`}
         className="flex-1 px-2.5 py-1.5 rounded-lg bg-black/40 border border-stone-700 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-indigo-500"
       />
       <button
@@ -104,6 +110,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
   onSetSlowMode,
   onBroadcastHouseRules,
   onSendAsCharacter,
+  onCharacterTyping,
 }) => {
   const [activeTab, setActiveTab] = useState<'reports' | 'patrons' | 'tables' | 'ai_characters' | 'rules' | 'ai_guard'>('reports');
   const [analyzingReportId, setAnalyzingReportId] = useState<string | null>(null);
@@ -194,7 +201,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
             }`}
           >
             <Users className="w-3.5 h-3.5 text-amber-400" />
-            <span>Users & Sanctions</span>
+            <span>Patrons & Sanctions</span>
           </button>
 
           <button
@@ -257,7 +264,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
           {activeTab === 'reports' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-stone-400">
-                <span>{pendingReports.length} pending user report(s) require review</span>
+                <span>{pendingReports.length} pending patron report(s) require review</span>
                 <span className="text-[11px] italic">Actions take effect immediately in real-time</span>
               </div>
 
@@ -367,7 +374,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
               {/* Active Patrons list */}
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-stone-300 uppercase tracking-wider">
-                  Connected Users in Café
+                  Connected Patrons in Café
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {activePatrons.map((patron, idx) => {
@@ -445,7 +452,7 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
                         key={`${uid}-${idx}`}
                         className="p-2.5 rounded-xl bg-rose-950/30 border border-rose-900/40 flex items-center justify-between text-xs text-rose-200"
                       >
-                        <span>User ID: {uid}</span>
+                        <span>Patron ID: {uid}</span>
                         <button
                           onClick={() => onUnbanUser(uid)}
                           className="px-2.5 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs"
@@ -544,7 +551,12 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
                           )}
                         </div>
                       </div>
-                      <SpeakAsCharacterRow characterId={character.id} onSend={onSendAsCharacter} />
+                      <SpeakAsCharacterRow
+                        characterId={character.id}
+                        characterName={character.name}
+                        onSend={onSendAsCharacter}
+                        onTyping={() => onCharacterTyping?.(character.id, character.name)}
+                      />
                     </div>
                   ))}
                 </div>

@@ -81,6 +81,14 @@ function getUsernameColor(id: string): string {
   return RETRO_NAME_COLORS[Math.abs(hash) % RETRO_NAME_COLORS.length];
 }
 
+// AI characters are listed in the room roster with the synthetic `ai_<id>`
+// id (see characterToUserProfile in ChatCafeApp) — they have no real
+// chat_cafe_profiles row, so per-user actions like whisper/mute don't
+// apply to them.
+function isAiCharacterId(id: string): boolean {
+  return id.startsWith('ai_');
+}
+
 export function RetroYahooChatWindow({
   tables,
   activeTableId,
@@ -795,7 +803,13 @@ export function RetroYahooChatWindow({
                 <div
                   key={`${patron.id}-${idx}`}
                   onClick={() => setSelectedPatron(patron)}
-                  onDoubleClick={() => setWhisperRecipient(patron)}
+                  onDoubleClick={() => {
+                    if (isAiCharacterId(patron.id)) {
+                      alert(`${patron.name} is an AI café regular — direct messaging isn't available for them.`);
+                      return;
+                    }
+                    setWhisperRecipient(patron);
+                  }}
                   className={`px-1.5 py-1 text-xs flex items-center gap-1.5 cursor-pointer rounded-none transition-colors select-none ${
                     isSelected
                       ? 'bg-[#0a246a] text-white font-bold'
@@ -841,7 +855,9 @@ export function RetroYahooChatWindow({
             {/* IM Button */}
             <button
               onClick={() => {
-                if (selectedPatron) {
+                if (selectedPatron && isAiCharacterId(selectedPatron.id)) {
+                  alert(`${selectedPatron.name} is an AI café regular — direct messaging isn't available for them.`);
+                } else if (selectedPatron) {
                   setWhisperRecipient(selectedPatron);
                   inputRef.current?.focus();
                 } else {
@@ -857,7 +873,9 @@ export function RetroYahooChatWindow({
             {/* Ignore User Button */}
             <button
               onClick={() => {
-                if (selectedPatron) {
+                if (selectedPatron && isAiCharacterId(selectedPatron.id)) {
+                  alert(`${selectedPatron.name} is an AI café regular — moderation actions don't apply to them.`);
+                } else if (selectedPatron) {
                   onMuteUser(selectedPatron.id, selectedPatron.name);
                 } else {
                   alert('Select a user from the list to mute/ignore.');
@@ -873,7 +891,9 @@ export function RetroYahooChatWindow({
           {/* Gift Drink button under IM */}
           <button
             onClick={() => {
-              if (selectedPatron) {
+              if (selectedPatron && isAiCharacterId(selectedPatron.id)) {
+                alert(`${selectedPatron.name} is an AI café regular — drink gifts aren't available for them.`);
+              } else if (selectedPatron) {
                 onGiftDrinkToUser(selectedPatron);
               } else {
                 onGiftDrinkToUser(currentUser);
