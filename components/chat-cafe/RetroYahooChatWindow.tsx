@@ -27,7 +27,7 @@ import {
   RetroThemeSkin,
   RetroViewMode,
   CafeDrink,
-} from '../types';
+} from './types';
 import { RetroSmiley, RETRO_EMOTICONS } from './RetroSmiley';
 import { cafeAudio } from './utils/cafeAudio';
 

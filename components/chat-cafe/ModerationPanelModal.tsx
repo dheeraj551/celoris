@@ -22,7 +22,7 @@ import {
   UserProfile,
   CafeTable,
   ChatMessage,
-} from '../types';
+} from './types';
 import { HOUSE_RULES } from './data/cafeData';
 
 interface ModerationPanelModalProps {

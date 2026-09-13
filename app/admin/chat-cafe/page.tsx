@@ -347,8 +347,8 @@ export default function ChatCafeAdminPage() {
               <Input
                 placeholder="Search by name…"
                 value={patronSearch}
-                onChange={(e) => setPatronSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearchPatrons()}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPatronSearch(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearchPatrons()}
                 className="bg-zinc-900 border-white/10"
               />
               <Button onClick={handleSearchPatrons} disabled={searching}>

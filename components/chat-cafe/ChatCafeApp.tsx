@@ -259,7 +259,7 @@ export default function ChatCafeApp() {
 
     const channel = supabase
       .channel('chat-cafe-tables')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_cafe_tables' }, async (payload) => {
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_cafe_tables' }, async (payload: any) => {
         const row: any = payload.new;
         let activeTopic: DiscussionTopic | undefined;
         if (row.active_topic_id) {
@@ -341,9 +341,9 @@ export default function ChatCafeApp() {
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
-        async (payload) => {
+        async (payload: any) => {
           const row: any = payload.new;
-          let sender = profilesCacheRef.current[row.sender_id];
+          let sender: UserProfile | undefined = profilesCacheRef.current[row.sender_id];
           if (!sender) {
             const { data: senderRow } = await supabase.from('chat_cafe_profiles').select('*').eq('id', row.sender_id).maybeSingle();
             sender = senderRow ? rowToUserProfile(senderRow) : undefined;
@@ -359,7 +359,7 @@ export default function ChatCafeApp() {
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
-        (payload) => {
+        (payload: any) => {
           const row: any = payload.new;
           setMessages((prev) =>
             prev.map((m) =>
@@ -376,7 +376,7 @@ export default function ChatCafeApp() {
           );
         }
       )
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_cafe_message_reactions' }, (payload) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_cafe_message_reactions' }, (payload: any) => {
         const row: any = payload.new || payload.old;
         if (!row) return;
         setReactionsByMessage((prev) => {
@@ -410,13 +410,13 @@ export default function ChatCafeApp() {
     });
 
     channel.on('presence', { event: 'sync' }, () => {
-      const state = channel.presenceState<{ profile: UserProfile }>();
+      const state: Record<string, Array<{ profile: UserProfile }>> = channel.presenceState();
       const patrons = Object.values(state).flatMap((entries) => entries.map((e: any) => e.profile));
       patrons.forEach(cacheProfile);
       setActivePatrons(sanitizePatrons(patrons));
     });
 
-    channel.subscribe(async (status) => {
+    channel.subscribe(async (status: any) => {
       if (status === 'SUBSCRIBED') {
         await channel.track({ profile: currentUser });
       }
@@ -471,7 +471,7 @@ export default function ChatCafeApp() {
 
     const channel = supabase
       .channel('chat-cafe-profiles')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_cafe_profiles' }, (payload) => {
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_cafe_profiles' }, (payload: any) => {
         const row: any = payload.new;
         const updated = rowToUserProfile(row);
         cacheProfile(updated);
