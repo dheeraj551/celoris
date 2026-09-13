@@ -25,7 +25,7 @@ export async function GET() {
 
     if (error) throw new Error(error.message);
 
-    const reports = (data || []).map((r) => ({
+    const reports = (data || []).map((r: any) => ({
       id: r.id,
       messageId: r.message_id,
       messagePreview: r.message_preview,
