@@ -24,6 +24,7 @@ import {
   Pencil,
   Pause,
   Play,
+  Send,
 } from "lucide-react"
 import { AVATAR_CHARACTERS } from "@/components/chat-cafe/data/cafeData"
 
@@ -86,6 +87,53 @@ interface ChatCafeAiCharacter {
 }
 
 const ROLE_OPTIONS = ['patron', 'regular', 'barista', 'moderator', 'admin']
+
+// A small controlled input + send button for posting one line as an AI
+// character, straight from the dashboard. Its own component so each
+// character's draft text is independent and typing doesn't re-render the
+// whole roster.
+function SendAsCharacterRow({ characterId, characterName }: { characterId: string; characterName: string }) {
+  const [text, setText] = useState("")
+  const [sending, setSending] = useState(false)
+
+  const submit = async () => {
+    const trimmed = text.trim()
+    if (!trimmed || sending) return
+    setSending(true)
+    try {
+      const res = await fetch(`/api/admin/chat-cafe/ai-characters/${characterId}/speak`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: trimmed }),
+      })
+      if (res.ok) {
+        setText("")
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || `Could not send that as ${characterName}.`)
+      }
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2 mt-2">
+      <Input
+        placeholder={`Type as ${characterName}…`}
+        value={text}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Enter') submit()
+        }}
+        className="bg-zinc-800 border-white/10 text-xs"
+      />
+      <Button size="sm" onClick={submit} disabled={sending || !text.trim()}>
+        <Send className="w-3.5 h-3.5" />
+      </Button>
+    </div>
+  )
+}
 
 export default function ChatCafeAdminPage() {
   const router = useRouter()
@@ -380,9 +428,9 @@ export default function ChatCafeAdminPage() {
           </CardHeader>
           <CardContent className="space-y-5">
             <p className="text-xs text-gray-500">
-              Admin-curated regulars that speak on their own (autopilot, while a table is open) or can be puppeted
-              live by moderators from the café's Staff Console. Patrons see a small "AI" badge next to their
-              messages, not a bot persona.
+              Admin-curated regulars — you (or a moderator, from the café's Staff Console) type their lines
+              yourself and post them straight to the table below. Patrons see a small "AI" badge next to their
+              messages, not a bot persona. There's no auto-generated dialogue.
             </p>
 
             {/* Add new character */}
@@ -538,6 +586,7 @@ export default function ChatCafeAdminPage() {
                           </div>
                         </div>
                       )}
+                      {!isEditing && <SendAsCharacterRow characterId={character.id} characterName={character.name} />}
                     </div>
                   )
                 })}

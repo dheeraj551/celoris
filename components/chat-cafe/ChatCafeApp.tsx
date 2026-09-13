@@ -169,8 +169,9 @@ export default function ChatCafeApp() {
   const [mutedUsers, setMutedUsers] = useState<Record<string, number>>({});
 
   // Admin-curated AI characters seated at the active table — powers the
-  // moderator "speak as" panel; the autopilot loop itself is entirely
-  // server-side (see /api/social/chat-cafe/ai-turn).
+  // moderator "speak as" panel. They only ever speak when someone (a
+  // moderator here, or the admin dashboard) manually sends a line as them;
+  // there's no automatic/AI-generated dialogue.
   const [aiCharacters, setAiCharacters] = useState<AiCharacter[]>([]);
 
   // A cache of every patron profile we've seen (message senders, presence,
@@ -402,71 +403,91 @@ export default function ChatCafeApp() {
         setReactionsByMessage(map);
       });
 
-    const channel = supabase
-      .channel(`chat-cafe-messages-${activeTableId}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
-        async (payload: any) => {
-          const row: any = payload.new;
-          let sender: UserProfile | undefined;
-          if (row.sender_type === 'ai' && row.ai_character_id) {
-            sender = await resolveAiCharacterSender(row.ai_character_id);
-          } else {
-            sender = profilesCacheRef.current[row.sender_id];
-            if (!sender) {
-              const { data: senderRow } = await supabase.from('chat_cafe_profiles').select('*').eq('id', row.sender_id).maybeSingle();
-              sender = senderRow ? rowToUserProfile(senderRow) : undefined;
-              if (sender) cacheProfile(sender);
+    // Self-healing subscribe: Supabase Realtime can drop a channel (a
+    // client-side rate limit, a brief network blip, a server restart) and
+    // otherwise the app would just go stale until the patron manually
+    // reloads. On CHANNEL_ERROR/TIMED_OUT/CLOSED we tear the channel down
+    // and reconnect after a short delay instead of leaving it dead.
+    let channel: any = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const connectMessagesChannel = () => {
+      if (cancelled) return;
+      channel = supabase
+        .channel(`chat-cafe-messages-${activeTableId}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
+          async (payload: any) => {
+            const row: any = payload.new;
+            let sender: UserProfile | undefined;
+            if (row.sender_type === 'ai' && row.ai_character_id) {
+              sender = await resolveAiCharacterSender(row.ai_character_id);
+            } else {
+              sender = profilesCacheRef.current[row.sender_id];
+              if (!sender) {
+                const { data: senderRow } = await supabase.from('chat_cafe_profiles').select('*').eq('id', row.sender_id).maybeSingle();
+                sender = senderRow ? rowToUserProfile(senderRow) : undefined;
+                if (sender) cacheProfile(sender);
+              }
+            }
+            const newMsg = rowToMessage(row, sender || currentUserRef.current!);
+            setMessages((prev) => (prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]));
+            if (row.sender_id !== currentUserRef.current?.id && soundFxEnabled) {
+              cafeAudio.playRetroDing();
             }
           }
-          const newMsg = rowToMessage(row, sender || currentUserRef.current!);
-          setMessages((prev) => (prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]));
-          if (row.sender_id !== currentUserRef.current?.id && soundFxEnabled) {
-            cafeAudio.playRetroDing();
+        )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
+          (payload: any) => {
+            const row: any = payload.new;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === row.id
+                  ? {
+                      ...m,
+                      isPinned: row.is_pinned,
+                      isDeleted: row.is_deleted,
+                      deletionReason: row.deletion_reason || undefined,
+                      deletedBy: row.deleted_by || undefined,
+                    }
+                  : m
+              )
+            );
           }
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'chat_cafe_messages', filter: `table_id=eq.${activeTableId}` },
-        (payload: any) => {
-          const row: any = payload.new;
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === row.id
-                ? {
-                    ...m,
-                    isPinned: row.is_pinned,
-                    isDeleted: row.is_deleted,
-                    deletionReason: row.deletion_reason || undefined,
-                    deletedBy: row.deleted_by || undefined,
-                  }
-                : m
-            )
-          );
-        }
-      )
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_cafe_message_reactions' }, (payload: any) => {
-        const row: any = payload.new || payload.old;
-        if (!row) return;
-        setReactionsByMessage((prev) => {
-          const current = { ...(prev[row.message_id] || {}) };
-          const list = new Set(current[row.emoji] || []);
-          if (payload.eventType === 'DELETE') {
-            list.delete(row.user_id);
-          } else {
-            list.add(row.user_id);
+        )
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_cafe_message_reactions' }, (payload: any) => {
+          const row: any = payload.new || payload.old;
+          if (!row) return;
+          setReactionsByMessage((prev) => {
+            const current = { ...(prev[row.message_id] || {}) };
+            const list = new Set(current[row.emoji] || []);
+            if (payload.eventType === 'DELETE') {
+              list.delete(row.user_id);
+            } else {
+              list.add(row.user_id);
+            }
+            current[row.emoji] = Array.from(list);
+            return { ...prev, [row.message_id]: current };
+          });
+        })
+        .subscribe((status: any, err: any) => {
+          if (cancelled) return;
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            console.warn('Chat Café messages realtime channel dropped, reconnecting…', status, err);
+            if (channel) supabase.removeChannel(channel);
+            retryTimer = setTimeout(connectMessagesChannel, 3000);
           }
-          current[row.emoji] = Array.from(list);
-          return { ...prev, [row.message_id]: current };
         });
-      })
-      .subscribe();
+    };
+    connectMessagesChannel();
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(channel);
+      if (retryTimer) clearTimeout(retryTimer);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [supabase, activeTableId, currentUser, soundFxEnabled, cacheProfile, resolveAiCharacterSender]);
 
@@ -475,29 +496,53 @@ export default function ChatCafeApp() {
   // ---------------------------------------------------------------------
   useEffect(() => {
     if (!currentUser) return;
+    let cancelled = false;
+    let channel: any = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const channel = supabase.channel(`chat-cafe-presence-${activeTableId}`, {
-      config: { presence: { key: currentUser.id } },
-    });
+    const connectPresence = () => {
+      if (cancelled) return;
+      channel = supabase.channel(`chat-cafe-presence-${activeTableId}`, {
+        config: { presence: { key: currentUser.id } },
+      });
 
-    channel.on('presence', { event: 'sync' }, () => {
-      const state: Record<string, Array<{ profile: UserProfile }>> = channel.presenceState();
-      const patrons = Object.values(state).flatMap((entries) => entries.map((e: any) => e.profile));
-      patrons.forEach(cacheProfile);
-      setActivePatrons(sanitizePatrons(patrons));
-    });
+      channel.on('presence', { event: 'sync' }, () => {
+        const state: Record<string, Array<{ profile: UserProfile }>> = channel.presenceState();
+        const patrons = Object.values(state).flatMap((entries) => entries.map((e: any) => e.profile));
+        patrons.forEach(cacheProfile);
+        setActivePatrons(sanitizePatrons(patrons));
+      });
 
-    channel.subscribe(async (status: any) => {
-      if (status === 'SUBSCRIBED') {
-        await channel.track({ profile: currentUser });
-      }
-    });
+      channel.subscribe(async (status: any) => {
+        if (cancelled) return;
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ profile: currentUserRef.current });
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          // Supabase enforces a per-client presence event rate limit — rapid
+          // table-switching can trip it. Reconnect instead of leaving the
+          // patron list (and, transitively, other realtime feel) stale.
+          console.warn('Chat Café presence channel dropped, reconnecting…', status);
+          if (presenceChannelRef.current === channel) presenceChannelRef.current = null;
+          supabase.removeChannel(channel);
+          retryTimer = setTimeout(connectPresence, 3000);
+        }
+      });
 
-    presenceChannelRef.current = channel;
+      presenceChannelRef.current = channel;
+    };
+
+    // Debounce the join slightly so quickly clicking through several table
+    // tabs doesn't fire a burst of presence join/leave events back to back.
+    const joinTimer = setTimeout(connectPresence, 250);
 
     return () => {
-      channel.untrack();
-      supabase.removeChannel(channel);
+      cancelled = true;
+      clearTimeout(joinTimer);
+      if (retryTimer) clearTimeout(retryTimer);
+      if (channel) {
+        channel.untrack();
+        supabase.removeChannel(channel);
+      }
       presenceChannelRef.current = null;
     };
     // Re-join presence when the table changes or the account changes; the
@@ -618,8 +663,8 @@ export default function ChatCafeApp() {
   // ---------------------------------------------------------------------
   // 7. AI characters seated at the active table (admin-curated). RLS on
   //    chat_cafe_ai_characters is SELECT-open to authenticated users, so
-  //    this reads directly — only writes (admin CRUD, autopilot, puppeting)
-  //    go through API routes.
+  //    this reads directly — only writes (admin CRUD, puppeting) go
+  //    through API routes.
   // ---------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
@@ -643,56 +688,34 @@ export default function ChatCafeApp() {
 
     loadCharacters();
 
-    const channel = supabase
-      .channel(`chat-cafe-ai-characters-${activeTableId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'chat_cafe_ai_characters', filter: `table_id=eq.${activeTableId}` },
-        () => loadCharacters()
-      )
-      .subscribe();
+    let channel: any = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const connect = () => {
+      if (cancelled) return;
+      channel = supabase
+        .channel(`chat-cafe-ai-characters-${activeTableId}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'chat_cafe_ai_characters', filter: `table_id=eq.${activeTableId}` },
+          () => loadCharacters()
+        )
+        .subscribe((status: any) => {
+          if (cancelled) return;
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            if (channel) supabase.removeChannel(channel);
+            retryTimer = setTimeout(connect, 3000);
+          }
+        });
+    };
+    connect();
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(channel);
+      if (retryTimer) clearTimeout(retryTimer);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [supabase, activeTableId]);
-
-  // ---------------------------------------------------------------------
-  // 8. AI autopilot: while this patron has the table open, nudge the
-  //    ai-turn endpoint every so often so admin-curated characters keep
-  //    the conversation going on their own. The server does an atomic
-  //    claim (chat_cafe_tables.next_ai_turn_at), so it's harmless for many
-  //    patrons' tabs to all be nudging the same table at once — only one
-  //    request per turn actually generates and posts a line.
-  // ---------------------------------------------------------------------
-  useEffect(() => {
-    if (!currentUser || !activeTableId) return;
-    let cancelled = false;
-
-    const nudge = () => {
-      fetch('/api/social/chat-cafe/ai-turn', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tableId: activeTableId }),
-      }).catch(() => {});
-    };
-
-    // Stagger the first nudge, then repeat on a jittered interval, so many
-    // simultaneously-opened tabs don't all hammer the claim in lockstep.
-    const firstNudge = setTimeout(() => {
-      if (!cancelled) nudge();
-    }, 4000 + Math.random() * 4000);
-    const interval = setInterval(() => {
-      if (!cancelled) nudge();
-    }, 30000 + Math.random() * 15000);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(firstNudge);
-      clearInterval(interval);
-    };
-  }, [currentUser, activeTableId]);
 
   // Auto-scroll on new messages is handled internally by RetroYahooChatWindow.
 
@@ -760,8 +783,9 @@ export default function ChatCafeApp() {
     [currentUser, activeTable, activeTableId, mutedUsers, showToast, cacheProfile]
   );
 
-  // Moderator/admin "puppeting" — post a line as one of this table's AI
-  // characters right now, instead of waiting for autopilot. The server
+  // Moderator "puppeting" — post a line as one of this table's AI
+  // characters, from the live Staff Console. (The admin dashboard has its
+  // own separate way to do this — see /admin/chat-cafe.) The server
   // (messages route) re-checks isModerator and table membership itself.
   const handleSendAsCharacter = useCallback(
     async (characterId: string, content: string) => {

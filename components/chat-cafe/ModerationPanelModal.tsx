@@ -514,9 +514,9 @@ export const ModerationPanelModal: React.FC<ModerationPanelModalProps> = ({
           {activeTab === 'ai_characters' && (
             <div className="space-y-4">
               <div className="p-3 rounded-2xl bg-indigo-950/30 border border-indigo-700/40 text-xs text-indigo-200 leading-relaxed">
-                Jump in as one of this table's AI regulars to steer the conversation — your line posts immediately
-                as them, and autopilot naturally picks things back up afterward. Add, edit, or pause characters
-                from the admin Chat Café dashboard.
+                Type a line as one of this table's AI regulars and it posts immediately as them — there's no
+                auto-generated dialogue, so they only speak when you (or the admin dashboard) write for them.
+                Add, edit, or pause characters from the admin Chat Café dashboard.
               </div>
 
               {aiCharacters.length === 0 ? (
