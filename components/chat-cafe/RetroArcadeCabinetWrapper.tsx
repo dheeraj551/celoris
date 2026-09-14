@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { RetroViewMode } from './types';
 import { cafeAudio } from './utils/cafeAudio';
+import { RetroDialogBox } from './RetroDialogBox';
 
 // The shared "café radio" — one track, staff-picked, playing for everyone
 // currently in this table at (approximately) the same position. startedAt
@@ -58,6 +59,10 @@ export function RetroArcadeCabinetWrapper({
   onToggleChatMinimized,
 }: RetroArcadeCabinetWrapperProps) {
   const [coinAnim, setCoinAnim] = useState(false);
+  // Replaces the old native `alert()` on the Start button — a plain browser
+  // popup looked "very odd" against the retro OS chrome, so it now opens an
+  // in-theme Windows-98-style dialog instead (see RetroDialogBox).
+  const [isStartInfoOpen, setIsStartInfoOpen] = useState(false);
 
   const handleCoinClick = () => {
     setCoinAnim(true);
@@ -382,7 +387,7 @@ export function RetroArcadeCabinetWrapper({
         <div className="flex items-center gap-2">
           {/* Classic Start Button */}
           <button
-            onClick={() => alert('Chat Café OS 2000\nClick on Chat menu or tables to switch rooms!')}
+            onClick={() => setIsStartInfoOpen(true)}
             className="retro-button px-3 py-1 font-bold text-xs flex items-center gap-1 cursor-pointer"
           >
             <span className="text-sm">🪟</span>
@@ -447,6 +452,13 @@ export function RetroArcadeCabinetWrapper({
           </span>
         </div>
       </footer>
+
+      <RetroDialogBox
+        isOpen={isStartInfoOpen}
+        title="Chat Café OS 2000"
+        message={'Click on Chat menu or tables to switch rooms!'}
+        onConfirm={() => setIsStartInfoOpen(false)}
+      />
     </div>
   );
 }

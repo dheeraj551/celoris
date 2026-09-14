@@ -30,6 +30,7 @@ import {
 } from './types';
 import { RetroSmiley, RETRO_EMOTICONS } from './RetroSmiley';
 import { cafeAudio } from './utils/cafeAudio';
+import { RetroDialogBox } from './RetroDialogBox';
 
 interface RetroYahooChatWindowProps {
   tables: CafeTable[];
@@ -119,6 +120,19 @@ export function RetroYahooChatWindow({
   const [whisperRecipient, setWhisperRecipient] = useState<UserProfile | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  // In-theme replacement for window.alert()/window.confirm() — native
+  // browser popups looked "very odd" against the retro OS chrome, so every
+  // one of them now opens a RetroDialogBox instead.
+  const [dialogState, setDialogState] = useState<{
+    mode: 'alert' | 'confirm';
+    title?: string;
+    message: string;
+    onConfirm?: () => void;
+  } | null>(null);
+  const showAlert = (message: string, title?: string) => setDialogState({ mode: 'alert', message, title });
+  const showConfirm = (message: string, onConfirm: () => void, title?: string) =>
+    setDialogState({ mode: 'confirm', message, onConfirm, title });
+  const closeDialog = () => setDialogState(null);
   const [showEmoticonPicker, setShowEmoticonPicker] = useState(false);
   const [showFontMenu, setShowFontMenu] = useState(false);
   const [customTextColor, setCustomTextColor] = useState('#000000');
@@ -260,9 +274,10 @@ export function RetroYahooChatWindow({
           {/* Close Window */}
           <button
             onClick={() => {
-              if (window.confirm('Leave this retro chat session?')) {
+              showConfirm('Leave this retro chat session?', () => {
+                closeDialog();
                 window.location.reload();
-              }
+              });
             }}
             className="w-4 h-4 bg-[#ece9d8] hover:bg-rose-500 hover:text-white border-t border-l border-white border-r border-b border-[#404040] text-black flex items-center justify-center text-[10px] font-bold active:translate-y-px"
             title="Close"
@@ -311,10 +326,11 @@ export function RetroYahooChatWindow({
               <div className="h-px bg-gray-400 my-1 mx-1" />
               <button
                 onClick={() => {
-                  if (window.confirm('Clear your chat transcript buffer?')) {
+                  showConfirm('Clear your chat transcript buffer?', () => {
+                    closeDialog();
                     // local clear
                     setActiveMenu(null);
-                  }
+                  });
                 }}
                 className="w-full text-left px-3 py-1 hover:bg-[#0a246a] hover:text-white"
               >
@@ -345,7 +361,7 @@ export function RetroYahooChatWindow({
                     .map((m) => `${m.sender.name}: ${m.content}`)
                     .join('\n');
                   navigator.clipboard.writeText(transcript);
-                  alert('Chat transcript copied to clipboard!');
+                  showAlert('Chat transcript copied to clipboard!');
                   setActiveMenu(null);
                 }}
                 className="w-full text-left px-3 py-1 hover:bg-[#0a246a] hover:text-white"
@@ -475,7 +491,7 @@ export function RetroYahooChatWindow({
               <button
                 onClick={() => {
                   cafeAudio.playArcadeCoin();
-                  alert('🪙 *Clink-Clank-Ding!* You inserted a 25¢ arcade coin! (+1 Credit)');
+                  showAlert('🪙 *Clink-Clank-Ding!* You inserted a 25¢ arcade coin! (+1 Credit)');
                   setActiveMenu(null);
                 }}
                 className="w-full text-left px-3 py-1 hover:bg-[#0a246a] hover:text-white"
@@ -494,7 +510,7 @@ export function RetroYahooChatWindow({
               <button
                 onClick={() => {
                   if (selectedPatron) onGiftDrinkToUser(selectedPatron);
-                  else alert('Select a user from the right list first to gift a drink!');
+                  else showAlert('Select a user from the right list first to gift a drink!');
                   setActiveMenu(null);
                 }}
                 className="w-full text-left px-3 py-1 hover:bg-[#0a246a] hover:text-white flex items-center gap-2"
@@ -543,8 +559,9 @@ export function RetroYahooChatWindow({
             <div className="absolute top-full left-0 mt-0.5 w-48 bg-[#ece9d8] text-black retro-bevel-out shadow-lg z-50 py-1 text-xs">
               <button
                 onClick={() => {
-                  alert(
-                    '📜 CHAT CAFÉ HOUSE RULES:\n1. Be kind & hospitable to all users.\n2. Keep discussions civil and cafe-friendly.\n3. No spam, advertising, or harassment.\n4. Enjoy the warm tea, coffee, and arcade games!'
+                  showAlert(
+                    '📜 CHAT CAFÉ HOUSE RULES:\n1. Be kind & hospitable to all users.\n2. Keep discussions civil and cafe-friendly.\n3. No spam, advertising, or harassment.\n4. Enjoy the warm tea, coffee, and arcade games!',
+                    'House Rules'
                   );
                   setActiveMenu(null);
                 }}
@@ -554,8 +571,9 @@ export function RetroYahooChatWindow({
               </button>
               <button
                 onClick={() => {
-                  alert(
-                    'Chat Café: 1999 Arcade Edition\nCrafted with nostalgic early 2000s chat styling, procedural Web Audio, CRT effects, and retro arcade cabinet visuals.'
+                  showAlert(
+                    'Chat Café: 1999 Arcade Edition\nCrafted with nostalgic early 2000s chat styling, procedural Web Audio, CRT effects, and retro arcade cabinet visuals.',
+                    'About Chat Café'
                   );
                   setActiveMenu(null);
                 }}
@@ -868,7 +886,7 @@ export function RetroYahooChatWindow({
                   setWhisperRecipient(selectedPatron);
                   inputRef.current?.focus();
                 } else {
-                  alert('Click on a user in the list first to whisper!');
+                  showAlert('Click on a user in the list first to whisper!');
                 }
               }}
               className="retro-button py-1 px-2 text-xs font-bold flex items-center justify-center gap-1"
@@ -883,7 +901,7 @@ export function RetroYahooChatWindow({
                 if (selectedPatron) {
                   onMuteUser(selectedPatron.id, selectedPatron.name);
                 } else {
-                  alert('Select a user from the list to mute/ignore.');
+                  showAlert('Select a user from the list to mute/ignore.');
                 }
               }}
               className="retro-button py-1 px-2 text-xs font-bold"
@@ -1019,7 +1037,7 @@ export function RetroYahooChatWindow({
             onClick={() => {
               const lastMsg = tableMessages[tableMessages.length - 1];
               if (lastMsg) onReportMessage(lastMsg);
-              else alert('No messages in room to report.');
+              else showAlert('No messages in room to report.');
             }}
             className="text-blue-800 hover:text-blue-900 underline text-xs cursor-pointer"
             title="Report inappropriate behavior to moderation staff"
@@ -1087,6 +1105,18 @@ export function RetroYahooChatWindow({
           Send
         </button>
       </div>
+
+      <RetroDialogBox
+        isOpen={!!dialogState}
+        mode={dialogState?.mode || 'alert'}
+        title={dialogState?.title}
+        message={dialogState?.message || ''}
+        onConfirm={() => {
+          if (dialogState?.onConfirm) dialogState.onConfirm();
+          else closeDialog();
+        }}
+        onCancel={closeDialog}
+      />
     </div>
   );
 }

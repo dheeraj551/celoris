@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Award,
   Trophy,
@@ -158,7 +159,13 @@ export const WallOfFameModal: React.FC<WallOfFameModalProps> = ({
     }
   };
 
-  return (
+  // Rendered through a portal straight onto document.body so this overlay's
+  // `fixed inset-0` is always positioned relative to the real viewport. The
+  // Chat Café UI nests this modal several layers deep inside the retro
+  // arcade cabinet frame; without the portal, position:fixed here can end up
+  // trapped by that ancestry (it was scrolling with the page and getting
+  // clipped near the taskbar instead of staying pinned full-screen).
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
         id="wall-of-fame-modal"
@@ -628,6 +635,7 @@ export const WallOfFameModal: React.FC<WallOfFameModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

@@ -267,19 +267,55 @@ function CafeRadioControl({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const supabase = useMemo(() => createClient(), [])
 
+  // Uploads go straight from the browser to Supabase Storage using a
+  // short-lived signed URL, instead of through this Next.js route as a
+  // multipart body. The old approach hit the hosting platform's request
+  // body-size limit (a 413, before our own 20MB check ever ran) for any
+  // mp3 that wasn't tiny — the plain-text "Request Entity Too Large" error
+  // body it returned then failed `res.json()` on the client. This way the
+  // only JSON round-trips with our server are the tiny "give me a signed
+  // URL" and "here's the path, finalize now_playing" calls; the file bytes
+  // themselves never touch our server or its body-size limit.
   const handleFileChosen = async (file: File) => {
     setIsUploading(true)
     setError(null)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch(`/api/admin/chat-cafe/tables/${tableId}/now-playing`, {
+      if (!file.type.startsWith('audio/')) {
+        throw new Error('File must be an audio file (mp3)')
+      }
+      const MAX_BYTES = 20 * 1024 * 1024 // matches the cafe-music bucket's file_size_limit
+      if (file.size > MAX_BYTES) {
+        throw new Error('File is too large — 20MB max')
+      }
+
+      // 1. Ask our server for a signed Supabase Storage upload URL.
+      const signRes = await fetch(`/api/admin/chat-cafe/tables/${tableId}/now-playing/sign-upload`, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName: file.name, contentType: file.type || 'audio/mpeg' }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Upload failed')
+      const signData = await signRes.json()
+      if (!signRes.ok) throw new Error(signData.error || 'Could not prepare upload')
+
+      // 2. Upload the mp3 bytes directly to Supabase Storage from the browser.
+      const { error: uploadError } = await supabase.storage
+        .from('cafe-music')
+        .uploadToSignedUrl(signData.path, signData.token, file, {
+          contentType: file.type || 'audio/mpeg',
+        })
+      if (uploadError) throw new Error(uploadError.message)
+
+      // 3. Tell our server the upload is done so it can set now_playing.
+      const finalizeRes = await fetch(`/api/admin/chat-cafe/tables/${tableId}/now-playing`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: signData.path, title: file.name.replace(/\.[^/.]+$/, '') }),
+      })
+      const finalizeData = await finalizeRes.json()
+      if (!finalizeRes.ok) throw new Error(finalizeData.error || 'Upload failed')
+
       onChanged()
     } catch (err: any) {
       setError(err.message || 'Upload failed')

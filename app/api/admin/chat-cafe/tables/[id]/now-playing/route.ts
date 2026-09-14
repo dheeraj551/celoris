@@ -1,51 +1,42 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseClientForServer } from '@/lib/supabase-client';
 
-// Admin-only: the shared "café radio" for one table. POST uploads an mp3
-// and makes it the track playing for everyone currently at this table;
-// DELETE stops it. Every listener's client computes its own seek offset
-// from `now_playing.started_at`, so this route only has to persist that
-// one row — the sync-on-join logic lives entirely client-side in
+// Admin-only: the shared "café radio" for one table. POST finalizes an mp3
+// upload (already sent straight to Supabase Storage by the client via the
+// signed URL from ./sign-upload — see that route) and makes it the track
+// playing for everyone currently at this table; DELETE stops it. Every
+// listener's client computes its own seek offset from
+// `now_playing.started_at`, so this route only has to persist that one row
+// — the sync-on-join logic lives entirely client-side in
 // RetroArcadeCabinetWrapper.
+//
+// This used to accept the mp3 itself as multipart form data, uploading it
+// to Supabase from inside this handler. That meant the file's bytes had to
+// pass through the hosting platform's own request-body-size limit before
+// this code ever ran, which rejected anything but the smallest mp3s with a
+// plain-text 413 the client's res.json() then choked on. Now the browser
+// uploads directly to Supabase Storage and this route only ever receives a
+// small JSON payload (the resulting storage path + a title).
 export const dynamic = 'force-dynamic';
-
-const MAX_BYTES = 20 * 1024 * 1024; // 20MB, matches the cafe-music bucket's file_size_limit
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: tableId } = await params;
-    const formData = await request.formData();
-    const file = formData.get('file');
-    const titleField = formData.get('title');
+    const body = await request.json().catch(() => null);
+    const path = typeof body?.path === 'string' ? body.path : null;
+    const titleField = typeof body?.title === 'string' ? body.title : '';
 
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'An mp3 file is required' }, { status: 400 });
-    }
-    if (!file.type.startsWith('audio/')) {
-      return NextResponse.json({ error: 'File must be an audio file (mp3)' }, { status: 400 });
-    }
-    if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: 'File is too large — 20MB max' }, { status: 400 });
+    if (!path) {
+      return NextResponse.json({ error: 'Missing uploaded file path' }, { status: 400 });
     }
 
     const admin = createSupabaseClientForServer();
 
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80);
-    const storagePath = `${tableId}/${Date.now()}-${safeName}`;
-    const bytes = new Uint8Array(await file.arrayBuffer());
+    const { data: publicUrlData } = admin.storage.from('cafe-music').getPublicUrl(path);
 
-    const { error: uploadError } = await admin.storage
-      .from('cafe-music')
-      .upload(storagePath, bytes, { contentType: file.type || 'audio/mpeg', upsert: false });
-
-    if (uploadError) throw new Error(uploadError.message);
-
-    const { data: publicUrlData } = admin.storage.from('cafe-music').getPublicUrl(storagePath);
-
-    const title =
-      typeof titleField === 'string' && titleField.trim()
-        ? titleField.trim().slice(0, 80)
-        : file.name.replace(/\.[^/.]+$/, '').slice(0, 80);
+    const title = titleField.trim()
+      ? titleField.trim().slice(0, 80)
+      : (path.split('/').pop() || 'Untitled Track').replace(/\.[^/.]+$/, '').slice(0, 80);
 
     const nowPlaying = {
       url: publicUrlData.publicUrl,
