@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coffee, ChevronRight, Compass, Shield, Sparkles } from 'lucide-react';
+import { Coffee, ChevronRight, Shield, Sparkles } from 'lucide-react';
 import { Room } from './types';
 
 interface LandingHeroProps {
@@ -10,9 +10,6 @@ interface LandingHeroProps {
 }
 
 export default function LandingHero({ onEnterCafe, onSeeOnline, activeRooms, onJoinRoom }: LandingHeroProps) {
-  // Let's filter some representative rooms for the preview
-  const previewRooms = activeRooms.slice(0, 3);
-
   const stats = [
     { label: 'Skill Learners', value: '12,400+' },
     { label: 'Indian Courses', value: '180+' },
@@ -81,53 +78,6 @@ export default function LandingHero({ onEnterCafe, onSeeOnline, activeRooms, onJ
               <span className="text-xs text-gray-500 uppercase tracking-wider block mt-1">{stat.label}</span>
             </div>
           ))}
-        </div>
-
-        {/* Live Preview Widget */}
-        <div className="max-w-3xl mx-auto text-left">
-          <div className="flex items-center justify-between mb-4 px-2">
-            <div className="flex items-center gap-2">
-              <Compass className="w-4 h-4 text-emerald-400 animate-spin-slow" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-emerald-500">Live Lounge Preview</h3>
-            </div>
-            <span className="text-xs text-gray-500">Click Join to jump straight into conversation</span>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {previewRooms.map((room) => (
-              <div 
-                key={room.id}
-                className="group relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#111] to-[#0d0d0d] border border-emerald-950/40 p-5 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-[0_10px_25px_-10px_rgba(16,185,129,0.15)] flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold uppercase">
-                      {room.category}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                      <span className="text-[11px] font-mono text-emerald-400 font-bold">{room.onlineCount} online</span>
-                    </div>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors mb-1 line-clamp-1">
-                    {room.name}
-                  </h4>
-                  <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed mb-4">
-                    {room.description}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => onJoinRoom(room.id)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-950/40 text-emerald-400 hover:bg-emerald-500 hover:text-[#0a0a0a] border border-emerald-500/20 font-bold text-xs transition-all duration-200"
-                >
-                  <span>Quick Join</span>
-                  <ChevronRight className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>

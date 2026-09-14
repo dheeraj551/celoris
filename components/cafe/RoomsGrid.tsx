@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Room } from './types';
-import { Users, Lock, Sparkles, Plus, Search, MessageSquare, Flame, Trash2, GraduationCap, ArrowUpRight } from 'lucide-react';
+import { Users, Lock, Sparkles, Plus, MessageSquare, Flame, Trash2, GraduationCap, ArrowUpRight } from 'lucide-react';
 
 interface RoomsGridProps {
   rooms: Room[];
@@ -9,8 +9,6 @@ interface RoomsGridProps {
   currentUser?: any;
   onDeleteRoom?: (roomId: string) => void;
 }
-
-type FilterCategory = 'all' | 'study' | 'course' | 'mixer' | 'night' | 'onboarding';
 
 // A lookup instead of the old ternary chain — that chain had no 'classroom'
 // case, so every classroom-category room (the 3D Aula rooms) silently fell
@@ -26,61 +24,10 @@ const CATEGORY_LABELS: Record<Room['category'], string> = {
 };
 
 export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser, onDeleteRoom }: RoomsGridProps) {
-  const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const categories: { id: FilterCategory; label: string }[] = [
-    { id: 'all', label: 'All Rooms' },
-    { id: 'study', label: 'Study Tables' },
-    { id: 'course', label: 'Course Lounges' },
-    { id: 'mixer', label: 'Open Mixers' },
-    { id: 'night', label: 'Night Owls' },
-    { id: 'onboarding', label: 'Onboarding Hub' },
-  ];
-
-  const filteredRooms = rooms.filter((room) => {
-    const matchesCategory = selectedCategory === 'all' || room.category === selectedCategory;
-    const matchesSearch = room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          room.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          room.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredRooms = rooms;
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0d0d0d]/80 backdrop-blur-md p-4 rounded-2xl border border-emerald-950/30 sticky top-0 z-30">
-        {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search rooms, courses, or skills (e.g. Figma, trading)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/30 transition-all"
-          />
-        </div>
-
-        {/* Categories filters for horizontal scroll on mobile */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none max-w-full">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`
-                px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer
-                ${selectedCategory === cat.id
-                  ? 'bg-emerald-500 text-[#0a0a0a] shadow-[0_4px_12px_rgba(16,185,129,0.2)]'
-                  : 'bg-[#121212] hover:bg-[#1a1a1a] text-gray-400 border border-emerald-950/20'}
-              `}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Grid count and quick stats */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
@@ -264,13 +211,7 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
         </div>
       ) : (
         <div className="text-center py-16 bg-[#0f0f0f] border border-emerald-950/20 rounded-2xl">
-          <p className="text-gray-400 text-sm mb-2">No active tables match your search or filter.</p>
-          <button
-            onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}
-            className="text-xs font-bold text-emerald-400 hover:underline"
-          >
-            Clear all filters
-          </button>
+          <p className="text-gray-400 text-sm">No active student tables right now — check back soon.</p>
         </div>
       )}
     </div>

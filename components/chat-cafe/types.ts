@@ -102,6 +102,15 @@ export interface CafeTable {
   slowModeSeconds: number;
   activeTopic?: DiscussionTopic;
   isLocked?: boolean;
+  // The shared "café radio" — one staff-picked mp3 playing for everyone
+  // currently at this table. startedAt (ms epoch) lets every listener
+  // compute their own seek offset so newcomers join mid-song in sync.
+  // Undefined/null when nothing is playing.
+  nowPlaying?: {
+    url: string;
+    title: string;
+    startedAt: number;
+  } | null;
 }
 
 export interface DiscussionTopic {

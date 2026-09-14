@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
 
 // Admin-only café room management — list + create.
 //
@@ -18,16 +18,39 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const admin = createSupabaseClientForServer()
+    let data = null
+    let error = null
 
-    const { data, error } = await admin
-      .from('cafe_classrooms')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      const admin = createSupabaseClientForServer()
+      const res = await admin
+        .from('cafe_classrooms')
+        .select('*')
+        .order('created_at', { ascending: false })
+      data = res.data
+      error = res.error
+    } catch (e: any) {
+      error = e
+    }
+
+    // Resilient fallback to browser/anon client if service-role key is invalid/unavailable
+    if (error) {
+      try {
+        const fallback = createClientForBrowser()
+        const res = await fallback
+          .from('cafe_classrooms')
+          .select('*')
+          .order('created_at', { ascending: false })
+        if (!res.error && res.data) {
+          data = res.data
+          error = null
+        }
+      } catch (_) {}
+    }
 
     if (error) {
       console.error('Admin cafe rooms GET error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: error.message || 'Failed to fetch rooms' }, { status: 500 })
     }
 
     return NextResponse.json({ rooms: data || [] })

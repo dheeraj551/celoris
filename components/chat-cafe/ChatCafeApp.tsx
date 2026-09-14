@@ -329,6 +329,7 @@ export default function ChatCafeApp() {
             atmosphere: row.atmosphere,
             slowModeSeconds: row.slow_mode_seconds,
             isLocked: row.is_locked,
+            nowPlaying: row.now_playing || null,
             activeTopic: row.active_topic
               ? {
                   id: row.active_topic.id,
@@ -368,7 +369,13 @@ export default function ChatCafeApp() {
         setTables((prev) =>
           prev.map((t) =>
             t.id === row.id
-              ? { ...t, slowModeSeconds: row.slow_mode_seconds, isLocked: row.is_locked, activeTopic }
+              ? {
+                  ...t,
+                  slowModeSeconds: row.slow_mode_seconds,
+                  isLocked: row.is_locked,
+                  nowPlaying: row.now_playing || null,
+                  activeTopic,
+                }
               : t
           )
         );
@@ -1318,6 +1325,7 @@ export default function ChatCafeApp() {
       ambientAudioEnabled={ambientAudioEnabled}
       onToggleAmbientAudio={handleToggleAmbientAudio}
       onOpenWallOfFame={() => setIsWallOfFameOpen(true)}
+      nowPlaying={activeTable?.nowPlaying}
     >
       {notificationBanner && (
         <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded bg-amber-950/95 border-2 border-amber-400 text-amber-200 text-xs font-pixel shadow-2xl flex items-center gap-2 animate-bounce">

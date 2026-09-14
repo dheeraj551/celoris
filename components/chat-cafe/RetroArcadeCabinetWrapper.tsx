@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Gamepad2,
-  Tv,
   Coins,
   Volume2,
   VolumeX,
   Sparkles,
   Maximize2,
-  Monitor,
   Music,
 } from 'lucide-react';
 import { RetroViewMode } from './types';
 import { cafeAudio } from './utils/cafeAudio';
+
+// The shared "café radio" — one track, staff-picked, playing for everyone
+// currently in this table at (approximately) the same position. startedAt
+// is a server timestamp (ms epoch); every listener computes their own seek
+// offset from it on load, so a newcomer joins mid-song in sync rather than
+// starting the track over from zero.
+export interface NowPlayingTrack {
+  url: string;
+  title: string;
+  startedAt: number;
+}
 
 interface RetroArcadeCabinetWrapperProps {
   children: React.ReactNode;
@@ -26,6 +35,7 @@ interface RetroArcadeCabinetWrapperProps {
   ambientAudioEnabled: boolean;
   onToggleAmbientAudio: () => void;
   onOpenWallOfFame?: () => void;
+  nowPlaying?: NowPlayingTrack | null;
 }
 
 export function RetroArcadeCabinetWrapper({
@@ -41,6 +51,7 @@ export function RetroArcadeCabinetWrapper({
   ambientAudioEnabled,
   onToggleAmbientAudio,
   onOpenWallOfFame,
+  nowPlaying,
 }: RetroArcadeCabinetWrapperProps) {
   const [coinAnim, setCoinAnim] = useState(false);
 
@@ -50,19 +61,156 @@ export function RetroArcadeCabinetWrapper({
     setTimeout(() => setCoinAnim(false), 600);
   };
 
+  // -----------------------------------------------------------------------
+  // CAFÉ RADIO — a shared, staff-picked mp3 that plays for everyone at this
+  // table, with the room's ambient lighting pulsing in sync to its real
+  // frequency data (bass drives the glow, treble drives the equalizer
+  // bars). Built on the Web Audio API's AnalyserNode, so it only works for
+  // an actual audio file we can decode locally — not something possible
+  // with an embedded YouTube player.
+  // -----------------------------------------------------------------------
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const glowRef = useRef<HTMLDivElement | null>(null);
+  const barRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [needsPlayGesture, setNeedsPlayGesture] = useState(false);
+  const [radioMuted, setRadioMuted] = useState(false);
+
+  // Lazily create the AudioContext + analyser graph the first time a track
+  // plays (browsers require it to happen after a user gesture on some
+  // platforms, and a MediaElementAudioSourceNode can only ever be attached
+  // to a given <audio> element once).
+  const ensureAudioGraph = useCallback(() => {
+    if (!audioElRef.current || sourceNodeRef.current) return;
+    try {
+      const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx: AudioContext = audioCtxRef.current || new AudioContextCtor();
+      audioCtxRef.current = ctx;
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 128;
+      analyser.smoothingTimeConstant = 0.75;
+      const source = ctx.createMediaElementSource(audioElRef.current);
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+      analyserRef.current = analyser;
+      sourceNodeRef.current = source;
+    } catch (e) {
+      // Web Audio unavailable (very old browser) — the track still plays
+      // via the plain <audio> element, it just won't drive the lighting.
+      console.warn('Café radio: audio-reactive lighting unavailable', e);
+    }
+  }, []);
+
+  // Load/seek/play whenever the shared track changes.
+  useEffect(() => {
+    const audioEl = audioElRef.current;
+    if (!audioEl) return;
+
+    if (!nowPlaying) {
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+      return;
+    }
+
+    setNeedsPlayGesture(false);
+    audioEl.loop = true;
+    audioEl.muted = radioMuted;
+    if (audioEl.src !== nowPlaying.url) {
+      audioEl.src = nowPlaying.url;
+    }
+
+    const syncAndPlay = () => {
+      const elapsedSec = (Date.now() - nowPlaying.startedAt) / 1000;
+      const duration = audioEl.duration;
+      const offset = duration && isFinite(duration) && duration > 0 ? elapsedSec % duration : 0;
+      if (offset >= 0 && isFinite(offset)) audioEl.currentTime = offset;
+      ensureAudioGraph();
+      audioCtxRef.current?.resume().catch(() => {});
+      audioEl.play().catch(() => setNeedsPlayGesture(true));
+    };
+
+    if (audioEl.readyState >= 1) {
+      syncAndPlay();
+    } else {
+      audioEl.addEventListener('loadedmetadata', syncAndPlay, { once: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nowPlaying?.url, nowPlaying?.startedAt]);
+
+  // Keep the personal mute toggle in sync without restarting the track.
+  useEffect(() => {
+    if (audioElRef.current) audioElRef.current.muted = radioMuted;
+  }, [radioMuted]);
+
+  // Animation loop: read live frequency data and push it straight into the
+  // DOM via refs (not React state) so it can run every frame without
+  // triggering re-renders.
+  useEffect(() => {
+    const tick = () => {
+      const analyser = analyserRef.current;
+      if (analyser && nowPlaying) {
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(data);
+        const bassEnd = Math.max(1, Math.floor(data.length * 0.2));
+        let bassSum = 0;
+        for (let i = 0; i < bassEnd; i++) bassSum += data[i];
+        const bass = bassSum / bassEnd / 255; // 0..1
+
+        if (glowRef.current) {
+          glowRef.current.style.opacity = String(0.15 + bass * 0.55);
+          glowRef.current.style.transform = `scale(${1 + bass * 0.12})`;
+        }
+        const barCount = barRefs.current.length;
+        for (let i = 0; i < barCount; i++) {
+          const bin = Math.floor((i / barCount) * data.length);
+          const level = data[bin] / 255;
+          const bar = barRefs.current[i];
+          if (bar) bar.style.height = `${3 + level * 11}px`;
+        }
+      } else {
+        if (glowRef.current) glowRef.current.style.opacity = '0';
+        barRefs.current.forEach((bar) => {
+          if (bar) bar.style.height = '3px';
+        });
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [nowPlaying]);
+
   return (
     <div className="relative w-full flex flex-col bg-black overflow-hidden select-none rounded-2xl border border-white/10 shadow-2xl">
       {/* 1. BACKGROUND: 1990s RETRO ARCADE ROOM WALLPAPER */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 pointer-events-none"
         style={{
-          backgroundImage: `url(/chat-cafe/retro-arcade-background.jpg)`,
+          backgroundImage: `url(/chat-cafe/cafebg.png)`,
           filter: viewMode === 'arcade_cabinet' ? 'brightness(0.35) blur(3px)' : 'brightness(0.65)',
         }}
       />
 
       {/* Ambient Vignette & Neon Glow Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/60 pointer-events-none" />
+
+      {/* Café Radio: room lighting that pulses with the shared track's bass,
+          driven by direct style updates in the rAF loop above (opacity 0
+          when nothing is playing). */}
+      <div
+        ref={glowRef}
+        className="absolute inset-0 pointer-events-none z-[5] transition-none"
+        style={{
+          opacity: 0,
+          background:
+            'radial-gradient(ellipse at 50% 20%, rgba(245,158,11,0.5) 0%, rgba(168,85,247,0.25) 45%, transparent 75%)',
+        }}
+      />
+      <audio ref={audioElRef} crossOrigin="anonymous" />
 
       {/* Global CRT Scanlines if toggled */}
       {crtScanlines && (
@@ -126,48 +274,51 @@ export function RetroArcadeCabinetWrapper({
           </button>
         </div>
 
-        {/* Right: CRT Scanlines & Ambient Audio toggles */}
+        {/* Right: Café Radio */}
         <div className="flex items-center gap-2">
-          {/* CRT Monitor Toggle */}
-          <button
-            onClick={onToggleCrtScanlines}
-            className={`p-2 rounded-lg border text-xs flex items-center gap-1 cursor-pointer transition-all ${
-              crtScanlines
-                ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.4)]'
-                : 'bg-neutral-900 text-stone-400 border-neutral-700 hover:text-white'
-            }`}
-            title="Toggle CRT Cathode-Ray Tube scanlines effect"
-          >
-            <Tv className="w-3.5 h-3.5" />
-            <span className="text-[10px] hidden lg:inline font-mono">CRT</span>
-          </button>
-
-          {/* Ambient Café / Arcade Music Toggle */}
-          <button
-            onClick={onToggleAmbientAudio}
-            className={`p-2 rounded-lg border text-xs flex items-center gap-1 cursor-pointer transition-all ${
-              ambientAudioEnabled
-                ? 'bg-amber-950/80 text-amber-300 border-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]'
-                : 'bg-neutral-900 text-stone-400 border-neutral-700 hover:text-white'
-            }`}
-            title="Toggle Lo-fi Ambient Café Chords & Rain"
-          >
-            {ambientAudioEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-          </button>
-
-          {/* View Mode Toggle */}
-          <button
-            onClick={() =>
-              onChangeViewMode(viewMode === 'arcade_cabinet' ? 'retro_window' : 'arcade_cabinet')
-            }
-            className="p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-stone-300 hover:text-white text-xs flex items-center gap-1"
-            title="Switch View Mode: Arcade Cabinet vs Floating Retro Window"
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span className="text-[10px] hidden xl:inline font-mono">
-              {viewMode === 'arcade_cabinet' ? 'Cabinet' : 'Desktop'}
-            </span>
-          </button>
+          {nowPlaying ? (
+            <button
+              onClick={() => setRadioMuted((m) => !m)}
+              className={`px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-2 cursor-pointer transition-all max-w-[160px] sm:max-w-[220px] ${
+                radioMuted
+                  ? 'bg-neutral-900 text-stone-400 border-neutral-700 hover:text-white'
+                  : 'bg-amber-950/80 text-amber-300 border-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]'
+              }`}
+              title={
+                needsPlayGesture
+                  ? 'Click to start the café radio (your browser blocked autoplay)'
+                  : radioMuted
+                  ? 'Café radio muted for you — click to unmute'
+                  : 'Café radio playing for the whole table — click to mute for yourself'
+              }
+            >
+              {radioMuted ? <VolumeX className="w-3.5 h-3.5 flex-shrink-0" /> : <Music className="w-3.5 h-3.5 flex-shrink-0" />}
+              {!radioMuted && (
+                <span className="flex items-end gap-[2px] h-[14px] flex-shrink-0">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      ref={(el) => {
+                        barRefs.current[i] = el;
+                      }}
+                      className="w-[2.5px] bg-amber-300 rounded-full"
+                      style={{ height: '3px' }}
+                    />
+                  ))}
+                </span>
+              )}
+              <span className="hidden sm:inline truncate font-mono text-[10px]">
+                {needsPlayGesture ? 'Tap to play radio' : nowPlaying.title}
+              </span>
+            </button>
+          ) : (
+            <div
+              className="p-2 rounded-lg border text-xs flex items-center gap-1 bg-neutral-900 text-stone-500 border-neutral-800"
+              title="No café radio playing right now — staff can start one from the Staff Console"
+            >
+              <VolumeX className="w-3.5 h-3.5" />
+            </div>
+          )}
         </div>
       </header>
 
