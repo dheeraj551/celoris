@@ -59,6 +59,8 @@ interface RetroYahooChatWindowProps {
   guestbookCount?: number;
   typingUsers?: string[];
   onTyping?: () => void;
+  isMinimized: boolean;
+  onToggleMinimize: () => void;
 }
 
 // Retro name color palette (mimicking late 90s/early 2000s chatrooms)
@@ -109,12 +111,13 @@ export function RetroYahooChatWindow({
   guestbookCount,
   typingUsers = [],
   onTyping,
+  isMinimized,
+  onToggleMinimize,
 }: RetroYahooChatWindowProps) {
   const [inputText, setInputText] = useState('');
   const [selectedPatron, setSelectedPatron] = useState<UserProfile | null>(null);
   const [whisperRecipient, setWhisperRecipient] = useState<UserProfile | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showEmoticonPicker, setShowEmoticonPicker] = useState(false);
   const [showFontMenu, setShowFontMenu] = useState(false);
@@ -195,18 +198,15 @@ export function RetroYahooChatWindow({
     }
   };
 
+  // Minimizing is owned by the parent (ChatCafeApp), which also drives the
+  // "Celoris Cafe:1 -- Chat" taskbar button in RetroArcadeCabinetWrapper —
+  // that button is now the one and only way back once minimized, so this
+  // window just renders nothing while minimized instead of also trying to
+  // be its own restore control. It used to keep a second, purely local
+  // "Minimized" pill whose state the taskbar button had no way to reach,
+  // which is why restoring used to require a full page reload.
   if (isMinimized) {
-    return (
-      <div className="fixed bottom-4 left-4 z-50">
-        <button
-          onClick={() => setIsMinimized(false)}
-          className="retro-button px-4 py-2 flex items-center gap-2 font-bold text-xs shadow-xl cursor-pointer"
-        >
-          <RetroSmiley type="happy" size={16} />
-          <span>{activeTable.name}:1 -- Chat (Minimized)</span>
-        </button>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -241,7 +241,7 @@ export function RetroYahooChatWindow({
         <div className="flex items-center gap-1 flex-shrink-0">
           {/* Minimize */}
           <button
-            onClick={() => setIsMinimized(true)}
+            onClick={onToggleMinimize}
             className="w-4 h-4 bg-[#ece9d8] hover:bg-[#f5f2e3] border-t border-l border-white border-r border-b border-[#404040] text-black flex items-center justify-center text-[9px] font-bold active:translate-y-px"
             title="Minimize"
           >

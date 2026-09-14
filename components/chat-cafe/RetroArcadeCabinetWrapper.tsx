@@ -36,6 +36,8 @@ interface RetroArcadeCabinetWrapperProps {
   onToggleAmbientAudio: () => void;
   onOpenWallOfFame?: () => void;
   nowPlaying?: NowPlayingTrack | null;
+  isChatMinimized: boolean;
+  onToggleChatMinimized: () => void;
 }
 
 export function RetroArcadeCabinetWrapper({
@@ -52,6 +54,8 @@ export function RetroArcadeCabinetWrapper({
   onToggleAmbientAudio,
   onOpenWallOfFame,
   nowPlaying,
+  isChatMinimized,
+  onToggleChatMinimized,
 }: RetroArcadeCabinetWrapperProps) {
   const [coinAnim, setCoinAnim] = useState(false);
 
@@ -385,11 +389,23 @@ export function RetroArcadeCabinetWrapper({
             <span className="font-bold text-green-900">Start</span>
           </button>
 
-          {/* Running Task button */}
-          <div className="px-3 py-1 bg-white border-t border-l border-[#808080] border-r border-b border-white text-xs font-bold flex items-center gap-1.5 shadow-inner">
+          {/* Running Task button — clicking it toggles the chat window
+              between minimized and restored. This used to be a plain,
+              non-interactive div with no onClick at all, so minimizing the
+              chat window (via its own titlebar button) had no way back
+              except reloading the whole room. */}
+          <button
+            onClick={onToggleChatMinimized}
+            className={`px-3 py-1 text-xs font-bold flex items-center gap-1.5 cursor-pointer ${
+              isChatMinimized
+                ? 'retro-button text-gray-800'
+                : 'bg-white border-t border-l border-[#808080] border-r border-b border-white shadow-inner'
+            }`}
+            title={isChatMinimized ? 'Restore chat window' : 'Minimize chat window'}
+          >
             <span className="text-sm">💬</span>
             <span className="truncate max-w-[140px] sm:max-w-xs">Celoris Cafe:1 -- Chat</span>
-          </div>
+          </button>
 
           {/* Quick Arcade Game Task Button */}
           <button

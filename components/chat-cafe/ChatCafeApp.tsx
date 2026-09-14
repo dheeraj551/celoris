@@ -215,6 +215,11 @@ export default function ChatCafeApp() {
   const [soundFxEnabled, setSoundFxEnabled] = useState(true);
   const [arcadeCredits, setArcadeCredits] = useState(4);
   const [isArcadeGameOpen, setIsArcadeGameOpen] = useState(false);
+  // Owned here (not inside RetroYahooChatWindow) so the arcade cabinet's
+  // taskbar button — a sibling component — can restore the window after
+  // minimizing it. Previously each side tracked this independently and had
+  // no way to talk to the other, so restoring after minimize didn't work.
+  const [isChatMinimized, setIsChatMinimized] = useState(false);
   const [ambientAudioEnabled, setAmbientAudioEnabled] = useState(false);
 
   const presenceChannelRef = useRef<any>(null);
@@ -1326,6 +1331,8 @@ export default function ChatCafeApp() {
       onToggleAmbientAudio={handleToggleAmbientAudio}
       onOpenWallOfFame={() => setIsWallOfFameOpen(true)}
       nowPlaying={activeTable?.nowPlaying}
+      isChatMinimized={isChatMinimized}
+      onToggleChatMinimized={() => setIsChatMinimized((v) => !v)}
     >
       {notificationBanner && (
         <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded bg-amber-950/95 border-2 border-amber-400 text-amber-200 text-xs font-pixel shadow-2xl flex items-center gap-2 animate-bounce">
@@ -1367,6 +1374,8 @@ export default function ChatCafeApp() {
             guestbookCount={guestbookEntries.length}
             typingUsers={Object.values(typingUsers)}
             onTyping={handleTyping}
+            isMinimized={isChatMinimized}
+            onToggleMinimize={() => setIsChatMinimized((v) => !v)}
           />
         </div>
 

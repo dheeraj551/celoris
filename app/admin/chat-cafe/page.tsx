@@ -36,6 +36,7 @@ interface ChatCafeTable {
   slow_mode_seconds: number
   is_locked: boolean
   active_topic: { title: string } | null
+  now_playing?: { url: string; title: string; startedAt: number } | null
 }
 
 interface ChatCafeReport {
@@ -239,6 +240,103 @@ function SendAsCharacterRow({ characterId, characterName, tableId }: { character
         <Button size="sm" onClick={submit} disabled={sending || !text.trim()}>
           <Send className="w-3.5 h-3.5" />
         </Button>
+      </div>
+    </div>
+  )
+}
+
+// Café Radio — upload an mp3 to make it the shared track playing for
+// everyone currently seated at this table, or stop whatever's playing.
+// Lives here on the dashboard (moved from the live room's Staff Console —
+// it was easy to miss buried in there, and staff already manage every
+// other per-table setting from this page) rather than duplicated in both
+// places. Talks directly to the now-playing API route; the actual "now
+// playing" state lives on the table row itself, so once the upload
+// succeeds the realtime subscription in ChatCafeApp picks it up for every
+// listener in the room. `onChanged` just re-pulls the overview so this
+// dashboard's own view of `now_playing` stays in sync too.
+function CafeRadioControl({
+  tableId,
+  nowPlaying,
+  onChanged,
+}: {
+  tableId: string
+  nowPlaying?: { url: string; title: string; startedAt: number } | null
+  onChanged: () => void
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleFileChosen = async (file: File) => {
+    setIsUploading(true)
+    setError(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch(`/api/admin/chat-cafe/tables/${tableId}/now-playing`, {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Upload failed')
+      onChanged()
+    } catch (err: any) {
+      setError(err.message || 'Upload failed')
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleStop = async () => {
+    setError(null)
+    try {
+      const res = await fetch(`/api/admin/chat-cafe/tables/${tableId}/now-playing`, { method: 'DELETE' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to stop radio')
+      onChanged()
+    } catch (err: any) {
+      setError(err.message || 'Failed to stop radio')
+    }
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 mt-2 border-t border-white/5">
+      <div className="min-w-0">
+        <span className="text-xs text-gray-400 flex items-center gap-1.5">
+          <Volume2 className="w-3.5 h-3.5 text-amber-400" />
+          <span>Café Radio{nowPlaying ? ':' : ' — nothing playing'}</span>
+        </span>
+        {nowPlaying && <p className="text-[11px] text-amber-300/80 truncate mt-0.5">♪ {nowPlaying.title}</p>}
+        {error && <p className="text-[11px] text-rose-400 mt-0.5">{error}</p>}
+      </div>
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        {nowPlaying && (
+          <button
+            onClick={handleStop}
+            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/50 hover:bg-rose-900/60 transition-all"
+          >
+            Stop
+          </button>
+        )}
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-900/50 text-amber-200 border border-amber-700/50 hover:bg-amber-800/60 transition-all disabled:opacity-50"
+        >
+          {isUploading ? 'Uploading…' : nowPlaying ? 'Change track' : 'Play mp3'}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="audio/*"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) handleFileChosen(file)
+          }}
+        />
       </div>
     </div>
   )
@@ -498,31 +596,35 @@ export default function ChatCafeAdminPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {tables.map((t) => (
-              <div key={t.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-zinc-900 border border-white/5">
-                <div>
-                  <div className="font-semibold text-sm flex items-center gap-2">
-                    <span>{t.icon}</span>
-                    <span>{t.name}</span>
-                    {t.active_topic && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
-                        Active topic: {t.active_topic.title}
-                      </span>
-                    )}
+              <div key={t.id} className="p-3 rounded-xl bg-zinc-900 border border-white/5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <div className="font-semibold text-sm flex items-center gap-2">
+                      <span>{t.icon}</span>
+                      <span>{t.name}</span>
+                      {t.active_topic && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                          Active topic: {t.active_topic.title}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {[0, 5, 15, 30].map((sec) => (
+                      <button
+                        key={sec}
+                        onClick={() => handleSetSlowMode(t.id, sec)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                          t.slow_mode_seconds === sec ? 'bg-amber-600 text-white' : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'
+                        }`}
+                      >
+                        {sec === 0 ? 'Off' : `${sec}s`}
+                      </button>
+                    ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  {[0, 5, 15, 30].map((sec) => (
-                    <button
-                      key={sec}
-                      onClick={() => handleSetSlowMode(t.id, sec)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        t.slow_mode_seconds === sec ? 'bg-amber-600 text-white' : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'
-                      }`}
-                    >
-                      {sec === 0 ? 'Off' : `${sec}s`}
-                    </button>
-                  ))}
-                </div>
+
+                <CafeRadioControl tableId={t.id} nowPlaying={t.now_playing} onChanged={loadOverview} />
               </div>
             ))}
           </CardContent>
