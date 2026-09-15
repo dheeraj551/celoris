@@ -1,5 +1,17 @@
 import React from 'react';
-import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, HelpCircle, Settings, User, ChevronDown, Cloud, Download } from 'lucide-react';
+import Link from 'next/link';
+import { Undo, Redo, MousePointer2, Hand, Share, CircleCheck, HelpCircle, Settings, ChevronDown, Cloud, Download, LogOut, LogIn, BookOpen, GraduationCap, Tv, Briefcase, Plus, Wallet, User as UserIcon } from 'lucide-react';
+import { useAuth } from '@/components/providers/AuthProvider';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
   activeTool: 'pointer' | 'hand';
@@ -26,6 +38,17 @@ export default function Header({
   onDownload,
   isExporting
 }: HeaderProps) {
+  const { user, profile, loading, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#121212] shrink-0">
       <div className="flex items-center gap-4">
@@ -113,10 +136,95 @@ export default function Header({
         <button className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
           <Settings className="w-5 h-5" />
         </button>
-        <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center overflow-hidden border border-white/10 ml-2 relative">
-          <img src="https://picsum.photos/seed/user/32/32" alt="User" referrerPolicy="no-referrer" />
-          <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#121212]"></div>
-        </div>
+        {user && (
+          <div className="hidden sm:flex items-center gap-1.5 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full text-xs font-bold text-emerald-400 ml-1">
+            <Plus className="w-3 h-3" />
+            {profile?.wallet_balance?.toString() || '0'}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse ml-2" />
+        ) : user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 border border-white/10 overflow-hidden ml-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
+                    alt={profile?.full_name || 'User'}
+                  />
+                  <AvatarFallback className="bg-emerald-500 text-white text-[10px]">
+                    {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-[#0d0d0d] border-white/5 text-slate-200" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-bold text-white leading-none italic uppercase">
+                    {profile?.full_name || user.email?.split('@')[0]}
+                  </p>
+                  <p className="text-[10px] leading-none text-slate-500 font-medium">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                <Link href="/learn" className="flex items-center">
+                  <BookOpen className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-tight italic">Learn</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                <Link href="/teach" className="flex items-center">
+                  <GraduationCap className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-tight italic">Teach</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                <Link href="/celoris-tv" className="flex items-center">
+                  <Tv className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-tight italic">Celoris TV</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                <Link href="/job-center" className="flex items-center">
+                  <Briefcase className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-tight italic">Job Center</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                <Link href="/social/profile" className="flex items-center">
+                  <UserIcon className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-tight italic">Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem className="cursor-default focus:bg-transparent">
+                <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
+                <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-rose-500 focus:text-rose-400 focus:bg-rose-500/10">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span className="text-xs font-bold uppercase tracking-tight italic">Sign out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link href="/login">
+            <Button
+              size="sm"
+              className="h-8 px-3 gap-1.5 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-[10px] font-black uppercase tracking-widest rounded-full ml-2"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              Sign In
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   );

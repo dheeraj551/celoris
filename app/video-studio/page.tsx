@@ -443,8 +443,8 @@ export default function VideoStudio() {
     }
 
     return (
-        <DashboardShell>
-            <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-[#0e0e0e] text-gray-300 font-sans overflow-hidden">
+        <DashboardShell hideTopBar>
+            <div className="flex flex-col h-screen w-full bg-[#0e0e0e] text-gray-300 font-sans overflow-hidden">
                 <Header
                     activeTool={activeTool}
                     setActiveTool={setActiveTool}

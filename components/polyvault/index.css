@@ -1,0 +1,33 @@
+/* PolyVault — ported into the main Celoris Next.js app, which already
+   loads Tailwind globally, so the original `@import "tailwindcss";` is
+   dropped here. The original `.animate-fade-in` keyframe is also dropped
+   since the app's own tailwind.config.js already defines an `animate-fade-in`
+   utility class (a near-identical fade+slide effect) — keeping both would
+   have created two conflicting definitions of the same class name. */
+
+/* Custom minimal scrollbar for light white & green theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -5,7 +5,6 @@ import {
     Coffee,
     Video,
     Lightbulb,
-    UserCircle,
     BarChart3,
     UploadCloud,
     BookOpen,
@@ -22,7 +21,8 @@ import {
     X,
     Briefcase,
     Tv,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Box
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -40,7 +40,7 @@ const MENU_GROUPS = [
         title: "Creative Studio",
         items: [
             { name: "Video studio", icon: Video, href: "/video-studio" },
-            { name: "Celoris 3D", icon: UserCircle, href: "/celoris-3d" },
+            { name: "PolyVault", icon: Box, href: "/polyvault" },
             { name: "PhotoLite", icon: ImageIcon, href: "/photolite" },
         ]
     },

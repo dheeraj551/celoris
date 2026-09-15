@@ -1,0 +1,6 @@
+{
+  "name": "PolyVault - 3D Models & Assets Marketplace",
+  "description": "Next-generation 3D models and digital assets marketplace with interactive 3D WebGL viewport, texture and lighting inspection, high-performance search engine, user creator profiles, download manager, and coupon system for ultra-fast CDN speeds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

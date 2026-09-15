@@ -32,8 +32,8 @@ import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 import { createClient } from "@/lib/supabase-client";
 
 import { VideoStudioFeature } from './VideoStudioFeature';
-import { Celoris3DFeature } from './Celoris3DFeature';
 import { PhotoLiteFeature } from './PhotoLiteFeature';
+import { PolyVaultFeature } from './PolyVaultFeature';
 
 // Pixel fireworks that burst around the hero heading, plus the user's own
 // pixel-art city image used as a skyline banner beneath it.
@@ -885,7 +885,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                 </div>
                 <div className="flex flex-col lg:flex-row gap-8 w-full max-w-[1200px] items-stretch justify-center px-4">
                     <div className="flex-1 w-full flex justify-center">
-                        <Celoris3DFeature />
+                        <PolyVaultFeature />
                     </div>
                     <div className="flex-1 w-full flex justify-center">
                         <PhotoLiteFeature />
