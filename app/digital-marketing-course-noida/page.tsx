@@ -1,32 +1,24 @@
 "use client"
 
-import { useEffect } from "react"
-import { 
-    ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, BookOpen, Zap, 
-    Lightbulb, MapPin, Smartphone, MessageSquare, Phone, Globe, ShieldCheck, 
-    TrendingUp, BarChart3, Target, Megaphone, Share2, Mail, FileText, MousePointer2, Search 
+import {
+    ArrowLeft, Clock, Users, Star, Award, Play, CheckCircle, BookOpen, Zap,
+    Lightbulb, MapPin, Smartphone, MessageSquare, Phone, Globe, ShieldCheck,
+    TrendingUp, BarChart3, Target, Megaphone, Share2, Mail, FileText, MousePointer2, Search
 } from "lucide-react"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
+// Title and meta description for this route are set server-side in the
+// sibling layout.tsx now, so crawlers and link previews get them on the
+// initial HTML instead of waiting on a client-side effect. (Previously this
+// component overwrote them client-side after hydration, which meant a
+// crawler reading the server-rendered HTML saw the site-wide default
+// title/description instead of this page's own — removed in favor of
+// layout.tsx's export const metadata.)
+
 export default function DigitalMarketingCourseNoida() {
-    useEffect(() => {
-        document.title = "Digital Marketing Course in Noida | Celoris — Book Free Demo"
-
-        const metaDescription = document.querySelector('meta[name="description"]')
-        const descriptionText = "Join the best digital marketing course in Noida. Learn SEO, Google Ads, Meta Ads & more from certified trainers. Online & offline. Book a free demo today!"
-        if (metaDescription) {
-            metaDescription.setAttribute("content", descriptionText)
-        } else {
-            const meta = document.createElement("meta")
-            meta.name = "description"
-            meta.content = descriptionText
-            document.head.appendChild(meta)
-        }
-    }, [])
-
     const pageData = {
         title: "Digital Marketing Course in Noida",
         subtitle: "Learn SEO, Google Ads, Meta Ads, Social Media Marketing, Content Marketing, and Analytics from certified trainers with real campaign experience.",
@@ -185,7 +177,11 @@ export default function DigitalMarketingCourseNoida() {
             },
             {
                 question: "Is digital marketing a good career in 2026?",
-                answer: "Absolutely. There are 15,000+ digital marketing job openings in Delhi NCR at any given time. Skilled digital marketers — especially those who can run paid ads — are in high demand across IT companies, D2C brands, and agencies in Noida."
+                answer: "There's real, verifiable demand for it: Internshala alone was listing 986 open digital marketing roles across Delhi NCR as of mid-September 2026 — a number that moves daily, but a fair sense of the hiring activity in this specific market. Skilled digital marketers, especially those who can run paid ads, are in demand across IT companies, D2C brands, and agencies in Noida."
+            },
+            {
+                question: "What makes Celoris different from other digital marketing courses in Noida?",
+                answer: "Batches are capped at 5 students with real ad-spend campaign practice, transparent pricing with no hidden fees, and a home-visit option across Noida sectors — built around a deliberately different teaching approach rather than a copy of what every other course already offers."
             },
             {
                 question: "Do I need any technical background to learn digital marketing?",
@@ -385,7 +381,7 @@ export default function DigitalMarketingCourseNoida() {
                             </div>
                             <div className="p-6 rounded-[2rem] bg-emerald-500/5 border border-emerald-500/10 text-center">
                                 <p className="text-sm font-black text-emerald-400 uppercase italic tracking-widest">
-                                    All plans include: 10+ practice assignments, live ad campaign experience, Celoris completion certificate, and lifetime WhatsApp support.
+                                    All three tiers include the same core inclusions — 10+ practice assignments, live ad campaign experience, a completion certificate, and lifetime WhatsApp support. The price difference mainly buys you a smaller batch and more direct trainer time.
                                 </p>
                             </div>
                         </section>
@@ -496,44 +492,38 @@ export default function DigitalMarketingCourseNoida() {
                             </p>
                         </section>
 
-                        {/* Comparison Table */}
+                        {/* What Makes Celoris Different */}
                         <section className="space-y-8">
                             <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">
                                 <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20">
                                     <Share2 className="h-8 w-8 text-purple-500" />
                                 </div>
-                                Celoris vs Others in Noida
+                                What Makes Celoris Different in Noida?
                             </h2>
-                            <div className="overflow-x-auto">
-                                <table className="w-full border-collapse bg-[#0d1321]/40 rounded-[2.5rem] overflow-hidden">
-                                    <thead>
-                                        <tr className="border-b border-white/5">
-                                            <th className="p-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Feature</th>
-                                            <th className="p-6 text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest italic bg-emerald-500/5">Celoris</th>
-                                            <th className="p-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Local Institute</th>
-                                            <th className="p-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest italic">UrbanPro</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="text-sm font-bold italic uppercase tracking-tight">
-                                        {[
-                                            { feature: "Transparent Pricing", celoris: "✅ Yes", local: "❌ Hidden fees", urban: "❌ Coin system" },
-                                            { feature: "Live Campaign Practice", celoris: "✅ Yes", local: "⚠️ Limited", urban: "✅ Some tutors" },
-                                            { feature: "Home Visit Option", celoris: "✅ Yes", local: "❌ No", urban: "✅ Some tutors" },
-                                            { feature: "Batch Size", celoris: "✅ Max 5 / 1-on-1", local: "❌ 20-30 students", urban: "✅ 1-on-1" },
-                                            { feature: "Free Demo", celoris: "✅ Yes", local: "❌ Rarely", urban: "❌ No" },
-                                            { feature: "Lifetime Support", celoris: "✅ WhatsApp", local: "❌ No", urban: "❌ No" },
-                                            { feature: "Certificate", celoris: "✅ Yes", local: "✅ Yes", urban: "❌ No" },
-                                            { feature: "Real Trainer Experience", celoris: "✅ Verified", local: "⚠️ Varies", urban: "⚠️ Unverified" },
-                                        ].map((row, i) => (
-                                            <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                <td className="p-6 text-slate-300">{row.feature}</td>
-                                                <td className="p-6 text-center text-emerald-400 bg-emerald-500/5">{row.celoris}</td>
-                                                <td className="p-6 text-center text-slate-500">{row.local}</td>
-                                                <td className="p-6 text-center text-slate-500">{row.urban}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <p className="text-lg text-slate-400 leading-relaxed font-medium">
+                                Batches capped at 5 students with real client ad-spend behind the practice work, pricing published upfront with nothing added later, and a trainer who can come to you — that's the actual difference, not a claim about being better than any specific competitor.
+                            </p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[
+                                    { feature: "Transparent Pricing", value: "No hidden fees" },
+                                    { feature: "Live Campaign Practice", value: "Real ad spend" },
+                                    { feature: "Home Visit Option", value: "Across Noida sectors" },
+                                    { feature: "Batch Size", value: "Max 5 / 1-on-1" },
+                                    { feature: "Free Demo", value: "30 min, no cost" },
+                                    { feature: "Lifetime Support", value: "WhatsApp" },
+                                    { feature: "Certificate", value: "Included every tier" },
+                                    { feature: "Trainer Experience", value: "Verified, real campaigns" },
+                                ].map((row, i) => (
+                                    <div key={i} className="p-5 rounded-2xl bg-[#0d1321]/40 border border-white/5 text-center">
+                                        <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic mb-2">{row.feature}</div>
+                                        <div className="text-sm font-black text-emerald-400 uppercase italic tracking-tight">{row.value}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="p-8 rounded-[2.5rem] bg-emerald-500/5 border border-emerald-500/10">
+                                <p className="text-slate-300 italic font-medium leading-relaxed">
+                                    "In digital marketing, hundreds of people are already writing and teaching about the same thing. Copy the same approach as a bigger, already-successful business and you just end up in their shadow — the only way to actually get noticed is to build your own way of doing it, even if it's less conventional." <span className="text-emerald-400 not-italic font-black">— Dheeraj Kushwaha, Founder</span>
+                                </p>
                             </div>
                         </section>
 
