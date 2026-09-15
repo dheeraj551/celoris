@@ -72,6 +72,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({
             primaryColor={asset.primaryColor}
             accentColor={asset.accentColor}
             isHovered={isHovered}
+            thumbnailDataUrl={asset.thumbnailDataUrl}
           />
         </div>
 

@@ -7,9 +7,40 @@ interface MiniModelPreviewProps {
   primaryColor?: string;
   accentColor?: string;
   isHovered: boolean;
+  /** A real snapshot of the actual uploaded model, captured once at upload
+   *  time (see UploadModal.tsx). When present, the card shows this
+   *  lightweight static image instead of mounting a live Three.js scene —
+   *  shoppers see the real product on every card without the grid having to
+   *  load full (potentially huge) 3D files all at once. Falls back to the
+   *  procedural placeholder preview below when absent (no uploaded file, or
+   *  an unsupported format that couldn't be snapshotted). */
+  thumbnailDataUrl?: string;
 }
 
-export const MiniModelPreview: React.FC<MiniModelPreviewProps> = ({
+export const MiniModelPreview: React.FC<MiniModelPreviewProps> = (props) => {
+  if (props.thumbnailDataUrl) {
+    return <ThumbnailMiniPreview thumbnailDataUrl={props.thumbnailDataUrl} />;
+  }
+  return <ProceduralMiniPreview {...props} />;
+};
+
+/** Real-model snapshot thumbnail — a plain image, no WebGL, so it stays cheap
+ *  no matter how many cards are visible in the grid at once. */
+const ThumbnailMiniPreview: React.FC<{ thumbnailDataUrl: string }> = ({ thumbnailDataUrl }) => (
+  <div className="w-full h-full relative cursor-pointer overflow-hidden flex items-center justify-center pointer-events-auto">
+    <img
+      src={thumbnailDataUrl}
+      alt="3D model preview"
+      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+      draggable={false}
+    />
+  </div>
+);
+
+/** Procedural placeholder preview — the original live Three.js render, used
+ *  whenever there's no real uploaded model to show a snapshot of (the
+ *  seeded demo catalog, or an asset whose file couldn't be snapshotted). */
+const ProceduralMiniPreview: React.FC<Omit<MiniModelPreviewProps, 'thumbnailDataUrl'>> = ({
   generatorType,
   primaryColor = '#059669',
   accentColor = '#10b981',
@@ -81,7 +112,7 @@ export const MiniModelPreview: React.FC<MiniModelPreviewProps> = ({
       particlePositions[i + 1] = (Math.random() - 0.5) * 3;
       particlePositions[i + 2] = (Math.random() - 0.5) * 4;
     }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 2));
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
 
     const particleMat = new THREE.PointsMaterial({
       color: new THREE.Color(primaryColor),

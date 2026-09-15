@@ -44,7 +44,13 @@ export const CompareModal: React.FC<CompareDrawerProps> = ({
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-3 p-2 pl-3.5 bg-white border border-zinc-200/90 rounded-2xl shadow-xl backdrop-blur-md"
+        // Bottom-LEFT, not bottom-right: the site's SupportBotWidget lives at
+        // a fixed bottom-5 right-5 with a higher z-index ([60] vs this tray's
+        // 40), so anchoring both trays to the same corner let the chat bubble
+        // sit on top of this tray's buttons (including Clear), making them
+        // unclickable. Opposite corners avoids the collision entirely rather
+        // than trying to out-stack a z-index race.
+        className="fixed bottom-5 left-5 z-40 flex items-center gap-3 p-2 pl-3.5 bg-white border border-zinc-200/90 rounded-2xl shadow-xl backdrop-blur-md"
       >
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
@@ -74,6 +80,7 @@ export const CompareModal: React.FC<CompareDrawerProps> = ({
                   generatorType={asset.generatorType}
                   primaryColor={asset.primaryColor}
                   accentColor={asset.accentColor}
+                  thumbnailDataUrl={asset.thumbnailDataUrl}
                   isHovered={false}
                 />
               </div>
@@ -192,6 +199,7 @@ export const CompareModal: React.FC<CompareDrawerProps> = ({
                             generatorType={asset.generatorType}
                             primaryColor={asset.primaryColor}
                             accentColor={asset.accentColor}
+                            thumbnailDataUrl={asset.thumbnailDataUrl}
                             isHovered={true}
                           />
                           <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-white/90 text-emerald-800 border border-emerald-200 shadow-2xs">

@@ -54,14 +54,12 @@
   }
 }
 
-/* Premium Font Loading - Prevent FOIT */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap') format('woff2');
-}
+/* Outfit is loaded via next/font/google in app/layout.tsx (self-hosted,
+   applied via outfit.className on <body>) and via the @import above as a
+   fallback. A hand-written @font-face block used to live here pointing its
+   src at Google Fonts' CSS endpoint instead of an actual .woff2 file, which
+   made every page try (and fail) to parse a stylesheet as a font binary
+   ("OTS parsing error: invalid sfntVersion") — removed. */
 
 @layer base {
   * {
@@ -470,38 +468,6 @@ html {
 
 .animate-spin-slow {
   animation: spin 15s linear infinite;
-}
-
-/* Chat Café promo section — slow Ken Burns pan/zoom for the ambient backdrop
-   photo, and a gentle float for the section's glow blobs, so the card reads
-   as alive instead of a flat static panel. */
-@keyframes cafe-photo-drift {
-  0% {
-    transform: scale(1.08) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.18) translate(-1.5%, -1%);
-  }
-  100% {
-    transform: scale(1.08) translate(0, 0);
-  }
-}
-
-.animate-cafe-photo-drift {
-  animation: cafe-photo-drift 22s ease-in-out infinite;
-}
-
-@keyframes cafe-glow-float {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-10px, 12px) scale(1.15);
-  }
-}
-
-.animate-cafe-glow-float {
-  animation: cafe-glow-float 8s ease-in-out infinite;
 }
 
 /* RGB animated running border & pulse glow (matches Celo AI prompt box) */

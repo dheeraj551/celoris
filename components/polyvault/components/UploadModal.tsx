@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
+import * as THREE from 'three';
 import { ModelAsset, AssetCategory, ModelFormat, ModelGeneratorType, UserProfile } from '../types';
+import {
+  getRealModelLoaderKind,
+  loadRealModelObject,
+  normalizeAndCenterObject,
+  standardizeMaterials,
+} from '../utils/modelLoaders';
 import {
   X,
   UploadCloud,
@@ -46,6 +53,64 @@ async function uploadModelFileToR2(file: File): Promise<string> {
   return key;
 }
 
+/**
+ * Renders one offscreen snapshot of the REAL uploaded model (read straight
+ * from the picked File — no need to wait for the R2 upload to finish) and
+ * returns it as a compact JPEG data URL. This becomes the catalog-grid card
+ * thumbnail, so shoppers see the actual product instead of a generic
+ * placeholder shape, without every visible grid card having to load the
+ * full (potentially huge) model file. Returns null for formats that can't
+ * be parsed client-side (.blend, .usdz, a Draco-compressed .glb, etc.), or
+ * if rendering fails for any reason — the caller falls back to the
+ * placeholder preview in that case, it never blocks publishing.
+ */
+async function generateModelThumbnail(file: File): Promise<string | null> {
+  const loaderKind = getRealModelLoaderKind(file.name);
+  if (!loaderKind) return null;
+
+  const objectUrl = URL.createObjectURL(file);
+  let renderer: THREE.WebGLRenderer | null = null;
+
+  try {
+    const width = 480;
+    const height = 360;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x090d16);
+
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(2.6, 1.8, 3.2);
+    camera.lookAt(0, 0, 0);
+
+    const keyLight = new THREE.DirectionalLight('#fef08a', 1.7);
+    keyLight.position.set(3, 4, 3);
+    const fillLight = new THREE.DirectionalLight('#38bdf8', 0.9);
+    fillLight.position.set(-3, 2, -2);
+    const ambient = new THREE.AmbientLight('#1e293b', 0.8);
+    scene.add(keyLight, fillLight, ambient);
+
+    const canvas = document.createElement('canvas');
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(width, height);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+    const object = await loadRealModelObject(objectUrl, loaderKind);
+    normalizeAndCenterObject(object);
+    standardizeMaterials(object);
+    object.rotation.y = Math.PI / 5.5; // slight turn for a more product-shot angle
+    scene.add(object);
+
+    renderer.render(scene, camera);
+    return canvas.toDataURL('image/jpeg', 0.72);
+  } catch (err) {
+    console.error('PolyVault: failed to generate a thumbnail for the uploaded model, falling back to placeholder preview', err);
+    return null;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+    renderer?.dispose();
+  }
+}
+
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -85,58 +150,78 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     setUploadError(null);
 
     let r2ModelKey: string | undefined;
+    let thumbnailDataUrl: string | undefined;
+    setIsUploading(true);
     if (modelFile) {
-      setIsUploading(true);
       try {
-        r2ModelKey = await uploadModelFileToR2(modelFile);
+        // Upload to R2 and render the real thumbnail snapshot in parallel —
+        // the thumbnail reads directly from the local File, so it doesn't
+        // need to wait on the network upload. A thumbnail failure never
+        // blocks publishing; only the R2 upload itself can fail the submit.
+        const [key, thumb] = await Promise.all([
+          uploadModelFileToR2(modelFile),
+          generateModelThumbnail(modelFile),
+        ]);
+        r2ModelKey = key;
+        thumbnailDataUrl = thumb || undefined;
       } catch (err: any) {
         setIsUploading(false);
         setUploadError(err?.message || 'Failed to upload model file. You can still publish without it.');
         return;
       }
-      setIsUploading(false);
     }
 
-    const newAsset: ModelAsset = {
-      id: `mod_${Date.now()}`,
-      title: title.trim(),
-      description: description.trim() || 'High-fidelity 3D model optimized for real-time rendering and virtual production pipelines.',
-      category,
-      price: Number(price) || 0,
-      originalPrice: price > 0 ? Math.round(price * 1.3) : undefined,
-      rating: 5.0,
-      reviewCount: 1,
-      polyCount: Number(polyCount) || 25000,
-      vertexCount: Math.round(Number(polyCount) * 1.05),
-      formats: formats.length > 0 ? formats : ['GLTF'],
-      textures: ['Albedo 4K', 'Normal 4K', 'Roughness 4K', 'Metallic 4K', 'AO 4K'],
-      isRigged,
-      isAnimated,
-      isPbr,
-      fileSizeMb: modelFile ? Math.max(1, Math.round(modelFile.size / (1024 * 1024))) : Math.round(polyCount / 500) + 15,
-      license: price === 0 ? 'CC0 Free' : 'Standard Commercial',
-      author: {
-        id: currentUser.id,
-        name: currentUser.name,
-        handle: currentUser.handle,
-        avatar: currentUser.avatar,
-        badge: 'CREATOR',
-        verified: true,
-        salesCount: currentUser.salesCount,
-      },
-      tags: tagsInput.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean),
-      createdAt: new Date().toISOString().split('T')[0],
-      downloadsCount: 0,
-      likesCount: 1,
-      generatorType,
-      primaryColor,
-      accentColor,
-      r2ModelKey,
-      modelFileName: modelFile?.name,
-    };
+    // Publish the listing as a real, shared row (see app/api/polyvault/assets)
+    // instead of only holding it in this browser's local state — that local-
+    // only behavior was the actual bug where uploads and their creator name
+    // were invisible to every other visitor. The server derives the real
+    // creator identity itself (ignoring anything we'd send for author) and
+    // returns the canonical row, which we then hand up to App.tsx.
+    try {
+      const publishRes = await fetch('/api/polyvault/assets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          description:
+            description.trim() ||
+            'High-fidelity 3D model optimized for real-time rendering and virtual production pipelines.',
+          category,
+          price: Number(price) || 0,
+          originalPrice: price > 0 ? Math.round(price * 1.3) : undefined,
+          polyCount: Number(polyCount) || 25000,
+          vertexCount: Math.round(Number(polyCount) * 1.05),
+          formats: formats.length > 0 ? formats : ['GLTF'],
+          textures: ['Albedo 4K', 'Normal 4K', 'Roughness 4K', 'Metallic 4K', 'AO 4K'],
+          isRigged,
+          isAnimated,
+          isPbr,
+          fileSizeMb: modelFile
+            ? Math.max(1, Math.round(modelFile.size / (1024 * 1024)))
+            : Math.round(polyCount / 500) + 15,
+          license: price === 0 ? 'CC0 Free' : 'Standard Commercial',
+          tags: tagsInput.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean),
+          generatorType,
+          primaryColor,
+          accentColor,
+          r2ModelKey,
+          modelFileName: modelFile?.name,
+          thumbnailDataUrl,
+        }),
+      });
 
-    onAssetCreated(newAsset);
-    onClose();
+      const publishBody = await publishRes.json().catch(() => ({}));
+      if (!publishRes.ok) {
+        throw new Error(publishBody?.error || 'Failed to publish listing');
+      }
+
+      onAssetCreated(publishBody.asset as ModelAsset);
+      onClose();
+    } catch (err: any) {
+      setUploadError(err?.message || 'Failed to publish listing. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const toggleFormat = (fmt: ModelFormat) => {
@@ -366,6 +451,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             </label>
             <p className="text-[10px] text-zinc-500">
               Without a file, this listing publishes as a preview-only catalog entry (downloads get a placeholder package).
+              With a .glb/.gltf/.obj/.fbx file, a real snapshot of your model is captured automatically for the store thumbnail.
             </p>
             {uploadError && (
               <p className="text-[11px] text-rose-600 font-medium">{uploadError}</p>

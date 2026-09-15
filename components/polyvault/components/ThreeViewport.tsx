@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { ModelAsset, ViewerSettings } from '../types';
+import {
+  getRealModelLoaderKind,
+  loadRealModelObject,
+  normalizeAndCenterObject,
+  standardizeMaterials,
+} from '../utils/modelLoaders';
 import {
   RotateCcw,
   Sun,
@@ -14,6 +21,8 @@ import {
   Eye,
   Sliders,
   Compass,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface ThreeViewportProps {
@@ -68,6 +77,10 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
   const [activeTab, setActiveTab] = useState<'model' | 'texture' | 'lighting' | 'settings'>('model');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [screenshotSuccess, setScreenshotSuccess] = useState(false);
+
+  // Real uploaded-file preview state (separate from the procedural placeholder)
+  const [isLoadingRealModel, setIsLoadingRealModel] = useState(false);
+  const [realModelNotice, setRealModelNotice] = useState<string | null>(null);
 
   // Helper to construct detailed procedural meshes for the selected generator type
   const buildProceduralModel = useCallback(
@@ -344,13 +357,19 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
 
       group.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-          // Backup original color if not backed up
-          if (!child.userData.origColor) {
+          // Backup the ENTIRE original material (not just its flat color) the
+          // first time we see this mesh, so every mode below can pull the
+          // real uploaded texture maps (diffuse/normal/roughness/metalness/
+          // AO/emissive) back out instead of permanently discarding them —
+          // procedural placeholder meshes simply have no maps to restore.
+          if (!child.userData.origMaterial) {
+            child.userData.origMaterial = child.material;
             const originalMat = child.material as THREE.MeshStandardMaterial;
             child.userData.origColor = originalMat.color?.clone() || new THREE.Color('#38bdf8');
             child.userData.origEmissive = originalMat.emissive?.clone() || new THREE.Color('#000000');
           }
 
+          const origMat = child.userData.origMaterial as THREE.MeshStandardMaterial;
           const origColor = child.userData.origColor as THREE.Color;
           const origEmissive = child.userData.origEmissive as THREE.Color;
 
@@ -402,9 +421,12 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
           } else {
             // Standard PBR or Texture Channel Inspection
             if (textureMode === 'albedo') {
-              // Flat diffuse base color inspection without lighting interference
+              // Real diffuse texture when the uploaded model has one, flat
+              // base color otherwise (procedural placeholders, or a real
+              // model with no diffuse map baked in)
               child.material = new THREE.MeshBasicMaterial({
-                color: origColor,
+                map: origMat.map || null,
+                color: origMat.map ? 0xffffff : origColor,
                 wireframe: false,
               });
             } else if (textureMode === 'normal') {
@@ -413,37 +435,59 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                 wireframe: false,
               });
             } else if (textureMode === 'roughness') {
-              // Grayscale Roughness Channel (Dark = smooth, White = rough)
+              // Real roughness texture when present, else a flat gray driven
+              // by the Roughness slider (Dark = smooth, White = rough)
               const roughVal = Math.round(materialRoughness * 255);
               child.material = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(`rgb(${roughVal},${roughVal},${roughVal})`),
+                map: origMat.roughnessMap || null,
+                color: origMat.roughnessMap ? 0xffffff : new THREE.Color(`rgb(${roughVal},${roughVal},${roughVal})`),
                 wireframe: false,
               });
             } else if (textureMode === 'metallic') {
-              // Grayscale Metalness Channel (White = metal, Black = dielectric)
+              // Real metalness texture when present, else a flat gray driven
+              // by the Metalness slider (White = metal, Black = dielectric)
               const metalVal = Math.round(materialMetalness * 255);
               child.material = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(`rgb(${metalVal},${metalVal},${metalVal})`),
+                map: origMat.metalnessMap || null,
+                color: origMat.metalnessMap ? 0xffffff : new THREE.Color(`rgb(${metalVal},${metalVal},${metalVal})`),
                 wireframe: false,
               });
             } else if (textureMode === 'ambient_occlusion') {
-              // Ambient Occlusion cavity simulation
-              child.material = new THREE.MeshStandardMaterial({
-                color: new THREE.Color('#9ca3af'),
-                roughness: 0.95,
-                metalness: 0.0,
+              // Real AO texture when present, else a flat neutral gray
+              child.material = new THREE.MeshBasicMaterial({
+                map: origMat.aoMap || null,
+                color: origMat.aoMap ? 0xffffff : new THREE.Color('#9ca3af'),
                 wireframe: false,
               });
             } else {
-              // Full PBR Shaded Mode
+              // Full PBR Shaded Mode — every real texture map the uploaded
+              // file actually has (diffuse/normal/roughness/metalness/AO/
+              // emissive) is carried over here; procedural placeholders have
+              // none of these so this falls back to their flat color exactly
+              // as before.
               child.material = new THREE.MeshStandardMaterial({
                 color: origColor,
+                map: origMat.map || null,
+                normalMap: origMat.normalMap || null,
+                normalScale: origMat.normalScale ? origMat.normalScale.clone() : undefined,
+                roughnessMap: origMat.roughnessMap || null,
+                metalnessMap: origMat.metalnessMap || null,
+                aoMap: origMat.aoMap || null,
+                aoMapIntensity: origMat.aoMapIntensity ?? 1,
+                emissiveMap: origMat.emissiveMap || null,
                 roughness: materialRoughness,
                 metalness: materialMetalness,
                 emissive: origEmissive,
-                emissiveIntensity: origEmissive.r > 0 || origEmissive.g > 0 || origEmissive.b > 0 ? 1.4 : 0,
+                emissiveIntensity:
+                  origEmissive.r > 0 || origEmissive.g > 0 || origEmissive.b > 0 || origMat.emissiveMap ? 1.4 : 0,
                 wireframe: false,
               });
+              // aoMap needs a second UV channel in three.js — real files
+              // usually only export one UV set, so reuse it as uv2 rather
+              // than silently dropping the AO map.
+              if (origMat.aoMap && child.geometry?.attributes?.uv && !child.geometry.attributes.uv2) {
+                child.geometry.setAttribute('uv2', child.geometry.attributes.uv);
+              }
             }
             child.visible = true;
           }
@@ -572,6 +616,15 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     renderer.toneMappingExposure = 1.0;
     rendererRef.current = renderer;
 
+    // 3b. Studio environment map — without this, MeshStandardMaterial has
+    // nothing to reflect, so metallic/glossy real-model surfaces read as flat
+    // matte gray no matter how the directional lights are set up. A neutral
+    // procedural "room" HDRI (no image download, generated on the GPU) gives
+    // every PBR material real image-based reflections and highlights.
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.045).texture;
+    pmremGenerator.dispose();
+
     // 4. Lights Group
     const lightsGroup = new THREE.Group();
     scene.add(lightsGroup);
@@ -585,7 +638,9 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     scene.add(grid);
     gridHelperRef.current = grid;
 
-    // 6. Build and add 3D Model
+    // 6. Build and add 3D Model — start with the procedural placeholder so
+    // there's never a blank canvas, then swap in the real uploaded file
+    // (if there is one and its format can be read in-browser) once it loads.
     const modelGroup = buildProceduralModel(
       asset.generatorType,
       asset.primaryColor || '#0ea5e9',
@@ -594,6 +649,51 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     scene.add(modelGroup);
     modelGroupRef.current = modelGroup;
     applyShaderFilters(modelGroup, settings);
+
+    let cancelled = false;
+    const loaderKind = getRealModelLoaderKind(asset.modelFileName);
+    setRealModelNotice(null);
+
+    if (asset.r2ModelKey && loaderKind) {
+      setIsLoadingRealModel(true);
+      (async () => {
+        try {
+          const res = await fetch('/api/polyvault/sign-download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: asset.r2ModelKey, filename: asset.modelFileName }),
+          });
+          if (!res.ok) throw new Error('Could not get a download link for this model file');
+          const { downloadUrl } = await res.json();
+
+          const loadedObject = await loadRealModelObject(downloadUrl, loaderKind);
+
+          if (cancelled) return;
+
+          normalizeAndCenterObject(loadedObject);
+          // Normalize every mesh onto MeshStandardMaterial so the existing
+          // shader-filter system (wireframe / matcap / x-ray / PBR channel
+          // inspection) behaves the same as it does on the procedural
+          // placeholders. glTF materials are already MeshStandardMaterial
+          // (keeps real textures); OBJ/FBX materials get replaced.
+          standardizeMaterials(loadedObject);
+
+          scene.remove(modelGroup);
+          const realGroup = new THREE.Group();
+          realGroup.name = 'AssetRoot';
+          realGroup.add(loadedObject);
+          scene.add(realGroup);
+          modelGroupRef.current = realGroup;
+          applyShaderFilters(realGroup, settings);
+          setIsLoadingRealModel(false);
+        } catch (err) {
+          if (cancelled) return;
+          console.error('PolyVault: failed to load the real model file, showing placeholder preview instead', err);
+          setRealModelNotice('Live preview unavailable for this file — showing a placeholder. The download still contains your real file.');
+          setIsLoadingRealModel(false);
+        }
+      })();
+    }
 
     // 7. Resize Observer
     const resizeObserver = new ResizeObserver((entries) => {
@@ -629,14 +729,16 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
 
     // Cleanup
     return () => {
+      cancelled = true;
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
       resizeObserver.disconnect();
+      scene.environment?.dispose();
       renderer.dispose();
       scene.clear();
     };
-  }, [asset.id, asset.generatorType, asset.primaryColor, asset.accentColor]);
+  }, [asset.id, asset.generatorType, asset.primaryColor, asset.accentColor, asset.r2ModelKey, asset.modelFileName]);
 
   // Effect to update shader filters when settings change
   useEffect(() => {
@@ -824,6 +926,26 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Real Model Loading Indicator */}
+      {isLoadingRealModel && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-slate-950/40 backdrop-blur-[1px]">
+          <div className="flex items-center gap-2 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-700/60 text-xs text-slate-200 shadow-lg">
+            <Loader2 className="w-4 h-4 text-sky-400 animate-spin" />
+            Loading your uploaded model…
+          </div>
+        </div>
+      )}
+
+      {/* Placeholder-Fallback Notice (real file couldn't be previewed in-browser) */}
+      {!isLoadingRealModel && realModelNotice && (
+        <div className="absolute top-14 left-3 right-3 flex justify-center pointer-events-none">
+          <div className="flex items-center gap-2 bg-amber-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-amber-700/50 text-[11px] text-amber-200 shadow-lg max-w-md text-center">
+            <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+            {realModelNotice}
+          </div>
+        </div>
+      )}
 
       {/* Orbit Helper Tip Overlay (fades out after hovering) */}
       <div className="absolute bottom-16 left-3 pointer-events-none hidden sm:flex items-center gap-2 bg-slate-950/60 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-slate-800/60 text-[11px] text-slate-400">

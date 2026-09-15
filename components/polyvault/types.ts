@@ -63,6 +63,14 @@ export interface ModelAsset {
   r2ModelKey?: string;
   /** Original filename of the uploaded model file, for download naming. */
   modelFileName?: string;
+  /** A real snapshot image of the actual uploaded model, captured once at
+   *  upload time (data: URL, JPEG). Used for the lightweight catalog-grid
+   *  card thumbnail so shoppers see the real product without every visible
+   *  card loading the full (potentially huge) 3D file. Assets without an
+   *  uploaded file, or whose format couldn't be rendered for a snapshot,
+   *  have no thumbnail and the grid card falls back to the procedural
+   *  placeholder preview instead. */
+  thumbnailDataUrl?: string;
 }
 
 export interface Coupon {

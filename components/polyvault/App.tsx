@@ -11,6 +11,7 @@ import { CouponSystem } from './components/CouponSystem';
 import { UserProfileModal } from './components/UserProfileModal';
 import { UploadModal } from './components/UploadModal';
 import { CompareModal } from './components/CompareModal';
+import { useAuth } from '@/components/providers/AuthProvider';
 import {
   Zap,
   Sparkles,
@@ -24,11 +25,20 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // Primary datasets
-  const [assets, setAssets] = useState<ModelAsset[]>(() => {
-    const saved = localStorage.getItem('polyvault_assets');
-    return saved ? JSON.parse(saved) : MOCK_ASSETS;
-  });
+  // The real signed-in Supabase user (separate from the mock `currentUser`
+  // profile below, which is a PolyVault-only local stand-in for
+  // gamification fields — wallet/badges/turbo-tier — that don't exist in
+  // the real profile yet). Real listings' author.id is always this user's
+  // real id, so "My Uploads" below has to key off it, not currentUser.id.
+  const { user } = useAuth();
+
+  // Primary datasets. Real, published listings now live in Supabase (see
+  // app/api/polyvault/assets) instead of this browser's own localStorage —
+  // that local-only storage was the actual bug where an uploaded model and
+  // its real creator name were invisible to every other visitor. `assets`
+  // starts as just the seeded demo catalog and the effect below fetches and
+  // prepends the real, shared listings once they load.
+  const [assets, setAssets] = useState<ModelAsset[]>(MOCK_ASSETS);
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('polyvault_user');
@@ -91,11 +101,30 @@ export default function App() {
     return assets.filter((a) => comparingAssetIds.includes(a.id));
   }, [assets, comparingAssetIds]);
 
-  // Sync to local storage
+  // Load the real, shared catalog from Supabase and prepend it to the
+  // seeded demo assets, so every visitor — any browser, any device, signed
+  // in or not — sees the same real uploads and real creator names.
   useEffect(() => {
-    localStorage.setItem('polyvault_assets', JSON.stringify(assets));
-  }, [assets]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/polyvault/assets');
+        if (!res.ok) return;
+        const body = await res.json();
+        const realAssets: ModelAsset[] = Array.isArray(body?.assets) ? body.assets : [];
+        if (!cancelled && realAssets.length > 0) {
+          setAssets((prev) => [...realAssets, ...prev]);
+        }
+      } catch (err) {
+        console.error('PolyVault: failed to load the shared catalog, showing the demo catalog only', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
+  // Sync to local storage
   useEffect(() => {
     localStorage.setItem('polyvault_compare', JSON.stringify(comparingAssetIds));
   }, [comparingAssetIds]);
@@ -251,10 +280,14 @@ export default function App() {
       });
   }, [assets, filters]);
 
-  // Assets uploaded by the current user
+  // Assets uploaded by the current user. Real listings' author.id is the
+  // real Supabase user id (see app/api/polyvault/assets), not the mock
+  // currentUser.id, so this has to key off the real signed-in user —
+  // signed-out visitors, and the seeded demo catalog, simply have none.
   const userUploads = useMemo(() => {
-    return assets.filter((a) => a.author.id === currentUser.id);
-  }, [assets, currentUser.id]);
+    if (!user) return [];
+    return assets.filter((a) => a.author.id === user.id);
+  }, [assets, user]);
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
