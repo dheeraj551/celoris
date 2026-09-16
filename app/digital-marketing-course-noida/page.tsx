@@ -630,6 +630,8 @@ export default function DigitalMarketingCourseNoida() {
                             <Link href="/social-media-marketing-noida" className="hover:text-emerald-400 transition-colors">Social Media Noida</Link>
                             <Link href="/microsoft-excel-training-noida" className="hover:text-emerald-400 transition-colors">Excel Training Noida</Link>
                             <Link href="/blog/best-digital-marketing-course-noida" className="hover:text-emerald-400 transition-colors">Best Course Noida Blog</Link>
+                            <Link href="/blog/best-digital-marketing-course-what-actually-works" className="hover:text-emerald-400 transition-colors">What Actually Separates a Good Course</Link>
+                            <Link href="/courses/digital-marketing-using-ai-tools" className="hover:text-emerald-400 transition-colors">AI Tools Course</Link>
                             <Link href="/learn" className="hover:text-emerald-400 transition-colors">Learn More</Link>
                         </div>
                     </div>

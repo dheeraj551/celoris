@@ -686,6 +686,8 @@ export default function SocialMediaMarketingCourseNoida() {
                             <Link href="/digital-marketing-course-noida" className="hover:text-emerald-400 transition-colors">Digital Marketing Noida</Link>
                             <Link href="/video-editing-course-noida" className="hover:text-emerald-400 transition-colors">Video Editing Noida</Link>
                             <Link href="/blog/best-social-media-marketing-course-noida" className="hover:text-emerald-400 transition-colors">Best SMM Course Blog Noida</Link>
+                            <Link href="/courses/social-media-marketing-with-ai" className="hover:text-emerald-400 transition-colors">AI-Powered SMM Course</Link>
+                            <Link href="/courses/social-media-marketing-professional-training" className="hover:text-emerald-400 transition-colors">SMM with Canva & Email Automation</Link>
                             <Link href="/learn" className="hover:text-emerald-400 transition-colors">Learn Directory</Link>
                         </div>
                     </div>
