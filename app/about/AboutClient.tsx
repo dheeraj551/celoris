@@ -28,25 +28,25 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
     {
       icon: Users,
       title: "Learn",
-      description: "Master new skills with our comprehensive courses and interactive lessons.",
+      description: "Paid courses in digital marketing, web development, social media marketing, Excel, Python, Photoshop, graphic design, WordPress and video editing — small live batches with real project work, not pre-recorded playlists.",
       color: "from-emerald-500 to-teal-600"
     },
     {
       icon: Target,
       title: "Earn",
-      description: "Find your dream job or freelance opportunities in our curated marketplace.",
+      description: "Our Job Center connects trained students with real freelance gigs and hiring leads, and PolyVault lets you sell 3D models and other work you've actually built.",
       color: "from-emerald-500 to-teal-600"
     },
     {
       icon: Award,
       title: "Social",
-      description: "Connect with community, enjoy engaging games, and climb leaderboards.",
+      description: "Chat Café and the wider Celoris community — a place to hang out, ask questions, and meet other learners, not just a comments section.",
       color: "from-emerald-500 to-teal-600"
     },
     {
       icon: TrendingUp,
       title: "Apps",
-      description: "Boost productivity with our collection of useful tools and utilities.",
+      description: "Free tools with no credit card required — Video Studio, Image Studio, and AI Explorer's 20+ AI models — usable whether or not you ever buy a course.",
       color: "from-emerald-500 to-teal-600"
     }
   ]
@@ -131,18 +131,21 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest">
                   <Sparkles size={10} /> Our Mission
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-[0.9]">Empowering <br />Digital Futures</h2>
+                <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-[0.9]">Learn It. <br />Then Earn From It.</h2>
                 <p className="text-base md:text-lg text-slate-400 leading-relaxed font-medium italic uppercase tracking-wide">
-                  At Celoris, we believe in empowering individuals and businesses through comprehensive
-                  digital transformation. Our platform brings together learning, earning opportunities,
-                  and engaging experiences in one unified ecosystem.
+                  Celoris Designs LLP started in 2019 as a small design studio in Noida. It's grown into
+                  a platform built around one idea: teach a practical, job-ready skill, then help you
+                  actually use it. Courses in digital marketing, web development, social media marketing,
+                  Excel, Python and design run in small live batches with real project and campaign work —
+                  not recorded videos — and every price is published upfront, with no hidden fees and no
+                  follow-up sales calls.
                 </p>
                 <div className="flex items-center gap-4 py-4 border-y border-white/5">
                   <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                     <Rocket className="h-5 w-5 text-emerald-400" />
                   </div>
                   <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                    Accelerating Local Nodes <br />Into The Global Grid
+                    1,000+ Students Trained <br />4.9/5 Average Rating
                   </div>
                 </div>
               </motion.div>
@@ -171,7 +174,10 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
           <section>
             <div className="text-center mb-16 px-4">
               <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter mb-4">The Celoris Framework</h2>
-              <div className="h-1 w-20 bg-emerald-600 mx-auto rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] mb-12" />
+              <div className="h-1 w-20 bg-emerald-600 mx-auto rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] mb-6" />
+              <p className="text-xs md:text-sm text-slate-500 font-bold uppercase tracking-widest max-w-xl mx-auto mb-12">
+                Four pillars, one account — here's what's actually on the platform.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -235,15 +241,17 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
                 </div>
                 <div className="p-8 md:p-16 flex flex-col justify-center items-center lg:items-start text-center lg:text-left space-y-8">
                   <Globe className="h-12 w-12 text-emerald-500 mb-2 animate-pulse" />
-                  <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-[0.9]">Our Global Vision</h2>
+                  <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-[0.9]">Where We're Headed</h2>
                   <p className="text-sm md:text-base text-slate-400 font-bold uppercase tracking-wide italic leading-relaxed">
-                    "To be the leading platform that democratizes access to quality education,
-                    employment opportunities, and digital tools, enabling anyone to build their
-                    digital future regardless of their background or location."
+                    We want Celoris to be the place someone in Noida — or anywhere in India — comes when
+                    they decide to learn a real skill and do something with it. Not a shelf of videos you
+                    finish and forget, but a loop: learn from people who do this for a living, walk away
+                    with work you can actually show someone, then find your next gig through the Job
+                    Center, sell what you built on PolyVault, or come back and teach it yourself.
                   </p>
                   <div className="flex items-center gap-3">
                     <CheckCircle2 size={16} className="text-emerald-500" />
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Universal Node Access Authorized</span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Built From Noida, For All Of India</span>
                   </div>
                 </div>
               </div>
@@ -348,18 +356,32 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
                 Ready to Connect <br /><span className="text-emerald-500 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">with Celoris ?</span>
               </h2>
               <p className="text-base text-slate-400 max-w-xl mx-auto font-bold uppercase tracking-widest italic">
-                Get in touch with our team to start your transformation.
+                Questions about a course, a freelance gig, or partnering with us? A real
+                person replies — no bots, no scripted sales calls.
               </p>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  asChild
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-12 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] shadow-3xl shadow-emerald-500/30 transition-all border-none"
-                >
-                  <Link href="/contact" className="flex items-center gap-3">
-                    Establish Contact <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </motion.div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    asChild
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white h-16 px-12 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] shadow-3xl shadow-emerald-500/30 transition-all border-none"
+                  >
+                    <Link href="https://wa.me/919084718101" target="_blank" className="flex items-center gap-3">
+                      WhatsApp Us <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="rounded-[2rem] border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 h-16 px-12 font-black uppercase tracking-[0.3em] text-[10px] transition-all"
+                  >
+                    <Link href="/contact" className="flex items-center gap-3">
+                      Contact Form <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </motion.div>
+              </div>
             </motion.div>
           </section>
         </div>

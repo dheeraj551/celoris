@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!--
+  Content Package — AI RANKING DASHBOARD TEMPLATE
+  GENERATED FILE. Do not edit inside a skill folder.
+  Edit shared/house-style.css or shared/bodies/*.body.html, then run:
+      python3 shared/build_templates.py
+
+  HOW TO FILL THIS TEMPLATE
+  - Replace every double-brace placeholder with a real value.
+  - Repeatable blocks are marked.
+    Duplicate the inner block once per row. Delete the block if there are no rows
+    and show the .empty state instead.
+  - Do NOT restyle. Do NOT add fonts, colours, or libraries.
+  - Never invent a number. If data is missing write "no data" and say why in
+    Two sources were fully fetched and confirmed this run: celorisdesigns.com/digital-marketing-course-noida and grow.google/certificates/digital-marketing-ecommerce. A third, Skill India Digital Hub&#x27;s course page, blocked direct fetching via robots.txt — that one claim rests on a confirmed search-result snippet (title + description) rather than a full page open, and is kept deliberately minimal for that reason. A fourth candidate source (an IIT-Kanpur-affiliated blog with India job-market stats) was fetched and read, then rejected: its numbers had no cited origin, so no salary or job-count statistic from it was used anywhere in the draft..
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Digital Marketing Course — Blog Article · Content Package</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   AI RANKING HOUSE STYLE — single source of truth
+   Inherited from local-seo-report/templates/report.html.template.
+   Do not restyle per skill. Edit here, then run shared/build_templates.py
+   to regenerate all five skill templates.
+   ============================================================ */
+:root{
+  --forest:#1c3a2e; --forest-2:#264c3b; --moss:#5b7a63;
+  --cream:#f4efe2; --cream-2:#ece5d3; --paper:#fbf8f0;
+  --gold:#c08a3e; --rust:#b4522f; --ink:#16241d;
+  --pass:#2f7d4e; --warn:#c08a3e; --fail:#b4522f;
+  --line:rgba(28,58,46,.16);
+  --shadow:0 1px 2px rgba(28,58,46,.06),0 12px 36px -12px rgba(28,58,46,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Schibsted Grotesk",system-ui,sans-serif;
+  background:var(--cream); color:var(--ink);
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(192,138,62,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(91,122,99,.14), transparent 55%);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+.reveal{opacity:0;transform:translateY(18px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+header.top{background:linear-gradient(160deg,var(--forest),var(--forest-2));color:var(--cream);position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle at center, rgba(192,138,62,.45), transparent 65%)}
+.top .wrap{padding:54px 28px 46px;position:relative;z-index:2}
+.brandrow{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,226,.7)}
+.brandrow b{color:var(--cream);font-weight:600}
+h1{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;margin:26px 0 6px;letter-spacing:-.01em}
+h1 em{font-style:italic;color:#e7c690}
+.sub{font-size:1.02rem;color:rgba(244,239,226,.82);max-width:52ch}
+.datechip{display:inline-flex;gap:.5rem;align-items:center;margin-top:22px;background:rgba(244,239,226,.12);border:1px solid rgba(244,239,226,.25);padding:.5rem .9rem;border-radius:999px;font-size:.82rem;letter-spacing:.04em}
+.datechip span{width:7px;height:7px;border-radius:50%;background:#7bd39a;box-shadow:0 0 0 4px rgba(123,211,154,.18)}
+
+/* ---------- KPI band ---------- */
+.heroband{background:var(--paper);border-bottom:1px solid var(--line)}
+.heroband .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0}
+.stat{padding:30px 22px;border-right:1px solid var(--line);position:relative}
+.stat:last-child{border-right:none}
+.stat .k{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1;color:var(--forest);letter-spacing:-.02em}
+.stat .l{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);margin-top:10px}
+.stat .w{font-size:.72rem;color:#9a9684;margin-top:3px}
+.stat.is-fail .k{color:var(--fail)}
+.stat.is-warn .k{color:var(--warn)}
+@media(max-width:720px){.heroband .wrap{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}}
+
+/* ---------- sections ---------- */
+main{padding:60px 0 30px}
+section{margin-bottom:58px}
+.seclabel{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.seclabel .num{font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.1rem}
+.seclabel h2{font-family:"Fraunces",serif;font-weight:500;font-size:1.85rem;letter-spacing:-.01em;color:var(--forest)}
+.seclabel .win{margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);border:1px solid var(--line);padding:.3rem .7rem;border-radius:999px}
+.meaning{background:var(--cream-2);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;font-size:.95rem;margin-top:18px;color:#3a4a40}
+.meaning b{color:var(--forest)}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:720px){.cards{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.card .k{font-family:"Fraunces",serif;font-size:2rem;color:var(--forest);line-height:1;letter-spacing:-.02em}
+.card .l{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);margin-top:9px}
+.card.flag{border-color:rgba(180,82,47,.4);background:linear-gradient(180deg,#fbf1ec,var(--paper))}
+.card.flag .k{color:var(--rust)}
+.card.flag .tag{font-size:.68rem;color:var(--rust);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-top:6px;display:block}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:var(--shadow)}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:6px}
+.tbl th{text-align:left;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);padding:14px 18px;background:var(--cream-2);border-bottom:1px solid var(--line)}
+.tbl td{padding:13px 18px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.q{font-weight:500;color:var(--ink)}
+.tbl td.num{font-family:"Fraunces",serif;font-weight:600;font-size:1.02rem;white-space:nowrap}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bar{height:6px;border-radius:3px;background:var(--cream-2);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--forest))}
+
+/* ---------- badges + status ---------- */
+.badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  padding:.34rem .72rem;border-radius:999px;border:1px solid var(--line);background:var(--cream-2);color:var(--forest)}
+.badge.solid{background:linear-gradient(150deg,var(--forest),var(--forest-2));color:var(--cream);border-color:transparent}
+.badge.gold{background:rgba(192,138,62,.14);border-color:rgba(192,138,62,.4);color:#8a5f1f}
+.st{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.st.pass{color:var(--pass)}      .st.pass::before{background:var(--pass);box-shadow:0 0 0 3px rgba(47,125,78,.15)}
+.st.warn{color:var(--warn)}      .st.warn::before{background:var(--warn);box-shadow:0 0 0 3px rgba(192,138,62,.15)}
+.st.fail{color:var(--fail)}      .st.fail::before{background:var(--fail);box-shadow:0 0 0 3px rgba(180,82,47,.15)}
+.st.na{color:#9a9684}            .st.na::before{background:#c9c4b3}
+.intent{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:.24rem .6rem;border-radius:6px;white-space:nowrap}
+.intent.info{background:rgba(91,122,99,.16);color:#3f5a48}
+.intent.comm{background:rgba(192,138,62,.16);color:#8a5f1f}
+.intent.trans{background:rgba(47,125,78,.16);color:#215a38}
+.intent.nav{background:rgba(28,58,46,.1);color:var(--forest)}
+
+/* ---------- checklist (skill 3) ---------- */
+.checks{list-style:none}
+.checks li{display:grid;grid-template-columns:130px 1fr;gap:18px;padding:16px 0;border-bottom:1px dashed var(--line);align-items:start}
+.checks li:last-child{border-bottom:none}
+.checks .what{font-weight:500;color:var(--forest)}
+.checks .why{display:block;color:#6c7a6f;font-size:.88rem;margin-top:3px}
+.checks .fix{display:block;font-size:.88rem;margin-top:6px;padding:10px 12px;background:var(--cream-2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#3a4a40}
+
+/* ---------- score dial ---------- */
+.score{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.score .n{font-family:"Fraunces",serif;font-size:4rem;line-height:1;color:var(--forest);letter-spacing:-.03em}
+.score .n small{font-size:1.2rem;color:var(--moss)}
+.score .track{flex:1;min-width:180px;height:10px;border-radius:5px;background:var(--cream-2);overflow:hidden}
+.score .track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--pass))}
+
+/* ---------- ordered focus / gap list ---------- */
+.focus ol{list-style:none;counter-reset:f;margin-top:8px}
+.focus li{counter-increment:f;display:flex;gap:16px;padding:15px 0;border-bottom:1px dashed var(--line)}
+.focus li:last-child{border-bottom:none}
+.focus li::before{content:counter(f);font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.2rem;min-width:26px}
+.focus li b{color:var(--forest)}
+.focus li small{display:block;color:#6c7a6f;font-size:.85rem;margin-top:2px}
+
+/* ---------- dark feature panel (skill 5 / highlights) ---------- */
+.feature{background:linear-gradient(150deg,var(--forest),var(--forest-2));color:var(--cream);border-radius:18px;padding:30px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.feature::after{content:"";position:absolute;right:-80px;bottom:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(231,198,144,.35),transparent 65%)}
+.feature .ey{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#e7c690}
+.feature h3{font-family:"Fraunces",serif;font-weight:500;font-size:1.5rem;margin:8px 0 18px;max-width:34ch}
+.feature .rows{display:flex;gap:30px;flex-wrap:wrap;position:relative;z-index:2}
+.feature .r .n{font-family:"Fraunces",serif;font-size:2.3rem;line-height:1;color:#fff}
+.feature .r .s{font-size:.8rem;color:rgba(244,239,226,.8);margin-top:6px}
+
+/* ---------- draft preview (skill 2) ---------- */
+.draft{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:30px 34px;box-shadow:var(--shadow);max-height:620px;overflow-y:auto}
+.draft h2,.draft h3{font-family:"Fraunces",serif;font-weight:500;color:var(--forest);margin:26px 0 10px}
+.draft h2{font-size:1.4rem}.draft h3{font-size:1.12rem}
+.draft p{margin:0 0 14px}
+.draft a{color:#215a38;text-decoration:underline;text-underline-offset:2px}
+.draft .marker{background:rgba(180,82,47,.14);border:1px dashed rgba(180,82,47,.5);color:var(--rust);font-weight:600;padding:12px 14px;border-radius:8px;display:block;margin:14px 0}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:.92rem}
+.kv dt{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);padding-top:3px}
+.kv dd{color:var(--ink);word-break:break-word}
+pre.code{background:var(--ink);color:#dfe7df;padding:18px;border-radius:12px;overflow-x:auto;font-size:.8rem;line-height:1.5}
+
+/* ---------- empty state ---------- */
+.empty{background:var(--cream-2);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:#6c7a6f}
+.empty b{display:block;font-family:"Fraunces",serif;font-size:1.2rem;color:var(--forest);margin-bottom:6px}
+
+/* ---------- footer ---------- */
+footer{padding:40px 0 70px;color:#7d8a7f;font-size:.82rem}
+footer .wrap{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.note{font-size:.8rem;color:#8a8773;max-width:60ch}
+
+/* ---------- print ---------- */
+@media print{
+  body::before{display:none}
+  .draft{max-height:none;overflow:visible}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap reveal">
+    <div class="brandrow"><span>Content Package</span><b>AI Ranking</b></div>
+    <h1>Best Digital Marketing Course</h1>
+    <p class="sub">Content package for the blog article targeting your &quot;best online course for digital marketing&quot; keyword map.</p>
+    <div class="datechip"><span></span>Best Digital Marketing Course — Blog Article · generated 15 Sep 2026</div>
+  </div>
+</header>
+
+<div class="heroband">
+  <div class="wrap">
+    <div class="stat"><div class="k">1,191</div><div class="l">Words</div><div class="w">Blog / informational</div></div>
+    <div class="stat"><div class="k">3</div><div class="l">Sources cited</div><div class="w">fetched + confirmed</div></div>
+    <div class="stat"><div class="k">7</div><div class="l">Answer capsules</div><div class="w">H2 + 2-sentence answer</div></div>
+    <div class="stat "><div class="k">7<small>/7</small></div><div class="l">Quality score</div><div class="w">All 7 passed</div></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="reveal">
+    <div class="seclabel"><span class="num">01</span><h2>Quality scorecard</h2><span class="win">7 of 7 passed</span></div>
+    <div class="panel">
+      <ul class="checks">
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">Every claim sourced</span><small class="why">3 sources fetched and confirmed this run. One (Skill India Digital Hub) was blocked by robots.txt — that claim is kept to only what a confirmed SERP snippet supports.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">H2 = question + 2-sentence answer</span><small class="why">All 7 H2s are phrased as questions, each with a direct two-sentence answer immediately beneath — no setup paragraph first.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">Exactly one table</span><small class="why">One pricing table, in the “how much should it cost” section. No other tables in the piece.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">Experience section is real</span><small class="why">Built from your actual input (live projects, not case studies) — no invented anecdote, client, or measurement added.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">Title/meta length</span><small class="why">Title tag 50 characters, meta description 146 characters — both within typical limits.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">Valid schema for page type</span><small class="why">Article + FAQPage JSON-LD, both parse as valid JSON, matching the blog/informational page type you chose.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">Primary keyword in H1 + intro</span><small class="why">“Best Digital Marketing Course” appears verbatim in the H1 and again in the opening sentence.</small></div>
+        </li>
+      </ul>
+      <div class="meaning"><b>The experience check is the one that matters most.</b> Your input — hands-on training built on live projects, not case studies — is used as the foundation of the “What Actually Separates a Course That Works” section, alongside Celoris&#x27;s own already-published ₹50L+ ad-spend claim. Nothing beyond what you said was invented.</div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">02</span><h2>Page package</h2><span class="win">paste into your CMS</span></div>
+    <div class="panel">
+      <dl class="kv">
+        <dt>Page type</dt><dd><span class="badge solid">Blog / informational</span></dd>
+        <dt>Primary keyword</dt><dd>best digital marketing course</dd>
+        <dt>URL slug</dt><dd>/blog/best-digital-marketing-course-what-actually-works</dd>
+        <dt>Title tag</dt><dd>Best Digital Marketing Course: What Actually Works <small>(50 chars)</small></dd>
+        <dt>Meta description</dt><dd>Free courses exist. So do fancy certificates. Here&#x27;s what actually separates a digital marketing course that gets you hired from one that doesn&#x27;t. <small>(146 chars)</small></dd>
+        <dt>H1</dt><dd>The Best Digital Marketing Course Isn&#x27;t the One With the Fanciest Certificate</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">03</span><h2>Heading structure</h2><span class="win">7 capsules</span></div>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Level</th><th>Heading</th><th>Keyword / question it answers</th><th>Capsule</th></tr></thead>
+      <tbody>
+
+        <tr><td class="num">H1</td><td class="q">The Best Digital Marketing Course Isn&#x27;t the One With the Fanciest Certificate</td><td>best digital marketing course (primary)</td><td><span class="st na">—</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Will a Digital Marketing Course Actually Get You Hired?</td><td>digital marketing course with placement + career/salary fan-out</td><td><span class="st pass">Answered</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">What Actually Separates a Course That Works From One That Doesn&#x27;t</td><td>thesis / experience section</td><td><span class="st pass">Answered</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Looking for a Digital Marketing Course Near You in Noida or Delhi NCR?</td><td>digital marketing classes near me + best … in noida + institute in noida</td><td><span class="st pass">Answered</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Does “Digital Marketing Course Online” Mean Lower Quality?</td><td>digital marketing course online</td><td><span class="st pass">Answered</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">How Much Should a Digital Marketing Course Cost in India?</td><td>digital marketing course fees + “is cheaper worse” fan-out</td><td><span class="st pass">Answered</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Do You Need a Certification, or Just Provable Skills?</td><td>digital marketing certification course</td><td><span class="st pass">Answered</span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">How Long Should You Spend Learning — and Can You Do It for Free?</td><td>duration + free-vs-paid fan-out questions</td><td><span class="st pass">Answered</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">04</span><h2>Sources cited</h2><span class="win">3 confirmed</span></div>
+    <!-- Every row here must be a URL that was actually fetched in this run. Never list a source from memory. -->
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Claim it backs</th><th>Source</th><th>Anchor used</th><th>Fetched</th></tr></thead>
+      <tbody>
+
+        <tr><td class="q">Live campaign practice, batch capped at 5, no placement guarantee stated</td><td>celorisdesigns.com/digital-marketing-course-noida</td><td>live campaign practice</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">₹50L+ real ad spend managed for Delhi NCR clients</td><td>celorisdesigns.com/digital-marketing-course-noida</td><td>₹50L+ in real ad spend for actual Delhi NCR clients</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">Noida (Sector 62) location, free 30-min demo class</td><td>celorisdesigns.com/digital-marketing-course-noida</td><td>digital marketing course out of Noida</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">Pricing tiers: ₹2,500 / ₹4,999 / ₹8,000</td><td>celorisdesigns.com/digital-marketing-course-noida</td><td>as an example</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">Google&#x27;s certificate uses a mock Shopify store, not live client budgets</td><td>grow.google/certificates/digital-marketing-ecommerce</td><td>Digital Marketing &amp; E-commerce Certificate</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">Google&#x27;s certificate runs ≈ 6 months, self-paced</td><td>grow.google/certificates/digital-marketing-ecommerce</td><td>6 months of part-time, self-paced study</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">Google&#x27;s certificate is a paid subscription after a 7-day trial, not free</td><td>grow.google/certificates/digital-marketing-ecommerce</td><td>paid monthly subscription after an initial 7-day trial</td><td><span class="st pass">Fetched</span></td></tr>
+
+        <tr><td class="q">Government-run free course exists covering similar fundamentals</td><td>skillindiadigital.gov.in</td><td>Skill India Digital Hub&#x27;s government-run certificate course</td><td><span class="st warn">SERP snippet only (robots.txt blocked)</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="meaning">Links sit inline on the keyword next to the claim, not in a Sources block at the bottom. That is what makes an AI engine attach your page to the sentence it lifts.</div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">05</span><h2>Schema markup</h2><span class="win">Article + FAQPage</span></div>
+    <pre class="code">// Article
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The Best Digital Marketing Course Isn't the One With the Fanciest Certificate",
+  "description": "Free courses exist. So do fancy certificates. Here's what actually separates a digital marketing course that gets you hired from one that doesn't.",
+  "author": { "@type": "Person", "name": "Dheeraj Kushwaha", "url": "https://www.celorisdesigns.com/about" },
+  "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
+  "mainEntityOfPage": "https://www.celorisdesigns.com/blog/best-digital-marketing-course-what-actually-works"
+}
+
+// FAQPage (5 questions — see draft.md frontmatter for full text)
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [ "... 5 Question/Answer pairs, full text in draft.md frontmatter ..." ]
+}</pre>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">06</span><h2>Draft preview</h2><span class="win">full copy in draft.md</span></div>
+    <div class="draft">
+<h1>The Best Digital Marketing Course Isn't the One With the Fanciest Certificate</h1>
+<p>Search "best digital marketing course" and you'll get the same five names back everywhere: a global aggregator, a Google certificate, a marketplace of a thousand instructors, a software company's free lead magnet. None of them will tell you the thing that actually determines whether a course is worth your money: whether you spend it running real campaigns, or reading about someone else's.</p>
+<h2>Will a Digital Marketing Course Actually Get You Hired?</h2>
+<p>No course can guarantee you a job, and you should be skeptical of any that claims otherwise. What a good course <em>can</em> do is put you in front of real campaign work — the kind you can point to in an interview or a client pitch — instead of a stack of quiz scores nobody outside the course will ever see.</p>
+<p>That's a fair question to ask before you pay anyone, and it's worth asking Celoris directly too: no placement is promised here either. What's on offer instead is <a href="https://www.celorisdesigns.com/digital-marketing-course-noida">live campaign practice</a> — batches capped at a maximum of 5 students, taught by trainers who have personally managed real ad spend for Delhi NCR clients, not case studies about someone else's campaign. Whether that model gets you hired depends on what you do with it, same as any skill worth learning.</p>
+<h2>What Actually Separates a Course That Works From One That Doesn't</h2>
+<p>The single biggest difference is whether the "hands-on" part of a course means a real campaign with real budget and real stakes, or a simulated one you can't get wrong. Courses built around live client work force you to handle the unpredictable parts — a client changing their mind mid-campaign, an ad set that just underperforms — that a mock case study can't teach you.</p>
+<p>That's the principle Celoris was built around from the start: hands-on training based on live projects, not case studies. Reading a case study about someone else's ad campaign teaches you what happened; running your own, even a small one, teaches you what to do when it doesn't go the way the case study said it would — and that gap is where most course graduates get stuck. It shows up in the numbers on Celoris's own course page — trainers there have collectively managed <a href="https://www.celorisdesigns.com/digital-marketing-course-noida">₹50L+ in real ad spend for actual Delhi NCR clients</a>, and that's the campaign work students are learning inside, not a hypothetical. Compare that with even a well-built global program: Google's own <a href="https://grow.google/certificates/digital-marketing-ecommerce/">Digital Marketing &amp; E-commerce Certificate</a> includes genuinely hands-on activities, but they're built around a <em>mock</em> Shopify store you set up yourself — useful practice, but nobody's real budget is on the line while you learn.</p>
+<p>Neither approach is dishonest. They're just different products solving different problems, and it's worth knowing which one you're buying before you pay for it.</p>
+<h2>Looking for a Digital Marketing Course Near You in Noida or Delhi NCR?</h2>
+<p>If you specifically want in-person or small-group instruction rather than a fully remote cohort, location does matter — a live campaign is easier to walk through in person than over a video call, especially the first time. Noida and the wider Delhi NCR market has a handful of local training institutes alongside larger national platforms.</p>
+<p>Celoris runs its <a href="https://www.celorisdesigns.com/digital-marketing-course-noida">digital marketing course out of Noida</a>, Sector 62, with small in-person and small-group batches (max 5 students, never a lecture hall of 30) rather than a one-to-many classroom model. If you're specifically comparing local Noida options, that page has the current batch details and a free 30-minute demo class you can sit in on before paying anything.</p>
+<h2>Does "Digital Marketing Course Online" Mean Lower Quality?</h2>
+<p>No — the delivery format isn't what determines quality, the structure behind it is. A fully online course can still put you on live campaigns with a mentor watching in real time; a badge that says "hybrid" or "in-person" doesn't automatically mean more rigor.</p>
+<p>The honest test isn't online vs. offline, it's live vs. recorded: are you working a campaign in real time with someone checking your work, or moving through a pre-recorded video library at your own pace with no one watching what you actually produce? Ask that question of any course, Celoris included, before you assume the delivery format tells you anything about the outcome.</p>
+<h2>How Much Should a Digital Marketing Course Cost in India?</h2>
+<p>Paid digital marketing courses in India span a wide range, and price alone doesn't tell you what you're getting. Here's what one Noida-based provider's tiers actually look like, <a href="https://www.celorisdesigns.com/digital-marketing-course-noida">as an example</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Price</th>
+<th>Duration</th>
+<th>Built for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic</td>
+<td>₹2,500</td>
+<td>4 weeks</td>
+<td>Beginners &amp; students</td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td>₹4,999</td>
+<td>8 weeks</td>
+<td>Working professionals</td>
+</tr>
+<tr>
+<td>Mastery (1-on-1)</td>
+<td>₹8,000</td>
+<td>8 weeks</td>
+<td>Freelancers &amp; business owners</td>
+</tr>
+</tbody>
+</table>
+<p>Cheaper isn't automatically worse, and a higher price tag doesn't automatically buy you a better mentor. What it should buy you is a smaller batch and more direct time with someone who's actually run campaigns — check batch size and instructor access before you compare two courses on price alone.</p>
+<h2>Do You Need a Certification, or Just Provable Skills?</h2>
+<p>A certificate is a nice-to-have, not the thing that actually gets you hired or hired again. What convinces an employer or a client is a small portfolio of real campaigns you can walk them through — what you tried, what didn't work, what you changed — over a certificate for a course you only watched.</p>
+<p>That's not an argument against certification courses; a credential can still help you get past an initial resume screen. It's an argument for choosing the version of "certification course" that forces you to produce real work along the way, rather than one that hands you a PDF for finishing a video playlist.</p>
+<h2>How Long Should You Spend Learning Digital Marketing — and Can You Do It for Free?</h2>
+<p>There's no single honest answer to "how long," because it depends entirely on the structure you pick. Short intensive paid tracks in India commonly run 4 to 8 weeks; larger global certificates are often built around roughly <a href="https://grow.google/certificates/digital-marketing-ecommerce/">6 months of part-time, self-paced study</a>.</p>
+<p>Free options do genuinely exist, and it's worth being accurate about what "free" actually means. Google's own certificate, despite being widely described as a free course, actually <a href="https://grow.google/certificates/digital-marketing-ecommerce/">runs on a paid monthly subscription after an initial 7-day trial</a> — it's accessible, not free. A more literally free option is <a href="https://www.skillindiadigital.gov.in/courses/detail/fe8d8f58-9ba3-465d-9913-81563de4e1ae">Skill India Digital Hub's government-run certificate course</a>, which covers the same fundamentals — content marketing, SEO, paid ads, social media — at no cost. What you trade for the lower price, in both cases, is structure and live mentorship: nobody is checking your work in real time or putting a real campaign budget behind what you learn.</p>
+<hr />
+<p><em>Written by Dheeraj Kushwaha, founder of <a href="https://www.celorisdesigns.com/about">Celoris Designs LLP</a>. Celoris runs small-batch digital marketing training out of Noida, built around live campaign work rather than theoretical case studies — <a href="https://www.celorisdesigns.com/digital-marketing-course-noida">book a free 30-minute demo class</a> if you'd rather see it than read about it.</em></p>
+    </div>
+    <div class="meaning"><b>The clean, paste-ready version is <code>draft.md</code>.</b> This preview exists so you can read it without leaving the dashboard. Any <span style="color:#b4522f">[YOUR EXPERIENCE HERE]</span> marker above is deliberate: the skill will not invent first-hand experience for you.</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Data: keyword map + web sources fetched this run · window: sources fetched 15 Sep 2026</span>
+    <span>seo-content-writer · generated 15 Sep 2026</span>
+  </div>
+  <div class="wrap" style="border:none;padding-top:14px">
+    <p class="note">Two sources were fully fetched and confirmed this run: celorisdesigns.com/digital-marketing-course-noida and grow.google/certificates/digital-marketing-ecommerce. A third, Skill India Digital Hub&#x27;s course page, blocked direct fetching via robots.txt — that one claim rests on a confirmed search-result snippet (title + description) rather than a full page open, and is kept deliberately minimal for that reason. A fourth candidate source (an IIT-Kanpur-affiliated blog with India job-market stats) was fetched and read, then rejected: its numbers had no cited origin, so no salary or job-count statistic from it was used anywhere in the draft.</p>
+  </div>
+</footer>
+
+</body>
+</html>

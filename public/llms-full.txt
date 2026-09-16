@@ -17,6 +17,14 @@ This document provides complete plain-text schemas and syllabus outlines for the
 - **URL**: https://www.celorisdesigns.com/ai-explorer
 - **Description**: A sandbox featuring state-of-the-art open-source and proprietary models. Text generation (Llama, DeepSeek), Image generation (Stable Diffusion, Flux), and voice synthesis/cloning tools.
 
+### PolyVault (3D Model Marketplace)
+- **URL**: https://www.celorisdesigns.com/polyvault
+- **Description**: A community marketplace for low-poly 3D models. Creators can generate models with built-in AI generators or upload their own, then list them for other users to browse, preview, and download. Supports common export formats, PBR textures, rigging, and animation metadata.
+
+### Chat Café (Retro Community Chat)
+- **URL**: https://www.celorisdesigns.com/social
+- **Description**: A real-time multiplayer retro-styled chat lounge where creators and learners hang out at virtual café tables, chat live, and interact with AI-hosted characters and guided discussion topics.
+
 ---
 
 ## 2. Advanced Courses & Syllabi Detailed

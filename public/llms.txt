@@ -7,6 +7,8 @@ India's free creative studio since 2019. Free video editor, image studio, 20+ AI
 - [AI Explorer](https://www.celorisdesigns.com/ai-explorer) - Explore 20+ state-of-the-art AI models for text, image, and video generation.
 - [Teach & Earn Platform](https://www.celorisdesigns.com/teach) - Join as a trainer, host classes, and monetize expertise.
 - [Earn Gigs Marketplace](https://www.celorisdesigns.com/earn) - Daily freelance and creation gigs for creators.
+- [PolyVault](https://www.celorisdesigns.com/polyvault) - Marketplace for buying, selling, and generating low-poly 3D models with AI generators.
+- [Chat Café](https://www.celorisdesigns.com/social) - Real-time multiplayer retro chat lounge for creators and learners to hang out and talk.
 
 ## Featured Syllabi
 

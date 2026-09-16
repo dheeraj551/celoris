@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<!--
+  Content Package — AI RANKING DASHBOARD TEMPLATE
+  GENERATED FILE. Do not edit inside a skill folder.
+  Edit shared/house-style.css or shared/bodies/*.body.html, then run:
+      python3 shared/build_templates.py
+
+  HOW TO FILL THIS TEMPLATE
+  - Replace every double-brace placeholder with a real value.
+  - Repeatable blocks are marked.
+    Duplicate the inner block once per row. Delete the block if there are no rows
+    and show the .empty state instead.
+  - Do NOT restyle. Do NOT add fonts, colours, or libraries.
+  - Never invent a number. If data is missing write "no data" and say why in
+    This is a rewrite of the live URL, not a new page — it directly answers the three biggest findings from the on-page audit run right before this: (1) the competitor-naming table is gone, replaced by a differentiation section grounded in Dheeraj&#x27;s own first-hand reasoning instead of a named comparison; (2) the unsourced “15,000+ job openings” claim is replaced with a real, fetched, dated Internshala count (986 as of today, flagged in-text as a number that moves daily); (3) the brief-approved “1,000+ Students” / “4.9/5 Rating” figures, previously unused on this page, are now surfaced near the testimonials. The primary keyword target also changed on purpose: the keyword map marked “digital marketing course in noida” (1,300/mo) as ‘skip’ for the blog specifically because it belongs to this URL — this is that keyword finally getting used..
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Marketing Course in Noida — service page rewrite · Content Package</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   AI RANKING HOUSE STYLE — single source of truth
+   Inherited from local-seo-report/templates/report.html.template.
+   Do not restyle per skill. Edit here, then run shared/build_templates.py
+   to regenerate all five skill templates.
+   ============================================================ */
+:root{
+  --forest:#1c3a2e; --forest-2:#264c3b; --moss:#5b7a63;
+  --cream:#f4efe2; --cream-2:#ece5d3; --paper:#fbf8f0;
+  --gold:#c08a3e; --rust:#b4522f; --ink:#16241d;
+  --pass:#2f7d4e; --warn:#c08a3e; --fail:#b4522f;
+  --line:rgba(28,58,46,.16);
+  --shadow:0 1px 2px rgba(28,58,46,.06),0 12px 36px -12px rgba(28,58,46,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Schibsted Grotesk",system-ui,sans-serif;
+  background:var(--cream); color:var(--ink);
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(192,138,62,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(91,122,99,.14), transparent 55%);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+.reveal{opacity:0;transform:translateY(18px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+header.top{background:linear-gradient(160deg,var(--forest),var(--forest-2));color:var(--cream);position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle at center, rgba(192,138,62,.45), transparent 65%)}
+.top .wrap{padding:54px 28px 46px;position:relative;z-index:2}
+.brandrow{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,226,.7)}
+.brandrow b{color:var(--cream);font-weight:600}
+h1{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;margin:26px 0 6px;letter-spacing:-.01em}
+h1 em{font-style:italic;color:#e7c690}
+.sub{font-size:1.02rem;color:rgba(244,239,226,.82);max-width:52ch}
+.datechip{display:inline-flex;gap:.5rem;align-items:center;margin-top:22px;background:rgba(244,239,226,.12);border:1px solid rgba(244,239,226,.25);padding:.5rem .9rem;border-radius:999px;font-size:.82rem;letter-spacing:.04em}
+.datechip span{width:7px;height:7px;border-radius:50%;background:#7bd39a;box-shadow:0 0 0 4px rgba(123,211,154,.18)}
+
+/* ---------- KPI band ---------- */
+.heroband{background:var(--paper);border-bottom:1px solid var(--line)}
+.heroband .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0}
+.stat{padding:30px 22px;border-right:1px solid var(--line);position:relative}
+.stat:last-child{border-right:none}
+.stat .k{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1;color:var(--forest);letter-spacing:-.02em}
+.stat .l{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);margin-top:10px}
+.stat .w{font-size:.72rem;color:#9a9684;margin-top:3px}
+.stat.is-fail .k{color:var(--fail)}
+.stat.is-warn .k{color:var(--warn)}
+@media(max-width:720px){.heroband .wrap{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}}
+
+/* ---------- sections ---------- */
+main{padding:60px 0 30px}
+section{margin-bottom:58px}
+.seclabel{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.seclabel .num{font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.1rem}
+.seclabel h2{font-family:"Fraunces",serif;font-weight:500;font-size:1.85rem;letter-spacing:-.01em;color:var(--forest)}
+.seclabel .win{margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);border:1px solid var(--line);padding:.3rem .7rem;border-radius:999px}
+.meaning{background:var(--cream-2);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;font-size:.95rem;margin-top:18px;color:#3a4a40}
+.meaning b{color:var(--forest)}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:720px){.cards{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.card .k{font-family:"Fraunces",serif;font-size:2rem;color:var(--forest);line-height:1;letter-spacing:-.02em}
+.card .l{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);margin-top:9px}
+.card.flag{border-color:rgba(180,82,47,.4);background:linear-gradient(180deg,#fbf1ec,var(--paper))}
+.card.flag .k{color:var(--rust)}
+.card.flag .tag{font-size:.68rem;color:var(--rust);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-top:6px;display:block}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:var(--shadow)}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:6px}
+.tbl th{text-align:left;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);padding:14px 18px;background:var(--cream-2);border-bottom:1px solid var(--line)}
+.tbl td{padding:13px 18px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.q{font-weight:500;color:var(--ink)}
+.tbl td.num{font-family:"Fraunces",serif;font-weight:600;font-size:1.02rem;white-space:nowrap}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bar{height:6px;border-radius:3px;background:var(--cream-2);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--forest))}
+
+/* ---------- badges + status ---------- */
+.badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  padding:.34rem .72rem;border-radius:999px;border:1px solid var(--line);background:var(--cream-2);color:var(--forest)}
+.badge.solid{background:linear-gradient(150deg,var(--forest),var(--forest-2));color:var(--cream);border-color:transparent}
+.badge.gold{background:rgba(192,138,62,.14);border-color:rgba(192,138,62,.4);color:#8a5f1f}
+.st{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.st.pass{color:var(--pass)}      .st.pass::before{background:var(--pass);box-shadow:0 0 0 3px rgba(47,125,78,.15)}
+.st.warn{color:var(--warn)}      .st.warn::before{background:var(--warn);box-shadow:0 0 0 3px rgba(192,138,62,.15)}
+.st.fail{color:var(--fail)}      .st.fail::before{background:var(--fail);box-shadow:0 0 0 3px rgba(180,82,47,.15)}
+.st.na{color:#9a9684}            .st.na::before{background:#c9c4b3}
+.intent{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:.24rem .6rem;border-radius:6px;white-space:nowrap}
+.intent.info{background:rgba(91,122,99,.16);color:#3f5a48}
+.intent.comm{background:rgba(192,138,62,.16);color:#8a5f1f}
+.intent.trans{background:rgba(47,125,78,.16);color:#215a38}
+.intent.nav{background:rgba(28,58,46,.1);color:var(--forest)}
+
+/* ---------- checklist (skill 3) ---------- */
+.checks{list-style:none}
+.checks li{display:grid;grid-template-columns:130px 1fr;gap:18px;padding:16px 0;border-bottom:1px dashed var(--line);align-items:start}
+.checks li:last-child{border-bottom:none}
+.checks .what{font-weight:500;color:var(--forest)}
+.checks .why{display:block;color:#6c7a6f;font-size:.88rem;margin-top:3px}
+.checks .fix{display:block;font-size:.88rem;margin-top:6px;padding:10px 12px;background:var(--cream-2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#3a4a40}
+
+/* ---------- score dial ---------- */
+.score{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.score .n{font-family:"Fraunces",serif;font-size:4rem;line-height:1;color:var(--forest);letter-spacing:-.03em}
+.score .n small{font-size:1.2rem;color:var(--moss)}
+.score .track{flex:1;min-width:180px;height:10px;border-radius:5px;background:var(--cream-2);overflow:hidden}
+.score .track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--pass))}
+
+/* ---------- ordered focus / gap list ---------- */
+.focus ol{list-style:none;counter-reset:f;margin-top:8px}
+.focus li{counter-increment:f;display:flex;gap:16px;padding:15px 0;border-bottom:1px dashed var(--line)}
+.focus li:last-child{border-bottom:none}
+.focus li::before{content:counter(f);font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.2rem;min-width:26px}
+.focus li b{color:var(--forest)}
+.focus li small{display:block;color:#6c7a6f;font-size:.85rem;margin-top:2px}
+
+/* ---------- dark feature panel (skill 5 / highlights) ---------- */
+.feature{background:linear-gradient(150deg,var(--forest),var(--forest-2));color:var(--cream);border-radius:18px;padding:30px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.feature::after{content:"";position:absolute;right:-80px;bottom:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(231,198,144,.35),transparent 65%)}
+.feature .ey{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#e7c690}
+.feature h3{font-family:"Fraunces",serif;font-weight:500;font-size:1.5rem;margin:8px 0 18px;max-width:34ch}
+.feature .rows{display:flex;gap:30px;flex-wrap:wrap;position:relative;z-index:2}
+.feature .r .n{font-family:"Fraunces",serif;font-size:2.3rem;line-height:1;color:#fff}
+.feature .r .s{font-size:.8rem;color:rgba(244,239,226,.8);margin-top:6px}
+
+/* ---------- draft preview (skill 2) ---------- */
+.draft{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:30px 34px;box-shadow:var(--shadow);max-height:620px;overflow-y:auto}
+.draft h2,.draft h3{font-family:"Fraunces",serif;font-weight:500;color:var(--forest);margin:26px 0 10px}
+.draft h2{font-size:1.4rem}.draft h3{font-size:1.12rem}
+.draft p{margin:0 0 14px}
+.draft a{color:#215a38;text-decoration:underline;text-underline-offset:2px}
+.draft .marker{background:rgba(180,82,47,.14);border:1px dashed rgba(180,82,47,.5);color:var(--rust);font-weight:600;padding:12px 14px;border-radius:8px;display:block;margin:14px 0}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:.92rem}
+.kv dt{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);padding-top:3px}
+.kv dd{color:var(--ink);word-break:break-word}
+pre.code{background:var(--ink);color:#dfe7df;padding:18px;border-radius:12px;overflow-x:auto;font-size:.8rem;line-height:1.5}
+
+/* ---------- empty state ---------- */
+.empty{background:var(--cream-2);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:#6c7a6f}
+.empty b{display:block;font-family:"Fraunces",serif;font-size:1.2rem;color:var(--forest);margin-bottom:6px}
+
+/* ---------- footer ---------- */
+footer{padding:40px 0 70px;color:#7d8a7f;font-size:.82rem}
+footer .wrap{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.note{font-size:.8rem;color:#8a8773;max-width:60ch}
+
+/* ---------- print ---------- */
+@media print{
+  body::before{display:none}
+  .draft{max-height:none;overflow:visible}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap reveal">
+    <div class="brandrow"><span>Content Package</span><b>AI Ranking</b></div>
+    <h1>Content Package</h1>
+    <p class="sub">draft2.md — rewritten copy for celorisdesigns.com/digital-marketing-course-noida</p>
+    <div class="datechip"><span></span>Digital Marketing Course in Noida — service page rewrite · generated 15 Sep 2026</div>
+  </div>
+</header>
+
+<div class="heroband">
+  <div class="wrap">
+    <div class="stat"><div class="k">1,239</div><div class="l">Words</div><div class="w">Service / product</div></div>
+    <div class="stat"><div class="k">4</div><div class="l">Sources cited</div><div class="w">fetched + confirmed</div></div>
+    <div class="stat"><div class="k">7</div><div class="l">Answer capsules</div><div class="w">H2 + 2-sentence answer</div></div>
+    <div class="stat is-pass"><div class="k">7<small>/7</small></div><div class="l">Quality score</div><div class="w">All 7 passed</div></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="reveal">
+    <div class="seclabel"><span class="num">01</span><h2>Quality scorecard</h2><span class="win">7 of 7 passed</span></div>
+    <div class="panel">
+      <ul class="checks">
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">1. Every claim has an inline, fetched source</span><small class="why">Internshala job count fetched and linked inline this run; pricing, curriculum, testimonials and NAP confirmed by reading the live page&#x27;s own source this session; student/rating and trainer ad-spend figures confirmed from site-brief.md. No claim carried over from memory.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">2. Every H2 is a question with a 2-sentence answer directly beneath it</span><small class="why">All 7 H2s checked individually. One first draft slipped — the pricing H2&#x27;s second sentence was a table lead-in instead of a completed answer — caught and rewritten before delivery so the capsule states the price-tier logic directly and the table lead-in became a separate third sentence.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">3. Exactly one table is present</span><small class="why">The pricing table (Basic/Advanced/Mastery) is the only table in the piece.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">4. Experience section filled by a human, not a marker</span><small class="why">Filled with Dheeraj&#x27;s own “build your own path instead of copying the successful business” reasoning, attributed to him by name in H2 5 — no marker used.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">5. Title tag and meta description within length limits</span><small class="why">Title 60 characters, meta description 154 characters — both reuse the already-correct copy sitting unused in the live codebase (see the on-page audit&#x27;s check 7).</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">6. Schema present and valid for the page type</span><small class="why">LocalBusiness + FAQPage, both valid JSON-LD, NAP matches site-brief.md exactly — same schema shape as the live page, only the FAQ text changed to match the rewritten copy.</small></div>
+        </li>
+
+        <li>
+          <span class="st pass">Pass</span>
+          <div><span class="what">7. Primary keyword in H1 and first 100 words</span><small class="why">H1 is “Digital Marketing Course in Noida”; the exact phrase “digital marketing course in Noida” also appears in the first sentence of the intro paragraph.</small></div>
+        </li>
+      </ul>
+      <div class="meaning"><b>The experience check is the one that matters most.</b> Filled by Dheeraj directly (H2 5, “What Makes Celoris Different”) — not a marker. His point: in digital marketing specifically, so many people already write about the same thing that copying a competitor&#x27;s structure just gets you shadowed by them; building your own approach is what actually gets noticed. That&#x27;s used as the stated reason this page doesn&#x27;t run a competitor-comparison table, replacing the one the on-page audit flagged as a hard-rule violation.</div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">02</span><h2>Page package</h2><span class="win">paste into your CMS</span></div>
+    <div class="panel">
+      <dl class="kv">
+        <dt>Page type</dt><dd><span class="badge solid">Service / product</span></dd>
+        <dt>Primary keyword</dt><dd>digital marketing course in noida</dd>
+        <dt>URL slug</dt><dd>/digital-marketing-course-noida</dd>
+        <dt>Title tag</dt><dd>Digital Marketing Course in Noida | Celoris — Book Free Demo <small>(60 chars)</small></dd>
+        <dt>Meta description</dt><dd>Join the best digital marketing course in Noida. Learn SEO, Google Ads, Meta Ads &amp; more from certified trainers. Online &amp; offline. Book a free demo today! <small>(154 chars)</small></dd>
+        <dt>H1</dt><dd>Digital Marketing Course in Noida</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">03</span><h2>Heading structure</h2><span class="win">7 capsules</span></div>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Level</th><th>Heading</th><th>Keyword / question it answers</th><th>Capsule</th></tr></thead>
+      <tbody>
+
+        <tr><td class="num">H1</td><td class="q">Digital Marketing Course in Noida</td><td>digital marketing course in noida (primary, 1,300/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">What Do You Get in Celoris&#x27;s Digital Marketing Course in Noida?</td><td>curriculum / digital marketing course syllabus (support, 880/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">How Much Does a Digital Marketing Course Cost in Noida?</td><td>digital marketing course fees (secondary, 9,900/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Is There a Digital Marketing Course Near You in Noida?</td><td>digital marketing classes near me (secondary, 14,800/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Will This Course Actually Get You a Job in Digital Marketing?</td><td>digital marketing course with placement (secondary, 1,600/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">What Makes Celoris Different From Other Digital Marketing Courses in Noida?</td><td>best digital marketing course in noida (secondary, 170/mo) + digital marketing institute in noida (support, 390/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">Do You Need a Certification, or Just Practical Skills?</td><td>digital marketing certification course (secondary, 2,400/mo)</td><td><span class="st "></span></td></tr>
+
+        <tr><td class="num">H2</td><td class="q">How Long Is the Course, and Can You Learn Online or In Person?</td><td>digital marketing course online (secondary, 12,100/mo) + digital marketing short term course (support, 590/mo)</td><td><span class="st "></span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">04</span><h2>Sources cited</h2><span class="win">4 confirmed</span></div>
+    <!-- Every row here must be a URL that was actually fetched in this run. Never list a source from memory. -->
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Claim it backs</th><th>Source</th><th>Anchor used</th><th>Fetched</th></tr></thead>
+      <tbody>
+
+        <tr><td class="q">986 open digital marketing roles in Delhi NCR (as of 15 Sep 2026)</td><td>Internshala — Digital Marketing Jobs in Delhi</td><td></td><td><span class="st pass">Fetched live this run</span></td></tr>
+
+        <tr><td class="q">Pricing (₹2,500 / ₹4,999 / ₹8,000) and plan inclusions</td><td>Celoris&#x27;s own live page source (app/digital-marketing-course-noida/page.tsx)</td><td></td><td><span class="st pass">Read directly from source this session</span></td></tr>
+
+        <tr><td class="q">Curriculum, sector coverage list, NAP, testimonials (Priya M., Sandeep K.)</td><td>Celoris&#x27;s own live page source (app/digital-marketing-course-noida/page.tsx)</td><td></td><td><span class="st pass">Read directly from source this session</span></td></tr>
+
+        <tr><td class="q">1,000+ students, 4.9/5 rating; trainers&#x27; ₹50L+ in real ad spend for Delhi NCR clients</td><td>site-brief.md (confirmed with Dheeraj directly)</td><td></td><td><span class="st pass">Confirmed first-party</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="meaning">Links sit inline on the keyword next to the claim, not in a Sources block at the bottom. That is what makes an AI engine attach your page to the sentence it lifts.</div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">05</span><h2>Schema markup</h2><span class="win">LocalBusiness + FAQPage</span></div>
+    <pre class="code">{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Celoris Digital Marketing Training Noida",
+  "image": "https://www.celorisdesigns.com/digimarck.png",
+  "@id": "https://www.celorisdesigns.com/digital-marketing-course-noida",
+  "url": "https://www.celorisdesigns.com/digital-marketing-course-noida",
+  "telephone": "+91 90847 18101",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Sector 62",
+    "addressLocality": "Noida",
+    "addressRegion": "UP",
+    "postalCode": "201301",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 28.6273,
+    "longitude": 77.3725
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Noida" },
+    { "@type": "City", "name": "Greater Noida" },
+    { "@type": "City", "name": "Ghaziabad" }
+  ],
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+    "opens": "08:00",
+    "closes": "21:00"
+  }
+}
+
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does a digital marketing course cost in Noida?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "At Celoris, the Basic plan is ₹2,500 for 4 weeks, Advanced is ₹4,999 for 8 weeks, and Mastery (1-on-1) is ₹8,000 for 8 weeks. All three prices are published upfront, with no hidden add-on fees."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a digital marketing course near me in Noida?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — Celoris runs in-person and small-group batches across Noida (including Sectors 18, 62, 63 and 125), Greater Noida, and Ghaziabad, plus a fully online option via Zoom or Google Meet for anyone outside those areas."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will this course actually help me get a job in digital marketing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No course can guarantee you a job, and Celoris doesn't claim to. What it offers instead is live campaign practice you can show an employer or client, in a market where hundreds of digital marketing roles are open in Delhi NCR at any given time."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What makes Celoris different from other digital marketing courses in Noida?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Batches are capped at 5 students with real ad-spend campaign practice, transparent pricing with no hidden fees, and a home-visit option across Noida sectors — built around a deliberately different teaching approach rather than a copy of what every other course already offers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need a certification, or just practical skills?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A Celoris Course Completion Certificate is included with every plan, but the thing that actually helps you get hired is the live campaign work you can point to. Treat the certificate as a bonus, not the reason to enrol."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long is the course, and can I learn online or in person?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The course runs 4 to 8 weeks depending on the plan you choose, and you can take it fully online via Zoom or Google Meet, in person at Celoris, or with a trainer visiting your home across Noida. All three formats cover the same curriculum."
+      }
+    }
+  ]
+}</pre>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">06</span><h2>Draft preview</h2><span class="win">full copy in draft.md</span></div>
+    <div class="draft">
+<h1>Digital Marketing Course in Noida</h1>
+<p>Celoris runs a digital marketing course in Noida built around one idea: show you exactly what you're paying for before you pay for it. That means published pricing with no hidden fees, batches capped at 5 students, and live ad-campaign practice instead of a stack of recorded videos — available in person across Noida, Greater Noida and Ghaziabad, or fully online.</p>
+<h2>What Do You Get in Celoris's Digital Marketing Course in Noida?</h2>
+<p>You get a structured path through SEO, Google Ads, Meta Ads, organic social media, content marketing and analytics, taught by trainers who run real client campaigns, not just theory. The course is split into 8 modules — Fundamentals, SEO, Google Ads, Meta Ads, Social Media Marketing, Content Marketing &amp; Copywriting, Analytics &amp; Reporting, and a bonus Freelancing &amp; Agency Skills module for anyone who wants to work independently after finishing.</p>
+<p>Every plan includes 10+ practice assignments, hands-on work inside live ad campaigns, a Celoris Course Completion Certificate, and lifetime WhatsApp support for questions that come up after you're done — <a href="https://wa.me/919084718101">WhatsApp: +91 90847 18101</a>.</p>
+<h2>How Much Does a Digital Marketing Course Cost in Noida?</h2>
+<p>Celoris's digital marketing course in Noida runs ₹2,500 for the 4-week Basic plan up to ₹8,000 for the 8-week Mastery (1-on-1) plan, with no hidden charges on any tier. All three tiers include the same core inclusions — practice assignments, live campaign work and a certificate — so the price difference mainly buys you a smaller batch and more direct trainer time. Here's the full breakdown:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Price</th>
+<th>Duration</th>
+<th>Built for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic</td>
+<td>₹2,500</td>
+<td>4 weeks</td>
+<td>Beginners &amp; students</td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td>₹4,999</td>
+<td>8 weeks</td>
+<td>Working professionals</td>
+</tr>
+<tr>
+<td>Mastery (1-on-1)</td>
+<td>₹8,000</td>
+<td>8 weeks</td>
+<td>Freelancers &amp; business owners</td>
+</tr>
+</tbody>
+</table>
+<p><em>Prices as of September 2026 — WhatsApp +91 90847 18101 to confirm current rates before enrolling.</em> All three plans include the same core promise: 10+ practice assignments, live campaign experience, a completion certificate, and lifetime WhatsApp support — the difference between tiers is batch size, duration and how much 1-on-1 time you get with a trainer.</p>
+<h2>Is There a Digital Marketing Course Near You in Noida?</h2>
+<p>Yes — Celoris runs in-person and small-group batches across Noida Sectors 18, 22, 37, 44, 50, 56, 62, 63, 76, 93, 100, 120, 125, 135 and 137, plus Greater Noida (Knowledge Park I–V, Alpha, Beta, Gamma, Delta, Omega and Greater Noida West's Gaur City, Supertech Eco Village and Amrapali Silicon City) and Ghaziabad (Indirapuram, Vaishali, Vasundhara, Crossings Republik). Trainers offer home-visit sessions across all of these, or you can join fully online via Zoom or Google Meet if you're outside the area, or just prefer to learn from home.</p>
+<p>If you're weighing a local, in-person option against a national online platform, location genuinely matters here: running a live ad campaign is easier to troubleshoot face-to-face the first time you try it, which is the main reason Celoris still offers home visits instead of going online-only.</p>
+<h2>Will This Course Actually Get You a Job in Digital Marketing?</h2>
+<p>No course can honestly guarantee you a job, and Celoris doesn't claim to — what it offers instead is campaign work you can actually show an employer or client. As of today, there were <a href="https://internshala.com/jobs/digital-marketing-jobs-in-delhi/">986 open digital marketing roles listed on Internshala for Delhi NCR alone</a> — a live count that moves daily, but a reasonable sense of how much hiring activity exists in this specific market right now.</p>
+<p>Whether that turns into a job for you depends on what you can prove you've actually done, which is the entire reason the course is structured around live campaigns instead of quizzes: a portfolio of real ad spend you managed carries more weight in an interview than a certificate for videos you watched.</p>
+<h2>What Makes Celoris Different From Other Digital Marketing Courses in Noida?</h2>
+<p>Batches are capped at 5 students with real client ad-spend behind the practice work, pricing is published upfront with nothing added later, and a trainer can come to you — that's the actual difference, not a claim about being better than any specific competitor. There's a simple reason this page doesn't run through a feature-by-feature scorecard against other named providers in Noida: in digital marketing specifically, almost everyone ends up writing the same list of "why choose us" points, and a course built to copy that formula just blends into the same noise as everyone else's.</p>
+<p>Dheeraj Kushwaha, Celoris's founder, puts it plainly: in a field where hundreds of people are already writing about the same topic, doing it the way everyone else already does guarantees you get overshadowed by whoever's biggest — the only way to actually get noticed is to build your own way of doing things, even if it's less conventional, rather than following the path a bigger, already-successful business laid down first. That's the thinking behind why this course runs small, in-person batches with real campaign budgets instead of copying the recorded-video, large-cohort format most competitors default to.</p>
+<h2>Do You Need a Certification, or Just Practical Skills?</h2>
+<p>A Celoris Course Completion Certificate comes with every plan, but it's not the reason to enrol — the thing that actually helps in a hiring conversation is a small portfolio of real campaigns you ran yourself. Add the certificate to LinkedIn or your resume as a supporting credential, not the headline.</p>
+<p>This matters most if you're a complete beginner deciding between a short, practical track and a longer certification-heavy one: the Basic plan is built for exactly that — no prior marketing background required, starting from fundamentals, with the practical work (not the paperwork) doing the heavy lifting.</p>
+<h2>How Long Is the Course, and Can You Learn Online or In Person?</h2>
+<p>The course runs 4 to 8 weeks depending on the plan, and you can take it fully online via Zoom or Google Meet, in person at Celoris, or with a trainer visiting your home across Noida — all three formats cover the same curriculum and modules. The 4-week Basic track suits someone who wants the fundamentals fast; the 8-week Advanced and Mastery tracks add Google Ads, Meta Ads and full analytics for anyone going deeper or planning to freelance afterward.</p>
+<p>Format doesn't change what you're taught, only how you attend — pick online if flexibility matters more, or in-person/home-visit if you specifically want someone watching your first live campaign over your shoulder.</p>
+<hr />
+<h3>What Students Say</h3>
+<p>"The trainer actually showed me how to run a live Facebook ad campaign during class. That hands-on experience is what got me my first freelance client." — Priya M., Noida Sector 62</p>
+<p>"I was running my own business but had no idea about digital marketing. After this course I am managing my own Google Ads and saving ₹15,000/month on the agency I was paying." — Sandeep K., Greater Noida</p>
+<p>Celoris has trained 1,000+ students platform-wide with a 4.9/5 average rating, and its digital marketing trainers specifically have managed ₹50L+ in real ad spend for Delhi NCR clients — learn from people who run these campaigns for a living, not just people who teach the theory.</p>
+<p><strong>Ready to see it before you pay for it?</strong> <a href="https://wa.me/919084718101">WhatsApp: +91 90847 18101</a> for a free 30-minute demo class — no payment required, no pressure to enrol.</p>
+    </div>
+    <div class="meaning"><b>The clean, paste-ready version is <code>draft.md</code>.</b> This preview exists so you can read it without leaving the dashboard. Any <span style="color:#b4522f">[YOUR EXPERIENCE HERE]</span> marker above is deliberate: the skill will not invent first-hand experience for you.</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Data: keyword map + web sources fetched this run · window: Written 15 Sep 2026, same day as the on-page audit of the live URL this rewrite responds to. Internshala job count fetched live this run; pricing, curriculum, testimonials and NAP confirmed by reading the live page&#x27;s own source (app/digital-marketing-course-noida/page.tsx) directly in this session; platform-wide student/rating numbers and the trainer ad-spend figure confirmed from site-brief.md.</span>
+    <span>seo-content-writer · generated 15 Sep 2026</span>
+  </div>
+  <div class="wrap" style="border:none;padding-top:14px">
+    <p class="note">This is a rewrite of the live URL, not a new page — it directly answers the three biggest findings from the on-page audit run right before this: (1) the competitor-naming table is gone, replaced by a differentiation section grounded in Dheeraj&#x27;s own first-hand reasoning instead of a named comparison; (2) the unsourced “15,000+ job openings” claim is replaced with a real, fetched, dated Internshala count (986 as of today, flagged in-text as a number that moves daily); (3) the brief-approved “1,000+ Students” / “4.9/5 Rating” figures, previously unused on this page, are now surfaced near the testimonials. The primary keyword target also changed on purpose: the keyword map marked “digital marketing course in noida” (1,300/mo) as ‘skip’ for the blog specifically because it belongs to this URL — this is that keyword finally getting used.</p>
+  </div>
+</footer>
+
+</body>
+</html>

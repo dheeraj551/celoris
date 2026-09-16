@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
-import { MessageCircle, X, Send, Loader2, ArrowLeft, Bot } from "lucide-react"
+import { MessageCircle, X, Send, Loader2, ArrowLeft, Bot, Bell, ChevronUp, ChevronDown, Search } from "lucide-react"
 
 type ChatMessage = {
     role: "user" | "assistant"
@@ -42,6 +42,16 @@ const GREETING: ChatMessage = {
         "Hi! I'm Celoris Support 👋 To point you the right way fastest, which of these best describes you? (Or just type your question below.)",
 }
 
+// Short preview shown in the proactive "unread message" row before the full
+// panel is opened — deliberately shorter than GREETING, like a notification
+// preview rather than the full opening line.
+const TEASER_PREVIEW = "Hi! Need help picking a course, finding a gig, or something else?"
+
+// Delay before the proactive teaser row appears, and the sessionStorage key
+// used so it only shows once per browser session rather than on every page.
+const TEASER_DELAY_MS = 4500
+const TEASER_SEEN_KEY = "celoris-support-teaser-seen"
+
 const INTENT_OPTIONS: { key: Exclude<Intent, null>; label: string; seed: string }[] = [
     { key: "student", label: "🎓 I'm a student", seed: "I'm a student looking to learn something new." },
     { key: "teacher", label: "🧑‍🏫 I'm a teacher", seed: "I'm a teacher and want to know about teaching on Celoris." },
@@ -60,7 +70,11 @@ const optionItemVariants = {
 
 export function SupportBotWidget() {
     const [open, setOpen] = useState(false)
-    const [view, setView] = useState<"chat" | "lead">("chat")
+    // "inbox" is the messenger-style landing screen (a list of conversations,
+    // Celoris Support being the first/only one for now) — clicking a
+    // conversation moves to "chat"; "lead" is the existing email/WhatsApp
+    // handoff form, reached from inside "chat".
+    const [view, setView] = useState<"inbox" | "chat" | "lead">("inbox")
     const [messages, setMessages] = useState<ChatMessage[]>([GREETING])
     const [intent, setIntent] = useState<Intent>(null)
     const [input, setInput] = useState("")
@@ -71,6 +85,51 @@ export function SupportBotWidget() {
     const scrollRef = useRef<HTMLDivElement>(null)
     const { toast } = useToast()
     const reduceMotion = useReducedMotion()
+
+    // Proactive "unread message" teaser — shown once per session, a few
+    // seconds after the page settles, so the widget feels like it messaged
+    // you rather than waiting to be clicked. Dismissible, and never shown
+    // again once opened or dismissed this session.
+    const [teaserVisible, setTeaserVisible] = useState(false)
+    const [hasUnread, setHasUnread] = useState(false)
+
+    useEffect(() => {
+        let alreadySeen = false
+        try {
+            alreadySeen = sessionStorage.getItem(TEASER_SEEN_KEY) === "1"
+        } catch {
+            // sessionStorage can throw in some private/blocked contexts — fail open,
+            // worst case the teaser just shows again next session.
+        }
+        if (alreadySeen) return
+
+        const timer = setTimeout(() => {
+            setTeaserVisible(true)
+            setHasUnread(true)
+            try {
+                sessionStorage.setItem(TEASER_SEEN_KEY, "1")
+            } catch {
+                // best-effort only
+            }
+        }, TEASER_DELAY_MS)
+
+        return () => clearTimeout(timer)
+    }, [])
+
+    const dismissTeaser = () => setTeaserVisible(false)
+    const openFromTeaser = () => {
+        // The teaser row IS the Celoris Support conversation preview, so
+        // clicking it opens that conversation directly — same as tapping a
+        // specific row in the inbox would.
+        setTeaserVisible(false)
+        setHasUnread(false)
+        setView("chat")
+        setOpen(true)
+    }
+    const openConversation = () => {
+        setHasUnread(false)
+        setView("chat")
+    }
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -175,7 +234,47 @@ export function SupportBotWidget() {
     }
 
     return (
-        <div className="fixed bottom-5 right-5 z-[60] flex flex-col items-end">
+        <div className="fixed bottom-5 right-5 z-[60] flex flex-col items-end gap-3">
+            {/* Proactive "unread message" preview row — the messenger-style teaser */}
+            <AnimatePresence>
+                {teaserVisible && !open && (
+                    <motion.div
+                        key="teaser"
+                        initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                        transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 340, damping: 26 }}
+                        className="w-[300px] max-w-[85vw] flex items-center gap-3 rounded-2xl border border-slate-800 bg-[#0b1220] shadow-2xl pl-3 pr-2.5 py-2.5"
+                    >
+                        <button
+                            onClick={openFromTeaser}
+                            className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                        >
+                            <div className="relative h-10 w-10 shrink-0">
+                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                                    <Bot className="h-5 w-5 text-white" />
+                                </div>
+                                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-rose-500 border-2 border-[#0b1220]" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between gap-2">
+                                    <p className="text-sm font-semibold text-white truncate">Celoris Support</p>
+                                    <span className="text-[10px] text-slate-500 shrink-0">now</span>
+                                </div>
+                                <p className="text-xs text-slate-400 truncate">{TEASER_PREVIEW}</p>
+                            </div>
+                        </button>
+                        <button
+                            onClick={dismissTeaser}
+                            aria-label="Dismiss"
+                            className="shrink-0 text-slate-500 hover:text-slate-300 transition-colors p-1"
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -193,15 +292,16 @@ export function SupportBotWidget() {
                         {/* Header */}
                         <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-800 bg-gradient-to-r from-emerald-500/10 to-emerald-600/10">
                             <div className="flex items-center gap-2 min-w-0">
-                                {view === "lead" ? (
+                                {(view === "lead" || view === "chat") && (
                                     <button
-                                        onClick={() => setView("chat")}
+                                        onClick={() => setView(view === "lead" ? "chat" : "inbox")}
                                         className="text-slate-400 hover:text-white transition-colors shrink-0"
-                                        aria-label="Back to chat"
+                                        aria-label={view === "lead" ? "Back to chat" : "Back to messages"}
                                     >
                                         <ArrowLeft className="h-4 w-4" />
                                     </button>
-                                ) : (
+                                )}
+                                {view === "chat" && (
                                     <div className="relative h-8 w-8 shrink-0">
                                         <motion.div
                                             className="absolute inset-0 rounded-full bg-emerald-400"
@@ -213,26 +313,98 @@ export function SupportBotWidget() {
                                         </div>
                                     </div>
                                 )}
+                                {view === "inbox" && (
+                                    <div className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                        <Bell className="h-4 w-4 text-slate-400" />
+                                    </div>
+                                )}
                                 <div className="min-w-0">
                                     <p className="text-sm font-semibold text-white truncate">
-                                        {view === "lead" ? "Talk to our team" : "Celoris Support"}
+                                        {view === "lead" ? "Talk to our team" : view === "chat" ? "Celoris Support" : "Messages"}
                                     </p>
                                     <p className="text-xs text-slate-400 truncate">
-                                        {view === "lead" ? "WhatsApp or email" : "Usually replies instantly"}
+                                        {view === "lead"
+                                            ? "WhatsApp or email"
+                                            : view === "chat"
+                                                ? "Usually replies instantly"
+                                                : hasUnread ? "1 unread" : "You're all caught up"}
                                     </p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setOpen(false)}
                                 className="text-slate-400 hover:text-white transition-colors shrink-0"
-                                aria-label="Close chat"
+                                aria-label="Close messages"
                             >
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
 
                         <AnimatePresence mode="wait" initial={false}>
-                            {view === "chat" ? (
+                            {view === "inbox" ? (
+                                <motion.div
+                                    key="inbox"
+                                    initial={{ opacity: 0, x: -14 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -14 }}
+                                    transition={{ duration: reduceMotion ? 0 : 0.18 }}
+                                    className="flex flex-col flex-1 min-h-0"
+                                >
+                                    {/* Search — visual for now, there's only one conversation to find */}
+                                    <div className="px-4 pt-3 pb-2">
+                                        <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-2">
+                                            <Search className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search messages"
+                                                disabled
+                                                className="bg-transparent text-xs text-slate-300 placeholder:text-slate-500 outline-none flex-1 cursor-default"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Chats / Requests — Requests is a placeholder until there's a real second source of threads */}
+                                    <div className="px-4 pb-2 flex items-center gap-2">
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                                            Chats
+                                            {hasUnread && (
+                                                <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-emerald-500 text-[#04160f] text-[10px] font-black">
+                                                    1
+                                                </span>
+                                            )}
+                                        </span>
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-full border border-slate-800 text-slate-500 text-xs font-semibold">
+                                            Requests
+                                        </span>
+                                    </div>
+
+                                    {/* Conversation list — Celoris Support today, room to add more sources later */}
+                                    <div className="flex-1 overflow-y-auto">
+                                        <button
+                                            onClick={openConversation}
+                                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors text-left"
+                                        >
+                                            <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                                                <Bot className="h-5 w-5 text-white" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <p className="text-sm font-semibold text-white truncate">Celoris Support</p>
+                                                    <span className="text-[10px] text-slate-500 shrink-0">now</span>
+                                                </div>
+                                                <p className="text-xs text-slate-400 truncate">
+                                                    {messages.length > 1 ? (messages[messages.length - 1].content || "...") : TEASER_PREVIEW}
+                                                </p>
+                                            </div>
+                                            {hasUnread && (
+                                                <span className="shrink-0 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center">
+                                                    1
+                                                </span>
+                                            )}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ) : view === "chat" ? (
                                 <motion.div
                                     key="chat"
                                     initial={{ opacity: 0, x: -14 }}
@@ -460,36 +632,36 @@ export function SupportBotWidget() {
                 )}
             </AnimatePresence>
 
-            {/* Toggle button */}
-            <div className="relative">
-                {!open && (
-                    <motion.span
-                        className="absolute inset-0 rounded-full bg-emerald-400 pointer-events-none"
-                        animate={reduceMotion ? undefined : { scale: [1, 1.6, 1.6], opacity: [0.4, 0, 0] }}
-                        transition={{ duration: 2.6, repeat: Infinity, ease: "easeOut" }}
-                    />
-                )}
-                <motion.button
-                    onClick={() => setOpen(o => !o)}
-                    whileHover={reduceMotion ? undefined : { scale: 1.08 }}
-                    whileTap={reduceMotion ? undefined : { scale: 0.92 }}
-                    className="relative h-14 w-14 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white"
-                    aria-label={open ? "Close Celoris Support chat" : "Open Celoris Support chat"}
-                >
-                    <AnimatePresence mode="wait" initial={false}>
+            {/* Messages dock bar — replaces the old plain circular chat bubble */}
+            <motion.button
+                onClick={() => {
+                    const next = !open
+                    setOpen(next)
+                    setTeaserVisible(false)
+                    // Opening always lands on the inbox list — it does not mark
+                    // the Celoris Support conversation read, same as any real
+                    // messenger: only opening that conversation does that.
+                    if (next) setView("inbox")
+                }}
+                whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                className="flex items-center gap-2.5 h-12 pl-4 pr-3.5 rounded-full bg-[#0b1220] border border-slate-800 shadow-xl shadow-black/30 text-white hover:border-emerald-500/50 transition-colors"
+                aria-label={open ? "Close messages" : "Open messages"}
+            >
+                <MessageCircle className="h-4 w-4 text-emerald-400" />
+                <span className="text-sm font-semibold">Messages</span>
+                <span className="relative flex items-center justify-center h-6 w-6 rounded-full bg-white/5">
+                    <Bell className="h-3.5 w-3.5 text-slate-400" />
+                    {hasUnread && (
                         <motion.span
-                            key={open ? "close" : "open"}
-                            initial={{ rotate: -90, opacity: 0 }}
-                            animate={{ rotate: 0, opacity: 1 }}
-                            exit={{ rotate: 90, opacity: 0 }}
-                            transition={{ duration: reduceMotion ? 0 : 0.2 }}
-                            className="flex items-center justify-center"
-                        >
-                            {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-                        </motion.span>
-                    </AnimatePresence>
-                </motion.button>
-            </div>
+                            className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-rose-500 border-2 border-[#0b1220]"
+                            animate={reduceMotion ? undefined : { scale: [1, 1.25, 1] }}
+                            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                    )}
+                </span>
+                {open ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronUp className="h-4 w-4 text-slate-400" />}
+            </motion.button>
         </div>
     )
 }
