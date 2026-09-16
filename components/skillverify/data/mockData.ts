@@ -962,6 +962,67 @@ export const PREBUILT_EXAMS: ExamDefinition[] = [
       },
     ],
   },
+  {
+    id: 'exam-digital-marketing-executive',
+    skillName: 'Digital Marketing Executive',
+    industry: 'Marketing',
+    title: 'Digital Marketing Executive Certification',
+    description: 'Validate hands-on ability to run Meta and Google Ads campaigns, manage a brand\'s social presence, perform basic on-page and local SEO, and read performance data to make real optimization calls rather than just report numbers.',
+    timeLimitMinutes: 8,
+    passingScorePercent: 70,
+    xpReward: 200,
+    badgeTitle: 'Digital Marketing Executive',
+    badgeColor: '#C9932E',
+    difficulty: 'Intermediate',
+    targetRoleExamples: ['Digital Marketing Executive', 'Performance Marketing Associate', 'Social Media & SEO Coordinator'],
+    questions: [
+      {
+        id: 'q1',
+        type: 'mcq',
+        question: 'You\'re running a Meta Ads campaign for an online store, optimized for the "Traffic" objective, but the actual goal is completed purchases. After two weeks, clicks are high but sales haven\'t moved. What\'s the most likely issue?',
+        options: [
+          'The ad creative isn\'t eye-catching enough — refresh the images or video.',
+          'The campaign objective is misaligned with the actual goal — switching to a "Conversions" objective, with the Purchase event and Meta Pixel/Conversions API firing correctly, lets the algorithm optimize toward buyers instead of just clickers.',
+          'The daily budget is too low to leave the learning phase.',
+          'The audience is too broad — narrow it using interest-based targeting.',
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Optimizing for Traffic tells Meta\'s algorithm to find people likely to click, not people likely to buy — those are often different audiences entirely. Matching the campaign objective to the real event you care about, and confirming the pixel/CAPI is actually firing, is the standard first fix before touching creative or budget.',
+      },
+      {
+        id: 'q2',
+        type: 'mcq',
+        question: 'A local business wants to rank higher for "[service] near me" searches. Which of these actually moves that ranking?',
+        options: [
+          'Stuffing extra keywords into the Google Business Profile business name field.',
+          'Keeping the Google Business Profile complete and accurate (categories, hours, services, photos), consistent name/address/phone across the web, and actively collecting and responding to reviews.',
+          'Buying backlinks in bulk from unrelated websites.',
+          'Changing the website\'s meta description every week.',
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Local (map pack) ranking is driven mainly by profile completeness and accuracy, consistent NAP (name, address, phone) across citations, and review signals — not keyword-stuffing the business name, which actually violates Google\'s guidelines and risks the listing being suspended.',
+      },
+      {
+        id: 'q3',
+        type: 'mcq',
+        question: 'This week\'s Facebook report shows reach up 40% and likes doubled, but leads from the website stayed flat. What should the report actually flag?',
+        options: [
+          'This is a clear win — reach and engagement are the goal of social media.',
+          'Reach and likes are vanity metrics here — since the real objective is website leads, the report should call out the disconnect between engagement and conversions and check the funnel (landing page, CTA, tracking) before calling it a success.',
+          'Nothing — leads always lag engagement by several weeks regardless of the campaign.',
+          'Delete the underperforming posts and repost the best-performing one.',
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Reach and likes measure attention, not outcomes. When the stated goal is leads, a report that only celebrates reach while leads stay flat is misleading — the job is connecting activity metrics to the metric that actually matters to the business.',
+      },
+      {
+        id: 'q4',
+        type: 'scenario',
+        question: 'Practical Scenario Challenge: Monthly ad spend just went up 20% to test a new campaign, but total website traffic only grew 5% and conversions stayed flat. Walk through how you\'d investigate this and what you\'d put in the weekly performance snapshot.',
+        explanation: 'Evaluates a real diagnostic process: checking whether the extra spend reached a genuinely new audience or just raised CPCs in the same one, comparing CTR and CPC before and after the increase, verifying the landing page and pixel/tracking setup for the new campaign, and reporting the actual bottleneck found rather than just restating the spend and traffic numbers.',
+      },
+    ],
+  },
 ];
 
 // Starting state for a brand-new user, before App.tsx's Supabase fetch
