@@ -168,10 +168,10 @@ export const ModelDetailModal: React.FC<ModelDetailModalProps> = ({
                       <span className="text-2xl font-black text-emerald-600">FREE</span>
                     ) : (
                       <>
-                        <span className="text-2xl font-black text-zinc-950 font-mono">${finalPrice}</span>
+                        <span className="text-2xl font-black text-zinc-950 font-mono">₹{finalPrice}</span>
                         {activeCoupon && asset.price !== finalPrice && (
                           <span className="text-sm line-through text-zinc-400 font-medium font-mono">
-                            ${asset.price}
+                            ₹{asset.price}
                           </span>
                         )}
                       </>

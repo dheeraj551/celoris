@@ -214,7 +214,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
               <FileBox className="w-3.5 h-3.5 text-emerald-600" /> Select 3D File Format
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {(['GLTF', 'FBX', 'OBJ', 'BLEND', 'USDZ'] as ModelFormat[]).map((fmt) => {
+              {(['GLTF', 'GLB', 'FBX', 'OBJ', 'BLEND', 'USDZ'] as ModelFormat[]).map((fmt) => {
                 const isAvailable = asset.formats.includes(fmt);
                 const isSelected = selectedFormat === fmt;
                 return (

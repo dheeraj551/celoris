@@ -350,7 +350,7 @@ export default function App() {
             </div>
             <div className="min-w-0">
               <div className="text-xs font-bold text-zinc-900 truncate">Game & VFX Ready</div>
-              <div className="text-[10px] text-zinc-500">GLTF, FBX, OBJ, USDZ</div>
+              <div className="text-[10px] text-zinc-500">GLTF, GLB, FBX, OBJ, USDZ</div>
             </div>
           </motion.div>
 

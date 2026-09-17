@@ -27,7 +27,8 @@ import {
   MessageCircle,
   GraduationCap,
   Video,
-  Star
+  Star,
+  Box
 } from "lucide-react"
 import LeadSync from "@/components/admin/LeadSync"
 
@@ -247,6 +248,13 @@ export default function AdminDashboard() {
       icon: Video,
       href: "/admin/featured-videos",
       color: "bg-red-600 hover:bg-red-700"
+    },
+    {
+      title: "PolyVault Models",
+      description: "Publish 3D model listings directly to the marketplace as Celoris Official",
+      icon: Box,
+      href: "/admin/polyvault",
+      color: "bg-cyan-600 hover:bg-cyan-700"
     },
     {
       title: "Wallet Transactions",

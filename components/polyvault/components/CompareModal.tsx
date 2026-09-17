@@ -219,10 +219,10 @@ export const CompareModal: React.FC<CompareDrawerProps> = ({
                                 <>
                                   {activeCoupon && asset.price !== finalPrice && (
                                     <span className="line-through text-zinc-400 mr-1 text-[11px]">
-                                      ${asset.price}
+                                      ₹{asset.price}
                                     </span>
                                   )}
-                                  ${finalPrice}
+                                  ₹{finalPrice}
                                 </>
                               )}
                             </span>

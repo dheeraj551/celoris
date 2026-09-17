@@ -299,7 +299,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-zinc-700">Price (USD) - 0 for Free</label>
+              <label className="font-semibold text-zinc-700">Price (₹ INR) - 0 for Free</label>
               <input
                 type="number"
                 min="0"
@@ -372,7 +372,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           <div className="space-y-1.5">
             <label className="font-semibold text-zinc-700">Included Formats</label>
             <div className="flex flex-wrap gap-2">
-              {(['GLTF', 'FBX', 'OBJ', 'BLEND', 'USDZ'] as ModelFormat[]).map((fmt) => (
+              {(['GLTF', 'GLB', 'FBX', 'OBJ', 'BLEND', 'USDZ'] as ModelFormat[]).map((fmt) => (
                 <button
                   type="button"
                   key={fmt}

@@ -342,7 +342,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
                   >
                     <div className="text-[10px] font-bold text-zinc-900 truncate">{asset.title}</div>
                     <div className="text-[9px] text-emerald-700 font-mono font-medium">
-                      {asset.price === 0 ? 'FREE' : `$${asset.price}`}
+                      {asset.price === 0 ? 'FREE' : `₹${asset.price}`}
                     </div>
                   </button>
                 );

@@ -186,7 +186,7 @@ export const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({
             <div className="space-y-1.5">
               <label className="font-bold text-zinc-800">File Formats</label>
               <div className="flex flex-wrap gap-1.5">
-                {(['GLTF', 'FBX', 'OBJ', 'BLEND', 'USDZ'] as ModelFormat[]).map((fmt) => {
+                {(['GLTF', 'GLB', 'FBX', 'OBJ', 'BLEND', 'USDZ'] as ModelFormat[]).map((fmt) => {
                   const isChecked = filters.formats.includes(fmt);
                   return (
                     <button
@@ -234,9 +234,9 @@ export const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({
               >
                 <option value="all">All Prices</option>
                 <option value="free">Free Only (100% Free / CC0)</option>
-                <option value="under25">Under $25</option>
-                <option value="25to50">$25 - $50</option>
-                <option value="50plus">$50 and Above</option>
+                <option value="under25">Under ₹25</option>
+                <option value="25to50">₹25 - ₹50</option>
+                <option value="50plus">₹50 and Above</option>
               </select>
             </div>
 

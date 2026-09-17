@@ -243,10 +243,10 @@ export const ModelCard: React.FC<ModelCardProps> = ({
               <div className="flex items-center gap-1.5">
                 {activeCoupon && asset.price !== finalPrice && (
                   <span className="text-[11px] line-through text-zinc-400 font-mono">
-                    ${asset.price}
+                    ₹{asset.price}
                   </span>
                 )}
-                <span className="text-sm font-bold text-zinc-950 font-mono">${finalPrice}</span>
+                <span className="text-sm font-bold text-zinc-950 font-mono">₹{finalPrice}</span>
               </div>
             )}
           </div>

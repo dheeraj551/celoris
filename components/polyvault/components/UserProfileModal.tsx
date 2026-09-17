@@ -279,7 +279,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         {model.title}
                       </h4>
                       <span className="text-xs font-mono font-bold text-emerald-700">
-                        {model.price === 0 ? 'FREE' : `$${model.price}`}
+                        {model.price === 0 ? 'FREE' : `₹${model.price}`}
                       </span>
                     </div>
 

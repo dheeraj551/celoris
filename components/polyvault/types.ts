@@ -9,7 +9,7 @@ export type AssetCategory =
   | 'Props'
   | 'Electronics';
 
-export type ModelFormat = 'GLTF' | 'FBX' | 'OBJ' | 'BLEND' | 'USDZ';
+export type ModelFormat = 'GLTF' | 'GLB' | 'FBX' | 'OBJ' | 'BLEND' | 'USDZ';
 
 export type ModelGeneratorType =
   | 'drone'
