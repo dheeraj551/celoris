@@ -361,6 +361,15 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
             const originalMat = child.material as THREE.MeshStandardMaterial;
             child.userData.origColor = originalMat.color?.clone() || new THREE.Color('#38bdf8');
             child.userData.origEmissive = originalMat.emissive?.clone() || new THREE.Color('#000000');
+            // Keep the untouched original material itself, texture maps and
+            // all, so "Full PBR Shaded" mode below can restore a real
+            // uploaded model's real look instead of rebuilding a flat,
+            // textureless material from just the backed-up color — that was
+            // silently discarding every real map (albedo/normal/roughness/
+            // metalness/AO) the first time the viewer applied its default
+            // filter, which is why a real upload always rendered as a flat
+            // single-color blob under the studio lighting.
+            child.userData.origMaterial = originalMat;
           }
 
           const origColor = child.userData.origColor as THREE.Color;
@@ -447,15 +456,32 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                 wireframe: false,
               });
             } else {
-              // Full PBR Shaded Mode
-              child.material = new THREE.MeshStandardMaterial({
-                color: origColor,
-                roughness: materialRoughness,
-                metalness: materialMetalness,
-                emissive: origEmissive,
-                emissiveIntensity: origEmissive.r > 0 || origEmissive.g > 0 || origEmissive.b > 0 ? 1.4 : 0,
-                wireframe: false,
-              });
+              // Full PBR Shaded Mode — restore the model's real material
+              // (real texture maps intact) by default. The Roughness/
+              // Metalness sliders only kick in once the user has actually
+              // touched one of them (materialOverrideActive), so a freshly
+              // loaded real upload shows its true appearance untouched.
+              const origMaterial = child.userData.origMaterial as THREE.MeshStandardMaterial;
+              if (currentSettings.materialOverrideActive && origMaterial) {
+                const overrideMat = origMaterial.clone();
+                overrideMat.roughness = materialRoughness;
+                overrideMat.metalness = materialMetalness;
+                overrideMat.wireframe = false;
+                child.material = overrideMat;
+              } else if (origMaterial) {
+                child.material = origMaterial;
+              } else {
+                // Fallback for the rare case there was no original material
+                // to back up (shouldn't normally happen).
+                child.material = new THREE.MeshStandardMaterial({
+                  color: origColor,
+                  roughness: materialRoughness,
+                  metalness: materialMetalness,
+                  emissive: origEmissive,
+                  emissiveIntensity: origEmissive.r > 0 || origEmissive.g > 0 || origEmissive.b > 0 ? 1.4 : 0,
+                  wireframe: false,
+                });
+              }
             }
             child.visible = true;
           }
@@ -1107,7 +1133,7 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                     max="1"
                     step="0.05"
                     value={settings.materialRoughness}
-                    onChange={(e) => setSettings((s) => ({ ...s, materialRoughness: Number(e.target.value) }))}
+                    onChange={(e) => setSettings((s) => ({ ...s, materialRoughness: Number(e.target.value), materialOverrideActive: true }))}
                     className="w-32 accent-sky-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer"
                   />
                   <span className="font-mono text-slate-400 w-8 text-right">
@@ -1124,7 +1150,7 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                     max="1"
                     step="0.05"
                     value={settings.materialMetalness}
-                    onChange={(e) => setSettings((s) => ({ ...s, materialMetalness: Number(e.target.value) }))}
+                    onChange={(e) => setSettings((s) => ({ ...s, materialMetalness: Number(e.target.value), materialOverrideActive: true }))}
                     className="w-32 accent-sky-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer"
                   />
                   <span className="font-mono text-slate-400 w-8 text-right">

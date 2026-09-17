@@ -140,6 +140,11 @@ export interface ViewerSettings {
   backgroundColor: 'dark' | 'gray' | 'light' | 'gradient';
   materialRoughness: number;
   materialMetalness: number;
+  /** Whether the Roughness/Metalness sliders above should override the
+   *  model's real material. Off by default so "PBR Shaded" mode shows a
+   *  real uploaded model's actual texture maps untouched; turns on the
+   *  first time either slider is moved. */
+  materialOverrideActive?: boolean;
 }
 
 export interface FilterState {
