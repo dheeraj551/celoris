@@ -16,8 +16,15 @@ import type { ModelAsset } from '@/components/polyvault/types'
 // author identity rather than any real user row, so they read honestly as
 // platform-curated rather than impersonating a creator.
 
+// polyvault_assets.author_id has a real foreign key to auth.users(id) (not
+// caught by the schema check run before this route was first written, which
+// missed the constraint) — it must be a genuine user id, not an arbitrary
+// UUID. This uses the platform's own support@celorisdesigns.com account as
+// the real row backing every admin-published "Celoris Official" listing;
+// the displayed name/handle/avatar below are independent columns, so this
+// doesn't change what shoppers see.
 const CELORIS_ADMIN_AUTHOR = {
-  id: '00000000-0000-0000-0000-000000000001',
+  id: '129cdb0b-ac55-45fe-8867-d802e7eebe39',
   name: 'Celoris Official',
   handle: '@celoris',
   avatar: 'https://ui-avatars.com/api/?name=Celoris&background=0f172a&color=fff',
