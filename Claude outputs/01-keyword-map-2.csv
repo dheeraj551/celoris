@@ -1,0 +1,30 @@
+cluster,keyword,intent,role,search_volume,ai_search_volume,competition,cpc
+Core Delhi,digital marketing course in delhi,commercial,primary,8100,no data,MEDIUM,1.49
+Core Delhi,digital marketing institute in delhi,commercial,secondary,8100,no data,LOW,0.99
+Institute rankings,best digital marketing institute in delhi,commercial,secondary,1600,no data,MEDIUM,1.74
+Institute rankings,best digital marketing course in delhi,commercial,secondary,880,no data,LOW,1.54
+Fees & pricing,digital marketing course fees in delhi,commercial,secondary,480,no data,MEDIUM,1.04
+Placement & outcomes,digital marketing course with placement in delhi,transactional,secondary,170,no data,MEDIUM,2.45
+Core Delhi,digital marketing training institute,commercial,support,720,no data,LOW,1.02
+Institute rankings,top 10 digital marketing institute in delhi,commercial,support,590,no data,MEDIUM,1.40
+Hyperlocal,digital marketing course in delhi pitampura,commercial,support,480,no data,MEDIUM,1.19
+Hyperlocal,digital marketing course in laxmi nagar delhi,commercial,support,480,no data,LOW,1.57
+Hyperlocal,digital marketing course in dwarka delhi,commercial,support,320,no data,MEDIUM,1.65
+Institute rankings,best institute for digital marketing course in delhi,commercial,support,320,no data,HIGH,1.81
+Hyperlocal,digital marketing course in south delhi,commercial,support,260,no data,LOW,1.29
+Core Delhi,digital marketing course in delhi ncr,commercial,support,90,no data,MEDIUM,2.27
+Format,online digital marketing course in delhi,commercial,support,70,no data,HIGH,1.48
+Format,ai digital marketing course in delhi,commercial,support,70,no data,MEDIUM,1.98
+Free / pricing angle,free digital marketing course in delhi,commercial,support,40,no data,LOW,1.45
+Adjacent / wrong format,mba in digital marketing,informational,skip,3600,no data,MEDIUM,2.90
+Adjacent / branded,iim digital marketing course,commercial,skip,1300,no data,HIGH,2.19
+Too generic,digital marketing academy,commercial,skip,880,no data,LOW,1.03
+Wrong geo scope,best digital marketing institute in india,commercial,skip,480,no data,MEDIUM,1.29
+Competitor brand,nsim digital marketing course in delhi,commercial,skip,390,no data,LOW,0.37
+Competitor brand,lskdm digital marketing course in delhi,commercial,skip,260,no data,LOW,1.59
+Redundant,digital marketing course in new delhi,commercial,skip,110,no data,HIGH,1.66
+Competitor brand,digiperform advanced digital marketing course in connaught place delhi,transactional,skip,110,no data,LOW,1.15
+Wrong intent (navigational),digital marketing course in delhi government,navigational,skip,70,no data,MEDIUM,0.95
+Wrong modality,digital marketing course offline in delhi,commercial,skip,50,no data,HIGH,2.05
+Wrong modality,offline digital marketing course in delhi,commercial,skip,50,no data,HIGH,2.07
+Competitor brand,digiperform advanced digital marketing course in pitampura delhi,commercial,skip,50,no data,LOW,0.05

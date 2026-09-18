@@ -1,0 +1,30 @@
+cluster,keyword,intent,role,search_volume,ai_search_volume,competition,cpc
+online-teaching-jobs-delhi,online teaching jobs delhi,informational,primary,320,no data,LOW,no data
+online-tutoring-jobs-india,online tutoring jobs,informational,secondary,40500,22,LOW,0.17
+online-tutoring-jobs-india,online teaching jobs,informational,secondary,22200,35,LOW,0.14
+online-tutoring-jobs-india,online tuition jobs,informational,secondary,8100,no data,LOW,0.14
+teaching-platforms-earn,online teaching platforms,commercial,secondary,6600,no data,MEDIUM,0.31
+online-teaching-jobs-delhi,home tutor jobs delhi,informational,secondary,480,no data,MEDIUM,0.13
+freshers-part-time-entry,online teaching jobs work from home for freshers,informational,secondary,390,no data,LOW,no data
+freshers-part-time-entry,online teaching jobs work from home part time,transactional,secondary,210,no data,LOW,no data
+teaching-platforms-earn,teach online and earn money,transactional,secondary,170,no data,LOW,no data
+other-segments,government online teaching jobs,informational,support,40,no data,LOW,no data
+freshers-part-time-entry,part time online teaching jobs from home in india,informational,support,40,no data,LOW,no data
+teaching-platforms-earn,become an online tutor india,commercial,support,40,5,MEDIUM,0.16
+online-teaching-jobs-delhi,online teaching jobs delhi work from home,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs delhi part time,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs delhi for students,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs delhi for freshers,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs delhi for female,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs delhi without investment,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs delhi for class 1,informational,support,no data,no data,no data,no data
+online-teaching-jobs-delhi,online teaching jobs for class 1 to 5 work from home in delhi,informational,support,no data,no data,no data,no data
+other-segments,online teaching jobs for class 6 to 10 work from home,informational,support,no data,no data,no data,no data
+other-segments,online teaching jobs for class 1 to 5 work from home without investment,informational,support,no data,no data,no data,no data
+freshers-part-time-entry,online teaching jobs work from home for freshers in india,informational,support,no data,no data,no data,no data
+teaching-platforms-earn,how to become an online tutor in india,informational,support,no data,5,no data,no data
+teaching-platforms-earn,best online tutoring platforms india,commercial,support,no data,6,no data,no data
+skip,online teaching jobs work from home for freshers in tamilnadu,informational,skip,no data,no data,no data,no data
+skip,online teaching jobs part-time no experience,informational,skip,10,no data,LOW,no data
+skip,part-time online teaching jobs from home for students,commercial,skip,20,no data,no data,no data
+skip,part-time online teaching jobs from home near me,informational,skip,10,no data,no data,no data

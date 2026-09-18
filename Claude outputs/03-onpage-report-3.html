@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Center Ranking System post · On-Page Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#1c3a2e; --forest-2:#264c3b; --moss:#5b7a63;
+  --cream:#f4efe2; --cream-2:#ece5d3; --paper:#fbf8f0;
+  --gold:#c08a3e; --rust:#b4522f; --ink:#16241d;
+  --pass:#2f7d4e; --warn:#c08a3e; --fail:#b4522f;
+  --line:rgba(28,58,46,.16);
+  --shadow:0 1px 2px rgba(28,58,46,.06),0 12px 36px -12px rgba(28,58,46,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Schibsted Grotesk",system-ui,sans-serif;
+  background:var(--cream); color:var(--ink);
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(192,138,62,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(91,122,99,.14), transparent 55%);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+.reveal{opacity:0;transform:translateY(18px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+header.top{background:linear-gradient(160deg,var(--forest),var(--forest-2));color:var(--cream);position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle at center, rgba(192,138,62,.45), transparent 65%)}
+.top .wrap{padding:54px 28px 46px;position:relative;z-index:2}
+.brandrow{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,226,.7)}
+.brandrow b{color:var(--cream);font-weight:600}
+h1{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;margin:26px 0 6px;letter-spacing:-.01em}
+h1 em{font-style:italic;color:#e7c690}
+.sub{font-size:1.02rem;color:rgba(244,239,226,.82);max-width:52ch}
+.datechip{display:inline-flex;gap:.5rem;align-items:center;margin-top:22px;background:rgba(244,239,226,.12);border:1px solid rgba(244,239,226,.25);padding:.5rem .9rem;border-radius:999px;font-size:.82rem;letter-spacing:.04em}
+.datechip span{width:7px;height:7px;border-radius:50%;background:#7bd39a;box-shadow:0 0 0 4px rgba(123,211,154,.18)}
+
+.heroband{background:var(--paper);border-bottom:1px solid var(--line)}
+.heroband .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0}
+.stat{padding:30px 22px;border-right:1px solid var(--line);position:relative}
+.stat:last-child{border-right:none}
+.stat .k{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1;color:var(--forest);letter-spacing:-.02em}
+.stat .l{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);margin-top:10px}
+.stat .w{font-size:.72rem;color:#9a9684;margin-top:3px}
+.stat.is-fail .k{color:var(--fail)}
+.stat.is-warn .k{color:var(--warn)}
+@media(max-width:720px){.heroband .wrap{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}}
+
+main{padding:60px 0 30px}
+section{margin-bottom:58px}
+.seclabel{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.seclabel .num{font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.1rem}
+.seclabel h2{font-family:"Fraunces",serif;font-weight:500;font-size:1.85rem;letter-spacing:-.01em;color:var(--forest)}
+.seclabel .win{margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);border:1px solid var(--line);padding:.3rem .7rem;border-radius:999px}
+.meaning{background:var(--cream-2);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;font-size:.95rem;margin-top:18px;color:#3a4a40}
+.meaning b{color:var(--forest)}
+
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:var(--shadow)}
+
+.checks{list-style:none}
+.checks li{display:grid;grid-template-columns:130px 1fr;gap:18px;padding:16px 0;border-bottom:1px dashed var(--line);align-items:start}
+.checks li:last-child{border-bottom:none}
+.checks .what{font-weight:500;color:var(--forest)}
+.checks .why{display:block;color:#6c7a6f;font-size:.88rem;margin-top:3px}
+.checks .fix{display:block;font-size:.88rem;margin-top:6px;padding:10px 12px;background:var(--cream-2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#3a4a40}
+
+.score{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.score .n{font-family:"Fraunces",serif;font-size:4rem;line-height:1;color:var(--forest);letter-spacing:-.03em}
+.score .n small{font-size:1.2rem;color:var(--moss)}
+.score .track{flex:1;min-width:180px;height:10px;border-radius:5px;background:var(--cream-2);overflow:hidden}
+.score .track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--pass))}
+
+.focus ol{list-style:none;counter-reset:f;margin-top:8px}
+.focus li{counter-increment:f;display:flex;gap:16px;padding:15px 0;border-bottom:1px dashed var(--line)}
+.focus li:last-child{border-bottom:none}
+.focus li::before{content:counter(f);font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.2rem;min-width:26px}
+.focus li b{color:var(--forest)}
+.focus li small{display:block;color:#6c7a6f;font-size:.85rem;margin-top:2px}
+
+.kv{display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:.92rem}
+.kv dt{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);padding-top:3px}
+.kv dd{color:var(--ink);word-break:break-word}
+pre.code{background:var(--ink);color:#dfe7df;padding:18px;border-radius:12px;overflow-x:auto;font-size:.8rem;line-height:1.5;white-space:pre-wrap}
+
+.st{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.st.pass{color:var(--pass)}      .st.pass::before{background:var(--pass);box-shadow:0 0 0 3px rgba(47,125,78,.15)}
+.st.warn{color:var(--warn)}      .st.warn::before{background:var(--warn);box-shadow:0 0 0 3px rgba(192,138,62,.15)}
+.st.fail{color:var(--fail)}      .st.fail::before{background:var(--fail);box-shadow:0 0 0 3px rgba(180,82,47,.15)}
+.st.na{color:#9a9684}            .st.na::before{background:#c9c4b3}
+
+footer{padding:40px 0 70px;color:#7d8a7f;font-size:.82rem}
+footer .wrap{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.note{font-size:.8rem;color:#8a8773;max-width:60ch}
+
+@media print{
+  body::before{display:none}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap reveal">
+    <div class="brandrow"><span>On-Page Report</span><b>AI Ranking</b></div>
+    <h1>On-Page Audit: <em>Job Center Ranking</em> Post</h1>
+    <p class="sub">The blog post explaining Celoris's Job Center XP/level/badge system, published today — checked against the blog/informational checklist.</p>
+    <div class="datechip"><span></span>/blog/job-center-ranking-system-explained · generated September 18, 2026</div>
+  </div>
+</header>
+
+<div class="heroband">
+  <div class="wrap">
+    <div class="stat"><div class="k" style="font-size:1.5rem;padding-top:.6rem">Blog</div><div class="l">Page type</div><div class="w">/blog/ URL, BlogPosting schema</div></div>
+    <div class="stat is-warn"><div class="k">47<small>/100</small></div><div class="l">On-page score</div><div class="w">good bones, truncating tags</div></div>
+    <div class="stat"><div class="k">4<small>/9</small></div><div class="l">Checks passed</div><div class="w">Blog / Informational checklist</div></div>
+    <div class="stat is-fail"><div class="k">3</div><div class="l">Critical fixes</div><div class="w">do these first</div></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="reveal">
+    <div class="seclabel"><span class="num">01</span><h2>What we checked, and why</h2><span class="win">Blog / Informational</span></div>
+    <div class="panel">
+      <div class="score">
+        <div class="n">47<small>/100</small></div>
+        <div class="track"><i style="width:47%"></i></div>
+      </div>
+      <div class="meaning"><b>This page was assessed as a Blog / Informational post.</b> It sits at /blog/, carries BlogPosting schema, explains a topic (how the ranking system works) rather than selling a specific transaction, and closes with a single soft CTA rather than CTAs throughout. A Service / Product page would have been graded on transactional-intent, specificity and trust-signal checks instead — if you think this should actually be graded as a landing/service page, say so and I'll re-run.</div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">02</span><h2>Blog / Informational checklist</h2><span class="win">4/9 passed</span></div>
+    <div class="panel">
+      <ul class="checks">
+        <li>
+          <span class="st pass">Pass</span>
+          <div>
+            <span class="what">Topical relevance</span>
+            <small class="why">The H1 and all 6 H2s stay on the single promised topic — XP, levels, loyalty time-based rewards, and exam-badge unlocks. No drift into course pricing or unrelated Celoris products.</small>
+          </div>
+        </li>
+        <li>
+          <span class="st pass">Pass</span>
+          <div>
+            <span class="what">Freshness</span>
+            <small class="why">Published September 18, 2026 — the same day as this audit. Every specific (level thresholds, XP amounts, exam names) reflects the live system, not stale figures.</small>
+          </div>
+        </li>
+        <li>
+          <span class="st fail">Fail</span>
+          <div>
+            <span class="what">Internal &amp; outbound links</span>
+            <small class="why">Only 1 link inside the article body — the closing CTA to /job-center. Zero contextual outbound links (the LinkedIn/Facebook/YouTube links a raw fetch picks up are site-wide footer icons, not in-article citations). Threshold is under 2 outbound contextual links = fail.</small>
+            <span class="fix"><b>Fix:</b> Add 1-2 more links inside the body where they're earned naturally — e.g. link "anti-cheat verified skill exams" on first mention, and reference a related post or course page partway through. Then run internal-link-architect: it crawls the rest of celorisdesigns.com and hands you the exact existing pages that should link back to this post (inbound is 0 right now since it's brand new today).</span>
+          </div>
+        </li>
+        <li>
+          <span class="st pass">Pass</span>
+          <div>
+            <span class="what">Claims backed by sources</span>
+            <small class="why">Every factual claim is first-party and self-referential (the platform's own level thresholds, XP amounts, live exam names) — nothing borrowed from a third-party statistic that would need an inline citation.</small>
+          </div>
+        </li>
+        <li>
+          <span class="st warn">Warn</span>
+          <div>
+            <span class="what">Author bio</span>
+            <small class="why">Byline reads "Celoris Team — Official Creator": present, but generic — no named individual, credentials, or author-page link. This matches every other Celoris post, so it's a site-wide pattern, not a one-off miss. site-brief.md wasn't available this run, so this is a judgment call rather than checked against a canonical author policy.</small>
+            <span class="fix"><b>Fix:</b> Optional. If you ever want stronger trust signal on Job Center content specifically (exam integrity is the whole pitch), a named author with a real title would carry more weight than "Celoris Team" — decide once, apply to the blog template site-wide.</span>
+          </div>
+        </li>
+        <li>
+          <span class="st pass">Pass</span>
+          <div>
+            <span class="what">Schema</span>
+            <small class="why">Valid BlogPosting JSON-LD is present and matches the page (headline = post title, datePublished = today, publisher = Celoris). Two smaller gaps: author is typed as an Organization rather than a Person (valid, but weaker E-E-A-T signal), and there's no dateModified field.</small>
+            <span class="fix"><b>Fix:</b> Template-level, low priority: add <code>dateModified: post.updated_at</code> to the jsonLd object in app/blog/[slug]/page.tsx — fixes every post at once, not just this one.</span>
+          </div>
+        </li>
+        <li>
+          <span class="st warn">Warn</span>
+          <div>
+            <span class="what">Content capsule structure</span>
+            <small class="why">One H2 passes cleanly — "Why Build It This Way?" is phrased as a real question, answered directly in the two sentences beneath it. Most others are statement-style headers rather than questions — e.g. "1. Loyalty XP — You're Rewarded for Actually Using the Platform" and "Getting Started" (followed by a numbered list, not two sentences of prose) don't give an AI engine an obvious question-and-answer pair to lift.</small>
+            <span class="fix"><b>Fix:</b> Rephrase 2-3 H2s as the actual question a reader would ask — the prose underneath already answers itself, so this is a heading-only edit: "The Core Idea…" → "How does XP and leveling work on the Job Center?"; "1. Loyalty XP…" → "How do I earn XP just for using the platform?"; "2. Exam XP…" → "How much XP do anti-cheat exams give, and what do badges unlock?"</span>
+          </div>
+        </li>
+        <li>
+          <span class="st fail">Fail</span>
+          <div>
+            <span class="what">Title tag &amp; meta length</span>
+            <small class="why">Rendered &lt;title&gt; is "How the Celoris Job Center Ranking System Works: Turn Your Time and Skills Into Real Job Offers | Celoris Blog" — 110 characters. Google shows roughly the first 55-60 before truncating, so this cuts off mid-sentence. Meta description is 171 characters, also past the ~155-160 char display limit.</small>
+            <span class="fix"><b>Fix:</b> See section 05 — shortened title and meta ready to paste.</span>
+          </div>
+        </li>
+        <li>
+          <span class="st fail">Fail</span>
+          <div>
+            <span class="what">Canonical tag</span>
+            <small class="why">generateMetadata() in app/blog/[slug]/page.tsx returns only {title, description} for database-backed posts — no alternates.canonical is set for any blog post on this route, this one included.</small>
+            <span class="fix"><b>Fix:</b> Template-level, one line, fixes every post at once — see section 06.</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">03</span><h2>Do these first</h2><span class="win">ordered by impact</span></div>
+    <div class="panel focus">
+      <ol>
+        <li><div><b>Shorten the title tag and meta description</b><small>Both currently truncate in search results — this is the cheapest fix here and the one that affects click-through starting today. New copy in section 05.</small></div></li>
+        <li><div><b>Add a canonical tag to the blog post template</b><small>One line in generateMetadata(), fixes every post on the site at once, not just this one.</small></div></li>
+        <li><div><b>Add 1-2 more internal links in the body, then run internal-link-architect</b><small>Closes the outbound-link fail and finds real pages on celorisdesigns.com that should link back to this post.</small></div></li>
+        <li><div><b>Rephrase 2-3 H2s as direct questions</b><small>Heading-only edit — makes the page easier for AI engines to lift a clean answer from.</small></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">04</span><h2>Current on-page elements</h2><span class="win">as found</span></div>
+    <div class="panel">
+      <dl class="kv">
+        <dt>URL</dt><dd>https://celorisdesigns.com/blog/job-center-ranking-system-explained</dd>
+        <dt>Title tag</dt><dd>How the Celoris Job Center Ranking System Works: Turn Your Time and Skills Into Real Job Offers | Celoris Blog <small>(110 chars)</small></dd>
+        <dt>Meta description</dt><dd>A complete breakdown of how XP, levels, loyalty rewards, and anti-cheat verified badges work on the Celoris Job Center — and how they unlock higher-paying Certified Roles. <small>(171 chars)</small></dd>
+        <dt>H1</dt><dd>How the Celoris Job Center Ranking System Works: Turn Your Time and Skills Into Real Job Offers</dd>
+        <dt>Schema found</dt><dd>BlogPosting (valid; Organization-type author; no dateModified)</dd>
+        <dt>Internal links</dt><dd>0 in (brand new today — not a full crawl, see internal-link-architect) · 1 out (in-body CTA to /job-center)</dd>
+        <dt>Last updated</dt><dd>September 18, 2026 (published today)</dd>
+        <dt>Word count</dt><dd>~830 words</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">05</span><h2>Rewritten elements</h2><span class="win">ready to paste</span></div>
+    <div class="panel">
+      <dl class="kv">
+        <dt>New title tag</dt><dd><b>How Job Center XP, Levels &amp; Badges Work | Celoris Blog</b> <small>(54 chars)</small></dd>
+        <dt>New meta</dt><dd>How Celoris rewards active time on the platform and anti-cheat verified exams with XP, levels, and badges that unlock higher-paying Certified Roles. <small>(148 chars)</small></dd>
+        <dt>New H1</dt><dd>How the Celoris Job Center Ranking System Works</dd>
+      </dl>
+      <p class="note" style="margin-top:18px">New title tag = new post.title ("How Job Center XP, Levels &amp; Badges Work") with " | Celoris Blog" appended automatically by the template. H1 can stay fuller/more descriptive than the title tag — only the title tag and meta were actually truncating. Heading structure changes are listed in the checklist above rather than duplicated here.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">06</span><h2>Schema / metadata to add</h2><span class="win">template-level, app/blog/[slug]/page.tsx</span></div>
+    <pre class="code">// In generateMetadata(), add a canonical (currently missing for every post):
+return {
+  title: `${post.title} | Celoris Blog`,
+  description: post.meta_description || post.excerpt,
+  alternates: {
+    canonical: `https://www.celorisdesigns.com/blog/${post.slug}`,
+  },
+}
+
+// In the jsonLd object further down, add dateModified so schema reflects edits:
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": post.title,
+  "description": post.excerpt,
+  "datePublished": post.published_at,
+  "dateModified": post.updated_at || post.published_at,
+  // ...rest unchanged
+}</pre>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Data: WebFetch (live page) + direct read of app/blog/[slug]/page.tsx · window: Sept 18, 2026</span>
+    <span>onpage-optimizer · generated September 18, 2026</span>
+  </div>
+  <div class="wrap" style="border:none;padding-top:14px">
+    <p class="note">DataForSEO's on_page connector returned HTTP 402 (account out of credits — consistent with the earlier decision to move live-data work to OpenRush). OpenRush doesn't expose a raw single-page content-parsing/on_page equivalent, so this audit combines a WebFetch pull of the rendered page with a direct read of the actual generateMetadata()/JSON-LD source in app/blog/[slug]/page.tsx for the title, meta, canonical and schema findings — more reliable than scraping for those specific fields anyway. site-brief.md wasn't available this run, so the author-bio check is a judgment call, not checked against a canonical brief; author-bio and content-capsule findings are weighted lower than schema/links/title-meta accordingly. Inbound-link count (0) is based on this post being published today, not a full site crawl — internal-link-architect will confirm and find real inbound candidates.</p>
+  </div>
+</footer>
+
+</body>
+</html>
