@@ -16,6 +16,7 @@ import {
   Tv,
   Briefcase,
   Wallet,
+  Compass,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -57,31 +58,33 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -8 }}
+      initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="sticky top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-zinc-200/90 shadow-xs"
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="sticky top-0 z-30 w-full bg-white/85 backdrop-blur-xl border-b border-zinc-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">
           <motion.div
             whileHover={{ rotate: 15, scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-            className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 p-0.5 shadow-md shadow-emerald-600/20 cursor-pointer"
+            transition={{ type: 'spring', stiffness: 350, damping: 20 }}
+            className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 p-0.5 shadow-md shadow-emerald-600/20 cursor-pointer"
           >
-            <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
+            <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
               <Box className="w-5 h-5 text-emerald-600" />
             </div>
           </motion.div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-black tracking-tight text-lg text-zinc-950">POLYVAULT</span>
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-1.5 py-0.2 rounded uppercase">
+              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
                 3D Store
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 hidden sm:block">Next-Gen 3D Assets & Fast Speed CDN</p>
+            <p className="text-[10px] text-zinc-500 hidden sm:block font-medium">
+              Next-Gen 3D Assets, WebGL Studio & Edge CDN
+            </p>
           </div>
         </div>
 
@@ -93,19 +96,27 @@ export const Navbar: React.FC<NavbarProps> = ({
             whileTap={{ scale: 0.98 }}
             id="btn-navbar-coupon"
             onClick={onOpenCouponModal}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            className={`px-3 sm:px-3.5 py-1.5 rounded-2xl border text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer shadow-xs ${
               activeCoupon
-                ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs'
-                : 'bg-zinc-50 border-zinc-200 text-zinc-700 hover:border-emerald-300 hover:bg-emerald-50/50'
+                ? 'bg-emerald-50/90 border-emerald-300 text-emerald-900 shadow-emerald-500/10'
+                : 'bg-white/90 border-zinc-200/90 text-zinc-700 hover:border-emerald-300 hover:bg-emerald-50/50'
             }`}
           >
-            <Zap className={`w-3.5 h-3.5 ${activeCoupon ? 'text-emerald-600 animate-pulse' : 'text-emerald-500'}`} />
+            <div className="relative">
+              <Zap className={`w-4 h-4 ${activeCoupon ? 'text-emerald-600 animate-pulse' : 'text-emerald-500'}`} />
+              {activeCoupon && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute -top-0.5 -right-0.5 animate-ping" />
+              )}
+            </div>
             <div className="text-left hidden xs:block">
-              <div className="text-[11px] font-bold leading-tight">
-                {activeCoupon ? `${activeCoupon.code} Active` : 'Speed Coupons'}
+              <div className="text-[11px] font-bold leading-tight flex items-center gap-1">
+                <span>{activeCoupon ? `${activeCoupon.code} Active` : 'Speed Coupons'}</span>
+                {activeCoupon && (
+                  <span className="bg-emerald-600 text-white text-[9px] px-1 rounded font-mono">120 MB/s</span>
+                )}
               </div>
               <div className="text-[9px] text-zinc-500 leading-tight">
-                {activeCoupon ? '120 MB/s Gigabit CDN' : 'Unlock Turbo Speed'}
+                {activeCoupon ? 'Direct Gigabit Pipeline' : 'Unlock Turbo Download'}
               </div>
             </div>
           </motion.button>
@@ -116,7 +127,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             whileTap={{ scale: 0.98 }}
             id="btn-navbar-upload"
             onClick={onOpenUploadModal}
-            className="hidden md:flex px-3.5 py-2 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-800 hover:text-zinc-950 text-xs font-semibold items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="hidden md:flex px-4 py-2 rounded-2xl bg-white hover:bg-zinc-50 border border-zinc-200/90 text-zinc-800 hover:text-zinc-950 text-xs font-bold items-center gap-2 transition-all cursor-pointer shadow-xs hover:border-zinc-300"
           >
             <Upload className="w-3.5 h-3.5 text-emerald-600" />
             <span>Publish Model</span>
@@ -124,22 +135,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Real Account Menu */}
           {authLoading ? (
-            <div className="w-9 h-9 rounded-xl bg-zinc-100 animate-pulse border border-zinc-200" />
+            <div className="w-9 h-9 rounded-2xl bg-zinc-100 animate-pulse border border-zinc-200" />
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   id="btn-navbar-profile"
-                  className="flex items-center gap-2 p-1.5 pr-3 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-200 transition-colors cursor-pointer shadow-xs"
+                  className="flex items-center gap-2 p-1.5 pr-3 rounded-2xl bg-white/90 hover:bg-white border border-zinc-200/90 transition-all cursor-pointer shadow-xs hover:border-zinc-300"
                 >
                   <div className="relative">
-                    <Avatar className="w-7 h-7 rounded-lg border border-emerald-500/40">
+                    <Avatar className="w-7 h-7 rounded-xl border border-emerald-500/40">
                       <AvatarImage
                         src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
                         alt={profile?.full_name || 'User'}
-                        className="rounded-lg object-cover"
+                        className="rounded-xl object-cover"
                       />
-                      <AvatarFallback className="rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold">
+                      <AvatarFallback className="rounded-xl bg-emerald-100 text-emerald-700 text-xs font-bold">
                         {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -155,32 +166,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-white border-zinc-200 text-zinc-900">
-                <DropdownMenuLabel className="text-zinc-900">
-                  <div className="font-semibold truncate">{profile?.full_name || user.email?.split('@')[0]}</div>
+              <DropdownMenuContent align="end" className="w-56 bg-white border-zinc-200 text-zinc-900 rounded-2xl shadow-xl p-1.5">
+                <DropdownMenuLabel className="text-zinc-900 px-2 py-1.5">
+                  <div className="font-bold truncate">{profile?.full_name || user.email?.split('@')[0]}</div>
                   <div className="text-[11px] font-normal text-zinc-500 truncate">{user.email}</div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-zinc-200" />
-                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer">
+                <DropdownMenuSeparator className="bg-zinc-100" />
+                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/learn"><BookOpen className="w-4 h-4 mr-2 text-emerald-600" /> Learn</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer">
+                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/teach"><GraduationCap className="w-4 h-4 mr-2 text-emerald-600" /> Teach</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer">
+                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/celoris-tv"><Tv className="w-4 h-4 mr-2 text-emerald-600" /> Celoris TV</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer">
+                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/job-center"><Briefcase className="w-4 h-4 mr-2 text-emerald-600" /> Job Center</Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-zinc-200" />
-                <DropdownMenuItem disabled className="text-zinc-500 opacity-100">
+                <DropdownMenuSeparator className="bg-zinc-100" />
+                <DropdownMenuItem disabled className="text-zinc-500 opacity-100 px-2">
                   <Wallet className="w-4 h-4 mr-2 text-emerald-600" /> Credits: {profile?.wallet_balance ?? '0'}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-zinc-200" />
+                <DropdownMenuSeparator className="bg-zinc-100" />
                 <DropdownMenuItem
                   onClick={handleSignOut}
-                  className="text-red-600 hover:bg-red-50 focus:bg-red-50 cursor-pointer"
+                  className="text-red-600 hover:bg-red-50 focus:bg-red-50 cursor-pointer rounded-xl"
                 >
                   <LogOut className="w-4 h-4 mr-2" /> Sign out
                 </DropdownMenuItem>
@@ -189,7 +200,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           ) : (
             <Link
               href="/login"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs shadow-emerald-600/20"
             >
               Sign In
             </Link>

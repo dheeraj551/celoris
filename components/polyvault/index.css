@@ -1,11 +1,7 @@
 /* PolyVault — ported into the main Celoris Next.js app, which already
-   loads Tailwind globally, so the original `@import "tailwindcss";` is
-   dropped here. The original `.animate-fade-in` keyframe is also dropped
-   since the app's own tailwind.config.js already defines an `animate-fade-in`
-   utility class (a near-identical fade+slide effect) — keeping both would
-   have created two conflicting definitions of the same class name. */
+   loads Tailwind globally. */
 
-/* Custom minimal scrollbar for light white & green theme */
+/* Custom minimal scrollbar for modern white & emerald cyber theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -30,4 +26,82 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Modern Animations & Holographic Accents */
+@keyframes pv-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pv-pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pv-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pv-radar {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-pv-float {
+  animation: pv-float 4s ease-in-out infinite;
+}
+
+.animate-pv-glow {
+  animation: pv-pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-pv-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: pv-shimmer 2.5s infinite;
+}
+
+.animate-pv-radar {
+  animation: pv-radar 10s linear infinite;
+}
+
+/* Modern Glass & Grid Utilities */
+.pv-glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(228, 228, 231, 0.8);
+}
+
+.pv-glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(228, 228, 231, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+}
+
+.pv-glass-card:hover {
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
 }

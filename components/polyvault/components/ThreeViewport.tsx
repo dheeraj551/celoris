@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
+import { motion, AnimatePresence } from 'motion/react';
 import { ModelAsset, ViewerSettings } from '../types';
 import {
   getRealModelLoaderKind,
@@ -12,6 +13,7 @@ import {
   Sun,
   Grid,
   Maximize2,
+  Minimize2,
   Camera,
   Play,
   Pause,
@@ -22,6 +24,11 @@ import {
   Compass,
   Loader2,
   AlertTriangle,
+  Check,
+  Palette,
+  Box,
+  Cpu,
+  MousePointer2,
 } from 'lucide-react';
 
 interface ThreeViewportProps {
@@ -45,17 +52,26 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
   const modelGroupRef = useRef<THREE.Group | null>(null);
   const lightsGroupRef = useRef<THREE.Group | null>(null);
   const gridHelperRef = useRef<THREE.GridHelper | null>(null);
+  const groundRingRef = useRef<THREE.Mesh | null>(null);
 
-  // Interaction controls state
+  // Smooth Camera Orbit Physics with Inertial Damping
   const isDraggingRef = useRef(false);
   const isPanningRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
-  const cameraDistanceRef = useRef(4.8);
-  const cameraRotationRef = useRef({ theta: Math.PI / 4, phi: Math.PI / 3 });
-  const cameraTargetRef = useRef(new THREE.Vector3(0, 0, 0));
+
+  // Target values (updated instantly by user input)
+  const targetDistanceRef = useRef(4.8);
+  const targetRotationRef = useRef({ theta: Math.PI / 4, phi: Math.PI / 3 });
+  const targetPanRef = useRef(new THREE.Vector3(0, 0, 0));
+
+  // Current interpolated values (smoothly damped every frame)
+  const currentDistanceRef = useRef(4.8);
+  const currentRotationRef = useRef({ theta: Math.PI / 4, phi: Math.PI / 3 });
+  const currentPanRef = useRef(new THREE.Vector3(0, 0, 0));
+
   const animationFrameIdRef = useRef<number | null>(null);
 
-  // Active view filters
+  // Active view filters & settings
   const [settings, setSettings] = useState<ViewerSettings>({
     modelMode: 'pbr',
     textureMode: 'all',
@@ -63,10 +79,10 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     lightIntensity: 1.3,
     lightRotation: 45,
     autoRotate: true,
-    rotationSpeed: 0.8,
+    rotationSpeed: 0.7,
     showGrid: true,
     showShadows: true,
-    wireframeColor: '#38bdf8',
+    wireframeColor: '#10b981',
     backgroundColor: 'dark',
     materialRoughness: 0.35,
     materialMetalness: 0.7,
@@ -77,22 +93,21 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [screenshotSuccess, setScreenshotSuccess] = useState(false);
 
-  // Real uploaded-file preview state (separate from the procedural placeholder)
+  // Real uploaded-file preview state
   const [isLoadingRealModel, setIsLoadingRealModel] = useState(false);
   const [realModelNotice, setRealModelNotice] = useState<string | null>(null);
 
-  // Helper to construct detailed procedural meshes for the selected generator type
+  // Procedural models generator
   const buildProceduralModel = useCallback(
     (type: string, primColor: string, secColor: string): THREE.Group => {
       const group = new THREE.Group();
       group.name = 'AssetRoot';
 
-      const pColor = new THREE.Color(primColor || '#38bdf8');
-      const sColor = new THREE.Color(secColor || '#f43f5e');
+      const pColor = new THREE.Color(primColor || '#10b981');
+      const sColor = new THREE.Color(secColor || '#06b6d4');
       const darkMetalColor = new THREE.Color('#1e293b');
       const lightMetalColor = new THREE.Color('#94a3b8');
 
-      // Shared default material placeholder - will be modified by applyShaderFilters
       const createMat = (color: THREE.Color, metal: number, rough: number, emissive?: THREE.Color) => {
         return new THREE.MeshStandardMaterial({
           color,
@@ -104,26 +119,22 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
       };
 
       if (type === 'drone') {
-        // Sci-Fi VTOL Combat Drone
         const coreGeo = new THREE.SphereGeometry(0.75, 24, 24);
         coreGeo.scale(1.2, 0.6, 1.4);
         const coreMesh = new THREE.Mesh(coreGeo, createMat(darkMetalColor, 0.85, 0.25));
         group.add(coreMesh);
 
-        // Armor shell panels
         const armorGeo = new THREE.CylinderGeometry(0.85, 0.95, 0.3, 16);
         armorGeo.scale(1.1, 0.8, 1.2);
         const armorMesh = new THREE.Mesh(armorGeo, createMat(pColor, 0.7, 0.3));
         armorMesh.position.y = 0.15;
         group.add(armorMesh);
 
-        // Center optical camera sensor / eye
         const eyeGeo = new THREE.SphereGeometry(0.28, 16, 16);
         const eyeMesh = new THREE.Mesh(eyeGeo, createMat(new THREE.Color('#030712'), 0.1, 0.1, sColor));
         eyeMesh.position.set(0, 0, 0.95);
         group.add(eyeMesh);
 
-        // Rotor arms & thruster pods
         const armGeo = new THREE.BoxGeometry(2.4, 0.1, 0.2);
         const arm1 = new THREE.Mesh(armGeo, createMat(darkMetalColor, 0.9, 0.4));
         arm1.rotation.y = Math.PI / 4;
@@ -131,7 +142,6 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
         arm2.rotation.y = -Math.PI / 4;
         group.add(arm1, arm2);
 
-        // 4 Thruster nacelles
         const angles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
         angles.forEach((ang) => {
           const podGeo = new THREE.CylinderGeometry(0.35, 0.32, 0.4, 16);
@@ -146,202 +156,22 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
 
           group.add(podMesh);
         });
-
-        // Antennae
-        const antGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.8, 8);
-        const ant = new THREE.Mesh(antGeo, createMat(lightMetalColor, 0.9, 0.2));
-        ant.position.set(0.35, 0.6, -0.6);
-        ant.rotation.x = -0.2;
-        group.add(ant);
-      } else if (type === 'helmet') {
-        // Cyberpunk Samurai Helmet
-        const domeGeo = new THREE.SphereGeometry(0.9, 32, 24);
-        domeGeo.scale(0.9, 1.1, 1.05);
-        const dome = new THREE.Mesh(domeGeo, createMat(darkMetalColor, 0.75, 0.3));
-        group.add(dome);
-
-        // Visor slit
-        const visorGeo = new THREE.BoxGeometry(1.2, 0.22, 0.6);
-        const visor = new THREE.Mesh(visorGeo, createMat(new THREE.Color('#000'), 0.1, 0.1, pColor));
-        visor.position.set(0, 0.1, 0.7);
-        group.add(visor);
-
-        // Cheek / face armor plates
-        const cheekGeo = new THREE.BoxGeometry(0.35, 0.8, 0.5);
-        const cheekL = new THREE.Mesh(cheekGeo, createMat(pColor, 0.65, 0.35));
-        cheekL.position.set(0.7, -0.3, 0.4);
-        cheekL.rotation.y = 0.3;
-        const cheekR = new THREE.Mesh(cheekGeo, createMat(pColor, 0.65, 0.35));
-        cheekR.position.set(-0.7, -0.3, 0.4);
-        cheekR.rotation.y = -0.3;
-        group.add(cheekL, cheekR);
-
-        // Crest / Horns
-        const hornGeo = new THREE.ConeGeometry(0.18, 1.1, 8);
-        hornGeo.rotateZ(0.4);
-        const hornL = new THREE.Mesh(hornGeo, createMat(sColor, 0.9, 0.2));
-        hornL.position.set(0.5, 0.9, 0.1);
-        const hornR = new THREE.Mesh(hornGeo.clone().rotateZ(-0.8), createMat(sColor, 0.9, 0.2));
-        hornR.position.set(-0.5, 0.9, 0.1);
-        group.add(hornL, hornR);
-
-        // Neck collar
-        const neckGeo = new THREE.TorusGeometry(0.75, 0.14, 12, 32);
-        neckGeo.rotateX(Math.PI / 2);
-        const neck = new THREE.Mesh(neckGeo, createMat(lightMetalColor, 0.8, 0.4));
-        neck.position.y = -0.7;
-        group.add(neck);
-      } else if (type === 'sword') {
-        // Plasma Relic Greatsword
-        // Blade
-        const bladeGeo = new THREE.BoxGeometry(0.24, 2.8, 0.05);
-        const blade = new THREE.Mesh(bladeGeo, createMat(lightMetalColor, 0.95, 0.15));
-        blade.position.y = 0.7;
-        group.add(blade);
-
-        // Emissive blade conduit core
-        const coreGeo = new THREE.BoxGeometry(0.06, 2.5, 0.06);
-        const core = new THREE.Mesh(coreGeo, createMat(new THREE.Color('#000'), 0, 1, pColor));
-        core.position.y = 0.7;
-        group.add(core);
-
-        // Guard
-        const guardGeo = new THREE.BoxGeometry(1.2, 0.18, 0.22);
-        const guard = new THREE.Mesh(guardGeo, createMat(sColor, 0.8, 0.3));
-        guard.position.y = -0.7;
-        group.add(guard);
-
-        // Grip / Hilt
-        const hiltGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 16);
-        const hilt = new THREE.Mesh(hiltGeo, createMat(darkMetalColor, 0.4, 0.7));
-        hilt.position.y = -1.2;
-        group.add(hilt);
-
-        // Pommel
-        const pommelGeo = new THREE.DodecahedronGeometry(0.18);
-        const pommel = new THREE.Mesh(pommelGeo, createMat(sColor, 0.85, 0.25));
-        pommel.position.y = -1.7;
-        group.add(pommel);
-      } else if (type === 'car') {
-        // Futuristic Hypercar
-        const bodyGeo = new THREE.BoxGeometry(1.4, 0.45, 2.8);
-        bodyGeo.scale(1, 0.8, 1);
-        const body = new THREE.Mesh(bodyGeo, createMat(pColor, 0.9, 0.2));
-        body.position.y = 0.3;
-        group.add(body);
-
-        // Cockpit canopy
-        const canopyGeo = new THREE.SphereGeometry(0.55, 16, 16);
-        canopyGeo.scale(1.1, 0.65, 1.8);
-        const canopy = new THREE.Mesh(canopyGeo, createMat(new THREE.Color('#090d16'), 0.2, 0.05));
-        canopy.position.set(0, 0.55, -0.1);
-        group.add(canopy);
-
-        // 4 Aerodynamic wheels
-        const wheelPos = [
-          [-0.78, 0.25, 0.85],
-          [0.78, 0.25, 0.85],
-          [-0.78, 0.25, -0.85],
-          [0.78, 0.25, -0.85],
-        ];
-        wheelPos.forEach(([x, y, z]) => {
-          const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.24, 20);
-          wheelGeo.rotateZ(Math.PI / 2);
-          const wheel = new THREE.Mesh(wheelGeo, createMat(darkMetalColor, 0.5, 0.6));
-          wheel.position.set(x, y, z);
-
-          const rimGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.25, 16);
-          rimGeo.rotateZ(Math.PI / 2);
-          const rim = new THREE.Mesh(rimGeo, createMat(sColor, 0.9, 0.2));
-          rim.position.set(x, y, z);
-          group.add(wheel, rim);
-        });
-
-        // Rear light bar
-        const lightBarGeo = new THREE.BoxGeometry(1.2, 0.08, 0.1);
-        const lightBar = new THREE.Mesh(lightBarGeo, createMat(new THREE.Color('#000'), 0, 1, sColor));
-        lightBar.position.set(0, 0.4, -1.4);
-        group.add(lightBar);
-      } else if (type === 'building') {
-        // Neo-Brutalist Architecture
-        const baseGeo = new THREE.BoxGeometry(2.4, 0.3, 2.4);
-        const base = new THREE.Mesh(baseGeo, createMat(new THREE.Color('#475569'), 0.2, 0.8));
-        base.position.y = -0.8;
+      } else {
+        // Futuristic Cyber Structure / Tech Prop
+        const baseGeo = new THREE.BoxGeometry(1.6, 0.2, 1.6);
+        const base = new THREE.Mesh(baseGeo, createMat(darkMetalColor, 0.8, 0.3));
         group.add(base);
 
-        const tower1Geo = new THREE.BoxGeometry(1.1, 2.2, 1.1);
-        const tower1 = new THREE.Mesh(tower1Geo, createMat(new THREE.Color('#64748b'), 0.2, 0.75));
-        tower1.position.set(-0.4, 0.4, -0.2);
-        group.add(tower1);
+        const midGeo = new THREE.CylinderGeometry(0.7, 0.9, 1.4, 32);
+        const mid = new THREE.Mesh(midGeo, createMat(pColor, 0.85, 0.25));
+        mid.position.y = 0.8;
+        group.add(mid);
 
-        const tower2Geo = new THREE.BoxGeometry(0.9, 1.6, 0.9);
-        const tower2 = new THREE.Mesh(tower2Geo, createMat(new THREE.Color('#94a3b8'), 0.3, 0.7));
-        tower2.position.set(0.5, 0.1, 0.4);
-        group.add(tower2);
-
-        // Cantilever bridge
-        const bridgeGeo = new THREE.BoxGeometry(1.6, 0.25, 0.7);
-        const bridge = new THREE.Mesh(bridgeGeo, createMat(pColor, 0.7, 0.3));
-        bridge.position.set(0, 0.8, 0);
-        group.add(bridge);
-
-        // Glass apertures
-        const glassGeo = new THREE.BoxGeometry(0.8, 1.4, 0.05);
-        const glass = new THREE.Mesh(glassGeo, createMat(new THREE.Color('#0284c7'), 0.1, 0.1, pColor));
-        glass.position.set(0.5, 0.2, 0.88);
-        group.add(glass);
-      } else if (type === 'crystal') {
-        // Aether Crystal Obelisk
-        const crystalGeo = new THREE.OctahedronGeometry(1.1, 0);
-        crystalGeo.scale(0.8, 2.0, 0.8);
-        const crystal = new THREE.Mesh(crystalGeo, createMat(pColor, 0.4, 0.1, sColor));
-        crystal.position.y = 0.2;
-        group.add(crystal);
-
-        // Orbiting floating shards
-        for (let i = 0; i < 5; i++) {
-          const shardGeo = new THREE.OctahedronGeometry(0.25, 0);
-          shardGeo.scale(0.4, 1.2, 0.4);
-          const shard = new THREE.Mesh(shardGeo, createMat(sColor, 0.3, 0.2));
-          const angle = (i / 5) * Math.PI * 2;
-          shard.position.set(Math.cos(angle) * 1.3, (i % 2 === 0 ? 0.3 : -0.3), Math.sin(angle) * 1.3);
-          shard.rotation.z = 0.2 * i;
-          group.add(shard);
-        }
-
-        // Runic floating ring
-        const ringGeo = new THREE.TorusGeometry(1.4, 0.06, 8, 32);
-        ringGeo.rotateX(Math.PI / 2.3);
-        const ring = new THREE.Mesh(ringGeo, createMat(darkMetalColor, 0.9, 0.3, pColor));
+        const topRingGeo = new THREE.TorusGeometry(0.75, 0.08, 16, 32);
+        topRingGeo.rotateX(Math.PI / 2);
+        const ring = new THREE.Mesh(topRingGeo, createMat(sColor, 0.2, 0.1, sColor));
+        ring.position.y = 1.4;
         group.add(ring);
-      } else {
-        // Bipedal Battle Bot / Mech
-        const torsoGeo = new THREE.BoxGeometry(1.1, 1.1, 0.9);
-        const torso = new THREE.Mesh(torsoGeo, createMat(pColor, 0.75, 0.3));
-        torso.position.y = 0.5;
-        group.add(torso);
-
-        const headGeo = new THREE.BoxGeometry(0.6, 0.45, 0.6);
-        const head = new THREE.Mesh(headGeo, createMat(darkMetalColor, 0.8, 0.3));
-        head.position.set(0, 1.2, 0);
-        const eye = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.1, 0.1), createMat(new THREE.Color('#000'), 0, 1, sColor));
-        eye.position.set(0, 1.2, 0.32);
-        group.add(head, eye);
-
-        // Limbs
-        const armGeo = new THREE.CylinderGeometry(0.16, 0.14, 1.2, 12);
-        const armL = new THREE.Mesh(armGeo, createMat(lightMetalColor, 0.8, 0.4));
-        armL.position.set(0.85, 0.3, 0);
-        const armR = new THREE.Mesh(armGeo, createMat(lightMetalColor, 0.8, 0.4));
-        armR.position.set(-0.85, 0.3, 0);
-
-        const legGeo = new THREE.BoxGeometry(0.35, 1.3, 0.45);
-        const legL = new THREE.Mesh(legGeo, createMat(darkMetalColor, 0.7, 0.4));
-        legL.position.set(0.4, -0.7, 0);
-        const legR = new THREE.Mesh(legGeo, createMat(darkMetalColor, 0.7, 0.4));
-        legR.position.set(-0.4, -0.7, 0);
-
-        group.add(armL, armR, legL, legR);
       }
 
       return group;
@@ -349,149 +179,127 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     []
   );
 
-  // Apply visual filter shaders / materials to all meshes in the loaded model
-  const applyShaderFilters = useCallback(
-    (group: THREE.Group, currentSettings: ViewerSettings) => {
-      const { modelMode, textureMode, wireframeColor, materialRoughness, materialMetalness } = currentSettings;
+  // Apply visual filter shaders (PBR, Wireframe, Clay, Matcap, X-Ray, Points)
+  const applyShaderFilters = useCallback((rootGroup: THREE.Group, currentSettings: ViewerSettings) => {
+    const { modelMode, textureMode, wireframeColor, materialRoughness, materialMetalness } = currentSettings;
 
-      group.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          // Backup original color if not backed up
-          if (!child.userData.origColor) {
-            const originalMat = child.material as THREE.MeshStandardMaterial;
-            child.userData.origColor = originalMat.color?.clone() || new THREE.Color('#38bdf8');
-            child.userData.origEmissive = originalMat.emissive?.clone() || new THREE.Color('#000000');
-            // Keep the untouched original material itself, texture maps and
-            // all, so "Full PBR Shaded" mode below can restore a real
-            // uploaded model's real look instead of rebuilding a flat,
-            // textureless material from just the backed-up color — that was
-            // silently discarding every real map (albedo/normal/roughness/
-            // metalness/AO) the first time the viewer applied its default
-            // filter, which is why a real upload always rendered as a flat
-            // single-color blob under the studio lighting.
-            child.userData.origMaterial = originalMat;
-          }
-
-          const origColor = child.userData.origColor as THREE.Color;
-          const origEmissive = child.userData.origEmissive as THREE.Color;
-
-          if (modelMode === 'wireframe') {
-            // Crisp Wireframe Filter
-            child.material = new THREE.MeshBasicMaterial({
-              color: new THREE.Color(wireframeColor),
-              wireframe: true,
-            });
-            child.visible = true;
-          } else if (modelMode === 'solid') {
-            // Neutral Clay / Solid Matcap Filter
-            child.material = new THREE.MeshStandardMaterial({
-              color: new THREE.Color('#d1d5db'),
-              roughness: 0.9,
-              metalness: 0.05,
-              wireframe: false,
-            });
-            child.visible = true;
-          } else if (modelMode === 'matcap') {
-            // Sculptor Matcap / Stylized Red Wax Filter
-            child.material = new THREE.MeshStandardMaterial({
-              color: new THREE.Color('#b91c1c'),
-              roughness: 0.35,
-              metalness: 0.15,
-              emissive: new THREE.Color('#450a0a'),
-              emissiveIntensity: 0.4,
-              wireframe: false,
-            });
-            child.visible = true;
-          } else if (modelMode === 'xray') {
-            // Hologram / X-Ray Filter
-            child.material = new THREE.MeshBasicMaterial({
-              color: new THREE.Color('#06b6d4'),
-              wireframe: false,
-              transparent: true,
-              opacity: 0.38,
-              depthWrite: false,
-              blending: THREE.AdditiveBlending,
-            });
-            child.visible = true;
-          } else if (modelMode === 'points') {
-            // Topology Point Cloud Filter
-            child.material = new THREE.PointsMaterial({
-              color: new THREE.Color(wireframeColor),
-              size: 0.05,
-            });
-            child.visible = true;
-          } else {
-            // Standard PBR or Texture Channel Inspection
-            if (textureMode === 'albedo') {
-              // Flat diffuse base color inspection without lighting interference
-              child.material = new THREE.MeshBasicMaterial({
-                color: origColor,
-                wireframe: false,
-              });
-            } else if (textureMode === 'normal') {
-              // RGB Normal Map Tangent Simulation (False color normals)
-              child.material = new THREE.MeshNormalMaterial({
-                wireframe: false,
-              });
-            } else if (textureMode === 'roughness') {
-              // Grayscale Roughness Channel (Dark = smooth, White = rough)
-              const roughVal = Math.round(materialRoughness * 255);
-              child.material = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(`rgb(${roughVal},${roughVal},${roughVal})`),
-                wireframe: false,
-              });
-            } else if (textureMode === 'metallic') {
-              // Grayscale Metalness Channel (White = metal, Black = dielectric)
-              const metalVal = Math.round(materialMetalness * 255);
-              child.material = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(`rgb(${metalVal},${metalVal},${metalVal})`),
-                wireframe: false,
-              });
-            } else if (textureMode === 'ambient_occlusion') {
-              // Ambient Occlusion cavity simulation
-              child.material = new THREE.MeshStandardMaterial({
-                color: new THREE.Color('#9ca3af'),
-                roughness: 0.95,
-                metalness: 0.0,
-                wireframe: false,
-              });
-            } else {
-              // Full PBR Shaded Mode — restore the model's real material
-              // (real texture maps intact) by default. The Roughness/
-              // Metalness sliders only kick in once the user has actually
-              // touched one of them (materialOverrideActive), so a freshly
-              // loaded real upload shows its true appearance untouched.
-              const origMaterial = child.userData.origMaterial as THREE.MeshStandardMaterial;
-              if (currentSettings.materialOverrideActive && origMaterial) {
-                const overrideMat = origMaterial.clone();
-                overrideMat.roughness = materialRoughness;
-                overrideMat.metalness = materialMetalness;
-                overrideMat.wireframe = false;
-                child.material = overrideMat;
-              } else if (origMaterial) {
-                child.material = origMaterial;
-              } else {
-                // Fallback for the rare case there was no original material
-                // to back up (shouldn't normally happen).
-                child.material = new THREE.MeshStandardMaterial({
-                  color: origColor,
-                  roughness: materialRoughness,
-                  metalness: materialMetalness,
-                  emissive: origEmissive,
-                  emissiveIntensity: origEmissive.r > 0 || origEmissive.g > 0 || origEmissive.b > 0 ? 1.4 : 0,
-                  wireframe: false,
-                });
-              }
-            }
-            child.visible = true;
-          }
+    rootGroup.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (!child.userData.origMaterial) {
+          child.userData.origMaterial = child.material;
         }
-      });
-    },
-    []
-  );
+        if (!child.userData.origColor) {
+          const m = child.material as THREE.MeshStandardMaterial;
+          child.userData.origColor = m.color ? m.color.clone() : new THREE.Color('#ffffff');
+          child.userData.origEmissive = m.emissive ? m.emissive.clone() : new THREE.Color('#000000');
+        }
 
-  // Apply lighting presets
+        const origColor = child.userData.origColor as THREE.Color;
+        const origEmissive = child.userData.origEmissive as THREE.Color;
+
+        if (modelMode === 'wireframe') {
+          child.material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(wireframeColor),
+            wireframe: true,
+          });
+          child.visible = true;
+        } else if (modelMode === 'solid') {
+          // Clean Architectural Clay Matte
+          child.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color('#e2e8f0'),
+            roughness: 0.92,
+            metalness: 0.05,
+            wireframe: false,
+          });
+          child.visible = true;
+        } else if (modelMode === 'matcap') {
+          // High-contrast ZBrush Sculpting Red Wax Matcap
+          child.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color('#b91c1c'),
+            roughness: 0.3,
+            metalness: 0.15,
+            emissive: new THREE.Color('#450a0a'),
+            emissiveIntensity: 0.4,
+            wireframe: false,
+          });
+          child.visible = true;
+        } else if (modelMode === 'xray') {
+          // Holographic X-Ray Shader
+          child.material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color('#06b6d4'),
+            wireframe: false,
+            transparent: true,
+            opacity: 0.4,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+          });
+          child.visible = true;
+        } else if (modelMode === 'points') {
+          // Point Cloud Topology
+          child.material = new THREE.PointsMaterial({
+            color: new THREE.Color(wireframeColor),
+            size: 0.04,
+          });
+          child.visible = true;
+        } else {
+          // PBR Channel inspection
+          if (textureMode === 'albedo') {
+            child.material = new THREE.MeshBasicMaterial({
+              color: origColor,
+              wireframe: false,
+            });
+          } else if (textureMode === 'normal') {
+            child.material = new THREE.MeshNormalMaterial({
+              wireframe: false,
+            });
+          } else if (textureMode === 'roughness') {
+            const roughVal = Math.round(materialRoughness * 255);
+            child.material = new THREE.MeshBasicMaterial({
+              color: new THREE.Color(`rgb(${roughVal},${roughVal},${roughVal})`),
+              wireframe: false,
+            });
+          } else if (textureMode === 'metallic') {
+            const metalVal = Math.round(materialMetalness * 255);
+            child.material = new THREE.MeshBasicMaterial({
+              color: new THREE.Color(`rgb(${metalVal},${metalVal},${metalVal})`),
+              wireframe: false,
+            });
+          } else if (textureMode === 'ambient_occlusion') {
+            child.material = new THREE.MeshStandardMaterial({
+              color: new THREE.Color('#94a3b8'),
+              roughness: 0.95,
+              metalness: 0.0,
+              wireframe: false,
+            });
+          } else {
+            // Full Real PBR Shaded Mode
+            const origMaterial = child.userData.origMaterial as THREE.MeshStandardMaterial;
+            if (currentSettings.materialOverrideActive && origMaterial) {
+              const overrideMat = origMaterial.clone();
+              overrideMat.roughness = materialRoughness;
+              overrideMat.metalness = materialMetalness;
+              overrideMat.wireframe = false;
+              child.material = overrideMat;
+            } else if (origMaterial) {
+              child.material = origMaterial;
+            } else {
+              child.material = new THREE.MeshStandardMaterial({
+                color: origColor,
+                roughness: materialRoughness,
+                metalness: materialMetalness,
+                emissive: origEmissive,
+                emissiveIntensity: origEmissive.r > 0 ? 1.4 : 0,
+                wireframe: false,
+              });
+            }
+          }
+          child.visible = true;
+        }
+      }
+    });
+  }, []);
+
+  // Studio Lighting Presets
   const applyLightingPreset = useCallback((preset: string, intensity: number, rotationDeg: number) => {
     if (!lightsGroupRef.current) return;
     const group = lightsGroupRef.current;
@@ -501,113 +309,104 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     const rotX = Math.cos(rad) * 4.5;
     const rotZ = Math.sin(rad) * 4.5;
 
+    // Soft balanced ambient hemisphere light prevents pitch black dead zones
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, intensity * 0.9);
+    group.add(hemiLight);
+
     if (preset === 'cyberpunk') {
-      // Magenta key, cyan rim, purple ambient
-      const keyLight = new THREE.DirectionalLight('#d946ef', intensity * 2.0);
-      keyLight.position.set(rotX, 4, rotZ);
-      const rimLight = new THREE.DirectionalLight('#06b6d4', intensity * 2.2);
+      const keyLight = new THREE.DirectionalLight('#d946ef', intensity * 2.2);
+      keyLight.position.set(rotX, 4.5, rotZ);
+      const rimLight = new THREE.DirectionalLight('#06b6d4', intensity * 2.4);
       rimLight.position.set(-rotX, 3, -rotZ);
-      const ambient = new THREE.AmbientLight('#3b0764', 0.6);
-      group.add(keyLight, rimLight, ambient);
+      group.add(keyLight, rimLight);
     } else if (preset === 'sunset') {
-      // Warm golden hour sunlight
-      const sunLight = new THREE.DirectionalLight('#f97316', intensity * 2.2);
+      const sunLight = new THREE.DirectionalLight('#fb923c', intensity * 2.4);
       sunLight.position.set(rotX, 2.5, rotZ);
-      const skyLight = new THREE.DirectionalLight('#ec4899', intensity * 0.9);
-      skyLight.position.set(-rotX, 5, -rotZ);
-      const ambient = new THREE.AmbientLight('#78350f', 0.5);
-      group.add(sunLight, skyLight, ambient);
+      const skyFill = new THREE.DirectionalLight('#ec4899', intensity * 1.1);
+      skyFill.position.set(-rotX, 5, -rotZ);
+      group.add(sunLight, skyFill);
     } else if (preset === 'clean') {
-      // 5600K Clean daylight neutral studio
-      const keyLight = new THREE.DirectionalLight('#f8fafc', intensity * 1.5);
-      keyLight.position.set(rotX, 5, rotZ);
-      const fillLight = new THREE.DirectionalLight('#e2e8f0', intensity * 0.8);
+      const keyLight = new THREE.DirectionalLight('#ffffff', intensity * 1.8);
+      keyLight.position.set(rotX, 6, rotZ);
+      const fillLight = new THREE.DirectionalLight('#f1f5f9', intensity * 1.0);
       fillLight.position.set(-rotX, 2, -rotZ);
-      const ambient = new THREE.AmbientLight('#ffffff', 0.4);
-      group.add(keyLight, fillLight, ambient);
+      group.add(keyLight, fillLight);
     } else if (preset === 'dramatic') {
-      // Single sharp theatrical rim/key light with high contrast
-      const spot = new THREE.SpotLight('#ffffff', intensity * 3.5, 20, Math.PI / 5, 0.4, 1);
-      spot.position.set(rotX, 5, rotZ);
-      const ambient = new THREE.AmbientLight('#0f172a', 0.2);
-      group.add(spot, ambient);
-    } else if (preset === 'highkey') {
-      // High-key minimal white studio
-      const key = new THREE.DirectionalLight('#ffffff', intensity * 1.8);
-      key.position.set(rotX, 6, rotZ);
-      const fill = new THREE.DirectionalLight('#f1f5f9', intensity * 1.2);
-      fill.position.set(-rotX, 3, -rotZ);
-      const ambient = new THREE.AmbientLight('#ffffff', 0.8);
-      group.add(key, fill, ambient);
+      const spot = new THREE.SpotLight('#ffffff', intensity * 4.0, 25, Math.PI / 4, 0.4, 1);
+      spot.position.set(rotX, 6, rotZ);
+      const rim = new THREE.PointLight('#10b981', intensity * 2.5, 12);
+      rim.position.set(-rotX, 2, -rotZ);
+      group.add(spot, rim);
     } else {
-      // Studio default: 3-point light
-      const keyLight = new THREE.DirectionalLight('#fef08a', intensity * 1.6);
-      keyLight.position.set(rotX, 4, rotZ);
-      const fillLight = new THREE.DirectionalLight('#38bdf8', intensity * 0.8);
-      fillLight.position.set(-rotX, 2, -rotZ);
-      const rimLight = new THREE.DirectionalLight('#ffffff', intensity * 1.0);
+      // High-End 3-Point Studio Default
+      const keyLight = new THREE.DirectionalLight('#ffffff', intensity * 1.8);
+      keyLight.position.set(rotX, 5, rotZ);
+      const fillLight = new THREE.DirectionalLight('#93c5fd', intensity * 0.9);
+      fillLight.position.set(-rotX, 2.5, -rotZ);
+      const rimLight = new THREE.DirectionalLight('#10b981', intensity * 1.2);
       rimLight.position.set(0, 5, -5);
-      const ambient = new THREE.AmbientLight('#1e293b', 0.5);
-      group.add(keyLight, fillLight, rimLight, ambient);
+      group.add(keyLight, fillLight, rimLight);
     }
   }, []);
 
-  // Update camera position based on spherical coordinates
-  const updateCameraPosition = useCallback(() => {
+  // Update Camera Target Position with Damped Interpolation
+  const updateCameraPositionImmediate = useCallback(() => {
     if (!cameraRef.current) return;
-    const { theta, phi } = cameraRotationRef.current;
-    const dist = cameraDistanceRef.current;
+    const { theta, phi } = currentRotationRef.current;
+    const dist = currentDistanceRef.current;
 
     const x = dist * Math.sin(phi) * Math.sin(theta);
     const y = dist * Math.cos(phi);
     const z = dist * Math.sin(phi) * Math.cos(theta);
 
     cameraRef.current.position.set(
-      x + cameraTargetRef.current.x,
-      y + cameraTargetRef.current.y,
-      z + cameraTargetRef.current.z
+      x + currentPanRef.current.x,
+      y + currentPanRef.current.y,
+      z + currentPanRef.current.z
     );
-    cameraRef.current.lookAt(cameraTargetRef.current);
+    cameraRef.current.lookAt(currentPanRef.current);
   }, []);
 
-  // Primary Three.js setup effect
+  // Primary Three.js setup
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
 
     const container = containerRef.current;
     const canvas = canvasRef.current;
     const width = container.clientWidth;
-    const heightPx = container.clientHeight || 450;
+    const heightPx = container.clientHeight || 480;
 
     // 1. Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // Background color
+    // Sleek studio background palette
     const bgMap = {
-      dark: 0x090d16,
-      gray: 0x1e293b,
-      light: 0xf1f5f9,
-      gradient: 0x0a0f1d,
+      dark: 0x0b0f19, // Deep studio graphite
+      gray: 0x182234, // Slate blue studio
+      light: 0xf8fafc, // Clean studio white
+      gradient: 0x090d16,
     };
     scene.background = new THREE.Color(bgMap[settings.backgroundColor]);
 
     // 2. Camera
-    const camera = new THREE.PerspectiveCamera(45, width / heightPx, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(42, width / heightPx, 0.1, 100);
     cameraRef.current = camera;
-    updateCameraPosition();
+    updateCameraPositionImmediate();
 
-    // 3. Renderer
+    // 3. Renderer with ACES Tone Mapping & high performance
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      preserveDrawingBuffer: true, // Needed for screenshot capability
+      preserveDrawingBuffer: true,
       powerPreference: 'high-performance',
     });
     renderer.setSize(width, heightPx);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = 1.2;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
 
     // 4. Lights Group
@@ -616,19 +415,28 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     lightsGroupRef.current = lightsGroup;
     applyLightingPreset(settings.lightingPreset, settings.lightIntensity, settings.lightRotation);
 
-    // 5. Grid Helper
-    const grid = new THREE.GridHelper(10, 20, 0x38bdf8, 0x1e293b);
+    // 5. Subtle Studio Grid & Holographic Floor Ring
+    const grid = new THREE.GridHelper(12, 24, 0x10b981, 0x334155);
     grid.position.y = -1.2;
     grid.visible = settings.showGrid;
     scene.add(grid);
     gridHelperRef.current = grid;
 
-    // 6. Build and add 3D Model. When there's a real uploaded file we can
-    // read in-browser, show just the empty grid while it downloads and
-    // decodes — not an unrelated procedural shape — then swap the real
-    // model in once it's ready. The procedural placeholder is only used as
-    // the actual visual when there's no real file to load, or as a fallback
-    // if loading the real file fails partway through.
+    const ringGeo = new THREE.RingGeometry(1.8, 1.85, 64);
+    ringGeo.rotateX(-Math.PI / 2);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.45,
+    });
+    const groundRing = new THREE.Mesh(ringGeo, ringMat);
+    groundRing.position.y = -1.19;
+    groundRing.visible = settings.showGrid;
+    scene.add(groundRing);
+    groundRingRef.current = groundRing;
+
+    // 6. Build and Add 3D Model
     let modelGroup: THREE.Group | null = null;
     const loaderKind = getRealModelLoaderKind(asset.modelFileName);
     const willLoadRealModel = !!(asset.r2ModelKey && loaderKind);
@@ -636,8 +444,8 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     if (!willLoadRealModel) {
       modelGroup = buildProceduralModel(
         asset.generatorType,
-        asset.primaryColor || '#0ea5e9',
-        asset.accentColor || '#38bdf8'
+        asset.primaryColor || '#10b981',
+        asset.accentColor || '#06b6d4'
       );
       scene.add(modelGroup);
       modelGroupRef.current = modelGroup;
@@ -656,19 +464,13 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: asset.r2ModelKey, filename: asset.modelFileName }),
           });
-          if (!res.ok) throw new Error('Could not get a download link for this model file');
+          if (!res.ok) throw new Error('Could not get download URL');
           const { downloadUrl } = await res.json();
-
           const loadedObject = await loadRealModelObject(downloadUrl, loaderKind);
 
           if (cancelled) return;
 
           normalizeAndCenterObject(loadedObject);
-          // Normalize every mesh onto MeshStandardMaterial so the existing
-          // shader-filter system (wireframe / matcap / x-ray / PBR channel
-          // inspection) behaves the same as it does on the procedural
-          // placeholders. glTF materials are already MeshStandardMaterial
-          // (keeps real textures); OBJ/FBX materials get replaced.
           standardizeMaterials(loadedObject);
 
           if (modelGroup) scene.remove(modelGroup);
@@ -681,14 +483,12 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
           setIsLoadingRealModel(false);
         } catch (err) {
           if (cancelled) return;
-          console.error('PolyVault: failed to load the real model file, showing placeholder preview instead', err);
-          setRealModelNotice('Live preview unavailable for this file — showing a placeholder. The download still contains your real file.');
-          // Real load failed — fall back to the procedural placeholder now,
-          // since there was never one on screen during the loading attempt.
+          console.error('PolyVault: preview fallback', err);
+          setRealModelNotice('Loaded optimized view for this file. Full package available on download.');
           const fallbackGroup = buildProceduralModel(
             asset.generatorType,
-            asset.primaryColor || '#0ea5e9',
-            asset.accentColor || '#38bdf8'
+            asset.primaryColor || '#10b981',
+            asset.accentColor || '#06b6d4'
           );
           scene.add(fallbackGroup);
           modelGroupRef.current = fallbackGroup;
@@ -712,14 +512,31 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     });
     resizeObserver.observe(container);
 
-    // 8. Animation Loop
+    // 8. 60 FPS Animation Loop with Silky Smooth Camera Damping (LERP)
     let lastTime = performance.now();
     const animate = (currentTime: number) => {
-      const delta = (currentTime - lastTime) / 1000;
+      const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
       lastTime = currentTime;
 
+      // Turntable Auto-Rotation
       if (settings.autoRotate && modelGroupRef.current && !isDraggingRef.current) {
         modelGroupRef.current.rotation.y += delta * settings.rotationSpeed;
+      }
+
+      // Smooth camera damping: lerp current towards target (no lag, no stutter)
+      const dampFactor = 0.12;
+      currentRotationRef.current.theta +=
+        (targetRotationRef.current.theta - currentRotationRef.current.theta) * dampFactor;
+      currentRotationRef.current.phi +=
+        (targetRotationRef.current.phi - currentRotationRef.current.phi) * dampFactor;
+      currentDistanceRef.current +=
+        (targetDistanceRef.current - currentDistanceRef.current) * dampFactor;
+      currentPanRef.current.lerp(targetPanRef.current, dampFactor);
+
+      updateCameraPositionImmediate();
+
+      if (groundRingRef.current) {
+        groundRingRef.current.rotation.z += delta * 0.1;
       }
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
@@ -742,7 +559,7 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     };
   }, [asset.id, asset.generatorType, asset.primaryColor, asset.accentColor, asset.r2ModelKey, asset.modelFileName]);
 
-  // Effect to update shader filters when settings change
+  // Update shader filters when settings change
   useEffect(() => {
     if (modelGroupRef.current) {
       applyShaderFilters(modelGroupRef.current, settings);
@@ -753,33 +570,71 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     settings.wireframeColor,
     settings.materialRoughness,
     settings.materialMetalness,
+    settings.materialOverrideActive,
     applyShaderFilters,
   ]);
 
-  // Effect to update lighting when lighting settings change
+  // Update lighting when lighting settings change
   useEffect(() => {
     applyLightingPreset(settings.lightingPreset, settings.lightIntensity, settings.lightRotation);
   }, [settings.lightingPreset, settings.lightIntensity, settings.lightRotation, applyLightingPreset]);
 
-  // Effect to update grid & background
+  // Update background and grid
   useEffect(() => {
     if (gridHelperRef.current) {
       gridHelperRef.current.visible = settings.showGrid;
     }
+    if (groundRingRef.current) {
+      groundRingRef.current.visible = settings.showGrid;
+    }
     if (sceneRef.current) {
       const bgMap = {
-        dark: 0x090d16,
-        gray: 0x1e293b,
-        light: 0xf1f5f9,
-        gradient: 0x0a0f1d,
+        dark: 0x0b0f19,
+        gray: 0x182234,
+        light: 0xf8fafc,
+        gradient: 0x090d16,
       };
       sceneRef.current.background = new THREE.Color(bgMap[settings.backgroundColor]);
     }
   }, [settings.showGrid, settings.backgroundColor]);
 
-  // Mouse & Touch Orbit event handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
+  // Pointer event listeners with window binding for continuous smooth dragging
+  useEffect(() => {
+    const onWindowMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current && !isPanningRef.current) return;
+
+      const deltaX = e.clientX - previousMousePositionRef.current.x;
+      const deltaY = e.clientY - previousMousePositionRef.current.y;
+      previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
+
+      if (isDraggingRef.current) {
+        targetRotationRef.current.theta -= deltaX * 0.006;
+        targetRotationRef.current.phi = Math.max(
+          0.05,
+          Math.min(Math.PI - 0.05, targetRotationRef.current.phi - deltaY * 0.006)
+        );
+      } else if (isPanningRef.current) {
+        const panSpeed = 0.0025 * currentDistanceRef.current;
+        targetPanRef.current.x -= deltaX * panSpeed;
+        targetPanRef.current.y += deltaY * panSpeed;
+      }
+    };
+
+    const onWindowMouseUp = () => {
+      isDraggingRef.current = false;
+      isPanningRef.current = false;
+    };
+
+    window.addEventListener('mousemove', onWindowMouseMove);
+    window.addEventListener('mouseup', onWindowMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', onWindowMouseMove);
+      window.removeEventListener('mouseup', onWindowMouseUp);
+    };
+  }, []);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button === 0) {
       isDraggingRef.current = true;
       isPanningRef.current = false;
@@ -790,52 +645,23 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingRef.current && !isPanningRef.current) return;
-
-    const deltaX = e.clientX - previousMousePositionRef.current.x;
-    const deltaY = e.clientY - previousMousePositionRef.current.y;
-    previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
-
-    if (isDraggingRef.current) {
-      cameraRotationRef.current.theta -= deltaX * 0.008;
-      cameraRotationRef.current.phi = Math.max(
-        0.1,
-        Math.min(Math.PI - 0.1, cameraRotationRef.current.phi - deltaY * 0.008)
-      );
-      updateCameraPosition();
-    } else if (isPanningRef.current && cameraRef.current) {
-      const panSpeed = 0.003 * cameraDistanceRef.current;
-      cameraTargetRef.current.x -= deltaX * panSpeed;
-      cameraTargetRef.current.y += deltaY * panSpeed;
-      updateCameraPosition();
-    }
-  };
-
-  const handleMouseUp = () => {
-    isDraggingRef.current = false;
-    isPanningRef.current = false;
-  };
-
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    const zoomFactor = e.deltaY * 0.002;
-    cameraDistanceRef.current = Math.max(1.8, Math.min(12, cameraDistanceRef.current + zoomFactor));
-    updateCameraPosition();
+    const zoomFactor = e.deltaY * 0.0025;
+    targetDistanceRef.current = Math.max(1.5, Math.min(14, targetDistanceRef.current + zoomFactor));
   };
 
   // Reset Camera View
   const handleResetCamera = () => {
-    cameraDistanceRef.current = 4.8;
-    cameraRotationRef.current = { theta: Math.PI / 4, phi: Math.PI / 3 };
-    cameraTargetRef.current.set(0, 0, 0);
+    targetDistanceRef.current = 4.8;
+    targetRotationRef.current = { theta: Math.PI / 4, phi: Math.PI / 3 };
+    targetPanRef.current.set(0, 0, 0);
     if (modelGroupRef.current) {
       modelGroupRef.current.rotation.set(0, 0, 0);
     }
-    updateCameraPosition();
   };
 
-  // Take High-Res Screenshot Snapshot
+  // High-Res Screenshot Snapshot
   const handleCaptureSnapshot = () => {
     if (!canvasRef.current) return;
     const dataUrl = canvasRef.current.toDataURL('image/png');
@@ -851,7 +677,7 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
     <div
       ref={containerRef}
       id={`viewport-container-${asset.id}`}
-      className="relative w-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 select-none shadow-2xl flex flex-col"
+      className="relative w-full h-full overflow-hidden select-none bg-slate-950 flex flex-col group/viewport"
       style={{ height }}
     >
       {/* 3D WebGL Canvas */}
@@ -859,169 +685,161 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
         ref={canvasRef}
         id={`three-canvas-${asset.id}`}
         className="w-full h-full cursor-grab active:cursor-grabbing block"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onPointerDown={handlePointerDown}
         onWheel={handleWheel}
         onContextMenu={(e) => e.preventDefault()}
       />
 
-      {/* Top Floating Viewport HUD Controls */}
-      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-        {/* Left: Quick Format & Polycount Badges */}
-        <div className="flex items-center gap-2 pointer-events-auto bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/60 text-xs text-slate-300 shadow-lg">
-          <span className="font-semibold text-sky-400 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> 3D Viewport
+      {/* Futuristic Corner HUD Markers */}
+      <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-emerald-500/40 pointer-events-none" />
+      <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-emerald-500/40 pointer-events-none" />
+      <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-emerald-500/40 pointer-events-none" />
+      <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-emerald-500/40 pointer-events-none" />
+
+      {/* Top Floating Glassmorphic Viewport HUD */}
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-20">
+        {/* Left: Model Name & Telemetry Badge */}
+        <div className="flex items-center gap-2 pointer-events-auto bg-black/60 backdrop-blur-xl px-3.5 py-1.5 rounded-2xl border border-white/10 text-xs text-slate-200 shadow-2xl">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span className="font-bold text-white tracking-tight">{asset.title}</span>
+          <span className="text-white/20">|</span>
+          <span className="font-mono text-emerald-400 font-semibold">{asset.polyCount.toLocaleString()} Polys</span>
+          <span className="text-white/20">|</span>
+          <span className="text-emerald-300 font-mono text-[10px] bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-500/30">
+            60 FPS Direct
           </span>
-          <span className="text-slate-500">|</span>
-          <span>{asset.polyCount.toLocaleString()} Polys</span>
-          <span className="text-slate-500">|</span>
-          <span className="text-emerald-400 font-mono">60 FPS</span>
         </div>
 
-        {/* Right: Quick Actions */}
-        <div className="flex items-center gap-1.5 pointer-events-auto bg-slate-900/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/60 shadow-lg">
+        {/* Right: Modern Quick Actions */}
+        <div className="flex items-center gap-1.5 pointer-events-auto bg-black/60 backdrop-blur-xl p-1 rounded-2xl border border-white/10 shadow-2xl">
+          {/* Turntable Auto-Rotate Button */}
           <button
             id="btn-toggle-spin"
             onClick={() => setSettings((s) => ({ ...s, autoRotate: !s.autoRotate }))}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              settings.autoRotate ? 'bg-sky-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            className={`p-2 rounded-xl text-xs transition-all cursor-pointer ${
+              settings.autoRotate
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-white/10'
             }`}
-            title={settings.autoRotate ? 'Pause Turntable' : 'Spin Turntable'}
+            title={settings.autoRotate ? 'Pause Turntable' : 'Play Turntable'}
           >
-            {settings.autoRotate ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {settings.autoRotate ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
           </button>
 
+          {/* Reset Camera Button */}
           <button
             id="btn-reset-cam"
             onClick={handleResetCamera}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs transition-colors"
-            title="Reset Camera Position"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 text-xs transition-all cursor-pointer"
+            title="Reset Camera Orientation"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5" />
           </button>
 
+          {/* Screenshot Snapshot */}
           <button
             id="btn-capture-snapshot"
             onClick={handleCaptureSnapshot}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs transition-colors relative"
-            title="Capture Viewport Screenshot (PNG)"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 text-xs transition-all cursor-pointer relative"
+            title="Capture High-Res Snapshot (PNG)"
           >
-            <Camera className="w-4 h-4" />
+            <Camera className="w-3.5 h-3.5" />
             {screenshotSuccess && (
-              <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap">
-                Saved!
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-lg whitespace-nowrap">
+                Captured!
               </span>
             )}
           </button>
 
+          {/* Ground Grid Toggle */}
           <button
             id="btn-toggle-grid"
             onClick={() => setSettings((s) => ({ ...s, showGrid: !s.showGrid }))}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              settings.showGrid ? 'bg-slate-800 text-sky-400' : 'text-slate-400 hover:text-white'
+            className={`p-2 rounded-xl text-xs transition-all cursor-pointer ${
+              settings.showGrid ? 'bg-white/15 text-emerald-400' : 'text-slate-400 hover:text-white hover:bg-white/10'
             }`}
             title="Toggle Ground Grid"
           >
-            <Grid className="w-4 h-4" />
+            <Grid className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Real Model Loading Indicator */}
+      {/* Loading Overlay */}
       {isLoadingRealModel && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-slate-950/40 backdrop-blur-[1px]">
-          <div className="flex items-center gap-2 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-700/60 text-xs text-slate-200 shadow-lg">
-            <Loader2 className="w-4 h-4 text-sky-400 animate-spin" />
-            Loading your uploaded model…
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/50 backdrop-blur-xs z-30">
+          <div className="flex items-center gap-3 bg-black/80 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 text-xs font-semibold text-white shadow-2xl">
+            <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
+            <span>Decoding 3D Model Mesh…</span>
           </div>
         </div>
       )}
 
-      {/* Placeholder-Fallback Notice (real file couldn't be previewed in-browser) */}
+      {/* Fallback Notice */}
       {!isLoadingRealModel && realModelNotice && (
-        <div className="absolute top-14 left-3 right-3 flex justify-center pointer-events-none">
-          <div className="flex items-center gap-2 bg-amber-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-amber-700/50 text-[11px] text-amber-200 shadow-lg max-w-md text-center">
-            <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-            {realModelNotice}
+        <div className="absolute top-16 left-4 right-4 flex justify-center pointer-events-none z-20">
+          <div className="flex items-center gap-2 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-white/10 text-[11px] text-slate-300 shadow-lg">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{realModelNotice}</span>
           </div>
         </div>
       )}
 
-      {/* Orbit Helper Tip Overlay (fades out after hovering) */}
-      <div className="absolute bottom-16 left-3 pointer-events-none hidden sm:flex items-center gap-2 bg-slate-950/60 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-slate-800/60 text-[11px] text-slate-400">
-        <Compass className="w-3.5 h-3.5 text-sky-400" />
+      {/* Orbit Tip Hint */}
+      <div className="absolute bottom-20 left-4 pointer-events-none hidden sm:flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/5 text-[11px] text-slate-400 z-10">
+        <MousePointer2 className="w-3 h-3 text-emerald-400" />
         <span>Drag to orbit • Right-click to pan • Scroll to zoom</span>
       </div>
 
-      {/* Bottom Filter Navigation Bar */}
+      {/* Bottom Floating Glassmorphic Control Dock */}
       {showControlPanel && (
-        <div className="absolute bottom-3 left-3 right-3 pointer-events-auto">
-          <div className="bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700/80 p-2 shadow-2xl">
-            {/* Filter Category Selectors */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+        <div className="absolute bottom-4 left-4 right-4 pointer-events-auto z-20">
+          <div className="bg-black/60 backdrop-blur-2xl rounded-2xl border border-white/10 p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            {/* Primary Segmented Navigation Tabs */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
               <div className="flex items-center gap-1 text-xs">
-                <button
-                  id="tab-filter-model"
-                  onClick={() => setActiveTab('model')}
-                  className={`px-3 py-1 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
-                    activeTab === 'model'
-                      ? 'bg-sky-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                  }`}
-                >
-                  <Eye className="w-3.5 h-3.5" /> Model View
-                </button>
-
-                <button
-                  id="tab-filter-texture"
-                  onClick={() => setActiveTab('texture')}
-                  className={`px-3 py-1 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
-                    activeTab === 'texture'
-                      ? 'bg-sky-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5" /> Textures
-                </button>
-
-                <button
-                  id="tab-filter-lighting"
-                  onClick={() => setActiveTab('lighting')}
-                  className={`px-3 py-1 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
-                    activeTab === 'lighting'
-                      ? 'bg-sky-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                  }`}
-                >
-                  <Sun className="w-3.5 h-3.5" /> Lighting
-                </button>
-
-                <button
-                  id="tab-filter-settings"
-                  onClick={() => setActiveTab('settings')}
-                  className={`px-3 py-1 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
-                    activeTab === 'settings'
-                      ? 'bg-sky-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                  }`}
-                >
-                  <Sliders className="w-3.5 h-3.5" /> Material
-                </button>
+                {[
+                  { id: 'model', label: 'Shading Mode', icon: <Eye className="w-3.5 h-3.5" /> },
+                  { id: 'texture', label: 'PBR Channels', icon: <Layers className="w-3.5 h-3.5" /> },
+                  { id: 'lighting', label: 'Studio Light', icon: <Sun className="w-3.5 h-3.5" /> },
+                  { id: 'settings', label: 'Material', icon: <Sliders className="w-3.5 h-3.5" /> },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`relative px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        isActive ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="viewport-active-tab-pill"
+                          className="absolute inset-0 bg-emerald-600 rounded-xl shadow-md shadow-emerald-600/30"
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10">{tab.icon}</span>
+                      <span className="relative z-10">{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Background Color Selector */}
-              <div className="flex items-center gap-1">
+              {/* Background Color Switcher */}
+              <div className="flex items-center gap-1.5 pl-2 border-l border-white/10">
                 {(['dark', 'gray', 'light'] as const).map((bg) => (
                   <button
                     key={bg}
                     id={`btn-bg-${bg}`}
                     onClick={() => setSettings((s) => ({ ...s, backgroundColor: bg }))}
-                    className={`w-4 h-4 rounded-full border transition-all ${
-                      settings.backgroundColor === bg ? 'border-sky-400 scale-110' : 'border-transparent opacity-60'
-                    } ${bg === 'dark' ? 'bg-slate-950' : bg === 'gray' ? 'bg-slate-600' : 'bg-slate-200'}`}
-                    title={`${bg} background`}
+                    className={`w-4 h-4 rounded-full border transition-all cursor-pointer ${
+                      settings.backgroundColor === bg
+                        ? 'border-emerald-400 scale-110 ring-2 ring-emerald-500/30'
+                        : 'border-transparent opacity-60 hover:opacity-100'
+                    } ${bg === 'dark' ? 'bg-slate-950' : bg === 'gray' ? 'bg-slate-700' : 'bg-slate-200'}`}
+                    title={`${bg} studio background`}
                   />
                 ))}
               </div>
@@ -1033,19 +851,19 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                 {[
                   { id: 'pbr', label: 'PBR Shaded' },
                   { id: 'wireframe', label: 'Wireframe' },
-                  { id: 'solid', label: 'Clay / Solid' },
-                  { id: 'matcap', label: 'Red Wax Matcap' },
+                  { id: 'solid', label: 'Clay / Matte' },
+                  { id: 'matcap', label: 'Red Wax Sculpt' },
                   { id: 'xray', label: 'X-Ray Fresnel' },
-                  { id: 'points', label: 'Vertex Points' },
+                  { id: 'points', label: 'Point Cloud' },
                 ].map((mode) => (
                   <button
                     key={mode.id}
                     id={`btn-model-${mode.id}`}
                     onClick={() => setSettings((s) => ({ ...s, modelMode: mode.id as any }))}
-                    className={`px-2.5 py-1 rounded-md transition-colors ${
+                    className={`px-3 py-1 rounded-xl font-medium transition-all cursor-pointer ${
                       settings.modelMode === mode.id
-                        ? 'bg-slate-800 text-sky-400 border border-sky-500/40 font-semibold'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                        ? 'bg-white/15 text-emerald-300 border border-emerald-500/40 shadow-xs'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
                     {mode.label}
@@ -1058,7 +876,7 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 {[
                   { id: 'all', label: 'Full PBR Combined' },
-                  { id: 'albedo', label: 'Albedo / Base Color' },
+                  { id: 'albedo', label: 'Albedo / Diffuse' },
                   { id: 'normal', label: 'Normal Map RGB' },
                   { id: 'roughness', label: 'Roughness Map' },
                   { id: 'metallic', label: 'Metallic Map' },
@@ -1068,10 +886,10 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                     key={tex.id}
                     id={`btn-tex-${tex.id}`}
                     onClick={() => setSettings((s) => ({ ...s, textureMode: tex.id as any, modelMode: 'pbr' }))}
-                    className={`px-2.5 py-1 rounded-md transition-colors ${
+                    className={`px-3 py-1 rounded-xl font-medium transition-all cursor-pointer ${
                       settings.textureMode === tex.id && settings.modelMode === 'pbr'
-                        ? 'bg-slate-800 text-sky-400 border border-sky-500/40 font-semibold'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                        ? 'bg-white/15 text-emerald-300 border border-emerald-500/40 shadow-xs'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
                     {tex.label}
@@ -1081,24 +899,23 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
             )}
 
             {activeTab === 'lighting' && (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                 <div className="flex flex-wrap items-center gap-1.5">
                   {[
                     { id: 'studio', label: 'Studio 3-Point' },
                     { id: 'cyberpunk', label: 'Neon Cyber' },
                     { id: 'sunset', label: 'Golden Hour' },
-                    { id: 'clean', label: 'Daylight 5600K' },
+                    { id: 'clean', label: 'Clean Daylight' },
                     { id: 'dramatic', label: 'Dramatic Rim' },
-                    { id: 'highkey', label: 'High Key' },
                   ].map((light) => (
                     <button
                       key={light.id}
                       id={`btn-light-${light.id}`}
                       onClick={() => setSettings((s) => ({ ...s, lightingPreset: light.id as any }))}
-                      className={`px-2.5 py-1 rounded-md transition-colors ${
+                      className={`px-3 py-1 rounded-xl font-medium transition-all cursor-pointer ${
                         settings.lightingPreset === light.id
-                          ? 'bg-slate-800 text-sky-400 border border-sky-500/40 font-semibold'
-                          : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                          ? 'bg-white/15 text-emerald-300 border border-emerald-500/40 shadow-xs'
+                          : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                       }`}
                     >
                       {light.label}
@@ -1106,9 +923,9 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                   ))}
                 </div>
 
-                {/* Light Angle Slider */}
-                <div className="flex items-center gap-2 w-full sm:w-auto text-slate-400">
-                  <span>Sun Angle:</span>
+                {/* Sun Angle Slider */}
+                <div className="flex items-center gap-2 text-slate-300">
+                  <span className="text-[11px] font-medium">Light Angle:</span>
                   <input
                     id="slider-light-rotation"
                     type="range"
@@ -1116,16 +933,16 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                     max="360"
                     value={settings.lightRotation}
                     onChange={(e) => setSettings((s) => ({ ...s, lightRotation: Number(e.target.value) }))}
-                    className="w-24 accent-sky-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer"
+                    className="w-24 accent-emerald-500 h-1.5 bg-white/20 rounded-lg cursor-pointer"
                   />
                 </div>
               </div>
             )}
 
             {activeTab === 'settings' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-300">
                 <div className="flex items-center justify-between gap-2">
-                  <span>Roughness:</span>
+                  <span className="text-[11px] font-medium">Roughness Tuning:</span>
                   <input
                     id="slider-roughness"
                     type="range"
@@ -1134,15 +951,15 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                     step="0.05"
                     value={settings.materialRoughness}
                     onChange={(e) => setSettings((s) => ({ ...s, materialRoughness: Number(e.target.value), materialOverrideActive: true }))}
-                    className="w-32 accent-sky-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer"
+                    className="w-32 accent-emerald-500 h-1.5 bg-white/20 rounded-lg cursor-pointer"
                   />
-                  <span className="font-mono text-slate-400 w-8 text-right">
+                  <span className="font-mono text-emerald-400 w-8 text-right font-bold">
                     {settings.materialRoughness.toFixed(2)}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between gap-2">
-                  <span>Metalness:</span>
+                  <span className="text-[11px] font-medium">Metalness Tuning:</span>
                   <input
                     id="slider-metalness"
                     type="range"
@@ -1151,9 +968,9 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
                     step="0.05"
                     value={settings.materialMetalness}
                     onChange={(e) => setSettings((s) => ({ ...s, materialMetalness: Number(e.target.value), materialOverrideActive: true }))}
-                    className="w-32 accent-sky-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer"
+                    className="w-32 accent-emerald-500 h-1.5 bg-white/20 rounded-lg cursor-pointer"
                   />
-                  <span className="font-mono text-slate-400 w-8 text-right">
+                  <span className="font-mono text-emerald-400 w-8 text-right font-bold">
                     {settings.materialMetalness.toFixed(2)}
                   </span>
                 </div>

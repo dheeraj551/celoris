@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { ModelAsset, FilterState, Coupon, UserProfile, DownloadItem, ModelFormat } from './types';
+import { motion, AnimatePresence } from 'motion/react';
+import { ModelAsset, FilterState, Coupon, UserProfile, DownloadItem, ModelFormat, AssetCategory } from './types';
 import { MOCK_ASSETS, INITIAL_COUPONS, INITIAL_USER } from './data/mockAssets';
 import { Navbar } from './components/Navbar';
 import { Hero3DStage } from './components/Hero3DStage';
 import { ModelCard } from './components/ModelCard';
+import { SearchAndFilters } from './components/SearchAndFilters';
 import { ModelDetailModal } from './components/ModelDetailModal';
 import { DownloadModal } from './components/DownloadModal';
 import { CouponSystem } from './components/CouponSystem';
@@ -22,22 +23,15 @@ import {
   Compass,
   Cpu,
   TrendingUp,
+  Globe,
+  Sliders,
 } from 'lucide-react';
 
 export default function App() {
-  // The real signed-in Supabase user (separate from the mock `currentUser`
-  // profile below, which is a PolyVault-only local stand-in for
-  // gamification fields — wallet/badges/turbo-tier — that don't exist in
-  // the real profile yet). Real listings' author.id is always this user's
-  // real id, so "My Uploads" below has to key off it, not currentUser.id.
+  // The real signed-in Supabase user
   const { user } = useAuth();
 
-  // Primary datasets. Real, published listings now live in Supabase (see
-  // app/api/polyvault/assets) instead of this browser's own localStorage —
-  // that local-only storage was the actual bug where an uploaded model and
-  // its real creator name were invisible to every other visitor. `assets`
-  // starts as just the seeded demo catalog and the effect below fetches and
-  // prepends the real, shared listings once they load.
+  // Primary datasets
   const [assets, setAssets] = useState<ModelAsset[]>(MOCK_ASSETS);
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
@@ -101,9 +95,7 @@ export default function App() {
     return assets.filter((a) => comparingAssetIds.includes(a.id));
   }, [assets, comparingAssetIds]);
 
-  // Load the real, shared catalog from Supabase and prepend it to the
-  // seeded demo assets, so every visitor — any browser, any device, signed
-  // in or not — sees the same real uploads and real creator names.
+  // Load the real, shared catalog from Supabase
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -163,7 +155,6 @@ export default function App() {
         return prev.filter((id) => id !== asset.id);
       }
       if (prev.length >= 4) {
-        // Replace oldest or cap at 4
         return [...prev.slice(1), asset.id];
       }
       return [...prev, asset.id];
@@ -208,6 +199,22 @@ export default function App() {
     );
   };
 
+  // Categories computed with counts for the category tabs
+  const categories = useMemo(() => {
+    const counts: { name: AssetCategory; count: number }[] = [
+      { name: 'All', count: assets.length },
+      { name: 'Sci-Fi', count: assets.filter((a) => a.category === 'Sci-Fi').length },
+      { name: 'Characters', count: assets.filter((a) => a.category === 'Characters').length },
+      { name: 'Vehicles', count: assets.filter((a) => a.category === 'Vehicles').length },
+      { name: 'Architecture', count: assets.filter((a) => a.category === 'Architecture').length },
+      { name: 'Weapons', count: assets.filter((a) => a.category === 'Weapons').length },
+      { name: 'Nature', count: assets.filter((a) => a.category === 'Nature').length },
+      { name: 'Props', count: assets.filter((a) => a.category === 'Props').length },
+      { name: 'Electronics', count: assets.filter((a) => a.category === 'Electronics').length },
+    ];
+    return counts.filter((c) => c.count > 0 || c.name === 'All');
+  }, [assets]);
+
   // High-performance search & filtering calculation
   const filteredAssets = useMemo(() => {
     return assets
@@ -230,7 +237,7 @@ export default function App() {
           return false;
         }
 
-        // Formats filter (asset must contain all chosen formats, or at least one)
+        // Formats filter
         if (filters.formats.length > 0) {
           const hasFormat = filters.formats.some((fmt) => asset.formats.includes(fmt));
           if (!hasFormat) return false;
@@ -275,22 +282,23 @@ export default function App() {
         if (filters.sortBy === 'polycount') {
           return b.polyCount - a.polyCount;
         }
-        // Default: popular (by downloads and reviews)
+        // Default: popular
         return b.downloadsCount - a.downloadsCount;
       });
   }, [assets, filters]);
 
-  // Assets uploaded by the current user. Real listings' author.id is the
-  // real Supabase user id (see app/api/polyvault/assets), not the mock
-  // currentUser.id, so this has to key off the real signed-in user —
-  // signed-out visitors, and the seeded demo catalog, simply have none.
+  // Assets uploaded by the current user
   const userUploads = useMemo(() => {
     if (!user) return [];
     return assets.filter((a) => a.author.id === user.id);
   }, [assets, user]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50/60 text-zinc-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
+      {/* Subtle Cyber Atmospheric Ambient Gradients */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[400px] bg-gradient-to-br from-emerald-400/8 via-teal-300/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="fixed top-1/3 right-10 w-[500px] h-[500px] bg-gradient-to-bl from-cyan-400/8 via-emerald-300/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+
       {/* Top Navbar */}
       <Navbar
         activeCoupon={activeCoupon}
@@ -301,7 +309,7 @@ export default function App() {
       />
 
       {/* Main Store Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
         {/* Interactive 3D WebGL Hero Graphic Stage */}
         <section>
           <Hero3DStage
@@ -314,71 +322,75 @@ export default function App() {
         </section>
 
         {/* Modern Graphic Feature Pillars */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <motion.div
-            whileHover={{ y: -2 }}
-            className="p-3.5 rounded-2xl bg-white border border-zinc-200/90 shadow-xs flex items-center gap-3 transition-colors hover:border-emerald-300"
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="p-4 rounded-3xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs flex items-center gap-3.5 transition-all hover:border-emerald-400/70 hover:shadow-lg hover:shadow-emerald-500/10 cursor-default group"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50/90 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200/80 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
               <Box className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-bold text-zinc-900 truncate">WebGL 2.0 Canvas</div>
-              <div className="text-[10px] text-zinc-500">60 FPS Hardware Viewport</div>
+              <div className="text-xs font-extrabold text-zinc-950 truncate tracking-tight">WebGL 2.0 Canvas</div>
+              <div className="text-[10px] text-zinc-500 font-medium">60 FPS Hardware Viewport</div>
             </div>
           </motion.div>
 
           <motion.div
-            whileHover={{ y: -2 }}
-            className="p-3.5 rounded-2xl bg-white border border-zinc-200/90 shadow-xs flex items-center gap-3 transition-colors hover:border-emerald-300"
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="p-4 rounded-3xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs flex items-center gap-3.5 transition-all hover:border-emerald-400/70 hover:shadow-lg hover:shadow-emerald-500/10 cursor-default group"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50/90 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200/80 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
               <Layers className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-bold text-zinc-900 truncate">4K PBR Materials</div>
-              <div className="text-[10px] text-zinc-500">Albedo, Normal & Roughness</div>
+              <div className="text-xs font-extrabold text-zinc-950 truncate tracking-tight">4K PBR Materials</div>
+              <div className="text-[10px] text-zinc-500 font-medium">Albedo, Normal & Roughness</div>
             </div>
           </motion.div>
 
           <motion.div
-            whileHover={{ y: -2 }}
-            className="p-3.5 rounded-2xl bg-white border border-zinc-200/90 shadow-xs flex items-center gap-3 transition-colors hover:border-emerald-300"
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="p-4 rounded-3xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs flex items-center gap-3.5 transition-all hover:border-emerald-400/70 hover:shadow-lg hover:shadow-emerald-500/10 cursor-default group"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50/90 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200/80 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
               <Cpu className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-bold text-zinc-900 truncate">Game & VFX Ready</div>
-              <div className="text-[10px] text-zinc-500">GLTF, GLB, FBX, OBJ, USDZ</div>
+              <div className="text-xs font-extrabold text-zinc-950 truncate tracking-tight">Game & VFX Ready</div>
+              <div className="text-[10px] text-zinc-500 font-medium">GLTF, GLB, FBX, OBJ, USDZ</div>
             </div>
           </motion.div>
 
           <motion.div
-            whileHover={{ y: -2 }}
-            className="p-3.5 rounded-2xl bg-white border border-zinc-200/90 shadow-xs flex items-center gap-3 transition-colors hover:border-emerald-300"
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="p-4 rounded-3xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs flex items-center gap-3.5 transition-all hover:border-emerald-400/70 hover:shadow-lg hover:shadow-emerald-500/10 cursor-default group"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50/90 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200/80 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
               <Zap className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-bold text-zinc-900 truncate">Gigabit Edge CDN</div>
-              <div className="text-[10px] text-zinc-500">Direct High-Speed Pipeline</div>
+              <div className="text-xs font-extrabold text-zinc-950 truncate tracking-tight">Gigabit Edge CDN</div>
+              <div className="text-[10px] text-zinc-500 font-medium">Direct High-Speed Pipeline</div>
             </div>
           </motion.div>
         </section>
 
         {/* Store Catalog Section */}
-        <section className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200">
+        <section className="space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200/80">
             <div>
-              <h2 className="text-lg font-bold text-zinc-950 tracking-tight flex items-center gap-2">
+              <h2 className="text-xl font-black text-zinc-950 tracking-tight flex items-center gap-2.5">
                 <span>Featured 3D Assets Catalog</span>
-                <span className="text-xs font-mono font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-300/80 shadow-2xs">
                   {filteredAssets.length} models
                 </span>
               </h2>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-xs text-zinc-500 mt-1">
                 Hover to rotate in real-time 3D, inspect polygon topology, or initiate rapid download.
               </p>
             </div>
@@ -387,7 +399,7 @@ export default function App() {
               {activeCoupon ? (
                 <div
                   onClick={() => setIsCouponModalOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-900 cursor-pointer hover:border-emerald-400 transition-colors shadow-xs"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-50/90 border border-emerald-300 text-xs text-emerald-900 cursor-pointer hover:border-emerald-400 transition-colors shadow-xs"
                   title="Manage active speed coupons"
                 >
                   <Zap className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
@@ -396,7 +408,7 @@ export default function App() {
               ) : (
                 <button
                   onClick={() => setIsCouponModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 hover:text-zinc-950 transition-colors cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-white hover:bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 hover:text-zinc-950 transition-colors cursor-pointer shadow-xs"
                 >
                   <Zap className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Apply Speed Coupon</span>
@@ -404,9 +416,21 @@ export default function App() {
               )}
             </div>
           </div>
-          {/* Model Assets Grid */}
+
+          {/* Integrated Modern Search & Filters Bar */}
+          <SearchAndFilters
+            filters={filters}
+            onFilterChange={setFilters}
+            categories={categories}
+            totalResults={filteredAssets.length}
+          />
+
+          {/* Model Assets Grid with Staggered Motion */}
           {filteredAssets.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+            >
               {filteredAssets.map((asset) => (
                 <ModelCard
                   key={asset.id}
@@ -421,14 +445,18 @@ export default function App() {
                   onToggleCompare={handleToggleCompare}
                 />
               ))}
-            </div>
+            </motion.div>
           ) : (
-            <div className="text-center py-16 px-4 rounded-2xl bg-white border border-zinc-200 shadow-xs space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-100">
-                <Box className="w-7 h-7" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-20 px-4 rounded-3xl bg-white/90 backdrop-blur-md border border-zinc-200/90 shadow-sm space-y-4"
+            >
+              <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200/80 shadow-xs">
+                <Box className="w-8 h-8 animate-pv-float" />
               </div>
-              <h3 className="text-base font-bold text-zinc-900">No 3D Models Matched Your Criteria</h3>
-              <p className="text-xs text-zinc-500 max-w-md mx-auto">
+              <h3 className="text-lg font-black text-zinc-950">No 3D Models Matched Your Criteria</h3>
+              <p className="text-xs text-zinc-500 max-w-md mx-auto leading-relaxed">
                 Try loosening your filters, selecting a different category, or clearing your search term.
               </p>
               <button
@@ -447,25 +475,25 @@ export default function App() {
                     sortBy: 'popular',
                   })
                 }
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs cursor-pointer"
+                className="px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 cursor-pointer transition-all"
               >
                 Reset All Filters
               </button>
-            </div>
+            </motion.div>
           )}
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-zinc-200 bg-white/90 py-8 text-xs text-zinc-500">
+      <footer className="mt-20 border-t border-zinc-200/80 bg-white/80 backdrop-blur-md py-8 text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Box className="w-4 h-4 text-emerald-600" />
-            <span className="font-bold text-zinc-950">POLYVAULT 3D</span>
+            <span className="font-extrabold text-zinc-950">POLYVAULT 3D</span>
             <span>— Next-Gen 3D Assets, WebGL Viewport Studio & Fast CDN</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-4 text-[11px] font-medium">
             <button onClick={() => setIsCouponModalOpen(true)} className="hover:text-emerald-600 transition-colors cursor-pointer">
               Speed Coupons
             </button>

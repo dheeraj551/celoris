@@ -14,6 +14,10 @@ import {
   CheckCircle2,
   Sliders,
   ChevronRight,
+  Maximize2,
+  MousePointer2,
+  Cpu,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface Hero3DStageProps {
@@ -34,6 +38,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
   const mountRef = useRef<HTMLDivElement>(null);
   const [renderMode, setRenderMode] = useState<'pbr' | 'wireframe' | 'clay'>('pbr');
   const [isAutoRotating, setIsAutoRotating] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Three.js scene refs
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -54,7 +59,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 1.2, 5.0);
+    camera.position.set(0, 1.25, 5.0);
 
     let renderer: THREE.WebGLRenderer | null = null;
     try {
@@ -66,7 +71,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.15;
+      renderer.toneMappingExposure = 1.2;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       container.appendChild(renderer.domElement);
@@ -75,57 +80,74 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       return;
     }
 
-    // Lighting setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+    // High-tech studio lighting setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.6);
     scene.add(ambientLight);
 
-    const mainSpot = new THREE.SpotLight(0xffffff, 3.5);
+    const mainSpot = new THREE.SpotLight(0xffffff, 3.8);
     mainSpot.position.set(5, 8, 6);
     mainSpot.angle = Math.PI / 4;
-    mainSpot.penumbra = 0.5;
+    mainSpot.penumbra = 0.6;
     scene.add(mainSpot);
 
-    const emeraldRim = new THREE.PointLight(0x10b981, 3.0, 12);
+    const emeraldRim = new THREE.PointLight(0x10b981, 3.5, 12);
     emeraldRim.position.set(-4, 3, -3);
     scene.add(emeraldRim);
 
-    const accentFill = new THREE.DirectionalLight(0x059669, 1.2);
+    const cyanFill = new THREE.PointLight(0x06b6d4, 2.2, 10);
+    cyanFill.position.set(4, -1, -2);
+    scene.add(cyanFill);
+
+    const accentFill = new THREE.DirectionalLight(0x059669, 1.4);
     accentFill.position.set(0, -3, 3);
     scene.add(accentFill);
 
-    // Dynamic ground grid with glowing emerald circles
-    const gridHelper = new THREE.GridHelper(10, 20, 0x10b981, 0xe4e4e7);
+    // Dynamic ground grid with cyber styling
+    const gridHelper = new THREE.GridHelper(12, 24, 0x10b981, 0xd1fae5);
     gridHelper.position.y = -1.3;
     scene.add(gridHelper);
 
-    // Glowing ring platform
-    const platformGeo = new THREE.RingGeometry(1.6, 1.68, 64);
+    // Outer concentric glowing ring platform
+    const platformGeo = new THREE.RingGeometry(1.6, 1.66, 64);
     platformGeo.rotateX(-Math.PI / 2);
     const platformMat = new THREE.MeshBasicMaterial({
       color: 0x10b981,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.75,
     });
     const platformRing = new THREE.Mesh(platformGeo, platformMat);
     platformRing.position.y = -1.29;
     scene.add(platformRing);
 
-    // Floating particle field graphic
-    const particleCount = 60;
+    // Inner concentric ring
+    const innerRingGeo = new THREE.RingGeometry(0.9, 0.94, 48);
+    innerRingGeo.rotateX(-Math.PI / 2);
+    const innerRingMat = new THREE.MeshBasicMaterial({
+      color: 0x06b6d4,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.5,
+    });
+    const innerRing = new THREE.Mesh(innerRingGeo, innerRingMat);
+    innerRing.position.y = -1.29;
+    scene.add(innerRing);
+
+    // Floating cyber particles
+    const particleCount = 75;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount * 3; i += 3) {
-      particlePositions[i] = (Math.random() - 0.5) * 8;
-      particlePositions[i + 1] = Math.random() * 4 - 1.2;
-      particlePositions[i + 2] = (Math.random() - 0.5) * 6;
+      particlePositions[i] = (Math.random() - 0.5) * 9;
+      particlePositions[i + 1] = Math.random() * 4.5 - 1.2;
+      particlePositions[i + 2] = (Math.random() - 0.5) * 7;
     }
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     const particleMat = new THREE.PointsMaterial({
-      color: 0x059669,
-      size: 0.055,
+      color: 0x10b981,
+      size: 0.05,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.65,
     });
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
@@ -138,7 +160,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       renderMode === 'wireframe'
     );
     model.position.y = 0;
-    model.scale.set(1.25, 1.25, 1.25);
+    model.scale.set(1.28, 1.28, 1.28);
     scene.add(model);
     modelGroupRef.current = model;
 
@@ -147,7 +169,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       const clayMat = new THREE.MeshStandardMaterial({
         color: 0xf4f4f5,
         roughness: 0.9,
-        metalness: 0.1,
+        metalness: 0.05,
       });
       model.traverse((child) => {
         if (child instanceof THREE.Mesh) {
@@ -156,13 +178,14 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       });
     }
 
-    // Drag to rotate interaction
+    // Drag to rotate interaction with smooth easing
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
+      setHasInteracted(true);
       prevMouseX = e.clientX;
       prevMouseY = e.clientY;
     };
@@ -194,7 +217,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       const time = clock.getElapsedTime();
 
       if (isAutoRotatingRef.current && modelGroupRef.current && !isDragging) {
-        modelGroupRef.current.rotation.y += delta * 0.45;
+        modelGroupRef.current.rotation.y += delta * 0.42;
       }
 
       if (modelGroupRef.current) {
@@ -202,7 +225,8 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       }
 
       platformRing.rotation.z = time * 0.2;
-      particles.rotation.y = time * 0.03;
+      innerRing.rotation.z = -time * 0.3;
+      particles.rotation.y = time * 0.035;
 
       if (renderer) {
         renderer.render(scene, camera);
@@ -240,57 +264,86 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
   const topPickAssets = allAssets.slice(0, 4);
 
   return (
-    <div className="relative w-full rounded-3xl bg-gradient-to-br from-white via-zinc-50 to-emerald-50/40 border border-zinc-200/90 shadow-sm overflow-hidden p-6 md:p-8">
-      {/* Background Graphic Grid Accent */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98110_1px,transparent_1px),linear-gradient(to_bottom,#10b98110_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-300/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative w-full rounded-3xl bg-gradient-to-br from-white via-slate-50/70 to-emerald-50/50 border border-zinc-200/90 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.06)] overflow-hidden p-6 sm:p-8 md:p-10 transition-all">
+      {/* Sci-Fi Decorative Corner Brackets */}
+      <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-emerald-500/40 pointer-events-none" />
+      <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-emerald-500/40 pointer-events-none" />
+      <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-emerald-500/40 pointer-events-none" />
+      <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-emerald-500/40 pointer-events-none" />
+
+      {/* Background Graphic Grid Accent & Glowing Orbs */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98112_1px,transparent_1px),linear-gradient(to_bottom,#10b98112_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-gradient-to-br from-emerald-400/15 via-teal-300/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-gradient-to-tr from-cyan-400/15 via-emerald-300/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* Left Column: Typography, Story, Specs & Action */}
-        <div className="lg:col-span-5 space-y-5">
+        <div className="lg:col-span-5 space-y-6">
           {/* Animated Pill Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold shadow-xs"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50/90 border border-emerald-300/80 text-emerald-800 text-xs font-semibold shadow-xs backdrop-blur-sm"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-spin" style={{ animationDuration: '6s' }} />
-            <span>Featured 3D Masterpiece</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-spin" style={{ animationDuration: '7s' }} />
+            <span className="tracking-wide">FEATURED 3D MASTERPIECE</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
           </motion.div>
 
-          <div className="space-y-2">
-            <motion.h2
-              key={featuredAsset.id + '-title'}
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className="text-2xl sm:text-3xl font-extrabold text-zinc-950 tracking-tight leading-tight"
-            >
-              {featuredAsset.title}
-            </motion.h2>
+          {/* Model Title & Story */}
+          <div className="space-y-2.5">
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={featuredAsset.id + '-title'}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="text-2xl sm:text-3xl md:text-4xl font-black text-zinc-950 tracking-tight leading-tight"
+              >
+                {featuredAsset.title}
+              </motion.h2>
+            </AnimatePresence>
 
-            <p className="text-xs sm:text-sm text-zinc-600 line-clamp-2 leading-relaxed">
-              {featuredAsset.description}
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={featuredAsset.id + '-desc'}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="text-xs sm:text-sm text-zinc-600 line-clamp-2 leading-relaxed"
+              >
+                {featuredAsset.description}
+              </motion.p>
+            </AnimatePresence>
           </div>
 
-          {/* Quick Technical Highlights */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <div className="p-2.5 rounded-xl bg-white border border-zinc-200 shadow-xs text-left">
-              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block">Polygons</span>
-              <span className="text-sm font-bold text-zinc-900 font-mono">
+          {/* Quick Technical Highlights - Modern HUD Style */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="p-3 rounded-2xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs text-left group hover:border-emerald-300 transition-colors">
+              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block mb-0.5">Polygons</span>
+              <span className="text-base font-extrabold text-zinc-900 font-mono tracking-tight block">
                 {featuredAsset.polyCount.toLocaleString()}
               </span>
+              <span className="text-[10px] text-emerald-700 font-medium">Quad Topology</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-white border border-zinc-200 shadow-xs text-left">
-              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block">Textures</span>
-              <span className="text-sm font-bold text-emerald-700">4K PBR Multi</span>
+
+            <div className="p-3 rounded-2xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs text-left group hover:border-emerald-300 transition-colors">
+              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block mb-0.5">Textures</span>
+              <span className="text-base font-extrabold text-emerald-700 font-mono tracking-tight block">
+                4K PBR Multi
+              </span>
+              <span className="text-[10px] text-zinc-500 font-medium">Albedo / Normal</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-white border border-zinc-200 shadow-xs text-left">
-              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block">License</span>
-              <span className="text-sm font-bold text-zinc-900">Royalty-Free</span>
+
+            <div className="p-3 rounded-2xl bg-white/90 backdrop-blur-sm border border-zinc-200/90 shadow-xs text-left group hover:border-emerald-300 transition-colors">
+              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block mb-0.5">License</span>
+              <span className="text-base font-extrabold text-zinc-900 tracking-tight block truncate">
+                Royalty-Free
+              </span>
+              <span className="text-[10px] text-emerald-700 font-medium">Commercial Ready</span>
             </div>
           </div>
 
@@ -301,8 +354,9 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
               whileTap={{ scale: 0.98 }}
               id="btn-hero-inspect-model"
               onClick={() => onInspect(featuredAsset)}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-emerald-600/20 cursor-pointer transition-all"
+              className="relative group overflow-hidden px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/25 cursor-pointer transition-all"
             >
+              <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000" />
               <Eye className="w-4 h-4" />
               <span>Launch 3D WebGL Studio</span>
             </motion.button>
@@ -312,36 +366,43 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
               whileTap={{ scale: 0.98 }}
               id="btn-hero-quick-download"
               onClick={() => onDownload(featuredAsset)}
-              className="px-4 py-2.5 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-300 text-zinc-800 font-semibold text-xs flex items-center gap-2 shadow-xs cursor-pointer transition-all"
+              className="px-4 py-3 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-300 text-zinc-800 font-semibold text-xs flex items-center gap-2 shadow-xs cursor-pointer transition-all"
             >
               <Download className="w-4 h-4 text-emerald-600" />
               <span>Download Package</span>
+              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                ⚡ 120 MB/s
+              </span>
             </motion.button>
           </div>
 
           {/* Quick asset selector thumbs */}
-          <div className="pt-2 border-t border-zinc-200/80">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
-                Select Featured Showcase:
+          <div className="pt-3 border-t border-zinc-200/80">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider flex items-center gap-1.5">
+                <span>Showcase Switcher</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               </span>
-              <span className="text-[11px] text-emerald-700 font-medium">Click to Load In 3D</span>
+              <span className="text-[11px] text-emerald-700 font-medium">Click to Load Model In 3D</span>
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2.5">
               {topPickAssets.map((asset) => {
                 const isSelected = asset.id === featuredAsset.id;
                 return (
                   <button
                     key={asset.id}
                     onClick={() => onSelectFeatured(asset)}
-                    className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
                       isSelected
-                        ? 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-500/20 shadow-xs'
-                        : 'bg-white border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50'
+                        ? 'bg-emerald-50/90 border-emerald-400 ring-2 ring-emerald-500/25 shadow-sm'
+                        : 'bg-white/80 border-zinc-200 hover:border-emerald-300 hover:bg-white'
                     }`}
                   >
+                    {isSelected && (
+                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-500" />
+                    )}
                     <div className="text-[10px] font-bold text-zinc-900 truncate">{asset.title}</div>
-                    <div className="text-[9px] text-emerald-700 font-mono font-medium">
+                    <div className="text-[9px] text-emerald-700 font-mono font-bold mt-0.5">
                       {asset.price === 0 ? 'FREE' : `₹${asset.price}`}
                     </div>
                   </button>
@@ -353,7 +414,16 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
 
         {/* Right Column: Live WebGL 3D Interactive Graphic Stage */}
         <div className="lg:col-span-7 flex flex-col items-center">
-          <div className="relative w-full h-[360px] sm:h-[420px] rounded-2xl bg-gradient-to-b from-zinc-50/90 to-white/95 border border-zinc-200/90 shadow-inner flex items-center justify-center overflow-hidden">
+          <div className="relative w-full h-[380px] sm:h-[440px] rounded-3xl bg-gradient-to-b from-white/95 via-slate-50/90 to-emerald-50/40 border border-zinc-200/90 shadow-inner flex items-center justify-center overflow-hidden">
+            {/* Holographic Radar Backdrop Grid */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.08)_0%,transparent_70%)] pointer-events-none" />
+
+            {/* Corner Sci-Fi Viewport Accents */}
+            <div className="absolute top-3 left-3 w-2.5 h-2.5 border-t-2 border-l-2 border-emerald-500/50 pointer-events-none z-10" />
+            <div className="absolute top-3 right-3 w-2.5 h-2.5 border-t-2 border-r-2 border-emerald-500/50 pointer-events-none z-10" />
+            <div className="absolute bottom-3 left-3 w-2.5 h-2.5 border-b-2 border-l-2 border-emerald-500/50 pointer-events-none z-10" />
+            <div className="absolute bottom-3 right-3 w-2.5 h-2.5 border-b-2 border-r-2 border-emerald-500/50 pointer-events-none z-10" />
+
             {/* Real-time 3D Mount Canvas */}
             <div
               ref={mountRef}
@@ -362,60 +432,72 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
             />
 
             {/* Top Toolbar: Shading modes & Auto Rotate Toggle */}
-            <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-              <div className="flex items-center gap-1.5 pointer-events-auto bg-white/90 backdrop-blur-md px-2 py-1 rounded-xl border border-zinc-200 shadow-xs">
-                <button
-                  onClick={() => setRenderMode('pbr')}
-                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
-                    renderMode === 'pbr' ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-600 hover:text-zinc-950'
-                  }`}
-                >
-                  PBR Shaded
-                </button>
-                <button
-                  onClick={() => setRenderMode('wireframe')}
-                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
-                    renderMode === 'wireframe'
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : 'text-zinc-600 hover:text-zinc-950'
-                  }`}
-                >
-                  Wireframe
-                </button>
-                <button
-                  onClick={() => setRenderMode('clay')}
-                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
-                    renderMode === 'clay' ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-600 hover:text-zinc-950'
-                  }`}
-                >
-                  Clay Matte
-                </button>
+            <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">
+              <div className="flex items-center gap-1 pointer-events-auto bg-white/90 backdrop-blur-md p-1 rounded-2xl border border-zinc-200/90 shadow-xs">
+                {(['pbr', 'wireframe', 'clay'] as const).map((mode) => {
+                  const isActive = renderMode === mode;
+                  const label = mode === 'pbr' ? 'PBR Shaded' : mode === 'wireframe' ? 'Wireframe' : 'Clay Matte';
+                  return (
+                    <button
+                      key={mode}
+                      onClick={() => setRenderMode(mode)}
+                      className={`relative px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
+                        isActive ? 'text-white' : 'text-zinc-600 hover:text-zinc-950'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="hero-render-mode-active"
+                          className="absolute inset-0 bg-emerald-600 rounded-xl shadow-xs"
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10">{label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              <button
-                onClick={() => setIsAutoRotating(!isAutoRotating)}
-                className={`pointer-events-auto p-2 rounded-xl backdrop-blur-md border transition-all cursor-pointer shadow-xs ${
-                  isAutoRotating
-                    ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                    : 'bg-white/90 border-zinc-200 text-zinc-500 hover:text-zinc-900'
-                }`}
-                title={isAutoRotating ? 'Pause auto-rotation' : 'Resume auto-rotation'}
-              >
-                <RotateCw className={`w-3.5 h-3.5 ${isAutoRotating ? 'animate-spin' : ''}`} style={{ animationDuration: '8s' }} />
-              </button>
+              <div className="flex items-center gap-1.5 pointer-events-auto">
+                <button
+                  onClick={() => setIsAutoRotating(!isAutoRotating)}
+                  className={`p-2 rounded-xl backdrop-blur-md border transition-all cursor-pointer shadow-xs ${
+                    isAutoRotating
+                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                      : 'bg-white/90 border-zinc-200 text-zinc-500 hover:text-zinc-900'
+                  }`}
+                  title={isAutoRotating ? 'Pause auto-rotation' : 'Resume auto-rotation'}
+                >
+                  <RotateCw className={`w-4 h-4 ${isAutoRotating ? 'animate-spin' : ''}`} style={{ animationDuration: '8s' }} />
+                </button>
+              </div>
             </div>
 
+            {/* Interactive Drag Hint (fades out after first interaction) */}
+            {!hasInteracted && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="absolute top-16 pointer-events-none flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] text-white font-medium shadow-lg"
+              >
+                <MousePointer2 className="w-3 h-3 text-emerald-400 animate-bounce" />
+                <span>Drag to inspect 360°</span>
+              </motion.div>
+            )}
+
             {/* Bottom Graphic Telemetry Bar */}
-            <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-[11px] pointer-events-none">
-              <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1 rounded-xl border border-zinc-200 shadow-xs pointer-events-auto text-zinc-600">
+            <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-[11px] pointer-events-none z-20">
+              <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-zinc-200/90 shadow-xs pointer-events-auto text-zinc-600">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                <span className="font-mono font-medium text-emerald-800">Direct WebGL 2.0 Canvas</span>
+                <span className="font-mono font-bold text-emerald-800">WebGL 2.0</span>
                 <span className="text-zinc-300">•</span>
-                <span className="font-mono">Interactive Orbit</span>
+                <span className="font-mono text-zinc-500">60 FPS Hardware</span>
               </div>
 
-              <div className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-xl border border-zinc-200 shadow-xs pointer-events-auto text-zinc-500 font-mono text-[10px]">
-                Drag to rotate 360°
+              <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-zinc-200/90 shadow-xs pointer-events-auto text-zinc-500 font-mono text-[10px] flex items-center gap-1.5">
+                <Cpu className="w-3 h-3 text-emerald-600" />
+                <span>Direct Orbit Viewport</span>
               </div>
             </div>
           </div>
