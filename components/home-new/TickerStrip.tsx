@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { BookOpen, Briefcase, Coffee, Sparkles, type LucideIcon } from "lucide-react"
+import { BookOpen, Briefcase, Coffee, Sparkles, Newspaper, type LucideIcon } from "lucide-react"
 
 export type TickerItem = {
-  category: "courses" | "jobs" | "cafe" | "apps"
+  category: "courses" | "jobs" | "cafe" | "apps" | "blog"
   label: string
   meta?: string
   href: string
@@ -15,6 +15,7 @@ const CATEGORY_META: Record<TickerItem["category"], { tag: string; icon: LucideI
   jobs: { tag: "Jobs", icon: Briefcase, className: "text-amber-400 bg-amber-500/10" },
   cafe: { tag: "Café", icon: Coffee, className: "text-sky-400 bg-sky-500/10" },
   apps: { tag: "Apps", icon: Sparkles, className: "text-pink-400 bg-pink-500/10" },
+  blog: { tag: "Blog", icon: Newspaper, className: "text-violet-400 bg-violet-500/10" },
 }
 
 export function TickerStrip({ items }: { items: TickerItem[] }) {

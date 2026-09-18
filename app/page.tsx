@@ -95,6 +95,26 @@ export default async function HomePage() {
     .order('created_at', { ascending: false })
     .limit(3);
 
+  // Certified Roles (Job Center) — separate table/tier from the open public_jobs
+  // board above, so it needs its own query to show up in the ticker at all.
+  const { data: topCertifiedJobsRaw } = await supabase
+    .from('certified_jobs')
+    .select('id, title, company, work_mode, salary_range, featured, created_at')
+    .eq('status', 'active')
+    .order('featured', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(2);
+
+  // Latest published blog posts
+  const { data: topBlogsRaw } = await supabase
+    .from('blog_posts')
+    .select('slug, title, category, is_featured, published_at')
+    .eq('is_published', true)
+    .eq('status', 'published')
+    .order('is_featured', { ascending: false })
+    .order('published_at', { ascending: false })
+    .limit(2);
+
   // Live café presence in the last 5 minutes — falls back to a plain "open" state
   // rather than showing a 0 count, since a visible zero reads as a dead platform.
   const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -116,6 +136,18 @@ export default async function HomePage() {
       label: j.title,
       meta: [j.company, j.work_mode].filter(Boolean).join(' · '),
       href: '/job-center',
+    })),
+    ...(topCertifiedJobsRaw || []).map((j: any) => ({
+      category: 'jobs' as const,
+      label: j.title,
+      meta: ['Certified Role', j.salary_range].filter(Boolean).join(' · '),
+      href: '/job-center',
+    })),
+    ...(topBlogsRaw || []).map((b: any) => ({
+      category: 'blog' as const,
+      label: b.title,
+      meta: b.is_featured ? 'Featured' : (b.category?.trim() || 'New on the blog'),
+      href: `/blog/${b.slug}`,
     })),
     {
       category: 'cafe' as const,

@@ -282,34 +282,63 @@ export default function App() {
     localStorage.setItem('skillverify_exams', JSON.stringify(exams));
   }, [exams]);
 
-  // Active Platform Time Accumulator & XP Tick
+  // Active Platform Time Accumulator (local, cosmetic "time on platform"
+  // counter only) + server-validated Loyalty XP Tick.
+  //
+  // This used to be one setInterval that mutated currentXP directly every
+  // 60 seconds the tab was open — regardless of whether it was visible,
+  // and regardless of whether that XP was ever synced to Supabase (it only
+  // reached the server as a side effect of the *next* exam completion,
+  // baking in whatever number the browser's own, editable local state had
+  // accumulated). Since level/XP directly gate access to Certified Roles
+  // (real freelance work), that meant the browser was the real source of
+  // truth for loyalty XP. Now the client only pings the server, which
+  // independently decides whether real time has actually passed and
+  // whether today's loyalty-XP cap has been hit — see
+  // app/api/job-center/activity-ping. Pinging pauses while the tab isn't
+  // visible so a background/pinned tab can't farm XP, though the actual
+  // limit is enforced server-side regardless of that.
   useEffect(() => {
-    const timer = setInterval(() => {
-      setUser((prevUser) => {
-        const newTotalSecs = prevUser.totalTimeSpentSeconds + 1;
-        // Award +5 XP every 60 seconds of active platform time
-        if (newTotalSecs > 0 && newTotalSecs % 60 === 0) {
-          const addedXP = 5;
-          const nextXP = prevUser.currentXP + addedXP;
-          const checkedLevel = checkLevelProgression(nextXP, prevUser.level);
-          return {
-            ...prevUser,
-            totalTimeSpentSeconds: newTotalSecs,
-            currentXP: nextXP,
-            level: checkedLevel.level,
-            levelTitle: checkedLevel.levelTitle,
-            nextLevelXP: checkedLevel.nextLevelXP,
-          };
-        }
-        return {
-          ...prevUser,
-          totalTimeSpentSeconds: newTotalSecs,
-        };
-      });
+    const secondsTimer = setInterval(() => {
+      setUser((prevUser) => ({
+        ...prevUser,
+        totalTimeSpentSeconds: prevUser.totalTimeSpentSeconds + 1,
+      }));
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => clearInterval(secondsTimer);
   }, []);
+
+  useEffect(() => {
+    if (!authUser?.id) return;
+
+    const pingActivity = async () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        const res = await fetch('/api/job-center/activity-ping', { method: 'POST' });
+        const data = await res.json();
+        if (data?.success && typeof data.currentXP === 'number') {
+          setUser((prev) => {
+            const checked = checkLevelProgression(data.currentXP, prev.level);
+            return {
+              ...prev,
+              currentXP: data.currentXP,
+              honorScore: typeof data.honorScore === 'number' ? data.honorScore : prev.honorScore,
+              level: checked.level,
+              levelTitle: checked.levelTitle,
+              nextLevelXP: checked.nextLevelXP,
+            };
+          });
+        }
+      } catch (err) {
+        console.error('Error syncing activity XP:', err);
+      }
+    };
+
+    const pingTimer = setInterval(pingActivity, 60 * 1000);
+    return () => clearInterval(pingTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser?.id]);
 
   // Check XP Progression & Level threshold
   const checkLevelProgression = (currentXP: number, currentLevel: UserTierLevel) => {
@@ -332,37 +361,24 @@ export default function App() {
     };
   };
 
-  // Award XP Helper
-  const handleAwardXP = (amount: number) => {
-    setUser((prev) => {
-      const nextXP = prev.currentXP + amount;
-      const checked = checkLevelProgression(nextXP, prev.level);
-      return {
-        ...prev,
-        currentXP: nextXP,
-        level: checked.level,
-        levelTitle: checked.levelTitle,
-        nextLevelXP: checked.nextLevelXP,
-      };
-    });
-  };
-
-  // Handle Exam Finished & Badge Issuance
-  const handleExamCompleted = (result: ExamResult) => {
+  // Handle Exam Finished & Badge Issuance. The XP/honor numbers and the
+  // badge object itself now come from the server's own recomputation
+  // (app/api/job-center/exam/submit already wrote them to Supabase before
+  // this fires) — this just mirrors that authoritative result into local
+  // UI state. It deliberately does NOT derive nextXP from `prev.currentXP`
+  // the way the old client-side-graded version did, since local state is
+  // exactly what a tampered client would control.
+  const handleExamCompleted = (result: ExamResult, progress?: { currentXP: number; honorScore: number }) => {
     soundFx.playNotification();
-    let nextXPForSync = 0;
-    let nextHonorForSync = 0;
 
     setUser((prev) => {
       const updatedBadges = result.badgeEarned
         ? [...prev.verifiedBadges.filter((b) => b.badgeTitle !== result.badgeEarned!.badgeTitle), result.badgeEarned]
         : prev.verifiedBadges;
 
-      const nextXP = prev.currentXP + result.xpEarned;
-      const nextHonor = Math.round((prev.honorScore + result.honorScore) / 2);
+      const nextXP = progress?.currentXP ?? prev.currentXP;
+      const nextHonor = progress?.honorScore ?? prev.honorScore;
       const checked = checkLevelProgression(nextXP, prev.level);
-      nextXPForSync = nextXP;
-      nextHonorForSync = nextHonor;
 
       return {
         ...prev,
@@ -375,57 +391,48 @@ export default function App() {
         examHistory: [result, ...prev.examHistory],
       };
     });
-
-    // Persist to Supabase so this badge/XP is real and shows up on the
-    // shareable public candidate profile — not just this browser's
-    // localStorage. Best-effort: a sync failure shouldn't block the exam
-    // result the user already sees locally.
-    if (authUser?.id) {
-      const supabase = createClient();
-      supabase
-        .from('job_center_progress')
-        .upsert({
-          id: authUser.id,
-          current_xp: nextXPForSync,
-          honor_score: nextHonorForSync,
-          updated_at: new Date().toISOString(),
-        })
-        .then(({ error }: { error: any }) => {
-          if (error) console.error('Error syncing job center progress:', error);
-        });
-
-      if (result.badgeEarned) {
-        const badge = result.badgeEarned;
-        supabase
-          .from('job_center_badges')
-          .insert({
-            user_id: authUser.id,
-            badge_title: badge.badgeTitle,
-            skill_name: badge.skillName,
-            industry: badge.industry,
-            verification_hash: badge.verificationHash,
-            score: badge.score,
-            proctor_score: badge.proctorScore,
-            badge_color: badge.badgeColor,
-          })
-          .then(({ error }: { error: any }) => {
-            if (error) console.error('Error syncing job center badge:', error);
-          });
-      }
-    }
   };
 
-  // Handle Applying for a Job
-  const handleApplyJob = (jobId: string) => {
-    setUser((prev) => {
-      if (prev.appliedJobIds.includes(jobId)) return prev;
-      return {
-        ...prev,
-        appliedJobIds: [...prev.appliedJobIds, jobId],
-      };
-    });
-    // Award XP for applying
-    handleAwardXP(25);
+  // Handle Applying for a Job. Marks it applied locally right away for a
+  // snappy UI, then records the application server-side and reconciles XP
+  // from the response — app/api/job-center/apply is what actually writes
+  // job_center_applications + job_center_progress; a real server record of
+  // who applied to what didn't exist before this (appliedJobIds used to
+  // live only in the browser's localStorage), and the unique constraint
+  // there means re-clicking Apply can't re-earn the +25 XP.
+  const handleApplyJob = async (jobId: string) => {
+    if (user.appliedJobIds.includes(jobId)) return;
+
+    setUser((prev) =>
+      prev.appliedJobIds.includes(jobId) ? prev : { ...prev, appliedJobIds: [...prev.appliedJobIds, jobId] }
+    );
+
+    const job = jobs.find((j) => j.id === jobId);
+    if (!authUser?.id || !job) return;
+
+    try {
+      const res = await fetch('/api/job-center/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId, jobTier: job.tier }),
+      });
+      const data = await res.json();
+      if (data?.success && typeof data.currentXP === 'number') {
+        setUser((prev) => {
+          const checked = checkLevelProgression(data.currentXP, prev.level);
+          return {
+            ...prev,
+            currentXP: data.currentXP,
+            honorScore: typeof data.honorScore === 'number' ? data.honorScore : prev.honorScore,
+            level: checked.level,
+            levelTitle: checked.levelTitle,
+            nextLevelXP: checked.nextLevelXP,
+          };
+        });
+      }
+    } catch (err) {
+      console.error('Error recording job application:', err);
+    }
   };
 
   // Launch Exam for Badge from Job card

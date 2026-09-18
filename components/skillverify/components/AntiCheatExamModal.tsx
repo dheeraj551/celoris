@@ -20,7 +20,7 @@ import {
   Zap,
   Volume2
 } from 'lucide-react';
-import { ExamDefinition, ExamQuestion, ExamResult, VerifiedBadge } from '../types';
+import { ExamDefinition, ExamResult } from '../types';
 import { soundFx } from '../utils/audio';
 import { AnimatedTooltip } from './AnimatedTooltip';
 import confetti from 'canvas-confetti';
@@ -29,7 +29,10 @@ interface AntiCheatExamModalProps {
   exam: ExamDefinition;
   isOpen: boolean;
   onClose: () => void;
-  onExamComplete: (result: ExamResult) => void;
+  // progress is the authoritative post-award current_xp/honor_score from
+  // app/api/job-center/exam/submit (see handleSubmitExam below) — the
+  // caller should trust these over anything derived from prior local state.
+  onExamComplete: (result: ExamResult, progress?: { currentXP: number; honorScore: number }) => void;
 }
 
 export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
@@ -56,7 +59,7 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
   // Evaluation & Results
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [finalResult, setFinalResult] = useState<ExamResult | null>(null);
-  const [aiEvaluationFeedback, setAiEvaluationFeedback] = useState<any>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const examContainerRef = useRef<HTMLDivElement | null>(null);
@@ -74,6 +77,7 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
       setHonorScore(100);
       setProctorLogs([`[${new Date().toLocaleTimeString()}] Anti-Cheat Session initialized for ${exam.title}`]);
       setFinalResult(null);
+      setSubmitError(null);
     } else {
       stopWebcam();
     }
@@ -215,109 +219,64 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
+  // Grading moved server-side (app/api/job-center/exam/submit) — this used
+  // to grade MCQs against exam.correctAnswerIndex and build the badge/XP
+  // entirely in the browser, then App.tsx wrote that self-reported result
+  // straight to Supabase. That meant a tampered client (or a forged network
+  // request) could self-issue XP and badges without the server ever
+  // re-checking anything. The server now independently recomputes the
+  // score from the raw answers and is the sole issuer of XP/badges; this
+  // function just submits and displays whatever it authoritatively
+  // returns. On a network/server failure we deliberately do NOT fall back
+  // to grading locally — that would reopen the same hole — we just let the
+  // candidate retry the submission.
   const handleSubmitExam = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setSubmitError(null);
     setPhase('evaluating');
     stopWebcam();
 
-    // Grade MCQs
-    let mcqCorrect = 0;
-    let mcqTotal = 0;
-
-    exam.questions.forEach((q) => {
-      if (q.type === 'mcq') {
-        mcqTotal++;
-        if (answers[q.id] === q.correctAnswerIndex) {
-          mcqCorrect++;
-        }
-      }
-    });
-
-    // Using .find() (rather than reassigning a `let` inside the forEach
-    // above) keeps this a plain `ExamQuestion | undefined` — reassigning
-    // a closure-captured variable inside a callback made TypeScript's
-    // production build (stricter than `next dev`) narrow it to `never`.
-    const scenarioQuestion: ExamQuestion | undefined = exam.questions.find((q) => q.type === 'scenario');
-    const scenarioAnswer = scenarioQuestion ? ((answers[scenarioQuestion.id] as string) || '') : '';
-
-    let scenarioScore = 80;
-    let scenarioFeedbackText = 'Solid practical scenario architectural design with verified anti-cheat integrity.';
-
-    // If scenario question exists, evaluate via server AI endpoint
-    if (scenarioQuestion && scenarioAnswer.trim().length > 10) {
-      try {
-        const response = await fetch('/api/exam/evaluate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            question: scenarioQuestion.question,
-            userAnswer: scenarioAnswer,
-            expectedTopic: exam.skillName,
-            skillName: exam.skillName,
-          }),
-        });
-        const data = await response.json();
-        if (data.success && data.evaluation) {
-          scenarioScore = data.evaluation.score || 80;
-          scenarioFeedbackText = data.evaluation.verifiedFeedback || data.evaluation.proctorNote;
-          setAiEvaluationFeedback(data.evaluation);
-        }
-      } catch (err) {
-        console.error('AI grading error:', err);
-      }
-    }
-
-    const mcqPercent = mcqTotal > 0 ? (mcqCorrect / mcqTotal) * 100 : 100;
-    const finalScore = scenarioQuestion ? Math.round(mcqPercent * 0.6 + scenarioScore * 0.4) : Math.round(mcqPercent);
-    const passed = finalScore >= exam.passingScorePercent && strikeCount < 3;
-
-    // Generate Cryptographic Verification Hash
-    const randomHash = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const verificationHash = `SV-2026-${exam.skillName.substring(0, 4).toUpperCase()}-${randomHash}`;
-
-    let earnedBadge: VerifiedBadge | undefined = undefined;
-    if (passed) {
-      earnedBadge = {
-        id: `badge-${Date.now()}`,
-        badgeTitle: exam.badgeTitle,
-        skillName: exam.skillName,
-        industry: exam.industry,
-        verificationHash,
-        earnedDate: 'Just now',
-        score: finalScore,
-        proctorScore: honorScore,
-        badgeColor: exam.badgeColor,
-      };
-      soundFx.playCelebration();
-      confetti({
-        particleCount: 90,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-    }
-
     const timeSpent = exam.timeLimitMinutes * 60 - timeLeftSeconds;
-    const result: ExamResult = {
-      id: `result-${Date.now()}`,
-      examId: exam.id,
-      examTitle: exam.title,
-      skillName: exam.skillName,
-      date: new Date().toLocaleDateString(),
-      score: finalScore,
-      passed,
-      timeSpentSeconds: timeSpent,
-      honorScore,
-      violationsCount: strikeCount,
-      badgeEarned: earnedBadge,
-      xpEarned: passed ? exam.xpReward : 35,
-      detailedFeedback: scenarioFeedbackText,
-    };
 
-    setFinalResult(result);
-    setIsSubmitting(false);
-    setPhase('completed');
-    onExamComplete(result);
+    try {
+      const response = await fetch('/api/job-center/exam/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          examId: exam.id,
+          answers,
+          timeSpentSeconds: timeSpent,
+          violationsCount: strikeCount,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data?.success || !data?.result) {
+        throw new Error(data?.error || 'Grading failed');
+      }
+
+      const result: ExamResult = data.result;
+
+      if (result.badgeEarned) {
+        soundFx.playCelebration();
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      }
+
+      setFinalResult(result);
+      setIsSubmitting(false);
+      setPhase('completed');
+      onExamComplete(result, data.progress);
+    } catch (err) {
+      console.error('Exam submit error:', err);
+      setIsSubmitting(false);
+      setSubmitError("We couldn't verify your result — check your connection and submit again. Your answers are still here.");
+      setPhase('active');
+    }
   };
 
   const currentQ = exam.questions[currentQuestionIndex];
@@ -448,9 +407,19 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
           )}
         </div>
 
+        {/* Submission Error Banner — shown if the server-side grading call
+            failed; we return to 'active' rather than silently faking a
+            local result, so this is where the candidate finds out. */}
+        {submitError && phase === 'active' && (
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-[#2C1916] border border-[#522923] text-xs text-[#F5C4B8] flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-[#E07A5F] shrink-0 mt-0.5" />
+            <span>{submitError}</span>
+          </div>
+        )}
+
         {/* MAIN BODY AREA */}
         <div className="flex-1 p-6 overflow-y-auto">
-          
+
           {/* PHASE 1: INTRO / PRE-CHECK */}
           {phase === 'intro' && (
             <div className="max-w-2xl mx-auto space-y-6 py-4">
