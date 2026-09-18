@@ -157,6 +157,12 @@ export function DashboardShell({ children, headerContent, hideTopBar }: { childr
                                                 <span className="text-xs font-bold uppercase tracking-tight italic">Profile</span>
                                             </Link>
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer">
+                                            <Link href="/account/payment-settings" className="flex items-center">
+                                                <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
+                                                <span className="text-xs font-bold uppercase tracking-tight italic">Payment Settings</span>
+                                            </Link>
+                                        </DropdownMenuItem>
                                         <DropdownMenuSeparator className="bg-white/5" />
                                         <DropdownMenuItem className="cursor-default focus:bg-transparent">
                                             <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
