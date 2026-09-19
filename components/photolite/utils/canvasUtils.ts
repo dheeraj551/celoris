@@ -1,4 +1,4 @@
-import { BlendMode, Layer, SerializedLayer } from '../types';
+import { BlendMode, Layer, SerializedLayer, PenPath } from '../types';
 
 export const BLEND_MODES: { value: BlendMode; label: string }[] = [
   { value: 'source-over', label: 'Normal' },
@@ -1195,5 +1195,177 @@ export function applyNoiseToCanvas(
   }
 
   return output;
+}
+
+export interface TextRenderOptions {
+  fontSize?: number;
+  fontFamily?: string;
+  color?: string;
+  bold?: boolean;
+  italic?: boolean;
+  align?: 'left' | 'center' | 'right';
+  x?: number;
+  y?: number;
+  shadow?: boolean;
+  lineHeight?: number;
+  isVertical?: boolean;
+}
+
+/**
+ * Clear and render text lines onto a layer canvas with consistent styling and alignment.
+ */
+export function renderTextToLayerCanvas(
+  canvas: HTMLCanvasElement,
+  text: string,
+  options: TextRenderOptions = {}
+): void {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const fontSize = options.fontSize || 36;
+  const fontFamily = options.fontFamily || '"Segoe UI", Roboto, sans-serif';
+  const weight = options.bold ? 'bold' : 'normal';
+  const style = options.italic ? 'italic' : 'normal';
+  const color = options.color || '#ffffff';
+  const align = options.align || 'center';
+
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${style} ${weight} ${fontSize}px ${fontFamily}`;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+
+  if (options.shadow !== false) {
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+    ctx.shadowBlur = Math.max(4, Math.round(fontSize * 0.2));
+    ctx.shadowOffsetY = Math.max(1, Math.round(fontSize * 0.08));
+  }
+
+  const posX = options.x ?? (align === 'center' ? w / 2 : align === 'right' ? w - 40 : 40);
+  const posY = options.y ?? h / 2;
+
+  if (options.isVertical) {
+    const chars = text.split('');
+    const lineH = options.lineHeight || fontSize * 1.1;
+    const startY = posY - (chars.length * lineH) / 2;
+    chars.forEach((ch, idx) => {
+      ctx.fillText(ch, posX, startY + idx * lineH);
+    });
+  } else {
+    const lines = text.split('\n');
+    const lineH = (options.lineHeight || fontSize) * 1.22;
+    const startY = posY - ((lines.length - 1) * lineH) / 2;
+    lines.forEach((line, idx) => {
+      ctx.fillText(line, posX, startY + idx * lineH);
+    });
+  }
+  ctx.restore();
+}
+
+/**
+ * Traces a PenPath onto a 2D canvas context with optional coordinate offset.
+ * Handles both sharp corner segments and smooth cubic Bézier curve segments.
+ */
+export function tracePenPath(
+  ctx: CanvasRenderingContext2D,
+  penPath: PenPath,
+  offsetX = 0,
+  offsetY = 0
+) {
+  if (!penPath.points || penPath.points.length === 0) return;
+  ctx.beginPath();
+  penPath.points.forEach((pt, i) => {
+    const px = pt.x - offsetX;
+    const py = pt.y - offsetY;
+    if (i === 0) {
+      ctx.moveTo(px, py);
+    } else {
+      const prev = penPath.points[i - 1];
+      const prevX = prev.x - offsetX;
+      const prevY = prev.y - offsetY;
+      const cp1 = prev.cp2 ? { x: prev.cp2.x - offsetX, y: prev.cp2.y - offsetY } : { x: prevX, y: prevY };
+      const cp2 = pt.cp1 ? { x: pt.cp1.x - offsetX, y: pt.cp1.y - offsetY } : { x: px, y: py };
+      if (prev.cp2 || pt.cp1) {
+        ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, px, py);
+      } else {
+        ctx.lineTo(px, py);
+      }
+    }
+  });
+
+  if (penPath.closed && penPath.points.length > 2) {
+    const last = penPath.points[penPath.points.length - 1];
+    const first = penPath.points[0];
+    const lastX = last.x - offsetX;
+    const lastY = last.y - offsetY;
+    const firstX = first.x - offsetX;
+    const firstY = first.y - offsetY;
+    const cp1 = last.cp2 ? { x: last.cp2.x - offsetX, y: last.cp2.y - offsetY } : { x: lastX, y: lastY };
+    const cp2 = first.cp1 ? { x: first.cp1.x - offsetX, y: first.cp1.y - offsetY } : { x: firstX, y: firstY };
+    if (last.cp2 || first.cp1) {
+      ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, firstX, firstY);
+    } else {
+      ctx.lineTo(firstX, firstY);
+    }
+    ctx.closePath();
+  }
+}
+
+/**
+ * Samples a PenPath into a sequence of points approximating its curves,
+ * useful for polygon-based selection states and hit detection.
+ */
+export function samplePenPath(penPath: PenPath, segmentsPerCurve = 16): { x: number; y: number }[] {
+  if (!penPath.points || penPath.points.length === 0) return [];
+  const result: { x: number; y: number }[] = [];
+
+  const sampleCubic = (
+    p0: { x: number; y: number },
+    p1: { x: number; y: number },
+    p2: { x: number; y: number },
+    p3: { x: number; y: number },
+    numSegs: number
+  ) => {
+    for (let s = 1; s <= numSegs; s++) {
+      const t = s / numSegs;
+      const it = 1 - t;
+      const x = it * it * it * p0.x + 3 * it * it * t * p1.x + 3 * it * t * t * p2.x + t * t * t * p3.x;
+      const y = it * it * it * p0.y + 3 * it * it * t * p1.y + 3 * it * t * t * p2.y + t * t * t * p3.y;
+      result.push({ x, y });
+    }
+  };
+
+  penPath.points.forEach((pt, i) => {
+    if (i === 0) {
+      result.push({ x: pt.x, y: pt.y });
+    } else {
+      const prev = penPath.points[i - 1];
+      if (prev.cp2 || pt.cp1) {
+        const cp1 = prev.cp2 || { x: prev.x, y: prev.y };
+        const cp2 = pt.cp1 || { x: pt.x, y: pt.y };
+        sampleCubic(prev, cp1, cp2, pt, segmentsPerCurve);
+      } else {
+        result.push({ x: pt.x, y: pt.y });
+      }
+    }
+  });
+
+  if (penPath.closed && penPath.points.length > 2) {
+    const last = penPath.points[penPath.points.length - 1];
+    const first = penPath.points[0];
+    if (last.cp2 || first.cp1) {
+      const cp1 = last.cp2 || { x: last.x, y: last.y };
+      const cp2 = first.cp1 || { x: first.x, y: first.y };
+      sampleCubic(last, cp1, cp2, first, segmentsPerCurve);
+    } else {
+      result.push({ x: first.x, y: first.y });
+    }
+  }
+
+  return result;
 }
 

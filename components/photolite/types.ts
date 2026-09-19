@@ -60,6 +60,11 @@ export interface Layer {
     color: string;
     bold: boolean;
     italic: boolean;
+    x?: number;
+    y?: number;
+    align?: 'left' | 'center' | 'right';
+    isVertical?: boolean;
+    lineHeight?: number;
   };
   // shape specific properties
   shapeData?: {
@@ -93,6 +98,11 @@ export interface SerializedLayer {
     color: string;
     bold: boolean;
     italic: boolean;
+    x?: number;
+    y?: number;
+    align?: 'left' | 'center' | 'right';
+    isVertical?: boolean;
+    lineHeight?: number;
   };
   shapeData?: {
     shapeType: 'rect' | 'circle' | 'line';

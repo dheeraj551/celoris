@@ -99,6 +99,7 @@ interface MenuBarProps {
   setProjectName: (name: string) => void;
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  onOpenTemplatesModal?: () => void;
 }
 
 export const MenuBar: React.FC<MenuBarProps> = ({
@@ -145,6 +146,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   setProjectName,
   isSidebarOpen,
   onToggleSidebar,
+  onOpenTemplatesModal,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
@@ -270,6 +272,19 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 </span>
                 <span className="text-[10px] text-gray-400">Ctrl+O</span>
               </button>
+              {onOpenTemplatesModal && (
+                <button
+                  onClick={() => handleAction(onOpenTemplatesModal)}
+                  className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
+                >
+                  <span className="flex items-center gap-2 font-medium text-cyan-300 hover:text-white">
+                    <Layers className="h-3.5 w-3.5 text-cyan-400" /> Templates & Presets...
+                  </span>
+                  <span className="rounded bg-cyan-500/20 px-1 py-0.2 text-[8px] font-mono text-cyan-300 font-bold">
+                    6 LAYERS
+                  </span>
+                </button>
+              )}
               <div className="my-1 border-t border-black" />
               <button
                 onClick={() => handleAction(onExportModal)}
@@ -738,6 +753,22 @@ export const MenuBar: React.FC<MenuBarProps> = ({
           >
             <Crown className={AI_STUDIO_ENABLED ? 'h-3 w-3 text-amber-400' : 'h-3 w-3 text-gray-500'} />
             <span>{AI_STUDIO_ENABLED ? (isProUser ? 'Pro Active' : 'Upgrade to Pro') : 'Coming Soon'}</span>
+          </button>
+        )}
+
+        {/* Templates Quick Button */}
+        {onOpenTemplatesModal && (
+          <button
+            id="quick-templates-btn"
+            onClick={onOpenTemplatesModal}
+            className="flex items-center gap-1.5 rounded-lg bg-gradient-to-b from-cyan-950/70 to-[#162736] hover:from-cyan-900/80 hover:to-[#1b344b] active:scale-95 px-2.5 py-1 text-[11px] font-medium text-cyan-300 border border-cyan-500/40 shadow-sm transition-all cursor-pointer"
+            title="Open Design Templates & Multi-Layer Art"
+          >
+            <Layers className="h-3 w-3 text-cyan-400" />
+            <span className="hidden sm:inline">Templates</span>
+            <span className="rounded-full bg-cyan-400/20 px-1 py-0.2 text-[8px] font-bold text-cyan-300">
+              NEW
+            </span>
           </button>
         )}
 

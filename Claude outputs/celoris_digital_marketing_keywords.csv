@@ -1,0 +1,40 @@
+cluster,keyword,monthly_search_volume_india,ppc_competition_level,intent,notes
+1. Digital Marketing Course (pillar),digital marketing course,110000,MEDIUM,commercial,"Best opportunity — 9 near-identical phrasings all return 110,000/mo (course on/of/in/about/for digital marketing, digital-marketing-course, etc.). Target the core course page; the variants don't need separate pages, just natural coverage in copy/FAQ."
+1. Digital Marketing Course (pillar),digital marketing,201000,LOW,commercial,"Broader head term, still commercial. High volume but very broad — use as a supporting term on the pillar page, not the primary target."
+1. Digital Marketing Course (pillar),what is digital marketing,40500,LOW,informational,Good top-of-funnel companion piece linking into the course page.
+1. Digital Marketing Course (pillar),digital marketing course online,12100,MEDIUM,commercial,"5 phrasing variants, all 12,100/mo — reinforces 'online' as a key modifier to include in title/H1."
+1. Digital Marketing Course (pillar),digital marketing services,14800,LOW,commercial,"Mixed intent — some searchers want to hire an agency, not learn. Low priority, mention only in passing."
+1. Digital Marketing Course (pillar),digital marketing institute,3600,LOW,informational,Matches how many Indian searchers phrase 'training institute' — worth having in copy.
+2. City Pages (expand the Noida playbook),digital marketing course bangalore,9900,MEDIUM,commercial,Higher volume than Delhi. No dedicated Celoris page exists yet — same template as your -noida pages would work.
+2. City Pages (expand the Noida playbook),digital marketing course delhi,8100,MEDIUM,commercial,"You already have a Delhi draft (Sept 2026) — this confirms real demand, publish it."
+2. City Pages (expand the Noida playbook),digital marketing course near me,14800,MEDIUM,commercial,'Near me' intent — make sure each city page has strong local schema/NAP so it can win this.
+2. City Pages (expand the Noida playbook),digital marketing agency noida,5400,LOW,commercial,"Agency-seeking intent, not course-seeking — low fit, skip."
+2. City Pages (expand the Noida playbook),digital marketing agency delhi,8100,LOW,commercial,"Agency-seeking intent, not course-seeking — low fit, skip."
+3. Pricing & Free-Course FAQ,digital marketing course fees,8100,MEDIUM,commercial,Comparison-shopping intent — a dedicated 'fees & what's included' section builds trust (matches your transparent-pricing brand voice).
+3. Pricing & Free-Course FAQ,digital marketing course cost,8100,MEDIUM,commercial,Same cluster as fees — cover both phrasings in one FAQ block.
+3. Pricing & Free-Course FAQ,digital marketing course price,8100,MEDIUM,commercial,Same cluster as fees.
+3. Pricing & Free-Course FAQ,free digital marketing course,8100,LOW,commercial,"People comparing free vs paid — good place to explain what your paid course adds over free resources, without disparaging the free option."
+3. Pricing & Free-Course FAQ,digital marketing free course,8100,LOW,informational,Same cluster as above.
+4. Fundamentals & Beginner Guides (blog),marketing strategy,33100,LOW,informational,Broad but relevant top-of-funnel topic — a 'digital marketing strategy for beginners' guide.
+4. Fundamentals & Beginner Guides (blog),social media marketing,74000,LOW,informational,"High volume, low competition — strong blog candidate, also a course topic Celoris already teaches."
+4. Fundamentals & Beginner Guides (blog),content marketing,49500,LOW,informational,Adjacent skill many digital marketing students also want — good blog + internal link to the course.
+4. Fundamentals & Beginner Guides (blog),seo in digital marketing,27100,LOW,commercial,"Specific enough to rank, ties directly to a module in your course."
+4. Fundamentals & Beginner Guides (blog),what is marketing,18100,LOW,informational,Broad beginner query — fine as a short glossary-style page linking to the pillar.
+4. Fundamentals & Beginner Guides (blog),fundamentals of digital marketing,5400,MEDIUM,informational,Matches Google's own free certificate name — see cluster 6 for the related comparison angle.
+4. Fundamentals & Beginner Guides (blog),what is seo in digital marketing,4400,LOW,informational,"Long-tail version of the SEO topic above — can be one FAQ answer, not a separate page."
+5. Careers & Job Center Crossover,digital marketing jobs,22200,LOW,informational,Directly bridges into your Job Center — strong internal-linking opportunity between the course and job listings.
+5. Careers & Job Center Crossover,digital marketing internship,5400,LOW,commercial,Good fit for students weighing a course before a first internship — link to Job Center internships.
+5. Careers & Job Center Crossover,digital marketing executive,2400,LOW,commercial,Job-title search — useful for a 'career paths after this course' section.
+5. Careers & Job Center Crossover,digital marketing freelancer,5400,LOW,commercial,Matches your 'career switch' course positioning well.
+5. Careers & Job Center Crossover,top digital marketing companies in india,1900,LOW,commercial,Lower volume but relevant to 'where could this course take you' content.
+6. 'Free Google Certificate vs Paid Course' (comparison blog),digital marketing course google,9900,MEDIUM,commercial,"9 phrasing variants at 9,900/mo all centered on Google's free digital marketing course/certificate — real demand for a comparison piece."
+6. 'Free Google Certificate vs Paid Course' (comparison blog),google digital marketing course,9900,MEDIUM,commercial,Same cluster.
+6. 'Free Google Certificate vs Paid Course' (comparison blog),google digital marketing certification,880,MEDIUM,informational,Smaller but same intent — one comparison article can absorb this whole cluster.
+6. 'Free Google Certificate vs Paid Course' (comparison blog),google garage digital marketing,1000,LOW,navigational,Navigational — people looking for Google's own program by name; still worth a mention/link for topical relevance.
+6. 'Free Google Certificate vs Paid Course' (comparison blog),free digital marketing certification,590,LOW,informational,Same cluster.
+7. Lower Fit — Skip or Deprioritize,digital marketing agency,49500,LOW,commercial,"Hire-an-agency intent, not learn-a-skill intent. Skip unless Celoris starts offering agency services."
+7. Lower Fit — Skip or Deprioritize,digital marketing agency in india,9900,LOW,commercial,Same — agency-hiring intent.
+7. Lower Fit — Skip or Deprioritize,best digital marketing agency,8100,LOW,commercial,Same — agency-hiring intent.
+7. Lower Fit — Skip or Deprioritize,google ads,673000,LOW,informational,"Huge volume but generic 'competition' shown here is PPC bid competition, not organic difficulty — realistically very hard to rank for as a small site, and mostly attracts people running ads, not buying a course."
+7. Lower Fit — Skip or Deprioritize,google adsense,450000,LOW,commercial,"Same caveat — about running ads/monetizing a site, not about taking a course. Off-topic for Celoris."
+7. Lower Fit — Skip or Deprioritize,affiliate marketing,90500,LOW,commercial,Adjacent topic Celoris doesn't teach — skip unless a course is added on it.

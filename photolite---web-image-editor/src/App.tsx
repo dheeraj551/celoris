@@ -17,6 +17,9 @@ import {
   resampleImage,
   cropCanvas,
   AnchorPosition,
+  renderTextToLayerCanvas,
+  tracePenPath,
+  samplePenPath,
 } from './utils/canvasUtils';
 import { createInitialProject } from './utils/sampleData';
 import {
@@ -24,6 +27,7 @@ import {
   fillSelectionOnLayer,
   invertMaskCanvas,
   createRectMaskCanvas,
+  getSelectionBounds,
 } from './utils/selectionUtils';
 import { MenuBar } from './components/MenuBar';
 import { Toolbar } from './components/Toolbar';
@@ -36,7 +40,8 @@ import { ExportModal } from './components/Modals/ExportModal';
 import { AIImageModal } from './components/Modals/AIImageModal';
 import { ProPlanModal } from './components/Modals/ProPlanModal';
 import { TemplatesModal } from './components/Modals/TemplatesModal';
-import { DesignTemplate } from './data/templates';
+import { loadNoSignalLayers } from './data/noSignalTemplate';
+import { DESIGN_TEMPLATES } from './data/templates';
 
 export default function App() {
   const [projectName, setProjectName] = useState('PhotoLite Composition');
@@ -91,8 +96,12 @@ export default function App() {
   // Text Tool
   const [textString, setTextString] = useState<string>('Creative Studio');
   const [textFontSize, setTextFontSize] = useState<number>(36);
+  const [textFontFamily, setTextFontFamily] = useState<string>('"Segoe UI", Roboto, sans-serif');
+  const [textColor, setTextColor] = useState<string>('#ffffff');
   const [textBold, setTextBold] = useState<boolean>(true);
   const [textItalic, setTextItalic] = useState<boolean>(false);
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('center');
+  const [editingTextLayerId, setEditingTextLayerId] = useState<string | null>(null);
 
   // Viewport Zoom & Pan
   const [zoom, setZoom] = useState<number>(1);
@@ -198,6 +207,22 @@ export default function App() {
       handleJumpToHistory(historyIndex + 1);
     }
   };
+
+  // Synchronize text controls with active text layer
+  useEffect(() => {
+    const layer = layers.find((l) => l.id === activeLayerId);
+    if (layer && layer.type === 'text' && layer.textData) {
+      setTextString(layer.textData.text);
+      if (layer.textData.fontSize) setTextFontSize(layer.textData.fontSize);
+      if (layer.textData.fontFamily) setTextFontFamily(layer.textData.fontFamily);
+      if (layer.textData.color) setTextColor(layer.textData.color);
+      if (typeof layer.textData.bold === 'boolean') setTextBold(layer.textData.bold);
+      if (typeof layer.textData.italic === 'boolean') setTextItalic(layer.textData.italic);
+      if (layer.textData.align) setTextAlign(layer.textData.align);
+    } else {
+      setEditingTextLayerId(null);
+    }
+  }, [activeLayerId]);
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -324,6 +349,80 @@ export default function App() {
         } else if (e.key === 'Enter') {
           if (activeTool === 'crop') {
             handleApplyCrop();
+          }
+        } else if (activeTool === 'select' && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+          e.preventDefault();
+          const step = e.shiftKey ? 10 : 1;
+          const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
+          const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
+
+          if (selection.active) {
+            const active = layers.find((l) => l.id === activeLayerId);
+            if (active && !active.locked) {
+              const selBounds = getSelectionBounds(selection);
+              if (selBounds) {
+                const floatingCanvas = createCanvas(selBounds.width, selBounds.height);
+                const fCtx = floatingCanvas.getContext('2d');
+                if (fCtx) {
+                  const srcX = selBounds.x - active.x;
+                  const srcY = selBounds.y - active.y;
+                  fCtx.drawImage(
+                    active.canvas,
+                    srcX, srcY, selBounds.width, selBounds.height,
+                    0, 0, selBounds.width, selBounds.height
+                  );
+                  if (selection.maskCanvas) {
+                    fCtx.globalCompositeOperation = 'destination-in';
+                    fCtx.drawImage(
+                      selection.maskCanvas,
+                      selBounds.x, selBounds.y, selBounds.width, selBounds.height,
+                      0, 0, selBounds.width, selBounds.height
+                    );
+                  }
+                }
+
+                clearSelectionFromLayer(active.canvas, selection, { x: active.x, y: active.y });
+
+                const aCtx = active.canvas.getContext('2d');
+                if (aCtx) {
+                  const destX = (selBounds.x + dx) - active.x;
+                  const destY = (selBounds.y + dy) - active.y;
+                  aCtx.drawImage(floatingCanvas, destX, destY);
+                }
+
+                const updatedRect = selection.rect ? {
+                  x: selection.rect.x + dx,
+                  y: selection.rect.y + dy,
+                  width: selection.rect.width,
+                  height: selection.rect.height,
+                } : undefined;
+
+                let updatedMask: HTMLCanvasElement | undefined;
+                if (selection.maskCanvas) {
+                  updatedMask = createCanvas(canvasWidth, canvasHeight);
+                  const mCtx = updatedMask.getContext('2d');
+                  if (mCtx) mCtx.drawImage(selection.maskCanvas, dx, dy);
+                }
+
+                const updatedPoly = selection.polygon
+                  ? selection.polygon.map((p) => ({ x: p.x + dx, y: p.y + dy }))
+                  : undefined;
+
+                setSelection({
+                  ...selection,
+                  rect: updatedRect,
+                  maskCanvas: updatedMask || (updatedRect ? createRectMaskCanvas(updatedRect, canvasWidth, canvasHeight) : undefined),
+                  polygon: updatedPoly,
+                });
+
+                recordHistory('Nudge Selection');
+              }
+            }
+          } else {
+            const active = layers.find((l) => l.id === activeLayerId);
+            if (active && !active.locked) {
+              handleLayerPositionChange(active.id, active.x + dx, active.y + dy);
+            }
           }
         }
       }
@@ -640,15 +739,11 @@ export default function App() {
       ctx.lineWidth = penStrokeWidth;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.beginPath();
-      penPath.points.forEach((pt, i) => {
-        if (i === 0) ctx.moveTo(pt.x - active.x, pt.y - active.y);
-        else ctx.lineTo(pt.x - active.x, pt.y - active.y);
-      });
-      if (penPath.closed) ctx.closePath();
+      tracePenPath(ctx, penPath, active.x, active.y);
       ctx.stroke();
       ctx.restore();
       recordHistory('Stroke Pen Path');
+      setPenPath({ points: [], closed: false });
     }
   };
 
@@ -660,15 +755,12 @@ export default function App() {
     if (ctx) {
       ctx.save();
       ctx.fillStyle = foregroundColor;
-      ctx.beginPath();
-      penPath.points.forEach((pt, i) => {
-        if (i === 0) ctx.moveTo(pt.x - active.x, pt.y - active.y);
-        else ctx.lineTo(pt.x - active.x, pt.y - active.y);
-      });
+      tracePenPath(ctx, penPath, active.x, active.y);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
       recordHistory('Fill Pen Path');
+      setPenPath({ points: [], closed: false });
     }
   };
 
@@ -678,41 +770,42 @@ export default function App() {
     const ctx = mask.getContext('2d');
     if (ctx) {
       ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      penPath.points.forEach((pt, i) => {
-        if (i === 0) ctx.moveTo(pt.x, pt.y);
-        else ctx.lineTo(pt.x, pt.y);
-      });
+      tracePenPath(ctx, penPath, 0, 0);
       ctx.closePath();
       ctx.fill();
     }
+    const sampledPolygon = samplePenPath(penPath, 16);
     setSelection({
       active: true,
       type: 'lasso',
-      polygon: [...penPath.points],
+      polygon: sampledPolygon,
       maskCanvas: mask,
     });
+    setPenPath({ points: [], closed: false });
   };
 
   // Add / Apply Text Layer
   const handleApplyText = () => {
-    if (!textString.trim()) return;
-
+    const textToUse = textString.trim() || 'New Text';
     const textCanvas = createCanvas(canvasWidth, canvasHeight);
-    const ctx = textCanvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = foregroundColor;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      const weight = textBold ? 'bold' : 'normal';
-      const style = textItalic ? 'italic' : 'normal';
-      ctx.font = `${style} ${weight} ${textFontSize}px sans-serif`;
-      ctx.fillText(textString, canvasWidth / 2, canvasHeight / 2);
-    }
+    const x = canvasWidth / 2;
+    const y = canvasHeight / 2;
+    const col = textColor || foregroundColor || '#ffffff';
+
+    renderTextToLayerCanvas(textCanvas, textToUse, {
+      fontSize: textFontSize,
+      fontFamily: textFontFamily,
+      color: col,
+      bold: textBold,
+      italic: textItalic,
+      align: textAlign,
+      x,
+      y,
+    });
 
     const textLayer: Layer = {
       id: `layer-text-${Date.now()}`,
-      name: `Text: ${textString.slice(0, 16)}`,
+      name: `Text: ${textToUse.split('\n')[0].slice(0, 16)}`,
       type: 'text',
       visible: true,
       locked: false,
@@ -724,19 +817,142 @@ export default function App() {
       height: canvasHeight,
       canvas: textCanvas,
       textData: {
-        text: textString,
+        text: textToUse,
         fontSize: textFontSize,
-        fontFamily: 'sans-serif',
-        color: foregroundColor,
+        fontFamily: textFontFamily,
+        color: col,
         bold: textBold,
         italic: textItalic,
+        align: textAlign,
+        x,
+        y,
       },
     };
 
     const updated = [...layers, textLayer];
     setLayers(updated);
     setActiveLayerId(textLayer.id);
+    setEditingTextLayerId(textLayer.id);
     recordHistory('Add Text Layer', updated, canvasWidth, canvasHeight, textLayer.id);
+  };
+
+  // Click on canvas to create text layer at (x, y)
+  const handleCreateTextAt = (x: number, y: number, initialText = 'Type your text') => {
+    const textCanvas = createCanvas(canvasWidth, canvasHeight);
+    const col = textColor || foregroundColor || '#ffffff';
+
+    renderTextToLayerCanvas(textCanvas, initialText, {
+      fontSize: textFontSize,
+      fontFamily: textFontFamily,
+      color: col,
+      bold: textBold,
+      italic: textItalic,
+      align: textAlign,
+      x,
+      y,
+    });
+
+    const newLayer: Layer = {
+      id: `layer-text-${Date.now()}`,
+      name: `Text: ${initialText.split('\n')[0].slice(0, 16)}`,
+      type: 'text',
+      visible: true,
+      locked: false,
+      opacity: 1,
+      blendMode: 'source-over',
+      x: 0,
+      y: 0,
+      width: canvasWidth,
+      height: canvasHeight,
+      canvas: textCanvas,
+      textData: {
+        text: initialText,
+        fontSize: textFontSize,
+        fontFamily: textFontFamily,
+        color: col,
+        bold: textBold,
+        italic: textItalic,
+        align: textAlign,
+        x,
+        y,
+      },
+    };
+
+    const updated = [...layers, newLayer];
+    setLayers(updated);
+    setActiveLayerId(newLayer.id);
+    setTextString(initialText);
+    setEditingTextLayerId(newLayer.id);
+    recordHistory('Add Text Layer', updated, canvasWidth, canvasHeight, newLayer.id);
+  };
+
+  // Update Active Text Layer
+  const handleUpdateActiveText = (
+    overrideText?: string,
+    overrideSize?: number,
+    overrideBold?: boolean,
+    overrideItalic?: boolean,
+    overrideFontFamily?: string,
+    overrideColor?: string,
+    overrideAlign?: 'left' | 'center' | 'right',
+    commit: boolean = false
+  ) => {
+    const layer = layers.find((l) => l.id === activeLayerId);
+    if (!layer || layer.type !== 'text') return;
+
+    const newText = overrideText !== undefined ? overrideText : textString;
+    const newSize = overrideSize !== undefined ? overrideSize : textFontSize;
+    const newBold = overrideBold !== undefined ? overrideBold : textBold;
+    const newItalic = overrideItalic !== undefined ? overrideItalic : textItalic;
+    const fontFamily = overrideFontFamily !== undefined ? overrideFontFamily : (layer.textData?.fontFamily || textFontFamily);
+    const color = overrideColor !== undefined ? overrideColor : (textColor || layer.textData?.color || foregroundColor || '#ffffff');
+    const align = overrideAlign !== undefined ? overrideAlign : (layer.textData?.align || textAlign);
+
+    const tData = layer.textData;
+    const posX = tData?.x ?? (align === 'center' ? layer.width / 2 : align === 'right' ? layer.width - 40 : 40);
+    const posY = tData?.y ?? layer.height / 2;
+
+    renderTextToLayerCanvas(layer.canvas, newText, {
+      fontSize: newSize,
+      fontFamily,
+      color,
+      bold: newBold,
+      italic: newItalic,
+      align,
+      x: posX,
+      y: posY,
+      isVertical: tData?.isVertical,
+      lineHeight: tData?.lineHeight,
+    });
+
+    const updatedTextData = {
+      ...(layer.textData || {}),
+      text: newText,
+      fontSize: newSize,
+      fontFamily,
+      color,
+      bold: newBold,
+      italic: newItalic,
+      align,
+      x: posX,
+      y: posY,
+    };
+
+    const updatedLayers = layers.map((l) =>
+      l.id === layer.id
+        ? {
+            ...l,
+            name: `Text: ${newText.split('\n')[0].slice(0, 18) || 'Text'}`,
+            textData: updatedTextData,
+          }
+        : l
+    );
+
+    setLayers(updatedLayers);
+
+    if (commit) {
+      recordHistory('Update Text Layer', updatedLayers, canvasWidth, canvasHeight, layer.id);
+    }
   };
 
   // Crop Canvas Execution
@@ -814,24 +1030,44 @@ export default function App() {
     recordHistory('New Document', [baseLayer], w, h, baseLayer.id);
   };
 
-  // Load Canva-Style Design Template
-  const handleSelectTemplate = (template: DesignTemplate) => {
-    const { layers: newLayers, activeLayerId: newActiveId } = template.generateLayers();
-    setProjectName(template.title);
-    setCanvasWidth(template.width);
-    setCanvasHeight(template.height);
-    setCropBox({ x: 0, y: 0, width: template.width, height: template.height });
-    setLayers(newLayers);
-    setActiveLayerId(newActiveId);
-    setSelection({ active: false, type: null });
-    setPan({ x: 0, y: 0 });
+  // Load "No Signal" Multi-Layer Template
+  const handleLoadNoSignalTemplate = async () => {
+    try {
+      const result = await loadNoSignalLayers();
+      setCanvasWidth(result.width);
+      setCanvasHeight(result.height);
+      setCropBox({ x: 0, y: 0, width: result.width, height: result.height });
+      setLayers(result.layers);
+      setActiveLayerId(result.activeLayerId);
+      setProjectName('No Signal — Phone Booth Art');
+      setSelection({ active: false, type: null });
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+      recordHistory('Load Template: No Signal', result.layers, result.width, result.height, result.activeLayerId);
+    } catch (e) {
+      console.error('Failed to load No Signal template:', e);
+    }
+  };
 
-    const availW = Math.max(80, (window.innerWidth || 1200) - (isSidebarOpen ? 320 : 60) - 100);
-    const availH = Math.max(80, (window.innerHeight || 800) - 180);
-    const fit = Math.min(availW / template.width, availH / template.height, 1);
-    setZoom(Math.max(0.1, Number(fit.toFixed(2))));
-
-    recordHistory(`Load Template: ${template.title}`, newLayers, template.width, template.height, newActiveId);
+  // Load any preset template from templates data
+  const handleLoadPresetTemplate = (templateId: string) => {
+    const template = DESIGN_TEMPLATES.find((t) => t.id === templateId);
+    if (!template) return;
+    try {
+      const result = template.generateLayers();
+      setCanvasWidth(template.width);
+      setCanvasHeight(template.height);
+      setCropBox({ x: 0, y: 0, width: template.width, height: template.height });
+      setLayers(result.layers);
+      setActiveLayerId(result.activeLayerId);
+      setProjectName(template.title);
+      setSelection({ active: false, type: null });
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+      recordHistory(`Load Template: ${template.title}`, result.layers, template.width, template.height, result.activeLayerId);
+    } catch (e) {
+      console.error('Failed to load preset template:', e);
+    }
   };
 
   // Open Image File from Computer
@@ -1068,7 +1304,7 @@ export default function App() {
   };
 
   return (
-    <div id="photolite-app-root" className="flex h-screen w-screen flex-col overflow-hidden bg-[#1a1a1a] text-gray-300 font-sans select-none">
+    <div id="photolite-app-root" className="flex h-screen w-full flex-col overflow-hidden bg-[#1a1a1a] text-gray-300 font-sans select-none">
       {/* Hidden file inputs for opening files */}
       <input
         ref={fileInputRef}
@@ -1133,7 +1369,6 @@ export default function App() {
           setSidebarTab('adjustments');
         }}
         onOpenAIModal={() => setIsAIModalOpen(true)}
-        onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
         onOpenProModal={() => setIsProModalOpen(true)}
         isProUser={isProUser}
         onNewLayer={handleNewLayer}
@@ -1174,6 +1409,7 @@ export default function App() {
         setProjectName={setProjectName}
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
+        onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
       />
 
       {/* Contextual Tool Options Bar */}
@@ -1211,11 +1447,18 @@ export default function App() {
         setTextString={setTextString}
         textFontSize={textFontSize}
         setTextFontSize={setTextFontSize}
+        textFontFamily={textFontFamily}
+        setTextFontFamily={setTextFontFamily}
+        textColor={textColor}
+        setTextColor={setTextColor}
         textBold={textBold}
         setTextBold={setTextBold}
         textItalic={textItalic}
         setTextItalic={setTextItalic}
+        textAlign={textAlign}
+        setTextAlign={setTextAlign}
         onApplyText={handleApplyText}
+        onUpdateActiveText={handleUpdateActiveText}
         activeLayer={layers.find((l) => l.id === activeLayerId) || null}
         onUpdateLayerAngle={(angle, commit) => {
           if (activeLayerId) {
@@ -1234,7 +1477,6 @@ export default function App() {
           setForegroundColor={setForegroundColor}
           backgroundColor={backgroundColor}
           setBackgroundColor={setBackgroundColor}
-          onOpenTemplates={() => setIsTemplatesModalOpen(true)}
         />
 
         {/* Central Canvas Viewport */}
@@ -1268,6 +1510,31 @@ export default function App() {
           onLayerPixelChange={handleLayerPixelChange}
           onLayerPositionChange={handleLayerPositionChange}
           onLayerAngleChange={handleLayerAngleChange}
+          textString={textString}
+          setTextString={setTextString}
+          textFontSize={textFontSize}
+          setTextFontSize={setTextFontSize}
+          textFontFamily={textFontFamily}
+          setTextFontFamily={setTextFontFamily}
+          textColor={textColor}
+          setTextColor={setTextColor}
+          textBold={textBold}
+          setTextBold={setTextBold}
+          textItalic={textItalic}
+          setTextItalic={setTextItalic}
+          textAlign={textAlign}
+          setTextAlign={setTextAlign}
+          editingTextLayerId={editingTextLayerId}
+          setEditingTextLayerId={setEditingTextLayerId}
+          onCreateTextAt={handleCreateTextAt}
+          onUpdateActiveText={handleUpdateActiveText}
+          onDeleteLayer={handleDeleteLayer}
+          setActiveLayerId={setActiveLayerId}
+          setActiveTool={setActiveTool}
+          onPenStroke={handlePenStroke}
+          onPenFill={handlePenFill}
+          onPenMakeSelection={handlePenMakeSelection}
+          onPenClear={() => setPenPath({ points: [], closed: false })}
         />
 
         {/* Right Sidebar (Layers, History, Adjustments) */}
@@ -1353,8 +1620,8 @@ export default function App() {
       <TemplatesModal
         isOpen={isTemplatesModalOpen}
         onClose={() => setIsTemplatesModalOpen(false)}
-        onSelectTemplate={handleSelectTemplate}
-        currentLayersCount={layers.length}
+        onLoadNoSignalTemplate={handleLoadNoSignalTemplate}
+        onLoadPresetTemplate={handleLoadPresetTemplate}
       />
     </div>
   );

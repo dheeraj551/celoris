@@ -2119,3 +2119,6 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     generateLayers: createTechWebinarTemplate,
   },
 ];
+
+export const TEMPLATES = DESIGN_TEMPLATES;
+

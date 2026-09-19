@@ -5,6 +5,7 @@ interface NewCanvasModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (width: number, height: number, bgColor: string, name: string) => void;
+  onOpenTemplates?: () => void;
 }
 
 const PRESETS = [
@@ -20,6 +21,7 @@ export const NewCanvasModal: React.FC<NewCanvasModalProps> = ({
   isOpen,
   onClose,
   onCreate,
+  onOpenTemplates,
 }) => {
   const [width, setWidth] = useState(1200);
   const [height, setHeight] = useState(800);
@@ -58,6 +60,38 @@ export const NewCanvasModal: React.FC<NewCanvasModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="mt-3.5 space-y-3 text-xs">
+          {/* Featured Template Banner */}
+          {onOpenTemplates && (
+            <div className="rounded-lg border border-cyan-500/40 bg-gradient-to-r from-cyan-950/40 via-[#1a2333] to-[#161c28] p-2.5 flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/templates/no-signal/thumbnail.jpg"
+                  alt="No Signal"
+                  className="w-8 h-12 object-cover rounded border border-white/20 shadow-sm"
+                />
+                <div>
+                  <div className="font-semibold text-white text-[11px] flex items-center gap-1.5">
+                    <span>No Signal — Phone Booth Art</span>
+                    <span className="text-[9px] font-bold text-cyan-300 bg-cyan-500/20 px-1.5 py-0.2 rounded border border-cyan-500/40">
+                      6 LAYERS
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-gray-300">Pre-divided layers ready to edit & move</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenTemplates();
+                }}
+                className="px-2.5 py-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium rounded text-[10px] shadow cursor-pointer transition-all active:scale-95"
+              >
+                Browse Templates
+              </button>
+            </div>
+          )}
+
           {/* Document name */}
           <div>
             <label className="block text-gray-300 font-medium mb-1">Document Name</label>

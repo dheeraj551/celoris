@@ -13,7 +13,12 @@ import {
   Minus,
   Maximize2,
   RotateCw,
-  RotateCcw
+  RotateCcw,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Plus,
+  Type,
 } from 'lucide-react';
 import { ToolType, SelectionState, PenPath, Layer } from '../types';
 
@@ -55,11 +60,27 @@ interface ToolOptionsBarProps {
   setTextString: (s: string) => void;
   textFontSize: number;
   setTextFontSize: (s: number) => void;
+  textFontFamily?: string;
+  setTextFontFamily?: (f: string) => void;
+  textColor?: string;
+  setTextColor?: (c: string) => void;
   textBold: boolean;
   setTextBold: (b: boolean) => void;
   textItalic: boolean;
   setTextItalic: (i: boolean) => void;
+  textAlign?: 'left' | 'center' | 'right';
+  setTextAlign?: (a: 'left' | 'center' | 'right') => void;
   onApplyText: () => void;
+  onUpdateActiveText?: (
+    overrideText?: string,
+    overrideSize?: number,
+    overrideBold?: boolean,
+    overrideItalic?: boolean,
+    overrideFontFamily?: string,
+    overrideColor?: string,
+    overrideAlign?: 'left' | 'center' | 'right',
+    commit?: boolean
+  ) => void;
   // Active layer & Rotation options
   activeLayer?: Layer | null;
   onUpdateLayerAngle?: (angle: number, commit?: boolean) => void;
@@ -99,11 +120,18 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
   setTextString,
   textFontSize,
   setTextFontSize,
+  textFontFamily,
+  setTextFontFamily,
+  textColor,
+  setTextColor,
   textBold,
   setTextBold,
   textItalic,
   setTextItalic,
+  textAlign,
+  setTextAlign,
   onApplyText,
+  onUpdateActiveText,
   activeLayer,
   onUpdateLayerAngle,
 }) => {
@@ -114,7 +142,9 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
     >
       {/* Current Tool Indicator */}
       <div className="flex items-center gap-1.5 font-medium text-gray-400 pr-2 border-r border-black">
-        <span className="capitalize text-cyan-400 font-semibold">{activeTool}</span> Tool
+        <span className="capitalize text-cyan-400 font-semibold">
+          {activeTool === 'select' && selection.active ? 'Move Selection' : activeTool === 'select' ? 'Move' : activeTool}
+        </span> Tool
       </div>
 
       {/* Brush / Eraser options */}
@@ -277,6 +307,9 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
           <span className="text-gray-500 text-[10px]">
             Points: {penPath.points.length} {penPath.closed ? '(Closed)' : ''}
           </span>
+          <span className="text-gray-500 text-[10px] hidden lg:inline border-l border-neutral-800 pl-2">
+            Drag to pull handles • Alt-drag to break handle • Click node to select/move
+          </span>
         </div>
       )}
 
@@ -364,53 +397,236 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
         </div>
       )}
 
-      {/* Text Tool options */}
-      {activeTool === 'text' && (
+      {/* Text Tool options or Active Text Layer */}
+      {(activeTool === 'text' || activeLayer?.type === 'text') && (
         <div className="flex items-center gap-2 flex-wrap">
-          <input
-            type="text"
-            placeholder="Type text to place..."
-            value={textString}
-            onChange={(e) => setTextString(e.target.value)}
-            className="rounded bg-[#1a1a1a] border border-black px-2 py-0.5 text-[11px] text-gray-200 focus:border-blue-500 focus:outline-none w-44"
-          />
-
           <div className="flex items-center gap-1.5">
+            <span className="text-cyan-400 font-medium text-[11px] whitespace-nowrap">
+              {activeLayer?.type === 'text' ? 'Text Layer:' : 'Text:'}
+            </span>
+            <input
+              type="text"
+              placeholder="Type text..."
+              value={textString}
+              onChange={(e) => {
+                const val = e.target.value;
+                setTextString(val);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(val, undefined, undefined, undefined, undefined, undefined, undefined, false);
+                }
+              }}
+              onBlur={() => {
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(textString, undefined, undefined, undefined, undefined, undefined, undefined, true);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(textString, textFontSize, textBold, textItalic, textFontFamily, textColor, textAlign, true);
+                }
+              }}
+              className="rounded bg-[#1a1a1a] border border-black px-2 py-0.5 text-[11px] text-gray-200 focus:border-cyan-500 focus:outline-none w-36"
+            />
+          </div>
+
+          {/* Font Family selector */}
+          <div className="flex items-center gap-1">
+            <select
+              value={textFontFamily || activeLayer?.textData?.fontFamily || '"Segoe UI", Roboto, sans-serif'}
+              onChange={(e) => {
+                const f = e.target.value;
+                setTextFontFamily?.(f);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, undefined, f, undefined, undefined, true);
+                }
+              }}
+              className="rounded bg-[#1a1a1a] border border-black px-1.5 py-0.5 text-[10px] text-gray-200 focus:border-cyan-500 focus:outline-none cursor-pointer"
+              title="Font Family"
+            >
+              <option value='"Segoe UI", Roboto, sans-serif'>Segoe UI / Modern</option>
+              <option value='Inter, system-ui, sans-serif'>Inter</option>
+              <option value='Arial, Helvetica, sans-serif'>Arial</option>
+              <option value='Impact, "Arial Black", sans-serif'>Impact / Bold</option>
+              <option value='"Times New Roman", Times, serif'>Times New Roman</option>
+              <option value='Georgia, serif'>Georgia</option>
+              <option value='"Courier New", monospace'>Courier New</option>
+              <option value='"Trebuchet MS", sans-serif'>Trebuchet</option>
+              <option value='Verdana, Geneva, sans-serif'>Verdana</option>
+              <option value='"Comic Sans MS", cursive'>Comic Sans</option>
+            </select>
+          </div>
+
+          {/* Font Size slider and number input */}
+          <div className="flex items-center gap-1">
             <span className="text-gray-400">Size:</span>
             <input
               type="range"
-              min="12"
-              max="120"
+              min="8"
+              max="160"
               value={textFontSize}
-              onChange={(e) => setTextFontSize(Number(e.target.value))}
-              className="h-1 w-16 cursor-pointer accent-blue-500"
+              onChange={(e) => {
+                const s = Number(e.target.value);
+                setTextFontSize(s);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, s, undefined, undefined, undefined, undefined, undefined, false);
+                }
+              }}
+              onMouseUp={(e) => {
+                const s = Number((e.target as HTMLInputElement).value);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, s, undefined, undefined, undefined, undefined, undefined, true);
+                }
+              }}
+              className="h-1 w-14 cursor-pointer accent-cyan-500"
             />
-            <span className="w-7 font-mono text-[10px] text-gray-300">{textFontSize}px</span>
+            <input
+              type="number"
+              min="8"
+              max="200"
+              value={textFontSize}
+              onChange={(e) => {
+                const s = Math.max(8, Math.min(200, Number(e.target.value)));
+                setTextFontSize(s);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, s, undefined, undefined, undefined, undefined, undefined, false);
+                }
+              }}
+              onBlur={() => {
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, textFontSize, undefined, undefined, undefined, undefined, undefined, true);
+                }
+              }}
+              className="w-9 rounded bg-[#1a1a1a] border border-black px-1 py-0.5 text-[10px] text-gray-200 text-center font-mono focus:border-cyan-500 focus:outline-none"
+            />
           </div>
 
+          {/* Bold and Italic toggles */}
           <div className="flex items-center rounded bg-[#1a1a1a] p-0.5 border border-black">
             <button
-              onClick={() => setTextBold(!textBold)}
-              className={`p-1 rounded cursor-pointer ${textBold ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              type="button"
+              onClick={() => {
+                const nextBold = !textBold;
+                setTextBold(nextBold);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, nextBold, undefined, undefined, undefined, undefined, true);
+                }
+              }}
+              className={`p-1 rounded cursor-pointer ${textBold ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
               title="Bold"
             >
               <Bold className="h-2.5 w-2.5" />
             </button>
             <button
-              onClick={() => setTextItalic(!textItalic)}
-              className={`p-1 rounded cursor-pointer ${textItalic ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              type="button"
+              onClick={() => {
+                const nextItalic = !textItalic;
+                setTextItalic(nextItalic);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, nextItalic, undefined, undefined, undefined, true);
+                }
+              }}
+              className={`p-1 rounded cursor-pointer ${textItalic ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
               title="Italic"
             >
               <Italic className="h-2.5 w-2.5" />
             </button>
           </div>
 
+          {/* Alignment toggles */}
+          <div className="flex items-center rounded bg-[#1a1a1a] p-0.5 border border-black">
+            <button
+              type="button"
+              onClick={() => {
+                setTextAlign?.('left');
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, undefined, undefined, undefined, 'left', true);
+                }
+              }}
+              className={`p-1 rounded cursor-pointer ${(textAlign || 'center') === 'left' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              title="Align Left"
+            >
+              <AlignLeft className="h-2.5 w-2.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setTextAlign?.('center');
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, undefined, undefined, undefined, 'center', true);
+                }
+              }}
+              className={`p-1 rounded cursor-pointer ${(textAlign || 'center') === 'center' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              title="Align Center"
+            >
+              <AlignCenter className="h-2.5 w-2.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setTextAlign?.('right');
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, undefined, undefined, undefined, 'right', true);
+                }
+              }}
+              className={`p-1 rounded cursor-pointer ${(textAlign || 'center') === 'right' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              title="Align Right"
+            >
+              <AlignRight className="h-2.5 w-2.5" />
+            </button>
+          </div>
+
+          {/* Text Color Swatch */}
+          <div className="flex items-center gap-1">
+            <label htmlFor="text-color-swatch-input" className="text-gray-400 text-[10px] cursor-pointer">
+              Color:
+            </label>
+            <input
+              id="text-color-swatch-input"
+              type="color"
+              value={textColor || activeLayer?.textData?.color || '#ffffff'}
+              onChange={(e) => {
+                const col = e.target.value;
+                setTextColor?.(col);
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, undefined, undefined, col, undefined, false);
+                }
+              }}
+              onBlur={(e) => {
+                const col = (e.target as HTMLInputElement).value;
+                if (onUpdateActiveText && activeLayer?.type === 'text') {
+                  onUpdateActiveText(undefined, undefined, undefined, undefined, undefined, col, undefined, true);
+                }
+              }}
+              className="h-5 w-6 rounded border border-black cursor-pointer bg-transparent"
+              title="Change Text Color"
+            />
+          </div>
+
+          {activeLayer?.type === 'text' && onUpdateActiveText && (
+            <button
+              type="button"
+              onClick={() => onUpdateActiveText(textString, textFontSize, textBold, textItalic, textFontFamily, textColor, textAlign, true)}
+              className="rounded bg-cyan-600 hover:bg-cyan-500 px-2 py-0.5 font-medium text-white shadow-xs text-[10px] border border-black cursor-pointer"
+              title="Commit active text layer"
+            >
+              Update Text
+            </button>
+          )}
+
           <button
+            type="button"
             onClick={onApplyText}
-            className="rounded bg-blue-600 hover:bg-blue-500 px-2.5 py-0.5 font-medium text-white shadow-sm text-[10px] border border-black cursor-pointer"
+            className="flex items-center gap-1 rounded bg-blue-600 hover:bg-blue-500 px-2 py-0.5 font-medium text-white shadow-xs text-[10px] border border-black cursor-pointer"
+            title="Add a new separate text layer"
           >
-            Add Text Layer
+            <Plus className="h-3 w-3" /> New Text Layer
           </button>
+
+          {activeTool === 'text' && (
+            <span className="text-cyan-400/90 text-[10px] italic hidden xl:inline">
+              Click canvas to place or edit text
+            </span>
+          )}
         </div>
       )}
 
@@ -554,6 +770,8 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
             <span>
               {activeTool === 'rotate'
                 ? 'Drag anywhere to freely rotate around center. Hold Shift to snap 15°.'
+                : selection.active
+                ? 'Drag selected area to move it. Arrow keys nudge 1px (Shift+Arrow 10px). Ctrl+D to deselect.'
                 : 'Drag layer to position, top handle to rotate. Arrow keys nudge 1px.'}
             </span>
           </div>

@@ -89,16 +89,68 @@ export function invertMaskCanvas(mask: HTMLCanvasElement): HTMLCanvasElement {
   return inverted;
 }
 
+// Calculate the bounding box of an active selection in canvas coordinates
+export function getSelectionBounds(
+  selection: SelectionState
+): { x: number; y: number; width: number; height: number } | null {
+  if (!selection.active) return null;
+
+  if (selection.type === 'rect' && selection.rect) {
+    const rx = selection.rect.width < 0 ? selection.rect.x + selection.rect.width : selection.rect.x;
+    const ry = selection.rect.height < 0 ? selection.rect.y + selection.rect.height : selection.rect.y;
+    const rw = Math.abs(selection.rect.width);
+    const rh = Math.abs(selection.rect.height);
+    return {
+      x: Math.round(rx),
+      y: Math.round(ry),
+      width: Math.round(rw),
+      height: Math.round(rh),
+    };
+  }
+
+  if (selection.type === 'lasso' && selection.polygon && selection.polygon.length > 0) {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const pt of selection.polygon) {
+      if (pt.x < minX) minX = pt.x;
+      if (pt.y < minY) minY = pt.y;
+      if (pt.x > maxX) maxX = pt.x;
+      if (pt.y > maxY) maxY = pt.y;
+    }
+    return {
+      x: Math.round(minX),
+      y: Math.round(minY),
+      width: Math.max(1, Math.round(maxX - minX)),
+      height: Math.max(1, Math.round(maxY - minY)),
+    };
+  }
+
+  if (selection.maskCanvas) {
+    return {
+      x: 0,
+      y: 0,
+      width: selection.maskCanvas.width,
+      height: selection.maskCanvas.height,
+    };
+  }
+
+  return null;
+}
+
 // Delete / Clear selected pixels from target layer canvas
 export function clearSelectionFromLayer(
   layerCanvas: HTMLCanvasElement,
-  selection: SelectionState
+  selection: SelectionState,
+  layerOffset: { x: number; y: number } = { x: 0, y: 0 }
 ): void {
   if (!selection.active) return;
   const ctx = layerCanvas.getContext('2d');
   if (!ctx) return;
 
   ctx.save();
+  ctx.translate(-layerOffset.x, -layerOffset.y);
   ctx.globalCompositeOperation = 'destination-out';
 
   if (selection.maskCanvas) {
@@ -127,10 +179,14 @@ export function clearSelectionFromLayer(
 export function fillSelectionOnLayer(
   layerCanvas: HTMLCanvasElement,
   selection: SelectionState,
-  color: string
+  color: string,
+  layerOffset: { x: number; y: number } = { x: 0, y: 0 }
 ): void {
   const ctx = layerCanvas.getContext('2d');
   if (!ctx) return;
+
+  ctx.save();
+  ctx.translate(-layerOffset.x, -layerOffset.y);
 
   if (selection.active && selection.maskCanvas) {
     // Create temporary fill canvas
@@ -163,6 +219,8 @@ export function fillSelectionOnLayer(
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, layerCanvas.width, layerCanvas.height);
   }
+
+  ctx.restore();
 }
 
 // Draw animated marching ants boundary

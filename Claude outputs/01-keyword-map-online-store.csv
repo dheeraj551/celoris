@@ -1,0 +1,32 @@
+cluster,keyword,intent,role,search_volume,ai_search_volume,competition,cpc
+1. Primary — Starting an Online Store From Home,how to start online business from home,informational,primary,1300,no data,MEDIUM,0.47
+2. Business Ideas & Niches,business ideas for e commerce,commercial,secondary,4400,no data,LOW,no data
+3. Dropshipping Path,what is dropshipping business,informational,secondary,2900,no data,LOW,0.26
+2. Business Ideas & Niches,online side business ideas,commercial,secondary,2400,no data,LOW,no data
+9. Broader Make-Money-Online Angle (closing section),how to make money online for beginners,informational,secondary,2400,no data,LOW,no data
+5. India-Specific / E-Commerce Registration,e commerce business kaise start kare,informational,secondary,1300,no data,LOW,0.51
+3. Dropshipping Path,how to start dropshipping business,informational,secondary,1000,no data,MEDIUM,0.37
+4. Clothing Niche (highest-demand single niche),how to start clothing business,informational,secondary,1000,no data,LOW,0.66
+3. Dropshipping Path,how to start dropshipping business in india,informational,secondary,720,no data,MEDIUM,0.34
+7. Where & How to Sell,sell stuff online,commercial,secondary,320,no data,MEDIUM,0.4
+6. Low-Investment / No-Money Angle,how to start an online business with no money,informational,secondary,140,no data,LOW,0.8
+8. Profitability / Realistic Expectations,is e commerce business profitable,informational,secondary,140,no data,LOW,0.36
+1. Primary — Starting an Online Store From Home,how to start e commerce business,informational,support,2900,no data,MEDIUM,0.51
+1. Primary — Starting an Online Store From Home,how to start a small business at home,informational,support,1600,no data,LOW,0.43
+1. Primary — Starting an Online Store From Home,how to start an online business,informational,support,590,no data,MEDIUM,1.21
+4. Clothing Niche (highest-demand single niche),how to start a small clothing business from home,informational,support,480,no data,LOW,0.38
+5. India-Specific / E-Commerce Registration,how to start ecommerce business in india,informational,support,480,no data,MEDIUM,0.54
+5. India-Specific / E-Commerce Registration,how to start e commerce business in india,informational,support,390,no data,MEDIUM,0.36
+2. Business Ideas & Niches,small online business ideas,informational,support,320,no data,LOW,no data
+2. Business Ideas & Niches,online business ideas for beginners,informational,support,260,no data,LOW,no data
+7. Where & How to Sell,how can i sell my products online,informational,support,170,no data,MEDIUM,1.45
+2. Business Ideas & Niches,online store business ideas,commercial,support,140,no data,LOW,no data
+4. Clothing Niche (highest-demand single niche),how to start a online clothing business,informational,support,140,no data,MEDIUM,0.79
+5. India-Specific / E-Commerce Registration,how to start an online business in india,informational,support,110,no data,LOW,0.85
+6. Low-Investment / No-Money Angle,low investment online business ideas,commercial,support,90,no data,LOW,no data
+6. Low-Investment / No-Money Angle,online business with low investment,commercial,support,40,no data,LOW,0.35
+skip — unrelated / junk match,how to add business location to snapchat,informational,skip,2900,no data,LOW,no data
+skip — unrelated / junk match,how to sell drugs online,informational,skip,1300,no data,LOW,no data
+"skip — wrong intent (social profile setup, not store)",how to create pinterest business account,informational,skip,1000,no data,LOW,0.29
+"skip — wrong intent (jobs, not founders)",ecommerce work from home jobs,informational,skip,720,no data,LOW,no data
+"skip — wrong intent (social profile setup, not store)",how to create business page on linkedin,informational,skip,260,no data,LOW,no data

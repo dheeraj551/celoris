@@ -184,12 +184,15 @@ export function createInitialProject(width = 960, height = 600): { layers: Layer
     height,
     canvas: textCanvas,
     textData: {
-      text: 'PHOTOLITE STUDIO',
+      text: 'PHOTOLITE STUDIO\nWEB IMAGE EDITOR',
       fontSize: 36,
-      fontFamily: 'Segoe UI, sans-serif',
+      fontFamily: '"Segoe UI", Roboto, sans-serif',
       color: '#ffffff',
       bold: true,
       italic: false,
+      align: 'center',
+      x: width * 0.5,
+      y: height * 0.495,
     },
   };
 
