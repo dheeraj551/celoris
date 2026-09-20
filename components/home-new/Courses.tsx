@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { PlayCircle, Clock, Star, Sparkles, ArrowRight } from 'lucide-react';
+import { PlayCircle, Clock, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
 import { CourseCardProps } from './types';
 import { motion } from 'framer-motion';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
 
 const courseRoutes: Record<string, string> = {
     'vibe-coding-mastery-static': '/courses/vibe-coding-mastery',
@@ -87,7 +88,7 @@ export const CourseCard: React.FC<CourseCardProps & { description?: string, imag
 
             {tag && (
                 <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-lg shadow-lg shadow-emerald-500/40 group-hover:scale-105 transition-transform duration-300">
-                    <Sparkles size={8} className="text-white animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                     <span className="text-white text-[8px] font-black uppercase tracking-widest italic">{tag}</span>
                 </div>
             )}
@@ -162,73 +163,138 @@ export const staticCourses = [
     { id: 'adobe-photoshop-with-ai-static', title: 'Adobe Photoshop with AI — Complete Course for Designers', subject: 'Design', instructor_name: 'Celoris Expert Trainer', course_duration: '24 Hours', price: 14999, is_featured: true, description: 'Supercharge your design workflow with Adobe Photoshop CC 2024 AI features. Master Generative Fill, Neural Filters, and AI-assisted retouching.', course_image_url: '/photoshop-ai-hero.png' }
 ];
 
-// Highlights whichever real, admin-published course was created most recently — sits above the
-// fixed 6-course grid (same idea as the blog page's "latest post" hero) so a brand new course is
-// always visible up top without ever needing to touch the curated grid below it.
-const LatestCourseHero: React.FC<{ course: any }> = ({ course }) => (
-    <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="mb-10 md:mb-12"
+// Flagship Featured Hero Showcase: Sits above the grid and highlights 2 top premier courses
+// side-by-side with uncropped 16:9 banners, balanced card heights, and zero duplication below.
+const FeaturedCourseHeroCard: React.FC<{ course: any; badgeText?: string }> = ({
+    course,
+    badgeText = "Newly Added",
+}) => (
+    <SpotlightCard
+        radius="2.5rem"
+        beamColor="rgba(16, 185, 129, 0.85)"
+        glowColor="rgba(16, 185, 129, 0.12)"
+        className="shadow-[0_0_80px_rgba(16,185,129,0.12)] h-full"
+        innerClassName="group relative flex flex-col justify-between bg-[#0d0d0d]/90 backdrop-blur-3xl overflow-hidden p-5 sm:p-7"
     >
-        <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as React.CSSProperties}>
-        <div className="home-rgb-border-ring">
-        <div className="group relative flex flex-col lg:flex-row bg-[#0d0d0d] overflow-hidden shadow-2xl" style={{ borderRadius: 'calc(2.5rem - 2px)' }}>
-            <div className="relative lg:w-[45%] aspect-video lg:aspect-auto overflow-hidden bg-slate-900">
+        {/* Top Section: Banner + Badges + Title + Description */}
+        <div className="flex flex-col">
+            {/* 16:9 Unclipped Aspect Video Frame */}
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black/60 border border-white/[0.08] shadow-2xl mb-4 sm:mb-5">
                 <img
                     src={course.course_image_url || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800"}
                     alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/70 via-transparent to-transparent" />
-                <div className="absolute top-6 left-6 flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg shadow-emerald-500/30">
-                        <Sparkles size={10} className="animate-pulse" /> Newly Added
+            </div>
+
+            {/* Status Badges Row */}
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono uppercase font-bold tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    {badgeText}
+                </span>
+                {course.subject && (
+                    <span className="text-[10px] font-mono font-bold text-neutral-300 bg-white/[0.05] border border-white/[0.1] px-3 py-1 rounded-full uppercase tracking-wider truncate max-w-[190px]">
+                        {course.subject}
                     </span>
-                </div>
-            </div>
-
-            <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
-                <div className="flex items-center gap-3 mb-4">
-                    {course.subject && (
-                        <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg uppercase tracking-widest italic">{course.subject}</span>
-                    )}
-                    <div className="flex items-center gap-1 text-emerald-500">
-                        <Star size={10} fill="currentColor" />
-                        <span className="text-[10px] font-black tracking-widest">4.9 Rating</span>
-                    </div>
-                </div>
-
-                <h2 className="text-2xl md:text-4xl font-black text-white leading-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all duration-300 uppercase italic tracking-tighter">
-                    <Link href={getCourseRoute(course.id)}>{course.title}</Link>
-                </h2>
-
-                {course.description && (
-                    <p className="text-slate-400 text-sm md:text-base leading-relaxed mb-6 line-clamp-3">{course.description}</p>
                 )}
+                <div className="flex items-center gap-1 text-emerald-400 text-[11px] font-bold ml-auto">
+                    <Star size={12} fill="currentColor" />
+                    <span>{course.rating ? `${course.rating} Rating` : '4.9 Rating'}</span>
+                </div>
+            </div>
 
-                <div className="flex items-center gap-5 text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none mb-8 flex-wrap">
-                    <div className="flex items-center gap-2"><PlayCircle size={14} className="text-emerald-500/60" /> {course.instructor_name || 'Celoris Team'}</div>
+            {/* Title */}
+            <h2 className="text-lg sm:text-xl font-black text-white leading-snug mb-2.5 group-hover:text-emerald-300 transition-colors tracking-tight line-clamp-2">
+                <Link href={getCourseRoute(course.id)}>{course.title}</Link>
+            </h2>
+
+            {/* Description */}
+            {course.description && (
+                <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3">
+                    {course.description}
+                </p>
+            )}
+        </div>
+
+        {/* Bottom Section: Meta details + Action CTA */}
+        <div className="pt-4 border-t border-white/[0.06] mt-auto">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs font-mono text-neutral-400">
+                    <div className="flex items-center gap-1.5">
+                        <PlayCircle size={14} className="text-emerald-400" />
+                        <span className="truncate max-w-[120px]">{course.instructor_name || 'Celoris Team'}</span>
+                    </div>
                     {course.course_duration && (
-                        <div className="flex items-center gap-2"><Clock size={14} className="text-emerald-500/60" /> {course.course_duration}</div>
+                        <div className="flex items-center gap-1.5">
+                            <Clock size={14} className="text-emerald-400" />
+                            <span>{course.course_duration}</span>
+                        </div>
                     )}
                 </div>
 
-                <div>
-                    <Link
-                        href={getCourseRoute(course.id)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600/90 text-white text-[10px] font-black uppercase italic rounded-2xl hover:bg-emerald-500 border border-emerald-500/50 transition-all shadow-xl shadow-emerald-500/20 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
-                    >
-                        LEARN MORE <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                </div>
+                <Link
+                    href={getCourseRoute(course.id)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-[#04160f] text-xs font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
+                >
+                    <span>Learn More</span>
+                    <ArrowRight size={13} />
+                </Link>
             </div>
         </div>
-        </div>
-        </div>
-    </motion.div>
+    </SpotlightCard>
 );
+
+const FeaturedCoursesHero: React.FC<{ courses: any[] }> = ({ courses }) => {
+    if (!courses || courses.length === 0) return null;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12 md:mb-16"
+        >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                {courses.slice(0, 2).map((course, idx) => (
+                    <FeaturedCourseHeroCard
+                        key={course.id}
+                        course={course}
+                        badgeText={idx === 0 ? "Newly Added" : "Featured Masterclass"}
+                    />
+                ))}
+            </div>
+        </motion.div>
+    );
+};
+
+const getInitialHeroCourses = (pool: any[]) => {
+    if (!pool || pool.length === 0) return [];
+    const excludedTitles = [
+        'agentic ai for beginners',
+        'agentic ai for beginners: from prompts to action',
+        'mastering nano banana pro',
+        'my new ai course',
+        'my new ai course will be here',
+        'nana banana bootcamp',
+        'building real-time voice ai with livekit',
+        'build real-time ai agents with livekit'
+    ];
+    const filteredDb = pool.filter((c: any) => {
+        const normalizedTitle = (c.title || '').toLowerCase().trim();
+        return !excludedTitles.some(ex => normalizedTitle === ex || normalizedTitle.includes('my new ai course') || normalizedTitle.includes('banana'));
+    });
+    const realPublished = [...filteredDb]
+        .filter((c: any) => c.created_at && c.is_published !== false)
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    const hero1 = filteredDb.find((c: any) => c.id === 'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead') || realPublished[0];
+    const hero2 = filteredDb.find((c: any) => c.id === 'e7698318-7f57-421f-866e-0101ee239c01') 
+        || realPublished.find((c: any) => c.id !== hero1?.id) 
+        || staticCourses.find((c: any) => c.id === 'python-mega-course-static');
+
+    return [hero1, hero2].filter(Boolean);
+};
 
 export const Courses: React.FC<any> = ({
     title = "Our Latest Courses",
@@ -239,9 +305,15 @@ export const Courses: React.FC<any> = ({
     initialCourses = null
 }) => {
 
-    const [courses, setCourses] = useState<any[]>(initialCourses ? initialCourses.slice(0, limit) : []);
+    const [featuredHeroCourses, setFeaturedHeroCourses] = useState<any[]>(() => {
+        return initialCourses ? getInitialHeroCourses(initialCourses) : [];
+    });
+    const [courses, setCourses] = useState<any[]>(() => {
+        if (!initialCourses) return [];
+        const heroIds = new Set(getInitialHeroCourses(initialCourses).map((c: any) => c.id));
+        return initialCourses.filter((c: any) => !heroIds.has(c.id)).slice(0, limit);
+    });
     const [loading, setLoading] = useState(!initialCourses);
-    const [latestCourse, setLatestCourse] = useState<any | null>(null);
 
     useEffect(() => {
         const prepareCourses = async () => {
@@ -284,15 +356,22 @@ export const Courses: React.FC<any> = ({
                 return !excludedTitles.some(ex => normalizedTitle === ex || normalizedTitle.includes('my new ai course') || normalizedTitle.includes('banana'));
             });
 
-            // Whichever real course was published most recently gets its own hero above the grid
-            // below — this never reorders or removes anything from that fixed 6-course grid.
-            const mostRecentReal = [...filteredDbCourses]
-                .filter((c: any) => c.created_at)
-                .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0] || null;
-            setLatestCourse(mostRecentReal);
-
             // Pool both static and database courses
             const allAvailable = [...staticCourses, ...filteredDbCourses];
+
+            // Select 2 top featured courses for the hero spotlight showcase
+            const realPublished = [...filteredDbCourses]
+                .filter((c: any) => c.created_at && c.is_published !== false)
+                .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+            const hero1 = filteredDbCourses.find((c: any) => c.id === 'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead') 
+                || realPublished[0];
+            const hero2 = filteredDbCourses.find((c: any) => c.id === 'e7698318-7f57-421f-866e-0101ee239c01') 
+                || realPublished.find((c: any) => c.id !== hero1?.id)
+                || allAvailable.find((c: any) => c.id === 'python-mega-course-static');
+
+            const heroList = [hero1, hero2].filter(Boolean);
+            setFeaturedHeroCourses(heroList);
 
             // Daily Randomizer
             const today = new Date();
@@ -318,7 +397,7 @@ export const Courses: React.FC<any> = ({
             });
 
             // Ensure priority courses are at the top (unshifting in reverse order for final priority)
-            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static', 'capcut-pro-viral-reels-static', 'ai-tools-content-creation-static', 'low-poly-3d-modeling-blender-static', 'python-trading-automation-static', 'adobe-photoshop-with-ai-static', 'e7698318-7f57-421f-866e-0101ee239c01', '48713643-694c-491f-86d6-5b6e713c1cf3', '879e499f-5517-413a-bd6a-76e2911b8331', 'f00459e9-20a0-4866-ba05-79aa574f7dff'].forEach(targetId => {
+            ['spoken-english-sonia-sharma-static', 'zumba-fitness-masterclass-static', 'python-mega-course-static', 'digital-marketing-ai-static', 'social-media-marketing-pro-training-static', 'social-media-marketing-ai-static', 'essential-python-ai-static', 'master-premiere-pro-ai-static', 'agentic-ai-masterclass-static', 'capcut-pro-viral-reels-static', 'ai-tools-content-creation-static', 'low-poly-3d-modeling-blender-static', 'python-trading-automation-static', 'adobe-photoshop-with-ai-static', '48713643-694c-491f-86d6-5b6e713c1cf3', '879e499f-5517-413a-bd6a-76e2911b8331', 'f00459e9-20a0-4866-ba05-79aa574f7dff'].forEach(targetId => {
                 const index = shuffled.findIndex(c => c.id === targetId);
                 if (index !== -1) {
                     const [course] = shuffled.splice(index, 1);
@@ -326,7 +405,11 @@ export const Courses: React.FC<any> = ({
                 }
             });
 
-            setCourses(shuffled.slice(0, limit));
+            // Filter out hero courses so there is no duplicate card between hero and the lower grid
+            const heroIds = new Set(heroList.map(c => c.id));
+            const availableForGrid = shuffled.filter(c => !heroIds.has(c.id));
+
+            setCourses(availableForGrid.slice(0, limit));
             setLoading(false);
         };
 
@@ -345,14 +428,14 @@ export const Courses: React.FC<any> = ({
                 className="mb-16 px-4"
             >
                 <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
-                    <Sparkles size={12} fill="currentColor" /> FEATURED LESSONS
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" /> FEATURED LESSONS
                 </div>
                 <h2 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter leading-tight max-w-4xl">{title}</h2>
                 <div className="h-1.5 w-24 bg-emerald-600 rounded-full mt-6 shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
                 {description && <p className="text-slate-500 text-xs md:text-sm mt-8 font-black uppercase tracking-[0.1em] italic leading-relaxed max-w-3xl border-l border-emerald-500/20 pl-6">{description}</p>}
             </motion.div>
 
-            {latestCourse && <LatestCourseHero course={latestCourse} />}
+            {featuredHeroCourses.length > 0 && <FeaturedCoursesHero courses={featuredHeroCourses} />}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {courses.map((course: any) => (

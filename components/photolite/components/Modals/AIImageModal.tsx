@@ -12,6 +12,7 @@ import {
   Palette,
   ArrowRight,
   Maximize2,
+  Wallet,
 } from 'lucide-react';
 import { Layer } from '../../types';
 
@@ -25,7 +26,13 @@ interface AIImageModalProps {
   onOpenProModal: () => void;
   onAddLayerFromImage: (imageUrl: string, promptName: string) => void;
   onReplaceActiveLayerImage: (imageUrl: string, promptName: string) => void;
+  userCredits?: number;
+  onRefreshCredits?: () => Promise<void> | void;
+  userId?: string | null;
 }
+
+const MIN_PRO_CREDITS = 2000;
+const GENERATION_CREDIT_COST = 100;
 
 const STYLE_PRESETS = [
   { label: 'Photorealistic', promptSuffix: ', 8k resolution photorealistic cinematic lighting shot on 35mm lens' },
@@ -63,6 +70,9 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
   onOpenProModal,
   onAddLayerFromImage,
   onReplaceActiveLayerImage,
+  userCredits = 0,
+  onRefreshCredits,
+  userId,
 }) => {
   const [mode, setMode] = useState<'create' | 'edit'>('create');
   const [prompt, setPrompt] = useState('');
@@ -73,6 +83,15 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [activeLayerDataUrl, setActiveLayerDataUrl] = useState<string | null>(null);
   const [appliedSuccess, setAppliedSuccess] = useState<string | null>(null);
+  const [localCredits, setLocalCredits] = useState<number | null>(null);
+
+  const currentCredits = localCredits !== null ? localCredits : userCredits;
+  const hasProAccess = currentCredits >= MIN_PRO_CREDITS;
+
+  // Sync external userCredits when modal opens or prop changes
+  useEffect(() => {
+    setLocalCredits(userCredits);
+  }, [userCredits, isOpen]);
 
   // Derive aspect ratio from canvas if appropriate
   useEffect(() => {
@@ -106,7 +125,10 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
       return;
     }
 
-    if (!isProUser) {
+    if (!hasProAccess) {
+      setError(
+        `AI Image Generation is a Pro feature requiring at least ${MIN_PRO_CREDITS.toLocaleString()} credits. You currently have ${currentCredits.toLocaleString()} credits.`
+      );
       onOpenProModal();
       return;
     }
@@ -126,6 +148,8 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
         prompt: fullPrompt,
         mode,
         aspectRatio,
+        userId: userId || undefined,
+        userCredits: currentCredits,
       };
 
       if (mode === 'edit' && activeLayer?.canvas) {
@@ -145,6 +169,23 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
       }
 
       setGeneratedImageUrl(data.imageUrl);
+
+      if (typeof data.remainingCredits === 'number') {
+        setLocalCredits(data.remainingCredits);
+        setAppliedSuccess(
+          `AI Image generated! ${data.creditsDeducted || GENERATION_CREDIT_COST} credits deducted. Remaining balance: ${data.remainingCredits.toLocaleString()} credits.`
+        );
+      } else {
+        const nextBal = Math.max(0, currentCredits - GENERATION_CREDIT_COST);
+        setLocalCredits(nextBal);
+        setAppliedSuccess(
+          `AI Image generated! ${GENERATION_CREDIT_COST} credits deducted. Remaining balance: ${nextBal.toLocaleString()} credits.`
+        );
+      }
+
+      if (onRefreshCredits) {
+        onRefreshCredits();
+      }
     } catch (err: any) {
       console.error('AI Generation Error:', err);
       setError(err?.message || 'Failed to generate image. Please try again.');
@@ -206,26 +247,33 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
               <Sparkles className="h-4 w-4 text-black" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-sm font-bold text-white tracking-wide">AI Image Studio</h2>
                 <span
                   id="badge-ai-model-tag"
                   className="rounded-full bg-neutral-900 border border-neutral-700 px-2 py-0.5 font-mono text-[9px] text-amber-300"
                 >
-                  gemini-3.1-flash-image-preview
+                  gemini / flux-pro
                 </span>
                 <span
                   id="badge-ai-pro-indicator"
                   onClick={onOpenProModal}
                   className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider cursor-pointer ${
-                    isProUser
+                    hasProAccess
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                       : 'bg-neutral-800 text-amber-400 border border-amber-500/40 hover:bg-neutral-700'
                   }`}
-                  title={isProUser ? 'Pro plan is active' : 'Click to upgrade to Pro'}
+                  title={hasProAccess ? 'Pro status is active' : 'Click to view Pro requirements'}
                 >
                   <Crown className="h-2.5 w-2.5" />
-                  <span>{isProUser ? 'Pro Active' : 'Pro Feature'}</span>
+                  <span>{hasProAccess ? 'Pro Active' : 'Pro Feature (2k+ Cr)'}</span>
+                </span>
+                <span className="flex items-center gap-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-mono text-emerald-300">
+                  <Wallet className="h-2.5 w-2.5 text-emerald-400" />
+                  <span>{currentCredits.toLocaleString()} Credits</span>
+                </span>
+                <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[9px] font-mono text-amber-300">
+                  -100 Cr / gen
                 </span>
               </div>
               <p className="text-[11px] text-gray-400">
@@ -235,22 +283,25 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
           </div>
         </div>
 
-        {/* Pro Plan Upsell Notice (when user is on Free Tier) */}
-        {!isProUser && (
+        {/* Pro Plan Credits Gate Notice (when user has < 2000 credits) */}
+        {!hasProAccess && (
           <div
             id="banner-pro-gated-alert"
-            className="pl-toast-anim bg-gradient-to-r from-amber-950/80 via-neutral-900 to-amber-950/80 border-b border-amber-500/30 px-5 py-2.5 flex items-center justify-between"
+            className="pl-toast-anim bg-gradient-to-r from-amber-950/90 via-neutral-900 to-amber-950/90 border-b border-amber-500/30 px-5 py-2.5 flex items-center justify-between gap-3"
           >
             <div className="flex items-center gap-2 text-xs text-amber-200">
               <Crown className="h-4 w-4 text-amber-400 shrink-0" />
               <span>
-                <strong>Pro Plan Exclusive:</strong> AI image creation & editing requires a PhotoLite Pro membership.
+                <strong>Pro Feature Locked:</strong> AI Image Generation requires holding at least{' '}
+                <strong className="text-amber-300">2,000 Credits</strong>. Your balance:{' '}
+                <strong className="text-amber-300">{currentCredits.toLocaleString()} Credits</strong> (
+                {Math.max(0, MIN_PRO_CREDITS - currentCredits).toLocaleString()} more needed).
               </span>
             </div>
             <button
               id="btn-activate-pro-from-banner"
               onClick={onOpenProModal}
-              className="rounded-md bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3 py-1 text-xs font-bold text-black shadow-md cursor-pointer transition-transform active:scale-95"
+              className="rounded-md bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3 py-1 text-xs font-bold text-black shadow-md cursor-pointer transition-transform active:scale-95 shrink-0"
             >
               Unlock Pro Access
             </button>
@@ -524,18 +575,27 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
               id="btn-generate-ai-image"
               type="button"
               onClick={handleGenerate}
-              disabled={loading || !prompt.trim()}
-              className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:from-neutral-700 disabled:to-neutral-800 disabled:text-gray-500 text-black font-bold px-4 py-1.5 text-xs shadow-lg shadow-amber-500/20 cursor-pointer transition-all disabled:cursor-not-allowed"
+              disabled={loading || !prompt.trim() || !hasProAccess}
+              className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:from-neutral-700 disabled:to-neutral-800 disabled:text-gray-400 text-black font-bold px-4 py-1.5 text-xs shadow-lg shadow-amber-500/20 cursor-pointer transition-all disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
                   <RefreshCw className="h-3.5 w-3.5 animate-spin text-black" />
                   <span>Generating with Gemini...</span>
                 </>
+              ) : !hasProAccess ? (
+                <>
+                  <Crown className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Requires 2,000 Credits ({currentCredits.toLocaleString()} available)</span>
+                </>
               ) : (
                 <>
                   <Sparkles className="h-3.5 w-3.5" />
-                  <span>{mode === 'create' ? 'Generate Image' : 'Transform Layer'}</span>
+                  <span>
+                    {mode === 'create'
+                      ? `Generate Image (${GENERATION_CREDIT_COST} Credits)`
+                      : `Transform Layer (${GENERATION_CREDIT_COST} Credits)`}
+                  </span>
                 </>
               )}
             </button>

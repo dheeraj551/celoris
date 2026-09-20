@@ -13,13 +13,18 @@ import {
   Sliders
 } from 'lucide-react';
 import Link from 'next/link';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
 
 export function PhotoLiteFeature() {
   return (
     <div className="w-full max-w-md md:max-w-xl mx-auto my-16 px-4">
-      <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as React.CSSProperties}>
-      <div className="home-rgb-border-ring">
-      <div className="relative w-full bg-[#0a0a0a] overflow-hidden shadow-[0_0_100px_rgba(6,182,212,0.1)] p-8 md:p-12" style={{ borderRadius: 'calc(2.5rem - 2px)' }}>
+      <SpotlightCard
+        radius="2.5rem"
+        beamColor="rgba(6, 182, 212, 0.85)"
+        glowColor="rgba(6, 182, 212, 0.12)"
+        className="shadow-[0_0_80px_rgba(6,182,212,0.12)]"
+        innerClassName="bg-[#08090d]/85 backdrop-blur-3xl p-8 md:p-12 border border-white/[0.1] shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]"
+      >
 
         {/* Background Dot Grid */}
         <div className="absolute top-1/4 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(6,182,212,0.15)_2px,transparent_2px)] [background-size:24px_24px] opacity-60" />
@@ -138,16 +143,17 @@ export function PhotoLiteFeature() {
 
           {/* Action Button */}
           <div className="w-full mt-auto">
-            <Link href="/photolite" className="inline-flex items-center gap-3 px-8 py-3 rounded-xl border border-cyan-500/40 bg-[#0a0a0a] hover:bg-cyan-900/20 text-cyan-400 hover:text-cyan-300 font-medium text-lg transition-all group w-48">
-              Learn More
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <Link 
+              href="/photolite" 
+              className="group relative inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border border-cyan-400/40 bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 hover:text-white font-medium text-sm transition-all duration-300 shadow-[0_0_25px_rgba(6,182,212,0.25)] hover:shadow-[0_0_35px_rgba(6,182,212,0.4)] hover:scale-[1.02] active:scale-[0.98] backdrop-blur-xl"
+            >
+              <span>Explore PhotoLite</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
         </div>
-      </div>
-      </div>
-      </div>
+      </SpotlightCard>
     </div>
   );
 }

@@ -48,12 +48,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-// AI image generation and the Pro plan are not launched yet — flip this to
-// true to re-enable the "Create & Edit with Gemini AI" entry points (the
-// Image-menu item, the toolbar AI Studio button, and the Pro badge) once
-// they're ready. Until then they render greyed out with a "Coming Soon"
-// label instead of opening AIImageModal / ProPlanModal.
-const AI_STUDIO_ENABLED = false;
+// AI image generation Pro feature is enabled.
+// Requires >= 2000 credits to unlock Pro generation, costs 100 credits per generation.
+const AI_STUDIO_ENABLED = true;
 
 interface MenuBarProps {
   onNew: () => void;
@@ -484,20 +481,14 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               <div className="my-1 border-t border-black" />
               <button
                 id="menu-image-ai-studio-btn"
-                disabled={!AI_STUDIO_ENABLED}
-                onClick={() => AI_STUDIO_ENABLED && handleAction(onOpenAIModal || (() => {}))}
-                title={AI_STUDIO_ENABLED ? undefined : 'Coming soon'}
-                className={
-                  AI_STUDIO_ENABLED
-                    ? 'flex w-full items-center justify-between px-3 py-1 hover:bg-[#3c3c3c] hover:text-amber-300 text-amber-200 cursor-pointer font-medium'
-                    : 'flex w-full items-center justify-between px-3 py-1 text-gray-500 cursor-not-allowed font-medium opacity-60'
-                }
+                onClick={() => handleAction(onOpenAIModal || (() => {}))}
+                className="flex w-full items-center justify-between px-3 py-1 hover:bg-[#3c3c3c] hover:text-amber-300 text-amber-200 cursor-pointer font-medium"
               >
                 <span className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5 text-gray-500" /> Create & Edit with Gemini AI...
+                  <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Create & Edit with Gemini AI...
                 </span>
-                <span className="flex items-center gap-1 text-[9px] font-mono text-gray-400 bg-white/5 px-1 py-0.5 rounded border border-white/10">
-                  SOON
+                <span className="flex items-center gap-1 text-[9px] font-mono text-amber-300 bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 rounded font-bold">
+                  PRO
                 </span>
               </button>
               <button
@@ -713,46 +704,44 @@ export const MenuBar: React.FC<MenuBarProps> = ({
           <button onClick={onZoomIn} className="hover:text-white px-0.5 cursor-pointer">+</button>
         </div>
 
-        {/* AI Image Studio Button (Pro Feature) — disabled until launch, see AI_STUDIO_ENABLED */}
+        {/* AI Image Studio Button (Pro Feature) */}
         {onOpenAIModal && (
           <button
             id="quick-ai-btn"
-            disabled={!AI_STUDIO_ENABLED}
-            onClick={AI_STUDIO_ENABLED ? onOpenAIModal : undefined}
-            className={
-              AI_STUDIO_ENABLED
-                ? 'flex items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:scale-95 px-2.5 py-1 font-bold text-black shadow-[0_1px_0_rgba(255,255,255,0.4)_inset,0_2px_6px_rgba(0,0,0,0.35)] transition-all border border-amber-700/60 text-[11px] cursor-pointer'
-                : 'flex items-center gap-1.5 rounded-lg bg-white/[0.04] px-2.5 py-1 font-bold text-gray-500 border border-white/10 text-[11px] cursor-not-allowed opacity-60'
-            }
-            title={AI_STUDIO_ENABLED ? 'Create & Edit Images with Gemini AI (gemini-3.1-flash-image-preview)' : 'Coming soon'}
+            onClick={onOpenAIModal}
+            className="flex items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:scale-95 px-2.5 py-1 font-bold text-black shadow-[0_1px_0_rgba(255,255,255,0.4)_inset,0_2px_6px_rgba(0,0,0,0.35)] transition-all border border-amber-700/60 text-[11px] cursor-pointer"
+            title="Create & Edit Images with Gemini AI (Pro Feature • 100 Credits/generation)"
           >
-            <Sparkles className={AI_STUDIO_ENABLED ? 'h-3 w-3 text-black' : 'h-3 w-3 text-gray-500'} />
+            <Sparkles className="h-3 w-3 text-black" />
             <span>AI Studio</span>
-            <span className={AI_STUDIO_ENABLED ? 'rounded-full bg-black/20 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider' : 'rounded-full bg-white/5 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider'}>
-              {AI_STUDIO_ENABLED ? 'PRO' : 'SOON'}
+            <span className="rounded-full bg-black/20 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider font-extrabold">
+              PRO
             </span>
           </button>
         )}
 
-        {/* Pro Plan Status Badge — disabled until launch, see AI_STUDIO_ENABLED */}
+        {/* Pro Plan Status Badge */}
         {onOpenProModal && (
           <button
             id="btn-pro-membership-badge"
-            disabled={!AI_STUDIO_ENABLED}
-            onClick={AI_STUDIO_ENABLED ? onOpenProModal : undefined}
-            className={
-              AI_STUDIO_ENABLED
-                ? `flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold border cursor-pointer active:scale-95 transition-all ${
-                    isProUser
-                      ? 'bg-amber-950/60 border-amber-500/40 text-amber-300 hover:bg-amber-900/70'
-                      : 'bg-white/5 border-white/10 text-gray-400 hover:text-amber-300 hover:border-amber-600/60'
-                  }`
-                : 'flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold border border-white/10 bg-white/[0.04] text-gray-500 cursor-not-allowed opacity-60'
+            onClick={onOpenProModal}
+            className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold border cursor-pointer active:scale-95 transition-all ${
+              (profile?.wallet_balance !== undefined && Number(profile.wallet_balance) >= 2000) || isProUser
+                ? 'bg-amber-950/60 border-amber-500/40 text-amber-300 hover:bg-amber-900/70 shadow-sm'
+                : 'bg-white/5 border-white/10 text-gray-400 hover:text-amber-300 hover:border-amber-600/60'
+            }`}
+            title={
+              (profile?.wallet_balance !== undefined && Number(profile.wallet_balance) >= 2000) || isProUser
+                ? `Pro Active (${Number(profile?.wallet_balance || 0).toLocaleString()} Credits)`
+                : `Unlock Pro with 2,000 Credits (Current: ${Number(profile?.wallet_balance || 0).toLocaleString()})`
             }
-            title={AI_STUDIO_ENABLED ? 'PhotoLite Pro Membership' : 'Coming soon'}
           >
-            <Crown className={AI_STUDIO_ENABLED ? 'h-3 w-3 text-amber-400' : 'h-3 w-3 text-gray-500'} />
-            <span>{AI_STUDIO_ENABLED ? (isProUser ? 'Pro Active' : 'Upgrade to Pro') : 'Coming Soon'}</span>
+            <Crown className={`h-3 w-3 ${((profile?.wallet_balance !== undefined && Number(profile.wallet_balance) >= 2000) || isProUser) ? 'text-amber-400' : 'text-gray-400'}`} />
+            <span>
+              {((profile?.wallet_balance !== undefined && Number(profile.wallet_balance) >= 2000) || isProUser)
+                ? 'Pro Active'
+                : `${Number(profile?.wallet_balance || 0).toLocaleString()} / 2k Cr`}
+            </span>
           </button>
         )}
 

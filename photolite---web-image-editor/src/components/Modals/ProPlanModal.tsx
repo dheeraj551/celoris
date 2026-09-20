@@ -7,8 +7,8 @@ import {
   Image as ImageIcon,
   Layers,
   Wand2,
-  X,
   ShieldCheck,
+  Wallet,
 } from 'lucide-react';
 
 interface ProPlanModalProps {
@@ -17,6 +17,7 @@ interface ProPlanModalProps {
   isProUser: boolean;
   setIsProUser: (isPro: boolean) => void;
   onOpenAIModal?: () => void;
+  userCredits?: number;
 }
 
 export const ProPlanModal: React.FC<ProPlanModalProps> = ({
@@ -25,14 +26,18 @@ export const ProPlanModal: React.FC<ProPlanModalProps> = ({
   isProUser,
   setIsProUser,
   onOpenAIModal,
+  userCredits = 0,
 }) => {
   if (!isOpen) return null;
+
+  const hasProCredits = userCredits >= 2000;
+  const isQualifiedPro = isProUser || hasProCredits;
 
   const proFeatures = [
     {
       icon: Sparkles,
       title: 'AI Create & Edit Images',
-      desc: 'Generate photorealistic images and edit active layers with gemini-3.1-flash-image-preview.',
+      desc: 'Generate photorealistic images and edit active layers with Gemini AI (100 credits per generation).',
     },
     {
       icon: Wand2,
@@ -67,25 +72,27 @@ export const ProPlanModal: React.FC<ProPlanModalProps> = ({
   return (
     <div
       id="modal-pro-plan-overlay"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center pl-window-overlay p-4"
       onClick={onClose}
     >
       <div
         id="modal-pro-plan-content"
-        className="relative w-full max-w-lg rounded-xl border border-amber-500/40 bg-[#1e1e1e] p-6 shadow-2xl text-gray-200"
+        className="pl-window-anim relative w-full max-w-lg rounded-2xl border border-amber-500/30 bg-gradient-to-b from-[#242424]/97 to-[#1a1a1a]/97 backdrop-blur-2xl p-6 text-gray-200"
+        style={{
+          boxShadow:
+            'inset 0 1px 0 rgba(255,255,255,0.06), 0 30px 70px -20px rgba(0,0,0,0.7), 0 10px 28px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,158,11,0.06)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          id="btn-close-pro-modal"
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 hover:bg-[#2e2e2e] hover:text-white transition-colors cursor-pointer"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        {/* Window controls */}
+        <div className="pl-traffic-lights absolute left-5 top-5" role="group" aria-label="Window controls">
+          <button type="button" id="btn-close-pro-modal" onClick={onClose} className="pl-traffic-dot pl-dot-red" title="Close" />
+          <span className="pl-traffic-dot pl-dot-yellow" />
+          <span className="pl-traffic-dot pl-dot-green" />
+        </div>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4 mt-5">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-black shadow-lg shadow-amber-500/20">
             <Crown className="h-7 w-7 text-white" />
           </div>
@@ -95,12 +102,12 @@ export const ProPlanModal: React.FC<ProPlanModalProps> = ({
               <span
                 id="badge-current-plan"
                 className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                  isProUser
+                  isQualifiedPro
                     ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40'
                     : 'bg-neutral-800 text-gray-400 border border-neutral-700'
                 }`}
               >
-                {isProUser ? 'Pro Active' : 'Free Tier'}
+                {isQualifiedPro ? 'Pro Active' : 'Requires 2,000 Credits'}
               </span>
             </div>
             <p className="text-xs text-gray-400">
@@ -109,29 +116,29 @@ export const ProPlanModal: React.FC<ProPlanModalProps> = ({
           </div>
         </div>
 
-        {/* Pro Banner */}
+        {/* Pro Banner with Credits Status */}
         <div className="mb-5 rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-950/40 to-neutral-900/80 p-3.5 flex items-center justify-between">
           <div className="space-y-0.5">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-200">
-              <ShieldCheck className="h-4 w-4 text-amber-400" />
-              <span>{isProUser ? 'You are on the Pro Plan' : 'Free Trial Available'}</span>
+              <Wallet className="h-4 w-4 text-emerald-400" />
+              <span>Wallet: {userCredits.toLocaleString()} Credits</span>
             </div>
             <p className="text-[11px] text-gray-300">
-              {isProUser
-                ? 'All AI image creation & editing capabilities are active.'
-                : 'Activate Pro today with instant trial access — no credit card required.'}
+              {hasProCredits
+                ? 'Your balance qualifies you for Pro AI Studio! (Deducts 100 credits per generation).'
+                : `Need at least 2,000 credits to unlock Pro AI Studio (${Math.max(0, 2000 - userCredits).toLocaleString()} more needed).`}
             </p>
           </div>
           <button
             id="btn-toggle-pro-membership"
             onClick={handleTogglePro}
             className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold shadow-md transition-all cursor-pointer ${
-              isProUser
+              isQualifiedPro
                 ? 'bg-neutral-800 hover:bg-neutral-700 text-gray-300 border border-neutral-700'
                 : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold shadow-amber-500/30'
             }`}
           >
-            {isProUser ? 'Downgrade to Free' : 'Activate Pro Access'}
+            {isQualifiedPro ? 'Active' : 'Test Pro Trial'}
           </button>
         </div>
 

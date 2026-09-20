@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Star, User, Building, MapPin, Globe, ChevronLeft, ChevronRight, Quote } from "lucide-react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import { SpotlightCard } from "@/components/ui/spotlight-card"
 
 interface Testimonial {
   id: string
@@ -113,11 +114,12 @@ export default function TestimonialsDisplay({
       transition={{ duration: 0.6, delay: index * 0.12, ease: "easeOut" }}
       className="h-full"
     >
-      <div className="home-rgb-border h-full" style={{ '--rgb-radius': '2rem' } as React.CSSProperties}>
-      <div className="home-rgb-border-ring h-full">
-      <div
-        className={`relative h-full flex flex-col bg-[#0a0a0a] p-8 overflow-hidden group ${featured ? 'ring-1 ring-emerald-400/40' : ''}`}
-        style={{ borderRadius: 'calc(2rem - 2px)' }}
+      <SpotlightCard
+        radius="2rem"
+        beamColor="rgba(16, 185, 129, 0.75)"
+        glowColor="rgba(16, 185, 129, 0.1)"
+        className={`h-full ${featured ? 'shadow-[0_0_50px_rgba(16,185,129,0.15)]' : ''}`}
+        innerClassName={`relative h-full flex flex-col bg-[#08090d]/80 backdrop-blur-3xl p-8 overflow-hidden group border border-white/[0.08] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] ${featured ? 'ring-1 ring-emerald-400/40' : ''}`}
       >
         {/* Glow Orb */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-emerald-500/20 transition-colors duration-500" />
@@ -216,9 +218,7 @@ export default function TestimonialsDisplay({
             </div>
           </div>
         </div>
-      </div>
-      </div>
-      </div>
+      </SpotlightCard>
     </motion.div>
   )
 

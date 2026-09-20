@@ -225,8 +225,8 @@ export const Hero: React.FC = () => {
                         className="relative rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl aspect-square md:aspect-video lg:aspect-square"
                     >
                         <img
-                            src="/images/homepage/hero.png"
-                            alt="Unified AI Ecosystem"
+                            src="/hero-space.jpg"
+                            alt="Celoris Cosmic Ecosystem"
                             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-60" />

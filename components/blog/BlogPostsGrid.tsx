@@ -5,6 +5,7 @@ import type { CSSProperties } from "react"
 import { motion } from "framer-motion"
 import { Calendar, Clock, ArrowUpRight, ChevronRight, ChevronLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { SpotlightCard } from "@/components/ui/spotlight-card"
 
 export interface BlogPost {
   id: string
@@ -93,15 +94,19 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
       {/* Featured hero post */}
       {featured && (
         <div className="mb-10">
-        <div className="home-rgb-border" style={{ '--rgb-radius': '2.5rem' } as CSSProperties}>
-        <div className="home-rgb-border-ring">
-        <motion.article
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          className="group relative bg-[#0a0f1d] overflow-hidden shadow-2xl"
-          style={{ borderRadius: 'calc(2.5rem - 2px)' }}
-        >
+          <SpotlightCard
+            radius="2.5rem"
+            beamColor="rgba(16, 185, 129, 0.85)"
+            glowColor="rgba(16, 185, 129, 0.12)"
+            className="shadow-[0_0_80px_rgba(16,185,129,0.12)]"
+            innerClassName="bg-[#0a0f1d] overflow-hidden"
+          >
+            <motion.article
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+              className="group relative"
+            >
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-1/2 aspect-video lg:aspect-auto overflow-hidden relative">
               <Link href={`/blog/${featured.slug}`}>
@@ -147,9 +152,8 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
               </div>
             </div>
           </div>
-        </motion.article>
-        </div>
-        </div>
+            </motion.article>
+          </SpotlightCard>
         </div>
       )}
 

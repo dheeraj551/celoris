@@ -25,7 +25,7 @@ export function TickerStrip({ items }: { items: TickerItem[] }) {
   const loopItems = [...items, ...items]
 
   return (
-    <div className="relative border-b border-white/5 bg-[#0a0a0a] overflow-hidden">
+    <div className="relative border-b border-white/[0.06] bg-[#07080b]/40 backdrop-blur-md overflow-hidden">
       <div className="flex items-stretch">
         <div
           className="flex-none flex items-center gap-2 pl-4 bg-emerald-500 text-[#04160f] text-[10px] font-black uppercase tracking-[0.2em] z-10"

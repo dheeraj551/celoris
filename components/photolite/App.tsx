@@ -42,6 +42,7 @@ import { ProPlanModal } from './components/Modals/ProPlanModal';
 import { TemplatesModal } from './components/Modals/TemplatesModal';
 import { loadNoSignalLayers } from './data/noSignalTemplate';
 import { DESIGN_TEMPLATES } from './data/templates';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 export default function App() {
   const [projectName, setProjectName] = useState('PhotoLite Composition');
@@ -129,6 +130,10 @@ export default function App() {
   });
   const [historyIndex, setHistoryIndex] = useState<number>(() => (initialData.layers.length > 0 ? 0 : -1));
 
+  // Auth & Credits
+  const { user, profile, refreshProfile } = useAuth();
+  const userCredits = Number(profile?.wallet_balance || 0);
+
   // Modals
   const [isNewCanvasOpen, setIsNewCanvasOpen] = useState(false);
   const [isResizeModalOpen, setIsResizeModalOpen] = useState(false);
@@ -142,8 +147,10 @@ export default function App() {
       const saved = localStorage.getItem('photolite_pro_user');
       if (saved !== null) return saved === 'true';
     }
-    return true; // Default to true (Active Pro trial) so user can test and enjoy AI creation immediately
+    return false;
   });
+
+  const effectiveProUser = isProUser || userCredits >= 2000;
 
   // File upload input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1370,7 +1377,7 @@ export default function App() {
         }}
         onOpenAIModal={() => setIsAIModalOpen(true)}
         onOpenProModal={() => setIsProModalOpen(true)}
-        isProUser={isProUser}
+        isProUser={effectiveProUser}
         onNewLayer={handleNewLayer}
         onDuplicateLayer={handleDuplicateLayer}
         onDeleteLayer={handleDeleteLayer}
@@ -1603,7 +1610,10 @@ export default function App() {
         activeLayer={layers.find((l) => l.id === activeLayerId) || null}
         canvasWidth={canvasWidth}
         canvasHeight={canvasHeight}
-        isProUser={isProUser}
+        isProUser={effectiveProUser}
+        userCredits={userCredits}
+        onRefreshCredits={refreshProfile}
+        userId={user?.id || null}
         onOpenProModal={() => setIsProModalOpen(true)}
         onAddLayerFromImage={handleAddLayerFromImage}
         onReplaceActiveLayerImage={handleReplaceActiveLayerImage}
@@ -1612,8 +1622,9 @@ export default function App() {
       <ProPlanModal
         isOpen={isProModalOpen}
         onClose={() => setIsProModalOpen(false)}
-        isProUser={isProUser}
+        isProUser={effectiveProUser}
         setIsProUser={setIsProUser}
+        userCredits={userCredits}
         onOpenAIModal={() => setIsAIModalOpen(true)}
       />
 

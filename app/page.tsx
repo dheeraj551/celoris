@@ -29,100 +29,111 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const supabase = (await createServerClient()) as any
+  let filteredCourses: any[] = [];
+  let enrichedTestimonials: any[] = [];
+  let topCourses: any[] = [];
+  let topJobsRaw: any[] = [];
+  let topCertifiedJobsRaw: any[] = [];
+  let topBlogsRaw: any[] = [];
+  let liveCafeCount: number | null = 0;
 
-  // Fetch courses on server
-  const { data: dbCourses } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('is_published', true)
-    .order('created_at', { ascending: false })
-    .limit(12);
+  try {
+    const supabase = (await createServerClient()) as any
 
-  // Fetch testimonials on server
-  const { data: dbTestimonials } = await supabase
-    .from('testimonials')
-    .select('*')
-    .contains('target_pages', ['homepage'])
-    .eq('is_visible', true)
-    .order('created_at', { ascending: false })
-    .limit(20);
+    // Fetch courses on server
+    const { data: dbCourses } = await supabase
+      .from('courses')
+      .select('*')
+      .eq('is_published', true)
+      .order('created_at', { ascending: false })
+      .limit(12);
 
-  // Enrich testimonials with specialties from profiles table
-  const enrichedTestimonials = dbTestimonials ? await Promise.all(dbTestimonials.map(async (t: any) => {
-    if (t.client_title === 'USER' || t.client_title === 'ADMIN' || !t.client_title || t.client_title === 'Member') {
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('specialty')
-          .eq('full_name', t.client_name)
-          .maybeSingle();
-        
-        if (profile?.specialty) {
-          return { ...t, client_title: profile.specialty };
+    // Fetch testimonials on server
+    const { data: dbTestimonials } = await supabase
+      .from('testimonials')
+      .select('*')
+      .contains('target_pages', ['homepage'])
+      .eq('is_visible', true)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    // Enrich testimonials with specialties from profiles table
+    enrichedTestimonials = dbTestimonials ? await Promise.all(dbTestimonials.map(async (t: any) => {
+      if (t.client_title === 'USER' || t.client_title === 'ADMIN' || !t.client_title || t.client_title === 'Member') {
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('specialty')
+            .eq('full_name', t.client_name)
+            .maybeSingle();
+          
+          if (profile?.specialty) {
+            return { ...t, client_title: profile.specialty };
+          }
+        } catch (err) {
+          console.error(`Error enriching testimonial for ${t.client_name}:`, err);
         }
-      } catch (err) {
-        console.error(`Error enriching testimonial for ${t.client_name}:`, err);
       }
-    }
-    return t;
-  })) : [];
+      return t;
+    })) : [];
 
-  const testCourseTitles = ['my new ai course will be here', 'agentic ai for beginners: from prompts to action', 'mastering nano banana pro'];
-  const filteredCourses = (dbCourses || []).filter((course: any) =>
-    course.title && !testCourseTitles.includes(course.title.toLowerCase())
-  );
+    const testCourseTitles = ['my new ai course will be here', 'agentic ai for beginners: from prompts to action', 'mastering nano banana pro'];
+    filteredCourses = (dbCourses || []).filter((course: any) =>
+      course.title && !testCourseTitles.includes(course.title.toLowerCase())
+    );
 
-  // ---- Ticker strip data (top courses, top jobs, live café, apps) ----
+    // ---- Ticker strip data (top courses, top jobs, live café, apps) ----
 
-  const { data: topCoursesRaw } = await supabase
-    .from('courses')
-    .select('id, title, category, duration, is_featured, created_at')
-    .eq('is_published', true)
-    .order('is_featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(8);
+    const { data: rawCourses } = await supabase
+      .from('courses')
+      .select('id, title, category, duration, is_featured, created_at')
+      .eq('is_published', true)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(8);
 
-  const topCourses = (topCoursesRaw || [])
-    .filter((c: any) => c.title && !testCourseTitles.includes(c.title.toLowerCase().trim()))
-    .slice(0, 3);
+    topCourses = (rawCourses || [])
+      .filter((c: any) => c.title && !testCourseTitles.includes(c.title.toLowerCase().trim()))
+      .slice(0, 3);
 
-  const { data: topJobsRaw } = await supabase
-    .from('public_jobs')
-    .select('id, title, company, work_mode, featured, created_at')
-    .eq('status', 'active')
-    .order('featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(3);
+    const { data: rawJobs } = await supabase
+      .from('public_jobs')
+      .select('id, title, company, work_mode, featured, created_at')
+      .eq('status', 'active')
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(3);
+    topJobsRaw = rawJobs || [];
 
-  // Certified Roles (Job Center) — separate table/tier from the open public_jobs
-  // board above, so it needs its own query to show up in the ticker at all.
-  const { data: topCertifiedJobsRaw } = await supabase
-    .from('certified_jobs')
-    .select('id, title, company, work_mode, salary_range, featured, created_at')
-    .eq('status', 'active')
-    .order('featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(2);
+    const { data: rawCertified } = await supabase
+      .from('certified_jobs')
+      .select('id, title, company, work_mode, salary_range, featured, created_at')
+      .eq('status', 'active')
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(2);
+    topCertifiedJobsRaw = rawCertified || [];
 
-  // Latest published blog posts
-  const { data: topBlogsRaw } = await supabase
-    .from('blog_posts')
-    .select('slug, title, category, is_featured, published_at')
-    .eq('is_published', true)
-    .eq('status', 'published')
-    .order('is_featured', { ascending: false })
-    .order('published_at', { ascending: false })
-    .limit(2);
+    const { data: rawBlogs } = await supabase
+      .from('blog_posts')
+      .select('slug, title, category, is_featured, published_at')
+      .eq('is_published', true)
+      .eq('status', 'published')
+      .order('is_featured', { ascending: false })
+      .order('published_at', { ascending: false })
+      .limit(2);
+    topBlogsRaw = rawBlogs || [];
 
-  // Live café presence in the last 5 minutes — falls back to a plain "open" state
-  // rather than showing a 0 count, since a visible zero reads as a dead platform.
-  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-  const { count: liveCafeCount } = await supabase
-    .from('user_presence')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'online')
-    .gte('last_seen', fiveMinAgo);
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { count } = await supabase
+      .from('user_presence')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'online')
+      .gte('last_seen', fiveMinAgo);
+    liveCafeCount = count;
+  } catch (err) {
+    console.warn('HomePage server data fetch fallback:', err);
+  }
 
   const tickerItems: TickerItem[] = [
     ...topCourses.map((c: any) => ({
@@ -161,7 +172,7 @@ export default async function HomePage() {
   ]
 
   return (
-    <DashboardShell>
+    <DashboardShell showVideoBackground>
       <TickerStrip items={tickerItems} />
       <DashboardContent
         courses={filteredCourses}
