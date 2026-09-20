@@ -151,7 +151,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const fullPath = path.join(process.cwd(), filePath);
+    const fileName = path.basename(filePath);
+    const fullPath = path.join(/*turbopackIgnore: true*/ process.cwd(), 'uploads', 'videos', fileName);
 
     try {
       const fileBuffer = await fs.readFile(fullPath);
