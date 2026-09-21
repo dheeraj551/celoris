@@ -129,7 +129,7 @@ export default function RootLayout({
         {/* Google AdSense - Managed via Dashboard and AdUnit component */}
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2389622666573829"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2157452506602914"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />

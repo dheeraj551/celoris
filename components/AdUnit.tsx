@@ -71,7 +71,7 @@ export function AdUnit({
                 ref={adRef}
                 className="adsbygoogle"
                 style={{ ...style, display: 'block', width: '100%', textAlign: 'center' }}
-                data-ad-client="ca-pub-2389622666573829"
+                data-ad-client="ca-pub-2157452506602914"
                 data-ad-slot={slot || "9266909448"}
                 data-ad-format={format}
                 data-full-width-responsive={responsive}
