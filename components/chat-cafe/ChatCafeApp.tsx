@@ -1455,6 +1455,7 @@ export default function ChatCafeApp() {
                 userSig={voiceJoinCreds.userSig}
                 sdkAppId={voiceJoinCreds.sdkAppId}
                 displayName={currentUser?.name || 'Patron'}
+                patrons={activePatrons}
                 onLeave={handleLeaveVoiceRoom}
               />
             </div>
