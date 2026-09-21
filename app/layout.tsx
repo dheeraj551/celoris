@@ -92,6 +92,9 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
+  other: {
+    "google-adsense-account": "ca-pub-2157452506602914",
+  },
   category: "Education",
   icons: {
     icon: [
@@ -126,12 +129,12 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense - Managed via Dashboard and AdUnit component */}
-        <Script
+        {/* Google AdSense */}
+        <meta name="google-adsense-account" content="ca-pub-2157452506602914" />
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2157452506602914"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
         {/* Note: To stop scattered ads, disable "Auto ads" (Anchor, Vignette, Side rails) in your Google AdSense Dashboard */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
