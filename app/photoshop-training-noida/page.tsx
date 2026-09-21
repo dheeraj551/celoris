@@ -334,13 +334,13 @@ export default function PhotoshopTrainingNoida() {
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {[
-                                    { name: "Basic", price: "2,500", focus: "Beginners, Students", duration: "4 Weeks", topics: "Tools, Layers, Basic Retouching, Social Media Graphics" },
+                                    { name: "Group Classes", price: "Free", focus: "Beginners, Students", duration: "4 Weeks", topics: "Tools, Layers, Basic Retouching, Social Media Graphics — 100% Free for Students" },
                                     { name: "Advanced", price: "4,999", focus: "Designers, Photographers", duration: "8 Weeks", topics: "Retouching + Compositing + Print Design + Portfolio" },
                                     { name: "Mastery (1-on-1)", price: "8,000", focus: "Freelancers, Professionals", duration: "8 Weeks", topics: "Full course + Custom projects + Client workflow" },
                                 ] .map((plan, i) => (
                                     <Card key={i} className="bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-blue-500/30 transition-all text-center flex flex-col">
                                         <div className="text-[10px] font-black text-blue-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
-                                        <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
+                                        <div className={`text-4xl font-black italic tracking-tighter mb-4 ${plan.price === 'Free' ? 'text-emerald-400' : 'text-white'}`}>{plan.price === 'Free' ? 'FREE' : `₹${plan.price}`}</div>
                                         <div className="space-y-2 mb-8 flex-1">
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.focus}</div>
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.duration}</div>

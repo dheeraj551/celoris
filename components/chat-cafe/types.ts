@@ -102,6 +102,13 @@ export interface CafeTable {
   slowModeSeconds: number;
   activeTopic?: DiscussionTopic;
   isLocked?: boolean;
+  /** 'text' (default, free) or 'voice_video' — a paid live mic+camera room.
+      Only 'voice_video' tables charge entryFee and render the call panel. */
+  roomKind?: 'text' | 'voice_video';
+  /** Flat one-time cost (in wallet_balance units) to join a 'voice_video'
+      table, charged once per browser session via POST
+      /api/social/chat-cafe/voice-entry. Undefined/0 = free to join. */
+  entryFee?: number;
   // The shared "café radio" — one staff-picked mp3 playing for everyone
   // currently at this table. startedAt (ms epoch) lets every listener
   // compute their own seek offset so newcomers join mid-song in sync.

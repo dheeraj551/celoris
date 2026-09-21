@@ -214,23 +214,20 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
         <div className="mnb-pin" style={{ background: '#f5a623' }} />
         <div className="mnb-label" style={{ marginBottom: '12px' }}>Enrollment</div>
         <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          {course?.price > 0 && (
-            <div style={{ fontSize: '12px', color: '#ef6a5f', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              🔥 50% Off Limited Time
-            </div>
-          )}
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '32px', fontWeight: 'bold', color: 'var(--navy)', lineHeight: 1 }}>
-            {price}
+          <div style={{ fontSize: '11px', color: '#35b0a0', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            ✓ Group Classes 100% Free
           </div>
-          {course?.price > 0 && (
-            <div style={{ fontSize: '13px', color: 'var(--ink)', opacity: 0.6, marginTop: '4px' }}>
-              <span style={{ textDecoration: 'line-through' }}>₹{(course.price * 2).toLocaleString('en-IN')}</span> · One-time
-            </div>
-          )}
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '32px', fontWeight: 'bold', color: 'var(--navy)', lineHeight: 1 }}>
+            FREE
+          </div>
+          <div style={{ fontSize: '12px', color: 'var(--ink)', opacity: 0.6, marginTop: '4px' }}>
+            Group Batch for All Students · ₹0
+          </div>
         </div>
         
         <CourseInquiryDialog
           courseTitle={course?.title || 'AI-Powered Web Development'}
+          buttonText="Join Free Group Batch"
           buttonClassName="w-full h-12 text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-xl shadow-md"
         />
       </div>

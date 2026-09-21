@@ -47,19 +47,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    Dialog,
-    DialogContent,
-    DialogTrigger,
-    DialogTitle
-} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 
 export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }) {
     const pathname = usePathname();
     const { user, profile, loading, signOut } = useAuth();
-    const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const handleSignOut = async () => {
@@ -270,33 +263,19 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                     </DropdownMenu>
                 </nav>
 
-                {/* Right: Actions, Support, Auth & Mobile Menu */}
+                {/* Right: Actions, Pricing, Auth & Mobile Menu */}
                 <div className="flex items-center gap-2 sm:gap-3">
 
-                    {/* Support Pill Button (Apple Dynamic Nano-Glass Capsule) */}
-                    <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
-                        <DialogTrigger asChild>
-                            <button
-                                type="button"
-                                className="group relative hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-b from-rose-500/[0.16] to-rose-500/[0.08] hover:from-rose-500/[0.26] hover:to-rose-500/[0.16] border border-rose-400/40 hover:border-rose-300/70 text-rose-200 hover:text-white text-xs font-medium backdrop-blur-2xl shadow-[0_4px_16px_rgba(244,63,94,0.18),inset_0_1px_1px_rgba(255,255,255,0.22)] hover:shadow-[0_0_25px_rgba(244,63,94,0.45)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer"
-                            >
-                                <div className="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-400/50 flex items-center justify-center text-rose-300 group-hover:scale-110 transition-transform shadow-[0_0_8px_rgba(244,63,94,0.4)]">
-                                    <Heart className="w-2.5 h-2.5 fill-rose-400 text-rose-400 animate-pulse" />
-                                </div>
-                                <span className="tracking-tight">Support</span>
-                            </button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md bg-transparent border-none shadow-none flex justify-center items-center p-0">
-                            <DialogTitle className="sr-only">Support Us</DialogTitle>
-                            <div className="relative w-full max-h-[90vh] rounded-3xl overflow-hidden bg-[#fff5f0] p-2 border border-white/20 shadow-2xl">
-                                <img
-                                    src="/support.png"
-                                    alt="Support us via QR Code"
-                                    className="w-full h-auto max-h-[85vh] object-contain rounded-2xl"
-                                />
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    {/* Pricing Pill Button (Apple Dynamic Nano-Glass Capsule) */}
+                    <Link
+                        href="/pricing"
+                        className="group relative hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-b from-purple-500/[0.16] to-purple-500/[0.08] hover:from-purple-500/[0.26] hover:to-purple-500/[0.16] border border-purple-400/40 hover:border-purple-300/70 text-purple-200 hover:text-white text-xs font-medium backdrop-blur-2xl shadow-[0_4px_16px_rgba(168,85,247,0.18),inset_0_1px_1px_rgba(255,255,255,0.22)] hover:shadow-[0_0_25px_rgba(168,85,247,0.45)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer"
+                    >
+                        <div className="w-4 h-4 rounded-full bg-purple-500/20 border border-purple-400/50 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform shadow-[0_0_8px_rgba(168,85,247,0.4)]">
+                            <IndianRupee className="w-2.5 h-2.5 stroke-[2.5]" />
+                        </div>
+                        <span className="tracking-tight">Pricing</span>
+                    </Link>
 
                     {/* Credits Counter (Apple Dynamic Island Nano-Glass Wallet Pill) */}
                     {user && (
@@ -325,13 +304,16 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                     ) : user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 border border-white/10 overflow-hidden cursor-pointer">
+                                <Button
+                                    variant="ghost"
+                                    className="relative h-8 w-8 rounded-full p-0 border border-white/20 hover:border-emerald-400/60 transition-all duration-300 hover:scale-105 shadow-[0_0_12px_rgba(0,0,0,0.5)] hover:shadow-[0_0_16px_rgba(16,185,129,0.35)] cursor-pointer overflow-hidden group"
+                                >
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage
                                             src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
                                             alt={profile?.full_name || 'User'}
                                         />
-                                        <AvatarFallback className="bg-emerald-500 text-white text-[10px]">
+                                        <AvatarFallback className="bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-bold text-[10px]">
                                             {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                                         </AvatarFallback>
                                     </Avatar>
@@ -339,64 +321,143 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 align="end"
-                                className="w-56 bg-[#08090d]/95 backdrop-blur-3xl border border-white/[0.12] text-slate-200 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.15)] z-50 mt-2"
+                                className="w-64 bg-[#08090d]/95 backdrop-blur-3xl border border-white/[0.12] text-slate-200 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.18)] z-50 p-2 mt-2"
                             >
-                                <DropdownMenuLabel className="font-normal p-3">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-bold text-white leading-none italic uppercase">
-                                            {profile?.full_name || user.email?.split('@')[0]}
-                                        </p>
-                                        <p className="text-[10px] leading-none text-slate-500 font-medium truncate">
+                                {/* User Profile Card */}
+                                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] mb-2 flex items-center gap-2.5">
+                                    <Avatar className="h-9 w-9 border border-white/15 shrink-0 shadow-sm">
+                                        <AvatarImage
+                                            src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
+                                            alt={profile?.full_name || 'User'}
+                                        />
+                                        <AvatarFallback className="bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-bold text-xs">
+                                            {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-1">
+                                            <p className="text-xs font-bold text-white tracking-tight truncate">
+                                                {profile?.full_name || user.email?.split('@')[0]}
+                                            </p>
+                                            <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/25 px-1.5 py-0.5 rounded-full shrink-0">
+                                                Active
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-neutral-400 truncate mt-0.5 font-normal">
                                             {user.email}
                                         </p>
                                     </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator className="bg-white/5" />
-                                <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer rounded-xl mx-1">
-                                    <Link href="/learn" className="flex items-center">
-                                        <BookOpen className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">My Courses</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer rounded-xl mx-1">
-                                    <Link href="/teach" className="flex items-center">
-                                        <GraduationCap className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Teach</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer rounded-xl mx-1">
-                                    <Link href="/celoris-tv" className="flex items-center">
-                                        <Tv className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Celoris TV</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer rounded-xl mx-1">
-                                    <Link href="/job-center" className="flex items-center">
-                                        <Briefcase className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Job Center</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer rounded-xl mx-1">
-                                    <Link href="/social/profile" className="flex items-center">
-                                        <UserIcon className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Profile</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="focus:bg-white/5 cursor-pointer rounded-xl mx-1">
-                                    <Link href="/account/payment-settings" className="flex items-center">
-                                        <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
-                                        <span className="text-xs font-bold uppercase tracking-tight italic">Payment Settings</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-white/5" />
-                                <DropdownMenuItem className="cursor-default focus:bg-transparent rounded-xl mx-1">
-                                    <IndianRupee className="mr-2 h-4 w-4 text-emerald-500" />
-                                    <span className="text-xs font-bold uppercase tracking-tight italic">Credits: ₹{profile?.wallet_balance || '0'}</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-white/5" />
-                                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-rose-500 focus:text-rose-400 focus:bg-rose-500/10 rounded-xl mx-1">
-                                    <LogOut className="mr-2 h-4 w-4" />
-                                    <span className="text-xs font-bold uppercase tracking-tight italic">Sign out</span>
+                                </div>
+
+                                {/* Quick Wallet Balance */}
+                                <Link
+                                    href="/account/payment-settings"
+                                    className="mx-0.5 mb-2 p-2 rounded-xl bg-gradient-to-r from-emerald-500/[0.10] via-teal-500/[0.06] to-transparent hover:from-emerald-500/[0.16] hover:via-teal-500/[0.10] border border-emerald-500/25 hover:border-emerald-400/40 transition-all flex items-center justify-between group/wallet cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 group-hover/wallet:scale-105 transition-transform shadow-[0_0_8px_rgba(52,211,153,0.3)]">
+                                            <IndianRupee className="w-3 h-3 stroke-[2.5]" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-neutral-400 leading-none font-medium">Wallet Credits</p>
+                                            <p className="text-xs font-mono font-bold text-white leading-tight mt-0.5">
+                                                ₹{profile?.wallet_balance || '0'} <span className="text-[9px] font-sans font-semibold text-emerald-400">Available</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-semibold text-emerald-300 group-hover/wallet:text-white px-2 py-0.5 rounded-md bg-emerald-500/20 group-hover/wallet:bg-emerald-500/30 border border-emerald-400/30 transition-all">
+                                        Manage →
+                                    </span>
+                                </Link>
+
+                                <div className="h-[1px] bg-white/[0.08] mb-1.5" />
+
+                                {/* Menu Items */}
+                                <div className="space-y-0.5">
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/learn" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                                <BookOpen className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">My Courses</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Classes &amp; curriculum</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/teach" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                                                <GraduationCap className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Teach</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Instructor dashboard</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/celoris-tv" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                                                <Tv className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Celoris TV</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">24/7 creative stream</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/job-center" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                                                <Briefcase className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Job Center</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Freelance gigs &amp; contracts</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/social/profile" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+                                                <UserIcon className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Profile</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Creator portfolio</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/account/payment-settings" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400 shrink-0">
+                                                <Wallet className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Payment Settings</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Bank, UPI &amp; GST info</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </div>
+
+                                <div className="h-[1px] bg-white/[0.08] my-1.5" />
+
+                                {/* Sign Out */}
+                                <DropdownMenuItem
+                                    onClick={handleSignOut}
+                                    className="rounded-xl p-2 text-neutral-400 hover:text-rose-300 hover:bg-rose-500/10 focus:text-rose-300 focus:bg-rose-500/10 cursor-pointer transition-colors flex items-center gap-2.5"
+                                >
+                                    <div className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+                                        <LogOut className="w-3.5 h-3.5" />
+                                    </div>
+                                    <span className="text-xs font-semibold">Sign Out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -537,24 +598,40 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <Briefcase className="w-4 h-4 text-amber-400" />
                                             <span className="text-sm font-medium">Job Center</span>
                                         </Link>
+                                        <Link
+                                            href="/pricing"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
+                                        >
+                                            <IndianRupee className="w-4 h-4 text-purple-400 stroke-[2.5]" />
+                                            <span className="text-sm font-medium">Pricing &amp; Plans</span>
+                                        </Link>
                                     </div>
                                 </div>
 
-                                {/* Support Card */}
-                                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Heart className="w-4 h-4 text-rose-400 fill-rose-400" />
-                                        <span className="text-xs font-bold text-white">Support Celoris</span>
+                                {/* Pricing & Plans Card */}
+                                <Link
+                                    href="/pricing"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block p-3.5 rounded-2xl bg-gradient-to-br from-purple-500/15 via-indigo-500/10 to-emerald-500/10 border border-purple-500/25 hover:border-purple-400/50 transition-all group shadow-[0_10px_25px_rgba(0,0,0,0.5)]"
+                                >
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <div className="flex items-center gap-2">
+                                            <IndianRupee className="w-4 h-4 text-purple-400 stroke-[2.5]" />
+                                            <span className="text-xs font-bold text-white">AI Tools &amp; Plans</span>
+                                        </div>
+                                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            From ₹0
+                                        </span>
                                     </div>
-                                    <p className="text-[11px] text-neutral-400 mb-3">
-                                        Scan QR code to support our free creative tools for India.
+                                    <p className="text-[11px] text-neutral-400 mb-2.5 leading-relaxed">
+                                        Free tier, unlimited models, 100% free classes &amp; zero-fee job portal.
                                     </p>
-                                    <img
-                                        src="/support.png"
-                                        alt="Support QR"
-                                        className="w-full h-auto rounded-xl bg-white p-1"
-                                    />
-                                </div>
+                                    <div className="text-[11px] font-bold text-purple-300 group-hover:text-purple-200 flex items-center gap-1.5">
+                                        <span>Explore Plans &amp; Pricing</span>
+                                        <span>→</span>
+                                    </div>
+                                </Link>
                             </div>
                         </SheetContent>
                     </Sheet>

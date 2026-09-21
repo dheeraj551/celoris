@@ -22,18 +22,13 @@ import {
     Briefcase,
     Tv,
     Image as ImageIcon,
-    Box
+    Box,
+    IndianRupee
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import {
-    Dialog,
-    DialogContent,
-    DialogTrigger,
-    DialogTitle
-} from "@/components/ui/dialog";
 
 const MENU_GROUPS = [
     {
@@ -47,6 +42,7 @@ const MENU_GROUPS = [
     {
         title: "Management",
         items: [
+            { name: "Pricing & Plans", icon: IndianRupee, href: "/pricing" },
             { name: "About Us", icon: Info, href: "/about" },
             { name: "Contact us", icon: Mail, href: "/contact" },
             { name: "Blog", icon: Lightbulb, href: "/blog" },
@@ -58,7 +54,6 @@ export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
 
     const [isNewbeeMode, setIsNewbeeMode] = React.useState(true);
-    const [isSupportModalOpen, setIsSupportModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         const checkNewbeeStatus = async () => {
@@ -206,29 +201,32 @@ export function Sidebar({ className }: { className?: string }) {
                 ))}
             </div>
 
-            {/* Support Widget */}
+            {/* Pricing Card */}
             <div className="px-6 mb-8 mt-auto w-full">
-                <Dialog open={isSupportModalOpen} onOpenChange={setIsSupportModalOpen}>
-                    <DialogTrigger asChild>
-                        <div className="w-full rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 transition-all bg-[#fff5f0] cursor-pointer group">
-                            <img 
-                                src="/support.png" 
-                                alt="Support us via QR Code" 
-                                className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity"
-                            />
+                <Link
+                    href="/pricing"
+                    className="block w-full p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 via-indigo-500/10 to-emerald-500/10 border border-purple-500/20 hover:border-purple-400/40 transition-all group shadow-[0_10px_25px_rgba(0,0,0,0.4)]"
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5">
+                            <IndianRupee className="w-3.5 h-3.5 text-purple-400 stroke-[2.5]" />
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-300">AI Plans</span>
                         </div>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md bg-transparent border-none shadow-none flex justify-center items-center p-0">
-                        <DialogTitle className="sr-only">Support Us</DialogTitle>
-                        <div className="relative w-full max-h-[90vh] rounded-2xl overflow-hidden bg-[#fff5f0]">
-                            <img 
-                                src="/support.png" 
-                                alt="Support us via QR Code - Full Size" 
-                                className="w-full h-auto max-h-[90vh] object-contain"
-                            />
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            From ₹0
+                        </span>
+                    </div>
+                    <p className="text-xs font-bold text-white group-hover:text-purple-200 transition-colors">
+                        Unlock 20+ AI Tools
+                    </p>
+                    <p className="text-[10px] text-neutral-400 mt-1 leading-tight">
+                        Free classes &amp; job portal included in all plans.
+                    </p>
+                    <div className="mt-3 text-[10px] font-bold text-purple-300 group-hover:text-purple-200 flex items-center gap-1">
+                        <span>Explore Pricing</span>
+                        <span>→</span>
+                    </div>
+                </Link>
             </div>
         </aside>
     );

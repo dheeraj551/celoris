@@ -175,6 +175,15 @@ export default function AdminDashboard() {
       color: "from-emerald-500 to-teal-600",
       stats: "View Applications",
       features: ["Review Profiles", "Verify Documents", "Approve Trainers", "Notice-Linked Apps"]
+    },
+    {
+      title: "Course Applications",
+      description: "Review free-class applications and verify uploaded student IDs",
+      icon: FileText,
+      href: "/admin/course-applications",
+      color: "from-cyan-500 to-blue-600",
+      stats: "View Applications",
+      features: ["Verify Student ID", "Approve/Reject", "Per-Course History", "Contact Details"]
     }
   ]
 

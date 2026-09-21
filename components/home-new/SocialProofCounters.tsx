@@ -21,9 +21,9 @@ interface Metric {
 
 const METRICS: Metric[] = [
     {
-        id: "creators",
+        id: "customers",
         odometerValue: "50,000+",
-        title: "Indian Creators Empowered",
+        title: "Indian Customers Empowered",
         subtitle: "Active daily across all 28 states",
         icon: Users,
         iconColor: "text-emerald-400",
@@ -35,7 +35,7 @@ const METRICS: Metric[] = [
     {
         id: "free",
         odometerValue: "₹0",
-        title: "Always Free to Start",
+        title: "A Free Tier for Students",
         subtitle: "No credit card or hidden charges",
         icon: ShieldCheck,
         iconColor: "text-amber-400",

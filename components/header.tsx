@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User, LogOut, User as UserIcon, Wallet, BookOpen, GraduationCap, Tv, Briefcase } from "lucide-react"
+import { Menu, User, LogOut, User as UserIcon, Wallet, BookOpen, GraduationCap, Tv, Briefcase, IndianRupee } from "lucide-react"
 import { cn } from "@/lib/utils"
 // removed createClient import as it is handled in useAuth
 import {
@@ -24,6 +24,7 @@ import { useEffect } from "react"
 const publicNavigation = [
   { name: "Learn", href: "/learn" },
   { name: "Job Center", href: "/job-center" },
+  { name: "Pricing", href: "/pricing" },
   { name: "Play", href: "/social" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
@@ -32,6 +33,7 @@ const publicNavigation = [
 const authenticatedNavigation = [
   { name: "Learn", href: "/learn" },
   { name: "Job Center", href: "/job-center" },
+  { name: "Pricing", href: "/pricing" },
   { name: "Play", href: "/social" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
@@ -65,6 +67,7 @@ export default function Header() {
     pathname?.startsWith("/celoris-tv") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
+    pathname?.startsWith("/pricing") ||
     pathname === "/login" ||
     pathname === "/register";
 
@@ -147,59 +150,146 @@ export default function Header() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {profile?.full_name || user.email}
-                    </p>
-                    {profile?.full_name && (
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
+              <DropdownMenuContent
+                align="end"
+                className="w-64 bg-[#08090d]/95 backdrop-blur-3xl border border-white/[0.12] text-slate-200 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.18)] z-50 p-2 mt-2"
+                forceMount
+              >
+                {/* User Profile Card */}
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] mb-2 flex items-center gap-2.5">
+                  <Avatar className="h-9 w-9 border border-white/15 shrink-0 shadow-sm" key={profile?.avatar_url || 'default'}>
+                    <AvatarImage
+                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
+                      alt={profile?.full_name || 'User'}
+                    />
+                    <AvatarFallback className="bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-bold text-xs">
+                      {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-xs font-bold text-white tracking-tight truncate">
+                        {profile?.full_name || user.email?.split('@')[0]}
                       </p>
-                    )}
+                      <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/25 px-1.5 py-0.5 rounded-full shrink-0">
+                        Active
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-neutral-400 truncate mt-0.5 font-normal">
+                      {user.email}
+                    </p>
                   </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/learn" className="cursor-pointer">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    <span>Learn</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/teach" className="cursor-pointer">
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    <span>Teach</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/celoris-tv" className="cursor-pointer">
-                    <Tv className="mr-2 h-4 w-4" />
-                    <span>Celoris TV</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/job-center" className="cursor-pointer">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Job Center</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/social/profile" className="cursor-pointer">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-default focus:bg-transparent">
-                  <Wallet className="mr-2 h-4 w-4 text-emerald-500" />
-                  <span className="text-xs font-bold uppercase tracking-tight italic">Credits: {profile?.wallet_balance || '0'}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
+                </div>
+
+                {/* Quick Wallet Balance */}
+                <Link
+                  href="/account/payment-settings"
+                  className="mx-0.5 mb-2 p-2 rounded-xl bg-gradient-to-r from-emerald-500/[0.10] via-teal-500/[0.06] to-transparent hover:from-emerald-500/[0.16] hover:via-teal-500/[0.10] border border-emerald-500/25 hover:border-emerald-400/40 transition-all flex items-center justify-between group/wallet cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 group-hover/wallet:scale-105 transition-transform shadow-[0_0_8px_rgba(52,211,153,0.3)]">
+                      <IndianRupee className="w-3 h-3 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-neutral-400 leading-none font-medium">Wallet Credits</p>
+                      <p className="text-xs font-mono font-bold text-white leading-tight mt-0.5">
+                        ₹{profile?.wallet_balance || '0'} <span className="text-[9px] font-sans font-semibold text-emerald-400">Available</span>
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-semibold text-emerald-300 group-hover/wallet:text-white px-2 py-0.5 rounded-md bg-emerald-500/20 group-hover/wallet:bg-emerald-500/30 border border-emerald-400/30 transition-all">
+                    Manage →
+                  </span>
+                </Link>
+
+                <div className="h-[1px] bg-white/[0.08] mb-1.5" />
+
+                {/* Menu Items */}
+                <div className="space-y-0.5">
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/learn" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                        <BookOpen className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">My Courses</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Classes &amp; curriculum</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/teach" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                        <GraduationCap className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Teach</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Instructor dashboard</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/celoris-tv" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                        <Tv className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Celoris TV</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">24/7 creative stream</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/job-center" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                        <Briefcase className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Job Center</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Freelance gigs &amp; contracts</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/social/profile" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+                        <UserIcon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Profile</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Creator portfolio</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/account/payment-settings" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400 shrink-0">
+                        <Wallet className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Payment Settings</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Bank, UPI &amp; GST info</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <div className="h-[1px] bg-white/[0.08] my-1.5" />
+
+                {/* Sign Out */}
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="rounded-xl p-2 text-neutral-400 hover:text-rose-300 hover:bg-rose-500/10 focus:text-rose-300 focus:bg-rose-500/10 cursor-pointer transition-colors flex items-center gap-2.5"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+                    <LogOut className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs font-semibold">Sign Out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

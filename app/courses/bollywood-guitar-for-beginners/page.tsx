@@ -348,8 +348,8 @@ export default function BollywoodGuitarCourse() {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/20 transition-all" />
                                 <div className="relative z-10">
                                     <div className="text-center mb-8">
-                                        <div className="text-4xl font-black text-white mb-2 leading-none italic tracking-tighter">₹1,999<span className="text-sm">/mo</span></div>
-                                        <div className="text-emerald-500 font-black uppercase tracking-[0.2em] text-[10px] italic">Starting Price</div>
+                                        <div className="text-4xl font-black text-emerald-400 mb-2 leading-none italic tracking-tighter">FREE</div>
+                                        <div className="text-emerald-500 font-black uppercase tracking-[0.2em] text-[10px] italic">Group Classes Free For All Students</div>
                                     </div>
 
                                     <div className="space-y-4 mb-8">
@@ -368,7 +368,7 @@ export default function BollywoodGuitarCourse() {
 
                                     <div className="space-y-4 mb-8 border-t border-white/5 pt-8">
                                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 italic">Plans Available:</div>
-                                        <div className="text-xs font-bold text-white italic">BASIC: ₹1,999/mo (Group)</div>
+                                        <div className="text-xs font-bold text-emerald-400 italic">GROUP CLASSES: FREE (100% Free For All Students)</div>
                                         <div className="text-xs font-bold text-white italic">STANDARD: ₹3,499/mo (Semi-private)</div>
                                         <div className="text-xs font-bold text-white italic">PREMIUM: ₹5,999/mo (1-on-1)</div>
                                     </div>

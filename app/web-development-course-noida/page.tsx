@@ -106,7 +106,7 @@ export default function WebDevelopmentCourseNoida() {
             }
         ],
         pricing: [
-            { name: "Basic (Frontend)", price: "2,500", focus: "Beginners, Students", duration: "4 Weeks", topics: "HTML, CSS, JavaScript basics" },
+            { name: "Group Classes (Frontend)", price: "Free", focus: "Beginners, Students", duration: "4 Weeks", topics: "HTML, CSS, JavaScript basics — 100% Free for Students" },
             { name: "Advanced (React)", price: "4,999", focus: "Job Seekers", duration: "8 Weeks", topics: "HTML + CSS + JS + React + API integration" },
             { name: "Full Stack (MERN)", price: "8,000", focus: "Career switchers, Freelancers", duration: "12 Weeks", topics: "Frontend + Backend + Database + Deployment" },
         ],
@@ -352,7 +352,7 @@ export default function WebDevelopmentCourseNoida() {
                                 {pageData.pricing.map((plan, i) => (
                                     <Card key={i} className={`bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-blue-500/30 transition-all text-center flex flex-col ${i === 2 ? 'border-blue-500/30 ring-1 ring-blue-500/20' : ''}`}>
                                         <div className="text-[10px] font-black text-blue-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
-                                        <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
+                                        <div className={`text-4xl font-black italic tracking-tighter mb-4 ${plan.price === 'Free' ? 'text-emerald-400' : 'text-white'}`}>{plan.price === 'Free' ? 'FREE' : `₹${plan.price}`}</div>
                                         <div className="space-y-2 mb-8 flex-1">
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.focus}</div>
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.duration}</div>

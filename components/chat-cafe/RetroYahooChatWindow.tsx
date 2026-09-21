@@ -638,6 +638,14 @@ export function RetroYahooChatWindow({
                   {table.slowModeSeconds}s
                 </span>
               )}
+              {table.roomKind === 'voice_video' && (
+                <span
+                  className="text-[9px] px-1 bg-fuchsia-200 text-fuchsia-900 rounded font-normal flex items-center gap-0.5"
+                  title="Live mic + camera — paid entry"
+                >
+                  🎙️{table.entryFee ? `₹${table.entryFee}` : ''}
+                </span>
+              )}
             </button>
           );
         })}

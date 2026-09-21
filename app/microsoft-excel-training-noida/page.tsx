@@ -320,13 +320,13 @@ export default function ExcelTrainingNoida() {
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {[
-                                    { name: "Basic Excel", price: "2,500", focus: "Essentials", duration: "2 Weeks" },
+                                    { name: "Group Classes (Basic)", price: "Free", focus: "Students & Beginners", duration: "2 Weeks" },
                                     { name: "Advanced Excel", price: "4,999", focus: "MIS & Dashboards", duration: "4 Weeks" },
                                     { name: "Mastery (VBA)", price: "8,000", focus: "Automation", duration: "8 Weeks" },
                                 ].map((plan, i) => (
                                     <Card key={i} className="bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-emerald-500/30 transition-all text-center">
                                         <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
-                                        <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
+                                        <div className={`text-4xl font-black italic tracking-tighter mb-4 ${plan.price === 'Free' ? 'text-emerald-400' : 'text-white'}`}>{plan.price === 'Free' ? 'FREE' : `₹${plan.price}`}</div>
                                         <div className="space-y-2 mb-8">
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.focus}</div>
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.duration}</div>

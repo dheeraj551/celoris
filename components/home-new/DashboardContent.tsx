@@ -25,6 +25,7 @@ import {
     GraduationCap,
     ArrowUpRight,
     CheckCircle2,
+    IndianRupee,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -582,10 +583,8 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         >
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
                             <span className="text-xs font-mono font-medium tracking-wider text-neutral-300 uppercase">
-                                Free Creative Studio
+                                Free Creative Studio for Students
                             </span>
-                            <span className="text-white/20">•</span>
-                            <span className="text-xs font-semibold text-emerald-400">₹0 Always Free</span>
                         </motion.div>
 
                         {/* Staggered Heading */}
@@ -596,16 +595,25 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 animate="visible"
                                 variants={{
                                     hidden: {},
-                                    visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } }
+                                    visible: { transition: { staggerChildren: 0.04, delayChildren: 0.1 } }
                                 }}
-                                className="text-4xl sm:text-6xl xl:text-7xl font-semibold tracking-tight text-white leading-[1.08]"
+                                className="text-3xl sm:text-5xl xl:text-6xl font-semibold tracking-tight text-white leading-[1.12]"
                             >
-                                {["India's", "Free", "Creative"].map((word, i) => (
+                                <motion.span
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
+                                        visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: "easeOut" } }
+                                    }}
+                                    className="inline-block home-shimmer-text drop-shadow-[0_0_25px_rgba(168,85,247,0.35)] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400 mr-[0.24em]"
+                                >
+                                    Celoris
+                                </motion.span>
+                                {["AI", "Powered", "Image", "and", "Video", "Editor's"].map((word, i) => (
                                     <motion.span
                                         key={i}
                                         variants={{
-                                            hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
-                                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
+                                            hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
+                                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: "easeOut" } }
                                         }}
                                         className="inline-block mr-[0.24em]"
                                     >
@@ -614,13 +622,25 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 ))}
                                 <motion.span
                                     variants={{
-                                        hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
-                                        visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
+                                        hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
+                                        visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: "easeOut" } }
                                     }}
-                                    className="inline-block home-shimmer-text drop-shadow-[0_0_25px_rgba(168,85,247,0.35)] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400"
+                                    className="inline-block home-shimmer-text drop-shadow-[0_0_25px_rgba(168,85,247,0.35)] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400 mr-[0.24em]"
                                 >
-                                    Studio
+                                    Cloud Studio
                                 </motion.span>
+                                {["for", "India"].map((word, i) => (
+                                    <motion.span
+                                        key={i}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
+                                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: "easeOut" } }
+                                        }}
+                                        className="inline-block mr-[0.24em]"
+                                    >
+                                        {word}
+                                    </motion.span>
+                                ))}
                             </motion.h1>
                         </div>
 
@@ -631,7 +651,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             transition={{ duration: 0.6, delay: 0.2 }}
                             className="text-neutral-300 text-base sm:text-lg leading-relaxed max-w-xl mb-7 font-normal"
                         >
-                            Create cinema-grade AI videos, master high-income creative skills, and collaborate with 50,000+ creators — completely free with zero subscription walls.
+                            India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed.
                         </motion.p>
 
                         {/* Primary CTAs */}
@@ -641,21 +661,21 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             transition={{ duration: 0.6, delay: 0.3 }}
                             className="flex flex-wrap items-center gap-3.5 mb-8"
                         >
-                            <Link
-                                href="/video-studio"
-                                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-[#04160f] font-bold text-sm sm:text-base transition-all shadow-[0_0_30px_rgba(16,185,129,0.35)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                            >
-                                <Video className="w-4 h-4 text-[#04160f]" />
-                                <span>Launch Video Studio</span>
-                                <ArrowRight className="w-4 h-4" />
-                            </Link>
 
                             <Link
                                 href="/learn"
                                 className="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] hover:border-white/[0.25] text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                             >
                                 <GraduationCap className="w-4 h-4 text-emerald-400" />
-                                <span>Explore Free Courses</span>
+                                <span>Explore Academy</span>
+                            </Link>
+
+                            <Link
+                                href="/pricing"
+                                className="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-purple-400/30 hover:border-purple-300/50 text-purple-200 hover:text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                            >
+                                <IndianRupee className="w-4 h-4 text-purple-400" />
+                                <span>View Plans &amp; Pricing</span>
                             </Link>
                         </motion.div>
 
@@ -666,10 +686,10 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             transition={{ duration: 0.6, delay: 0.4 }}
                             className="flex flex-wrap items-center gap-4 sm:gap-6 pt-4 border-t border-white/[0.08] text-xs font-medium text-neutral-400"
                         >
-                            <div className="flex items-center gap-2">
-                                <span className="text-emerald-400 font-bold">₹0</span>
-                                <span>Always Free Forever</span>
-                            </div>
+                            <Link href="/pricing" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+                                <span className="text-emerald-400 font-bold">Free Tier</span>
+                                <span className="text-[10px] text-neutral-400">(Plans →)</span>
+                            </Link>
                             <div className="w-1 h-1 rounded-full bg-white/20" />
                             <div className="flex items-center gap-2">
                                 <span className="text-white font-bold">20+</span>
@@ -678,7 +698,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             <div className="w-1 h-1 rounded-full bg-white/20" />
                             <div className="flex items-center gap-2">
                                 <span className="text-purple-400 font-bold">50K+</span>
-                                <span>Active Creators</span>
+                                <span>Satisfied Customers</span>
                             </div>
                         </motion.div>
                     </div>
@@ -721,10 +741,6 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                     innerClassName="bg-[#08090d]/30 sm:bg-[#08090d]/20 backdrop-blur-2xl p-6 sm:p-8 md:p-10 border border-white/[0.12] shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)]"
                 >
                     <div className="flex flex-col items-center justify-center">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-neutral-300 text-xs font-medium mb-3 backdrop-blur-xl">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>100% Free Guarantee</span>
-                        </div>
 
                         <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-2 text-center">
                             Simple, Transparent &amp; Honest
@@ -1098,7 +1114,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 {[
                                     { value: '+187%', label: 'SEO Organic Traffic Boost', color: 'text-emerald-400' },
                                     { value: '500+', label: 'Delivered Projects & Gigs', color: 'text-cyan-400' },
-                                    { value: '4.9 ★', label: 'Satisfaction & App Store Rating', color: 'text-amber-400' },
+                                    { value: '4.9 ★', label: 'Satisfied Customer Reviews Rating', color: 'text-amber-400' },
                                     { value: 'India-Based', label: 'Serving Global Clients Since 2019', color: 'text-indigo-400' },
                                 ].map((stat, i) => (
                                     <div key={i} className="flex flex-col">

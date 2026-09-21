@@ -124,7 +124,7 @@ export default function WordPressCourseNoida() {
             }
         ],
         pricing: [
-            { name: "Basic", price: "2,500", focus: "Beginners, Business Owners", duration: "4 Weeks", topics: "WordPress setup, themes, Elementor, essential plugins" },
+            { name: "Group Classes", price: "Free", focus: "Beginners, Students", duration: "4 Weeks", topics: "WordPress setup, themes, Elementor, essential plugins — 100% Free for Students" },
             { name: "Advanced", price: "4,999", focus: "Freelancers, Job Seekers", duration: "8 Weeks", topics: "Full course + WooCommerce + SEO + performance optimization" },
             { name: "Mastery (1-on-1)", price: "8,000", focus: "Agency aspirants, Developers", duration: "8 Weeks", topics: "Complete stack + client management + freelance business setup" },
         ],
@@ -376,7 +376,7 @@ export default function WordPressCourseNoida() {
                                 {pageData.pricing.map((plan, i) => (
                                     <Card key={i} className={`bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-purple-500/30 transition-all text-center flex flex-col ${i === 1 ? 'border-purple-500/30 ring-1 ring-purple-500/20' : ''}`}>
                                         <div className="text-[10px] font-black text-purple-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
-                                        <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
+                                        <div className={`text-4xl font-black italic tracking-tighter mb-4 ${plan.price === 'Free' ? 'text-emerald-400' : 'text-white'}`}>{plan.price === 'Free' ? 'FREE' : `₹${plan.price}`}</div>
                                         <div className="space-y-2 mb-8 flex-1">
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.focus}</div>
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.duration}</div>

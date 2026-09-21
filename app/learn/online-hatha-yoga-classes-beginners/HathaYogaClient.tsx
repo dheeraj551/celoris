@@ -302,11 +302,12 @@ export default function HathaYogaClient() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                         {/* Group Plan */}
                         <Card className="rounded-[3rem] bg-slate-900 border border-emerald-500/20 overflow-hidden shadow-2xl relative">
-                            <div className="bg-emerald-500 py-3 text-center text-[10px] font-black text-black uppercase tracking-widest italic">Best Value</div>
+                            <div className="bg-emerald-500 py-3 text-center text-[10px] font-black text-black uppercase tracking-widest italic">100% Free For All Students</div>
                             <CardContent className="p-10">
-                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">8-Week Programme</h3>
-                                <div className="flex items-baseline gap-2 mb-8">
-                                    <span className="text-4xl font-black text-white italic uppercase tracking-tighter">₹4,999</span>
+                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">8-Week Programme (Group Batch)</h3>
+                                <div className="flex items-baseline gap-3 mb-8">
+                                    <span className="text-4xl font-black text-emerald-400 italic uppercase tracking-tighter">FREE</span>
+                                    <span className="text-slate-500 line-through text-lg font-bold">₹4,999</span>
                                 </div>
                                 <ul className="space-y-4 mb-10">
                                     {[
@@ -322,8 +323,8 @@ export default function HathaYogaClient() {
                                         </li>
                                     ))}
                                 </ul>
-                                <a href="https://wa.me/919084718101?text=I%20want%20to%20enroll%20in%20Hatha%20Yoga%208-week%20programme">
-                                    <Button className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs italic">Enroll For Batch</Button>
+                                <a href="https://wa.me/919084718101?text=I%20want%20to%20enroll%20in%20free%20Hatha%20Yoga%208-week%20programme%20group%20classes">
+                                    <Button className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs italic">Join Free Group Class</Button>
                                 </a>
                             </CardContent>
                         </Card>

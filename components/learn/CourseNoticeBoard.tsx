@@ -355,7 +355,7 @@ export function CourseNoticeBoard({ course }: { course: any }) {
         <div className="nb-stat"><div className="nb-n">{stats.seatsOpen}</div><div className="nb-t">Seats Left</div></div>
         <div className="nb-stat"><div className="nb-n">{String(stats.trainersCount).padStart(2, '0')}</div><div className="nb-t">Trainers</div></div>
         <div className="nb-stat"><div className="nb-n">2</div><div className="nb-t">Batches Active</div></div>
-        <div className="nb-stat"><div className="nb-n">{price}</div><div className="nb-t">Course Fee</div></div>
+        <div className="nb-stat"><div className="nb-n" style={{ color: 'var(--mint)' }}>FREE</div><div className="nb-t">Group Classes</div></div>
         <div className="nb-stat"><div className="nb-n">{durationDisplay}</div><div className="nb-t">Duration</div></div>
         <div className="nb-stat"><div className="nb-n">NCR</div><div className="nb-t">Home Tuition Zone</div></div>
         <button

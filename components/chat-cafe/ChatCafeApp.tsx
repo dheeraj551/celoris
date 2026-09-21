@@ -39,10 +39,13 @@ import { RetroYahooChatWindow } from './RetroYahooChatWindow';
 import { RetroArcadeCabinetWrapper } from './RetroArcadeCabinetWrapper';
 import { RetroArcadeGame } from './RetroArcadeGame';
 import { WallOfFameModal } from './WallOfFameModal';
+import { VoiceLoungeEntryModal } from './VoiceLoungeEntryModal';
+import { VoiceVideoCallPanel } from './VoiceVideoCallPanel';
 
-// Fixed display order for the four café tables (matches the original
-// prototype's CAFE_TABLES array — the DB doesn't guarantee row order).
-const TABLE_ORDER = ['main_lounge', 'study_nook', 'idea_roastery', 'mindful_patio'];
+// Fixed display order for the café tables (matches the original prototype's
+// CAFE_TABLES array — the DB doesn't guarantee row order). vip_lounge is the
+// paid voice/video room and always sorts last.
+const TABLE_ORDER = ['main_lounge', 'study_nook', 'idea_roastery', 'mindful_patio', 'vip_lounge'];
 const sortTables = (list: CafeTable[]): CafeTable[] =>
   [...list].sort((a, b) => {
     const ai = TABLE_ORDER.indexOf(a.id);
@@ -151,7 +154,7 @@ function rowToGuestbookEntry(row: any): GuestbookEntry {
 
 export default function ChatCafeApp() {
   const supabase = useMemo(() => createClient(), []);
-  const { user: authUser, loading: authLoading } = useAuth();
+  const { user: authUser, loading: authLoading, profile: authProfile } = useAuth();
 
   // Café persona for the signed-in account (fetched/created server-side).
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -196,6 +199,22 @@ export default function ChatCafeApp() {
   const [isWallOfFameOpen, setIsWallOfFameOpen] = useState(false);
   const [guestbookEntries, setGuestbookEntries] = useState<GuestbookEntry[]>([]);
 
+  // Paid VIP Voice & Video Lounge (room_kind 'voice_video'): tables the
+  // caller has paid the flat entry fee for THIS BROWSER SESSION (cleared on
+  // leave, not persisted) — see handleSelectTable/handleConfirmVoiceEntry.
+  // voiceJoinCreds holds the live TRTC credentials for whichever paid table
+  // is currently joined; null means "not currently connected to a call".
+  const [voiceAccessTableIds, setVoiceAccessTableIds] = useState<Set<string>>(new Set());
+  const [voiceEntryPendingTable, setVoiceEntryPendingTable] = useState<CafeTable | null>(null);
+  const [voiceEntryLoading, setVoiceEntryLoading] = useState(false);
+  const [voiceEntryError, setVoiceEntryError] = useState<string | null>(null);
+  const [voiceJoinCreds, setVoiceJoinCreds] = useState<{
+    userSig: string;
+    sdkAppId: number;
+    userId: string;
+    roomId: string;
+  } | null>(null);
+
   // "X is typing…" — userId -> display name, expired individually a few
   // seconds after their last keystroke broadcast (see the typing effect).
   const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
@@ -237,6 +256,75 @@ export default function ChatCafeApp() {
 
   const cacheProfile = useCallback((p: UserProfile) => {
     if (p?.id) profilesCacheRef.current[p.id] = p;
+  }, []);
+
+  // Table switching, gated for paid voice/video rooms: a 'voice_video' table
+  // not yet paid for this session opens the entry-fee confirmation modal
+  // instead of switching immediately. Everything else switches straight
+  // through, same as before this feature existed.
+  const handleSelectTable = useCallback(
+    (id: string) => {
+      const target = tables.find((t) => t.id === id);
+      if (target?.roomKind === 'voice_video' && !voiceAccessTableIds.has(id)) {
+        setVoiceEntryError(null);
+        setVoiceEntryPendingTable(target);
+        return;
+      }
+      setActiveTableId(id);
+    },
+    [tables, voiceAccessTableIds]
+  );
+
+  // Charges the flat entry fee (server-side, atomic — see the voice-entry
+  // route) and, on success, mints TRTC join credentials and switches into
+  // the room. entryFee is deducted from wallet_balance every time this
+  // succeeds — leaving the call (handleLeaveVoiceRoom) clears
+  // voiceAccessTableIds, so re-entering later charges again. That's a
+  // deliberate "cover charge" model, not pay-once-per-day; change it here
+  // (skip the fetch when voiceAccessTableIds already has the id) if a
+  // pay-once-per-visit model is wanted instead.
+  const handleConfirmVoiceEntry = useCallback(async () => {
+    if (!voiceEntryPendingTable) return;
+    setVoiceEntryLoading(true);
+    setVoiceEntryError(null);
+    try {
+      const res = await fetch('/api/social/chat-cafe/voice-entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tableId: voiceEntryPendingTable.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setVoiceEntryError(data.error || 'Could not enter the room. Try again.');
+        return;
+      }
+      setVoiceJoinCreds({ userSig: data.userSig, sdkAppId: data.sdkAppId, userId: data.userId, roomId: data.roomId });
+      setVoiceAccessTableIds((prev) => new Set(prev).add(voiceEntryPendingTable.id));
+      setActiveTableId(voiceEntryPendingTable.id);
+      showToast(`Entered ${voiceEntryPendingTable.name} — ₹${data.entryFee} deducted, balance ₹${data.balanceAfter}.`);
+      setVoiceEntryPendingTable(null);
+    } catch (err: any) {
+      setVoiceEntryError('Network error — try again.');
+    } finally {
+      setVoiceEntryLoading(false);
+    }
+  }, [voiceEntryPendingTable, showToast]);
+
+  // A full exit from the call (disconnect TRTC + revoke this session's paid
+  // access to that table) rather than a "mute" — see the comment above
+  // handleConfirmVoiceEntry for why re-entry charges again.
+  const handleLeaveVoiceRoom = useCallback(() => {
+    setVoiceJoinCreds((prev) => {
+      if (prev) {
+        setVoiceAccessTableIds((ids) => {
+          const next = new Set(ids);
+          next.delete(prev.roomId);
+          return next;
+        });
+      }
+      return null;
+    });
+    setActiveTableId('main_lounge');
   }, []);
 
   // Resolve an AI character id (from a realtime message row that only
@@ -335,6 +423,8 @@ export default function ChatCafeApp() {
             slowModeSeconds: row.slow_mode_seconds,
             isLocked: row.is_locked,
             nowPlaying: row.now_playing || null,
+            roomKind: row.room_kind || 'text',
+            entryFee: row.entry_fee != null ? Number(row.entry_fee) : undefined,
             activeTopic: row.active_topic
               ? {
                   id: row.active_topic.id,
@@ -379,6 +469,8 @@ export default function ChatCafeApp() {
                   slowModeSeconds: row.slow_mode_seconds,
                   isLocked: row.is_locked,
                   nowPlaying: row.now_playing || null,
+                  roomKind: row.room_kind || 'text',
+                  entryFee: row.entry_fee != null ? Number(row.entry_fee) : undefined,
                   activeTopic,
                 }
               : t
@@ -1261,6 +1353,18 @@ export default function ChatCafeApp() {
           onTribute={handleTributeGuestbook}
           isRetroMode={true}
         />
+
+        <VoiceLoungeEntryModal
+          table={voiceEntryPendingTable}
+          walletBalance={authProfile?.wallet_balance ?? 0}
+          isLoading={voiceEntryLoading}
+          error={voiceEntryError}
+          onConfirm={handleConfirmVoiceEntry}
+          onClose={() => {
+            setVoiceEntryPendingTable(null);
+            setVoiceEntryError(null);
+          }}
+        />
       </>
     );
 
@@ -1343,10 +1447,22 @@ export default function ChatCafeApp() {
 
       <div className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4">
         <div className="w-full flex-1 max-w-4xl">
+          {activeTable?.roomKind === 'voice_video' && voiceJoinCreds && (
+            <div className="mb-3">
+              <VoiceVideoCallPanel
+                roomId={voiceJoinCreds.roomId}
+                userId={voiceJoinCreds.userId}
+                userSig={voiceJoinCreds.userSig}
+                sdkAppId={voiceJoinCreds.sdkAppId}
+                displayName={currentUser?.name || 'Patron'}
+                onLeave={handleLeaveVoiceRoom}
+              />
+            </div>
+          )}
           <RetroYahooChatWindow
             tables={tables}
             activeTableId={activeTableId}
-            onSelectTable={(id) => setActiveTableId(id)}
+            onSelectTable={handleSelectTable}
             messages={messagesWithReactions}
             currentUser={currentUser}
             activePatrons={displayRoster}

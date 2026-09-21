@@ -111,7 +111,7 @@ export default function VideoEditingCourseNoida() {
             }
         ],
         pricing: [
-            { name: "Basic", price: "2,500", focus: "Beginners, Content Creators", duration: "4 Weeks", topics: "CapCut + Premiere Pro basics, Reels & YouTube" },
+            { name: "Group Classes", price: "Free", focus: "Beginners, Content Creators", duration: "4 Weeks", topics: "CapCut + Premiere Pro basics, Reels & YouTube — 100% Free for Students" },
             { name: "Advanced", price: "4,999", focus: "Job Seekers, YouTubers", duration: "8 Weeks", topics: "Premiere Pro + After Effects + Colour Grading + Portfolio" },
             { name: "Mastery (1-on-1)", price: "8,000", focus: "Freelancers, Agency editors", duration: "10 Weeks", topics: "Full stack + DaVinci Resolve + Client workflow" },
         ],
@@ -363,7 +363,7 @@ export default function VideoEditingCourseNoida() {
                                 {pageData.pricing.map((plan, i) => (
                                     <Card key={i} className={`bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-purple-500/30 transition-all text-center flex flex-col ${i === 1 ? 'border-purple-500/30 ring-1 ring-purple-500/20' : ''}`}>
                                         <div className="text-[10px] font-black text-purple-500 uppercase tracking-widest italic mb-2">{plan.name}</div>
-                                        <div className="text-4xl font-black text-white italic tracking-tighter mb-4">₹{plan.price}</div>
+                                        <div className={`text-4xl font-black italic tracking-tighter mb-4 ${plan.price === 'Free' ? 'text-emerald-400' : 'text-white'}`}>{plan.price === 'Free' ? 'FREE' : `₹${plan.price}`}</div>
                                         <div className="space-y-2 mb-8 flex-1">
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.focus}</div>
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{plan.duration}</div>

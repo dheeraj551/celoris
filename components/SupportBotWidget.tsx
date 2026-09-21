@@ -20,7 +20,6 @@ import {
     Search,
     Phone,
     HelpCircle,
-    Sparkles,
     Wifi,
     Battery,
     ChevronLeft,
@@ -348,7 +347,7 @@ export function SupportBotWidget() {
                             setTeaserVisible(false)
                         }
                     }}
-                    className={`pt-2 px-3 pb-1.5 flex items-center justify-between z-30 bg-[#07080c] text-white/80 text-[10px] font-mono select-none transition-colors ${
+                    className={`pt-2 pl-6 pr-4 pb-1.5 flex items-center justify-between z-30 bg-[#07080c] text-white/80 text-[10px] font-mono select-none transition-colors ${
                         !open ? "cursor-pointer hover:bg-white/[0.04]" : "border-b border-white/[0.06]"
                     }`}
                     title={!open ? "Click to open Celoris Phone" : undefined}
@@ -427,8 +426,7 @@ export function SupportBotWidget() {
                                 <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white drop-shadow">
                                     {currentTime}
                                 </div>
-                                <div className="mt-1 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[9px] font-mono text-neutral-400">
-                                    <Sparkles className="w-2 h-2 text-emerald-400" />
+                                <div className="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[9px] font-mono text-neutral-400">
                                     <span>Celoris OS 2.6</span>
                                 </div>
                             </div>

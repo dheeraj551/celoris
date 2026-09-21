@@ -10,6 +10,7 @@ const footerSections = [
   {
     title: "Platform",
     links: [
+      { name: "Pricing & Plans", href: "/pricing" },
       { name: "Learn", href: "/learn" },
       { name: "Job Center", href: "/job-center" },
       { name: "Social", href: "/social" },
@@ -81,6 +82,7 @@ export default function Footer() {
     pathname?.startsWith("/celoris-tv") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
+    pathname?.startsWith("/pricing") ||
     pathname === "/login" ||
     pathname === "/register";
 
