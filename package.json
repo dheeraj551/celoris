@@ -79,7 +79,7 @@
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.185.1",
-    "tls-sig-api-v2": "^2.0.1",
+    "tls-sig-api-v2": "^1.0.2",
     "trtc-sdk-v5": "^5.13.0",
     "twilio": "^4.19.3",
     "uuid": "^13.0.0",
