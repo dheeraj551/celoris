@@ -184,6 +184,15 @@ export default function AdminDashboard() {
       color: "from-cyan-500 to-blue-600",
       stats: "View Applications",
       features: ["Verify Student ID", "Approve/Reject", "Per-Course History", "Contact Details"]
+    },
+    {
+      title: "Class Queue",
+      description: "Admit students waiting for a full classroom room and set boost codes",
+      icon: Clock,
+      href: "/admin/cafe/queue",
+      color: "from-indigo-500 to-blue-600",
+      stats: "Manage Queue",
+      features: ["Admit Next", "Priority Boost Codes", "Per-Room Waiting List", "Live Refresh"]
     }
   ]
 

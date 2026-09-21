@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { IAgoraRTCClient, IMicrophoneAudioTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
-import { Users } from 'lucide-react';
 
 import { ClassroomHeader } from './ClassroomHeader';
 import { RightSidebar } from './RightSidebar';
 import { Classroom3DCanvas } from './Classroom3DCanvas';
 import { StudentActionModal } from './StudentActionModal';
+import { ClassroomQueueGate } from './ClassroomQueueGate';
 import { Student, ChatMessage, CameraPreset } from '../types';
 
 let client: IAgoraRTCClient;
@@ -77,6 +77,11 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
   const [joined, setJoined] = useState(false);
   const [roomFullError, setRoomFullError] = useState<string | null>(null);
+  // Bumped by the ClassroomQueueGate's onAdmitted callback to force the join
+  // effect below to run again — that's what actually retries reserving a
+  // classroom-presence seat and connecting to Agora once the trainer has
+  // admitted this student from the waiting queue.
+  const [queueRetryToken, setQueueRetryToken] = useState(0);
   const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null);
   const [localScreenTrack, setLocalScreenTrack] = useState<ILocalVideoTrack | [ILocalVideoTrack, ILocalAudioTrack] | null>(null);
 
@@ -141,6 +146,12 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   useEffect(() => {
     const init = async () => {
       if (!user) return;
+
+      // Clear any previous "room full" state on every (re)attempt — this is
+      // what lets a retry after being admitted from the queue actually swap
+      // the queue gate back out for the real room once the seat reservation
+      // below succeeds.
+      setRoomFullError(null);
 
       try {
         const presenceRes = await fetch('/api/social/cafe/classroom-presence', {
@@ -209,7 +220,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     // focus/visibility change), which would otherwise tear this effect
     // down and re-join on every window switch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, user?.id]);
+  }, [roomId, user?.id, queueRetryToken]);
 
   // Keep our Presence payload in sync with our own hand/mic state, and
   // re-broadcast once `profile` finishes loading (it's async, so the very
@@ -486,19 +497,12 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
   if (roomFullError) {
     return (
-      <div className="flex h-[80vh] w-full rounded-2xl overflow-hidden bg-[#070b14] border border-slate-800 shadow-2xl items-center justify-center p-8">
-        <div className="text-center space-y-3 max-w-sm">
-          <Users className="w-8 h-8 text-amber-500 mx-auto" />
-          <h3 className="text-white font-bold">Hall's full</h3>
-          <p className="text-xs text-slate-400">{roomFullError}</p>
-          <button
-            onClick={onLeave}
-            className="mt-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold"
-          >
-            Back to Café
-          </button>
-        </div>
-      </div>
+      <ClassroomQueueGate
+        roomId={roomId}
+        roomName={roomName}
+        onAdmitted={() => setQueueRetryToken((t) => t + 1)}
+        onLeave={onLeave}
+      />
     );
   }
 
@@ -541,6 +545,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
         <RightSidebar
           isHost={isHost}
+          roomId={roomId}
           currentUserId={user?.id || null}
           students={students}
           onToggleOwnHand={toggleOwnHand}

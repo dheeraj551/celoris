@@ -5,11 +5,11 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-    title: "Free Online Video Editor India 2025 — No Watermark",
-    description: "Use Celoris's free online video editor. No downloads, no watermarks. Professional tools for Indian creators. Free to start. No credit card. celoris.in 🇮🇳",
+    title: "Online Video Editor India 2026 — 4K Studio & AI Timeline",
+    description: "Use Celoris's browser video editor. 4K timeline, AI scene generation, and professional editing tools for Indian creators and students. celorisdesigns.com 🇮🇳",
     openGraph: {
-        title: "Free Online Video Editor India 2025 — No Watermark",
-        description: "Use Celoris's free online video editor. No downloads, no watermarks. Professional tools for Indian creators. Free to start. No credit card. celoris.in 🇮🇳",
+        title: "Online Video Editor India 2026 — 4K Studio & AI Timeline",
+        description: "Use Celoris's browser video editor. 4K timeline, AI scene generation, and professional editing tools for Indian creators and students. celorisdesigns.com 🇮🇳",
     }
 }
 

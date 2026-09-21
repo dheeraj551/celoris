@@ -29,7 +29,7 @@ const FAQS = [
   {
     question: "Is pricing listed in INR (₹) and what payment methods are accepted?",
     answer:
-      "All pricing is in Indian Rupees (INR - ₹) with all taxes clearly accounted for. We support UPI (Google Pay, PhonePe, Paytm), Net Banking, RuPay, Visa, Mastercard, and corporate invoicing."
+      "All pricing is in Indian Rupees (INR - ₹) with zero hidden fees. We support direct instant UPI (Google Pay, PhonePe, Paytm, CRED, BHIM) via our official verified ICICI Bank Merchant QR code (celoris@icici - M/S. CELORIS DESIGNS LLP), as well as Net Banking and GST invoicing."
   },
   {
     question: "Can I cancel or change my plan whenever I want?",

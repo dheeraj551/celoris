@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import nodemailer from "nodemailer"
+import { createRouteClient } from "@/lib/supabase-server"
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,6 +9,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       phone,
+      utrNumber,
       planName,
       billingCycle,
       price,
@@ -25,6 +27,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Best-effort record in Supabase leads table
+    try {
+      const supabase = await createRouteClient()
+      await supabase.from("leads").insert({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone ? phone.trim() : null,
+        interest: `Subscription: ${planName} (${billingCycle})`,
+        source: "pricing_upi_qr",
+        status: "pending_verification",
+        notes: `Plan: ${planName} | Price: ${price} | Credits: ${credits} | UTR: ${utrNumber || "N/A"} | Registered: ${isRegisteredUser ? "Yes" : "No"} | Notes: ${message || "None"}`,
+      })
+    } catch (dbErr) {
+      console.warn("Could not record subscription in leads table (non-blocking):", dbErr)
+    }
+
     // Nodemailer transport
     const transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST || "smtp.gmail.com",
@@ -39,7 +57,9 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    const mailSubject = `New Subscription Request: ${planName} — ${name}`
+    const mailSubject = utrNumber
+      ? `[PAID UPI: ${utrNumber}] ${planName} (${price}) — ${name}`
+      : `Subscription Request: ${planName} — ${name}`
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -54,6 +74,10 @@ export async function POST(request: NextRequest) {
           .header p { margin: 0; font-size: 13px; opacity: 0.92; }
           .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.25); font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
           .body { padding: 28px 24px; }
+          .utr-card { background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; padding: 18px; margin-bottom: 20px; text-align: center; }
+          .utr-label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #047857; letter-spacing: 0.8px; }
+          .utr-value { font-size: 24px; font-weight: 900; color: #065f46; font-family: monospace; letter-spacing: 1.5px; margin: 6px 0; }
+          .utr-sub { font-size: 12px; color: #059669; }
           .plan-card { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 24px; }
           .plan-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
           .plan-price { font-size: 24px; font-weight: 900; color: #10b981; }
@@ -69,18 +93,26 @@ export async function POST(request: NextRequest) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>New Subscription Request</h1>
+            <h1>${utrNumber ? "UPI Payment Received" : "Subscription Request"}</h1>
             <p>From Celoris AI Pricing Portal</p>
             <div class="badge">${billingCycle === "annual" ? "Annual Billing (Save 20-25%)" : "Monthly Billing"}</div>
           </div>
           <div class="body">
+            ${utrNumber ? `
+              <div class="utr-card">
+                <div class="utr-label">UPI Reference / UTR Number</div>
+                <div class="utr-value">${utrNumber}</div>
+                <div class="utr-sub">Verified Merchant: <strong>celoris@icici</strong> (M/S. CELORIS DESIGNS LLP)</div>
+              </div>
+            ` : ""}
+
             <div class="plan-card">
               <div class="plan-title">${planName}</div>
               <div class="plan-price">${price}</div>
               <div class="plan-meta">Credits Quota: <strong>${credits}</strong></div>
             </div>
 
-            <div class="section-title">Customer Information</div>
+            <div class="section-title">Customer Details</div>
 
             <div class="field">
               <div class="label">Customer Name</div>
@@ -131,14 +163,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Subscription request received! Our team will contact you shortly.",
+        message: "Payment confirmation received! Our accounts team is verifying and will activate your subscription shortly.",
       },
       { status: 200 }
     )
   } catch (error: any) {
     console.error("Error processing subscription request:", error)
     return NextResponse.json(
-      { error: "Failed to send subscription request. Please try again later." },
+      { error: "Failed to process payment confirmation. Please reach out on WhatsApp or email." },
       { status: 500 }
     )
   }

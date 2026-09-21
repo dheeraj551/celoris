@@ -8,10 +8,21 @@ import {
   Hand,
   Volume2,
   MonitorUp,
+  Clock,
+  Sparkles,
+  UserPlus,
+  RefreshCw,
 } from 'lucide-react';
 
 interface RightSidebarProps {
   isHost: boolean;
+  /** Needed only to drive the host-side Waiting Queue panel below — it
+      polls /api/social/cafe/classroom-queue?roomId=... itself rather than
+      ClassroomRoom fetching and passing the list down, since that GET has
+      to hit the service-role client anyway (the queue's only client-facing
+      RLS grant is SELECT-your-own-row, which can't power a trainer's "see
+      everyone waiting" view). */
+  roomId: string;
   currentUserId: string | null;
   students: Student[];
   onToggleOwnHand: () => void;
@@ -41,6 +52,7 @@ interface RightSidebarProps {
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
   isHost,
+  roomId,
   currentUserId,
   students,
   onToggleOwnHand,
@@ -141,6 +153,15 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </section>
         )}
+
+        {/* Waiting Queue — students who hit classroom-presence's capacity
+            cap land in cafe_classroom_queue (see ClassroomQueueGate.tsx)
+            instead of just being turned away. This is the trainer's side of
+            that: an ordered (priority, then FIFO) list they can admit from
+            one at a time, or let a boost-code redemption jump someone
+            ahead. Only rendered for the host — a student never sees anyone
+            else's place in line, only their own (in ClassroomQueueGate). */}
+        {isHost && <WaitingQueuePanel roomId={roomId} />}
 
         {/* Live Presentation (real Agora screen-share, texture-mapped onto the 3D board) */}
         {isHost && (
@@ -374,5 +395,134 @@ const StudentCard: React.FC<StudentCardProps> = ({
         </div>
       )}
     </div>
+  );
+};
+
+interface QueueEntry {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  priority_score: number;
+  joined_queue_at: string;
+}
+
+const WaitingQueuePanel: React.FC<{ roomId: string }> = ({ roomId }) => {
+  const [queue, setQueue] = useState<QueueEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [admittingId, setAdmittingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchQueue = async (showSpinner = false) => {
+    if (showSpinner) setLoading(true);
+    try {
+      const res = await fetch(`/api/social/cafe/classroom-queue?roomId=${roomId}`);
+      const body = await res.json().catch(() => ({}));
+      if (res.ok) setQueue(body.queue || []);
+    } catch {
+      // Next poll picks it back up — nothing worth surfacing for a single
+      // missed refresh.
+    } finally {
+      if (showSpinner) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQueue(true);
+    // No Realtime here on purpose — cafe_classroom_queue's only
+    // client-facing RLS grant is SELECT-your-own-row, so a room-scoped
+    // subscription would silently see nothing. Polling is what actually
+    // works for "everyone waiting in this room".
+    const interval = setInterval(() => fetchQueue(false), 5000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId]);
+
+  const admit = async (userId?: string) => {
+    setAdmittingId(userId || 'next');
+    setError(null);
+    try {
+      const res = await fetch('/api/social/cafe/admit-next', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId, userId }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(body.error || 'Could not admit that student.');
+      } else {
+        fetchQueue(false);
+      }
+    } catch {
+      setError('Could not reach the server. Try again.');
+    } finally {
+      setAdmittingId(null);
+    }
+  };
+
+  return (
+    <section className="p-4 space-y-2.5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <Clock className="w-3 h-3 text-blue-400" />
+          Waiting Queue
+        </h2>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-slate-500">{queue.length} waiting</span>
+          <button
+            onClick={() => fetchQueue(false)}
+            title="Refresh"
+            className="text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            <RefreshCw className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <p className="text-[11px] text-slate-500">Loading...</p>
+      ) : queue.length === 0 ? (
+        <p className="text-[11px] text-slate-500">Nobody's waiting — the room has open seats.</p>
+      ) : (
+        <>
+          <button
+            onClick={() => admit(undefined)}
+            disabled={admittingId !== null}
+            className="w-full h-8 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-[11px] font-semibold flex items-center justify-center gap-1.5"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            {admittingId === 'next' ? 'Admitting...' : 'Admit Next'}
+          </button>
+
+          <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+            {queue.map((entry, index) => (
+              <div
+                key={entry.id}
+                className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-[#131a29] border border-slate-800/80 text-[11px]"
+              >
+                <div className="flex items-center gap-1.5 truncate">
+                  <span className="text-slate-500 w-4 flex-shrink-0 text-right">{index + 1}.</span>
+                  <span className="text-slate-200 truncate">{entry.full_name || 'Student'}</span>
+                  {entry.priority_score > 0 && (
+                    <span className="flex items-center gap-0.5 text-emerald-400 flex-shrink-0">
+                      <Sparkles className="w-2.5 h-2.5" />
+                      {entry.priority_score}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => admit(entry.user_id)}
+                  disabled={admittingId !== null}
+                  className="flex-shrink-0 text-blue-400 hover:text-blue-300 disabled:opacity-50 font-semibold"
+                >
+                  Admit
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {error && <p className="text-[10px] text-red-400">{error}</p>}
+    </section>
   );
 };

@@ -5,11 +5,11 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-    title: "Free AI Tools India 2025 — 20 AI Models",
-    description: "Access 20+ free AI models for content creation, image generation, and workflow automation. Built for Indian creators. Free to start. No credit card. celoris.in 🇮🇳",
+    title: "AI Tools Suite India 2026 — 20+ AI Models & Creative Generators",
+    description: "Access 20+ AI models for content creation, image generation, and workflow automation. Built for Indian creators, students, and professionals. celorisdesigns.com 🇮🇳",
     openGraph: {
-        title: "Free AI Tools India 2025 — 20 AI Models",
-        description: "Access 20+ free AI models for content creation, image generation, and workflow automation. Built for Indian creators. Free to start. No credit card. celoris.in 🇮🇳",
+        title: "AI Tools Suite India 2026 — 20+ AI Models & Creative Generators",
+        description: "Access 20+ AI models for content creation, image generation, and workflow automation. Built for Indian creators, students, and professionals. celorisdesigns.com 🇮🇳",
     }
 }
 

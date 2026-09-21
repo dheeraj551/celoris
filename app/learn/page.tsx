@@ -4,11 +4,11 @@ import LearnClient from "./LearnClient"
 import { DashboardShell } from "@/components/home-new/DashboardShell"
 
 export const metadata: Metadata = {
-    title: "Free Online Classes India — Learn from Real Trainers",
-    description: "Book free online classes in India. Learn video editing, AI tools, Excel, spoken English and more from real trainers. Celoris — free to start. Free to start. No credit card. celoris.in 🇮🇳",
+    title: "Celoris Academy — Online Courses & Skill Training in India",
+    description: "Learn video editing, AI tools, web development, Excel, and creative skills from real industry trainers. Certified batches and a free tier for students. celorisdesigns.com 🇮🇳",
     openGraph: {
-        title: "Free Online Classes India",
-        description: "Book free online classes in India. Learn video editing, AI tools, Excel, spoken English and more from real trainers. Celoris — free to start. Free to start. No credit card. celoris.in 🇮🇳",
+        title: "Celoris Academy — Online Courses & Skill Training in India",
+        description: "Learn video editing, AI tools, web development, Excel, and creative skills from real industry trainers. Certified batches and a free tier for students. celorisdesigns.com 🇮🇳",
     }
 }
 

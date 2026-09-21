@@ -19,6 +19,9 @@ const nextConfig = {
       { source: '/apps/1', destination: '/apps', permanent: true },
       { source: '/events/category/get-together/:path*', destination: '/events', permanent: true },
       { source: '/learn/pathways/:path*', destination: '/learn', permanent: true },
+      { source: '/cancellation-policy', destination: '/refund-policy', permanent: true },
+      { source: '/refund', destination: '/refund-policy', permanent: true },
+      { source: '/refunds', destination: '/refund-policy', permanent: true },
     ];
   },
 }

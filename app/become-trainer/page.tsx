@@ -6,11 +6,11 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-    title: "Online Teaching Jobs India — Become a Trainer on Celoris",
-    description: "Join Celoris as a trainer and teach online. Share your skills in video editing, AI tools, Excel, and more with students across India. Free to start. No credit card. celoris.in 🇮🇳",
+    title: "Online Teaching Jobs India — Become an Instructor on Celoris",
+    description: "Join Celoris as an instructor and teach online. Share your expertise in video editing, AI tools, Excel, design, and more with learners across India. celorisdesigns.com 🇮🇳",
     openGraph: {
-        title: "Online Teaching Jobs India — Become a Trainer on Celoris",
-        description: "Join Celoris as a trainer and teach online. Share your skills in video editing, AI tools, Excel, and more with students across India. Free to start. No credit card. celoris.in 🇮🇳",
+        title: "Online Teaching Jobs India — Become an Instructor on Celoris",
+        description: "Join Celoris as an instructor and teach online. Share your expertise in video editing, AI tools, Excel, design, and more with learners across India. celorisdesigns.com 🇮🇳",
     }
 }
 

@@ -74,7 +74,7 @@ export function PricingClientContent() {
           className="text-neutral-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto"
         >
           Choose the AI generation credits you need.{" "}
-          <strong className="text-emerald-400 font-bold">100% Free Online Classes</strong>,{" "}
+          <strong className="text-emerald-400 font-bold">A Free Tier for Students</strong>,{" "}
           <strong className="text-amber-400 font-bold">Free Job Portal</strong>, and{" "}
           <strong className="text-rose-400 font-bold">Café Lounge Access</strong> are included in every package, forever.
         </motion.p>
@@ -113,6 +113,23 @@ export function PricingClientContent() {
               Save up to 25%
             </span>
           </button>
+        </motion.div>
+
+        {/* Instant UPI & Verified Merchant Badge */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-4 flex flex-wrap items-center justify-center gap-3 text-[11px] text-neutral-400 font-medium"
+        >
+          <span className="flex items-center gap-1.5 text-slate-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Direct UPI &amp; QR Checkout
+          </span>
+          <span className="text-neutral-600">•</span>
+          <span>Google Pay, PhonePe, Paytm, CRED &amp; BHIM</span>
+          <span className="text-neutral-600">•</span>
+          <span className="text-purple-300 font-mono">celoris@icici</span>
         </motion.div>
       </div>
 

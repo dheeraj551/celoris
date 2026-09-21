@@ -5,11 +5,11 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-    title: "Earn Online India — Daily Freelance Jobs",
-    description: "Discover fresh freelance opportunities daily. Video editing, design, content writing, and AI gigs for Indian creators. Free to start. No credit card. celoris.in 🇮🇳",
+    title: "Earn Online India — Freelance Jobs & Daily Gigs",
+    description: "Discover fresh freelance opportunities daily. Video editing, design, content writing, and AI gigs for Indian creators and students. celorisdesigns.com 🇮🇳",
     openGraph: {
-        title: "Earn Online India — Daily Freelance Jobs",
-        description: "Discover fresh freelance opportunities daily. Video editing, design, content writing, and AI gigs for Indian creators. Free to start. No credit card. celoris.in 🇮🇳",
+        title: "Earn Online India — Freelance Jobs & Daily Gigs",
+        description: "Discover fresh freelance opportunities daily. Video editing, design, content writing, and AI gigs for Indian creators and students. celorisdesigns.com 🇮🇳",
     }
 }
 

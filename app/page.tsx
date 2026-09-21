@@ -19,12 +19,12 @@ const COURSE_ROUTES: Record<string, string> = {
 const getCourseRoute = (id: string) => COURSE_ROUTES[id] || `/learn/course/${id}`
 
 export const metadata: Metadata = {
-  title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-  description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed. Free to start. No credit card. 🇮🇳",
-  keywords: "free video editor India, free AI tools India, online classes India, earn online India, teach online India, Celoris",
+  title: "Celoris — India's Creative Studio & Academy | AI Video, Photo & Courses",
+  description: "India's creative studio and academy since 2019. 4K AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students. 🇮🇳",
+  keywords: "creative studio India, AI video editor India, photo editor online, online courses India, Celoris Academy, freelance gigs India, free tier for students",
   openGraph: {
-    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed. Free to start. No credit card. 🇮🇳",
+    title: "Celoris — India's Creative Studio & Academy | AI Video, Photo & Courses",
+    description: "India's creative studio and academy since 2019. 4K AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students. 🇮🇳",
   }
 }
 

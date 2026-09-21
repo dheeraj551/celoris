@@ -5,15 +5,15 @@ import { PricingClientContent } from "./PricingClientContent"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Pricing & Plans — 100% Free Classes, Job Portal & AI Studio",
+  title: "Pricing & Plans — Student Tier, Pro & AI Creative Studio",
   description:
-    "Explore Celoris plans in INR (₹). Free tier with starter credits, Basic, Pro, and Max packages with 20+ AI models including Nano Banana and Seedance. 100% free classes & job portal included in all plans.",
+    "Explore Celoris plans in INR (₹). A free tier for students with starter credits, plus Basic, Pro, and Max packages with 20+ AI models including Nano Banana and Seedance.",
   keywords:
-    "Celoris pricing, AI tools price India, free online courses India, free job portal, Nano Banana Pro, Seedance video AI, creative studio pricing INR",
+    "Celoris pricing, AI tools price India, free online courses India, student tier, Nano Banana Pro, Seedance video AI, creative studio pricing INR",
   openGraph: {
-    title: "Pricing & Plans — Celoris AI Tools, Free Classes & Job Portal",
+    title: "Pricing & Plans — Celoris AI Tools, Courses & Studio",
     description:
-      "Explore Celoris plans in INR (₹). Free tier with starter credits, Basic, Pro, and Max packages with 20+ AI models including Nano Banana and Seedance. 100% free classes & job portal included in all plans.",
+      "Explore Celoris plans in INR (₹). A free tier for students with starter credits, plus Basic, Pro, and Max packages with 20+ AI models including Nano Banana and Seedance.",
   }
 }
 

@@ -42,6 +42,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (body.nextBatchInfo !== undefined) updates.next_batch_info = String(body.nextBatchInfo).trim() || null
     if (body.trainerCode !== undefined) updates.trainer_code = String(body.trainerCode).trim() || null
     if (body.studentCode !== undefined) updates.student_code = String(body.studentCode).trim() || null
+    // Waiting-queue boost codes (+10/+50/+100 priority) — set here from the
+    // admin Queue Management page. See /api/social/cafe/redeem-boost-code
+    // for the only other place these are ever read.
+    if (body.boostCode10 !== undefined) updates.boost_code_10 = String(body.boostCode10).trim() || null
+    if (body.boostCode50 !== undefined) updates.boost_code_50 = String(body.boostCode50).trim() || null
+    if (body.boostCode100 !== undefined) updates.boost_code_100 = String(body.boostCode100).trim() || null
     if (body.courseUrl !== undefined) updates.course_url = String(body.courseUrl).trim() || null
     if (body.courseTitle !== undefined) updates.course_title = String(body.courseTitle).trim() || null
     if (body.courseImageUrl !== undefined) updates.course_image_url = String(body.courseImageUrl).trim() || null

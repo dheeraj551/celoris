@@ -32,6 +32,7 @@ const footerSections = [
       { name: "Help Center", href: "/help" },
       { name: "Privacy Policy", href: "/privacy" },
       { name: "Terms of Service", href: "/terms" },
+      { name: "Refund & Cancellation", href: "/refund-policy" },
       { name: "Cookie Policy", href: "/cookies" },
     ],
   },
@@ -95,6 +96,7 @@ export default function Footer() {
     pathname === "/earn" ||
     pathname === "/social" ||
     pathname === "/apps" ||
+    pathname === "/refund-policy" ||
     pathname?.startsWith("/blog") ||
     pathname?.startsWith("/courses/")
 
@@ -272,16 +274,21 @@ export default function Footer() {
               <p>Registered with Ministry of Corporate Affairs, Government of India</p>
             </div>
             <div className="flex sm:justify-end space-x-8 text-[10px] font-black uppercase tracking-widest italic pt-2">
-              {['Privacy', 'Terms', 'Cookies'].map((item) => (
+              {[
+                { label: "Privacy", href: "/privacy" },
+                { label: "Terms", href: "/terms" },
+                { label: "Refunds", href: "/refund-policy" },
+                { label: "Cookies", href: "/cookies" },
+              ].map((item) => (
                 <Link
-                  key={item}
-                  href={`/${item.toLowerCase()}`}
+                  key={item.label}
+                  href={item.href}
                   className={cn(
                     "transition-colors",
                     isDarkPage ? "text-slate-600 hover:text-emerald-500" : "text-text-secondary hover:text-primary-500"
                   )}
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
             </div>

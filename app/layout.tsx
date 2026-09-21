@@ -18,25 +18,24 @@ const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    template: "%s | Celoris - India's Free Creative Studio",
+    default: "Celoris — India's Creative Studio & Academy | AI Video, Photo & Courses",
+    template: "%s | Celoris",
   },
-  description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed. Free to start.",
+  description: "India's creative studio and academy since 2019. AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students.",
   keywords: [
     "Celoris",
-    "AI ecosystem",
-    "digital transformation",
+    "Creative studio India",
+    "AI video editor India",
+    "photo editing online",
     "AI learning",
     "AI courses India",
-    "free video editor India",
-    "free image studio India",
+    "digital marketing course",
+    "video editing training",
+    "graphic designing course",
+    "web development course",
     "online classes India",
-    "earn online India",
-    "teach online India",
-    "skill learning marketplace India",
-    "Excel course India",
-    "Python course India",
-    "Digital Marketing course India"
+    "free tier for students",
+    "Celoris Academy"
   ],
   authors: [{ name: "Dheeraj Kushwaha", url: "https://www.celorisdesigns.com/about" }],
   creator: "Celoris Designs LLP",
@@ -58,21 +57,21 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "https://www.celorisdesigns.com",
     siteName: "Celoris",
-    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed.",
+    title: "Celoris — India's Creative Studio & Academy",
+    description: "India's creative studio and academy since 2019. AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Celoris - India's Free Creative Studio",
+        alt: "Celoris - India's Creative Studio & Academy",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Celoris — Free Video Editor, AI Tools & Creative Studio for India",
-    description: "India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs.",
+    title: "Celoris — India's Creative Studio & Academy",
+    description: "India's creative studio and academy since 2019. AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students.",
     images: ["/og-image.jpg"],
     creator: "@celoris",
     site: "@celoris",
@@ -89,9 +88,13 @@ export const metadata: Metadata = {
     },
     notranslate: true,
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
   other: {
     "google-adsense-account": "ca-pub-2157452506602914",
   },
