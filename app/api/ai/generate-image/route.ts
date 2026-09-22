@@ -239,9 +239,10 @@ async function generateViaHiggsfieldRest(
     prompt: string,
     aspectRatio: string,
     publicImageUrl?: string | null
-): Promise<{ imageUrl: string; model: string } | null> {
+): Promise<{ imageUrl: string; model: string }> {
     const authHeader = `Key ${creds.keyId}:${creds.keySecret}`
     const soulSize = mapAspectRatioToSoulResolution(aspectRatio)
+    let lastError = ''
 
     // 1. Try Soul endpoint via REST
     const soulBody: any = {
@@ -274,9 +275,18 @@ async function generateViaHiggsfieldRest(
             if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/soul-v2' }
         } else {
             const errText = await soulRes.text()
-            console.warn('[Higgsfield REST] Soul endpoint status:', soulRes.status, errText)
+            lastError = `Soul [${soulRes.status}]: ${errText}`
+            console.warn('[Higgsfield REST] Soul endpoint error:', soulRes.status, errText)
+            if (soulRes.status === 401) {
+                throw new Error('Higgsfield AI authentication failed (401: Invalid API credentials). Please verify your HF_CREDENTIALS in your environment settings.')
+            }
+            if (soulRes.status === 403 || soulRes.status === 402) {
+                throw new Error('Higgsfield AI account error (403: Not enough credits). Please check your credit balance at cloud.higgsfield.ai.')
+            }
         }
     } catch (e: any) {
+        if (e?.message?.includes('Higgsfield AI')) throw e
+        lastError = e?.message || 'Network error'
         console.warn('[Higgsfield REST] Soul request error:', e?.message)
     }
 
@@ -301,13 +311,22 @@ async function generateViaHiggsfieldRest(
             if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/flux-pro' }
         } else {
             const errText = await fluxRes.text()
-            console.warn('[Higgsfield REST] Flux Pro endpoint status:', fluxRes.status, errText)
+            lastError = `Flux Pro [${fluxRes.status}]: ${errText}`
+            console.warn('[Higgsfield REST] Flux Pro endpoint error:', fluxRes.status, errText)
+            if (fluxRes.status === 401) {
+                throw new Error('Higgsfield AI authentication failed (401: Invalid API credentials). Please verify your HF_CREDENTIALS in your environment settings.')
+            }
+            if (fluxRes.status === 403 || fluxRes.status === 402) {
+                throw new Error('Higgsfield AI account error (403: Not enough credits). Please check your credit balance at cloud.higgsfield.ai.')
+            }
         }
     } catch (e: any) {
+        if (e?.message?.includes('Higgsfield AI')) throw e
+        lastError = e?.message || 'Network error'
         console.warn('[Higgsfield REST] Flux Pro request error:', e?.message)
     }
 
-    return null
+    throw new Error(lastError ? `Higgsfield AI API error: ${lastError}` : 'Higgsfield AI failed to generate image.')
 }
 
 /**
@@ -325,6 +344,7 @@ async function generateViaHiggsfield(
     })
 
     const soulSize = mapAspectRatioToSoulResolution(aspectRatio)
+    let lastError: any = null
 
     // Attempt 1: Soul Text2Image via Official SDK
     try {
@@ -359,14 +379,30 @@ async function generateViaHiggsfield(
             return { imageUrl: url, usedModel: 'higgsfield/soul-v2' }
         }
     } catch (soulErr: any) {
-        console.warn('[Higgsfield AI] Soul SDK attempt failed:', soulErr?.message)
+        lastError = soulErr
+        console.warn(
+            '[Higgsfield AI] Soul SDK attempt failed:',
+            soulErr?.name,
+            soulErr?.statusCode,
+            soulErr?.message
+        )
         if (
-            soulErr?.message?.includes('moderation') ||
             soulErr?.name === 'AuthenticationError' ||
-            soulErr?.name === 'NotEnoughCreditsError' ||
-            soulErr?.status === 401 ||
-            soulErr?.status === 403
+            soulErr?.message?.includes('Invalid API credentials') ||
+            soulErr?.message?.includes('Invalid credentials') ||
+            soulErr?.statusCode === 401
         ) {
+            throw new Error('Higgsfield AI authentication failed (401: Invalid credentials). Please check that HF_CREDENTIALS in your environment settings is correct.')
+        }
+        if (
+            soulErr?.name === 'AccountError' ||
+            soulErr?.statusCode === 403 ||
+            soulErr?.statusCode === 402 ||
+            soulErr?.message?.includes('credits')
+        ) {
+            throw new Error('Higgsfield AI account error (403: Not enough credits). Your account has insufficient generation credits on cloud.higgsfield.ai.')
+        }
+        if (soulErr?.message?.includes('moderation')) {
             throw soulErr
         }
     }
@@ -395,26 +431,46 @@ async function generateViaHiggsfield(
             return { imageUrl: url, usedModel: 'higgsfield/flux-pro' }
         }
     } catch (fluxErr: any) {
-        console.warn('[Higgsfield AI] Flux Pro SDK attempt failed:', fluxErr?.message)
+        lastError = fluxErr
+        console.warn(
+            '[Higgsfield AI] Flux Pro SDK attempt failed:',
+            fluxErr?.name,
+            fluxErr?.statusCode,
+            fluxErr?.message
+        )
         if (
-            fluxErr?.message?.includes('moderation') ||
             fluxErr?.name === 'AuthenticationError' ||
-            fluxErr?.name === 'NotEnoughCreditsError' ||
-            fluxErr?.status === 401 ||
-            fluxErr?.status === 403
+            fluxErr?.message?.includes('Invalid API credentials') ||
+            fluxErr?.message?.includes('Invalid credentials') ||
+            fluxErr?.statusCode === 401
         ) {
+            throw new Error('Higgsfield AI authentication failed (401: Invalid credentials). Please check that HF_CREDENTIALS in your environment settings is correct.')
+        }
+        if (
+            fluxErr?.name === 'AccountError' ||
+            fluxErr?.statusCode === 403 ||
+            fluxErr?.statusCode === 402 ||
+            fluxErr?.message?.includes('credits')
+        ) {
+            throw new Error('Higgsfield AI account error (403: Not enough credits). Your account has insufficient generation credits on cloud.higgsfield.ai.')
+        }
+        if (fluxErr?.message?.includes('moderation')) {
             throw fluxErr
         }
     }
 
     // Attempt 3: Direct REST fallback to api.higgsfield.ai
     console.log('[Higgsfield AI] Attempting direct REST fallback...')
-    const restResult = await generateViaHiggsfieldRest(creds, prompt, aspectRatio, publicImageUrl)
-    if (restResult) {
-        return { imageUrl: restResult.imageUrl, usedModel: restResult.model }
+    try {
+        const restResult = await generateViaHiggsfieldRest(creds, prompt, aspectRatio, publicImageUrl)
+        if (restResult) {
+            return { imageUrl: restResult.imageUrl, usedModel: restResult.model }
+        }
+    } catch (restErr: any) {
+        lastError = restErr
     }
 
-    throw new Error('Higgsfield AI could not generate the image. Please verify your credentials and account status at cloud.higgsfield.ai.')
+    throw lastError || new Error('Higgsfield AI could not generate the image. Please verify your credentials and account status at cloud.higgsfield.ai.')
 }
 
 export async function POST(request: Request) {
@@ -595,23 +651,35 @@ export async function POST(request: Request) {
             remainingCredits: newBalance,
         })
     } catch (error: any) {
-        console.error('Error generating image via Higgsfield AI:', error)
+        // Log the raw name/statusCode too — the friendly-message classification below
+        // depends on matching these exactly, and the SDK's actual property names
+        // (.statusCode, and .name === 'AccountError' for credit errors) are easy to
+        // get wrong, which previously caused every real error to fall through to the
+        // generic "could not generate" message. This log makes the true cause visible
+        // in server logs even if a future SDK update breaks the matching again.
+        console.error(
+            'Error generating image via Higgsfield AI:',
+            { name: error?.name, statusCode: error?.statusCode, message: error?.message },
+            error
+        )
         let friendlyMsg = error?.message || 'Failed to process AI image generation request with Higgsfield AI.'
 
         if (
             error?.name === 'AuthenticationError' ||
             error?.message?.includes('Invalid API credentials') ||
-            error?.response?.status === 401
+            error?.statusCode === 401
         ) {
             friendlyMsg =
                 'Higgsfield AI authentication failed. Please verify that HF_CREDENTIALS=your-api-key-id:your-api-key-secret in your .env.local file is correct. No Celoris credits were deducted.'
         } else if (
-            error?.name === 'NotEnoughCreditsError' ||
-            error?.response?.status === 403 ||
+            // NotEnoughCreditsError's actual .name is 'AccountError', not
+            // 'NotEnoughCreditsError' — see the SDK's errors.js.
+            error?.name === 'AccountError' ||
+            error?.statusCode === 403 ||
             error?.message?.includes('credits')
         ) {
             friendlyMsg =
-                'Your Higgsfield AI account has insufficient credits. Please check your credit balance at cloud.higgsfield.ai. No Celoris credits were deducted.'
+                'Your Higgsfield AI account has insufficient credits (or the account/plan is inactive). Please check your credit balance and account status at cloud.higgsfield.ai. No Celoris credits were deducted.'
         } else if (error?.name === 'TimeoutError' || error?.message?.includes('Polling exceeded')) {
             friendlyMsg =
                 'Higgsfield AI generation timed out while waiting in queue. Please try again in a few moments. No Celoris credits were deducted.'
@@ -622,7 +690,7 @@ export async function POST(request: Request) {
                 success: false,
                 error: friendlyMsg,
             },
-            { status: error?.response?.status || 500 }
+            { status: error?.statusCode || error?.response?.status || 500 }
         )
     }
 }
