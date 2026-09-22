@@ -120,22 +120,63 @@ function getHiggsfieldCredentials(): HiggsfieldCreds | null {
 }
 
 /**
- * Maps standard PhotoLite aspect ratio to Higgsfield Soul supported resolutions
+ * Soul v2's documented request body is { prompt, aspect_ratio, resolution,
+ * style_id, batch_size, enhance_prompt, seed } — there is no "width_and_height"
+ * or "quality" field (see docs.higgsfield.ai/docs/models/soul-2/generate.md).
+ * This normalizes PhotoLite's aspect ratio string into Soul v2's allowed
+ * aspect_ratio enum: 9:16, 16:9, 4:3, 3:4, 1:1, 2:3, 3:2.
  */
-function mapAspectRatioToSoulResolution(ratio: string): string {
-    switch (ratio) {
-        case '16:9':
-            return '2048x1152'
-        case '9:16':
-            return '1152x2048'
-        case '4:3':
-            return '2048x1536'
-        case '3:4':
-            return '1536x2048'
-        case '1:1':
-        default:
-            return '1536x1536'
+function normalizeSoulAspectRatio(ratio: string): string {
+    const allowed = new Set(['9:16', '16:9', '4:3', '3:4', '1:1', '2:3', '3:2'])
+    return allowed.has(ratio) ? ratio : '4:3'
+}
+
+/**
+ * The user's Higgsfield account may only be entitled to a specific subset of
+ * models chosen at signup ("they ask me to choose three models") — for this
+ * account that appears to be "Marketing Studio Image", a model separate from
+ * Soul v2 with its own endpoint and request schema (verified against
+ * docs.higgsfield.ai/docs/models/marketing-studio-image):
+ *   POST https://api.higgsfield.ai/marketing-studio/image
+ *   { prompt, image_urls?: string[], resolution: '1k'|'2k'|'4k',
+ *     aspect_ratio: 'auto'|'1:1'|'3:2'|'2:3'|'4:3'|'3:4'|'16:9'|'9:16'|'21:9',
+ *     quality: 'low'|'medium'|'high', enhanced?: boolean, preset_id?: string }
+ * Note this endpoint takes a plural `image_urls` ARRAY, unlike Soul v2's
+ * (unverified) flat `image_url` field.
+ */
+function normalizeMarketingStudioAspectRatio(ratio: string): string {
+    const allowed = new Set(['auto', '1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9'])
+    return allowed.has(ratio) ? ratio : 'auto'
+}
+
+/**
+ * Classifies a Higgsfield error so callers can distinguish "this API key isn't
+ * entitled to this particular model" (try the next model in the priority list)
+ * from "the credentials themselves are wrong" (fatal — no point trying other
+ * models) from any other error (record and keep trying, since it might just be
+ * this specific model/request that's the problem).
+ */
+function classifyHiggsfieldError(err: any): 'auth' | 'not_entitled' | 'other' {
+    if (
+        err?.name === 'AuthenticationError' ||
+        err?.statusCode === 401 ||
+        err?.message?.includes('Invalid API credentials') ||
+        err?.message?.includes('Invalid credentials')
+    ) {
+        return 'auth'
     }
+    if (
+        err?.name === 'AccountError' ||
+        err?.statusCode === 403 ||
+        err?.statusCode === 402 ||
+        err?.message?.includes('credits') ||
+        err?.message?.includes('not entitled') ||
+        err?.message?.includes('not enabled') ||
+        err?.message?.includes('not allowed')
+    ) {
+        return 'not_entitled'
+    }
+    return 'other'
 }
 
 /**
@@ -232,7 +273,75 @@ async function pollRestRequest(authHeader: string, initialData: any): Promise<st
 }
 
 /**
- * Direct REST fallback to api.higgsfield.ai
+ * Direct REST call to the Marketing Studio Image endpoint
+ * (https://docs.higgsfield.ai/docs/models/marketing-studio-image). Uses
+ * "direct mode" (enhanced: false / omitted) — no preset_id required, since
+ * PhotoLite doesn't currently expose Marketing Studio's preset picker. Direct
+ * mode just needs a prompt plus, optionally, up to 16 reference image URLs.
+ */
+async function generateViaMarketingStudioRest(
+    creds: HiggsfieldCreds,
+    prompt: string,
+    aspectRatio: string,
+    publicImageUrl?: string | null
+): Promise<{ imageUrl: string; model: string }> {
+    const authHeader = `Key ${creds.keyId}:${creds.keySecret}`
+
+    const body: any = {
+        prompt,
+        aspect_ratio: normalizeMarketingStudioAspectRatio(aspectRatio),
+        resolution: '2k',
+        quality: 'high',
+    }
+    if (publicImageUrl) {
+        // Marketing Studio's image field is a plural array, unlike Soul v2.
+        body.image_urls = [publicImageUrl]
+    }
+
+    const res = await fetch('https://api.higgsfield.ai/marketing-studio/image', {
+        method: 'POST',
+        headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+            'User-Agent': 'higgsfield-server-js/2.0',
+        },
+        body: JSON.stringify(body),
+    })
+
+    if (res.ok) {
+        const data = await res.json()
+        const imgUrl = await pollRestRequest(authHeader, data)
+        if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/marketing-studio-image' }
+        throw new Error('Higgsfield AI Marketing Studio request succeeded but returned no image URL.')
+    }
+
+    const errText = await res.text()
+    console.warn('[Higgsfield REST] Marketing Studio endpoint error:', res.status, errText)
+    if (res.status === 401) {
+        throw new Error('Higgsfield AI authentication failed (401: Invalid API credentials). Please verify your HF_CREDENTIALS in your environment settings.')
+    }
+    if (res.status === 403 || res.status === 402) {
+        const err: any = new Error(`Higgsfield AI account error (403: Not entitled to Marketing Studio Image, or not enough credits): ${errText}`)
+        err.statusCode = 403
+        err.name = 'AccountError'
+        throw err
+    }
+    throw new Error(`Higgsfield AI Marketing Studio API error [${res.status}]: ${errText}`)
+}
+
+/**
+ * Direct REST fallback to api.higgsfield.ai, in case the SDK instance itself
+ * has an issue. Hits the same Soul v2 endpoint as the primary attempt
+ * (https://docs.higgsfield.ai/docs/models/soul-2/generate.md):
+ * POST https://api.higgsfield.ai/higgsfield-ai/soul/v2/standard
+ *
+ * NOTE: a "Flux Pro / Kontext" fallback used to live here too, POSTing to
+ * https://api.higgsfield.ai/flux-pro/kontext/max/text-to-image. That path does
+ * not appear anywhere in Higgsfield's docs (main docs page, openapi.json, or
+ * quickstart) — "flux-pro/kontext/max/text-to-image" is a real model id on
+ * fal.ai, not on Higgsfield, so it was always a guaranteed 404 that silently
+ * wasted a full request/retry cycle on every generation. Removed rather than
+ * fixed, since Higgsfield doesn't document an equivalent endpoint to fix it to.
  */
 async function generateViaHiggsfieldRest(
     creds: HiggsfieldCreds,
@@ -241,96 +350,61 @@ async function generateViaHiggsfieldRest(
     publicImageUrl?: string | null
 ): Promise<{ imageUrl: string; model: string }> {
     const authHeader = `Key ${creds.keyId}:${creds.keySecret}`
-    const soulSize = mapAspectRatioToSoulResolution(aspectRatio)
-    let lastError = ''
 
-    // 1. Try Soul endpoint via REST
     const soulBody: any = {
         prompt,
-        width_and_height: soulSize,
-        quality: '1080p',
+        aspect_ratio: normalizeSoulAspectRatio(aspectRatio),
+        resolution: '1080p',
         batch_size: 1,
     }
     if (publicImageUrl) {
-        soulBody.image_reference = {
-            type: 'image_url',
-            image_url: publicImageUrl,
-        }
+        // Per docs.higgsfield.ai/docs/concepts/file-uploads: "Pass public_url in
+        // the model parameter that accepts an input URL, such as image_url" — a
+        // flat field, not the previous nested { type, image_url } shape. Soul
+        // v2's documented generate schema doesn't list this field, so this is a
+        // best-effort pass-through; if edit mode still fails after this fix,
+        // that field may need to come from Higgsfield support/docs directly.
+        soulBody.image_url = publicImageUrl
     }
 
-    try {
-        const soulRes = await fetch('https://api.higgsfield.ai/v1/text2image/soul', {
-            method: 'POST',
-            headers: {
-                Authorization: authHeader,
-                'Content-Type': 'application/json',
-                'User-Agent': 'higgsfield-server-js/2.0',
-            },
-            body: JSON.stringify(soulBody),
-        })
+    const soulRes = await fetch('https://api.higgsfield.ai/higgsfield-ai/soul/v2/standard', {
+        method: 'POST',
+        headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+            'User-Agent': 'higgsfield-server-js/2.0',
+        },
+        body: JSON.stringify(soulBody),
+    })
 
-        if (soulRes.ok) {
-            const data = await soulRes.json()
-            const imgUrl = await pollRestRequest(authHeader, data)
-            if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/soul-v2' }
-        } else {
-            const errText = await soulRes.text()
-            lastError = `Soul [${soulRes.status}]: ${errText}`
-            console.warn('[Higgsfield REST] Soul endpoint error:', soulRes.status, errText)
-            if (soulRes.status === 401) {
-                throw new Error('Higgsfield AI authentication failed (401: Invalid API credentials). Please verify your HF_CREDENTIALS in your environment settings.')
-            }
-            if (soulRes.status === 403 || soulRes.status === 402) {
-                throw new Error('Higgsfield AI account error (403: Not enough credits). Please check your credit balance at cloud.higgsfield.ai.')
-            }
-        }
-    } catch (e: any) {
-        if (e?.message?.includes('Higgsfield AI')) throw e
-        lastError = e?.message || 'Network error'
-        console.warn('[Higgsfield REST] Soul request error:', e?.message)
+    if (soulRes.ok) {
+        const data = await soulRes.json()
+        const imgUrl = await pollRestRequest(authHeader, data)
+        if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/soul-v2' }
+        throw new Error('Higgsfield AI Soul v2 request succeeded but returned no image URL.')
     }
 
-    // 2. Try Flux Pro endpoint via REST
-    try {
-        const fluxRes = await fetch('https://api.higgsfield.ai/flux-pro/kontext/max/text-to-image', {
-            method: 'POST',
-            headers: {
-                Authorization: authHeader,
-                'Content-Type': 'application/json',
-                'User-Agent': 'higgsfield-server-js/2.0',
-            },
-            body: JSON.stringify({
-                prompt,
-                aspect_ratio: aspectRatio || '1:1',
-            }),
-        })
-
-        if (fluxRes.ok) {
-            const data = await fluxRes.json()
-            const imgUrl = await pollRestRequest(authHeader, data)
-            if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/flux-pro' }
-        } else {
-            const errText = await fluxRes.text()
-            lastError = `Flux Pro [${fluxRes.status}]: ${errText}`
-            console.warn('[Higgsfield REST] Flux Pro endpoint error:', fluxRes.status, errText)
-            if (fluxRes.status === 401) {
-                throw new Error('Higgsfield AI authentication failed (401: Invalid API credentials). Please verify your HF_CREDENTIALS in your environment settings.')
-            }
-            if (fluxRes.status === 403 || fluxRes.status === 402) {
-                throw new Error('Higgsfield AI account error (403: Not enough credits). Please check your credit balance at cloud.higgsfield.ai.')
-            }
-        }
-    } catch (e: any) {
-        if (e?.message?.includes('Higgsfield AI')) throw e
-        lastError = e?.message || 'Network error'
-        console.warn('[Higgsfield REST] Flux Pro request error:', e?.message)
+    const errText = await soulRes.text()
+    console.warn('[Higgsfield REST] Soul v2 endpoint error:', soulRes.status, errText)
+    if (soulRes.status === 401) {
+        throw new Error('Higgsfield AI authentication failed (401: Invalid API credentials). Please verify your HF_CREDENTIALS in your environment settings.')
     }
-
-    throw new Error(lastError ? `Higgsfield AI API error: ${lastError}` : 'Higgsfield AI failed to generate image.')
+    if (soulRes.status === 403 || soulRes.status === 402) {
+        throw new Error('Higgsfield AI account error (403: Not enough credits or inactive plan). Please check your account status at cloud.higgsfield.ai.')
+    }
+    throw new Error(`Higgsfield AI Soul v2 API error [${soulRes.status}]: ${errText}`)
 }
 
 /**
- * Primary Higgsfield generation executor
+ * Primary Higgsfield generation executor.
+ *
+ * Tries models in priority order rather than assuming Soul v2: the user's
+ * Higgsfield account was set up by choosing 3 models at signup, and this
+ * account's set is believed to include "Marketing Studio Image" (see the
+ * comment on normalizeMarketingStudioAspectRatio above) rather than Soul.
+ * A model this API key ISN'T entitled to returns a 403/AccountError, which is
+ * treated as "skip to the next model", not a fatal error — only a genuine
+ * 401 (bad credentials) aborts immediately, since that means no model will work.
  */
 async function generateViaHiggsfield(
     creds: HiggsfieldCreds,
@@ -343,26 +417,94 @@ async function generateViaHiggsfield(
         credentials: `${creds.keyId}:${creds.keySecret}`,
     })
 
-    const soulSize = mapAspectRatioToSoulResolution(aspectRatio)
     let lastError: any = null
 
-    // Attempt 1: Soul Text2Image via Official SDK
+    // Attempt 1: Marketing Studio Image via Official SDK.
+    // Endpoint + body verified against docs.higgsfield.ai/docs/models/marketing-studio-image
     try {
-        console.log('[Higgsfield AI] Subscribing to /v1/text2image/soul...')
+        console.log('[Higgsfield AI] Subscribing to marketing-studio/image...')
         const input: any = {
             prompt,
-            width_and_height: soulSize,
-            quality: '1080p',
+            aspect_ratio: normalizeMarketingStudioAspectRatio(aspectRatio),
+            resolution: '2k',
+            quality: 'high',
+        }
+        if (publicImageUrl) {
+            input.image_urls = [publicImageUrl]
+        }
+
+        const response = await v2Client.subscribe('marketing-studio/image', {
+            input,
+            withPolling: true,
+        })
+
+        if (response.status === 'nsfw') {
+            throw new Error('Higgsfield AI content moderation: The prompt or input was flagged by safety filters.')
+        }
+        if (response.status === 'failed') {
+            throw new Error('Higgsfield AI generation failed on the server.')
+        }
+
+        const url = extractImageUrl(response)
+        if (url) {
+            return { imageUrl: url, usedModel: 'higgsfield/marketing-studio-image' }
+        }
+    } catch (msErr: any) {
+        lastError = msErr
+        console.warn(
+            '[Higgsfield AI] Marketing Studio SDK attempt failed:',
+            msErr?.name,
+            msErr?.statusCode,
+            msErr?.message
+        )
+        const kind = classifyHiggsfieldError(msErr)
+        if (kind === 'auth') {
+            throw new Error('Higgsfield AI authentication failed (401: Invalid credentials). Please check that HF_CREDENTIALS in your environment settings is correct.')
+        }
+        if (msErr?.message?.includes('moderation')) {
+            throw msErr
+        }
+        // kind === 'not_entitled' or 'other': fall through and try the next model.
+    }
+
+    // Attempt 2: Marketing Studio Image via direct REST (in case the SDK
+    // instance itself has an issue rather than the account/model).
+    try {
+        const restResult = await generateViaMarketingStudioRest(creds, prompt, aspectRatio, publicImageUrl)
+        if (restResult) {
+            return { imageUrl: restResult.imageUrl, usedModel: restResult.model }
+        }
+    } catch (msRestErr: any) {
+        lastError = msRestErr
+        const kind = classifyHiggsfieldError(msRestErr)
+        if (kind === 'auth') {
+            throw msRestErr
+        }
+    }
+
+    // Attempt 3: Soul v2 Text-to-Image via Official SDK, in case this account
+    // is entitled to Soul instead of (or in addition to) Marketing Studio.
+    // Endpoint + body verified against docs.higgsfield.ai/docs/models/soul-2/generate.md
+    // (previously this posted to the non-existent "/v1/text2image/soul" with
+    // "width_and_height"/"quality" fields that don't exist in Soul v2's schema —
+    // the real fields are aspect_ratio + resolution).
+    try {
+        console.log('[Higgsfield AI] Subscribing to higgsfield-ai/soul/v2/standard...')
+        const input: any = {
+            prompt,
+            aspect_ratio: normalizeSoulAspectRatio(aspectRatio),
+            resolution: '1080p',
             batch_size: 1,
         }
         if (publicImageUrl) {
-            input.image_reference = {
-                type: 'image_url',
-                image_url: publicImageUrl,
-            }
+            // See the matching note in generateViaHiggsfieldRest — flat
+            // image_url per docs.higgsfield.ai/docs/concepts/file-uploads,
+            // not the previous nested { type, image_url } shape. Unverified
+            // for Soul v2 specifically since its generate schema doesn't list it.
+            input.image_url = publicImageUrl
         }
 
-        const response = await v2Client.subscribe('/v1/text2image/soul', {
+        const response = await v2Client.subscribe('higgsfield-ai/soul/v2/standard', {
             input,
             withPolling: true,
         })
@@ -386,80 +528,17 @@ async function generateViaHiggsfield(
             soulErr?.statusCode,
             soulErr?.message
         )
-        if (
-            soulErr?.name === 'AuthenticationError' ||
-            soulErr?.message?.includes('Invalid API credentials') ||
-            soulErr?.message?.includes('Invalid credentials') ||
-            soulErr?.statusCode === 401
-        ) {
+        const kind = classifyHiggsfieldError(soulErr)
+        if (kind === 'auth') {
             throw new Error('Higgsfield AI authentication failed (401: Invalid credentials). Please check that HF_CREDENTIALS in your environment settings is correct.')
-        }
-        if (
-            soulErr?.name === 'AccountError' ||
-            soulErr?.statusCode === 403 ||
-            soulErr?.statusCode === 402 ||
-            soulErr?.message?.includes('credits')
-        ) {
-            throw new Error('Higgsfield AI account error (403: Not enough credits). Your account has insufficient generation credits on cloud.higgsfield.ai.')
         }
         if (soulErr?.message?.includes('moderation')) {
             throw soulErr
         }
     }
 
-    // Attempt 2: Flux Pro via Official SDK
-    try {
-        console.log('[Higgsfield AI] Subscribing to flux-pro/kontext/max/text-to-image...')
-        const response = await v2Client.subscribe('flux-pro/kontext/max/text-to-image', {
-            input: {
-                prompt,
-                aspect_ratio: aspectRatio || '1:1',
-                safety_tolerance: 2,
-            },
-            withPolling: true,
-        })
-
-        if (response.status === 'nsfw') {
-            throw new Error('Higgsfield AI content moderation: The prompt was flagged by safety filters.')
-        }
-        if (response.status === 'failed') {
-            throw new Error('Higgsfield AI generation failed on the server.')
-        }
-
-        const url = extractImageUrl(response)
-        if (url) {
-            return { imageUrl: url, usedModel: 'higgsfield/flux-pro' }
-        }
-    } catch (fluxErr: any) {
-        lastError = fluxErr
-        console.warn(
-            '[Higgsfield AI] Flux Pro SDK attempt failed:',
-            fluxErr?.name,
-            fluxErr?.statusCode,
-            fluxErr?.message
-        )
-        if (
-            fluxErr?.name === 'AuthenticationError' ||
-            fluxErr?.message?.includes('Invalid API credentials') ||
-            fluxErr?.message?.includes('Invalid credentials') ||
-            fluxErr?.statusCode === 401
-        ) {
-            throw new Error('Higgsfield AI authentication failed (401: Invalid credentials). Please check that HF_CREDENTIALS in your environment settings is correct.')
-        }
-        if (
-            fluxErr?.name === 'AccountError' ||
-            fluxErr?.statusCode === 403 ||
-            fluxErr?.statusCode === 402 ||
-            fluxErr?.message?.includes('credits')
-        ) {
-            throw new Error('Higgsfield AI account error (403: Not enough credits). Your account has insufficient generation credits on cloud.higgsfield.ai.')
-        }
-        if (fluxErr?.message?.includes('moderation')) {
-            throw fluxErr
-        }
-    }
-
-    // Attempt 3: Direct REST fallback to api.higgsfield.ai
+    // Attempt 4: Soul v2 via direct REST fallback (same endpoint, in case the
+    // SDK instance itself is the problem rather than the request).
     console.log('[Higgsfield AI] Attempting direct REST fallback...')
     try {
         const restResult = await generateViaHiggsfieldRest(creds, prompt, aspectRatio, publicImageUrl)
@@ -470,7 +549,7 @@ async function generateViaHiggsfield(
         lastError = restErr
     }
 
-    throw lastError || new Error('Higgsfield AI could not generate the image. Please verify your credentials and account status at cloud.higgsfield.ai.')
+    throw lastError || new Error('Higgsfield AI could not generate the image with any entitled model (tried Marketing Studio Image and Soul v2). Please verify your credentials and account status at cloud.higgsfield.ai.')
 }
 
 export async function POST(request: Request) {
