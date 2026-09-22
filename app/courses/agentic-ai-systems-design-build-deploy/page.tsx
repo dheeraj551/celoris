@@ -574,7 +574,7 @@ export default function AgenticAISystemsCourse() {
                                 <CardContent>
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="w-14 h-14 rounded-2xl bg-white p-2.5 shadow-lg shadow-white/10 border border-slate-200 flex items-center justify-center">
-                                            <img src="/celoris-logo.png" alt="Celoris" className="w-full h-full object-contain" />
+                                            <img src="/celoris-icon.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-white">Celoris</h4>

@@ -37,7 +37,7 @@ export const ProPlanModal: React.FC<ProPlanModalProps> = ({
     {
       icon: Sparkles,
       title: 'AI Create & Edit Images',
-      desc: 'Generate photorealistic images and edit active layers with Gemini AI (100 credits per generation).',
+      desc: 'Generate photorealistic images and edit active layers with Higgsfield AI (100 credits per generation).',
     },
     {
       icon: Wand2,
@@ -111,7 +111,7 @@ export const ProPlanModal: React.FC<ProPlanModalProps> = ({
               </span>
             </div>
             <p className="text-xs text-gray-400">
-              Unlock Gemini AI image generation, layer editing, and creative tools.
+              Unlock Higgsfield AI image generation, layer editing, and creative tools.
             </p>
           </div>
         </div>

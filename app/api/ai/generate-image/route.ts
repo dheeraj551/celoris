@@ -1,152 +1,432 @@
 import { NextResponse } from 'next/server'
-import { GoogleGenAI } from '@google/genai'
+import { createHiggsfieldClient } from '@higgsfield/client/v2'
+import { HiggsfieldClient as HiggsfieldV1Client } from '@higgsfield/client'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
 
-// Ported from the PhotoLite Web Image Editor app's server.ts
-// (POST /api/ai/generate-image), following the same getAI() singleton
-// pattern established in app/api/exam/generate/route.ts.
+export const runtime = 'nodejs'
+export const maxDuration = 120
+
+// PhotoLite AI Image Generation Route powered by Higgsfield AI API
 // Frontend call site: components/photolite/components/Modals/AIImageModal.tsx
 
 const PRO_REQUIRED_CREDITS = 2000
 const GENERATION_CREDIT_COST = 100
 
-let aiClient: GoogleGenAI | null = null
-function getAI(): GoogleGenAI {
-    if (!aiClient) {
-        const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || ''
-        aiClient = new GoogleGenAI({
-            apiKey,
-            httpOptions: {
-                headers: {
-                    'User-Agent': 'aistudio-build',
-                },
-            },
-        })
-    }
-    return aiClient
+interface HiggsfieldCreds {
+    keyId: string
+    keySecret: string
+    raw: string
 }
 
-const PRIMARY_MODEL = 'gemini-3.1-flash-image-preview'
-const FALLBACK_MODELS = ['gemini-3.1-flash-image', 'gemini-2.5-flash-image']
+/**
+ * Sanitizes credential string from common paste formats (quotes, HF_CREDENTIALS= prefix, Key prefix, whitespace)
+ */
+function cleanCredentialString(str: string): string {
+    let clean = str.trim()
+    // Strip wrapping quotes if present
+    if (
+        (clean.startsWith('"') && clean.endsWith('"')) ||
+        (clean.startsWith("'") && clean.endsWith("'"))
+    ) {
+        clean = clean.slice(1, -1).trim()
+    }
+    // Strip accidental "HF_CREDENTIALS=" prefix if pasted with variable name
+    if (clean.toLowerCase().startsWith('hf_credentials=')) {
+        clean = clean.slice('hf_credentials='.length).trim()
+    }
+    // Strip "Key " prefix if pasted with Authorization header
+    if (clean.startsWith('Key ') || clean.startsWith('key ')) {
+        clean = clean.slice(4).trim()
+    }
+    // Strip wrapping quotes again in case it was HF_CREDENTIALS="..."
+    if (
+        (clean.startsWith('"') && clean.endsWith('"')) ||
+        (clean.startsWith("'") && clean.endsWith("'"))
+    ) {
+        clean = clean.slice(1, -1).trim()
+    }
+    return clean
+}
 
-async function executeCall(
-    modelName: string,
-    mode: string,
-    prompt: string,
-    imageBase64?: string,
-    mimeType?: string,
-    aspectRatio?: string
-) {
-    const ai = getAI()
+/**
+ * Resolves Higgsfield credentials prioritizing the official documentation format:
+ * 1. HF_CREDENTIALS="your-api-key-id:your-api-key-secret" (Official Higgsfield SDK format)
+ * 2. Separate variables: HIGGSFIELD_KEY_ID + HIGGSFIELD_KEY_SECRET or HF_API_KEY + HF_API_SECRET
+ */
+function getHiggsfieldCredentials(): HiggsfieldCreds | null {
+    // 1. Primary official format as documented: HF_CREDENTIALS="your-api-key-id:your-api-key-secret"
+    const combined =
+        process.env.HF_CREDENTIALS ||
+        process.env.HIGGSFIELD_CREDENTIALS ||
+        process.env.HF_KEY
 
-    if (mode === 'edit' && imageBase64) {
-        // Strip data: prefix if present
-        let cleanData = imageBase64
-        let finalMime = mimeType
-        if (cleanData.startsWith('data:')) {
-            const commaIdx = cleanData.indexOf(',')
-            const header = cleanData.substring(0, commaIdx)
-            const matchedMime = header.split(';')[0]?.replace('data:', '')
-            if (matchedMime) finalMime = matchedMime
-            cleanData = cleanData.substring(commaIdx + 1)
+    if (combined) {
+        const cleaned = cleanCredentialString(combined)
+        const colonIdx = cleaned.indexOf(':')
+        if (colonIdx > 0 && colonIdx < cleaned.length - 1) {
+            const keyId = cleaned.slice(0, colonIdx).trim()
+            const keySecret = cleaned.slice(colonIdx + 1).trim()
+            if (keyId && keySecret) {
+                const raw = `${keyId}:${keySecret}`
+                if (!process.env.HF_CREDENTIALS) {
+                    process.env.HF_CREDENTIALS = raw
+                }
+                return { keyId, keySecret, raw }
+            }
         }
-
-        return await ai.models.generateContent({
-            model: modelName,
-            contents: {
-                parts: [
-                    {
-                        inlineData: {
-                            data: cleanData,
-                            mimeType: finalMime || 'image/png',
-                        },
-                    },
-                    {
-                        text: prompt,
-                    },
-                ],
-            },
-        })
     }
 
-    // Create mode (text-to-image)
-    return await ai.models.generateContent({
-        model: modelName,
-        contents: {
-            parts: [{ text: prompt }],
-        },
-        config: {
-            imageConfig: {
-                aspectRatio: aspectRatio || '1:1',
-            },
-        },
-    })
+    // 2. Separate variables format (backwards compatibility)
+    const keyId =
+        process.env.HIGGSFIELD_KEY_ID ||
+        process.env.HF_KEY_ID ||
+        process.env.HF_API_KEY
+
+    const keySecret =
+        process.env.HIGGSFIELD_KEY_SECRET ||
+        process.env.HF_KEY_SECRET ||
+        process.env.HF_API_SECRET
+
+    if (keyId && keySecret) {
+        const cleanId = cleanCredentialString(keyId)
+        const cleanSecret = cleanCredentialString(keySecret)
+        if (cleanId && cleanSecret && !cleanId.includes(':')) {
+            const raw = `${cleanId}:${cleanSecret}`
+            if (!process.env.HF_CREDENTIALS) {
+                process.env.HF_CREDENTIALS = raw
+            }
+            return { keyId: cleanId, keySecret: cleanSecret, raw }
+        }
+    }
+
+    // 3. Fallback: single HIGGSFIELD_API_KEY with colon
+    const singleKey = process.env.HIGGSFIELD_API_KEY
+    if (singleKey && singleKey.includes(':')) {
+        const cleaned = cleanCredentialString(singleKey)
+        const colonIdx = cleaned.indexOf(':')
+        if (colonIdx > 0 && colonIdx < cleaned.length - 1) {
+            const kId = cleaned.slice(0, colonIdx).trim()
+            const kSec = cleaned.slice(colonIdx + 1).trim()
+            const raw = `${kId}:${kSec}`
+            if (!process.env.HF_CREDENTIALS) {
+                process.env.HF_CREDENTIALS = raw
+            }
+            return { keyId: kId, keySecret: kSec, raw }
+        }
+    }
+
+    return null
 }
 
-async function generateViaVercelGateway(prompt: string, aspectRatio: string = '1:1') {
-    const gatewayKey = process.env.VERCEL_AI_GATEWAY_KEY
-    if (!gatewayKey) return null
+/**
+ * Maps standard PhotoLite aspect ratio to Higgsfield Soul supported resolutions
+ */
+function mapAspectRatioToSoulResolution(ratio: string): string {
+    switch (ratio) {
+        case '16:9':
+            return '2048x1152'
+        case '9:16':
+            return '1152x2048'
+        case '4:3':
+            return '2048x1536'
+        case '3:4':
+            return '1536x2048'
+        case '1:1':
+        default:
+            return '1536x1536'
+    }
+}
 
-    let size = '1024x1024'
-    if (aspectRatio === '16:9') size = '1344x768'
-    else if (aspectRatio === '9:16') size = '768x1344'
-    else if (aspectRatio === '4:3') size = '1152x864'
+/**
+ * Extracts the image URL from various Higgsfield response schemas (V2Response or JobSet)
+ */
+function extractImageUrl(result: any): string | null {
+    if (!result) return null
 
-    const models = [
-        'bfl/flux-pro-1.1',
-        'bfl/flux-pro-1.1-ultra',
-        'prodia/flux-fast-schnell',
-        'openai/gpt-image-1',
-    ]
+    // V2 images array: [{ url: "https://..." }]
+    if (Array.isArray(result.images) && result.images.length > 0 && result.images[0]?.url) {
+        return result.images[0].url
+    }
 
-    for (const model of models) {
+    // JobSet jobs array: [{ results: { raw: { url: "https://..." } } }]
+    if (Array.isArray(result.jobs) && result.jobs.length > 0) {
+        const rawUrl = result.jobs[0]?.results?.raw?.url || result.jobs[0]?.results?.min?.url
+        if (rawUrl) return rawUrl
+    }
+
+    if (result.image?.url && typeof result.image.url === 'string') {
+        return result.image.url
+    }
+
+    if (result.url && typeof result.url === 'string') {
+        return result.url
+    }
+
+    return null
+}
+
+/**
+ * Converts a remote URL to a base64 Data URL on the server.
+ * This completely avoids HTML5 Canvas CORS / tainted canvas issues in the browser.
+ */
+async function toDataUrlSafe(remoteUrl: string): Promise<string> {
+    if (!remoteUrl || remoteUrl.startsWith('data:')) return remoteUrl
+    try {
+        const res = await fetch(remoteUrl)
+        if (res.ok) {
+            const contentType = res.headers.get('content-type') || 'image/png'
+            const arrayBuffer = await res.arrayBuffer()
+            const base64 = Buffer.from(arrayBuffer).toString('base64')
+            return `data:${contentType};base64,${base64}`
+        }
+    } catch (fetchErr) {
+        console.warn('Could not pre-convert remote image to base64 data URL, returning original URL:', fetchErr)
+    }
+    return remoteUrl
+}
+
+/**
+ * REST status polling for Higgsfield background jobs
+ */
+async function pollRestRequest(authHeader: string, initialData: any): Promise<string | null> {
+    const directUrl = extractImageUrl(initialData)
+    if (directUrl && initialData.status === 'completed') {
+        return directUrl
+    }
+
+    const requestId = initialData.request_id
+    if (!requestId) return null
+
+    const pollUrl = `https://api.higgsfield.ai/requests/${requestId}/status`
+    const maxPollTimeMs = 90000 // 90 seconds
+    const pollIntervalMs = 2000
+    const start = Date.now()
+
+    while (Date.now() - start < maxPollTimeMs) {
+        await new Promise((r) => setTimeout(r, pollIntervalMs))
         try {
-            const res = await fetch('https://ai-gateway.vercel.sh/v1/images/generations', {
-                method: 'POST',
+            const res = await fetch(pollUrl, {
                 headers: {
-                    Authorization: `Bearer ${gatewayKey}`,
-                    'Content-Type': 'application/json',
+                    Authorization: authHeader,
+                    'User-Agent': 'higgsfield-server-js/2.0',
                 },
-                body: JSON.stringify({
-                    model,
-                    prompt,
-                    size,
-                }),
             })
-
             if (res.ok) {
                 const data = await res.json()
-                const item = data?.data?.[0]
-                if (item?.b64_json) {
-                    return {
-                        imageUrl: `data:image/jpeg;base64,${item.b64_json}`,
-                        usedModel: model,
-                    }
-                } else if (item?.url) {
-                    return {
-                        imageUrl: item.url,
-                        usedModel: model,
-                    }
+                if (data.status === 'completed') {
+                    return extractImageUrl(data)
+                }
+                if (data.status === 'failed') {
+                    throw new Error('Higgsfield AI generation failed on the server.')
+                }
+                if (data.status === 'nsfw') {
+                    throw new Error('Higgsfield AI flagged content with safety filter (NSFW).')
                 }
             }
-        } catch (err) {
-            console.warn(`Vercel AI Gateway ${model} attempt failed:`, err)
+        } catch (e: any) {
+            if (e?.message?.includes('Higgsfield AI')) throw e
         }
     }
     return null
 }
 
+/**
+ * Direct REST fallback to api.higgsfield.ai
+ */
+async function generateViaHiggsfieldRest(
+    creds: HiggsfieldCreds,
+    prompt: string,
+    aspectRatio: string,
+    publicImageUrl?: string | null
+): Promise<{ imageUrl: string; model: string } | null> {
+    const authHeader = `Key ${creds.keyId}:${creds.keySecret}`
+    const soulSize = mapAspectRatioToSoulResolution(aspectRatio)
+
+    // 1. Try Soul endpoint via REST
+    const soulBody: any = {
+        prompt,
+        width_and_height: soulSize,
+        quality: '1080p',
+        batch_size: 1,
+    }
+    if (publicImageUrl) {
+        soulBody.image_reference = {
+            type: 'image_url',
+            image_url: publicImageUrl,
+        }
+    }
+
+    try {
+        const soulRes = await fetch('https://api.higgsfield.ai/v1/text2image/soul', {
+            method: 'POST',
+            headers: {
+                Authorization: authHeader,
+                'Content-Type': 'application/json',
+                'User-Agent': 'higgsfield-server-js/2.0',
+            },
+            body: JSON.stringify(soulBody),
+        })
+
+        if (soulRes.ok) {
+            const data = await soulRes.json()
+            const imgUrl = await pollRestRequest(authHeader, data)
+            if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/soul-v2' }
+        } else {
+            const errText = await soulRes.text()
+            console.warn('[Higgsfield REST] Soul endpoint status:', soulRes.status, errText)
+        }
+    } catch (e: any) {
+        console.warn('[Higgsfield REST] Soul request error:', e?.message)
+    }
+
+    // 2. Try Flux Pro endpoint via REST
+    try {
+        const fluxRes = await fetch('https://api.higgsfield.ai/flux-pro/kontext/max/text-to-image', {
+            method: 'POST',
+            headers: {
+                Authorization: authHeader,
+                'Content-Type': 'application/json',
+                'User-Agent': 'higgsfield-server-js/2.0',
+            },
+            body: JSON.stringify({
+                prompt,
+                aspect_ratio: aspectRatio || '1:1',
+            }),
+        })
+
+        if (fluxRes.ok) {
+            const data = await fluxRes.json()
+            const imgUrl = await pollRestRequest(authHeader, data)
+            if (imgUrl) return { imageUrl: imgUrl, model: 'higgsfield/flux-pro' }
+        } else {
+            const errText = await fluxRes.text()
+            console.warn('[Higgsfield REST] Flux Pro endpoint status:', fluxRes.status, errText)
+        }
+    } catch (e: any) {
+        console.warn('[Higgsfield REST] Flux Pro request error:', e?.message)
+    }
+
+    return null
+}
+
+/**
+ * Primary Higgsfield generation executor
+ */
+async function generateViaHiggsfield(
+    creds: HiggsfieldCreds,
+    prompt: string,
+    mode: string,
+    aspectRatio: string,
+    publicImageUrl?: string | null
+): Promise<{ imageUrl: string; usedModel: string }> {
+    const v2Client = createHiggsfieldClient({
+        credentials: `${creds.keyId}:${creds.keySecret}`,
+    })
+
+    const soulSize = mapAspectRatioToSoulResolution(aspectRatio)
+
+    // Attempt 1: Soul Text2Image via Official SDK
+    try {
+        console.log('[Higgsfield AI] Subscribing to /v1/text2image/soul...')
+        const input: any = {
+            prompt,
+            width_and_height: soulSize,
+            quality: '1080p',
+            batch_size: 1,
+        }
+        if (publicImageUrl) {
+            input.image_reference = {
+                type: 'image_url',
+                image_url: publicImageUrl,
+            }
+        }
+
+        const response = await v2Client.subscribe('/v1/text2image/soul', {
+            input,
+            withPolling: true,
+        })
+
+        if (response.status === 'nsfw') {
+            throw new Error('Higgsfield AI content moderation: The prompt or input was flagged by safety filters.')
+        }
+        if (response.status === 'failed') {
+            throw new Error('Higgsfield AI generation failed on the server.')
+        }
+
+        const url = extractImageUrl(response)
+        if (url) {
+            return { imageUrl: url, usedModel: 'higgsfield/soul-v2' }
+        }
+    } catch (soulErr: any) {
+        console.warn('[Higgsfield AI] Soul SDK attempt failed:', soulErr?.message)
+        if (
+            soulErr?.message?.includes('moderation') ||
+            soulErr?.name === 'AuthenticationError' ||
+            soulErr?.name === 'NotEnoughCreditsError' ||
+            soulErr?.status === 401 ||
+            soulErr?.status === 403
+        ) {
+            throw soulErr
+        }
+    }
+
+    // Attempt 2: Flux Pro via Official SDK
+    try {
+        console.log('[Higgsfield AI] Subscribing to flux-pro/kontext/max/text-to-image...')
+        const response = await v2Client.subscribe('flux-pro/kontext/max/text-to-image', {
+            input: {
+                prompt,
+                aspect_ratio: aspectRatio || '1:1',
+                safety_tolerance: 2,
+            },
+            withPolling: true,
+        })
+
+        if (response.status === 'nsfw') {
+            throw new Error('Higgsfield AI content moderation: The prompt was flagged by safety filters.')
+        }
+        if (response.status === 'failed') {
+            throw new Error('Higgsfield AI generation failed on the server.')
+        }
+
+        const url = extractImageUrl(response)
+        if (url) {
+            return { imageUrl: url, usedModel: 'higgsfield/flux-pro' }
+        }
+    } catch (fluxErr: any) {
+        console.warn('[Higgsfield AI] Flux Pro SDK attempt failed:', fluxErr?.message)
+        if (
+            fluxErr?.message?.includes('moderation') ||
+            fluxErr?.name === 'AuthenticationError' ||
+            fluxErr?.name === 'NotEnoughCreditsError' ||
+            fluxErr?.status === 401 ||
+            fluxErr?.status === 403
+        ) {
+            throw fluxErr
+        }
+    }
+
+    // Attempt 3: Direct REST fallback to api.higgsfield.ai
+    console.log('[Higgsfield AI] Attempting direct REST fallback...')
+    const restResult = await generateViaHiggsfieldRest(creds, prompt, aspectRatio, publicImageUrl)
+    if (restResult) {
+        return { imageUrl: restResult.imageUrl, usedModel: restResult.model }
+    }
+
+    throw new Error('Higgsfield AI could not generate the image. Please verify your credentials and account status at cloud.higgsfield.ai.')
+}
+
 export async function POST(request: Request) {
     try {
-        const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
-        const gatewayKey = process.env.VERCEL_AI_GATEWAY_KEY
-
-        if (!apiKey && !gatewayKey) {
+        // 1. Verify Higgsfield API credentials
+        const creds = getHiggsfieldCredentials()
+        if (!creds) {
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Neither Gemini API key nor Vercel AI Gateway key is configured.',
+                    error:
+                        'Higgsfield AI API credentials not found. Please add HF_CREDENTIALS=your-api-key-id:your-api-key-secret to your .env.local file. No Celoris credits were deducted.',
                 },
                 { status: 400 }
             )
@@ -172,7 +452,7 @@ export async function POST(request: Request) {
             )
         }
 
-        // 1. Identify User Session
+        // 2. Identify User Session
         let userId: string | null = null
         try {
             const routeClient = await createRouteClient()
@@ -200,7 +480,7 @@ export async function POST(request: Request) {
             )
         }
 
-        // 2. Fetch User wallet_balance & check 2,000 credits threshold
+        // 3. Fetch User wallet_balance & check 2,000 credits threshold
         let dbClient: any = null
         try {
             dbClient = await createRouteClient()
@@ -217,7 +497,6 @@ export async function POST(request: Request) {
         }
 
         let currentBalance = typeof body.userCredits === 'number' ? body.userCredits : 0
-        let userRow: any = null
 
         if (dbClient) {
             try {
@@ -228,7 +507,6 @@ export async function POST(request: Request) {
                     .maybeSingle()
 
                 if (!error && data) {
-                    userRow = data
                     currentBalance = Number(data.wallet_balance || 0)
                 } else {
                     const profileRes = await dbClient
@@ -237,7 +515,6 @@ export async function POST(request: Request) {
                         .eq('id', userId)
                         .maybeSingle()
                     if (!profileRes.error && profileRes.data) {
-                        userRow = profileRes.data
                         currentBalance = Number(profileRes.data.wallet_balance || 0)
                     }
                 }
@@ -258,75 +535,44 @@ export async function POST(request: Request) {
             )
         }
 
-        // 3. Generate Image (Gemini SDK with Vercel AI Gateway fallback)
-        let imageUrl: string | null = null
-        let usedModel = PRIMARY_MODEL
-        let textDescription = ''
-
-        // Try Gemini first if API key configured
-        if (apiKey) {
+        // 4. In edit mode, upload base layer to Higgsfield CDN for reference
+        let publicImageUrl: string | null = null
+        if (mode === 'edit' && imageBase64) {
             try {
-                const response = await executeCall(PRIMARY_MODEL, mode, prompt, imageBase64, mimeType, aspectRatio)
-                const candidates = response?.candidates || []
-                if (candidates.length > 0 && candidates[0].content?.parts) {
-                    for (const part of candidates[0].content.parts) {
-                        if (part.inlineData && part.inlineData.data) {
-                            const partMime = part.inlineData.mimeType || 'image/png'
-                            imageUrl = `data:${partMime};base64,${part.inlineData.data}`
-                            usedModel = PRIMARY_MODEL
-                            break
-                        } else if (part.text) {
-                            textDescription += part.text
-                        }
-                    }
+                let cleanBase64 = imageBase64
+                let format: 'png' | 'jpeg' | 'webp' = 'png'
+                if (cleanBase64.startsWith('data:')) {
+                    const commaIdx = cleanBase64.indexOf(',')
+                    const header = cleanBase64.substring(0, commaIdx)
+                    if (header.includes('jpeg') || header.includes('jpg')) format = 'jpeg'
+                    else if (header.includes('webp')) format = 'webp'
+                    cleanBase64 = cleanBase64.substring(commaIdx + 1)
                 }
-            } catch (primaryErr: any) {
-                console.warn(`Primary model ${PRIMARY_MODEL} error:`, primaryErr?.message)
-                for (const fallback of FALLBACK_MODELS) {
-                    try {
-                        const response = await executeCall(fallback, mode, prompt, imageBase64, mimeType, aspectRatio)
-                        const candidates = response?.candidates || []
-                        if (candidates.length > 0 && candidates[0].content?.parts) {
-                            for (const part of candidates[0].content.parts) {
-                                if (part.inlineData && part.inlineData.data) {
-                                    const partMime = part.inlineData.mimeType || 'image/png'
-                                    imageUrl = `data:${partMime};base64,${part.inlineData.data}`
-                                    usedModel = fallback
-                                    break
-                                }
-                            }
-                        }
-                        if (imageUrl) break
-                    } catch (fbErr: any) {
-                        console.warn(`Fallback model ${fallback} error:`, fbErr?.message)
-                    }
-                }
+                const imgBuffer = Buffer.from(cleanBase64, 'base64')
+                const v1Client = new HiggsfieldV1Client({
+                    apiKey: creds.keyId,
+                    apiSecret: creds.keySecret,
+                })
+                publicImageUrl = await v1Client.uploadImage(imgBuffer, format)
+                console.log('[Higgsfield AI] Active layer reference uploaded:', publicImageUrl)
+            } catch (uploadErr) {
+                console.warn('[Higgsfield AI] Active layer upload failed:', uploadErr)
             }
         }
 
-        // Try Vercel AI Gateway if Gemini didn't produce an image
-        if (!imageUrl && gatewayKey && mode === 'create') {
-            console.log('Attempting Vercel AI Gateway image generation...')
-            const gatewayResult = await generateViaVercelGateway(prompt, aspectRatio)
-            if (gatewayResult?.imageUrl) {
-                imageUrl = gatewayResult.imageUrl
-                usedModel = gatewayResult.usedModel
-            }
-        }
+        // 5. Generate Image via Higgsfield AI
+        const { imageUrl: rawImageUrl, usedModel } = await generateViaHiggsfield(
+            creds,
+            prompt,
+            mode,
+            aspectRatio,
+            publicImageUrl
+        )
 
-        if (!imageUrl) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error:
-                        'Both Google Gemini and Vercel AI Gateway have reached their free-tier request limits. To enable image generation, please link a billing account to your Google AI Studio project (aistudio.google.com) or add credits to Vercel AI Gateway. No Celoris credits were deducted.',
-                    usedModel,
-                },
-                { status: 422 }
-            )
-        }
+        // Convert remote URL to base64 Data URL to prevent HTML5 canvas CORS taint
+        const finalImageUrl = await toDataUrlSafe(rawImageUrl)
 
-        // 5. Deduct 100 Credits upon successful image generation
+        // 6. Deduct 100 Credits upon successful generation
         const newBalance = Math.max(0, currentBalance - GENERATION_CREDIT_COST)
         if (dbClient) {
             try {
@@ -341,7 +587,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             success: true,
-            imageUrl,
+            imageUrl: finalImageUrl,
             usedModel,
             prompt,
             mode,
@@ -349,26 +595,26 @@ export async function POST(request: Request) {
             remainingCredits: newBalance,
         })
     } catch (error: any) {
-        console.error('Error generating image via Gemini API:', error)
-        let friendlyMsg = error?.message || 'Failed to process AI image generation request.'
-        try {
-            if (typeof friendlyMsg === 'string' && friendlyMsg.includes('{')) {
-                const parsed = JSON.parse(friendlyMsg)
-                if (parsed?.error?.message) {
-                    if (
-                        parsed.error.code === 429 ||
-                        parsed.error.message.includes('limit: 0') ||
-                        parsed.error.message.includes('Quota exceeded')
-                    ) {
-                        friendlyMsg =
-                            'Google Gemini Quota Notice: The configured Gemini API key is on an unbilled Google AI Studio tier (Google sets image generation quota to 0 for unbilled projects). To generate images, billing must be linked to your project in Google AI Studio (aistudio.google.com). No credits were deducted.'
-                    } else {
-                        friendlyMsg = parsed.error.message
-                    }
-                }
-            }
-        } catch {
-            // Keep default message if parsing fails
+        console.error('Error generating image via Higgsfield AI:', error)
+        let friendlyMsg = error?.message || 'Failed to process AI image generation request with Higgsfield AI.'
+
+        if (
+            error?.name === 'AuthenticationError' ||
+            error?.message?.includes('Invalid API credentials') ||
+            error?.response?.status === 401
+        ) {
+            friendlyMsg =
+                'Higgsfield AI authentication failed. Please verify that HF_CREDENTIALS=your-api-key-id:your-api-key-secret in your .env.local file is correct. No Celoris credits were deducted.'
+        } else if (
+            error?.name === 'NotEnoughCreditsError' ||
+            error?.response?.status === 403 ||
+            error?.message?.includes('credits')
+        ) {
+            friendlyMsg =
+                'Your Higgsfield AI account has insufficient credits. Please check your credit balance at cloud.higgsfield.ai. No Celoris credits were deducted.'
+        } else if (error?.name === 'TimeoutError' || error?.message?.includes('Polling exceeded')) {
+            friendlyMsg =
+                'Higgsfield AI generation timed out while waiting in queue. Please try again in a few moments. No Celoris credits were deducted.'
         }
 
         return NextResponse.json(
@@ -376,7 +622,7 @@ export async function POST(request: Request) {
                 success: false,
                 error: friendlyMsg,
             },
-            { status: 500 }
+            { status: error?.response?.status || 500 }
         )
     }
 }

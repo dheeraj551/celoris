@@ -545,7 +545,7 @@ export default function ArjunaIntegratedCourse() {
                                 <CardContent>
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group overflow-hidden">
-                                            <img src="/celoris-logo.png" alt="Celoris" className="w-8 h-8 object-contain transition-transform duration-500 group-hover:scale-110" />
+                                            <img src="/celoris-icon.png" alt="Celoris" className="w-8 h-8 object-contain transition-transform duration-500 group-hover:scale-110" />
                                         </div>
                                         <div>
                                             <h3 className="font-black text-white italic uppercase tracking-tighter">Celoris Designs</h3>

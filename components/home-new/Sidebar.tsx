@@ -104,7 +104,7 @@ export function Sidebar({ className }: { className?: string }) {
                     <img
                         src="/celoris-logo.png"
                         alt="Celoris Logo"
-                        className="h-7 w-auto object-contain brightness-0 invert"
+                        className="h-8 w-auto object-contain"
                     />
                 </Link>
             </div>

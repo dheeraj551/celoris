@@ -485,7 +485,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-[#3c3c3c] hover:text-amber-300 text-amber-200 cursor-pointer font-medium"
               >
                 <span className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Create & Edit with Gemini AI...
+                  <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Create & Edit with Higgsfield AI...
                 </span>
                 <span className="flex items-center gap-1 text-[9px] font-mono text-amber-300 bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 rounded font-bold">
                   PRO
@@ -710,7 +710,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
             id="quick-ai-btn"
             onClick={onOpenAIModal}
             className="flex items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:scale-95 px-2.5 py-1 font-bold text-black shadow-[0_1px_0_rgba(255,255,255,0.4)_inset,0_2px_6px_rgba(0,0,0,0.35)] transition-all border border-amber-700/60 text-[11px] cursor-pointer"
-            title="Create & Edit Images with Gemini AI (Pro Feature • 100 Credits/generation)"
+            title="Create & Edit Images with Higgsfield AI (Pro Feature • 100 Credits/generation)"
           >
             <Sparkles className="h-3 w-3 text-black" />
             <span>AI Studio</span>

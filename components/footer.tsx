@@ -97,6 +97,9 @@ export default function Footer() {
     pathname === "/social" ||
     pathname === "/apps" ||
     pathname === "/refund-policy" ||
+    pathname === "/terms" ||
+    pathname === "/privacy" ||
+    pathname === "/cookies" ||
     pathname?.startsWith("/blog") ||
     pathname?.startsWith("/courses/")
 
@@ -113,7 +116,7 @@ export default function Footer() {
     <footer className={cn(
       "border-t transition-all duration-300 px-4",
       isDarkPage
-        ? "bg-slate-50 border-slate-200"
+        ? "bg-[#050810] border-white/10 text-slate-300"
         : "bg-surface border-border"
     )}>
       <div className="container py-16">
@@ -123,14 +126,14 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center mb-8">
               <img
-                src="/celoris-logo.png"
+                src={isDarkPage ? "/celoris-logo.png" : "/celoris-logo-dark.png"}
                 alt="Celoris Logo"
                 className="h-10 w-auto object-contain"
               />
             </Link>
             <p className={cn(
               "text-sm mb-8 max-w-sm font-bold uppercase tracking-tight italic",
-              isDarkPage ? "text-slate-500" : "text-text-secondary"
+              isDarkPage ? "text-slate-400" : "text-text-secondary"
             )}>
               Empowering individuals and businesses through comprehensive learning,
               earning opportunities, and engaging experiences in one unified platform.
@@ -144,7 +147,7 @@ export default function Footer() {
                   className={cn(
                     "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
                     isDarkPage
-                      ? "bg-slate-200 border border-slate-300 text-slate-600 hover:bg-emerald-500 hover:text-white hover:border-emerald-500"
+                      ? "bg-white/5 border border-white/10 text-slate-400 hover:bg-emerald-500 hover:text-white hover:border-emerald-500"
                       : "bg-gray-100 hover:bg-primary-100 text-text-secondary hover:text-primary-500"
                   )}
                   aria-label={social.label}
@@ -160,7 +163,7 @@ export default function Footer() {
             <div key={section.title}>
               <h3 className={cn(
                 "font-black uppercase tracking-widest text-[10px] mb-6 italic",
-                isDarkPage ? "text-emerald-500" : "text-text-primary"
+                isDarkPage ? "text-emerald-400" : "text-text-primary"
               )}>
                 {section.title}
               </h3>
@@ -172,7 +175,7 @@ export default function Footer() {
                       className={cn(
                         "text-[11px] font-black uppercase tracking-widest transition-colors italic",
                         isDarkPage
-                          ? "text-slate-500 hover:text-emerald-600"
+                          ? "text-slate-400 hover:text-emerald-400"
                           : "text-text-secondary hover:text-primary-500"
                       )}
                     >
@@ -259,7 +262,7 @@ export default function Footer() {
             </div>
             <p className={cn(
               "text-[10px] font-black uppercase tracking-widest italic pt-4",
-              isDarkPage ? "text-slate-400" : "text-text-secondary"
+              isDarkPage ? "text-slate-500" : "text-text-secondary"
             )}>
               © 2019–2026 Celoris Designs LLP. All rights reserved.
             </p>
@@ -285,7 +288,7 @@ export default function Footer() {
                   href={item.href}
                   className={cn(
                     "transition-colors",
-                    isDarkPage ? "text-slate-600 hover:text-emerald-500" : "text-text-secondary hover:text-primary-500"
+                    isDarkPage ? "text-slate-400 hover:text-emerald-400" : "text-text-secondary hover:text-primary-500"
                   )}
                 >
                   {item.label}

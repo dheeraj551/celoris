@@ -483,7 +483,7 @@ export default function AgenticAIBeginnersCourse() {
                                     <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic mb-4">Course Provider</div>
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-16 rounded-[1.5rem] bg-white p-3 shadow-xl border border-white/10 flex items-center justify-center">
-                                            <img src="/celoris-logo.svg" alt="Celoris" className="w-full h-full object-contain" />
+                                            <img src="/celoris-icon.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
                                             <h4 className="font-black text-white italic uppercase tracking-tighter">Celoris</h4>

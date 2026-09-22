@@ -106,6 +106,56 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
+  manifest: "/site.webmanifest",
+}
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://www.celorisdesigns.com/#organization",
+  "name": "Celoris Designs",
+  "legalName": "Celoris Designs LLP",
+  "alternateName": "Celoris",
+  "url": "https://www.celorisdesigns.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://www.celorisdesigns.com/celoris-logo.png",
+    "width": "512",
+    "height": "512"
+  },
+  "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "IN"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+91 90847 18101",
+    "contactType": "customer service",
+    "email": "support@celorisdesigns.com",
+    "availableLanguage": ["English", "Hindi"]
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/celoris",
+    "https://www.facebook.com/celoris",
+    "https://www.youtube.com/celoris",
+    "https://x.com/celoris"
+  ]
+}
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://www.celorisdesigns.com/#website",
+  "name": "Celoris",
+  "url": "https://www.celorisdesigns.com",
+  "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
+  "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://www.celorisdesigns.com/learn/courses?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
 }
 
 export default function RootLayout({
@@ -132,77 +182,30 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense */}
-        <meta name="google-adsense-account" content="ca-pub-2157452506602914" />
-        <script
+        {/* Google AdSense via next/script afterInteractive */}
+        <Script
+          id="google-adsense"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2157452506602914"
           crossOrigin="anonymous"
-        />
-        {/* Note: To stop scattered ads, disable "Auto ads" (Anchor, Vignette, Side rails) in your Google AdSense Dashboard */}
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
-        <link rel="manifest" href="/site.webmanifest" />
-        {/* Global Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "@id": "https://www.celorisdesigns.com/#organization",
-              "name": "Celoris Designs",
-              "legalName": "Celoris Designs LLP",
-              "alternateName": "Celoris",
-              "url": "https://www.celorisdesigns.com",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://www.celorisdesigns.com/celoris-logo.png",
-                "width": "512",
-                "height": "512"
-              },
-              "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "IN"
-              },
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+91 90847 18101",
-                "contactType": "customer service",
-                "email": "support@celorisdesigns.com",
-                "availableLanguage": ["English", "Hindi"]
-              },
-              "sameAs": [
-                "https://www.linkedin.com/company/celoris",
-                "https://www.facebook.com/celoris",
-                "https://www.youtube.com/celoris",
-                "https://x.com/celoris"
-              ]
-            })
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": "https://www.celorisdesigns.com/#website",
-              "name": "Celoris",
-              "url": "https://www.celorisdesigns.com",
-              "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
-              "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://www.celorisdesigns.com/learn/courses?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
-            })
-          }}
+          strategy="afterInteractive"
         />
       </head>
       <body className={outfit.className}>
+        {/* Global Structured Data (JSON-LD) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema)
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteSchema)
+          }}
+        />
+
         <ReCaptchaProvider siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
           <AuthProvider>
             <PresenceProvider>

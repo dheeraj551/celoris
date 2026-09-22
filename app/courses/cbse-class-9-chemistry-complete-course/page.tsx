@@ -295,7 +295,7 @@ export default function CBSEClass9ChemistryCourse() {
                                 <CardContent>
                                     <div className="flex items-center space-x-4 mb-4">
                                         <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-gray-200">
-                                            <img src="/celoris-logo.png" alt="Celoris" className="w-12 h-12 object-contain" />
+                                            <img src="/celoris-icon.png" alt="Celoris" className="w-10 h-10 object-contain" />
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-text-primary">Celoris Designs</h3>

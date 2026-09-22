@@ -91,6 +91,10 @@ export default function Header() {
     pathname === "/ai-explorer" ||
     pathname === "/video-studio" ||
     pathname === "/image-studio" ||
+    pathname === "/refund-policy" ||
+    pathname === "/terms" ||
+    pathname === "/privacy" ||
+    pathname === "/cookies" ||
     pathname?.startsWith("/blog") ||
     pathname?.startsWith("/courses/")
 
@@ -98,16 +102,16 @@ export default function Header() {
     <header className={cn(
       "sticky top-0 z-50 w-full transition-all duration-300",
       isDarkPage
-        ? "border-b border-slate-200 bg-white/90 backdrop-blur-xl"
+        ? "border-b border-white/10 bg-[#050810]/90 backdrop-blur-xl text-white"
         : "border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60"
     )}>
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <img
-            src="/celoris-logo.png"
+            src={isDarkPage ? "/celoris-logo.png" : "/celoris-logo-dark.png"}
             alt="Celoris Logo"
-            className="h-8 w-auto object-contain transition-all hover:opacity-80"
+            className="h-8 sm:h-9 w-auto object-contain transition-all hover:opacity-80"
           />
         </Link>
 
@@ -121,7 +125,7 @@ export default function Header() {
                 "text-sm font-black uppercase tracking-widest transition-colors italic",
                 pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
                   ? "text-emerald-500"
-                  : isDarkPage ? "text-slate-600 hover:text-black" : "text-text-secondary hover:text-primary-500"
+                  : isDarkPage ? "text-slate-300 hover:text-white" : "text-text-secondary hover:text-primary-500"
               )}
             >
               {item.name}
@@ -323,7 +327,7 @@ export default function Header() {
         {/* Mobile Navigation */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className={isDarkPage ? "text-white hover:bg-white/10" : ""}>
               <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
@@ -331,7 +335,7 @@ export default function Header() {
             <nav className="flex flex-col space-y-6 mt-6">
               <Link href="/" className="flex items-center">
                 <img
-                  src="/celoris-logo.png"
+                  src={isDarkPage ? "/celoris-logo.png" : "/celoris-logo-dark.png"}
                   alt="Celoris Logo"
                   className="h-8 w-auto object-contain"
                 />

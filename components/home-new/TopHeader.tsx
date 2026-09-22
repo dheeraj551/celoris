@@ -76,7 +76,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                         <img
                             src="/celoris-logo.png"
                             alt="Celoris Logo"
-                            className="h-7 sm:h-8 w-auto object-contain brightness-0 invert group-hover:scale-105 transition-transform duration-200"
+                            className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-200"
                         />
                     </Link>
 
@@ -494,7 +494,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                     <img
                                         src="/celoris-logo.png"
                                         alt="Celoris Logo"
-                                        className="h-7 w-auto object-contain brightness-0 invert"
+                                        className="h-8 w-auto object-contain"
                                     />
                                 </div>
                                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>

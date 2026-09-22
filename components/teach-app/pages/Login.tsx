@@ -47,7 +47,7 @@ export function Login() {
         <div className="flex justify-center">
           <Link to="/teach" className="flex items-center">
             <img
-              src="/celoris-logo.png"
+              src="/celoris-logo-dark.png"
               alt="Celoris Logo"
               className="h-10 w-auto object-contain transition-all hover:opacity-80"
             />

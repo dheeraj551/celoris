@@ -497,7 +497,7 @@ export default function YogaMasteryCourse2025() {
                                 <CardContent className="p-8 pt-0">
                                     <div className="flex items-center gap-5 mb-8">
                                         <div className="w-16 h-16 rounded-2xl bg-white p-3 shadow-3xl shadow-white/5 border border-white/10 flex items-center justify-center">
-                                            <img src="/celoris-logo.png" alt="Celoris" className="w-full h-full object-contain" />
+                                            <img src="/celoris-icon.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
                                             <h4 className="font-black text-white italic uppercase tracking-tight">Yoga Alliance</h4>

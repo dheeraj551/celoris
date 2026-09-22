@@ -361,7 +361,7 @@ export default function AgenticAIMasterclass() {
                             <div className="p-8 rounded-[3rem] bg-slate-900/60 border border-white/5 space-y-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-14 h-14 rounded-2xl bg-white p-2.5 shadow-2xl border border-white/10 flex items-center justify-center">
-                                        <img src="/celoris-logo.svg" alt="Celoris" className="w-full h-full object-contain" />
+                                        <img src="/celoris-icon.png" alt="Celoris" className="w-full h-full object-contain" />
                                     </div>
                                     <div>
                                         <h4 className="font-black text-white italic uppercase tracking-tighter text-xl">Celoris</h4>

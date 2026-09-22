@@ -736,7 +736,7 @@ export default function VibeCodingMasteryCourse() {
                                 <CardContent>
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 p-2 border border-slate-700 flex items-center justify-center">
-                                            <img src="/celoris-logo.png" alt="Celoris" className="w-full h-full object-contain" />
+                                            <img src="/celoris-icon.png" alt="Celoris" className="w-full h-full object-contain" />
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-white">Celoris Designs</h4>

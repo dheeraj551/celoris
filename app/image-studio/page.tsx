@@ -561,7 +561,7 @@ export default function ImageStudio() {
                 {/* Left Sidebar - Icon Strip */}
                 <div className="w-[72px] bg-[#111111] flex flex-col items-center py-4 border-r border-white/10 z-20 shrink-0">
                     <Link href="/" className="w-10 h-10 mb-6 flex items-center justify-center hover:opacity-80 transition-opacity">
-                        <img src="/celoris-logo.png" alt="Celoris" className="w-8 h-8 object-contain" />
+                        <img src="/celoris-icon.png" alt="Celoris" className="w-8 h-8 object-contain" />
                     </Link>
 
                     <div className="flex flex-col gap-4 w-full">

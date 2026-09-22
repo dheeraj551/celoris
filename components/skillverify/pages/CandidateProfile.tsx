@@ -309,7 +309,7 @@ export function CandidateProfile({ id: routeParam }: { id: string }) {
                   transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' as const }}
                   className="flex items-center gap-4 bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl px-5 py-4 shadow-sm"
                 >
-                  <img src="/celoris-logo.png" alt="Celoris" className="h-7 w-auto flex-shrink-0" />
+                  <img src="/celoris-logo-dark.png" alt="Celoris" className="h-7 w-auto flex-shrink-0" />
                   <div className="h-10 w-px bg-emerald-100 flex-shrink-0" />
                   {qrCodeUrl && (
                     <img

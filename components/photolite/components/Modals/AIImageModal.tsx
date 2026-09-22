@@ -253,7 +253,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
                   id="badge-ai-model-tag"
                   className="rounded-full bg-neutral-900 border border-neutral-700 px-2 py-0.5 font-mono text-[9px] text-amber-300"
                 >
-                  gemini / flux-pro
+                  higgsfield / soul-v2
                 </span>
                 <span
                   id="badge-ai-pro-indicator"
@@ -365,7 +365,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
                   <span>Target Layer: {activeLayer?.name || 'Background'}</span>
                 </div>
                 <p className="text-gray-400 text-[11px]">
-                  Gemini will analyze your active layer pixels and transform them based on your text prompt.
+                  Higgsfield AI will analyze your active layer pixels and transform them based on your text prompt.
                 </p>
                 <div className="text-[10px] font-mono text-gray-500">
                   Dimensions: {activeLayer?.width || canvasWidth} × {activeLayer?.height || canvasHeight} px
@@ -381,7 +381,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
                 <Wand2 className="h-3.5 w-3.5 text-amber-400" />
                 <span>{mode === 'create' ? 'Prompt Description' : 'Edit Instructions'}</span>
               </label>
-              <span className="text-[10px] text-gray-500">Powered by Gemini AI</span>
+              <span className="text-[10px] text-gray-500">Powered by Higgsfield AI</span>
             </div>
 
             <textarea
@@ -502,7 +502,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>Generated Image Result</span>
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">gemini-3.1-flash-image-preview</span>
+                <span className="text-[10px] text-gray-400 font-mono">higgsfield-soul-v2</span>
               </div>
 
               <div className="relative rounded-md border border-black/80 bg-black/60 overflow-hidden flex items-center justify-center max-h-72">
@@ -557,7 +557,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
         <div className="flex items-center justify-between border-t border-black/80 bg-[#252525] px-5 py-3">
           <div className="flex items-center gap-2 text-[11px] text-gray-400">
             <span className="h-2 w-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-            <span>Server-side Gemini SDK Ready</span>
+            <span>Server-side Higgsfield AI Ready</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -581,7 +581,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
               {loading ? (
                 <>
                   <RefreshCw className="h-3.5 w-3.5 animate-spin text-black" />
-                  <span>Generating with Gemini...</span>
+                  <span>Generating with Higgsfield AI...</span>
                 </>
               ) : !hasProAccess ? (
                 <>

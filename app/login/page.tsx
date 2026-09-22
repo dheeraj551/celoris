@@ -125,7 +125,7 @@ export default function LoginPage() {
             <img
               src="/celoris-logo.png"
               alt="Celoris Logo"
-              className="h-10 w-auto object-contain brightness-0 invert"
+              className="h-10 sm:h-12 w-auto object-contain"
             />
           </Link>
           <h2 className="text-4xl font-black text-white italic uppercase tracking-tight mb-3">Welcome back</h2>
