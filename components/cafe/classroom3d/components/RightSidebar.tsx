@@ -12,7 +12,9 @@ import {
   Sparkles,
   UserPlus,
   RefreshCw,
+  Crown,
 } from 'lucide-react';
+import { ClassSchedulePanel } from '@/components/cafe/ClassSchedulePanel';
 
 interface RightSidebarProps {
   isHost: boolean;
@@ -161,6 +163,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             one at a time, or let a boost-code redemption jump someone
             ahead. Only rendered for the host — a student never sees anyone
             else's place in line, only their own (in ClassroomQueueGate). */}
+        {/* Scheduled free classes: set the class time, then "Start class"
+            seats the top of the queue (members first — see lib/cafe-class-queue.ts). */}
+        {isHost && <ClassSchedulePanel roomId={roomId} theme="dark" />}
         {isHost && <WaitingQueuePanel roomId={roomId} />}
 
         {/* Live Presentation (real Agora screen-share, texture-mapped onto the 3D board) */}
@@ -403,6 +408,7 @@ interface QueueEntry {
   user_id: string;
   full_name: string | null;
   priority_score: number;
+  plan_tier?: string | null;
   joined_queue_at: string;
 }
 
@@ -481,7 +487,7 @@ const WaitingQueuePanel: React.FC<{ roomId: string }> = ({ roomId }) => {
       {loading ? (
         <p className="text-[11px] text-slate-500">Loading...</p>
       ) : queue.length === 0 ? (
-        <p className="text-[11px] text-slate-500">Nobody's waiting — the room has open seats.</p>
+        <p className="text-[11px] text-slate-500">Nobody's waiting right now.</p>
       ) : (
         <>
           <button
@@ -502,6 +508,12 @@ const WaitingQueuePanel: React.FC<{ roomId: string }> = ({ roomId }) => {
                 <div className="flex items-center gap-1.5 truncate">
                   <span className="text-slate-500 w-4 flex-shrink-0 text-right">{index + 1}.</span>
                   <span className="text-slate-200 truncate">{entry.full_name || 'Student'}</span>
+                  {entry.plan_tier && entry.plan_tier !== 'free' && (
+                    <span className="flex items-center gap-0.5 text-amber-300 flex-shrink-0 uppercase text-[9px] font-bold" title="Paid member">
+                      <Crown className="w-2.5 h-2.5" />
+                      {entry.plan_tier}
+                    </span>
+                  )}
                   {entry.priority_score > 0 && (
                     <span className="flex items-center gap-0.5 text-emerald-400 flex-shrink-0">
                       <Sparkles className="w-2.5 h-2.5" />

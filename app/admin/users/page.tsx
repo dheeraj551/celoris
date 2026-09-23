@@ -38,6 +38,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { MembershipPlanCard } from "@/components/admin/MembershipPlanCard"
 import { usePresence } from "@/components/providers/PresenceProvider"
 
 interface User {
@@ -329,6 +330,8 @@ export default function UserManagementPage() {
                 </div>
 
                 {/* Filters and Search */}
+                <MembershipPlanCard />
+
                 <Card className="bg-slate-800 border-slate-700 mb-8">
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">

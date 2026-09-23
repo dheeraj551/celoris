@@ -541,7 +541,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           const message: string = body.error || "This room is full. Please try again later.";
-          if (!cancelled) setJoinError({ message, full: /full/i.test(message) });
+          if (!cancelled) setJoinError({ message, full: body.queue === true || /full/i.test(message) });
           return;
         }
       } catch {

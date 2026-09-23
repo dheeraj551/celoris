@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { resolveRoomAccess } from '@/lib/cafe-room-access'
+import { classPhase, loadRoomSchedule } from '@/lib/cafe-class-queue'
 
 // Tracks who is currently seated in a Cafe Classroom room (Agora-backed).
 //
@@ -80,6 +81,33 @@ export async function POST(request: Request) {
             // (role: 'student') — the host never counts against their own
             // 15-student limit, and an existing occupant re-sending a
             // heartbeat shouldn't get locked out by their own seat.
+            // Scheduled class (lib/cafe-class-queue.ts): students only get a
+            // seat through the queue — the trainer's Start button and the
+            // automatic seat-filling mark them 'admitted' in order.
+            if (action === 'join' && seatRole === 'student') {
+                const phase = classPhase(await loadRoomSchedule(admin, roomId))
+                if (phase.mode !== 'open') {
+                    const { data: queueRow } = await admin
+                        .from('cafe_classroom_queue')
+                        .select('status')
+                        .eq('room_id', roomId)
+                        .eq('user_id', user.id)
+                        .maybeSingle()
+                    if (queueRow?.status !== 'admitted') {
+                        return NextResponse.json(
+                            {
+                                error: phase.mode === 'not_open'
+                                    ? 'The waiting line for this class hasn\'t opened yet.'
+                                    : 'This class uses a waiting line — join the queue to get your seat.',
+                                queue: true,
+                                phase,
+                            },
+                            { status: 403 }
+                        )
+                    }
+                }
+            }
+
             if (action === 'join' && seatRole === 'student') {
                 const staleCutoff = new Date(Date.now() - STALE_AFTER_SECONDS * 1000).toISOString()
                 const [{ count, error: countError }, maxStudents] = await Promise.all([
@@ -100,7 +128,7 @@ export async function POST(request: Request) {
 
                 if ((count || 0) >= maxStudents) {
                     return NextResponse.json(
-                        { error: `This room is full (${maxStudents}/${maxStudents} students). Please try again once a seat opens up.` },
+                        { error: `This room is full (${maxStudents}/${maxStudents} students). Please try again once a seat opens up.`, queue: true },
                         { status: 403 }
                     )
                 }
@@ -128,6 +156,17 @@ export async function POST(request: Request) {
             if (upsertError) {
                 console.error('classroom-presence upsert error:', upsertError)
                 return NextResponse.json({ error: upsertError.message }, { status: 500 })
+            }
+
+            // Keeps an admitted queue row "alive" while its owner is seated, so
+            // a page refresh doesn't hand their seat to the next person.
+            if (seatRole === 'student') {
+                await admin
+                    .from('cafe_classroom_queue')
+                    .update({ last_heartbeat: new Date().toISOString() })
+                    .eq('room_id', roomId)
+                    .eq('user_id', user.id)
+                    .eq('status', 'admitted')
             }
 
             return NextResponse.json({ success: true })

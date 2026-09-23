@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Users, Clock, Sparkles, LogOut, Loader2 } from 'lucide-react';
+import { Users, Clock, Sparkles, LogOut, Loader2, Crown, CalendarClock } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
 
@@ -31,7 +31,35 @@ interface ClassroomQueueGateProps {
  *
  * A waiting student can also redeem one of the room's boost codes here (see
  * /api/social/cafe/redeem-boost-code) to jump ahead of plain FIFO.
+ *
+ * Sept 2026 — scheduled classes (lib/cafe-class-queue.ts): everyone waits
+ * here. Before the line opens it shows a countdown and joins automatically;
+ * members (Basic/Pro/Max) are placed ahead of free students; once the trainer
+ * starts the class, seats are filled automatically in order.
  */
+
+type Phase =
+  | { mode: 'open' }
+  | { mode: 'not_open'; opensAt: string; startsAt: string }
+  | { mode: 'queueing'; opensAt: string; startsAt: string }
+  | { mode: 'started'; startsAt: string; startedAt: string; graceEndsAt: string };
+
+const PLAN_NAMES: Record<string, string> = { basic: 'Basic', pro: 'Pro', max: 'Max VIP' };
+const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+function useCountdown(targetIso: string | null) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!targetIso) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [targetIso]);
+  if (!targetIso) return null;
+  const s = Math.max(0, Math.floor((Date.parse(targetIso) - now) / 1000));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return h > 0 ? `${h}h ${m}m` : `${m}:${String(s % 60).padStart(2, '0')}`;
+}
 export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, roomName, onAdmitted, onLeave }) => {
   const { user } = useAuth();
   const supabase = createClient();
@@ -41,6 +69,12 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
   const [priorityScore, setPriorityScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [joinError, setJoinError] = useState<string | null>(null);
+
+  const [phase, setPhase] = useState<Phase>({ mode: 'open' });
+  const [plan, setPlan] = useState<string>('free');
+  const [joinAttempt, setJoinAttempt] = useState(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdown = useCountdown(phase.mode === 'not_open' ? phase.opensAt : null);
 
   const [boostInput, setBoostInput] = useState('');
   const [redeemingBoost, setRedeemingBoost] = useState(false);
@@ -57,6 +91,7 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
       const res = await fetch(`/api/social/cafe/classroom-queue?roomId=${roomId}`);
       const body = await res.json().catch(() => ({}));
       if (!res.ok) return;
+      if (body.phase) setPhase(body.phase);
       if (body.myEntry?.status === 'admitted') {
         if (!admittedRef.current) {
           admittedRef.current = true;
@@ -92,6 +127,18 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
         if (!res.ok) {
           setJoinError(body.error || 'Could not join the queue.');
           setLoading(false);
+          return;
+        }
+
+        if (body.phase) setPhase(body.phase);
+        if (typeof body.plan === 'string') setPlan(body.plan);
+
+        // Line not open yet: show the countdown and try again when it opens
+        // (checking at least once a minute in case the trainer reschedules).
+        if (body.state === 'not_open') {
+          setLoading(false);
+          const opensIn = body.phase?.opensAt ? Date.parse(body.phase.opensAt) - Date.now() : 60000;
+          retryTimerRef.current = setTimeout(() => setJoinAttempt((n) => n + 1), Math.min(Math.max(opensIn + 500, 2000), 60000));
           return;
         }
 
@@ -154,6 +201,7 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
 
     return () => {
       cancelled = true;
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
       if (heartbeatRef.current) clearInterval(heartbeatRef.current);
       if (pollRef.current) clearInterval(pollRef.current);
       if (channelRef.current) supabase.removeChannel(channelRef.current);
@@ -170,7 +218,7 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, user?.id]);
+  }, [roomId, user?.id, joinAttempt]);
 
   const handleLeaveQueue = () => {
     onLeave();
@@ -230,15 +278,38 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
         ) : (
           <>
             <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto">
-              <Clock className="w-7 h-7 text-blue-400" />
+              {phase.mode === 'not_open' ? <CalendarClock className="w-7 h-7 text-blue-400" /> : <Clock className="w-7 h-7 text-blue-400" />}
             </div>
             <div>
-              <h3 className="text-white font-bold text-lg">You're in line</h3>
+              <h3 className="text-white font-bold text-lg">
+                {phase.mode === 'not_open' ? 'The line opens soon' : "You're in line"}
+              </h3>
               <p className="text-xs text-slate-400 mt-1">
-                "{roomName}" is full — the trainer will admit you as a seat opens up.
+                {phase.mode === 'not_open' ? (
+                  <>"{roomName}" starts at {fmtTime(phase.startsAt)}. The waiting line opens at {fmtTime(phase.opensAt)} — keep this page open and you'll join automatically.</>
+                ) : phase.mode === 'queueing' ? (
+                  <>Class starts at {fmtTime(phase.startsAt)}. When the trainer starts it, seats go to the line in order — stay on this page to keep your place.</>
+                ) : phase.mode === 'started' ? (
+                  <>The class is running. You'll be let in automatically as soon as a seat frees up — stay on this page.</>
+                ) : (
+                  <>"{roomName}" is full — the trainer will admit you as a seat opens up.</>
+                )}
               </p>
             </div>
 
+            {plan !== 'free' && PLAN_NAMES[plan] && phase.mode !== 'not_open' && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-semibold">
+                <Crown className="w-3.5 h-3.5" />
+                <span>{PLAN_NAMES[plan]} member — you're ahead of free students</span>
+              </div>
+            )}
+
+            {phase.mode === 'not_open' ? (
+              <div className="py-2">
+                <div className="text-3xl font-bold text-white font-mono">{countdown ?? '—'}</div>
+                <div className="text-[10px] uppercase tracking-wider text-slate-500">until the line opens</div>
+              </div>
+            ) : (
             <div className="flex items-center justify-center gap-6 py-2">
               <div>
                 <div className="text-2xl font-bold text-white">{position ?? '—'}</div>
@@ -250,14 +321,16 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
                 <div className="text-[10px] uppercase tracking-wider text-slate-500">Waiting total</div>
               </div>
             </div>
+            )}
 
-            {priorityScore > 0 && (
+            {priorityScore > 0 && plan === 'free' && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>+{priorityScore} priority applied</span>
               </div>
             )}
 
+            {phase.mode !== 'not_open' && (
             <form onSubmit={handleRedeemBoost} className="space-y-2 pt-2 border-t border-slate-800">
               <label className="text-[10px] uppercase tracking-wider text-slate-500 block text-left">
                 Have a boost code?
@@ -281,13 +354,14 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
               {boostError && <p className="text-[10px] text-red-400 text-left">{boostError}</p>}
               {boostSuccess && <p className="text-[10px] text-emerald-400 text-left">{boostSuccess}</p>}
             </form>
+            )}
 
             <button
               onClick={handleLeaveQueue}
               className="w-full h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5"
             >
               <LogOut className="w-3.5 h-3.5" />
-              Leave queue
+              {phase.mode === 'not_open' ? 'Back to Café' : 'Leave queue'}
             </button>
           </>
         )}

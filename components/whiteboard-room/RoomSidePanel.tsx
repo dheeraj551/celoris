@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GraduationCap, Hand, Loader2, Mic, MicOff, Send, UserPlus, X } from "lucide-react";
 import type { RoomChatMessage, RoomParticipant } from "./hooks/useWhiteboardRoom";
+import { ClassSchedulePanel } from "@/components/cafe/ClassSchedulePanel";
 
 interface RoomSidePanelProps {
   open: boolean;
@@ -154,6 +155,7 @@ export const RoomSidePanel: React.FC<RoomSidePanelProps> = ({
         </>
       ) : (
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
+          {isHost && <ClassSchedulePanel roomId={roomId} theme="light" />}
           {isHost && <WaitingQueue roomId={roomId} />}
 
           <ul className="space-y-1.5">
@@ -228,6 +230,7 @@ interface QueueEntry {
   id: string;
   user_id: string;
   full_name: string | null;
+  plan_tier?: string | null;
 }
 
 /** Same waiting-queue API the 3D classroom's trainer sidebar uses. */
@@ -291,7 +294,12 @@ const WaitingQueue: React.FC<{ roomId: string }> = ({ roomId }) => {
       <ul className="space-y-1">
         {queue.map((q) => (
           <li key={q.id} className="flex items-center justify-between text-xs text-amber-900">
-            <span className="truncate">{q.full_name || "Student"}</span>
+            <span className="truncate">
+              {q.full_name || "Student"}
+              {q.plan_tier && q.plan_tier !== "free" && (
+                <span className="ml-1 text-[9px] font-bold uppercase text-amber-600">★ {q.plan_tier}</span>
+              )}
+            </span>
             <button
               onClick={() => admit(q.user_id)}
               disabled={!!busy}
