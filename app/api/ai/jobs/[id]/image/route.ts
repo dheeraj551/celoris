@@ -25,13 +25,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     .maybeSingle()
   if (!data?.result_key) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  const upstream = await fetch(await signedResultUrl(data.result_key))
+  const external = data.result_key.startsWith('ext:') ? data.result_key.slice(4) : null
+  const upstream = await fetch(external || (await signedResultUrl(data.result_key)))
   if (!upstream.ok || !upstream.body) return NextResponse.json({ error: 'Image unavailable' }, { status: 502 })
 
-  const ext = data.result_key.split('.').pop() || 'png'
+  const type = upstream.headers.get('content-type') || 'image/png'
+  const ext = external ? (type.includes('jpeg') ? 'jpg' : type.includes('webp') ? 'webp' : 'png') : data.result_key.split('.').pop() || 'png'
   const download = new URL(request.url).searchParams.get('download') === '1'
   const headers = new Headers({
-    'Content-Type': upstream.headers.get('content-type') || 'image/png',
+    'Content-Type': type,
     'Cache-Control': 'private, max-age=86400',
   })
   const len = upstream.headers.get('content-length')

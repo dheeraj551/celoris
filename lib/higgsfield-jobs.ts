@@ -146,29 +146,57 @@ function normalizeStatus(s: any): JobStatus {
 const REF_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }
 
 /**
- * Stores a reference photo (product / model / canvas layer) in R2 for the
- * record, then uploads it to Higgsfield's own storage and returns the
- * public_url Higgsfield wants in image_urls.
+ * Makes a reference photo (product / model / canvas layer) available to
+ * Higgsfield and returns the URL to put in image_urls.
+ *
+ *  1. Keep a copy in our R2 bucket (best effort — never blocks generation).
+ *  2. Preferred: upload the bytes into Higgsfield's own storage
+ *     (/files/generate-upload-url) and use its public_url.
+ *  3. Fallback: if that fails, give Higgsfield a 24-hour signed link to the
+ *     R2 copy so it can download the image itself.
  */
-export async function storeReferenceImage(userId: string, bytes: Buffer, contentType: string): Promise<{ key: string; publicUrl: string }> {
+export async function storeReferenceImage(userId: string, bytes: Buffer, contentType: string): Promise<{ key: string | null; publicUrl: string }> {
   const ext = REF_TYPES[contentType]
   if (!ext) throw new HiggsfieldError('Please use a JPG, PNG or WebP image.', 400, 'input')
-  const key = `ai-inputs/${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`
-  await putR2Object(key, bytes, contentType)
 
-  const slot = await hf('/files/generate-upload-url', { method: 'POST', body: JSON.stringify({ content_type: contentType }) })
-  if (!slot?.upload_url || !slot?.public_url) throw new HiggsfieldError('Higgsfield did not return an upload slot.', 502)
-  const put = await fetch(slot.upload_url, {
-    method: 'PUT',
-    headers: { 'Content-Type': contentType, ...(slot.upload_headers || {}) },
-    body: new Uint8Array(bytes),
-    signal: AbortSignal.timeout(30_000),
-  })
-  if (!put.ok) {
-    console.warn('[Higgsfield] reference upload failed:', put.status, await put.text().catch(() => ''))
-    throw new HiggsfieldError("Couldn't send your image to Higgsfield. Please try again.", 502)
+  let key: string | null = `ai-inputs/${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`
+  try {
+    await putR2Object(key, bytes, contentType)
+  } catch (err: any) {
+    console.warn('[AI uploads] R2 copy failed (continuing without it):', err?.message)
+    key = null
   }
-  return { key, publicUrl: String(slot.public_url) }
+
+  let hfProblem = ''
+  try {
+    const slot = await hf('/files/generate-upload-url', { method: 'POST', body: JSON.stringify({ content_type: contentType }) })
+    if (!slot?.upload_url || !slot?.public_url) {
+      hfProblem = `no upload slot returned (keys: ${Object.keys(slot || {}).join(', ') || 'none'})`
+    } else {
+      const put = await fetch(slot.upload_url, {
+        method: 'PUT',
+        headers: { 'Content-Type': contentType, ...(slot.upload_headers || {}) },
+        body: new Uint8Array(bytes),
+        signal: AbortSignal.timeout(30_000),
+      })
+      if (put.ok) return { key, publicUrl: String(slot.public_url) }
+      hfProblem = `storage PUT ${put.status}: ${(await put.text().catch(() => '')).slice(0, 200)}`
+    }
+  } catch (err: any) {
+    hfProblem = err?.message || 'unknown error'
+  }
+  console.warn('[AI uploads] Higgsfield upload failed:', hfProblem)
+
+  if (key) {
+    // Higgsfield downloads the image straight from our private bucket.
+    const signed = await createR2SignedReadUrl(key, 24 * 60 * 60)
+    console.log('[AI uploads] using signed R2 link for Higgsfield instead')
+    return { key, publicUrl: signed }
+  }
+  throw new HiggsfieldError(
+    `Couldn't hand your image to Higgsfield (${hfProblem}) and the R2 backup also failed — check the R2_* settings in Vercel.`,
+    502
+  )
 }
 
 // ------------------------------------------------------------------ presets
@@ -297,8 +325,15 @@ export async function refreshJob(job: JobRow): Promise<JobRow> {
     }
     const contentType = (img.headers.get('content-type') || 'image/png').split(';')[0]
     const ext = contentType.includes('jpeg') ? 'jpg' : contentType.includes('webp') ? 'webp' : 'png'
-    const key = `ai-outputs/${job.user_id}/${job.id}.${ext}`
-    await putR2Object(key, Buffer.from(await img.arrayBuffer()), contentType)
+    let key = `ai-outputs/${job.user_id}/${job.id}.${ext}`
+    try {
+      await putR2Object(key, Buffer.from(await img.arrayBuffer()), contentType)
+    } catch (err: any) {
+      // Don't lose a finished (already paid-for) image because storage hiccuped:
+      // serve it from Higgsfield's link for now (kept ~7 days).
+      console.warn('[AI jobs] R2 save failed, using Higgsfield URL:', err?.message)
+      key = `ext:${remote.imageUrl}`
+    }
     const { data } = await admin
       .from('ai_generations')
       .update({ status: 'completed', result_key: key, error: null, updated_at: new Date().toISOString(), completed_at: new Date().toISOString() })
