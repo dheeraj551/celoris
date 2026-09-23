@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AlertTriangle, ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { ClassroomQueueGate } from "@/components/cafe/classroom3d/components/ClassroomQueueGate";
@@ -377,9 +378,14 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
     );
   }
 
-  return (
+  // Rendered into <body> (not inside the café page) so the site's sticky
+  // header and any transformed parent containers can't cover or clip the
+  // room's own top bar — the room takes over the whole screen while you're
+  // in class, and "Leave" brings the normal site back.
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <BoardReadOnlyContext.Provider value={!isHost}>
-      <div className="fixed inset-0 z-[70] flex flex-col bg-[#fdfbf7] text-neutral-900">
+      <div className="fixed inset-0 z-[1000] flex flex-col bg-[#fdfbf7] text-neutral-900">
         <RoomTopBar
           roomName={roomName}
           isHost={isHost}
@@ -516,6 +522,7 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
           <ArrowLeft className="w-4 h-4 inline" /> Leave room
         </button>
       </div>
-    </BoardReadOnlyContext.Provider>
+    </BoardReadOnlyContext.Provider>,
+    document.body
   );
 }

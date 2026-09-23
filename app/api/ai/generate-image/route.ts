@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createHiggsfieldClient } from '@higgsfield/client/v2'
 import { HiggsfieldClient as HiggsfieldV1Client } from '@higgsfield/client'
 import { createRouteClient } from '@/lib/supabase-server'
-import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -601,9 +601,10 @@ export async function POST(request: Request) {
             console.warn('Could not determine session via cookies:', authErr)
         }
 
-        if (!userId && bodyUserId && typeof bodyUserId === 'string') {
-            userId = bodyUserId
-        }
+        // Sept 2026: removed the fallback that accepted a `userId` from the
+        // request body when there was no session — anyone could claim to be
+        // any user (e.g. one with a big wallet) and use Pro generation.
+        void bodyUserId
 
         if (!userId) {
             return NextResponse.json(
@@ -615,47 +616,34 @@ export async function POST(request: Request) {
             )
         }
 
-        // 3. Fetch User wallet_balance & check 2,000 credits threshold
-        let dbClient: any = null
+        // 3. Fetch User wallet_balance & check 2,000 credits threshold.
+        // Read on the server with the service-role client only. Previously a
+        // failed lookup fell back to `body.userCredits` — a number the browser
+        // sends — so anyone could pass the check by sending userCredits: 99999.
+        let currentBalance = 0
         try {
-            dbClient = await createRouteClient()
-        } catch (e) {
-            console.warn('Could not create route client:', e)
-        }
-
-        if (!dbClient) {
-            try {
-                dbClient = createClientForBrowser()
-            } catch (e) {
-                console.warn('Could not create browser client:', e)
-            }
-        }
-
-        let currentBalance = typeof body.userCredits === 'number' ? body.userCredits : 0
-
-        if (dbClient) {
-            try {
-                const { data, error } = await dbClient
-                    .from('users')
+            const admin = createSupabaseClientForServer()
+            const { data: userRow, error: userErr } = await admin
+                .from('users')
+                .select('wallet_balance')
+                .eq('id', userId)
+                .maybeSingle()
+            if (!userErr && userRow && userRow.wallet_balance !== null && userRow.wallet_balance !== undefined) {
+                currentBalance = Number(userRow.wallet_balance) || 0
+            } else {
+                const { data: profileRow } = await admin
+                    .from('profiles')
                     .select('wallet_balance')
                     .eq('id', userId)
                     .maybeSingle()
-
-                if (!error && data) {
-                    currentBalance = Number(data.wallet_balance || 0)
-                } else {
-                    const profileRes = await dbClient
-                        .from('profiles')
-                        .select('wallet_balance')
-                        .eq('id', userId)
-                        .maybeSingle()
-                    if (!profileRes.error && profileRes.data) {
-                        currentBalance = Number(profileRes.data.wallet_balance || 0)
-                    }
-                }
-            } catch (err) {
-                console.warn('Database query error, using session credit balance:', err)
+                currentBalance = Number(profileRow?.wallet_balance) || 0
             }
+        } catch (err) {
+            console.warn('Could not read wallet balance:', err)
+            return NextResponse.json(
+                { success: false, error: "Couldn't check your credit balance right now. Please try again." },
+                { status: 503 }
+            )
         }
 
         if (currentBalance < PRO_REQUIRED_CREDITS) {
@@ -709,15 +697,15 @@ export async function POST(request: Request) {
 
         // 6. Deduct 100 Credits upon successful generation
         const newBalance = Math.max(0, currentBalance - GENERATION_CREDIT_COST)
-        if (dbClient) {
-            try {
-                await dbClient
-                    .from('users')
-                    .update({ wallet_balance: newBalance })
-                    .eq('id', userId)
-            } catch (deductErr) {
-                console.warn('Failed to deduct credits in database:', deductErr)
-            }
+        try {
+            const admin = createSupabaseClientForServer()
+            const { error: deductErr } = await admin
+                .from('users')
+                .update({ wallet_balance: newBalance })
+                .eq('id', userId)
+            if (deductErr) console.warn('Failed to deduct credits in database:', deductErr)
+        } catch (deductErr) {
+            console.warn('Failed to deduct credits in database:', deductErr)
         }
 
         return NextResponse.json({

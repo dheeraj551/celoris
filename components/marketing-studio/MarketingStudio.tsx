@@ -13,7 +13,7 @@ import {
   DemoAvatar,
   DEMO_AVATARS,
 } from './marketingStudioData';
-import { Sparkles, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { Sparkles, AlertTriangle, X } from 'lucide-react';
 
 export function MarketingStudio() {
   const [mode, setMode] = useState<'image' | 'video'>('image');
@@ -31,6 +31,7 @@ export function MarketingStudio() {
   const [generationStage, setGenerationStage] = useState('');
   const [generatedCreative, setGeneratedCreative] = useState<GeneratedCreative | null>(null);
   const [isOutputModalOpen, setIsOutputModalOpen] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   // When card in carousel is selected
   const handleSelectCard = (card: CarouselCard) => {
@@ -47,6 +48,8 @@ export function MarketingStudio() {
   };
 
   const handleGenerate = async () => {
+    if (isGenerating) return;
+    setGenerationError(null);
     setIsGenerating(true);
     const prod = selectedProduct || DEMO_PRODUCTS[0];
 
@@ -57,17 +60,14 @@ export function MarketingStudio() {
       'Composing high-CTR marketing typography & decals...',
       'Finalizing commercial ad creative...',
     ];
-
     setGenerationStage(stages[0]);
+    let stageIdx = 0;
+    const stageInterval = setInterval(() => {
+      stageIdx = Math.min(stageIdx + 1, stages.length - 1);
+      setGenerationStage(stages[stageIdx]);
+    }, 6000);
 
     try {
-      // Background animation stages
-      let stageIdx = 0;
-      const stageInterval = setInterval(() => {
-        stageIdx = (stageIdx + 1) % stages.length;
-        setGenerationStage(stages[stageIdx]);
-      }, 1400);
-
       const res = await fetch('/api/marketing/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,38 +82,30 @@ export function MarketingStudio() {
         }),
       });
 
-      clearInterval(stageInterval);
+      const data: any = await res.json().catch(() => null);
 
-      let data: any = null;
-      if (res.ok) {
-        data = await res.json();
+      // No more silent fallbacks: previously any failure showed the demo
+      // product photo as if it were the generated ad.
+      if (!res.ok || !data?.imageUrl) {
+        const message =
+          data?.error ||
+          (res.status === 504
+            ? 'The generation took too long and the server stopped waiting. Please try again.'
+            : `Generation failed (error ${res.status}). Please try again.`);
+        setGenerationError(message);
+        return;
       }
 
       const created: GeneratedCreative = {
         id: `creative-${Date.now()}`,
-        headline: data?.headline || (
-          selectedStyle === 'Vibrant Pop Ad'
-            ? 'ZERO SUGAR. 100% VIBE.'
-            : selectedStyle === 'Commercial Packshot'
-            ? 'PURE CELLULAR HYDRATION.'
-            : selectedStyle === 'Editorial Poster'
-            ? 'CHASE THE UNEXPECTED.'
-            : 'ELEVATE YOUR EVERYDAY RITUAL.'
-        ),
-        tagline: data?.tagline || 'Crafted for high performance & unstoppable flavor.',
-        badgeText: data?.badgeText || 'TRY NOW',
-        ctaText: data?.ctaText || 'ORDER TODAY',
-        adCopy: data?.adCopy || `Turn everyday moments into pure refreshment with ${prod.name}. Crisp, vibrant, and engineered with premium natural ingredients for taste-makers who demand the best. Tap below to claim your exclusive launch pack!`,
-        hashtags: data?.hashtags || [
-          `#${prod.name.replace(/\s+/g, '')}`,
-          '#ViOStudio',
-          '#MarketingDesign',
-          '#ProductDrop',
-          '#AIGeneratedAds',
-          '#ReadyToPost',
-        ],
+        headline: data.headline || 'STAND OUT. GET NOTICED.',
+        tagline: data.tagline || '',
+        badgeText: data.badgeText || 'NEW',
+        ctaText: data.ctaText || 'SHOP NOW',
+        adCopy: data.adCopy || '',
+        hashtags: Array.isArray(data.hashtags) ? data.hashtags : [],
         productName: prod.name,
-        productImage: data?.imageUrl || prod.image,
+        productImage: data.imageUrl,
         avatarUrl: selectedAvatar?.avatarUrl,
         avatarName: selectedAvatar?.name,
         themeGradient:
@@ -126,35 +118,18 @@ export function MarketingStudio() {
             : 'linear-gradient(180deg, #1F1B38 0%, #3B3363 50%, #110E21 100%)',
         accentColor: prod.colors[0] || '#D4FF00',
         aspectRatio: selectedRatio,
-        stylePreset: data?.usedModel ? 'Marketing Studio Image' : selectedStyle,
+        stylePreset: 'Marketing Studio Image',
         createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
       setGeneratedCreative(created);
-    } catch (err) {
-      console.warn('Generation failed, using fallback creative:', err);
-      const created: GeneratedCreative = {
-        id: `creative-${Date.now()}`,
-        headline: 'STAND OUT. GET NOTICED.',
-        tagline: 'High-converting commercial creative crafted for modern taste-makers.',
-        badgeText: 'TRY NOW',
-        ctaText: 'SHOP EXCLUSIVE',
-        adCopy: `Discover why creators and customers can't stop talking about ${prod.name}. Premium quality, engineered performance, and unforgettable impact. Tap below to claim yours today!`,
-        hashtags: [`#${prod.name.replace(/\s+/g, '')}`, '#ViOStudio', '#ReadyToPost'],
-        productName: prod.name,
-        productImage: prod.image,
-        avatarUrl: selectedAvatar?.avatarUrl,
-        avatarName: selectedAvatar?.name,
-        themeGradient: 'linear-gradient(180deg, #2E9C3A 0%, #42B84F 50%, #207A2B 100%)',
-        accentColor: prod.colors[0] || '#D4FF00',
-        aspectRatio: selectedRatio,
-        stylePreset: selectedStyle,
-        createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setGeneratedCreative(created);
-    } finally {
-      setIsGenerating(false);
       setIsOutputModalOpen(true);
+    } catch (err) {
+      console.warn('ViO Studio generation request failed:', err);
+      setGenerationError('Could not reach Celoris. Check your connection and try again.');
+    } finally {
+      clearInterval(stageInterval);
+      setIsGenerating(false);
     }
   };
 
@@ -257,6 +232,28 @@ export function MarketingStudio() {
             <div className="w-64 bg-white/10 h-1.5 rounded-full overflow-hidden">
               <div className="bg-[#D4FF00] h-full w-full animate-pulse" />
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Generation error */}
+      <AnimatePresence>
+        {generationError && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            role="alert"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,34rem)] rounded-2xl border border-red-500/30 bg-[#1a0b0b]/95 backdrop-blur-xl px-4 py-3 flex items-start gap-3 shadow-2xl"
+          >
+            <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="flex-1 text-sm text-red-100">
+              <p className="font-semibold text-red-300 mb-0.5">Couldn&apos;t generate your creative</p>
+              <p className="text-red-100/80">{generationError}</p>
+            </div>
+            <button onClick={() => setGenerationError(null)} className="text-red-300/70 hover:text-red-200" aria-label="Dismiss">
+              <X className="w-4 h-4" />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
