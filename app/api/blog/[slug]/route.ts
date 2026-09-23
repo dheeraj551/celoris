@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClientForBrowser } from '@/lib/supabase-client';
+import { createClientForBrowser, createSupabaseClientForServer } from '@/lib/supabase-client';
 
 // GET /api/blog/[slug] - Get single published blog post by slug
 export async function GET(
@@ -67,9 +67,10 @@ export async function GET(
       }
 
       // Increment views count
-      await (supabase as any)
+      // Server-side write: the public key can no longer edit blog_posts.
+      await (createSupabaseClientForServer() as any)
         .from('blog_posts')
-        .update({ views_count: (postById as any).views_count + 1 })
+        .update({ views_count: ((postById as any).views_count || 0) + 1 })
         .eq('id', slug);
 
       // Ensure all fields are properly handled
@@ -95,9 +96,10 @@ export async function GET(
     }
 
     // Increment views count
-    await (supabase as any)
+    // Server-side write: the public key can no longer edit blog_posts.
+    await (createSupabaseClientForServer() as any)
       .from('blog_posts')
-      .update({ views_count: (post as any).views_count + 1 })
+      .update({ views_count: ((post as any).views_count || 0) + 1 })
       .eq('id', (post as any).id);
 
     return NextResponse.json({ post });

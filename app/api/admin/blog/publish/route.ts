@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteClient } from '@/lib/supabase-server';
+import { createSupabaseClientForServer } from '@/lib/supabase-client';
 
 // POST /api/admin/blog/publish
 export async function POST(request: NextRequest) {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize Supabase client
-    const supabase = (await createRouteClient()) as any;
+    const supabase = createSupabaseClientForServer() as any;
 
     // Create slug from title
     const slug = title
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
     console.error('Error in blog publish endpoint:', error);
 
     // Log error
-    const supabase = (await createRouteClient()) as any;
+    const supabase = createSupabaseClientForServer() as any;
     await supabase
       .from('automation_logs')
       .insert([{
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
 // GET /api/admin/blog/publish - List published posts
 export async function GET(request: NextRequest) {
   try {
-    const supabase = (await createRouteClient()) as any;
+    const supabase = createSupabaseClientForServer() as any;
 
     const { data: blogPosts, error } = await supabase
       .from('blog_posts')

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-client';
+import { createSupabaseClientForServer } from '@/lib/supabase-client';
 import { authenticateAdmin, createUnauthorizedResponse } from '@/lib/admin-auth';
 
 // GET /api/admin/blog - List all blog posts with filtering
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     // For non-admin requests, only return published posts
     let isAdminRequest = auth.success;
 
-    const supabase = (createClient() as any)
+    const supabase = (createSupabaseClientForServer() as any)
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       return createUnauthorizedResponse('Admin authentication required');
     }
 
-    const supabase = (createClient() as any)
+    const supabase = (createSupabaseClientForServer() as any)
     const body = await request.json();
     const {
       title,

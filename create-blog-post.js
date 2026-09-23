@@ -9,7 +9,7 @@ async function createBlogPost() {
     console.log('Creating new blog post...');
 
     const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
-    const supabaseServiceKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
+    const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 
     if (!supabaseUrl || !supabaseServiceKey) {
         console.error('❌ Missing Supabase environment variables');

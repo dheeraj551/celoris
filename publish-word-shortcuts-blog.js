@@ -10,7 +10,7 @@ async function publishBlog() {
     const content = fs.readFileSync(path.resolve(__dirname, 'microsoft-word-advanced-shortcut-keys-blog.md'), 'utf-8');
 
     const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
-    const supabaseServiceKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
+    const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 
     if (!supabaseUrl || !supabaseServiceKey) {
         console.error('❌ Missing Supabase environment variables');

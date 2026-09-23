@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase-client"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,29 +16,51 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
+  // Admin access now uses the account's real Celoris (Supabase) sign-in, and
+  // the server checks users.role before any admin API call is allowed (see
+  // proxy.ts). The old version compared against a password written into this
+  // page's JavaScript, which anyone could read in their browser.
+  const [signedInAdmin, setSignedInAdmin] = useState<string | null>(null)
+
+  const confirmAdmin = async (): Promise<{ email: string } | null> => {
+    const res = await fetch("/api/admin/whoami", { cache: "no-store" })
+    if (!res.ok) return null
+    return res.json()
+  }
+
+  const enterDashboard = (adminEmail: string) => {
+    // The admin pages still read this flag for their own screens; the real
+    // protection is on the server.
+    localStorage.setItem("admin_session", JSON.stringify({ email: adminEmail, isAdmin: true, timestamp: Date.now() }))
+    router.push("/admin/dashboard")
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    confirmAdmin()
+      .then((me) => { if (!cancelled && me) setSignedInAdmin(me.email) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
     try {
-      // Hardcoded admin credentials for security
-      const ADMIN_EMAIL = "support@celorisdesigns.com"
-      const ADMIN_PASSWORD = "f3yay3qa2!oTFTpa"
-
-      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        // Set admin session
-        localStorage.setItem("admin_session", JSON.stringify({
-          email: ADMIN_EMAIL,
-          isAdmin: true,
-          timestamp: Date.now()
-        }))
-
-        // Redirect to admin dashboard
-        router.push("/admin/dashboard")
-      } else {
+      const supabase = createClient()
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+      if (signInError) {
         setError("Invalid credentials. Access denied.")
+        return
       }
+      const me = await confirmAdmin()
+      if (!me) {
+        setError("This account does not have admin access.")
+        return
+      }
+      enterDashboard(me.email)
     } catch (err) {
       setError("An unexpected error occurred")
     } finally {
@@ -70,7 +93,7 @@ export default function AdminLoginPage() {
               <span>Secure Admin Login</span>
             </CardTitle>
             <CardDescription className="text-slate-300">
-              Enter your administrator credentials to access the command center
+              Sign in with your Celoris account (it must have admin access)
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -79,6 +102,16 @@ export default function AdminLoginPage() {
                 <AlertCircle className="h-4 w-4" />
                 <span>{error}</span>
               </div>
+            )}
+
+            {signedInAdmin && (
+              <Button
+                type="button"
+                onClick={() => enterDashboard(signedInAdmin)}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3"
+              >
+                Continue as {signedInAdmin}
+              </Button>
             )}
 
             <form onSubmit={handleLogin} className="space-y-4">
@@ -107,7 +140,7 @@ export default function AdminLoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter admin password"
+                    placeholder="Your Celoris account password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 pr-10"

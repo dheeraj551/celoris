@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-client';
+import { createSupabaseClientForServer } from '@/lib/supabase-client';
 import type { Updates } from '@/lib/database.types';
 
 // GET /api/admin/blog/[id] - Get single blog post
@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const supabase: any = createSupabaseClientForServer()
     const { id } = await params;
 
     const { data: post, error } = await supabase
@@ -43,7 +43,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const supabase: any = createSupabaseClientForServer()
     const { id } = await params;
     const body = await request.json();
 
@@ -84,7 +84,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const supabase: any = createSupabaseClientForServer()
     const { id } = await params;
 
     const { error } = await supabase
@@ -114,7 +114,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createClient()
+    const supabase: any = createSupabaseClientForServer()
     const { id } = await params;
     const body = await request.json();
     const { action } = body; // 'publish' or 'unpublish'
