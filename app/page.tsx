@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   title: "Celoris — India's Creative Studio & Academy | AI Video, Photo & Courses",
   description: "India's creative studio and academy since 2019. 4K AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students. 🇮🇳",
   keywords: "creative studio India, AI video editor India, photo editor online, online courses India, Celoris Academy, freelance gigs India, free tier for students",
+  alternates: { canonical: '/' },
   openGraph: {
     title: "Celoris — India's Creative Studio & Academy | AI Video, Photo & Courses",
     description: "India's creative studio and academy since 2019. 4K AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students. 🇮🇳",

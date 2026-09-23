@@ -12,43 +12,63 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  
-  // Hardcoded metadata for the new blog post
+// Each post is its own canonical URL (it used to inherit the homepage's).
+// Titles are set "absolute" so the root layout's "%s | Celoris" template
+// doesn't append a second brand suffix.
+function cleanTitle(t: string) {
+  return t.replace(/\s*\|\s*Celoris( Blog)?\s*$/i, '').replace(/\s*\|\s*Celoris( Blog)?\s*$/i, '').trim()
+}
+
+async function postMetadata(slug: string): Promise<{ title: string; description?: string; image?: string } | null> {
   if (slug === 'fish-audio-s2-1-pro-voice-ai') {
     return {
-      title: "Fish Audio S2.1 Pro: The Free TTS Model That's Changing the Voice AI Game | Celoris Blog",
+      title: "Fish Audio S2.1 Pro: The Free TTS Model That's Changing the Voice AI Game",
       description: "Fish Audio's new S2.1 Pro voice model delivers ~70ms latency, 83-language support, and zero-shot voice cloning — free on Celo AI until September 18th.",
     };
   }
-
   if (slug === 'excel-copilot-modes-2026') {
     return {
-      title: "From Chaos to Control: How Microsoft Excel's New Copilot Modes Are Redefining Spreadsheet Productivity | Celoris Blog",
+      title: "From Chaos to Control: How Microsoft Excel's New Copilot Modes Are Redefining Spreadsheet Productivity",
       description: "Chat, Edit, Plan and now Agent Mode — here's how Copilot in Excel actually works in 2026, the research behind why planning beats acting, and how to master it.",
     };
   }
-
   if (slug === 'deepseek-harness-ai-trend-2026') {
     return {
-      title: 'DeepSeek Harness Kya Hai? | Celoris Blog',
+      title: 'DeepSeek Harness Kya Hai?',
       description: 'DeepSeek Harness ne AI coding agents ki duniya badal di hai. Janiye kya hai Agent = Model + Harness.',
     };
   }
-
   const supabase = (await createServerClient()) as any;
   const { data: post } = await supabase
     .from('blog_posts')
-    .select('*')
+    .select('title, meta_title, meta_description, excerpt, featured_image_url')
     .eq('slug', slug)
     .maybeSingle();
-
-  if (!post) return { title: 'Post Not Found - Celoris' };
-
+  if (!post) return null;
   return {
-    title: `${post.title} | Celoris Blog`,
+    title: cleanTitle(post.meta_title || post.title),
     description: post.meta_description || post.excerpt,
+    image: post.featured_image_url || undefined,
+  };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const meta = await postMetadata(slug);
+  if (!meta) return { title: 'Post Not Found', robots: { index: false } };
+
+  const url = `/blog/${slug}`;
+  return {
+    title: { absolute: `${meta.title} | Celoris Blog` },
+    description: meta.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      url,
+      title: meta.title,
+      description: meta.description,
+      ...(meta.image ? { images: [meta.image] } : {}),
+    },
   };
 }
 

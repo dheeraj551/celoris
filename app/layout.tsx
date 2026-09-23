@@ -46,12 +46,9 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL("https://www.celorisdesigns.com"),
-  alternates: {
-    canonical: '/',
-    languages: {
-      'en-IN': '/',
-    },
-  },
+  // No site-wide canonical here: in Next.js a canonical in the root layout is
+  // inherited by EVERY page that doesn't set its own, which told Google each
+  // blog post / tool page was a duplicate of the homepage. Pages set their own.
   openGraph: {
     type: "website",
     locale: "en_IN",
