@@ -4,36 +4,37 @@ import React, { useState } from 'react';
 import {
   Image as ImageIcon,
   Video,
-  Sparkles,
   Box,
   Smartphone,
   Plus,
   Minus,
   ChevronRight,
   X,
-  Wand2,
+  LayoutTemplate,
+  Gauge,
+  Loader2,
 } from 'lucide-react';
-import {
-  DemoProduct,
-  DemoAvatar,
-  STYLE_PRESETS,
-  SHOT_ANGLES,
-  ASPECT_RATIOS,
-} from './marketingStudioData';
+import { DemoProduct, DemoAvatar, SHOT_ANGLES, ASPECT_RATIOS, RESOLUTIONS } from './marketingStudioData';
 import { ProductSelectorModal } from './ProductSelectorModal';
 import { AvatarSelectorModal } from './AvatarSelectorModal';
+import type { MarketingPreset } from '@/lib/ai-jobs-client';
+
+export const MAX_VARIATIONS = 3;
 
 interface StudioDockProps {
   mode: 'image' | 'video';
   setMode: (m: 'image' | 'video') => void;
   prompt: string;
   setPrompt: (p: string) => void;
-  selectedStyle: string;
-  setSelectedStyle: (s: string) => void;
+  selectedPreset: MarketingPreset | null;
+  onOpenPresets: () => void;
+  onClearPreset: () => void;
   selectedAngle: string;
   setSelectedAngle: (a: string) => void;
   selectedRatio: string;
   setSelectedRatio: (r: string) => void;
+  resolution: '1k' | '2k' | '4k';
+  setResolution: (r: '1k' | '2k' | '4k') => void;
   variationCount: number;
   setVariationCount: React.Dispatch<React.SetStateAction<number>>;
   selectedProduct: DemoProduct | null;
@@ -41,20 +42,26 @@ interface StudioDockProps {
   selectedAvatar: DemoAvatar | null;
   setSelectedAvatar: (a: DemoAvatar | null) => void;
   onGenerate: () => void;
-  isGenerating: boolean;
+  isSubmitting: boolean;
+  submitLabel?: string;
 }
+
+type Menu = 'angle' | 'ratio' | 'res' | null;
 
 export function StudioDock({
   mode,
   setMode,
   prompt,
   setPrompt,
-  selectedStyle,
-  setSelectedStyle,
+  selectedPreset,
+  onOpenPresets,
+  onClearPreset,
   selectedAngle,
   setSelectedAngle,
   selectedRatio,
   setSelectedRatio,
+  resolution,
+  setResolution,
   variationCount,
   setVariationCount,
   selectedProduct,
@@ -62,345 +69,259 @@ export function StudioDock({
   selectedAvatar,
   setSelectedAvatar,
   onGenerate,
-  isGenerating,
+  isSubmitting,
+  submitLabel,
 }: StudioDockProps) {
-  const [isStyleMenuOpen, setIsStyleMenuOpen] = useState(false);
-  const [isAngleMenuOpen, setIsAngleMenuOpen] = useState(false);
-  const [isRatioMenuOpen, setIsRatioMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<Menu>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const toggle = (m: Menu) => setOpenMenu((cur) => (cur === m ? null : m));
+  const isVideo = mode === 'video';
 
-  const currentStyleObj = STYLE_PRESETS.find((s) => s.name === selectedStyle) || STYLE_PRESETS[0];
-  const currentAngleObj = SHOT_ANGLES.find((a) => a.name === selectedAngle) || SHOT_ANGLES[0];
+  const chip =
+    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[11px] font-medium text-neutral-200 transition-colors cursor-pointer select-none';
+  const menuBox =
+    'absolute bottom-full left-0 mb-2 bg-[#14161F] border border-white/15 rounded-2xl p-1.5 shadow-2xl z-50 animate-in fade-in slide-in-from-bottom-2';
+  const menuItem = (active: boolean) =>
+    `w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
+      active ? 'bg-[#D4FF00]/15 text-[#D4FF00] font-bold' : 'text-neutral-300 hover:bg-white/5'
+    }`;
 
   return (
     <>
       <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 relative z-30">
-        {/* Main Dock Container */}
         <div className="relative bg-[#111217]/95 backdrop-blur-3xl border border-white/[0.12] rounded-3xl p-2.5 sm:p-3.5 shadow-[0_30px_70px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.12)] flex flex-col md:flex-row items-stretch md:items-center gap-2.5">
-          
-          {/* Far Left: Image / Video Mode Switcher */}
+          {/* Image / Video switch */}
           <div className="flex md:flex-col bg-white/[0.04] p-1 rounded-2xl border border-white/5 shrink-0 justify-center">
-            <button
-              type="button"
-              onClick={() => setMode('image')}
-              className={`flex-1 md:flex-none flex flex-col items-center justify-center gap-0.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl text-[10px] font-bold tracking-tight transition-all cursor-pointer ${
-                mode === 'image'
-                  ? 'bg-white/15 text-white shadow-md'
-                  : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              <ImageIcon className={`w-4 h-4 ${mode === 'image' ? 'text-white' : 'text-neutral-400'}`} />
-              <span>Image</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setMode('video')}
-              className={`flex-1 md:flex-none flex flex-col items-center justify-center gap-0.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl text-[10px] font-bold tracking-tight transition-all cursor-pointer ${
-                mode === 'video'
-                  ? 'bg-white/15 text-white shadow-md'
-                  : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              <Video className={`w-4 h-4 ${mode === 'video' ? 'text-white' : 'text-neutral-400'}`} />
-              <span>Video</span>
-            </button>
+            {(['image', 'video'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={`flex-1 md:flex-none flex flex-col items-center justify-center gap-0.5 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl text-[10px] font-bold tracking-tight transition-all cursor-pointer ${
+                  mode === m ? 'bg-white/15 text-white shadow-md' : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                {m === 'image' ? <ImageIcon className="w-4 h-4" /> : <Video className="w-4 h-4" />}
+                <span>{m === 'image' ? 'Image' : 'Video'}</span>
+              </button>
+            ))}
           </div>
 
-          {/* Middle: Input Field & Configuration Chips */}
+          {/* Prompt + settings */}
           <div className="flex-1 flex flex-col justify-between min-w-0 bg-white/[0.02] border border-white/[0.06] rounded-2xl p-2.5 sm:p-3 focus-within:border-white/20 transition-all">
-            {/* Prompt Text Input */}
-            <input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder={
-                mode === 'image'
-                  ? "Describe what you want to create..."
-                  : "Describe motion, camera movement and ad transition..."
-              }
-              className="w-full bg-transparent text-white text-sm sm:text-base placeholder-neutral-500 outline-none pb-2 tracking-wide font-normal"
-            />
+            {isVideo ? (
+              <div className="pb-2 text-sm text-neutral-400">
+                <span className="font-bold text-white">Video ads (UGC &amp; Motion) are coming soon.</span> Switch to Image to create
+                product ads now.
+              </div>
+            ) : (
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value.slice(0, 2000))}
+                rows={2}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onGenerate();
+                }}
+                placeholder={
+                  selectedPreset
+                    ? `Optional: add details for the "${selectedPreset.name}" template…`
+                    : 'Describe the ad you want: scene, mood, lighting, text on the image…'
+                }
+                className="w-full resize-none bg-transparent text-white text-sm sm:text-base placeholder-neutral-500 outline-none pb-2 tracking-wide font-normal leading-snug"
+              />
+            )}
 
-            {/* Bottom Row of Controls / Chips */}
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-white/5 relative">
-              
-              {/* Plus Button */}
-              <button
-                type="button"
-                onClick={() => setIsStyleMenuOpen(!isStyleMenuOpen)}
-                className="w-7 h-7 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
-                title="Choose Model Preset"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-
-              {/* Higgsfield Marketing Studio Model Selector Pill */}
-              <div className="relative">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1.5 border-t border-white/5 relative">
+              {/* Template (Higgsfield preset) */}
+              {selectedPreset ? (
+                <span className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-full bg-[#D4FF00]/15 border border-[#D4FF00]/40 text-[11px] font-bold text-[#D4FF00] max-w-[14rem]">
+                  <LayoutTemplate className="w-3.5 h-3.5 shrink-0" />
+                  <button type="button" onClick={onOpenPresets} className="truncate cursor-pointer" title="Change template">
+                    {selectedPreset.name}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onClearPreset}
+                    className="p-0.5 rounded-full hover:bg-black/30 cursor-pointer"
+                    aria-label="Remove template"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsStyleMenuOpen(!isStyleMenuOpen);
-                    setIsAngleMenuOpen(false);
-                    setIsRatioMenuOpen(false);
-                  }}
+                  onClick={onOpenPresets}
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-[11px] font-bold text-white transition-all cursor-pointer select-none"
                 >
-                  {/* Glowing Lime Squiggly Ribbon */}
                   <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#D4FF00] fill-none stroke-current stroke-[2.8]" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 14c2.5-5 4.5-5 7 0s4.5 5 7 0" />
                   </svg>
-                  <span className="font-extrabold tracking-tight">Marketing Studio Image</span>
+                  <span className="font-extrabold tracking-tight">Templates</span>
                   <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
                 </button>
+              )}
 
-                {isStyleMenuOpen && (
-                  <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#14161F] border border-white/15 rounded-2xl p-1.5 shadow-2xl z-50 animate-in fade-in slide-in-from-bottom-2">
-                    <div className="px-2.5 py-1 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                      Higgsfield AI Models
-                    </div>
-                    {STYLE_PRESETS.map((preset) => (
-                      <button
-                        key={preset.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedStyle(preset.name);
-                          setIsStyleMenuOpen(false);
-                        }}
-                        className={`w-full text-left px-2.5 py-2 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                          selectedStyle === preset.name
-                            ? 'bg-[#D4FF00]/15 text-[#D4FF00] font-bold'
-                            : 'text-neutral-300 hover:bg-white/5'
-                        }`}
-                      >
-                        <div>
-                          <div className="font-bold flex items-center gap-1.5">
-                            <span className="text-[#D4FF00]">〰</span>
-                            {preset.name}
+              {/* Angle (prompt mode only) */}
+              {!selectedPreset && (
+                <div className="relative">
+                  <button type="button" onClick={() => toggle('angle')} className={chip}>
+                    <Box className="w-3 h-3 text-neutral-400" />
+                    <span>{selectedAngle}</span>
+                  </button>
+                  {openMenu === 'angle' && (
+                    <div className={`${menuBox} w-60`}>
+                      <div className="px-2.5 py-1 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Camera angle</div>
+                      {SHOT_ANGLES.map((a) => (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedAngle(a.name);
+                            setOpenMenu(null);
+                          }}
+                          className={menuItem(selectedAngle === a.name)}
+                        >
+                          <div>
+                            <div>{a.name}</div>
+                            <div className="text-[10px] text-neutral-400 font-normal">{a.desc}</div>
                           </div>
-                          <div className="text-[10px] text-neutral-400 font-normal mt-0.5">{preset.desc}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Angle / Framing Selector */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsAngleMenuOpen(!isAngleMenuOpen);
-                    setIsStyleMenuOpen(false);
-                    setIsRatioMenuOpen(false);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[11px] font-medium text-neutral-200 transition-colors cursor-pointer select-none"
-                >
-                  <Box className="w-3 h-3 text-neutral-400" />
-                  <span>{selectedAngle}</span>
-                </button>
-
-                {isAngleMenuOpen && (
-                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-[#14161F] border border-white/15 rounded-2xl p-1.5 shadow-2xl z-50 animate-in fade-in slide-in-from-bottom-2">
-                    <div className="px-2.5 py-1 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                      Camera Angle & Framing
+                        </button>
+                      ))}
                     </div>
-                    {SHOT_ANGLES.map((angle) => (
-                      <button
-                        key={angle.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedAngle(angle.name);
-                          setIsAngleMenuOpen(false);
-                        }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                          selectedAngle === angle.name
-                            ? 'bg-[#D4FF00]/15 text-[#D4FF00] font-bold'
-                            : 'text-neutral-300 hover:bg-white/5'
-                        }`}
-                      >
-                        <div>
-                          <div>{angle.name}</div>
-                          <div className="text-[10px] text-neutral-400 font-normal">{angle.desc}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
 
-              {/* Aspect Ratio Selector */}
+              {/* Aspect ratio */}
               <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsRatioMenuOpen(!isRatioMenuOpen);
-                    setIsStyleMenuOpen(false);
-                    setIsAngleMenuOpen(false);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[11px] font-medium text-neutral-200 transition-colors cursor-pointer select-none"
-                >
+                <button type="button" onClick={() => toggle('ratio')} className={chip}>
                   <Smartphone className="w-3 h-3 text-neutral-400" />
                   <span>{selectedRatio}</span>
                 </button>
-
-                {isRatioMenuOpen && (
-                  <div className="absolute bottom-full left-0 mb-2 w-52 bg-[#14161F] border border-white/15 rounded-2xl p-1.5 shadow-2xl z-50 animate-in fade-in slide-in-from-bottom-2">
-                    <div className="px-2.5 py-1 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                      Aspect Ratio
-                    </div>
-                    {ASPECT_RATIOS.map((ratio) => (
+                {openMenu === 'ratio' && (
+                  <div className={`${menuBox} w-56`}>
+                    <div className="px-2.5 py-1 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Aspect ratio</div>
+                    {ASPECT_RATIOS.map((r) => (
                       <button
-                        key={ratio.id}
+                        key={r.id}
                         type="button"
                         onClick={() => {
-                          setSelectedRatio(ratio.id);
-                          setIsRatioMenuOpen(false);
+                          setSelectedRatio(r.id);
+                          setOpenMenu(null);
                         }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                          selectedRatio === ratio.id
-                            ? 'bg-[#D4FF00]/15 text-[#D4FF00] font-bold'
-                            : 'text-neutral-300 hover:bg-white/5'
-                        }`}
+                        className={menuItem(selectedRatio === r.id)}
                       >
-                        <span>{ratio.name}</span>
-                        <span className="font-mono text-[10px] text-neutral-400">{ratio.id}</span>
+                        <span>{r.name}</span>
+                        <span className="font-mono text-[10px] text-neutral-400">{r.id}</span>
                       </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Variations Counter (- 1 +) */}
-              <div className="inline-flex items-center bg-white/[0.05] border border-white/10 rounded-full px-1.5 py-0.5 text-xs text-neutral-300">
+              {/* Resolution */}
+              <div className="relative">
+                <button type="button" onClick={() => toggle('res')} className={chip}>
+                  <Gauge className="w-3 h-3 text-neutral-400" />
+                  <span>{resolution.toUpperCase()}</span>
+                </button>
+                {openMenu === 'res' && (
+                  <div className={`${menuBox} w-52`}>
+                    <div className="px-2.5 py-1 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Resolution</div>
+                    {RESOLUTIONS.map((r) => (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() => {
+                          setResolution(r.id);
+                          setOpenMenu(null);
+                        }}
+                        className={menuItem(resolution === r.id)}
+                      >
+                        <span className="font-bold">{r.name}</span>
+                        <span className="text-[10px] text-neutral-400">{r.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Variations */}
+              <div
+                className="inline-flex items-center bg-white/[0.05] border border-white/10 rounded-full px-1.5 py-0.5 text-xs text-neutral-300"
+                title="How many versions to create"
+              >
                 <button
                   type="button"
-                  onClick={() => setVariationCount((prev) => Math.max(1, prev - 1))}
+                  onClick={() => setVariationCount((v) => Math.max(1, v - 1))}
                   className="p-1 hover:text-white transition-colors cursor-pointer"
+                  aria-label="Fewer versions"
                 >
                   <Minus className="w-2.5 h-2.5" />
                 </button>
-                <span className="px-1.5 font-mono font-bold text-[11px] text-white">
-                  {variationCount}
-                </span>
+                <span className="px-1.5 font-mono font-bold text-[11px] text-white">{variationCount}</span>
                 <button
                   type="button"
-                  onClick={() => setVariationCount((prev) => Math.min(4, prev + 1))}
+                  onClick={() => setVariationCount((v) => Math.min(MAX_VARIATIONS, v + 1))}
                   className="p-1 hover:text-white transition-colors cursor-pointer"
+                  aria-label="More versions"
                 >
                   <Plus className="w-2.5 h-2.5" />
                 </button>
               </div>
-
             </div>
           </div>
 
-          {/* Right: Reference Slots (+ AVATAR, + PRODUCT) & GENERATE Button */}
+          {/* Reference slots + Generate */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* AVATAR Reference Slot */}
-            <div className="relative">
-              {selectedAvatar ? (
-                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-[#D4FF00]/60 bg-black/60 group">
-                  <img
-                    src={selectedAvatar.avatarUrl}
-                    alt={selectedAvatar.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-end p-1">
-                    <span className="text-[8px] font-bold text-white truncate max-w-full">
-                      {selectedAvatar.name}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setSelectedAvatar(null)}
-                    className="absolute top-1 right-1 p-0.5 rounded-full bg-black/80 text-white hover:text-rose-400"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsAvatarModalOpen(true)}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-white transition-all cursor-pointer group"
-                >
-                  <div className="w-5 h-5 rounded-full border border-neutral-500 group-hover:border-white flex items-center justify-center">
-                    <Plus className="w-3 h-3" />
-                  </div>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider">
-                    AVATAR
-                  </span>
-                </button>
-              )}
-            </div>
+            <RefSlot
+              label="MODEL"
+              image={selectedAvatar?.avatarUrl}
+              name={selectedAvatar?.name}
+              onAdd={() => setIsAvatarModalOpen(true)}
+              onClear={() => setSelectedAvatar(null)}
+            />
+            <RefSlot
+              label="PRODUCT"
+              image={selectedProduct?.image}
+              name={selectedProduct?.name}
+              required={!!selectedPreset}
+              onAdd={() => setIsProductModalOpen(true)}
+              onClear={() => setSelectedProduct(null)}
+            />
 
-            {/* PRODUCT Reference Slot */}
-            <div className="relative">
-              {selectedProduct ? (
-                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-[#D4FF00]/60 bg-black/60 group">
-                  <img
-                    src={selectedProduct.image}
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-end p-1">
-                    <span className="text-[8px] font-bold text-white truncate max-w-full">
-                      {selectedProduct.name}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setSelectedProduct(null)}
-                    className="absolute top-1 right-1 p-0.5 rounded-full bg-black/80 text-white hover:text-rose-400"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsProductModalOpen(true)}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-white transition-all cursor-pointer group"
-                >
-                  <div className="w-5 h-5 rounded-full border border-neutral-500 group-hover:border-white flex items-center justify-center">
-                    <Plus className="w-3 h-3" />
-                  </div>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider">
-                    PRODUCT
-                  </span>
-                </button>
-              )}
-            </div>
-
-            {/* Neon Action Button: GENERATE ✦ 4 */}
             <button
               type="button"
               onClick={onGenerate}
-              disabled={isGenerating}
-              className="h-16 sm:h-20 px-5 sm:px-7 rounded-2xl bg-[#E2FE52] hover:bg-[#D4FF00] text-black font-black flex flex-col items-center justify-center transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_30px_rgba(226,254,82,0.4)] disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer shrink-0"
+              disabled={isSubmitting || isVideo}
+              className="h-16 sm:h-20 px-5 sm:px-7 rounded-2xl bg-[#E2FE52] hover:bg-[#D4FF00] text-black font-black flex flex-col items-center justify-center transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_30px_rgba(226,254,82,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 select-none cursor-pointer shrink-0"
             >
-              <span className="text-xs sm:text-sm tracking-wider uppercase font-black">
-                {isGenerating ? "CREATING..." : "GENERATE"}
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-1 text-neutral-800">
-                ✦ {variationCount * 4}
-              </span>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-[10px] font-mono font-bold mt-0.5">{submitLabel || 'Starting…'}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-xs sm:text-sm tracking-wider uppercase font-black">{isVideo ? 'SOON' : 'GENERATE'}</span>
+                  <span className="text-[10px] sm:text-[11px] font-mono font-bold text-neutral-800">
+                    {variationCount}× {resolution.toUpperCase()}
+                  </span>
+                </>
+              )}
             </button>
-
           </div>
-
         </div>
       </div>
 
-      {/* Selector Modals */}
       <ProductSelectorModal
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}
         onSelectProduct={(prod) => setSelectedProduct(prod)}
         selectedProduct={selectedProduct}
       />
-
       <AvatarSelectorModal
         isOpen={isAvatarModalOpen}
         onClose={() => setIsAvatarModalOpen(false)}
@@ -408,5 +329,54 @@ export function StudioDock({
         selectedAvatar={selectedAvatar}
       />
     </>
+  );
+}
+
+function RefSlot({
+  label,
+  image,
+  name,
+  required,
+  onAdd,
+  onClear,
+}: {
+  label: string;
+  image?: string;
+  name?: string;
+  required?: boolean;
+  onAdd: () => void;
+  onClear: () => void;
+}) {
+  if (image) {
+    return (
+      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-[#D4FF00]/60 bg-black/60">
+        <img src={image} alt={name || label} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-end p-1">
+          <span className="text-[8px] font-bold text-white truncate max-w-full">{name}</span>
+        </div>
+        <button
+          type="button"
+          onClick={onClear}
+          className="absolute top-1 right-1 p-0.5 rounded-full bg-black/80 text-white hover:text-rose-400 cursor-pointer"
+          aria-label={`Remove ${label.toLowerCase()}`}
+        >
+          <X className="w-3 h-3" />
+        </button>
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={onAdd}
+      className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-white transition-all cursor-pointer group ${
+        required ? 'border-[#D4FF00]/50 animate-pulse' : 'border-white/10 hover:border-white/20'
+      }`}
+    >
+      <div className="w-5 h-5 rounded-full border border-neutral-500 group-hover:border-white flex items-center justify-center">
+        <Plus className="w-3 h-3" />
+      </div>
+      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider">{label}</span>
+    </button>
   );
 }

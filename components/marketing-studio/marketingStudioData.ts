@@ -223,6 +223,7 @@ export const STYLE_PRESETS = [
 ];
 
 export const SHOT_ANGLES = [
+  { id: 'auto', name: 'Any angle', icon: 'Sparkles', desc: 'Let the model choose the framing' },
   { id: 'closeup', name: 'Closeup', icon: 'Box', desc: 'Tight focus highlighting packaging & texture details' },
   { id: 'hero-shot', name: 'Hero Low-Angle', icon: 'Maximize2', desc: 'Dramatic low-angle framing for premium prestige' },
   { id: 'floating-3d', name: 'Floating Zero-G', icon: 'Compass', desc: 'Anti-gravity suspension with dynamic splash particles' },
@@ -230,10 +231,18 @@ export const SHOT_ANGLES = [
   { id: 'flatlay', name: 'Studio Flatlay', icon: 'Grid', desc: 'Top-down geometric alignment with ingredients' },
 ];
 
+// Only ratios Higgsfield Marketing Studio accepts.
 export const ASPECT_RATIOS = [
   { id: '3:4', label: '3:4', name: 'Ad Poster (3:4)', icon: 'RectangleVertical', desc: 'High-converting social ad feed format' },
   { id: '1:1', label: '1:1', name: 'Square Feed (1:1)', icon: 'Square', desc: 'Instagram, Facebook & Shopify catalog' },
   { id: '9:16', label: '9:16', name: 'Story / Reel (9:16)', icon: 'Smartphone', desc: 'Full-screen TikTok, Reels & Shorts' },
   { id: '16:9', label: '16:9', name: 'Web Banner (16:9)', icon: 'Monitor', desc: 'Desktop hero sections & YouTube ads' },
-  { id: '4:5', label: '4:5', name: 'Portrait (4:5)', icon: 'Tablet', desc: 'Optimal Instagram vertical timeline' },
+  { id: '2:3', label: '2:3', name: 'Pin / Poster (2:3)', icon: 'Tablet', desc: 'Pinterest pins & tall posters' },
+  { id: '4:3', label: '4:3', name: 'Landscape (4:3)', icon: 'Monitor', desc: 'Marketplace galleries & slides' },
 ];
+
+export const RESOLUTIONS = [
+  { id: '1k', name: '1K', desc: 'Fast drafts' },
+  { id: '2k', name: '2K', desc: 'Social-ready (recommended)' },
+  { id: '4k', name: '4K', desc: 'Print & hero banners (slower)' },
+] as const;

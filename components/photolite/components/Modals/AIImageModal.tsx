@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Sparkles,
   Wand2,
@@ -13,8 +13,18 @@ import {
   ArrowRight,
   Maximize2,
   Wallet,
+  Clock,
+  History,
 } from 'lucide-react';
 import { Layer } from '../../types';
+import {
+  AiJob,
+  AiJobsError,
+  listAiJobs,
+  startAiJob,
+  uploadReferenceImage,
+  waitForAiJob,
+} from '@/lib/ai-jobs-client';
 
 interface AIImageModalProps {
   isOpen: boolean;
@@ -85,6 +95,14 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
   const [activeLayerDataUrl, setActiveLayerDataUrl] = useState<string | null>(null);
   const [appliedSuccess, setAppliedSuccess] = useState<string | null>(null);
   const [localCredits, setLocalCredits] = useState<number | null>(null);
+  // Async job state: the render runs on Higgsfield in the background and this
+  // modal polls for it, so no request is held open (that caused the
+  // "Failed to fetch" / connection-closed errors).
+  const [stage, setStage] = useState<string | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [recentJobs, setRecentJobs] = useState<AiJob[]>([]);
+  const [resultPrompt, setResultPrompt] = useState<string>('');
+  const pollAbort = useRef<AbortController | null>(null);
 
   const currentCredits = localCredits !== null ? localCredits : userCredits;
   const hasProAccess = currentCredits >= MIN_PRO_CREDITS;
@@ -104,6 +122,30 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
       else if (Math.abs(ratio - 1) < 0.2) setAspectRatio('1:1');
     }
   }, [canvasWidth, canvasHeight]);
+
+  // Stop polling if PhotoLite itself unmounts.
+  useEffect(() => () => pollAbort.current?.abort(), []);
+
+  // Timer shown while a render is running.
+  useEffect(() => {
+    if (!loading) return;
+    const started = Date.now();
+    setElapsed(0);
+    const t = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(t);
+  }, [loading]);
+
+  // Recent generations (also finishes any that completed while the modal was closed).
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    listAiJobs('photolite')
+      .then((jobs) => !cancelled && setRecentJobs(jobs.filter((j) => j.status === 'completed' && j.imageUrl).slice(0, 8)))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, generatedImageUrl]);
 
   // Generate thumbnail data URL for active layer
   useEffect(() => {
@@ -134,9 +176,18 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
       return;
     }
 
+    if (mode === 'edit' && !activeLayer?.canvas) {
+      setError('Select a layer to edit first.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setAppliedSuccess(null);
+    setGeneratedImageUrl(null);
+    pollAbort.current?.abort();
+    const abort = new AbortController();
+    pollAbort.current = abort;
 
     let fullPrompt = prompt.trim();
     if (mode === 'create' && selectedStyle) {
@@ -145,65 +196,70 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
     }
 
     try {
-      const bodyPayload: any = {
-        prompt: fullPrompt,
-        mode,
-        aspectRatio,
-        userId: userId || undefined,
-        userCredits: currentCredits,
-      };
-
+      // 1) Edit mode: send the layer as a reference image (downscaled in the browser, stored in R2).
+      let imageUrls: string[] = [];
       if (mode === 'edit' && activeLayer?.canvas) {
-        bodyPayload.imageBase64 = activeLayer.canvas.toDataURL('image/png');
-        bodyPayload.mimeType = 'image/png';
+        setStage('Uploading layer…');
+        imageUrls = [await uploadReferenceImage(activeLayer.canvas)];
+        fullPrompt = `Edit the reference image: ${fullPrompt}. Keep everything else in the image the same.`;
       }
 
-      const res = await fetch('/api/ai/generate-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyPayload),
+      // 2) Start the job — returns in a second or two with a job id.
+      setStage('Starting…');
+      const { job, balance } = await startAiJob({
+        app: 'photolite',
+        prompt: fullPrompt,
+        displayPrompt: prompt.trim(),
+        imageUrls,
+        aspectRatio: mode === 'edit' ? 'auto' : aspectRatio,
+        resolution: '2k',
+        quality: 'high',
       });
+      if (typeof balance === 'number') setLocalCredits(balance);
+      setStage(job.status === 'queued' ? 'In queue…' : 'Rendering…');
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'AI image generation service failed.');
+      // 3) Poll until Higgsfield finishes (the image is then copied to R2).
+      const done = await waitForAiJob(job.id, {
+        signal: abort.signal,
+        onUpdate: (j) => {
+          setStage(j.status === 'queued' ? 'In queue…' : 'Rendering…');
+        },
+      });
+      if (typeof done.balance === 'number') setLocalCredits(done.balance);
+
+      if (done.job.status !== 'completed' || !done.job.imageUrl) {
+        const refundNote = done.job.refunded ? ` Your ${GENERATION_CREDIT_COST} credits were refunded.` : '';
+        throw new Error((done.job.error || 'Generation failed.') + refundNote);
       }
 
-      setGeneratedImageUrl(data.imageUrl);
-      // The backend tries several Higgsfield models in priority order (whichever
-      // this account is actually entitled to) and reports which one it used —
-      // this used to be hardcoded to "soul-v2" in the UI regardless of which
-      // model actually ran, which was misleading once the backend started
-      // trying Marketing Studio Image first.
-      setUsedModel(typeof data.usedModel === 'string' ? data.usedModel : null);
-
-      if (typeof data.remainingCredits === 'number') {
-        setLocalCredits(data.remainingCredits);
-        setAppliedSuccess(
-          `AI Image generated! ${data.creditsDeducted || GENERATION_CREDIT_COST} credits deducted. Remaining balance: ${data.remainingCredits.toLocaleString()} credits.`
-        );
-      } else {
-        const nextBal = Math.max(0, currentCredits - GENERATION_CREDIT_COST);
-        setLocalCredits(nextBal);
-        setAppliedSuccess(
-          `AI Image generated! ${GENERATION_CREDIT_COST} credits deducted. Remaining balance: ${nextBal.toLocaleString()} credits.`
-        );
-      }
-
-      if (onRefreshCredits) {
-        onRefreshCredits();
-      }
+      setGeneratedImageUrl(done.job.imageUrl);
+      setResultPrompt(prompt.trim());
+      setUsedModel('marketing-studio/image');
+      const remaining = typeof done.balance === 'number' ? done.balance : typeof balance === 'number' ? balance : null;
+      setAppliedSuccess(
+        remaining !== null
+          ? `AI Image generated! ${GENERATION_CREDIT_COST} credits used. Remaining balance: ${remaining.toLocaleString()} credits.`
+          : `AI Image generated! ${GENERATION_CREDIT_COST} credits used.`
+      );
+      if (onRefreshCredits) onRefreshCredits();
     } catch (err: any) {
+      if (abort.signal.aborted) return;
       console.error('AI Generation Error:', err);
-      setError(err?.message || 'Failed to generate image. Please try again.');
+      const msg = err?.message || 'Failed to generate image. Please try again.';
+      setError(msg);
+      if (err instanceof AiJobsError && err.status === 403) onOpenProModal();
+      if (onRefreshCredits) onRefreshCredits();
     } finally {
-      setLoading(false);
+      if (pollAbort.current === abort) {
+        setLoading(false);
+        setStage(null);
+      }
     }
   };
 
   const handleInsertAsNewLayer = () => {
     if (!generatedImageUrl) return;
-    const label = prompt.slice(0, 24) || 'AI Generated';
+    const label = (resultPrompt || prompt).slice(0, 24) || 'AI Generated';
     onAddLayerFromImage(generatedImageUrl, `AI: ${label}`);
     setAppliedSuccess('Added as new layer to composition!');
     setTimeout(() => {
@@ -213,7 +269,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
 
   const handleApplyToActiveLayer = () => {
     if (!generatedImageUrl) return;
-    const label = prompt.slice(0, 24) || 'AI Edit';
+    const label = (resultPrompt || prompt).slice(0, 24) || 'AI Edit';
     onReplaceActiveLayerImage(generatedImageUrl, `AI Edit: ${label}`);
     setAppliedSuccess('Updated active layer with AI transformation!');
     setTimeout(() => {
@@ -224,7 +280,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
   const handleDownload = () => {
     if (!generatedImageUrl) return;
     const a = document.createElement('a');
-    a.href = generatedImageUrl;
+    a.href = generatedImageUrl.startsWith('/api/ai/jobs/') ? `${generatedImageUrl}?download=1` : generatedImageUrl;
     a.download = `photolite-ai-${Date.now()}.png`;
     document.body.appendChild(a);
     a.click();
@@ -480,6 +536,23 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
             </div>
           )}
 
+          {/* Background render progress */}
+          {loading && (
+            <div className="pl-toast-anim rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 flex items-center gap-3 text-xs text-amber-200">
+              <RefreshCw className="h-4 w-4 animate-spin text-amber-400 shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold">{stage || 'Working…'}</p>
+                <p className="text-[11px] text-amber-200/70">
+                  Usually 20–90 seconds. You can close this window — the image will be waiting under &quot;Recent&quot; when you come back.
+                </p>
+              </div>
+              <span className="font-mono text-amber-300 flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}
+              </span>
+            </div>
+          )}
+
           {/* Error Message */}
           {error && (
             <div
@@ -564,13 +637,43 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
               </div>
             </div>
           )}
+          {/* Recent generations (stored in Celoris R2) */}
+          {recentJobs.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400">
+                <History className="h-3.5 w-3.5 text-amber-400" />
+                <span>Recent — click to reuse</span>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {recentJobs.map((j) => (
+                  <button
+                    key={j.id}
+                    type="button"
+                    onClick={() => {
+                      setGeneratedImageUrl(j.imageUrl);
+                      setResultPrompt(j.prompt);
+                      setUsedModel('marketing-studio/image');
+                      setAppliedSuccess(null);
+                      setError(null);
+                    }}
+                    className={`h-16 w-16 shrink-0 rounded border overflow-hidden bg-black/60 cursor-pointer transition-colors ${
+                      generatedImageUrl === j.imageUrl ? 'border-amber-400' : 'border-black/80 hover:border-amber-500/60'
+                    }`}
+                    title={j.prompt}
+                  >
+                    <img src={j.imageUrl!} alt={j.prompt} loading="lazy" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Modal Footer Controls */}
         <div className="flex items-center justify-between border-t border-black/80 bg-[#252525] px-5 py-3">
           <div className="flex items-center gap-2 text-[11px] text-gray-400">
             <span className="h-2 w-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-            <span>Server-side Higgsfield AI Ready</span>
+            <span>Higgsfield AI · images saved to your Celoris storage</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -578,7 +681,6 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
               id="btn-cancel-ai-modal"
               type="button"
               onClick={onClose}
-              disabled={loading}
               className="rounded-lg bg-[#1f1f1f] hover:bg-[#333] border border-black px-3.5 py-1.5 text-xs font-medium text-gray-300 cursor-pointer transition-colors disabled:opacity-50"
             >
               Close
@@ -594,7 +696,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
               {loading ? (
                 <>
                   <RefreshCw className="h-3.5 w-3.5 animate-spin text-black" />
-                  <span>Generating with Higgsfield AI...</span>
+                  <span>{stage || 'Generating…'}</span>
                 </>
               ) : !hasProAccess ? (
                 <>
