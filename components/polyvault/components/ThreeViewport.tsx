@@ -7,6 +7,7 @@ import {
   loadRealModelObject,
   normalizeAndCenterObject,
   standardizeMaterials,
+  getModelUrlForAsset,
 } from '../utils/modelLoaders';
 import {
   RotateCcw,
@@ -438,39 +439,37 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
 
     // 6. Build and Add 3D Model
     let modelGroup: THREE.Group | null = null;
-    const loaderKind = getRealModelLoaderKind(asset.modelFileName);
-    const willLoadRealModel = !!(asset.r2ModelKey && loaderKind);
+    const loaderKind = getRealModelLoaderKind(
+      asset.modelFileName || (asset.title.toLowerCase().includes('lara') ? 'laracroft.glb' : undefined)
+    );
 
-    if (!willLoadRealModel) {
-      modelGroup = buildProceduralModel(
-        asset.generatorType,
-        asset.primaryColor || '#10b981',
-        asset.accentColor || '#06b6d4'
-      );
-      scene.add(modelGroup);
-      modelGroupRef.current = modelGroup;
-      applyShaderFilters(modelGroup, settings);
-    }
+    // Initial procedural placeholder while real model loads
+    modelGroup = buildProceduralModel(
+      asset.generatorType,
+      asset.primaryColor || '#10b981',
+      asset.accentColor || '#06b6d4'
+    );
+    scene.add(modelGroup);
+    modelGroupRef.current = modelGroup;
+    applyShaderFilters(modelGroup, settings);
 
     let cancelled = false;
     setRealModelNotice(null);
 
-    if (asset.r2ModelKey && loaderKind) {
+    if (loaderKind) {
       setIsLoadingRealModel(true);
       (async () => {
         try {
-          const res = await fetch('/api/polyvault/sign-download', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: asset.r2ModelKey, filename: asset.modelFileName }),
-          });
-          if (!res.ok) throw new Error('Could not get download URL');
-          const { downloadUrl } = await res.json();
-          const loadedObject = await loadRealModelObject(downloadUrl, loaderKind);
+          const modelUrl = await getModelUrlForAsset(asset);
+          if (!modelUrl) {
+            setIsLoadingRealModel(false);
+            return;
+          }
+          const loadedObject = await loadRealModelObject(modelUrl, loaderKind);
 
           if (cancelled) return;
 
-          normalizeAndCenterObject(loadedObject);
+          normalizeAndCenterObject(loadedObject, 2.6);
           standardizeMaterials(loadedObject);
 
           if (modelGroup) scene.remove(modelGroup);
@@ -485,14 +484,6 @@ export const ThreeViewport: React.FC<ThreeViewportProps> = ({
           if (cancelled) return;
           console.error('PolyVault: preview fallback', err);
           setRealModelNotice('Loaded optimized view for this file. Full package available on download.');
-          const fallbackGroup = buildProceduralModel(
-            asset.generatorType,
-            asset.primaryColor || '#10b981',
-            asset.accentColor || '#06b6d4'
-          );
-          scene.add(fallbackGroup);
-          modelGroupRef.current = fallbackGroup;
-          applyShaderFilters(fallbackGroup, settings);
           setIsLoadingRealModel(false);
         }
       })();

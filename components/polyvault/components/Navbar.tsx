@@ -17,6 +17,7 @@ import {
   Briefcase,
   Wallet,
   Compass,
+  ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -64,27 +65,51 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-30 w-full bg-white/85 backdrop-blur-xl border-b border-zinc-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        {/* Logo & Brand */}
-        <div className="flex items-center gap-3">
-          <motion.div
-            whileHover={{ rotate: 15, scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 20 }}
-            className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 p-0.5 shadow-md shadow-emerald-600/20 cursor-pointer"
+        {/* Left: Celoris Brand & Back to Main + PolyVault Brand */}
+        <div className="flex items-center gap-2.5 sm:gap-4">
+          {/* Back to Celoris Main Website */}
+          <Link
+            href="/"
+            id="btn-back-to-celoris"
+            className="group flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-zinc-50 hover:bg-zinc-100/90 border border-zinc-200/90 hover:border-emerald-300 text-zinc-700 hover:text-emerald-700 transition-all cursor-pointer shadow-xs"
+            title="Back to Celoris Main Website"
           >
-            <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-              <Box className="w-5 h-5 text-emerald-600" />
+            <ArrowLeft className="w-4 h-4 text-emerald-600 group-hover:-translate-x-0.5 transition-transform" />
+            <img
+              src="/celoris-logo-dark.png"
+              alt="Celoris Logo"
+              className="h-5 sm:h-6 w-auto object-contain"
+            />
+            <span className="text-[11px] font-bold tracking-tight hidden md:inline text-zinc-600 group-hover:text-emerald-700">
+              Home
+            </span>
+          </Link>
+
+          {/* Divider */}
+          <div className="h-6 w-[1px] bg-zinc-200 hidden sm:block" />
+
+          {/* PolyVault Brand */}
+          <div className="flex items-center gap-2.5">
+            <motion.div
+              whileHover={{ rotate: 15, scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 20 }}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 p-0.5 shadow-md shadow-emerald-600/20 cursor-pointer"
+            >
+              <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
+                <Box className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+              </div>
+            </motion.div>
+            <div>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-black tracking-tight text-base sm:text-lg text-zinc-950">POLYVAULT</span>
+                <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
+                  3D Store
+                </span>
+              </div>
+              <p className="text-[10px] text-zinc-500 hidden lg:block font-medium">
+                Next-Gen 3D Assets, WebGL Studio & Edge CDN
+              </p>
             </div>
-          </motion.div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black tracking-tight text-lg text-zinc-950">POLYVAULT</span>
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
-                3D Store
-              </span>
-            </div>
-            <p className="text-[10px] text-zinc-500 hidden sm:block font-medium">
-              Next-Gen 3D Assets, WebGL Studio & Edge CDN
-            </p>
           </div>
         </div>
 
@@ -172,6 +197,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="text-[11px] font-normal text-zinc-500 truncate">{user.email}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-zinc-100" />
+                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
+                  <Link href="/"><ArrowLeft className="w-4 h-4 mr-2 text-emerald-600" /> Back to Main Website</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/learn"><BookOpen className="w-4 h-4 mr-2 text-emerald-600" /> Learn</Link>
                 </DropdownMenuItem>

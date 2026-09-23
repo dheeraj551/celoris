@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { resolveRoomAccess } from '@/lib/cafe-room-access'
 
 // Lets the trainer pull the next student out of the waiting queue and into
 // the room — the "Waiting Queue" panel's "Admit Next" button (see
@@ -11,13 +12,8 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 // that up and is what actually takes the classroom-presence seat, so this
 // route never needs to know about capacity itself.
 //
-// Auth note: like verify-admit-code and every /api/admin/cafe/* route, this
-// only confirms the CALLER is a logged-in user — it can't confirm they're
-// actually the room's trainer, because "trainer" here is resolved
-// client-side from matching the room's trainer_code rather than from a
-// persisted DB relationship (there's no server-side identity for it to
-// check). Same disclosed, existing trust model as the rest of this app's
-// café surface — flagged here rather than silently assumed. The admin
+// Auth: the caller must be the room's trainer (host_id owner, or someone who
+// entered the trainer code — recorded in cafe_room_roles). The admin
 // queue-management panel (/api/admin/cafe/queue) reuses this same logic
 // with a broader, admin-only entry point.
 const STALE_AFTER_SECONDS = 60
@@ -38,6 +34,15 @@ export async function POST(request: Request) {
         }
 
         const admin = createSupabaseClientForServer()
+
+        // Sept 2026: the trainer role is now recorded server-side (see
+        // lib/cafe-room-access.ts), so only the room's trainer can admit
+        // people. Before the migration runs (`legacy`), keep the old
+        // behaviour so the queue panel doesn't break mid-rollout.
+        const access = await resolveRoomAccess(admin, roomId, user.id)
+        if (!access.legacy && access.role !== 'trainer') {
+            return NextResponse.json({ error: 'Only this room\'s trainer can admit students.' }, { status: 403 })
+        }
 
         let targetId = userId as string | undefined
 

@@ -1022,7 +1022,8 @@ export default function AdminSocialPage() {
                     onChange={(e) => setRoomForm((f) => ({ ...f, category: e.target.value }))}
                     className="w-full h-9 px-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-purple-500"
                   >
-                    <option value="classroom">Live Classroom</option>
+                    <option value="classroom">Live Classroom (3D)</option>
+                    <option value="whiteboard">Whiteboard Class (2D)</option>
                     <option value="study">Silent Study</option>
                     <option value="course">Skill Lounge</option>
                     <option value="mixer">Mixer Chat</option>

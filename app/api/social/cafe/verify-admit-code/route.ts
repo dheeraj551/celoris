@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { grantRoomRole } from '@/lib/cafe-room-access'
 
 // Checks a code entered by whoever's trying to join a room against the
 // room's saved codes — there are now TWO: a trainer_code (grants the
@@ -20,6 +21,13 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 // editable from inside the classroom at all — only from the admin
 // dashboard's Café Rooms panel (app/admin/social) — so a trainer can share
 // their code without ever being able to see or change it themselves.
+//
+// Sept 2026: whichever role a code unlocks is now also recorded server-side
+// in `cafe_room_roles` (see lib/cafe-room-access.ts), so the Agora token,
+// presence, admit-next and whiteboard-events routes can check the real role
+// instead of trusting the one the browser sends. The same migration also
+// revoked anon/authenticated SELECT on the code columns, which closes the
+// "readable via the public key" gap described in the note below.
 //
 // Note: this stops casual gatecrashing (the intended use — the admin/
 // trainer shares a code with their own students), not a determined
@@ -72,15 +80,18 @@ export async function POST(request: Request) {
     const provided = typeof code === 'string' ? code.trim() : ''
 
     if (requiredTrainer && provided && provided.toLowerCase() === requiredTrainer.toLowerCase()) {
+      await grantRoomRole(admin, roomId, user.id, 'trainer')
       return NextResponse.json({ ok: true, role: 'trainer' })
     }
 
     if (requiredStudent && provided && provided.toLowerCase() === requiredStudent.toLowerCase()) {
+      await grantRoomRole(admin, roomId, user.id, 'student')
       return NextResponse.json({ ok: true, role: 'student' })
     }
 
     // Neither code is set on this room — nothing to gate.
     if (!requiredTrainer && !requiredStudent) {
+      await grantRoomRole(admin, roomId, user.id, 'student')
       return NextResponse.json({ ok: true, role: 'student' })
     }
 

@@ -15,6 +15,9 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
 const ClassroomTable = dynamic(() => import('@/components/cafe/classroom3d/components/ClassroomRoom'), { ssr: false });
+// 2D whiteboard classroom (category 'whiteboard') — same seats/queue, Agora
+// voice + screen share and room codes as the 3D classroom above.
+const WhiteboardRoom = dynamic(() => import('@/components/whiteboard-room/WhiteboardRoom'), { ssr: false });
 const ChatCafeApp = dynamic(() => import('@/components/chat-cafe/ChatCafeApp'), { ssr: false });
 
 import { 
@@ -357,7 +360,14 @@ export default function App() {
             <div className="space-y-6">
               {joinedRoomId && joinedRoom ? (
                 // Seated Chat / Virtual Table View
-                joinedRoom.category === 'classroom' ? (
+                joinedRoom.category === 'whiteboard' ? (
+                  <WhiteboardRoom
+                    roomId={joinedRoom.id}
+                    roomName={joinedRoom.name}
+                    isHost={joinedRoomRole === 'host' || joinedRoomRole === 'trainer'}
+                    onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
+                  />
+                ) : joinedRoom.category === 'classroom' ? (
                   <ClassroomTable
                     roomId={joinedRoom.id}
                     roomName={joinedRoom.name}

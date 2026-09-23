@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { RtcTokenBuilder, RtcRole } from 'agora-token'
+import { createRouteClient } from '@/lib/supabase-server'
+import { resolveRoomAccess, roomIdFromClassroomChannel } from '@/lib/cafe-room-access'
 
 // Initialize Supabase client for server-side operations
 const supabaseUrl = process.env.SUPABASE_URL!
@@ -58,8 +60,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Café classrooms (3D room + whiteboard room): the caller must be
+    // signed in, can only get a token for their OWN uid, must actually be
+    // admitted to the room, and only the room's trainer gets a publisher
+    // token. Previously anyone — even logged out — could mint a publisher
+    // token for any classroom as any user id.
+    let roleNum = role === 'publisher' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER
+    if (channelName.startsWith('classroom_')) {
+      const roomId = roomIdFromClassroomChannel(channelName)
+      if (!roomId) {
+        return NextResponse.json({ error: 'Invalid classroom channel' }, { status: 400 })
+      }
+
+      const routeClient = await createRouteClient()
+      const { data: { user }, error: authError } = await routeClient.auth.getUser()
+      if (authError || !user) {
+        return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+      }
+      if (String(uid) !== user.id) {
+        return NextResponse.json({ error: 'Token uid must match the signed-in user' }, { status: 403 })
+      }
+
+      const access = await resolveRoomAccess(supabase, roomId, user.id)
+      if (!access.roomExists || access.role === 'none') {
+        return NextResponse.json({ error: 'Not admitted to this classroom' }, { status: 403 })
+      }
+      if (!access.legacy) {
+        roleNum = access.role === 'trainer' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER
+      }
+    }
+
     // Generate Token
-    const roleNum = role === 'publisher' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER
     const expireTime = 3600 // 1 hour
     const currentTime = Math.floor(Date.now() / 1000)
     const privilegeExpiredTs = currentTime + expireTime

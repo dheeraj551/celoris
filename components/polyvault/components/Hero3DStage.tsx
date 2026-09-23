@@ -4,6 +4,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ModelAsset } from '../types';
 import { buildProceduralModel } from '../utils/proceduralModels';
 import {
+  getRealModelLoaderKind,
+  loadRealModelObject,
+  normalizeAndCenterObject,
+  standardizeMaterials,
+  getModelUrlForAsset,
+} from '../utils/modelLoaders';
+import {
   Box,
   Eye,
   Download,
@@ -19,6 +26,31 @@ import {
   Cpu,
   ShieldCheck,
 } from 'lucide-react';
+
+function applyShadingMode(group: THREE.Object3D, mode: 'pbr' | 'wireframe' | 'clay') {
+  group.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      if (!child.userData.origMaterial) {
+        child.userData.origMaterial = child.material;
+      }
+
+      if (mode === 'wireframe') {
+        child.material = new THREE.MeshBasicMaterial({
+          color: 0x10b981,
+          wireframe: true,
+        });
+      } else if (mode === 'clay') {
+        child.material = new THREE.MeshStandardMaterial({
+          color: 0xf4f4f5,
+          roughness: 0.9,
+          metalness: 0.05,
+        });
+      } else {
+        child.material = child.userData.origMaterial || child.material;
+      }
+    }
+  });
+}
 
 interface Hero3DStageProps {
   featuredAsset: ModelAsset;
@@ -39,6 +71,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
   const [renderMode, setRenderMode] = useState<'pbr' | 'wireframe' | 'clay'>('pbr');
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isLoadingModel, setIsLoadingModel] = useState(false);
 
   // Three.js scene refs
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -46,6 +79,16 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const isAutoRotatingRef = useRef(isAutoRotating);
   isAutoRotatingRef.current = isAutoRotating;
+  const renderModeRef = useRef(renderMode);
+  renderModeRef.current = renderMode;
+
+  // React to renderMode changes without re-mounting the entire scene
+  useEffect(() => {
+    renderModeRef.current = renderMode;
+    if (modelGroupRef.current) {
+      applyShadingMode(modelGroupRef.current, renderMode);
+    }
+  }, [renderMode]);
 
   // Initialize Three.js interactive showcase
   useEffect(() => {
@@ -152,31 +195,66 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
 
-    // Procedural Model Group
-    const model = buildProceduralModel(
+    // Model Root Group Container
+    const modelRoot = new THREE.Group();
+    modelRoot.name = 'HeroModelRoot';
+    modelRoot.position.y = 0;
+    scene.add(modelRoot);
+    modelGroupRef.current = modelRoot;
+
+    // Fast initial procedural placeholder while real model loads
+    const placeholder = buildProceduralModel(
       featuredAsset.generatorType,
       featuredAsset.primaryColor || '#059669',
       featuredAsset.accentColor || '#10b981',
-      renderMode === 'wireframe'
+      false
     );
-    model.position.y = 0;
-    model.scale.set(1.28, 1.28, 1.28);
-    scene.add(model);
-    modelGroupRef.current = model;
+    placeholder.position.y = 0;
+    placeholder.scale.set(1.28, 1.28, 1.28);
+    modelRoot.add(placeholder);
+    applyShadingMode(placeholder, renderModeRef.current);
 
-    // Apply clay mode if requested
-    if (renderMode === 'clay') {
-      const clayMat = new THREE.MeshStandardMaterial({
-        color: 0xf4f4f5,
-        roughness: 0.9,
-        metalness: 0.05,
-      });
-      model.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.material = clayMat;
+    let cancelled = false;
+    const loaderKind = getRealModelLoaderKind(
+      featuredAsset.modelFileName || (featuredAsset.title.toLowerCase().includes('lara') ? 'laracroft.glb' : undefined)
+    );
+
+    (async () => {
+      try {
+        const modelUrl = await getModelUrlForAsset(featuredAsset);
+        if (!modelUrl || !loaderKind || cancelled) return;
+
+        setIsLoadingModel(true);
+        const loaded = await loadRealModelObject(modelUrl, loaderKind);
+        if (cancelled) return;
+
+        // Scale and center: size 2.5 puts base cleanly above the platform ring (-1.29)
+        normalizeAndCenterObject(loaded, 2.5);
+        standardizeMaterials(loaded);
+
+        loaded.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (!child.userData.origMaterial) {
+              child.userData.origMaterial = child.material;
+            }
+          }
+        });
+
+        applyShadingMode(loaded, renderModeRef.current);
+
+        // Swap out placeholder with real model
+        while (modelRoot.children.length > 0) {
+          modelRoot.remove(modelRoot.children[0]);
         }
-      });
-    }
+        modelRoot.add(loaded);
+        setIsLoadingModel(false);
+      } catch (err) {
+        console.error('Hero3DStage: failed to load real model', err);
+        setIsLoadingModel(false);
+      }
+    })();
 
     // Drag to rotate interaction with smooth easing
     let isDragging = false;
@@ -248,6 +326,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
     resizeObserver.observe(container);
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(animationFrameId);
       container.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
@@ -259,7 +338,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
       }
       scene.clear();
     };
-  }, [featuredAsset, renderMode]);
+  }, [featuredAsset]);
 
   const topPickAssets = allAssets.slice(0, 4);
 
@@ -430,6 +509,16 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({
               className="w-full h-full cursor-grab active:cursor-grabbing"
               title="Click and drag to rotate the 3D model"
             />
+
+            {/* Model Loading State Overlay */}
+            {isLoadingModel && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10 backdrop-blur-[2px] z-30">
+                <div className="flex items-center gap-2.5 bg-black/80 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-white shadow-xl">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-spin" />
+                  <span>Loading 3D Model…</span>
+                </div>
+              </div>
+            )}
 
             {/* Top Toolbar: Shading modes & Auto Rotate Toggle */}
             <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">

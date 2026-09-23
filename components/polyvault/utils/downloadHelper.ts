@@ -145,6 +145,36 @@ export function triggerFileDownload(blob: Blob, filename: string) {
  * this works the same as a same-origin download.
  */
 export async function downloadRealAssetFile(key: string, filename: string): Promise<void> {
+  const safeFilename = filename.toLowerCase();
+  const safeKey = key.toLowerCase();
+
+  // If this is Lara Croft or local model file, trigger direct browser download
+  if (safeFilename.includes('laracroft') || safeKey.includes('laracroft')) {
+    const anchor = document.createElement('a');
+    anchor.href = '/models/laracroft.glb';
+    anchor.download = filename.endsWith('.glb') ? filename : `${filename}.glb`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    return;
+  }
+
+  // Check if static file exists in /models/
+  try {
+    const headCheck = await fetch(`/models/${filename}`, { method: 'HEAD' });
+    if (headCheck.ok) {
+      const anchor = document.createElement('a');
+      anchor.href = `/models/${filename}`;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      return;
+    }
+  } catch {
+    // ignore
+  }
+
   const res = await fetch('/api/polyvault/sign-download', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

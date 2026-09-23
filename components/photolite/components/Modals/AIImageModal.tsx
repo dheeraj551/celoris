@@ -81,6 +81,7 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [usedModel, setUsedModel] = useState<string | null>(null);
   const [activeLayerDataUrl, setActiveLayerDataUrl] = useState<string | null>(null);
   const [appliedSuccess, setAppliedSuccess] = useState<string | null>(null);
   const [localCredits, setLocalCredits] = useState<number | null>(null);
@@ -169,6 +170,12 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
       }
 
       setGeneratedImageUrl(data.imageUrl);
+      // The backend tries several Higgsfield models in priority order (whichever
+      // this account is actually entitled to) and reports which one it used —
+      // this used to be hardcoded to "soul-v2" in the UI regardless of which
+      // model actually ran, which was misleading once the backend started
+      // trying Marketing Studio Image first.
+      setUsedModel(typeof data.usedModel === 'string' ? data.usedModel : null);
 
       if (typeof data.remainingCredits === 'number') {
         setLocalCredits(data.remainingCredits);
@@ -253,7 +260,11 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
                   id="badge-ai-model-tag"
                   className="rounded-full bg-neutral-900 border border-neutral-700 px-2 py-0.5 font-mono text-[9px] text-amber-300"
                 >
-                  higgsfield / soul-v2
+                  {/* The account's entitled model varies (Marketing Studio Image,
+                      Soul v2, ...) — the backend tries them in priority order and
+                      reports which one actually ran, so this reflects the real
+                      result instead of a hardcoded guess. */}
+                  {usedModel ? usedModel.replace('/', ' / ') : 'higgsfield AI'}
                 </span>
                 <span
                   id="badge-ai-pro-indicator"
@@ -502,7 +513,9 @@ export const AIImageModal: React.FC<AIImageModalProps> = ({
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>Generated Image Result</span>
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">higgsfield-soul-v2</span>
+                <span className="text-[10px] text-gray-400 font-mono">
+                  {usedModel ? usedModel.replace('/', '-') : 'higgsfield-ai'}
+                </span>
               </div>
 
               <div className="relative rounded-md border border-black/80 bg-black/60 overflow-hidden flex items-center justify-center max-h-72">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { resolveRoomAccess } from '@/lib/cafe-room-access'
 
 // Tracks who is currently seated in a Cafe Classroom room (Agora-backed).
 //
@@ -60,11 +61,26 @@ export async function POST(request: Request) {
         }
 
         if (action === 'join' || action === 'heartbeat') {
+            // The seat's role comes from the server (room owner / the code
+            // they entered — see lib/cafe-room-access.ts), not from the
+            // `role` the browser sends. Before the Sept 2026 migration runs
+            // (`legacy`), fall back to the old client-claimed role.
+            const access = await resolveRoomAccess(admin, roomId, user.id)
+            if (!access.roomExists) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 })
+            }
+            if (access.role === 'none') {
+                return NextResponse.json({ error: 'Enter this room\'s code from the café lobby first.' }, { status: 403 })
+            }
+            const seatRole: 'trainer' | 'student' = access.legacy
+                ? (role === 'trainer' ? 'trainer' : 'student')
+                : access.role
+
             // Only enforce the cap on the way IN, and only against students
             // (role: 'student') — the host never counts against their own
             // 15-student limit, and an existing occupant re-sending a
             // heartbeat shouldn't get locked out by their own seat.
-            if (action === 'join' && role === 'student') {
+            if (action === 'join' && seatRole === 'student') {
                 const staleCutoff = new Date(Date.now() - STALE_AFTER_SECONDS * 1000).toISOString()
                 const [{ count, error: countError }, maxStudents] = await Promise.all([
                     admin
@@ -101,7 +117,7 @@ export async function POST(request: Request) {
                 .upsert({
                     room_id: roomId,
                     user_id: user.id,
-                    role: role === 'trainer' ? 'trainer' : 'student',
+                    role: seatRole,
                     full_name: profile?.full_name || null,
                     avatar_url: profile?.avatar_url || null,
                     ...(typeof handRaised === 'boolean' ? { hand_raised: handRaised } : {}),
@@ -132,6 +148,13 @@ export async function GET(request: Request) {
         const roomId = searchParams.get('roomId')
         if (!roomId) {
             return NextResponse.json({ error: 'roomId is required' }, { status: 400 })
+        }
+
+        // Signed-in users only — this returns classmates' names and photos.
+        const routeClient = await createRouteClient()
+        const { data: { user }, error: authError } = await routeClient.auth.getUser()
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
         }
 
         const admin = createSupabaseClientForServer()

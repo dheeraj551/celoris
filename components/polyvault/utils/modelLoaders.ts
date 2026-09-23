@@ -46,10 +46,11 @@ export function normalizeAndCenterObject(object: THREE.Object3D, targetSize = 2.
   box.getSize(size);
   const center = new THREE.Vector3();
   box.getCenter(center);
-  object.position.sub(center);
   const maxDim = Math.max(size.x, size.y, size.z);
   if (maxDim > 0 && isFinite(maxDim)) {
-    object.scale.setScalar(targetSize / maxDim);
+    const scale = targetSize / maxDim;
+    object.scale.setScalar(scale);
+    object.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
   }
 }
 
@@ -67,3 +68,57 @@ export function standardizeMaterials(object: THREE.Object3D) {
     }
   });
 }
+
+/**
+ * Resolves the 3D model source URL for a given asset.
+ * Checks for:
+ * 1. Bundled / static local assets (e.g. Lara Croft glb).
+ * 2. Any local static file placed in /models/${modelFileName}.
+ * 3. Signed Cloudflare R2 download URL if published with an R2 key.
+ */
+export async function getModelUrlForAsset(asset: {
+  id?: string;
+  title?: string;
+  modelFileName?: string;
+  r2ModelKey?: string;
+}): Promise<string | null> {
+  const fileName = (asset.modelFileName || '').toLowerCase();
+  const title = (asset.title || '').toLowerCase();
+
+  // 1. Direct local bundle check for Lara Croft
+  if (fileName.includes('laracroft') || title.includes('lara croft') || fileName.includes('lara_croft')) {
+    return '/models/laracroft.glb';
+  }
+
+  // 2. Check if a local model matching modelFileName exists in /models/
+  if (asset.modelFileName) {
+    try {
+      const testRes = await fetch(`/models/${asset.modelFileName}`, { method: 'HEAD' });
+      if (testRes.ok) {
+        return `/models/${asset.modelFileName}`;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3. If R2 model key is present, try signed download URL
+  if (asset.r2ModelKey) {
+    try {
+      const res = await fetch('/api/polyvault/sign-download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: asset.r2ModelKey, filename: asset.modelFileName }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.downloadUrl) return data.downloadUrl;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return null;
+}
+

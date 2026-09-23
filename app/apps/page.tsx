@@ -1,6 +1,6 @@
 "use client"
 
-import { Smartphone, Download, Star, Users, Zap, Shield, Palette, TrendingUp, Sparkles, ArrowRight, Layout, Globe, Cpu } from "lucide-react"
+import { Smartphone, Download, Star, Users, Zap, Shield, Palette, TrendingUp, Sparkles, ArrowRight, Layout, Globe, Cpu, Video } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -19,33 +19,50 @@ const mobileApps = [
     isFeatured: true,
     platforms: ["iOS", "Android"],
     features: ["Offline Sync", "Neural Tracking", "Interactive Modules"],
-    color: "from-blue-500 to-cyan-500"
+    color: "from-blue-500 to-cyan-500",
+    href: "/learn"
   },
   {
     id: 2,
-    name: "Celoris Play",
-    description: "The definitive entertainment and interactive layer for high-impact networking and discovery.",
-    category: "Play",
-    icon: Users,
-    rating: 4.7,
+    name: "Video Studio",
+    description: "AI-assisted generative video editing, automated captions & motion FX.",
+    category: "Creative",
+    icon: Video,
+    rating: 4.9,
     downloads: "100K+",
     isFeatured: true,
-    platforms: ["iOS", "Android"],
-    features: ["Global Mesh", "Real-time Sync", "Direct Connect"],
-    color: "from-purple-500 to-pink-500"
+    platforms: ["Web", "iOS", "Android"],
+    features: ["4K AI Timeline", "Motion Graphics", "Automated Subtitles"],
+    color: "from-blue-600 to-indigo-600",
+    href: "/video-studio"
   },
   {
     id: 3,
-    name: "Celoris Nexus",
-    description: "A centralized hub for enterprise-level task orchestration and goal alignment.",
-    category: "Ops",
-    icon: Cpu,
-    rating: 4.6,
+    name: "ViO Studio",
+    description: "Turn any product into ready-to-post commercial ads and viral marketing creatives.",
+    category: "Creative",
+    icon: Sparkles,
+    rating: 4.9,
+    downloads: "New",
+    isFeatured: true,
+    platforms: ["Web", "iOS", "Android"],
+    features: ["Commercial Packshots", "Pop Social Ads", "Instant Marketing Copy"],
+    color: "from-emerald-500 to-lime-400",
+    href: "/vio-studio"
+  },
+  {
+    id: 4,
+    name: "PhotoLite AI",
+    description: "Browser-based graphic editing, retouching, filters & smart cutouts.",
+    category: "Creative",
+    icon: Palette,
+    rating: 4.8,
     downloads: "75K+",
     isFeatured: true,
-    platforms: ["iOS", "Android"],
-    features: ["Logic Gates", "Priority Sort", "Team Sync"],
-    color: "from-emerald-500 to-teal-500"
+    platforms: ["Web", "iOS", "Android"],
+    features: ["Layer Editing", "Smart Cutouts", "Color Grading"],
+    color: "from-cyan-500 to-teal-500",
+    href: "/photolite"
   }
 ]
 
@@ -230,7 +247,7 @@ export default function AppsPage() {
                         ))}
                       </div>
                       <Button className="w-full bg-[#0d1321] hover:bg-blue-600 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg shadow-black/5" asChild>
-                        <Link href={app.id === 1 ? "/video-studio" : app.id === 2 ? "/image-studio" : `/apps/${app.id}`}>
+                        <Link href={app.href || `/apps/${app.id}`}>
                           Open Studio
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>

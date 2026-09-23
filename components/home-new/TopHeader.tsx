@@ -64,7 +64,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
         }
     };
 
-    const isStudioActive = pathname.startsWith('/video-studio') || pathname.startsWith('/photolite') || pathname.startsWith('/polyvault');
+    const isStudioActive = pathname.startsWith('/video-studio') || pathname.startsWith('/photolite') || pathname.startsWith('/polyvault') || pathname.startsWith('/vio-studio') || pathname.startsWith('/marketing-studio') || pathname.startsWith('/vibe-marketer');
 
     return (
         <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#08080c]/85 backdrop-blur-3xl shadow-[0_10px_30px_rgba(0,0,0,0.8),inset_0_-1px_0_rgba(255,255,255,0.06)]">
@@ -109,6 +109,21 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                             align="start"
                             className="w-72 bg-[#08090d]/95 backdrop-blur-3xl border border-white/[0.12] p-1.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.15)] text-slate-200 z-50 mt-2"
                         >
+                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
+                                <Link href="/vio-studio" className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#D4FF00]/15 border border-[#D4FF00]/30 flex items-center justify-center text-[#D4FF00] shrink-0">
+                                        <Sparkles className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">ViO Studio</span>
+                                            <span className="text-[9px] font-mono font-bold text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 rounded-full">Marketing</span>
+                                        </div>
+                                        <p className="text-[10px] text-neutral-400 truncate">Product ads & viral content</p>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+
                             <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
                                 <Link href="/video-studio" className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
@@ -510,6 +525,19 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         Creative Studios
                                     </h4>
                                     <div className="space-y-1">
+                                        <Link
+                                            href="/vio-studio"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-colors"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-[#D4FF00]/15 border border-[#D4FF00]/30 flex items-center justify-center text-[#D4FF00]">
+                                                <Sparkles className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <span className="text-sm font-bold text-white block">ViO Studio</span>
+                                                <span className="text-[10px] text-neutral-400">AI Marketing Studio</span>
+                                            </div>
+                                        </Link>
                                         <Link
                                             href="/video-studio"
                                             onClick={() => setIsMobileMenuOpen(false)}

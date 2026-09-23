@@ -22,6 +22,7 @@ import {
     ExternalLink,
     HelpCircle,
     Info,
+    Sparkles,
     type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -129,6 +130,19 @@ interface PaletteCommand {
 }
 
 const PALETTE_COMMANDS: PaletteCommand[] = [
+    {
+        category: "Creative Studios",
+        title: "ViO Studio",
+        description: "Commercial product ad studio & ready-to-post AI marketing creatives",
+        href: "/vio-studio",
+        icon: Sparkles,
+        badge: "Marketing",
+        shortcut: "M",
+        color: "from-[#D4FF00] to-emerald-400",
+        glowRgba: "rgba(212, 255, 0, 0.45)",
+        iconColor: "text-[#D4FF00]",
+        badgeStyle: "bg-[#D4FF00]/15 text-[#D4FF00] border-[#D4FF00]/30",
+    },
     {
         category: "Creative Studios",
         title: "Video Studio",

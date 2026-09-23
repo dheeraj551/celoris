@@ -21,6 +21,7 @@ const CATEGORY_LABELS: Record<Room['category'], string> = {
   night: 'Night Owl',
   onboarding: 'Onboarding',
   classroom: 'Live Classroom',
+  whiteboard: 'Whiteboard Class',
 };
 
 export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser, onDeleteRoom }: RoomsGridProps) {

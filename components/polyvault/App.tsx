@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ModelAsset, FilterState, Coupon, UserProfile, DownloadItem, ModelFormat, AssetCategory } from './types';
-import { MOCK_ASSETS, INITIAL_COUPONS, INITIAL_USER } from './data/mockAssets';
+import { INITIAL_COUPONS, INITIAL_USER } from './data/mockAssets';
 import { Navbar } from './components/Navbar';
 import { Hero3DStage } from './components/Hero3DStage';
 import { ModelCard } from './components/ModelCard';
@@ -31,8 +31,10 @@ export default function App() {
   // The real signed-in Supabase user
   const { user } = useAuth();
 
-  // Primary datasets
-  const [assets, setAssets] = useState<ModelAsset[]>(MOCK_ASSETS);
+  // Primary datasets — starts empty (no placeholder demo catalog) and is
+  // populated from the real, shared Supabase catalog below.
+  const [assets, setAssets] = useState<ModelAsset[]>([]);
+  const [assetsLoading, setAssetsLoading] = useState(true);
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('polyvault_user');
@@ -51,7 +53,7 @@ export default function App() {
 
   const [likedIds, setLikedIds] = useState<string[]>(() => {
     const saved = localStorage.getItem('polyvault_likes');
-    return saved ? JSON.parse(saved) : ['mod_1', 'mod_3'];
+    return saved ? JSON.parse(saved) : [];
   });
 
   // Filters State
@@ -74,7 +76,7 @@ export default function App() {
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [featuredAssetId, setFeaturedAssetId] = useState<string>(() => assets[0]?.id || 'mod_1');
+  const [featuredAssetId, setFeaturedAssetId] = useState<string>(() => assets[0]?.id || '');
   const [comparingAssetIds, setComparingAssetIds] = useState<string[]>(() => {
     const saved = localStorage.getItem('polyvault_compare');
     if (saved) {
@@ -95,7 +97,9 @@ export default function App() {
     return assets.filter((a) => comparingAssetIds.includes(a.id));
   }, [assets, comparingAssetIds]);
 
-  // Load the real, shared catalog from Supabase
+  // Load the real, shared catalog from Supabase. This is the ONLY source for
+  // the catalog now — there's no placeholder/demo catalog to fall back to, so
+  // a failed or empty fetch just means an empty store, not fake listings.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -108,7 +112,9 @@ export default function App() {
           setAssets((prev) => [...realAssets, ...prev]);
         }
       } catch (err) {
-        console.error('PolyVault: failed to load the shared catalog, showing the demo catalog only', err);
+        console.error('PolyVault: failed to load the shared catalog', err);
+      } finally {
+        if (!cancelled) setAssetsLoading(false);
       }
     })();
     return () => {
@@ -292,6 +298,57 @@ export default function App() {
     if (!user) return [];
     return assets.filter((a) => a.author.id === user.id);
   }, [assets, user]);
+
+  // Hero3DStage requires a real featuredAsset (it reads .title/.polyCount/etc
+  // unconditionally), so guard against rendering it before the real catalog
+  // has loaded from Supabase, or when the catalog is genuinely empty.
+  if (!featuredAsset) {
+    return (
+      <div className="min-h-screen bg-slate-50/60 text-zinc-900 flex flex-col font-sans">
+        <Navbar
+          activeCoupon={activeCoupon}
+          currentUser={currentUser}
+          onOpenCouponModal={() => setIsCouponModalOpen(true)}
+          onOpenUploadModal={() => setIsUploadModalOpen(true)}
+          onOpenProfileModal={() => setIsProfileModalOpen(true)}
+        />
+        <div className="flex-1 flex items-center justify-center py-24 px-4">
+          {assetsLoading ? (
+            <div className="h-12 w-12 border-4 border-emerald-500/10 border-t-emerald-600 rounded-full animate-spin" />
+          ) : (
+            <div className="text-center py-20 px-4 rounded-3xl bg-white/90 backdrop-blur-md border border-zinc-200/90 shadow-sm space-y-4 max-w-md">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200/80 shadow-xs">
+                <Box className="w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-black text-zinc-950">No 3D Models Yet</h3>
+              <p className="text-xs text-zinc-500 leading-relaxed">
+                Nothing has been uploaded to PolyVault yet. Be the first to add a model.
+              </p>
+              <button
+                onClick={() => setIsUploadModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Upload a Model
+              </button>
+            </div>
+          )}
+        </div>
+        <UploadModal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          currentUser={currentUser}
+          onAssetCreated={(newAsset) => {
+            setAssets((prev) => [newAsset, ...prev]);
+            setCurrentUser((u) => ({
+              ...u,
+              uploadedAssetIds: [newAsset.id, ...u.uploadedAssetIds],
+            }));
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/60 text-zinc-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">

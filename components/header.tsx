@@ -62,6 +62,9 @@ export default function Header() {
     pathname?.startsWith("/courses") ||
     pathname?.startsWith("/teach") ||
     pathname?.startsWith("/marketing") ||
+    pathname?.startsWith("/vio-studio") ||
+    pathname?.startsWith("/vibe-marketer") ||
+    pathname?.startsWith("/marketing-studio") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
     pathname?.startsWith("/celoris-tv") ||
