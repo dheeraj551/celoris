@@ -8,7 +8,7 @@
 // image is ready -> show /api/ai/jobs/{id}/image (served from R2).
 // No request ever waits for the render, so Vercel's timeouts can't kill it.
 
-export type AiApp = 'vio' | 'photolite'
+export type AiApp = 'vio' | 'photolite' | 'motion-swap'
 export type AiJobStatus = 'queued' | 'in_progress' | 'completed' | 'failed' | 'nsfw' | 'canceled'
 
 export interface AiJob {
@@ -20,6 +20,11 @@ export interface AiJob {
   presetName: string | null
   aspectRatio: string | null
   imageUrl: string | null
+  /** Motion Swap Studio only */
+  videoUrl?: string | null
+  mode?: 'motion-transfer' | 'objects-swap' | null
+  resolution?: string | null
+  durationSeconds?: number | null
   creditsCharged: number
   refunded: boolean
   createdAt: string
@@ -42,8 +47,15 @@ export interface StartJobInput {
   presetName?: string | null
   imageUrls?: string[]
   aspectRatio?: string
-  resolution?: '1k' | '2k' | '4k'
+  /** '1k' | '2k' | '4k' for images, '480p' | '720p' for Motion Swap videos */
+  resolution?: '1k' | '2k' | '4k' | '480p' | '720p'
   quality?: 'low' | 'medium' | 'high'
+  /** Motion Swap Studio */
+  mode?: 'motion-transfer' | 'objects-swap'
+  videoKey?: string
+  videoUrl?: string
+  videoName?: string
+  durationSeconds?: number
 }
 
 export class AiJobsError extends Error {
@@ -194,6 +206,79 @@ export function getAiJob(id: string) {
 export async function listAiJobs(app: AiApp): Promise<AiJob[]> {
   const { jobs } = await call<{ jobs: AiJob[] }>(`/api/ai/jobs?app=${app}`)
   return jobs || []
+}
+
+/** History plus the current wallet balance (null if it couldn't be read). */
+export async function listAiJobsWithBalance(app: AiApp): Promise<{ jobs: AiJob[]; balance: number | null }> {
+  const res = await call<{ jobs: AiJob[]; balance?: number | null }>(`/api/ai/jobs?app=${app}`)
+  return { jobs: res.jobs || [], balance: typeof res.balance === 'number' ? res.balance : null }
+}
+
+// ------------------------------------------------------------------ videos
+
+/** Reads a local video's length (seconds) without uploading it. */
+export function readVideoDuration(file: Blob): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const v = document.createElement('video')
+    v.preload = 'metadata'
+    v.muted = true
+    const done = (fn: () => void) => {
+      URL.revokeObjectURL(url)
+      fn()
+    }
+    v.onloadedmetadata = () => done(() => (Number.isFinite(v.duration) ? resolve(v.duration) : reject(new AiJobsError("Couldn't read the video's length.", 400))))
+    v.onerror = () => done(() => reject(new AiJobsError("Your browser couldn't open this video. Please use an MP4 file.", 400)))
+    v.src = url
+  })
+}
+
+function putWithProgress(url: string, file: Blob, headers: Record<string, string>, onProgress?: (fraction: number) => void) {
+  return new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', url)
+    Object.entries(headers || {}).forEach(([k, v]) => {
+      if (k.toLowerCase() !== 'content-length' && k.toLowerCase() !== 'host') xhr.setRequestHeader(k, String(v))
+    })
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress?.(e.loaded / e.total)
+    }
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new AiJobsError(`Upload failed (error ${xhr.status}).`, xhr.status)))
+    // Network errors here are usually the storage bucket's CORS rules.
+    xhr.onerror = () => reject(new AiJobsError('Upload was blocked by the storage server.', 0, { network: true }))
+    xhr.send(file)
+  })
+}
+
+/**
+ * Uploads a Motion Swap reference video straight from the browser.
+ * Tries our R2 bucket first, then Higgsfield's storage if R2 blocks it.
+ * Returns what to pass to startAiJob (videoKey or videoUrl).
+ */
+export async function uploadReferenceVideo(
+  file: File,
+  onProgress?: (fraction: number) => void
+): Promise<{ videoKey?: string; videoUrl?: string }> {
+  const contentType = file.type || 'video/mp4'
+  const r2 = await call<{ uploadUrl: string; headers: Record<string, string>; videoKey: string }>('/api/ai/video-uploads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contentType, size: file.size }),
+  })
+  try {
+    await putWithProgress(r2.uploadUrl, file, r2.headers, onProgress)
+    return { videoKey: r2.videoKey }
+  } catch (err: any) {
+    if (!(err instanceof AiJobsError && err.data?.network)) throw err
+    console.warn('[Motion Swap] R2 upload blocked, trying Higgsfield storage instead')
+  }
+  const hf = await call<{ uploadUrl: string; headers: Record<string, string>; videoUrl: string }>('/api/ai/video-uploads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contentType, size: file.size, target: 'higgsfield' }),
+  })
+  await putWithProgress(hf.uploadUrl, file, { 'Content-Type': contentType, ...hf.headers }, onProgress)
+  return { videoUrl: hf.videoUrl }
 }
 
 export async function listMarketingPresets(): Promise<MarketingPreset[]> {

@@ -1,3 +1,4 @@
+import { after } from 'next/server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { createR2SignedReadUrl, putR2Object } from '@/lib/r2-client'
 
@@ -13,18 +14,38 @@ import { createR2SignedReadUrl, putR2Object } from '@/lib/r2-client'
 //  - POST https://api.higgsfield.ai/files/generate-upload-url → { upload_url, public_url, upload_headers }
 //  - GET  https://api.higgsfield.ai/marketing-studio/image/presets
 //  - Output URLs are kept ~7 days, so results are copied into R2.
+//  - POST https://api.higgsfield.ai/higgsfiled/genjutsu/motion-transfer/v1.0
+//    { prompt, video_url, image_urls[], resolution: '480p' | '720p' }
+//    → same { request_id } / status flow; the result is { video: { url } }.
+//    ("higgsfiled" is Higgsfield's own spelling of the model id.) The source
+//    video must be at least 4 seconds long. Billed per output second.
 
 const API = 'https://api.higgsfield.ai'
 
 export const PRO_REQUIRED_CREDITS = 2000
-export const APP_CREDIT_COST: Record<'vio' | 'photolite', number> = {
+export const APP_CREDIT_COST: Record<AiApp, number> = {
   vio: 0, // ViO Studio: Pro-gated (2,000 credits) but not charged per image
   photolite: 100, // PhotoLite: 100 credits per image, refunded if it fails
+  'motion-swap': 1000, // Motion Swap Studio: 1,000 credits per video, refunded if it fails
 }
+
+/** Minimum wallet balance needed to use Motion Swap Studio at all. */
+export const MOTION_SWAP_REQUIRED_CREDITS = 5000
 export const MAX_ACTIVE_JOBS_PER_USER = 3
 const STALE_AFTER_MS = 15 * 60 * 1000
 
-export type AiApp = 'vio' | 'photolite'
+export type AiApp = 'vio' | 'photolite' | 'motion-swap'
+export const APP_LABEL: Record<AiApp, string> = { vio: 'ViO Studio', photolite: 'PhotoLite', 'motion-swap': 'Motion Swap Studio' }
+
+// Genjutsu renders take minutes, so a video job is allowed longer before we
+// give up on it than an image.
+const VIDEO_STALE_AFTER_MS = 45 * 60 * 1000
+export const GENJUTSU_MODEL_PATH = '/higgsfiled/genjutsu/motion-transfer/v1.0'
+export const GENJUTSU_RESOLUTIONS = ['480p', '720p'] as const
+export type GenjutsuResolution = (typeof GENJUTSU_RESOLUTIONS)[number]
+export const VIDEO_MIN_SECONDS = 4
+export const VIDEO_MAX_SECONDS = 30
+export const MAX_ACTIVE_VIDEO_JOBS_PER_USER = 1
 export type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed' | 'nsfw' | 'canceled'
 
 export class HiggsfieldError extends Error {
@@ -56,7 +77,7 @@ export function higgsfieldAuthHeader(): string {
     keySecret = (process.env.HIGGSFIELD_KEY_SECRET || process.env.HF_API_SECRET || '').trim() || undefined
   }
   if (!keyId || !keySecret) {
-    throw new HiggsfieldError("Image generation isn't configured on the server (HF_CREDENTIALS is missing).", 500)
+    throw new HiggsfieldError("AI generation isn't configured on the server (HF_CREDENTIALS is missing).", 500)
   }
   cachedAuth = `Key ${keyId}:${keySecret}`
   return cachedAuth
@@ -108,6 +129,42 @@ export function extractImageUrl(result: any): string | null {
   )
 }
 
+export function extractVideoUrl(result: any): string | null {
+  if (!result) return null
+  const v = result.video ?? result.output?.video
+  if (typeof v === 'string') return v
+  if (v?.url) return String(v.url)
+  const vids = result.videos ?? result.output?.videos
+  if (Array.isArray(vids) && vids.length) return typeof vids[0] === 'string' ? vids[0] : vids[0]?.url || null
+  return null
+}
+
+export interface GenjutsuInput {
+  prompt: string
+  video_url: string
+  image_urls: string[]
+  resolution: GenjutsuResolution
+}
+
+export async function submitGenjutsu(input: GenjutsuInput): Promise<{ requestId: string; status: JobStatus }> {
+  const body = await hf(GENJUTSU_MODEL_PATH, { method: 'POST', body: JSON.stringify(input) })
+  const requestId = body?.request_id || body?.id
+  if (!requestId) {
+    console.warn('[Higgsfield] Genjutsu submit returned no request_id. Keys:', Object.keys(body || {}))
+    throw new HiggsfieldError('Higgsfield accepted the video job but returned no request id.', 502)
+  }
+  return { requestId: String(requestId), status: normalizeStatus(body?.status) }
+}
+
+/** An upload slot in Higgsfield's own storage (used for reference videos). */
+export async function createHiggsfieldUploadSlot(contentType: string): Promise<{ uploadUrl: string; publicUrl: string; headers: Record<string, string> }> {
+  const slot = await hf('/files/generate-upload-url', { method: 'POST', body: JSON.stringify({ content_type: contentType }) })
+  if (!slot?.upload_url || !slot?.public_url) {
+    throw new HiggsfieldError(`Higgsfield returned no upload slot (keys: ${Object.keys(slot || {}).join(', ') || 'none'}).`, 502)
+  }
+  return { uploadUrl: String(slot.upload_url), publicUrl: String(slot.public_url), headers: slot.upload_headers || {} }
+}
+
 export interface MarketingStudioInput {
   prompt: string
   aspect_ratio: string
@@ -128,9 +185,16 @@ export async function submitMarketingStudioImage(input: MarketingStudioInput): P
   return { requestId: String(requestId), status: normalizeStatus(body?.status) }
 }
 
-export async function getRequestStatus(requestId: string): Promise<{ status: JobStatus; imageUrl: string | null; error: string | null }> {
+export async function getRequestStatus(
+  requestId: string
+): Promise<{ status: JobStatus; imageUrl: string | null; videoUrl: string | null; error: string | null }> {
   const body = await hf(`/requests/${encodeURIComponent(requestId)}/status`, { signal: AbortSignal.timeout(15_000) })
-  return { status: normalizeStatus(body?.status), imageUrl: extractImageUrl(body), error: body?.error ? String(body.error) : null }
+  return {
+    status: normalizeStatus(body?.status),
+    imageUrl: extractImageUrl(body),
+    videoUrl: extractVideoUrl(body),
+    error: body?.error ? String(typeof body.error === 'string' ? body.error : JSON.stringify(body.error)) : null,
+  }
 }
 
 function normalizeStatus(s: any): JobStatus {
@@ -276,7 +340,7 @@ export const isTerminal = (s: JobStatus) => TERMINAL.includes(s)
 function friendlyFailure(status: JobStatus, err: string | null) {
   if (status === 'nsfw') return "Higgsfield's safety filter blocked this. Try a different prompt or image."
   if (status === 'canceled') return 'This generation was canceled.'
-  return err ? `Generation failed: ${err.slice(0, 200)}` : 'Higgsfield could not generate this image. Please try again.'
+  return err ? `Generation failed: ${err.slice(0, 200)}` : 'Higgsfield could not generate this. Please try again.'
 }
 
 /**
@@ -304,16 +368,38 @@ export async function refreshJob(job: JobRow): Promise<JobRow> {
     return markFailed('failed', 'The job was never accepted by Higgsfield.')
   }
 
+  const isVideo = job.app === 'motion-swap'
+  const staleAfter = isVideo ? VIDEO_STALE_AFTER_MS : STALE_AFTER_MS
+
   let remote
   try {
     remote = await getRequestStatus(job.provider_request_id)
   } catch (err: any) {
     // Temporary network trouble: keep waiting unless the job is very old.
-    if (Date.now() - new Date(job.created_at).getTime() > STALE_AFTER_MS) {
+    if (Date.now() - new Date(job.created_at).getTime() > staleAfter) {
       return markFailed('failed', 'Timed out waiting for Higgsfield.')
     }
     console.warn('[AI jobs] status check failed (will retry):', err?.message)
     return job
+  }
+
+  if (remote.status === 'completed' && isVideo) {
+    if (!remote.videoUrl) return markFailed('failed', 'Higgsfield finished but returned no video.')
+    // Show the result straight away from Higgsfield's link (kept 7+ days),
+    // then copy it into R2 after the response has been sent — a video is
+    // too big to download and re-upload inside a status check.
+    const { data } = await admin
+      .from('ai_generations')
+      .update({ status: 'completed', result_key: `ext:${remote.videoUrl}`, error: null, updated_at: new Date().toISOString(), completed_at: new Date().toISOString() })
+      .eq('id', job.id)
+      .in('status', ['queued', 'in_progress'])
+      .select('*')
+      .maybeSingle()
+    if (data) {
+      const sourceUrl = remote.videoUrl
+      after(() => copyVideoToR2(job.id, job.user_id, sourceUrl))
+    }
+    return (data as JobRow) || { ...job, status: 'completed', result_key: `ext:${remote.videoUrl}` }
   }
 
   if (remote.status === 'completed') {
@@ -347,7 +433,7 @@ export async function refreshJob(job: JobRow): Promise<JobRow> {
     return markFailed(remote.status, friendlyFailure(remote.status, remote.error))
   }
 
-  if (Date.now() - new Date(job.created_at).getTime() > STALE_AFTER_MS) {
+  if (Date.now() - new Date(job.created_at).getTime() > staleAfter) {
     return markFailed('failed', 'Timed out waiting for Higgsfield.')
   }
 
@@ -368,7 +454,11 @@ export function publicJob(job: JobRow) {
     prompt: job.params?.displayPrompt ?? job.params?.prompt ?? '',
     presetName: job.params?.presetName ?? null,
     aspectRatio: job.params?.aspect_ratio ?? null,
-    imageUrl: job.status === 'completed' && job.result_key ? `/api/ai/jobs/${job.id}/image` : null,
+    imageUrl: job.status === 'completed' && job.result_key && job.app !== 'motion-swap' ? `/api/ai/jobs/${job.id}/image` : null,
+    videoUrl: job.status === 'completed' && job.result_key && job.app === 'motion-swap' ? `/api/ai/jobs/${job.id}/video` : null,
+    mode: job.params?.mode ?? null,
+    resolution: job.params?.resolution ?? null,
+    durationSeconds: typeof job.params?.durationSeconds === 'number' ? job.params.durationSeconds : null,
     creditsCharged: Number(job.credits_charged) || 0,
     refunded: !!job.refunded,
     createdAt: job.created_at,
@@ -376,6 +466,43 @@ export function publicJob(job: JobRow) {
   }
 }
 
-export async function signedResultUrl(key: string) {
-  return createR2SignedReadUrl(key, 300)
+export async function signedResultUrl(key: string, expiresInSeconds = 300, contentDisposition?: string) {
+  return createR2SignedReadUrl(key, expiresInSeconds, contentDisposition)
+}
+
+/**
+ * Copies a finished Genjutsu video from Higgsfield into R2 so it outlives
+ * Higgsfield's 7-day retention. Runs after the response (next/server
+ * `after`); on any problem the job simply keeps using Higgsfield's link.
+ */
+async function copyVideoToR2(jobId: string, userId: string, sourceUrl: string) {
+  try {
+    const res = await fetch(sourceUrl, { signal: AbortSignal.timeout(50_000) })
+    if (!res.ok) throw new Error(`download ${res.status}`)
+    const contentType = (res.headers.get('content-type') || 'video/mp4').split(';')[0]
+    const ext = contentType.includes('webm') ? 'webm' : contentType.includes('quicktime') ? 'mov' : 'mp4'
+    const key = `ai-outputs/${userId}/${jobId}.${ext}`
+    await putR2Object(key, Buffer.from(await res.arrayBuffer()), contentType)
+    const admin = createSupabaseClientForServer()
+    await admin.from('ai_generations').update({ result_key: key, updated_at: new Date().toISOString() }).eq('id', jobId)
+    console.log('[AI jobs] video copied to R2', jobId)
+  } catch (err: any) {
+    console.warn('[AI jobs] video R2 copy failed (keeping Higgsfield link):', err?.message)
+  }
+}
+
+/** Reference videos uploaded to our R2 bucket live under this prefix. */
+export function referenceVideoKeyPrefix(userId: string) {
+  return `ai-inputs/${userId}/video-`
+}
+
+/**
+ * Lets Higgsfield download a reference video from our private bucket. The
+ * key must be one of this user's own uploads.
+ */
+export async function referenceVideoUrlForKey(userId: string, key: string): Promise<string> {
+  if (!key.startsWith(referenceVideoKeyPrefix(userId)) || key.includes('..')) {
+    throw new HiggsfieldError('That reference video does not belong to your account.', 403, 'input')
+  }
+  return createR2SignedReadUrl(key, 24 * 60 * 60)
 }
