@@ -21,9 +21,13 @@ This document provides complete plain-text schemas and syllabus outlines for the
 - **URL**: https://www.celorisdesigns.com/polyvault
 - **Description**: A community marketplace for low-poly 3D models. Creators can generate models with built-in AI generators or upload their own, then list them for other users to browse, preview, and download. Supports common export formats, PBR textures, rigging, and animation metadata.
 
-### Chat Café (Retro Community Chat)
+### Classrooms (Live Classes)
 - **URL**: https://www.celorisdesigns.com/social
-- **Description**: A real-time multiplayer retro-styled chat lounge where creators and learners hang out at virtual café tables, chat live, and interact with AI-hosted characters and guided discussion topics.
+- **Description**: Live trainer-led classes in small batches, held in a 3D classroom or a 2D whiteboard room with voice, screen share and a join queue.
+
+### Celoris Chat (Members Only)
+- **URL**: https://www.celorisdesigns.com/chat
+- **Description**: Private one-to-one chat between Celoris members who add each other with a share code. Contact details are hidden automatically to keep learners safe.
 
 ---
 

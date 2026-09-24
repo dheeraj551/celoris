@@ -111,7 +111,8 @@ export async function POST(req: NextRequest) {
     const trimmedMessages = messages
       .slice(-20)
       .filter((m: any) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
-      .map((m: any) => ({ role: m.role, content: m.content }));
+      // Cap each message too, so one huge paste can't run up the AI bill.
+      .map((m: any) => ({ role: m.role, content: String(m.content).slice(0, 4000) }));
 
     if (trimmedMessages.length === 0) {
       return Response.json({ error: 'messages is required' }, { status: 400 });

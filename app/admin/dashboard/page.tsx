@@ -233,10 +233,10 @@ export default function AdminDashboard() {
       color: "bg-indigo-600 hover:bg-indigo-700"
     },
     {
-      title: "Chat Café",
-      description: "Moderate the retro chat lounge — tables, reports, bans, and patron roles",
+      title: "Celoris Chat Reports",
+      description: "Review reported conversations and pause chat access",
       icon: MessageSquare,
-      href: "/admin/chat-cafe",
+      href: "/admin/celoris-chat",
       color: "bg-fuchsia-600 hover:bg-fuchsia-700"
     },
     {

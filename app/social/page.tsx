@@ -9,7 +9,6 @@ import ChatRoom from '@/components/cafe/ChatRoom';
 import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
 import LearnTab from '@/components/cafe/LearnTab';
 import TeachTab from '@/components/cafe/TeachTab';
-import ChatCafeSection from '@/components/cafe/ChatCafeSection';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
@@ -18,7 +17,6 @@ const ClassroomTable = dynamic(() => import('@/components/cafe/classroom3d/compo
 // 2D whiteboard classroom (category 'whiteboard') — same seats/queue, Agora
 // voice + screen share and room codes as the 3D classroom above.
 const WhiteboardRoom = dynamic(() => import('@/components/whiteboard-room/WhiteboardRoom'), { ssr: false });
-const ChatCafeApp = dynamic(() => import('@/components/chat-cafe/ChatCafeApp'), { ssr: false });
 
 import { 
   Menu, 
@@ -82,6 +80,19 @@ export default function App() {
 
   // Find the currently joined room details
   const joinedRoom = allRooms.find(r => r.id === joinedRoomId);
+
+  // Deep link: /social?tab=cafe (used by the homepage phone's Classrooms app)
+  // opens straight on the classroom lobby instead of the Café home.
+  useEffect(() => {
+    try {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (tab && ['home', 'cafe', 'learn', 'teach'].includes(tab)) {
+        setActiveTab(tab);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Scroll to top on page or tab changes
   useEffect(() => {
@@ -308,10 +319,10 @@ export default function App() {
                 <div className="text-center md:text-left">
                   <span className="text-xs text-emerald-400 font-bold uppercase tracking-widest block mb-1">Discover Celoris</span>
                   <h2 className="text-2xl md:text-3xl font-display font-black italic text-white tracking-wide uppercase">
-                    CHOOSE YOUR HANGOUT SPACE
+                    CHOOSE YOUR CLASSROOM
                   </h2>
                   <p className="text-xs text-gray-400 max-w-xl mt-1">
-                    Select a curated study table or course lounge. Jump right in, say hello, or sit down silently to code.
+                    Pick a live classroom or whiteboard room, join the queue, and learn with your trainer and batch.
                   </p>
                 </div>
 
@@ -322,9 +333,6 @@ export default function App() {
                   onDeleteRoom={handleDeleteRoom}
                 />
               </div>
-
-              {/* Celoris Chat Cafe — real-time multiplayer retro chat lounge */}
-              <ChatCafeSection onEnter={() => setActiveTab('chat-cafe')} />
 
               {/* Bottom CTA banner */}
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-8 md:p-12 text-center text-[#0a0a0a] shadow-2xl group border border-emerald-400/20">
@@ -348,7 +356,7 @@ export default function App() {
                     onClick={() => { setActiveTab('cafe'); setJoinedRoomId(null); }}
                     className="mt-4 px-8 py-4 rounded-2xl bg-[#0a0a0a] text-emerald-400 font-bold text-sm transition-all duration-300 hover:scale-[1.03] shadow-xl hover:bg-zinc-900 cursor-pointer flex items-center justify-center gap-2 mx-auto group-hover:shadow-2xl"
                   >
-                    <span>Enter the Café Now</span>
+                    <span>Open Classrooms</span>
                     <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                   </button>
                 </div>
@@ -393,7 +401,7 @@ export default function App() {
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                       </div>
                       <h2 className="text-xl md:text-2xl font-display font-black italic text-white tracking-wide mt-1 uppercase">
-                        CELORIS CAFÉ TABLES
+                        CELORIS CLASSROOMS
                       </h2>
                     </div>
                   </div>
@@ -411,18 +419,6 @@ export default function App() {
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {activeTab === 'chat-cafe' && (
-            <div className="space-y-4">
-              <button
-                onClick={() => setActiveTab('home')}
-                className="text-xs font-bold text-fuchsia-400 hover:text-fuchsia-300 flex items-center gap-1.5"
-              >
-                ← Back to Café
-              </button>
-              <ChatCafeApp />
             </div>
           )}
 

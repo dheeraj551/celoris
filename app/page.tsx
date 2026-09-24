@@ -36,7 +36,6 @@ export default async function HomePage() {
   let topJobsRaw: any[] = [];
   let topCertifiedJobsRaw: any[] = [];
   let topBlogsRaw: any[] = [];
-  let liveCafeCount: number | null = 0;
 
   try {
     const supabase = (await createServerClient()) as any
@@ -124,14 +123,6 @@ export default async function HomePage() {
       .order('published_at', { ascending: false })
       .limit(2);
     topBlogsRaw = rawBlogs || [];
-
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-    const { count } = await supabase
-      .from('user_presence')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'online')
-      .gte('last_seen', fiveMinAgo);
-    liveCafeCount = count;
   } catch (err) {
     console.warn('HomePage server data fetch fallback:', err);
   }
@@ -161,12 +152,8 @@ export default async function HomePage() {
       meta: b.is_featured ? 'Featured' : (b.category?.trim() || 'New on the blog'),
       href: `/blog/${b.slug}`,
     })),
-    {
-      category: 'cafe' as const,
-      label: liveCafeCount && liveCafeCount > 0 ? 'Chat Café is live' : 'Chat Café is open',
-      meta: liveCafeCount && liveCafeCount > 0 ? `${liveCafeCount} online now` : 'come hang out',
-      href: '/social',
-    },
+    { category: 'cafe' as const, label: 'Live Classrooms', meta: 'join a class with your trainer', href: '/social?tab=cafe' },
+    { category: 'chat' as const, label: 'Celoris Chat', meta: 'private chats with your batchmates', href: '/chat' },
     { category: 'apps' as const, label: 'Video Studio', meta: 'free, no card needed', href: '/video-studio' },
     { category: 'apps' as const, label: 'Image Studio', meta: 'free photo editor', href: '/image-studio' },
     { category: 'apps' as const, label: 'AI Explorer', meta: '20+ AI models', href: '/ai-explorer' },

@@ -16,7 +16,7 @@ import { createServerClient } from '@supabase/ssr'
 // which Chat Café moderators also use from inside the café.
 
 export const config = {
-  matcher: ['/api/admin/:path*'],
+  matcher: ['/api/admin/:path*', '/api/social/chat-cafe/:path*'],
 }
 
 const ADMIN_ROLES = new Set(['admin', 'super_admin'])
@@ -42,6 +42,16 @@ async function lookupRole(url: string, serviceKey: string, table: string, userId
 }
 
 export async function proxy(request: NextRequest) {
+  // Chat Café has been retired (replaced by Celoris Chat at /chat). Its old
+  // public API routes stay on disk but are switched off here, so nobody can
+  // keep posting to the old café tables directly. Its data is untouched.
+  if (request.nextUrl.pathname.startsWith('/api/social/chat-cafe')) {
+    return NextResponse.json(
+      { error: 'Chat Café has closed. Use Celoris Chat at /chat instead.', code: 'GONE' },
+      { status: 410 }
+    )
+  }
+
   const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '').trim()
   const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim()
   const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '').trim()

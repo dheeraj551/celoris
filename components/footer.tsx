@@ -70,6 +70,7 @@ export default function Footer() {
     pathname?.startsWith("/learn") ||
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||
+    pathname === "/chat" ||
     pathname?.startsWith("/ai-explorer") ||
     pathname?.startsWith("/video-studio") ||
     pathname?.startsWith("/image-studio") ||

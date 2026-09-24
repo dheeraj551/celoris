@@ -40,7 +40,7 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
     {
       icon: Award,
       title: "Social",
-      description: "Chat Café and the wider Celoris community — a place to hang out, ask questions, and meet other learners, not just a comments section.",
+      description: "Live classrooms with your trainer and batch, plus Celoris Chat for private conversations with the friends you make along the way.",
       color: "from-emerald-500 to-teal-600"
     },
     {
