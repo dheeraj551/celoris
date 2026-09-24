@@ -89,8 +89,10 @@ export const CLASSROOM_BOARD = {
   shareCenterY: 1.7,
 };
 
-const LECTERN_POS = new THREE.Vector3(2.85, 0, -3.3);
-const LECTERN_ROT_Y = -0.42;
+// Front-right, just beside the board, so the trainer is in view from the
+// students' desks (including the front row) without blocking the board.
+const LECTERN_POS = new THREE.Vector3(2.55, 0, -3.55);
+const LECTERN_ROT_Y = -0.45;
 
 const DESK_COLUMNS_X = [-2.93, -0.99, 0.95, 2.89]; // left -> right as seen by students
 const DESK_ROWS_Z = [-1.57, -0.07, 1.44, 2.94]; // front row (A) -> back row (D)
@@ -117,7 +119,9 @@ export const CLASSROOM_LAYOUT: RoomLayout = {
   kind: 'classroom',
   presets: {
     // Trainer standing behind the lectern, looking over the class.
-    teacher: { pos: [2.3, 1.9, -4.45], look: [-0.9, 0.75, 1.6] },
+    // Trainer's own eyes, standing behind the lectern and facing the class
+    // (their own figure is hidden for them, like a first-person view).
+    teacher: { pos: [2.3, 1.85, -4.35], look: [-0.4, 0.95, 1.4] },
     board: { pos: [-0.159, 1.6, -1.25], look: [-0.159, 1.62, -4.808] },
     overview: { pos: [3.5, 2.55, 4.5], look: [-0.7, 0.75, -1.6] },
     balcony: { pos: [0, 2.7, 4.55], look: boardCenter },
@@ -132,9 +136,9 @@ export const CLASSROOM_LAYOUT: RoomLayout = {
   maxDistance: 9.0,
   focus: { up: 1.55, forward: 1.9, lookUp: 1.0, lookBack: 0.3 },
   chairOffsetZ: 0.33,
-  seatEye: { up: 1.6, back: 0.78, side: 0.2 },
+  seatEye: { up: 1.62, back: 1.0, side: 0.15 },
   boardLook: boardCenter,
-  teacher: { pos: [3.2, 0, -3.95], rotY: LECTERN_ROT_Y },
+  teacher: { pos: [2.85, 0, -4.15], rotY: LECTERN_ROT_Y },
   spotlightY: 3.15,
   dust: { halfX: 4.0, minY: 0.3, maxY: 3.0, halfZ: 4.6, size: 0.025 },
 };

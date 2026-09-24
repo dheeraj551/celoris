@@ -171,6 +171,7 @@ export class Classroom3DScene {
   // "My seat" camera for the signed-in student.
   private viewerId: string | null = null;
   private viewerSeatCode: string | null = null;
+  private viewerSawHost = false;
   private lastPreset: CameraPreset = 'teacher';
 
   // Live screen-share element. In the classroom the board plane is resized
@@ -519,8 +520,11 @@ export class Classroom3DScene {
     this.applyLabelVisibility();
     const desk = this.viewerDesk();
     const code = desk ? desk.seatCode : null;
-    if (code === this.viewerSeatCode) return;
+    // The seat view also re-aims when the trainer arrives or leaves.
+    const hostPresent = this.students.some((st) => st.isHost);
+    if (code === this.viewerSeatCode && hostPresent === this.viewerSawHost) return;
     this.viewerSeatCode = code;
+    this.viewerSawHost = hostPresent;
     if (this.isStudentPreset(this.lastPreset) && this.roomKind) {
       this.setCameraPreset(this.lastPreset);
     }
@@ -542,11 +546,39 @@ export class Classroom3DScene {
           p.y + L.seatEye.up,
           p.z + L.chairOffsetZ + L.seatEye.back
         ),
-        look: new THREE.Vector3(...L.boardLook),
+        look:
+          L.kind === 'classroom'
+            ? this.classroomSeatLook(p.x + L.seatEye.side, p.z + L.chairOffsetZ + L.seatEye.back)
+            : new THREE.Vector3(...L.boardLook),
       };
     }
     const def = L.presets[preset] || L.presets.teacher;
     return { pos: new THREE.Vector3(...def.pos), look: new THREE.Vector3(...def.look) };
+  }
+
+  /**
+   * From a student's desk, aim so both the board and the trainer at the
+   * lectern (beside the board) are in view. Falls back to the board centre
+   * when there's no trainer or both can't fit on screen.
+   */
+  private classroomSeatLook(camX: number, camZ: number): THREE.Vector3 {
+    const b = CLASSROOM_BOARD;
+    // Horizontal angle to a point, 0 = straight at the board wall, + = right.
+    const angleTo = (x: number, z: number) => Math.atan2(x - camX, camZ - z);
+    let left = angleTo(b.center.x - b.width / 2, b.center.z);
+    let right = angleTo(b.center.x + b.width / 2, b.center.z);
+    if (this.students.some((st) => st.isHost)) {
+      const [tx, , tz] = this.layout.teacher.pos;
+      const t = angleTo(tx, tz);
+      // ~65° keeps both inside a typical widescreen view.
+      if (Math.max(right, t) - Math.min(left, t) < 1.13) {
+        left = Math.min(left, t);
+        right = Math.max(right, t);
+      }
+    }
+    const mid = (left + right) / 2;
+    const dist = Math.max(1, (camZ - b.center.z) / Math.cos(mid));
+    return new THREE.Vector3(camX + Math.sin(mid) * dist, 1.5, camZ - Math.cos(mid) * dist);
   }
 
   /** Moves the camera instantly (used right after the room changes). */
@@ -2082,6 +2114,9 @@ export class Classroom3DScene {
 
     const teacher = this.students.find((s) => s.isHost);
     if (!teacher) return;
+    // The trainer's Podium view is from their own eyes, so they don't see
+    // their own figure (it would block the view); everyone else does.
+    if (teacher.id === this.viewerId) return;
 
     const group = new THREE.Group();
     // Standing just behind the podium / lectern, turned towards the class.
