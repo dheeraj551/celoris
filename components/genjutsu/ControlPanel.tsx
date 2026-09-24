@@ -19,7 +19,7 @@ import {
   Check
 } from 'lucide-react';
 import Link from 'next/link';
-import { ModelOption, MOTION_SWAP_COST, MOTION_SWAP_MIN_BALANCE } from './genjutsuData';
+import { ModelOption, MOTION_SWAP_CREDITS_PER_SECOND, MOTION_SWAP_MIN_BALANCE, motionSwapPrice } from './genjutsuData';
 import type { ReferenceVideoState } from './GenjutsuStudio';
 
 export interface UploadedFile {
@@ -230,7 +230,7 @@ export function ControlPanel({
           <input
             type="file"
             ref={videoInputRef}
-            accept="video/mp4,video/webm,video/quicktime"
+            accept="video/mp4,video/quicktime"
             onChange={handleVideoUpload}
             className="hidden"
           />
@@ -238,7 +238,7 @@ export function ControlPanel({
           {referenceVideo ? (
             <div className="relative rounded-2xl border border-white/20 bg-white/[0.04] p-3 flex items-center gap-3 group">
               <div className="w-16 h-12 rounded-lg bg-black overflow-hidden relative shrink-0 border border-white/10">
-                {/\.(mp4|mov|webm)$/i.test(referenceVideo.url) || referenceVideo.url.startsWith('blob:') ? (
+                {/\.(mp4|mov)$/i.test(referenceVideo.url) || referenceVideo.url.startsWith('blob:') ? (
                   <video
                     src={referenceVideo.url}
                     className="w-full h-full object-cover"
@@ -300,7 +300,7 @@ export function ControlPanel({
                 {mode === 'motion-transfer' ? 'Add a reference video to extract motion' : 'Add target video to edit'}
               </p>
               <p className="text-[11px] text-zinc-500 mt-1">
-                MP4 recommended · 4–30 seconds · up to 200 MB
+                MP4 or MOV · 4–30 seconds · up to 200 MB
               </p>
             </div>
           )}
@@ -443,6 +443,9 @@ export function ControlPanel({
             <span className="text-zinc-400 font-medium">Quality</span>
             <div className="flex items-center gap-1.5">
               <span className="text-white font-medium text-xs">{quality}</span>
+              <span className="text-[10px] text-zinc-500 font-mono">
+                {MOTION_SWAP_CREDITS_PER_SECOND[quality] ?? 100} cr/s
+              </span>
               <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
             </div>
           </div>
@@ -485,12 +488,15 @@ export function ControlPanel({
             >
               {referenceVideo?.status === 'uploading'
                 ? 'Uploading video…'
-                : `Generate · ${MOTION_SWAP_COST.toLocaleString('en-IN')} credits`}
+                : referenceVideo
+                ? `Generate · ${motionSwapPrice(referenceVideo.seconds, quality).toLocaleString('en-IN')} credits`
+                : 'Generate'}
             </button>
           )}
           <p className="text-[10px] text-zinc-500 text-center leading-snug">
-            Needs {MOTION_SWAP_MIN_BALANCE.toLocaleString('en-IN')} credits in your wallet. Failed renders are refunded.
-            Renders take a few minutes — you can leave this page; finished videos appear in History.
+            {MOTION_SWAP_CREDITS_PER_SECOND['720p']} credits/sec at 720p · {MOTION_SWAP_CREDITS_PER_SECOND['480p']} at 480p
+            (min 4 s). Needs {MOTION_SWAP_MIN_BALANCE.toLocaleString('en-IN')} credits in your wallet; failed renders are
+            refunded. Renders take a few minutes — finished videos appear in History.
           </p>
         </div>
 

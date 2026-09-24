@@ -29,6 +29,8 @@ export interface ModelOption {
   description: string;
   fps: number;
   creditCost: number;
+  /** Shown instead of creditCost when the model is priced per second. */
+  priceLabel?: string;
 }
 
 export interface GenerationHistoryItem {
@@ -49,9 +51,18 @@ export interface GenerationHistoryItem {
 // Only Genjutsu is wired to a real API. (The other engines shown in the
 // original design — "Genjutsu Turbo 60fps", "Kling 3.0 Motion", "Soul v2
 // Recast" — don't exist as Higgsfield motion-transfer endpoints.)
-/** Wallet balance needed to use the studio, and the price of one video. */
+/**
+ * Wallet balance needed to use the studio, and the per-second price.
+ * Keep in sync with lib/higgsfield-jobs.ts (the server is what charges).
+ */
 export const MOTION_SWAP_MIN_BALANCE = 5000;
-export const MOTION_SWAP_COST = 1000;
+export const MOTION_SWAP_CREDITS_PER_SECOND: Record<string, number> = { '480p': 50, '720p': 100 };
+
+/** Billed on whole seconds, rounded up, minimum 4 s (same as the server). */
+export function motionSwapPrice(seconds: number, resolution: string): number {
+  const billed = Math.max(4, Math.ceil(Math.round(seconds * 100) / 100));
+  return billed * (MOTION_SWAP_CREDITS_PER_SECOND[resolution] ?? MOTION_SWAP_CREDITS_PER_SECOND['720p']);
+}
 
 export const GENJUTSU_MODELS: ModelOption[] = [
   {
@@ -61,14 +72,15 @@ export const GENJUTSU_MODELS: ModelOption[] = [
     subtitle: 'Motion transfer & object swap',
     description: 'Takes the motion, timing and camera movement of your reference video and recasts it with your characters, products or clothes.',
     fps: 30,
-    creditCost: 1000,
+    creditCost: 50,
+    priceLabel: '50–100 credits / sec',
   },
 ];
 
 // Genjutsu renders at 480p or 720p (billed per output second).
 export const QUALITY_OPTIONS = [
-  { id: '720p', label: '720p', desc: 'HD (recommended)', recommended: true },
-  { id: '480p', label: '480p', desc: 'Faster, lower cost' },
+  { id: '720p', label: '720p', desc: 'HD (recommended) · 100 credits / sec', recommended: true },
+  { id: '480p', label: '480p', desc: 'Half the price · 50 credits / sec' },
 ];
 
 export const PRESET_MOTIONS: PresetMotion[] = [

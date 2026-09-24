@@ -1,4 +1,5 @@
 import { after } from 'next/server'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { createR2SignedReadUrl, putR2Object } from '@/lib/r2-client'
 
@@ -26,11 +27,30 @@ export const PRO_REQUIRED_CREDITS = 2000
 export const APP_CREDIT_COST: Record<AiApp, number> = {
   vio: 0, // ViO Studio: Pro-gated (2,000 credits) but not charged per image
   photolite: 100, // PhotoLite: 100 credits per image, refunded if it fails
-  'motion-swap': 1000, // Motion Swap Studio: 1,000 credits per video, refunded if it fails
+  'motion-swap': 0, // Motion Swap Studio is priced per second — see motionSwapPrice()
 }
 
 /** Minimum wallet balance needed to use Motion Swap Studio at all. */
 export const MOTION_SWAP_REQUIRED_CREDITS = 5000
+
+/**
+ * Motion Swap Studio price, per second of video (Celoris credits).
+ * Top-up: ₹500 → 450 credits, so 1 credit ≈ ₹1.11.
+ * Higgsfield Genjutsu API cost: ~$0.68/s at 720p, ~$0.32/s at 480p
+ * (≈ ₹68 / ₹32 per second at ₹100 per $, allowing for card FX fees).
+ *   720p: 100 credits/s ≈ ₹111/s  (cost ≈ ₹68/s)
+ *   480p:  50 credits/s ≈ ₹56/s   (cost ≈ ₹32/s)
+ * Billed on whole seconds (rounded up, like Higgsfield), minimum 4 s.
+ */
+export const MOTION_SWAP_CREDITS_PER_SECOND: Record<'480p' | '720p', number> = { '480p': 50, '720p': 100 }
+
+export function motionSwapBilledSeconds(seconds: number): number {
+  return Math.max(4, Math.ceil(Math.round(seconds * 100) / 100))
+}
+
+export function motionSwapPrice(seconds: number, resolution: '480p' | '720p'): number {
+  return motionSwapBilledSeconds(seconds) * MOTION_SWAP_CREDITS_PER_SECOND[resolution]
+}
 export const MAX_ACTIVE_JOBS_PER_USER = 3
 const STALE_AFTER_MS = 15 * 60 * 1000
 
@@ -489,6 +509,24 @@ async function copyVideoToR2(jobId: string, userId: string, sourceUrl: string) {
   } catch (err: any) {
     console.warn('[AI jobs] video R2 copy failed (keeping Higgsfield link):', err?.message)
   }
+}
+
+/**
+ * A reference video uploaded to Higgsfield's storage (the upload fallback)
+ * comes back to us as a URL. This token proves the URL was issued by our
+ * upload route for this user, so the job route never fetches arbitrary
+ * addresses someone typed in.
+ */
+function videoTokenKey() {
+  return process.env.HF_CREDENTIALS || process.env.HIGGSFIELD_CREDENTIALS || process.env.SUPABASE_SERVICE_ROLE_KEY || 'celoris-video'
+}
+export function signVideoUrl(userId: string, url: string): string {
+  return createHmac('sha256', videoTokenKey()).update(`${userId}|${url}`).digest('hex')
+}
+export function verifyVideoUrl(userId: string, url: string, token: unknown): boolean {
+  if (typeof token !== 'string' || !/^[0-9a-f]{64}$/.test(token)) return false
+  const expected = Buffer.from(signVideoUrl(userId, url), 'hex')
+  return timingSafeEqual(expected, Buffer.from(token, 'hex'))
 }
 
 /** Reference videos uploaded to our R2 bucket live under this prefix. */

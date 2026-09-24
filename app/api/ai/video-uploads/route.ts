@@ -7,6 +7,7 @@ import {
   HiggsfieldError,
   MOTION_SWAP_REQUIRED_CREDITS,
   referenceVideoKeyPrefix,
+  signVideoUrl,
 } from '@/lib/higgsfield-jobs'
 
 // Motion Swap Studio reference videos. Videos are far bigger than Vercel's
@@ -20,7 +21,8 @@ import {
 export const runtime = 'nodejs'
 export const maxDuration = 30
 
-const TYPES: Record<string, string> = { 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm' }
+// MP4 / MOV only: the server reads their length to price the video.
+const TYPES: Record<string, string> = { 'video/mp4': 'mp4', 'video/quicktime': 'mov' }
 const MAX_BYTES = 200 * 1024 * 1024
 
 export async function POST(request: Request) {
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
     const contentType = String(body.contentType || '').toLowerCase()
     const size = Number(body.size)
     const ext = TYPES[contentType]
-    if (!ext) return NextResponse.json({ error: 'Please upload an MP4, MOV or WebM video.' }, { status: 400 })
+    if (!ext) return NextResponse.json({ error: 'Please upload an MP4 or MOV video.' }, { status: 400 })
     if (!Number.isFinite(size) || size <= 0) return NextResponse.json({ error: 'Invalid file.' }, { status: 400 })
     if (size > MAX_BYTES) return NextResponse.json({ error: 'That video is too large. Please keep it under 200 MB.' }, { status: 413 })
 
@@ -50,7 +52,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Please convert the video to MP4 and try again.' }, { status: 400 })
       }
       const slot = await createHiggsfieldUploadSlot(contentType)
-      return NextResponse.json({ target: 'higgsfield', uploadUrl: slot.uploadUrl, headers: slot.headers, videoUrl: slot.publicUrl })
+      return NextResponse.json({
+        target: 'higgsfield',
+        uploadUrl: slot.uploadUrl,
+        headers: slot.headers,
+        videoUrl: slot.publicUrl,
+        videoToken: signVideoUrl(userId, slot.publicUrl),
+      })
     }
 
     const key = `${referenceVideoKeyPrefix(userId)}${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`

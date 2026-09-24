@@ -102,7 +102,7 @@ export function ModelPickerModal({
                 </div>
                 <div className="flex items-center gap-2 shrink-0 pt-1">
                   <span className="text-xs font-mono text-zinc-400">
-                    {model.creditCost > 0 ? `${model.creditCost} credits` : 'Included with Pro'}
+                    {model.priceLabel ?? (model.creditCost > 0 ? `${model.creditCost} credits` : 'Included with Pro')}
                   </span>
                   <div
                     className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${

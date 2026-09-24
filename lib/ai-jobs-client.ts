@@ -54,6 +54,7 @@ export interface StartJobInput {
   mode?: 'motion-transfer' | 'objects-swap'
   videoKey?: string
   videoUrl?: string
+  videoToken?: string
   videoName?: string
   durationSeconds?: number
 }
@@ -258,7 +259,7 @@ function putWithProgress(url: string, file: Blob, headers: Record<string, string
 export async function uploadReferenceVideo(
   file: File,
   onProgress?: (fraction: number) => void
-): Promise<{ videoKey?: string; videoUrl?: string }> {
+): Promise<{ videoKey?: string; videoUrl?: string; videoToken?: string }> {
   const contentType = file.type || 'video/mp4'
   const r2 = await call<{ uploadUrl: string; headers: Record<string, string>; videoKey: string }>('/api/ai/video-uploads', {
     method: 'POST',
@@ -272,13 +273,13 @@ export async function uploadReferenceVideo(
     if (!(err instanceof AiJobsError && err.data?.network)) throw err
     console.warn('[Motion Swap] R2 upload blocked, trying Higgsfield storage instead')
   }
-  const hf = await call<{ uploadUrl: string; headers: Record<string, string>; videoUrl: string }>('/api/ai/video-uploads', {
+  const hf = await call<{ uploadUrl: string; headers: Record<string, string>; videoUrl: string; videoToken: string }>('/api/ai/video-uploads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contentType, size: file.size, target: 'higgsfield' }),
   })
   await putWithProgress(hf.uploadUrl, file, { 'Content-Type': contentType, ...hf.headers }, onProgress)
-  return { videoUrl: hf.videoUrl }
+  return { videoUrl: hf.videoUrl, videoToken: hf.videoToken }
 }
 
 export async function listMarketingPresets(): Promise<MarketingPreset[]> {

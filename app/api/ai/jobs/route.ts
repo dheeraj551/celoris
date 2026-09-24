@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { currentUserId } from '../_auth'
+import { probeVideoDuration } from '@/lib/video-probe'
 import {
   AiApp,
   APP_CREDIT_COST,
@@ -9,8 +10,12 @@ import {
   GenjutsuInput,
   GenjutsuResolution,
   MAX_ACTIVE_VIDEO_JOBS_PER_USER,
+  MOTION_SWAP_CREDITS_PER_SECOND,
   MOTION_SWAP_REQUIRED_CREDITS,
+  motionSwapBilledSeconds,
+  motionSwapPrice,
   referenceVideoUrlForKey,
+  verifyVideoUrl,
   submitGenjutsu,
   VIDEO_MAX_SECONDS,
   VIDEO_MIN_SECONDS,
@@ -210,16 +215,12 @@ async function startGenjutsuJob(userId: string, body: any) {
   const imageUrls: string[] = Array.isArray(body.imageUrls)
     ? body.imageUrls.filter((u: unknown) => typeof u === 'string' && /^https:\/\//i.test(u)).slice(0, 30)
     : []
-  const durationSeconds = Number(body.durationSeconds)
 
   if (imageUrls.length === 0) {
     return NextResponse.json(
       { error: mode === 'motion-transfer' ? 'Add at least one character, product or clothing photo.' : 'Add a photo of the replacement object or clothing.' },
       { status: 400 }
     )
-  }
-  if (!Number.isFinite(durationSeconds) || durationSeconds < VIDEO_MIN_SECONDS - 0.05 || durationSeconds > VIDEO_MAX_SECONDS + 0.5) {
-    return NextResponse.json({ error: `The reference video must be ${VIDEO_MIN_SECONDS}–${VIDEO_MAX_SECONDS} seconds long.` }, { status: 400 })
   }
 
   // Reference video: one of this user's uploads in our R2 bucket (preferred),
@@ -229,7 +230,12 @@ async function startGenjutsuJob(userId: string, body: any) {
   try {
     if (typeof body.videoKey === 'string' && body.videoKey) {
       videoUrl = await referenceVideoUrlForKey(userId, body.videoKey)
-    } else if (typeof body.videoUrl === 'string' && /^https:\/\//i.test(body.videoUrl) && body.videoUrl.length < 2048) {
+    } else if (
+      typeof body.videoUrl === 'string' &&
+      body.videoUrl.length < 2048 &&
+      (verifyVideoUrl(userId, body.videoUrl, body.videoToken) || /^https:\/\/(www\.)?celorisdesigns\.com\//i.test(body.videoUrl))
+    ) {
+      // A Higgsfield-storage upload we issued, or a preset clip on our own site.
       videoUrl = body.videoUrl
     } else {
       return NextResponse.json({ error: 'Add a reference video first.' }, { status: 400 })
@@ -238,16 +244,42 @@ async function startGenjutsuJob(userId: string, body: any) {
     return NextResponse.json({ error: err?.message || 'Invalid reference video.' }, { status: err?.status || 400 })
   }
 
-  // Needs 5,000 credits in the wallet to use; each video then costs 1,000
-  // (refunded automatically if the render fails). One video at a time.
+  // Price is per second, so measure the real video length here instead of
+  // trusting the browser.
+  let durationSeconds: number
+  try {
+    durationSeconds = await probeVideoDuration(videoUrl)
+  } catch (err: any) {
+    console.warn('[AI jobs] could not read video length:', err?.message)
+    return NextResponse.json(
+      { error: "Couldn't read the video's length. Please export it as a standard MP4 and upload it again." },
+      { status: 400 }
+    )
+  }
+  if (durationSeconds < VIDEO_MIN_SECONDS - 0.05 || durationSeconds > VIDEO_MAX_SECONDS + 0.5) {
+    return NextResponse.json(
+      { error: `The reference video must be ${VIDEO_MIN_SECONDS}–${VIDEO_MAX_SECONDS} seconds long (this one is ${durationSeconds.toFixed(1)} s).` },
+      { status: 400 }
+    )
+  }
+  const cost = motionSwapPrice(durationSeconds, resolution)
+
+  // Needs 5,000 credits in the wallet to use, and enough for this video;
+  // the price is charged up front and refunded automatically if the render
+  // fails. One video at a time.
   const balance = await getWalletBalance(userId)
   if (balance === null) return NextResponse.json({ error: "Couldn't check your credits. Please try again." }, { status: 503 })
-  if (balance < MOTION_SWAP_REQUIRED_CREDITS) {
+  const needed = Math.max(MOTION_SWAP_REQUIRED_CREDITS, cost)
+  if (balance < needed) {
     return NextResponse.json(
       {
-        error: `Motion Swap Studio needs at least ${MOTION_SWAP_REQUIRED_CREDITS.toLocaleString('en-IN')} credits in your wallet (each video costs ${APP_CREDIT_COST[app].toLocaleString('en-IN')}). Your balance is ${balance.toLocaleString('en-IN')} credits.`,
+        error:
+          balance < MOTION_SWAP_REQUIRED_CREDITS
+            ? `Motion Swap Studio needs at least ${MOTION_SWAP_REQUIRED_CREDITS.toLocaleString('en-IN')} credits in your wallet. This video costs ${cost.toLocaleString('en-IN')} credits; your balance is ${balance.toLocaleString('en-IN')}.`
+            : `This video costs ${cost.toLocaleString('en-IN')} credits (${motionSwapBilledSeconds(durationSeconds)} s × ${MOTION_SWAP_CREDITS_PER_SECOND[resolution]} credits at ${resolution}). Your balance is ${balance.toLocaleString('en-IN')}.`,
         currentBalance: balance,
-        requiredCredits: MOTION_SWAP_REQUIRED_CREDITS,
+        requiredCredits: needed,
+        price: cost,
       },
       { status: 403 }
     )
@@ -269,7 +301,6 @@ async function startGenjutsuJob(userId: string, body: any) {
     image_urls: imageUrls,
     resolution,
   }
-  const cost = APP_CREDIT_COST[app]
 
   const { data: row, error: insertErr } = await admin
     .from('ai_generations')
@@ -286,6 +317,8 @@ async function startGenjutsuJob(userId: string, body: any) {
         resolution,
         imageCount: imageUrls.length,
         durationSeconds: Math.round(durationSeconds * 10) / 10,
+        billedSeconds: motionSwapBilledSeconds(durationSeconds),
+        creditsPerSecond: MOTION_SWAP_CREDITS_PER_SECOND[resolution],
         videoKey: typeof body.videoKey === 'string' ? body.videoKey : null,
         videoName: typeof body.videoName === 'string' ? body.videoName.slice(0, 120) : null,
       },
@@ -299,11 +332,11 @@ async function startGenjutsuJob(userId: string, body: any) {
     const { data: after, error: chargeErr } = await admin.rpc('charge_ai_credits', {
       p_user_id: userId,
       p_amount: cost,
-      p_description: 'Motion Swap Studio video',
+      p_description: `Motion Swap Studio video (${motionSwapBilledSeconds(durationSeconds)} s, ${resolution})`,
     })
     if (chargeErr) {
       await admin.from('ai_generations').update({ status: 'failed', error: 'Not enough credits.' }).eq('id', row.id)
-      return NextResponse.json({ error: `Not enough credits (each video costs ${cost.toLocaleString('en-IN')}).` }, { status: 402 })
+      return NextResponse.json({ error: `Not enough credits (this video costs ${cost.toLocaleString('en-IN')}).` }, { status: 402 })
     }
     newBalance = Number(after)
     await admin.from('ai_generations').update({ credits_charged: cost }).eq('id', row.id)

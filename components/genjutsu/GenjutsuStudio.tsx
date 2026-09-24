@@ -11,8 +11,8 @@ import {
   PRESET_MOTIONS,
   PresetMotion,
   GenerationHistoryItem,
-  MOTION_SWAP_COST,
   MOTION_SWAP_MIN_BALANCE,
+  motionSwapPrice,
 } from './genjutsuData';
 import {
   ModelPickerModal,
@@ -52,6 +52,7 @@ export interface ReferenceVideoState extends UploadedFile {
   progress: number; // 0..1
   error?: string;
   videoKey?: string;
+  videoToken?: string;
   videoUrl?: string;
 }
 
@@ -232,8 +233,8 @@ export function GenjutsuStudio() {
   const handlePickVideo = async (file: File) => {
     setGenerateError(null);
     const token = ++uploadToken.current;
-    if (!/^video\/(mp4|quicktime|webm)$/.test(file.type)) {
-      setGenerateError('Please use an MP4, MOV or WebM video.');
+    if (!/^video\/(mp4|quicktime)$/.test(file.type)) {
+      setGenerateError('Please use an MP4 or MOV video.');
       return;
     }
     if (file.size > MAX_VIDEO_BYTES) {
@@ -337,11 +338,15 @@ export function GenjutsuStudio() {
       );
       return;
     }
-    // Quick check before uploading photos (the server checks again).
-    if (balance !== null && balance < MOTION_SWAP_MIN_BALANCE) {
+    // Quick check before uploading photos (the server checks again, using
+    // the video's real length).
+    const price = motionSwapPrice(referenceVideo.seconds, quality);
+    if (balance !== null && balance < Math.max(MOTION_SWAP_MIN_BALANCE, price)) {
       setNeedsPro(true);
       setGenerateError(
-        `Motion Swap Studio needs at least ${MOTION_SWAP_MIN_BALANCE.toLocaleString('en-IN')} credits in your wallet (each video costs ${MOTION_SWAP_COST.toLocaleString('en-IN')}). Your balance is ${balance.toLocaleString('en-IN')}.`
+        balance < MOTION_SWAP_MIN_BALANCE
+          ? `Motion Swap Studio needs at least ${MOTION_SWAP_MIN_BALANCE.toLocaleString('en-IN')} credits in your wallet. This video costs ${price.toLocaleString('en-IN')} credits; your balance is ${balance.toLocaleString('en-IN')}.`
+          : `This video costs ${price.toLocaleString('en-IN')} credits. Your balance is ${balance.toLocaleString('en-IN')}.`
       );
       return;
     }
@@ -373,6 +378,7 @@ export function GenjutsuStudio() {
         resolution: quality === '480p' ? '480p' : '720p',
         videoKey: referenceVideo.videoKey,
         videoUrl: referenceVideo.videoKey ? undefined : referenceVideo.videoUrl,
+        videoToken: referenceVideo.videoKey ? undefined : referenceVideo.videoToken,
         videoName: referenceVideo.name,
         durationSeconds: referenceVideo.seconds,
       });
