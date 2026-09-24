@@ -58,8 +58,6 @@ import { useEffect } from "react"
 
 export default function Footer() {
   const pathname = usePathname()
-  const [email, setEmail] = useState("")
-  const [isSubscribed, setIsSubscribed] = useState(false)
   const [isNative, setIsNative] = useState(false)
 
   useEffect(() => {
@@ -105,15 +103,6 @@ export default function Footer() {
     pathname === "/cookies" ||
     pathname?.startsWith("/blog") ||
     pathname?.startsWith("/courses/")
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (email) {
-      setIsSubscribed(true)
-      setEmail("")
-      setTimeout(() => setIsSubscribed(false), 3000)
-    }
-  }
 
   return (
     <footer className={cn(
@@ -189,58 +178,6 @@ export default function Footer() {
               </ul>
             </div>
           ))}
-        </div>
-
-        {/* Newsletter Section */}
-        <div className={cn(
-          "border-t pt-12 mb-12",
-          isDarkPage ? "border-white/5" : "border-border"
-        )}>
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
-            <div>
-              <h3 className={cn(
-                "text-2xl font-black uppercase tracking-tighter italic mb-2",
-                isDarkPage ? "text-slate-900" : "text-text-primary"
-              )}>
-                Stay Synchronized
-              </h3>
-              <p className={cn(
-                "text-xs font-bold uppercase tracking-widest italic",
-                isDarkPage ? "text-slate-500" : "text-text-secondary"
-              )}>
-                Get the latest updates on new knowledge nodes and grid opportunities.
-              </p>
-            </div>
-            <form onSubmit={handleNewsletterSubmit} className="flex max-w-md w-full gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Initialize Email..."
-                className={cn(
-                  "flex-1 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest italic focus:outline-none transition-all",
-                  isDarkPage
-                    ? "bg-slate-100 border border-slate-200 text-slate-900 focus:border-emerald-500/50"
-                    : "border-border focus:ring-2 focus:ring-primary-500"
-                )}
-                required
-              />
-              <button
-                type="submit"
-                disabled={isSubscribed}
-                className={cn(
-                  "px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all",
-                  isSubscribed
-                    ? "bg-emerald-500 text-white cursor-not-allowed"
-                    : isDarkPage
-                      ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-3xl shadow-emerald-500/20"
-                      : "bg-primary-500 hover:bg-primary-700 text-white"
-                )}
-              >
-                {isSubscribed ? "ACKNOWLEDGED" : "SUBSCRIBE"}
-              </button>
-            </form>
-          </div>
         </div>
 
         {/* Bottom Bar */}

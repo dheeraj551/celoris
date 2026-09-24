@@ -1,6 +1,6 @@
 "use client"
 
-import { Smartphone, Download, Star, Users, Zap, Shield, Palette, TrendingUp, Sparkles, ArrowRight, Layout, Globe, Cpu, Video } from "lucide-react"
+import { Smartphone, Download, Star, Users, Zap, Shield, Palette, TrendingUp, Sparkles, ArrowRight, Layout, Globe, Cpu, Video, Wand2, ArrowLeftRight, Megaphone } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -8,6 +8,20 @@ import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
 
 const mobileApps = [
+  {
+    id: 0,
+    name: "Motion Swap Studio",
+    description: "AI reality manipulation: motion transfer & object swap from reference video.",
+    category: "Creative",
+    icon: ArrowLeftRight,
+    rating: 5.0,
+    downloads: "New",
+    isFeatured: true,
+    platforms: ["Web", "iOS", "Android"],
+    features: ["Motion Transfer", "Objects Swap", "Higgsfield Genjutsu"],
+    color: "from-lime-400 to-emerald-500",
+    href: "/motion-swap"
+  },
   {
     id: 1,
     name: "Celoris Learn",
@@ -41,7 +55,7 @@ const mobileApps = [
     name: "ViO Studio",
     description: "Turn any product into ready-to-post commercial ads and viral marketing creatives.",
     category: "Creative",
-    icon: Sparkles,
+    icon: Megaphone,
     rating: 4.9,
     downloads: "New",
     isFeatured: true,

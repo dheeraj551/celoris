@@ -23,6 +23,8 @@ import {
     HelpCircle,
     Info,
     Sparkles,
+    ArrowLeftRight,
+    Megaphone,
     type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -132,12 +134,25 @@ interface PaletteCommand {
 const PALETTE_COMMANDS: PaletteCommand[] = [
     {
         category: "Creative Studios",
+        title: "Motion Swap Studio",
+        description: "AI Motion transfer & surgical object swap using Higgsfield Genjutsu models",
+        href: "/motion-swap",
+        icon: ArrowLeftRight,
+        badge: "New",
+        shortcut: "M",
+        color: "from-[#d4f634] to-emerald-400",
+        glowRgba: "rgba(212, 246, 52, 0.45)",
+        iconColor: "text-[#d4f634]",
+        badgeStyle: "bg-[#d4f634]/15 text-[#d4f634] border-[#d4f634]/30",
+    },
+    {
+        category: "Creative Studios",
         title: "ViO Studio",
         description: "Commercial product ad studio & ready-to-post AI marketing creatives",
         href: "/vio-studio",
-        icon: Sparkles,
+        icon: Megaphone,
         badge: "Marketing",
-        shortcut: "M",
+        shortcut: "V",
         color: "from-[#D4FF00] to-emerald-400",
         glowRgba: "rgba(212, 255, 0, 0.45)",
         iconColor: "text-[#D4FF00]",

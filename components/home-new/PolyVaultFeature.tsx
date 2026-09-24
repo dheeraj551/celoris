@@ -16,10 +16,34 @@ import Link from 'next/link';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 
 const TILES = [
-  { icon: Box, from: 'from-emerald-500', to: 'to-teal-500', rotate: '-rotate-3' },
-  { icon: Sparkles, from: 'from-teal-500', to: 'to-cyan-500', rotate: 'rotate-2' },
-  { icon: Layers, from: 'from-cyan-500', to: 'to-emerald-500', rotate: 'rotate-1' },
-  { icon: Box, from: 'from-emerald-600', to: 'to-emerald-400', rotate: '-rotate-2' },
+  {
+    title: 'Titan Vanguard Mech',
+    format: 'GLTF',
+    image: '/3d/mech-model.jpeg',
+    tag: 'Rigged',
+    rotate: '-rotate-1',
+  },
+  {
+    title: 'GT3 Aero Hypercar',
+    format: 'FBX',
+    image: '/3d/sports-car.jpeg',
+    tag: '4K PBR',
+    rotate: 'rotate-1',
+  },
+  {
+    title: 'Toon Character Rig',
+    format: 'BLEND',
+    image: '/3d/character-cat.jpeg',
+    tag: 'Animated',
+    rotate: 'rotate-1',
+  },
+  {
+    title: 'Modular Brick Building',
+    format: 'OBJ',
+    image: '/3d/modular-building.jpeg',
+    tag: 'Game Ready',
+    rotate: '-rotate-1',
+  },
 ];
 
 export function PolyVaultFeature() {
@@ -81,15 +105,34 @@ export function PolyVaultFeature() {
                 <span className="ml-2 text-[9px] text-slate-500 font-mono">polyvault.celoris.app</span>
               </div>
               {/* Model card grid */}
-              <div className="relative flex-1 p-3 grid grid-cols-2 gap-2.5 bg-[#101010]">
-                {TILES.map(({ icon: Icon, from, to, rotate }, i) => (
+              <div className="relative flex-1 p-2.5 grid grid-cols-2 gap-2 bg-[#0c0c0e]">
+                {TILES.map((tile, i) => (
                   <div
                     key={i}
-                    className={`relative aspect-square rounded-xl bg-gradient-to-br ${from} ${to} ${rotate} flex items-center justify-center shadow-lg overflow-hidden`}
+                    className={`relative aspect-square rounded-xl bg-[#141416] border border-white/10 ${tile.rotate} shadow-lg overflow-hidden group/tile flex flex-col justify-between`}
                   >
-                    <Icon className="w-7 h-7 text-white/90" strokeWidth={1.5} />
-                    <div className="absolute bottom-1 left-1.5 text-[7px] font-mono font-bold text-white/70 uppercase tracking-wider">
-                      GLTF
+                    <img
+                      src={tile.image}
+                      alt={tile.title}
+                      className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
+
+                    {/* Top badge */}
+                    <div className="relative z-10 p-1.5 flex items-center justify-between">
+                      <span className="text-[7px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-md uppercase tracking-wider">
+                        {tile.format}
+                      </span>
+                      <span className="text-[6px] font-bold px-1 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/20">
+                        {tile.tag}
+                      </span>
+                    </div>
+
+                    {/* Bottom title */}
+                    <div className="relative z-10 p-1.5">
+                      <div className="text-[8px] font-bold text-white truncate drop-shadow-sm">
+                        {tile.title}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -121,11 +164,14 @@ export function PolyVaultFeature() {
                 Top Rated
               </div>
               <div className="flex flex-col gap-1.5">
-                {['Sci-Fi Drone', 'Samurai Helmet'].map((name) => (
-                  <div key={name} className="flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5">
-                    <div className="w-4 h-4 rounded bg-emerald-500/50 shrink-0" />
-                    <span className="text-[10px] text-slate-300 flex-1 truncate">{name}</span>
-                    <span className="text-[9px] text-emerald-400 font-mono">4.9</span>
+                {[
+                  { name: 'Titan Mech', rating: '4.95', img: '/3d/mech-model.jpeg' },
+                  { name: 'GT3 Hypercar', rating: '4.98', img: '/3d/sports-car.jpeg' },
+                ].map((item) => (
+                  <div key={item.name} className="flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
+                    <img src={item.img} alt={item.name} className="w-4 h-4 rounded object-cover border border-emerald-500/30 shrink-0" />
+                    <span className="text-[10px] text-slate-300 flex-1 truncate">{item.name}</span>
+                    <span className="text-[9px] text-emerald-400 font-mono">{item.rating}</span>
                   </div>
                 ))}
               </div>
@@ -138,11 +184,14 @@ export function PolyVaultFeature() {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[88%] md:w-[105%] bg-[#0a0a0a]/80 backdrop-blur-md rounded-2xl border border-white/5 shadow-2xl p-3 flex items-center gap-3 z-30"
             >
-              <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                <Download className="w-4 h-4 text-emerald-400" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden border border-emerald-500/30 shrink-0 relative bg-black">
+                <img src="/3d/mech-model.jpeg" alt="Titan Vanguard Mech" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] font-bold text-white truncate">Combat Drone Mk.IV</div>
+                <div className="text-[10px] font-bold text-white truncate">Titan Vanguard Mech (GLTF)</div>
                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mt-1">
                   <div className="h-full w-3/4 bg-emerald-500 rounded-full" />
                 </div>

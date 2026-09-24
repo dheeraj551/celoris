@@ -24,7 +24,9 @@ import {
     Image as ImageIcon,
     Box,
     IndianRupee,
-    Sparkles
+    Sparkles,
+    Wand2,
+    ArrowLeftRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -35,7 +37,8 @@ const MENU_GROUPS = [
     {
         title: "Creative Studio",
         items: [
-            { name: "ViO Studio", icon: Sparkles, href: "/vio-studio" },
+            { name: "Motion Swap Studio", icon: ArrowLeftRight, href: "/motion-swap" },
+            { name: "ViO Studio", icon: Megaphone, href: "/vio-studio" },
             { name: "Video studio", icon: Video, href: "/video-studio" },
             { name: "PolyVault", icon: Box, href: "/polyvault" },
             { name: "PhotoLite", icon: ImageIcon, href: "/photolite" },
