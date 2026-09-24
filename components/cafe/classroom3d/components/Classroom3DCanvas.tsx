@@ -51,15 +51,21 @@ interface Classroom3DCanvasProps {
       panel — keeps the live feed inside the room instead of breaking
       immersion. Pass null/undefined when nothing is being shared. */
   liveBoardStream?: MediaStream | null;
+  /** Signed-in user id, so a student's own view starts from their desk
+      and their own name tag isn't drawn in front of their camera. */
+  viewerId?: string | null;
+  /** Room capacity shown in the top bar (defaults to the number of seats). */
+  capacity?: number;
 }
 
 const PRESET_META: Record<CameraPreset, { icon: string; label: string; title: string }> = {
-  teacher: { icon: '🎓', label: 'Podium', title: 'Teacher Podium First-Person View' },
-  board: { icon: '📋', label: 'Board Focus', title: 'Zoom directly in front of the Stage Smart Board' },
-  overview: { icon: '🦅', label: 'Overview', title: 'Grand Auditorium High-Angle Overview' },
-  balcony: { icon: '🏛️', label: 'Balcony', title: 'Rear Balcony Perspective' },
-  'student-row1': { icon: '🪑', label: 'Row 1', title: 'Front Row Student Perspective' },
-  'student-row3': { icon: '🪑', label: 'Row 3', title: 'Mid-Tier Seating Perspective' },
+  teacher: { icon: '🎓', label: 'Podium', title: "Trainer's view from the lectern" },
+  board: { icon: '📋', label: 'Board Focus', title: 'Zoom in on the board' },
+  overview: { icon: '🦅', label: 'Overview', title: 'Whole-class overview' },
+  balcony: { icon: '🏛️', label: 'Back Row', title: 'View from the back of the class' },
+  // Both student presets start from behind the viewer's own desk.
+  'student-row1': { icon: '🪑', label: 'My Seat', title: 'View from your desk' },
+  'student-row3': { icon: '🪑', label: 'My Seat', title: 'View from your desk' },
 };
 
 const CHALK_PALETTE = [
@@ -84,6 +90,8 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
   onAddStudentToSeat,
   onAddNextStudent,
   liveBoardStream,
+  viewerId = null,
+  capacity,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sceneRef = useRef<Classroom3DScene | null>(null);
@@ -113,6 +121,14 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
 
   const [showTip, setShowTip] = useState<boolean>(true);
 
+  // The classroom model downloads after mount; keep a loading screen over
+  // the canvas until the room is ready (or the fallback room is shown).
+  const [roomReady, setRoomReady] = useState<boolean>(false);
+  const [seatCount, setSeatCount] = useState<number>(16);
+  // In the real classroom 'ready' shows the plain chalkboard (the demo
+  // physics slides only exist in the fallback auditorium).
+  const [isClassroomModel, setIsClassroomModel] = useState<boolean>(true);
+
   // Initialize Three.js 3D Scene
   useEffect(() => {
     const container = containerRef.current;
@@ -131,6 +147,18 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
     );
     sceneRef.current = scene;
 
+    scene.onRoomReady = (kind, seats) => {
+      setSeatCount(seats);
+      setIsClassroomModel(kind === 'classroom');
+      setRoomReady(true);
+    };
+    if (scene.roomKind) {
+      setSeatCount(scene.getSeatCount());
+      setIsClassroomModel(scene.roomKind === 'classroom');
+      setRoomReady(true);
+    }
+
+    scene.setViewerId(viewerId);
     scene.setStudents(students, selectedStudentId);
     scene.setCameraPreset(cameraPreset);
     scene.setBoardMode(boardMode, slideIndex, isVideoPlaying);
@@ -164,6 +192,10 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
       sceneRef.current.setStudents(students, selectedStudentId);
     }
   }, [students, selectedStudentId]);
+
+  useEffect(() => {
+    sceneRef.current?.setViewerId(viewerId);
+  }, [viewerId]);
 
   // Sync selected student or seat
   useEffect(() => {
@@ -336,6 +368,13 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
         className="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"
       />
 
+      {!roomReady && (
+        <div className="absolute inset-0 z-[35] flex flex-col items-center justify-center gap-3 bg-[#070b14]">
+          <div className="w-8 h-8 rounded-full border-2 border-sky-400/30 border-t-sky-400 animate-spin" />
+          <p className="text-slate-400 text-sm">Setting up the classroom…</p>
+        </div>
+      )}
+
       {/* Hidden source element for the live screen-share — never shown
           directly, only sampled as a Three.js VideoTexture on the 3D
           Smart Board mesh above. */}
@@ -354,7 +393,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
         <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-[#080e1d]/90 border border-slate-700/80 shadow-2xl backdrop-blur-md text-xs pointer-events-auto">
           <span className="text-slate-400 font-medium flex items-center mr-2">
             <Camera className="w-3.5 h-3.5 mr-1 text-sky-400" />
-            Hall Views
+            Views
             <span className="text-[10px] text-sky-400/70 ml-1 font-normal bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-800/40">±45° bounded</span>
           </span>
 
@@ -416,7 +455,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
           <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-2xl bg-[#0a101f]/90 border border-slate-700/80 shadow-2xl backdrop-blur-md text-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-slate-300 font-medium">
-              Capacity: <strong className="text-white">{students.filter((s) => !s.isHost).length} / 40 Seats</strong>
+              Capacity: <strong className="text-white">{students.filter((s) => !s.isHost).length} / {capacity ?? seatCount} Seats</strong>
             </span>
             {onAddNextStudent && (
               <button
@@ -454,7 +493,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4 text-sky-400" />
               <div>
-                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Auditorium Time</div>
+                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Classroom Time</div>
                 <div className="text-base font-bold text-white font-mono">{timeFormatted}</div>
               </div>
             </div>
@@ -650,7 +689,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
         {/* Helper Tip */}
         {showTip && (
           <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-[11px] text-slate-400 backdrop-blur-md shadow-md">
-            <span>✏️ 3D Smart Board on stage · Drag to look around (bounded to ±45° within hall) · Click desks to focus!</span>
+            <span>✏️ Draw on the board · Drag to look around · Click a desk to focus on it</span>
             <button
               onClick={() => setShowTip(false)}
               className="text-slate-500 hover:text-slate-300 ml-1"
@@ -677,7 +716,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
                   ? 'bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.6)]'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
-              title={liveBoardStream ? 'Board is showing the live screen share' : 'Activate Chalk Drawing on 3D Stage Board'}
+              title={liveBoardStream ? 'Board is showing the live screen share' : 'Draw on the board with chalk'}
             >
               <PenTool className="w-3.5 h-3.5 text-blue-400" />
               <span>Chalk / Draw</span>
@@ -693,10 +732,16 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
                   ? 'bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.6)]'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
-              title={liveBoardStream ? 'Board is showing the live screen share' : 'Display Lecture Slides on 3D Stage Board'}
+              title={
+                liveBoardStream
+                  ? 'Board is showing the live screen share'
+                  : isClassroomModel
+                  ? 'Stop drawing (the chalk stays on the board)'
+                  : 'Show slides on the board'
+              }
             >
               <Presentation className="w-3.5 h-3.5 text-sky-400" />
-              <span>Slides</span>
+              <span>{isClassroomModel ? 'Board' : 'Slides'}</span>
             </button>
 
             <button
@@ -709,7 +754,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
                   ? 'bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.6)]'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
-              title={liveBoardStream ? 'Board is showing the live screen share' : 'Play Video Simulation on 3D Stage Board'}
+              title={liveBoardStream ? 'Board is showing the live screen share' : 'Play the video demo on the board'}
             >
               <Tv className="w-3.5 h-3.5 text-purple-400" />
               <span>Video</span>
@@ -780,7 +825,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
             </div>
           )}
 
-          {boardMode === 'ready' && (
+          {boardMode === 'ready' && !isClassroomModel && (
             <div className="flex items-center space-x-2">
               <button
                 onClick={handlePrevSlide}
@@ -837,7 +882,7 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
               <button
                 onClick={() => handlePresetSelect('board')}
                 className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium transition-colors"
-                title="Swoop camera right in front of the 3D Stage Board"
+                title="Move the camera in front of the board"
               >
                 <Maximize2 className="w-3.5 h-3.5 text-sky-400" />
                 <span>Focus Board</span>

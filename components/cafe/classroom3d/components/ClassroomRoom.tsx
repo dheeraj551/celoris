@@ -540,6 +540,8 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
             onCameraPresetChange={setCameraPreset}
             allowedPresets={allowedPresets}
             liveBoardStream={boardMediaStream}
+            viewerId={user?.id ?? null}
+            capacity={classInfo.maxStudents}
           />
         </main>
 

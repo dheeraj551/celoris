@@ -1,7 +1,27 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Student, CameraPreset, ChalkStroke, SmartBoardMode, TimeOfDayPreset } from '../types';
 import { calculateAtmosphere, AtmosphereResult, TIME_PRESETS } from './AtmosphereConfig';
+import {
+  AUDITORIUM_LAYOUT,
+  CLASSROOM_BOARD,
+  CLASSROOM_DESK_TOP_Y,
+  CLASSROOM_LAYOUT,
+  CLASSROOM_SEATS,
+  ClassroomModel,
+  RoomLayout,
+  SeatSlotDef,
+  disposeObject,
+  loadClassroomModel,
+} from './ClassroomModelRoom';
+
+/** Which room is on screen: the real classroom model, or the procedural
+    auditorium it falls back to if the model can't be downloaded. */
+export type RoomKind = 'classroom' | 'auditorium';
+
+/** How long to wait for the classroom model before showing the fallback room. */
+const MODEL_LOAD_TIMEOUT_MS = 15000;
 
 export interface SeatDefinition {
   code: string; // e.g., 'A-01'
@@ -49,6 +69,7 @@ export class Classroom3DScene {
   // student seat.
   private teacherFigureGroup: THREE.Group | null = null;
   private teacherFigureMaterials: THREE.Material[] = [];
+  private teacherNameSprite: THREE.Sprite | null = null;
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
 
@@ -133,6 +154,34 @@ export class Classroom3DScene {
   private clock = new THREE.Clock();
   private animFrameId: number | null = null;
 
+  // Room model: the real classroom GLB replaces the procedural auditorium
+  // once it has loaded. Until then the canvas component covers the
+  // viewport with a loading screen, so people never see one room flash
+  // into the other.
+  private layout: RoomLayout = AUDITORIUM_LAYOUT;
+  private auditoriumGroup = new THREE.Group();
+  private boardFixtures = new THREE.Group();
+  private modelRoot: THREE.Group | null = null;
+  private envTexture: THREE.Texture | null = null;
+  public roomKind: RoomKind | null = null;
+  public onRoomReady?: (kind: RoomKind, seatCount: number) => void;
+  private loadTimeoutId: number | null = null;
+  private disposed = false;
+
+  // "My seat" camera for the signed-in student.
+  private viewerId: string | null = null;
+  private viewerSeatCode: string | null = null;
+  private lastPreset: CameraPreset = 'teacher';
+
+  // Live screen-share element. In the classroom the board plane is resized
+  // to the video's aspect ratio so a share isn't stretched across the
+  // (very wide) chalkboard.
+  private boardVideoEl: HTMLVideoElement | null = null;
+  private boardVideoSize = { w: 0, h: 0 };
+  private boardBezel: THREE.Mesh | null = null;
+
+  private removeEventListeners: (() => void) | null = null;
+
   constructor(
     container: HTMLElement,
     onSelectStudent?: (student: Student) => void,
@@ -216,6 +265,299 @@ export class Classroom3DScene {
 
     // 8. Start loop
     this.animate();
+
+    // 9. Swap in the real classroom model. Falls back to the auditorium
+    //    above if it fails or takes too long.
+    this.loadRoomModel();
+  }
+
+  // ------------------------------------------------------------ room model
+
+  private loadRoomModel() {
+    this.loadTimeoutId = window.setTimeout(() => {
+      this.loadTimeoutId = null;
+      if (!this.roomKind) {
+        console.warn('[classroom3d] Classroom model is taking too long; showing the fallback room.');
+        this.markRoomReady('auditorium');
+      }
+    }, MODEL_LOAD_TIMEOUT_MS);
+
+    loadClassroomModel()
+      .then((model) => {
+        if (this.disposed || this.roomKind === 'auditorium') {
+          disposeObject(model.root);
+          return;
+        }
+        this.applyClassroomModel(model);
+      })
+      .catch((err) => {
+        console.warn('[classroom3d] Could not load the classroom model; showing the fallback room.', err);
+        if (!this.disposed && !this.roomKind) this.markRoomReady('auditorium');
+      });
+  }
+
+  private markRoomReady(kind: RoomKind) {
+    if (this.loadTimeoutId !== null) {
+      window.clearTimeout(this.loadTimeoutId);
+      this.loadTimeoutId = null;
+    }
+    this.roomKind = kind;
+    this.onRoomReady?.(kind, this.allSeats.length);
+  }
+
+  public getSeatCount() {
+    return this.allSeats.length;
+  }
+
+  /** Replaces the procedural auditorium with the loaded classroom model. */
+  private applyClassroomModel(model: ClassroomModel) {
+    // 1. Architecture: drop the auditorium hall, its board frame and podium.
+    this.scene.remove(this.auditoriumGroup);
+    disposeObject(this.auditoriumGroup);
+    this.scene.remove(this.boardFixtures);
+    disposeObject(this.boardFixtures);
+    if (this.podiumGroup) {
+      this.scene.remove(this.podiumGroup);
+      disposeObject(this.podiumGroup);
+      this.podiumGroup = null;
+      this.podiumScreenMesh = null;
+    }
+    this.windowShaftMesh = null;
+    this.windowShaftMat = null;
+    this.sconceMaterials = [];
+
+    this.modelRoot = model.root;
+    this.scene.add(model.root);
+    // Clicking the lectern jumps to the trainer's view, like the old podium.
+    model.lectern?.traverse((o) => {
+      o.userData = { ...o.userData, isPodium: true, isClickable: true };
+    });
+
+    this.layout = CLASSROOM_LAYOUT;
+
+    // 2. Image-based lighting so the metal chair frames and desk legs read
+    //    as metal instead of flat black.
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    const roomEnv = new RoomEnvironment();
+    this.envTexture = pmrem.fromScene(roomEnv, 0.04).texture;
+    roomEnv.dispose();
+    pmrem.dispose();
+    this.scene.environment = this.envTexture;
+    this.scene.environmentIntensity = 0.45;
+    this.renderer.toneMappingExposure = 1.0;
+
+    // 3. Lights re-aimed for a 9 x 10 m room.
+    if (this.mainAuditoriumLight) {
+      this.mainAuditoriumLight.position.set(1.2, 9, 1.5);
+      const cam = this.mainAuditoriumLight.shadow.camera;
+      cam.left = -6;
+      cam.right = 6;
+      cam.top = 6;
+      cam.bottom = -6;
+      cam.near = 1;
+      cam.far = 20;
+      cam.updateProjectionMatrix();
+      this.mainAuditoriumLight.shadow.bias = -0.0006;
+      this.mainAuditoriumLight.shadow.normalBias = 0.02;
+    }
+    if (this.sunLight) {
+      const cam = this.sunLight.shadow.camera;
+      cam.left = -8;
+      cam.right = 8;
+      cam.top = 8;
+      cam.bottom = -8;
+      cam.updateProjectionMatrix();
+      this.sunLight.shadow.bias = -0.0006;
+      this.sunLight.shadow.normalBias = 0.02;
+    }
+    if (this.stageBoardSpot) {
+      this.stageBoardSpot.position.set(CLASSROOM_BOARD.center.x, 3.1, -2.3);
+      this.stageBoardSpot.target.position.set(CLASSROOM_BOARD.center.x, 1.6, -4.8);
+      this.stageBoardSpot.angle = Math.PI / 4;
+      this.stageBoardSpot.distance = 8;
+    }
+    if (this.lecternSpot) {
+      const [tx, , tz] = this.layout.teacher.pos;
+      this.lecternSpot.position.set(tx - 0.6, 3.1, tz + 1.6);
+      this.lecternSpot.target.position.set(tx - 0.2, 1.1, tz + 0.5);
+      this.lecternSpot.angle = Math.PI / 6;
+      this.lecternSpot.distance = 6;
+    }
+    if (this.studentSpotlight) {
+      this.studentSpotlight.angle = Math.PI / 7;
+      this.studentSpotlight.distance = 6;
+    }
+    if (this.studentBeamMesh) {
+      this.studentBeamMesh.scale.set(0.45, 2.7 / 9.5, 0.45);
+    }
+
+    // 4. Board: draw on the real chalkboard.
+    this.configureClassroomBoard();
+
+    // 5. Dust motes inside the smaller room.
+    this.reseedDust();
+
+    // 6. Orbit limits.
+    this.controls.minDistance = this.layout.minDistance;
+    this.controls.maxDistance = this.layout.maxDistance;
+
+    // 7. Seats, trainer, lighting and camera for the new room.
+    this.rebuildAuditoriumSeats();
+    this.applyAtmosphere(this.currentHour, true);
+    this.jumpToPreset(this.lastPreset);
+    this.markRoomReady('classroom');
+  }
+
+  /** Points the smart-board plane at the model's chalkboard. */
+  private configureClassroomBoard() {
+    const b = CLASSROOM_BOARD;
+    // Match the canvas to the board's shape so chalk strokes aren't stretched.
+    this.boardCanvas.width = 2048;
+    this.boardCanvas.height = Math.round(2048 * (b.height / b.width));
+    this.boardCtx = this.boardCanvas.getContext('2d');
+    this.strokes = [];
+    this.redoStrokes = [];
+
+    if (this.smartBoardTexture) this.smartBoardTexture.dispose();
+    this.smartBoardTexture = new THREE.CanvasTexture(this.boardCanvas);
+    this.smartBoardTexture.colorSpace = THREE.SRGBColorSpace;
+    this.smartBoardTexture.minFilter = THREE.LinearFilter;
+    this.smartBoardTexture.magFilter = THREE.LinearFilter;
+
+    if (this.smartBoardMaterial) {
+      this.smartBoardMaterial.transparent = true;
+      this.smartBoardMaterial.toneMapped = false;
+      this.smartBoardMaterial.map = this.smartBoardVideoTexture || this.smartBoardTexture;
+      this.smartBoardMaterial.needsUpdate = true;
+    }
+    if (this.smartBoardMesh) {
+      this.smartBoardMesh.geometry.dispose();
+      this.smartBoardMesh.geometry = new THREE.PlaneGeometry(1, 1);
+    }
+
+    // Thin dark frame shown around a shared screen.
+    const bezel = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ color: 0x0b0f17 })
+    );
+    bezel.visible = false;
+    bezel.raycast = () => {};
+    this.scene.add(bezel);
+    this.boardBezel = bezel;
+
+    this.fitClassroomBoard();
+    this.renderBoardContent();
+  }
+
+  /**
+   * Classroom board sizing: the full chalkboard normally, or a screen with
+   * the shared video's own aspect ratio while someone is presenting.
+   */
+  private fitClassroomBoard() {
+    if (this.layout.kind !== 'classroom' || !this.smartBoardMesh) return;
+    const b = CLASSROOM_BOARD;
+    const video = this.smartBoardVideoTexture ? this.boardVideoEl : null;
+    const vw = video?.videoWidth || 0;
+    const vh = video?.videoHeight || 0;
+    this.boardVideoSize = { w: vw, h: vh };
+
+    if (video) {
+      const aspect = vw > 0 && vh > 0 ? vw / vh : 16 / 9;
+      let h = b.maxShareHeight;
+      let w = h * aspect;
+      if (w > b.width) {
+        w = b.width;
+        h = w / aspect;
+      }
+      this.smartBoardMesh.position.set(b.center.x, b.shareCenterY, b.center.z + 0.012);
+      this.smartBoardMesh.scale.set(w, h, 1);
+      if (this.boardBezel) {
+        this.boardBezel.visible = true;
+        this.boardBezel.position.set(b.center.x, b.shareCenterY, b.center.z + 0.008);
+        this.boardBezel.scale.set(w + 0.06, h + 0.06, 1);
+      }
+    } else {
+      this.smartBoardMesh.position.set(b.center.x, b.center.y, b.center.z + 0.004);
+      this.smartBoardMesh.scale.set(b.width, b.height, 1);
+      if (this.boardBezel) this.boardBezel.visible = false;
+    }
+  }
+
+  private reseedDust() {
+    if (!this.dustPoints || !this.dustPositions) return;
+    // Floating motes read as stars against a low white ceiling, so the
+    // classroom leaves them out.
+    this.dustPoints.visible = this.layout.kind !== 'classroom';
+    if (!this.dustPoints.visible) this.dustPoints.raycast = () => {};
+    const d = this.layout.dust;
+    const count = this.dustPositions.length / 3;
+    for (let i = 0; i < count; i++) {
+      this.dustPositions[i * 3] = (Math.random() * 2 - 1) * d.halfX;
+      this.dustPositions[i * 3 + 1] = d.minY + Math.random() * (d.maxY - d.minY);
+      this.dustPositions[i * 3 + 2] = (Math.random() * 2 - 1) * d.halfZ;
+    }
+    this.dustPoints.geometry.attributes.position.needsUpdate = true;
+    const mat = this.dustPoints.material as THREE.PointsMaterial;
+    mat.size = d.size;
+    mat.opacity = 0.45;
+  }
+
+  /** Signed-in user, so a student's own view can start from their desk. */
+  public setViewerId(id: string | null) {
+    if (id === this.viewerId) return;
+    this.viewerId = id;
+    this.rebuildAuditoriumSeats(); // re-creates labels without your own
+  }
+
+  private viewerDesk(): Desk3DObject | undefined {
+    if (!this.viewerId) return undefined;
+    return this.desks.find((d) => d.studentId === this.viewerId);
+  }
+
+  /** Seats are re-assigned as people join/leave; follow the viewer's desk. */
+  private syncViewerSeat() {
+    this.applyLabelVisibility();
+    const desk = this.viewerDesk();
+    const code = desk ? desk.seatCode : null;
+    if (code === this.viewerSeatCode) return;
+    this.viewerSeatCode = code;
+    if (this.isStudentPreset(this.lastPreset) && this.roomKind) {
+      this.setCameraPreset(this.lastPreset);
+    }
+  }
+
+  private isStudentPreset(p: CameraPreset) {
+    return p === 'student-row1' || p === 'student-row3';
+  }
+
+  private presetTarget(preset: CameraPreset): { pos: THREE.Vector3; look: THREE.Vector3 } {
+    const L = this.layout;
+    const desk = this.isStudentPreset(preset) ? this.viewerDesk() : undefined;
+    if (desk) {
+      // Just behind and above the student's own head, looking at the board.
+      const p = desk.group.position;
+      return {
+        pos: new THREE.Vector3(
+          p.x + L.seatEye.side,
+          p.y + L.seatEye.up,
+          p.z + L.chairOffsetZ + L.seatEye.back
+        ),
+        look: new THREE.Vector3(...L.boardLook),
+      };
+    }
+    const def = L.presets[preset] || L.presets.teacher;
+    return { pos: new THREE.Vector3(...def.pos), look: new THREE.Vector3(...def.look) };
+  }
+
+  /** Moves the camera instantly (used right after the room changes). */
+  private jumpToPreset(preset: CameraPreset) {
+    const { pos, look } = this.presetTarget(preset);
+    this.isCameraTransitioning = false;
+    this.transitionProgress = 1;
+    this.camera.position.copy(pos);
+    this.controls.target.copy(look);
+    this.controls.update();
+    this.updateRotationLimits(this.camera.position, this.controls.target);
   }
 
   private setupProceduralSky() {
@@ -369,6 +711,7 @@ export class Classroom3DScene {
   }
 
   private buildGrandAuditorium() {
+    this.scene.add(this.auditoriumGroup);
     // 1. Proscenium Stage (Front elevated platform)
     const stageWoodMat = new THREE.MeshStandardMaterial({
       color: 0x182030,
@@ -378,13 +721,13 @@ export class Classroom3DScene {
     const stageMesh = new THREE.Mesh(new THREE.BoxGeometry(26, 0.8, 8.5), stageWoodMat);
     stageMesh.position.set(0, 0.0, -10.0);
     stageMesh.receiveShadow = true;
-    this.scene.add(stageMesh);
+    this.auditoriumGroup.add(stageMesh);
 
     // Front stage edge strip
     const stageEdgeMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
     const stageEdge = new THREE.Mesh(new THREE.BoxGeometry(25.8, 0.04, 0.06), stageEdgeMat);
     stageEdge.position.set(0, 0.4, -5.72);
-    this.scene.add(stageEdge);
+    this.auditoriumGroup.add(stageEdge);
 
     // 2. Auditorium Stepped Seating Tiers (5 sweeping tiers)
     const tierMat = new THREE.MeshStandardMaterial({
@@ -405,12 +748,12 @@ export class Classroom3DScene {
       const riser = new THREE.Mesh(new THREE.BoxGeometry(28, cfg.height + 0.4, cfg.depth), tierMat);
       riser.position.set(0, cfg.y, cfg.z);
       riser.receiveShadow = true;
-      this.scene.add(riser);
+      this.auditoriumGroup.add(riser);
 
       // Floor LED safety runner lights
       const runner = new THREE.Mesh(new THREE.BoxGeometry(27.8, 0.03, 0.04), stageEdgeMat);
       runner.position.set(0, cfg.y + cfg.height * 0.5 + 0.2, cfg.z - cfg.depth * 0.5);
-      this.scene.add(runner);
+      this.auditoriumGroup.add(runner);
     });
 
     // 3. Central & Side Aisle Staircases (walkways through the tiers)
@@ -421,7 +764,7 @@ export class Classroom3DScene {
     // Center walkway accent line
     const aisleStrip = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.02, 18), stairMat);
     aisleStrip.position.set(0, 1.4, 4.5);
-    this.scene.add(aisleStrip);
+    this.auditoriumGroup.add(aisleStrip);
 
     // 4. Back Stage Wall (Massive wall behind the 3D smart board)
     const backWallMat = new THREE.MeshStandardMaterial({
@@ -431,7 +774,7 @@ export class Classroom3DScene {
     const backWall = new THREE.Mesh(new THREE.BoxGeometry(30, 12, 0.6), backWallMat);
     backWall.position.set(0, 5.5, -14.2);
     backWall.receiveShadow = true;
-    this.scene.add(backWall);
+    this.auditoriumGroup.add(backWall);
 
     // Decorative wall wooden ribs around stage proscenium
     const ribMat = new THREE.MeshStandardMaterial({
@@ -443,7 +786,7 @@ export class Classroom3DScene {
       if (Math.abs(x) > 8.0) {
         const rib = new THREE.Mesh(new THREE.BoxGeometry(0.3, 10, 0.4), ribMat);
         rib.position.set(x, 5.0, -13.9);
-        this.scene.add(rib);
+        this.auditoriumGroup.add(rib);
       }
     }
 
@@ -457,28 +800,28 @@ export class Classroom3DScene {
     const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 12, 28), sideWallMat);
     rightWall.position.set(14.5, 5.5, 0);
     rightWall.receiveShadow = true;
-    this.scene.add(rightWall);
+    this.auditoriumGroup.add(rightWall);
 
     // LEFT WALL: Grand Architectural Cathedral Window Opening overlooking procedural sky
     // Lower acoustic wainscoting
     const leftLowerWall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 3.4, 28), sideWallMat);
     leftLowerWall.position.set(-14.5, 1.7, 0);
     leftLowerWall.receiveShadow = true;
-    this.scene.add(leftLowerWall);
+    this.auditoriumGroup.add(leftLowerWall);
 
     // Upper ceiling header
     const leftUpperWall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.6, 28), sideWallMat);
     leftUpperWall.position.set(-14.5, 10.4, 0);
-    this.scene.add(leftUpperWall);
+    this.auditoriumGroup.add(leftUpperWall);
 
     // Front & rear structural window corner columns
     const leftFrontPillar = new THREE.Mesh(new THREE.BoxGeometry(0.6, 7.2, 2.4), sideWallMat);
     leftFrontPillar.position.set(-14.5, 6.0, -12.8);
-    this.scene.add(leftFrontPillar);
+    this.auditoriumGroup.add(leftFrontPillar);
 
     const leftRearPillar = new THREE.Mesh(new THREE.BoxGeometry(0.6, 7.2, 2.4), sideWallMat);
     leftRearPillar.position.set(-14.5, 6.0, 12.8);
-    this.scene.add(leftRearPillar);
+    this.auditoriumGroup.add(leftRearPillar);
 
     // Window Glass Pane (23.2m wide, 6.6m high)
     const glassMat = new THREE.MeshStandardMaterial({
@@ -491,7 +834,7 @@ export class Classroom3DScene {
     const windowGlass = new THREE.Mesh(new THREE.PlaneGeometry(23.2, 6.6), glassMat);
     windowGlass.position.set(-14.45, 6.7, 0);
     windowGlass.rotation.y = Math.PI / 2;
-    this.scene.add(windowGlass);
+    this.auditoriumGroup.add(windowGlass);
 
     // Architectural Window Mullions (vertical columns & horizontal transoms)
     const mullionMat = new THREE.MeshStandardMaterial({
@@ -504,36 +847,36 @@ export class Classroom3DScene {
     for (let z = -11.6; z <= 11.6; z += 3.86) {
       const vMullion = new THREE.Mesh(new THREE.BoxGeometry(0.25, 6.6, 0.15), mullionMat);
       vMullion.position.set(-14.4, 6.7, z);
-      this.scene.add(vMullion);
+      this.auditoriumGroup.add(vMullion);
     }
 
     // Horizontal window transoms
     const transom1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 23.4), mullionMat);
     transom1.position.set(-14.4, 5.2, 0);
-    this.scene.add(transom1);
+    this.auditoriumGroup.add(transom1);
 
     const transom2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 23.4), mullionMat);
     transom2.position.set(-14.4, 7.8, 0);
-    this.scene.add(transom2);
+    this.auditoriumGroup.add(transom2);
 
     // Window sill ledge
     const sillMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
     const sill = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 23.6), sillMat);
     sill.position.set(-14.3, 3.45, 0);
-    this.scene.add(sill);
+    this.auditoriumGroup.add(sill);
 
     // Outside campus courtyard terrace & horizon balustrade
     const terraceMat = new THREE.MeshStandardMaterial({ color: 0x0b1120, roughness: 0.85 });
     const terrace = new THREE.Mesh(new THREE.BoxGeometry(16, 0.8, 40), terraceMat);
     terrace.position.set(-22.5, 3.0, 0);
-    this.scene.add(terrace);
+    this.auditoriumGroup.add(terrace);
 
     // Distant landscape silhouettes outside the window
     const foliageMat = new THREE.MeshStandardMaterial({ color: 0x06191f, roughness: 0.9 });
     for (let tz = -18; tz <= 18; tz += 4.5) {
       const tree = new THREE.Mesh(new THREE.ConeGeometry(1.8, 6.0, 6), foliageMat);
       tree.position.set(-26.0 + Math.sin(tz) * 2.0, 6.0, tz);
-      this.scene.add(tree);
+      this.auditoriumGroup.add(tree);
     }
 
     // Volumetric window sunlight beam streaming into auditorium
@@ -549,7 +892,7 @@ export class Classroom3DScene {
     this.windowShaftMesh = new THREE.Mesh(shaftGeo, this.windowShaftMat);
     this.windowShaftMesh.position.set(-6.5, 4.8, 0);
     this.windowShaftMesh.rotation.set(0.15, 0.45, 0.65);
-    this.scene.add(this.windowShaftMesh);
+    this.auditoriumGroup.add(this.windowShaftMesh);
 
     // Wall vertical acoustic slats & warm sconces
     const slatMat = new THREE.MeshStandardMaterial({
@@ -561,12 +904,12 @@ export class Classroom3DScene {
       // Right wall slat
       const rSlat = new THREE.Mesh(new THREE.BoxGeometry(0.2, 8.5, 0.5), slatMat);
       rSlat.position.set(14.15, 5.2, z);
-      this.scene.add(rSlat);
+      this.auditoriumGroup.add(rSlat);
 
       // Left lower wall slat
       const lSlat = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.0, 0.5), slatMat);
       lSlat.position.set(-14.15, 1.7, z);
-      this.scene.add(lSlat);
+      this.auditoriumGroup.add(lSlat);
 
       // Warm amber wall sconce fixture
       const sconceMat = new THREE.MeshStandardMaterial({
@@ -578,25 +921,25 @@ export class Classroom3DScene {
 
       const rSconce = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.45, 0.15), sconceMat);
       rSconce.position.set(14.05, 5.5, z);
-      this.scene.add(rSconce);
+      this.auditoriumGroup.add(rSconce);
 
       const lSconce = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.35, 0.15), sconceMat);
       lSconce.position.set(-14.05, 2.5, z);
-      this.scene.add(lSconce);
+      this.auditoriumGroup.add(lSconce);
     }
 
     // 6. Ceiling with Acoustic Floating Dark Baffles & Downlights
     const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x04070e, roughness: 0.95 });
     const ceiling = new THREE.Mesh(new THREE.BoxGeometry(30, 0.6, 30), ceilingMat);
     ceiling.position.set(0, 11.2, 0);
-    this.scene.add(ceiling);
+    this.auditoriumGroup.add(ceiling);
 
     // Acoustic hanging louvers
     const louverMat = new THREE.MeshStandardMaterial({ color: 0x121b2b, roughness: 0.7 });
     for (let z = -8; z <= 10; z += 3.2) {
       const louver = new THREE.Mesh(new THREE.BoxGeometry(26, 0.6, 0.15), louverMat);
       louver.position.set(0, 10.4, z);
-      this.scene.add(louver);
+      this.auditoriumGroup.add(louver);
     }
   }
 
@@ -1016,6 +1359,7 @@ export class Classroom3DScene {
   }
 
   private setupSmartBoardIn3D() {
+    this.scene.add(this.boardFixtures);
     // Giant Stage Presentation Smart Board (14.5m wide x 6.0m high)
     const boardWidth = 14.5;
     const boardHeight = 6.0;
@@ -1032,7 +1376,7 @@ export class Classroom3DScene {
     );
     frame.position.set(0, 5.2, -13.85);
     frame.castShadow = true;
-    this.scene.add(frame);
+    this.boardFixtures.add(frame);
 
     // Initial render on 2048x1024 canvas
     this.renderBoardContent();
@@ -1061,7 +1405,7 @@ export class Classroom3DScene {
     });
     const tray = new THREE.Mesh(new THREE.BoxGeometry(boardWidth + 0.4, 0.1, 0.3), trayMat);
     tray.position.set(0, 5.2 - boardHeight * 0.5 - 0.05, -13.68);
-    this.scene.add(tray);
+    this.boardFixtures.add(tray);
 
     // Chalk sticks on tray
     const colors = [0xfef08a, 0x38bdf8, 0xf87171, 0x4ade80, 0xf8fafc, 0xc084fc];
@@ -1072,7 +1416,7 @@ export class Classroom3DScene {
       );
       chalk.rotation.z = Math.PI / 2;
       chalk.position.set(-2.5 + idx * 0.35, 5.2 - boardHeight * 0.5 + 0.04, -13.65);
-      this.scene.add(chalk);
+      this.boardFixtures.add(chalk);
     });
   }
 
@@ -1082,6 +1426,21 @@ export class Classroom3DScene {
     if (!ctx) return;
     const w = this.boardCanvas.width;
     const h = this.boardCanvas.height;
+
+    // Classroom: the canvas is a transparent layer over the model's real
+    // green chalkboard, so only chalk strokes (and the video demo) show.
+    if (this.layout.kind === 'classroom') {
+      ctx.clearRect(0, 0, w, h);
+      if (this.boardMode === 'video') {
+        ctx.fillStyle = '#0a101f';
+        ctx.fillRect(0, 0, w, h);
+        this.renderVideoOnBoard(ctx, w, h);
+      }
+      this.drawChalkStrokes(ctx);
+      if (this.smartBoardTexture) this.smartBoardTexture.needsUpdate = true;
+      this.renderPodiumConsole();
+      return;
+    }
 
     // Clean background
     ctx.fillStyle = '#080d1a';
@@ -1130,6 +1489,15 @@ export class Classroom3DScene {
     }
 
     // Draw all chalk strokes on top!
+    this.drawChalkStrokes(ctx);
+
+    if (this.smartBoardTexture) {
+      this.smartBoardTexture.needsUpdate = true;
+    }
+    this.renderPodiumConsole();
+  }
+
+  private drawChalkStrokes(ctx: CanvasRenderingContext2D) {
     this.strokes.forEach((stroke) => {
       if (stroke.points.length === 0) return;
       ctx.save();
@@ -1155,11 +1523,6 @@ export class Classroom3DScene {
       ctx.stroke();
       ctx.restore();
     });
-
-    if (this.smartBoardTexture) {
-      this.smartBoardTexture.needsUpdate = true;
-    }
-    this.renderPodiumConsole();
   }
 
   private renderLectureSlidesOnBoard(ctx: CanvasRenderingContext2D, w: number, h: number) {
@@ -1361,7 +1724,10 @@ export class Classroom3DScene {
   }
 
   public applyAtmosphere(hour: number, instant: boolean = false) {
-    const atmo = calculateAtmosphere(hour);
+    const atmo = this.roomAtmosphere(calculateAtmosphere(hour));
+    // The sun only reaches the classroom through its windows, so it can be
+    // brighter there without washing the room out.
+    const sunLightIntensity = atmo.sunIntensity * (this.layout.kind === 'classroom' ? 1.35 : 1);
     this.currentHour = hour;
     this.currentTimePreset = atmo.closestPreset;
 
@@ -1425,11 +1791,11 @@ export class Classroom3DScene {
       if (instant) {
         this.sunLight.position.copy(atmo.sunPos);
         this.sunLight.color.copy(atmo.sunColor);
-        this.sunLight.intensity = atmo.sunIntensity;
+        this.sunLight.intensity = sunLightIntensity;
       } else {
         this.sunLight.position.lerp(atmo.sunPos, 0.15);
         this.sunLight.color.lerp(atmo.sunColor, 0.15);
-        this.sunLight.intensity = THREE.MathUtils.lerp(this.sunLight.intensity, atmo.sunIntensity, 0.15);
+        this.sunLight.intensity = THREE.MathUtils.lerp(this.sunLight.intensity, sunLightIntensity, 0.15);
       }
     }
 
@@ -1503,6 +1869,22 @@ export class Classroom3DScene {
     this.renderPodiumConsole();
   }
 
+  /**
+   * Classroom lighting: the ceiling tubes are on at every hour, so indoor
+   * light stays steady and only the window light and sky follow the clock.
+   */
+  private roomAtmosphere(atmo: AtmosphereResult): AtmosphereResult {
+    if (this.layout.kind !== 'classroom') return atmo;
+    return {
+      ...atmo,
+      ambientIntensity: 0.35 + atmo.ambientIntensity * 0.35,
+      mainLightIntensity: 0.75 + atmo.mainLightIntensity * 0.3,
+      windowLightIntensity: atmo.windowLightIntensity * 0.45,
+      stageSpotMultiplier: atmo.stageSpotMultiplier * 0.35,
+      fogDensity: atmo.fogDensity * 0.25,
+    };
+  }
+
   public setTimeOfDay(hour: number, preset?: TimeOfDayPreset, instant: boolean = false) {
     this.targetHour = ((hour % 24) + 24) % 24;
     if (preset) {
@@ -1555,13 +1937,19 @@ export class Classroom3DScene {
   }
 
   private rebuildAuditoriumSeats() {
-    // Clear existing desk meshes
+    // Clear existing desk meshes (geometries, materials and the name-label
+    // textures — this runs on every presence change, so leaking them adds up).
     for (const desk of this.desks) {
       this.scene.remove(desk.group);
-      desk.materials.forEach((m) => m.dispose());
+      disposeObject(desk.group);
     }
     this.desks = [];
     this.allSeats = [];
+
+    if (this.layout.kind === 'classroom') {
+      this.rebuildClassroomSeats();
+      return;
+    }
 
     // Grand Hall Tiers:
     // Tier 1 (Row A): 6 seats (Z = -3.2, Y = 0.0)
@@ -1626,6 +2014,56 @@ export class Classroom3DScene {
     this.updateSelectionVisuals();
     this.renderPodiumConsole();
     this.rebuildTeacherFigure();
+    this.syncViewerSeat();
+  }
+
+  /**
+   * Classroom: 16 real desks from the model (4 rows x 4). Students are
+   * seated front row first, filling from the middle columns outwards so a
+   * small class sits together near the board rather than along one wall.
+   */
+  private rebuildClassroomSeats() {
+    const seatedStudents = this.students.filter((s) => !s.isHost);
+    const fillOrder = [1, 2, 0, 3];
+    const order: SeatSlotDef[] = [];
+    for (let r = 1; r <= 4; r++) {
+      fillOrder.forEach((c) => {
+        const slot = CLASSROOM_SEATS.find((sd) => sd.row === r && sd.col === c);
+        if (slot) order.push(slot);
+      });
+    }
+    const assigned: Record<string, Student> = {};
+    seatedStudents.slice(0, order.length).forEach((student, i) => {
+      assigned[order[i].code] = student;
+    });
+
+    CLASSROOM_SEATS.forEach((slot) => {
+      const student = assigned[slot.code];
+      if (student) {
+        student.row = slot.row;
+        student.col = slot.col;
+        student.seatCode = slot.code;
+      }
+      const seatDef: SeatDefinition = {
+        code: slot.code,
+        row: slot.row,
+        tierIndex: slot.row,
+        colIndex: slot.col,
+        x: slot.x,
+        y: slot.y,
+        z: slot.z,
+        student,
+      };
+      this.allSeats.push(seatDef);
+      const deskObj = this.createClassroomSeatMesh(seatDef);
+      this.desks.push(deskObj);
+      this.scene.add(deskObj.group);
+    });
+
+    this.updateSelectionVisuals();
+    this.renderPodiumConsole();
+    this.rebuildTeacherFigure();
+    this.syncViewerSeat();
   }
 
   /**
@@ -1636,24 +2074,33 @@ export class Classroom3DScene {
   private rebuildTeacherFigure() {
     if (this.teacherFigureGroup) {
       this.scene.remove(this.teacherFigureGroup);
-      this.teacherFigureMaterials.forEach((m) => m.dispose());
+      disposeObject(this.teacherFigureGroup);
       this.teacherFigureGroup = null;
       this.teacherFigureMaterials = [];
     }
+    this.teacherNameSprite = null;
 
     const teacher = this.students.find((s) => s.isHost);
     if (!teacher) return;
 
     const group = new THREE.Group();
-    // Standing just behind the podium (podium sits at x:-4.0, z:-9.6),
-    // angled to match the podium's turn toward the hall.
-    group.position.set(-4.0, 0, -9.95);
-    group.rotation.y = 0.14;
+    // Standing just behind the podium / lectern, turned towards the class.
+    group.position.set(...this.layout.teacher.pos);
+    group.rotation.y = this.layout.teacher.rotY;
 
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xf5d0b0, roughness: 0.7 });
     const clothesMat = new THREE.MeshStandardMaterial({ color: teacher.color, roughness: 0.55, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x2b1c12, roughness: 0.8 });
-    this.teacherFigureMaterials.push(skinMat, clothesMat, hairMat);
+    const trouserMat = new THREE.MeshStandardMaterial({ color: 0x2b3444, roughness: 0.7 });
+    this.teacherFigureMaterials.push(skinMat, clothesMat, hairMat, trouserMat);
+
+    // Legs, so the figure isn't a floating torso when seen from the side.
+    [-0.14, 0.14].forEach((x) => {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.08, 0.7, 10), trouserMat);
+      leg.position.set(x, 0.35, 0);
+      leg.castShadow = true;
+      group.add(leg);
+    });
 
     const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.92, 0.38), clothesMat);
     torso.position.set(0, 1.15, 0);
@@ -1671,9 +2118,14 @@ export class Classroom3DScene {
     hair.position.set(0, 1.78, -0.02);
     group.add(hair);
 
-    const nameSprite = this.createNameSprite(teacher, 'Podium');
+    const nameSprite = this.createNameSprite(teacher, this.layout.kind === 'classroom' ? 'Trainer' : 'Podium');
     nameSprite.position.set(0, 2.2, 0);
+    if (this.layout.kind === 'classroom') {
+      this.makeScreenSizeLabel(nameSprite, 0.042);
+      nameSprite.position.set(0, 2.05, 0);
+    }
     group.add(nameSprite);
+    this.teacherNameSprite = nameSprite;
 
     this.scene.add(group);
     this.teacherFigureGroup = group;
@@ -1810,94 +2262,18 @@ export class Classroom3DScene {
       group.add(mug);
 
       // 4. Student Avatar Model (Torso, head, hair, arms)
-      const studentGroup = new THREE.Group();
-      studentGroup.position.set(0, 0, 0.85);
+      const avatar = this.buildStudentAvatar(student, seat.code, isAway, baseOpacity, materials);
+      avatar.studentGroup.position.set(0, 0, 0.85);
+      rightArmPivot = avatar.rightArmPivot;
+      haloMesh = avatar.haloMesh;
+      group.add(avatar.studentGroup);
 
-      const skinMat = new THREE.MeshStandardMaterial({
-        color: 0xf5d0b0,
-        roughness: 0.7,
-        transparent: isAway,
-        opacity: baseOpacity,
-      });
-      const clothesMat = new THREE.MeshStandardMaterial({
-        color: student.color,
-        roughness: 0.6,
-        transparent: isAway,
-        opacity: baseOpacity,
-      });
-      materials.push(skinMat, clothesMat);
-
-      // Torso
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.34), clothesMat);
-      torso.position.set(0, 0.76, 0);
-      torso.castShadow = true;
-      torso.userData = { seatCode: seat.code, studentId: student.id, isClickable: true };
-      studentGroup.add(torso);
-
-      // Head
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), skinMat);
-      head.position.set(0, 1.25, 0);
-      head.castShadow = true;
-      head.userData = { seatCode: seat.code, studentId: student.id, isClickable: true };
-      studentGroup.add(head);
-
-      // Hair
-      const hairMat = new THREE.MeshStandardMaterial({
-        color: student.row % 2 === 0 ? 0x221711 : 0x4a3222,
-        roughness: 0.8,
-        transparent: isAway,
-        opacity: baseOpacity,
-      });
-      materials.push(hairMat);
-      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.19, 14, 14), hairMat);
-      hair.position.set(0, 1.28, -0.02);
-      studentGroup.add(hair);
-
-      // Left arm resting on desk
-      const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.55, 10), clothesMat);
-      leftArm.position.set(-0.36, 0.8, -0.32);
-      leftArm.rotation.x = -Math.PI / 2.8;
-      leftArm.rotation.z = 0.25;
-      studentGroup.add(leftArm);
-
-      // Right arm (kinematic shoulder pivot for hand raising!)
-      rightArmPivot = new THREE.Group();
-      rightArmPivot.position.set(0.32, 0.98, 0);
-
-      const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.45, 10), clothesMat);
-      upperArm.position.set(0, -0.2, 0);
-      rightArmPivot.add(upperArm);
-
-      const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), skinMat);
-      rightHand.position.set(0, -0.45, 0);
-      rightArmPivot.add(rightHand);
-
-      if (student.isHandRaised && !isAway) {
-        rightArmPivot.rotation.z = -Math.PI * 0.88;
-        rightArmPivot.rotation.x = -0.15;
-      } else {
-        rightArmPivot.rotation.x = -Math.PI / 2.8;
-        rightArmPivot.rotation.z = -0.25;
+      // 5. Floating Name Billboard with Seat Code (not over your own head)
+      if (student.id !== this.viewerId) {
+        nameSprite = this.createNameSprite(student, `Seat ${seat.code}`);
+        nameSprite.position.set(0, 1.72, 0.85);
+        group.add(nameSprite);
       }
-      studentGroup.add(rightArmPivot);
-
-      // Hand Raised Halo Beacon
-      if (student.isHandRaised && !isAway) {
-        const haloGeo = new THREE.TorusGeometry(0.25, 0.03, 10, 24);
-        const haloMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.9 });
-        materials.push(haloMat);
-        haloMesh = new THREE.Mesh(haloGeo, haloMat);
-        haloMesh.position.set(0.32, 1.9, 0);
-        haloMesh.rotation.x = Math.PI / 2;
-        studentGroup.add(haloMesh);
-      }
-
-      group.add(studentGroup);
-
-      // 5. Floating Name Billboard with Seat Code
-      nameSprite = this.createNameSprite(student, `Seat ${seat.code}`);
-      nameSprite.position.set(0, 1.72, 0.85);
-      group.add(nameSprite);
     } else {
       // EMPTY SEAT (Ready for Realtime Students!)
       // Add a clean translucent seat number chip
@@ -1928,6 +2304,228 @@ export class Classroom3DScene {
       laptopScreenMat,
       baseY: seat.y,
     };
+  }
+
+  /**
+   * Classroom seat: the desk and chair come from the model, so this only
+   * adds the student (or an "Open" chip), a laptop, the name label and an
+   * invisible hit-box that makes the desk clickable.
+   */
+  private createClassroomSeatMesh(seat: SeatDefinition): Desk3DObject {
+    const group = new THREE.Group();
+    group.position.set(seat.x, seat.y, seat.z);
+    group.userData = { seatCode: seat.code, studentId: seat.student?.id };
+
+    const materials: THREE.Material[] = [];
+    const student = seat.student;
+    const isAway = student?.status === 'away';
+    const baseOpacity = isAway ? 0.4 : 1.0;
+    const top = CLASSROOM_DESK_TOP_Y;
+    const chairZ = this.layout.chairOffsetZ;
+
+    const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+    hitMat.colorWrite = false;
+    materials.push(hitMat);
+    // Desk top + the seated student, not the gaps around them.
+    const hitBox = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.25, 1.0), hitMat);
+    hitBox.position.set(0, 0.625, 0.2);
+    hitBox.userData = student
+      ? { seatCode: seat.code, studentId: student.id, isClickable: true }
+      : { seatCode: seat.code, isEmptySeat: true, isClickable: true };
+    group.add(hitBox);
+
+    let rightArmPivot: THREE.Group | undefined;
+    let haloMesh: THREE.Mesh | undefined;
+    let nameSprite: THREE.Sprite | undefined;
+    let laptopScreenMat: THREE.MeshStandardMaterial | undefined;
+
+    if (student) {
+      // Laptop on the desk
+      const laptopMat = new THREE.MeshStandardMaterial({ color: 0x3a4250, roughness: 0.35, metalness: 0.7 });
+      materials.push(laptopMat);
+      const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.014, 0.25), laptopMat);
+      laptopBase.position.set(0.08, top + 0.007, 0.0);
+      laptopBase.castShadow = true;
+      group.add(laptopBase);
+
+      laptopScreenMat = new THREE.MeshStandardMaterial({
+        color: isAway ? 0x0f172a : 0x9fd8ff,
+        emissive: isAway ? 0x000000 : 0x38bdf8,
+        emissiveIntensity: isAway ? 0 : 0.55,
+      });
+      materials.push(laptopScreenMat);
+      const laptopScreen = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.24, 0.012), laptopScreenMat);
+      laptopScreen.position.set(0.08, top + 0.125, -0.13);
+      laptopScreen.rotation.x = -0.28;
+      laptopScreen.castShadow = true;
+      group.add(laptopScreen);
+
+      const avatar = this.buildStudentAvatar(student, seat.code, isAway, baseOpacity, materials);
+      avatar.studentGroup.position.set(0, 0.05, chairZ + 0.08);
+      avatar.studentGroup.scale.setScalar(0.92);
+      rightArmPivot = avatar.rightArmPivot;
+      haloMesh = avatar.haloMesh;
+      group.add(avatar.studentGroup);
+
+      // Your own label would sit right in front of your camera.
+      if (student.id !== this.viewerId) {
+        nameSprite = this.createNameSprite(student, `Seat ${seat.code}`);
+        this.makeScreenSizeLabel(nameSprite, 0.042);
+        nameSprite.position.set(0, 1.52, chairZ);
+        group.add(nameSprite);
+      }
+    } else {
+      const emptySprite = this.createEmptySeatSprite(seat.code);
+      this.makeScreenSizeLabel(emptySprite, 0.03);
+      emptySprite.position.set(0, 1.12, 0.1);
+      emptySprite.userData = { seatCode: seat.code, isEmptySeat: true, isClickable: true };
+      group.add(emptySprite);
+    }
+
+    return {
+      seatCode: seat.code,
+      studentId: student?.id,
+      student,
+      group,
+      rightArmPivot,
+      haloMesh,
+      nameSprite,
+      materials,
+      laptopScreenMat,
+      baseY: seat.y,
+    };
+  }
+
+  /**
+   * Seated student figure (torso, head, hair, arms with a raisable right
+   * arm and a halo when the hand is up). Origin = centre of the chair seat
+   * at floor level, facing -z (towards the board).
+   */
+  private buildStudentAvatar(
+    student: Student,
+    seatCode: string,
+    isAway: boolean,
+    baseOpacity: number,
+    materials: THREE.Material[]
+  ): { studentGroup: THREE.Group; rightArmPivot: THREE.Group; haloMesh?: THREE.Mesh } {
+    let haloMesh: THREE.Mesh | undefined;
+    const studentGroup = new THREE.Group();
+
+    const skinMat = new THREE.MeshStandardMaterial({
+      color: 0xf5d0b0,
+      roughness: 0.7,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    const clothesMat = new THREE.MeshStandardMaterial({
+      color: student.color,
+      roughness: 0.6,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    materials.push(skinMat, clothesMat);
+
+    // Torso
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.34), clothesMat);
+    torso.position.set(0, 0.76, 0);
+    torso.castShadow = true;
+    torso.userData = { seatCode: seatCode, studentId: student.id, isClickable: true };
+    studentGroup.add(torso);
+
+    // Head
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), skinMat);
+    head.position.set(0, 1.25, 0);
+    head.castShadow = true;
+    head.userData = { seatCode: seatCode, studentId: student.id, isClickable: true };
+    studentGroup.add(head);
+
+    // Hair
+    const hairMat = new THREE.MeshStandardMaterial({
+      color: student.row % 2 === 0 ? 0x221711 : 0x4a3222,
+      roughness: 0.8,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    materials.push(hairMat);
+    // Hair as a cap over the top and back of the head. Students face -z
+    // (the board), so the back of the head is +z; a full offset sphere used
+    // to hide their faces from the trainer's side.
+    const hair = new THREE.Mesh(
+      new THREE.SphereGeometry(0.195, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.58),
+      hairMat
+    );
+    hair.position.set(0, 1.265, 0.02);
+    hair.rotation.x = 0.55;
+    studentGroup.add(hair);
+
+    // Left arm resting on desk
+    const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.55, 10), clothesMat);
+    leftArm.position.set(-0.36, 0.8, -0.32);
+    leftArm.rotation.x = -Math.PI / 2.8;
+    leftArm.rotation.z = 0.25;
+    studentGroup.add(leftArm);
+
+    // Right arm (kinematic shoulder pivot for hand raising!)
+    const rightArmPivot = new THREE.Group();
+    rightArmPivot.position.set(0.32, 0.98, 0);
+
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.45, 10), clothesMat);
+    upperArm.position.set(0, -0.2, 0);
+    rightArmPivot.add(upperArm);
+
+    const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), skinMat);
+    rightHand.position.set(0, -0.45, 0);
+    rightArmPivot.add(rightHand);
+
+    if (student.isHandRaised && !isAway) {
+      rightArmPivot.rotation.z = -Math.PI * 0.88;
+      rightArmPivot.rotation.x = -0.15;
+    } else {
+      rightArmPivot.rotation.x = -Math.PI / 2.8;
+      rightArmPivot.rotation.z = -0.25;
+    }
+    studentGroup.add(rightArmPivot);
+
+    // Hand Raised Halo Beacon
+    if (student.isHandRaised && !isAway) {
+      const haloGeo = new THREE.TorusGeometry(0.25, 0.03, 10, 24);
+      const haloMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.9 });
+      materials.push(haloMat);
+      haloMesh = new THREE.Mesh(haloGeo, haloMat);
+      haloMesh.position.set(0.32, 1.9, 0);
+      haloMesh.rotation.x = Math.PI / 2;
+      studentGroup.add(haloMesh);
+    }
+
+
+    return { studentGroup, rightArmPivot, haloMesh };
+  }
+
+  /**
+   * Classroom labels keep the same on-screen size at any distance, so the
+   * student at the next desk doesn't get a label covering half the view.
+   * `height` is a fraction of the viewport height (roughly).
+   */
+  private makeScreenSizeLabel(sprite: THREE.Sprite, height: number) {
+    const mat = sprite.material as THREE.SpriteMaterial;
+    mat.sizeAttenuation = false;
+    const aspect = sprite.scale.x / sprite.scale.y;
+    sprite.scale.set(height * aspect, height, 1);
+  }
+
+  /**
+   * While a screen is being shared, a seated student sees only raised-hand
+   * labels, so name tags don't cover the shared screen.
+   */
+  private applyLabelVisibility() {
+    const quiet = this.boardMode === 'screenshare' && !!this.viewerDesk();
+    this.desks.forEach((desk) => {
+      if (desk.nameSprite) desk.nameSprite.visible = !quiet || !!desk.student?.isHandRaised;
+    });
+    // The trainer doesn't need their own name tag floating over their view.
+    const teacher = this.students.find((st) => st.isHost);
+    const ownFigure = !!teacher && teacher.id === this.viewerId;
+    if (this.teacherNameSprite) this.teacherNameSprite.visible = !quiet && !ownFigure;
   }
 
   private createNameSprite(student: Student, subtitle: string): THREE.Sprite {
@@ -2050,56 +2648,24 @@ export class Classroom3DScene {
     }
 
     const pos = targetDesk.group.position;
-    this.studentSpotlight.position.set(pos.x, 11.2, pos.z + 0.4);
-    this.studentSpotlightTarget.position.set(pos.x, pos.y + 0.8, pos.z + 0.4);
-    this.studentSpotlight.intensity = 4.2;
+    const isRoom = this.layout.kind === 'classroom';
+    const dz = isRoom ? this.layout.chairOffsetZ * 0.5 : 0.4;
+    this.studentSpotlight.position.set(pos.x, this.layout.spotlightY, pos.z + dz);
+    this.studentSpotlightTarget.position.set(pos.x, pos.y + 0.8, pos.z + dz);
+    this.studentSpotlight.intensity = isRoom ? 2.2 : 4.2;
 
-    this.studentBeamMesh.position.set(pos.x, 5.5 + pos.y * 0.5, pos.z + 0.4);
-    (this.studentBeamMesh.material as THREE.MeshBasicMaterial).opacity = 0.2;
+    const beamY = isRoom ? this.layout.spotlightY * 0.5 : 5.5 + pos.y * 0.5;
+    this.studentBeamMesh.position.set(pos.x, beamY, pos.z + dz);
+    (this.studentBeamMesh.material as THREE.MeshBasicMaterial).opacity = isRoom ? 0.12 : 0.2;
   }
 
   // Camera preset navigation
   public setCameraPreset(preset: CameraPreset) {
-    let targetPos: THREE.Vector3;
-    let targetLookAt: THREE.Vector3;
-
-    switch (preset) {
-      case 'teacher':
-        // Anchored directly behind the 3D teacher's podium looking out over auditorium tiers
-        targetPos = new THREE.Vector3(-4.0, 1.92, -10.55);
-        targetLookAt = new THREE.Vector3(0, 1.85, 3.2);
-        break;
-      case 'board':
-        // Zoomed directly in front of the giant 3D Smart Board on stage
-        targetPos = new THREE.Vector3(0, 5.2, -5.5);
-        targetLookAt = new THREE.Vector3(0, 5.2, -13.74);
-        break;
-      case 'overview':
-        // High angle dramatic overview of the grand lecture hall (safely inside room bounds)
-        targetPos = new THREE.Vector3(10.5, 7.8, 10.5);
-        targetLookAt = new THREE.Vector3(0, 2.5, -4.0);
-        break;
-      case 'balcony':
-        // Rear top balcony centered view (safely inside back wall at Z=12.8)
-        targetPos = new THREE.Vector3(0, 6.8, 12.8);
-        targetLookAt = new THREE.Vector3(0, 3.8, -8.0);
-        break;
-      case 'student-row1':
-        // Front row student view looking up at stage
-        targetPos = new THREE.Vector3(-1.8, 1.4, -2.5);
-        targetLookAt = new THREE.Vector3(0, 4.8, -13.74);
-        break;
-      case 'student-row3':
-        // Mid-tier student perspective
-        targetPos = new THREE.Vector3(2.2, 2.6, 4.2);
-        targetLookAt = new THREE.Vector3(0, 4.8, -13.74);
-        break;
-      default:
-        targetPos = new THREE.Vector3(-3.5, 2.2, -8.5);
-        targetLookAt = new THREE.Vector3(0, 1.8, 3.5);
-    }
-
-    this.animateCameraTo(targetPos, targetLookAt);
+    // Positions come from the active room layout (see ClassroomModelRoom.ts).
+    // A student's own-row view starts from behind their actual desk.
+    this.lastPreset = preset;
+    const { pos, look } = this.presetTarget(preset);
+    this.animateCameraTo(pos, look);
   }
 
   /**
@@ -2126,8 +2692,9 @@ export class Classroom3DScene {
     if (!desk) return;
 
     const pos = desk.group.position;
-    const camPos = new THREE.Vector3(pos.x, pos.y + 1.8, pos.z - 2.8);
-    const lookPos = new THREE.Vector3(pos.x, pos.y + 1.1, pos.z + 0.8);
+    const f = this.layout.focus;
+    const camPos = new THREE.Vector3(pos.x, pos.y + f.up, pos.z - f.forward);
+    const lookPos = new THREE.Vector3(pos.x, pos.y + f.lookUp + 0.1, pos.z + f.lookBack);
 
     this.animateCameraTo(camPos, lookPos);
   }
@@ -2137,8 +2704,9 @@ export class Classroom3DScene {
     if (!desk) return;
 
     const pos = desk.group.position;
-    const camPos = new THREE.Vector3(pos.x, pos.y + 1.8, pos.z - 2.8);
-    const lookPos = new THREE.Vector3(pos.x, pos.y + 1.0, pos.z + 0.8);
+    const f = this.layout.focus;
+    const camPos = new THREE.Vector3(pos.x, pos.y + f.up, pos.z - f.forward);
+    const lookPos = new THREE.Vector3(pos.x, pos.y + f.lookUp, pos.z + f.lookBack);
 
     this.animateCameraTo(camPos, lookPos);
   }
@@ -2162,6 +2730,7 @@ export class Classroom3DScene {
     this.slideIndex = slideIndex;
     this.isVideoPlaying = isVideoPlaying;
     this.renderBoardContent();
+    this.applyLabelVisibility();
   }
 
   /**
@@ -2177,17 +2746,20 @@ export class Classroom3DScene {
       this.smartBoardVideoTexture.dispose();
       this.smartBoardVideoTexture = null;
     }
+    this.boardVideoEl = videoEl;
     if (!this.smartBoardMaterial) return;
     if (videoEl) {
       const texture = new THREE.VideoTexture(videoEl);
       texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
+      if (this.layout.kind === 'classroom') texture.colorSpace = THREE.SRGBColorSpace;
       this.smartBoardVideoTexture = texture;
       this.smartBoardMaterial.map = texture;
     } else {
       this.smartBoardMaterial.map = this.smartBoardTexture;
     }
     this.smartBoardMaterial.needsUpdate = true;
+    this.fitClassroomBoard();
   }
 
   public nextSlide() {
@@ -2357,6 +2929,11 @@ export class Classroom3DScene {
     canvas.addEventListener('mousedown', onPointerDown);
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', onPointerUp);
+    this.removeEventListeners = () => {
+      canvas.removeEventListener('mousedown', onPointerDown);
+      window.removeEventListener('mousemove', onPointerMove);
+      window.removeEventListener('mouseup', onPointerUp);
+    };
   }
 
   public resize() {
@@ -2418,13 +2995,14 @@ export class Classroom3DScene {
     this.controls.update();
 
     // 2. Strict room bounding enforcement so camera never clips or escapes outside the hall
-    this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -13.4, 13.4);
-    this.camera.position.y = THREE.MathUtils.clamp(this.camera.position.y, 0.8, 10.2);
-    this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -12.8, 13.4);
+    const L = this.layout;
+    this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, L.camMin[0], L.camMax[0]);
+    this.camera.position.y = THREE.MathUtils.clamp(this.camera.position.y, L.camMin[1], L.camMax[1]);
+    this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, L.camMin[2], L.camMax[2]);
 
-    this.controls.target.x = THREE.MathUtils.clamp(this.controls.target.x, -9.0, 9.0);
-    this.controls.target.y = THREE.MathUtils.clamp(this.controls.target.y, 0.5, 7.5);
-    this.controls.target.z = THREE.MathUtils.clamp(this.controls.target.z, -12.5, 11.0);
+    this.controls.target.x = THREE.MathUtils.clamp(this.controls.target.x, L.targetMin[0], L.targetMax[0]);
+    this.controls.target.y = THREE.MathUtils.clamp(this.controls.target.y, L.targetMin[1], L.targetMax[1]);
+    this.controls.target.z = THREE.MathUtils.clamp(this.controls.target.z, L.targetMin[2], L.targetMax[2]);
 
     // 2. Animate student raised arms and halos
     this.desks.forEach((desk) => {
@@ -2441,6 +3019,15 @@ export class Classroom3DScene {
       }
     });
 
+    // 2b. Classroom: keep a shared screen at the video's own aspect ratio
+    //     (its size is only known once frames arrive, and can change).
+    if (this.layout.kind === 'classroom' && this.smartBoardVideoTexture && this.boardVideoEl) {
+      const v = this.boardVideoEl;
+      if (v.videoWidth !== this.boardVideoSize.w || v.videoHeight !== this.boardVideoSize.h) {
+        this.fitClassroomBoard();
+      }
+    }
+
     // 3. Animate video simulation on 3D board if playing
     if (this.boardMode === 'video' && this.isVideoPlaying) {
       this.videoAnimTime += delta;
@@ -2455,10 +3042,10 @@ export class Classroom3DScene {
       const count = this.dustPositions.length / 3;
       for (let i = 0; i < count; i++) {
         const idx = i * 3;
-        this.dustPositions[idx + 1] += 0.003;
-        this.dustPositions[idx] += Math.sin(elapsedTime * 0.5 + i) * 0.002;
-        if (this.dustPositions[idx + 1] > 9.0) {
-          this.dustPositions[idx + 1] = 0.5;
+        this.dustPositions[idx + 1] += this.layout.kind === 'classroom' ? 0.0012 : 0.003;
+        this.dustPositions[idx] += Math.sin(elapsedTime * 0.5 + i) * (this.layout.kind === 'classroom' ? 0.0008 : 0.002);
+        if (this.dustPositions[idx + 1] > this.layout.dust.maxY) {
+          this.dustPositions[idx + 1] = this.layout.dust.minY;
         }
       }
       this.dustPoints.geometry.attributes.position.needsUpdate = true;
@@ -2468,13 +3055,27 @@ export class Classroom3DScene {
   };
 
   public destroy() {
+    this.disposed = true;
     if (this.animFrameId !== null) {
       cancelAnimationFrame(this.animFrameId);
     }
+    if (this.loadTimeoutId !== null) {
+      window.clearTimeout(this.loadTimeoutId);
+      this.loadTimeoutId = null;
+    }
+    this.removeEventListeners?.();
+    this.removeEventListeners = null;
     if (this.smartBoardVideoTexture) {
       this.smartBoardVideoTexture.dispose();
       this.smartBoardVideoTexture = null;
     }
+    // Free GPU memory held by the room, desks and textures.
+    disposeObject(this.scene);
+    this.envTexture?.dispose();
+    this.envTexture = null;
+    this.smartBoardTexture?.dispose();
+    this.podiumTexture?.dispose();
+    this.crestTexture?.dispose();
     this.controls.dispose();
     this.renderer.dispose();
     if (this.container.contains(this.renderer.domElement)) {
