@@ -340,38 +340,7 @@ export default function CourseDetailPage() {
           Back to Courses
         </Link>
 
-        {/* JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Course",
-              "name": course.title,
-              "description": course.description,
-              "provider": {
-                "@type": "Organization",
-                "name": "Celoris Designs",
-                "sameAs": "https://celorisdesigns.com"
-              },
-              "hasCourseInstance": {
-                "@type": "CourseInstance",
-                "courseMode": "online",
-                "location": {
-                  "@type": "VirtualLocation",
-                  "url": typeof window !== 'undefined' ? window.location.href : `https://celorisdesigns.com/learn/course/${course.id}`
-                },
-                "offers": {
-                  "@type": "Offer",
-                  "price": course.price.toString(),
-                  "priceCurrency": "INR",
-                  "availability": "https://schema.org/InStock",
-                }
-              },
-              "educationalLevel": course.grade_level
-            })
-          }}
-        />
+        {/* Course JSON-LD is rendered on the server by ./layout.tsx */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}

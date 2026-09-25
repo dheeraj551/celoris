@@ -17,6 +17,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    // Flagship course pages (clean URLs served by app/learn/course/[id])
+    ...[
+      'digital-marketing-mastery',
+      'web-development-bootcamp',
+      'ai-web-development',
+      'master-copilot-excel',
+      'master-youtube-shorts-instagram-reels',
+    ].map((slug) => ({
+      url: `${baseUrl}/learn/course/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    })),
     {
       url: `${baseUrl}/teach`,
       lastModified: new Date(),
