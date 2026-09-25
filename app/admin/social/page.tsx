@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { formatClassTime, fromIstInputValue, nextSession, toIstInputValue } from "@/lib/class-schedule"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -50,6 +51,9 @@ interface CafeRoom {
   current_students: number
   class_status: 'Ready' | 'Live' | 'Full'
   next_batch_info: string | null
+  next_class_at?: string | null
+  class_duration_minutes?: number | null
+  repeats_weekly?: boolean | null
   trainer_code: string | null
   student_code: string | null
   course_url: string | null
@@ -70,6 +74,9 @@ const emptyRoomForm = {
   classStatus: 'Ready' as 'Ready' | 'Live' | 'Full',
   currentStudents: '1',
   nextBatchInfo: '',
+  nextClassAt: '',
+  classDurationMinutes: '60',
+  repeatsWeekly: false,
   trainerCode: '',
   studentCode: '',
   courseUrl: '',
@@ -255,6 +262,9 @@ export default function AdminSocialPage() {
       classStatus: (room.class_status as any) || 'Ready',
       currentStudents: String(room.current_students ?? 1),
       nextBatchInfo: room.next_batch_info || '',
+      nextClassAt: toIstInputValue(room.next_class_at),
+      classDurationMinutes: String(room.class_duration_minutes ?? 60),
+      repeatsWeekly: !!room.repeats_weekly,
       trainerCode: room.trainer_code || '',
       studentCode: room.student_code || '',
       courseUrl: room.course_url || '',
@@ -283,6 +293,9 @@ export default function AdminSocialPage() {
       classStatus: roomForm.classStatus,
       currentStudents: roomForm.currentStudents,
       nextBatchInfo: roomForm.nextBatchInfo,
+      nextClassAt: fromIstInputValue(roomForm.nextClassAt) || '',
+      classDurationMinutes: roomForm.classDurationMinutes,
+      repeatsWeekly: roomForm.repeatsWeekly,
       trainerCode: roomForm.trainerCode,
       studentCode: roomForm.studentCode,
       courseUrl: roomForm.courseUrl,
@@ -594,6 +607,16 @@ export default function AdminSocialPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-slate-400">Next batch</span>
                       <span className="text-white truncate max-w-[180px]">{room.next_batch_info || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Next class</span>
+                      <span className={`truncate max-w-[180px] ${room.next_class_at ? 'text-emerald-300' : 'text-amber-400'}`}>
+                        {(() => {
+                          const s = nextSession(room)
+                          if (!s) return room.next_class_at ? 'Finished — set a new date' : 'Not scheduled'
+                          return `${s.isLive ? 'LIVE now · ' : ''}${formatClassTime(s.start)}${room.repeats_weekly ? ' · weekly' : ''}`
+                        })()}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-slate-400 flex items-center gap-1"><Lock className="w-3 h-3" /> Trainer code</span>
@@ -934,14 +957,47 @@ export default function AdminSocialPage() {
                 />
               </div>
 
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-emerald-700/40 space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">Next Class (India time)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="datetime-local"
+                    value={roomForm.nextClassAt}
+                    onChange={(e) => setRoomForm((f) => ({ ...f, nextClassAt: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500 [color-scheme:dark]"
+                  />
+                  <select
+                    value={roomForm.classDurationMinutes}
+                    onChange={(e) => setRoomForm((f) => ({ ...f, classDurationMinutes: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  >
+                    {[30, 45, 60, 90, 120, 150, 180].map((m) => (
+                      <option key={m} value={String(m)}>{m < 60 ? `${m} min` : `${m / 60} hr${m > 60 ? 's' : ''}`}</option>
+                    ))}
+                  </select>
+                </div>
+                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={roomForm.repeatsWeekly}
+                    onChange={(e) => setRoomForm((f) => ({ ...f, repeatsWeekly: e.target.checked }))}
+                    className="accent-emerald-500"
+                  />
+                  Repeats every week at this time
+                </label>
+                <p className="text-[11px] text-slate-500">
+                  Shown on /learn, the classroom lobby and the phone app, and sent to Google as the class date. Leave empty if no class is scheduled.
+                </p>
+              </div>
+
               <div className="space-y-1">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Next Batch Timing (optional)</label>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Batch Note (optional)</label>
                 <input
                   type="text"
                   value={roomForm.nextBatchInfo}
                   onChange={(e) => setRoomForm((f) => ({ ...f, nextBatchInfo: e.target.value }))}
                   className="w-full h-9 px-3 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
-                  placeholder="e.g. Tomorrow 6 PM"
+                  placeholder="e.g. New batch starts 1 Oct"
                 />
               </div>
 

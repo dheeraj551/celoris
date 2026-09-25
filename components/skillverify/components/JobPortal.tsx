@@ -11,11 +11,13 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  PlusCircle
 } from 'lucide-react';
 import { JobListing, JobTier, UserProfile } from '../types';
 import { AnimatedTooltip } from './AnimatedTooltip';
 import { soundFx } from '../utils/audio';
+import { PostProjectModal } from './PostProjectModal';
 
 interface JobPortalProps {
   jobs: JobListing[];
@@ -38,6 +40,7 @@ export const JobPortal: React.FC<JobPortalProps> = ({
   const [selectedWorkMode, setSelectedWorkMode] = useState<string>('All');
   const [minSalary, setMinSalary] = useState<number>(0);
   const [unlockedOnly, setUnlockedOnly] = useState<boolean>(false);
+  const [postProjectOpen, setPostProjectOpen] = useState<boolean>(false);
 
   const industries = ['All', 'AI / Machine Learning', 'Cloud & Infrastructure', 'FinTech', 'Cybersecurity', 'HealthTech', 'SaaS / Web Platforms', 'Creative & Marketing'];
 
@@ -113,6 +116,20 @@ export const JobPortal: React.FC<JobPortalProps> = ({
             </p>
           </div>
 
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 shrink-0">
+          {/* Post a Project: opens a form that goes to the Celoris support team */}
+          <button
+            type="button"
+            onClick={() => {
+              soundFx.playClick();
+              setPostProjectOpen(true);
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-xs font-bold transition-colors"
+          >
+            <PlusCircle className="w-4 h-4" />
+            Post a Project
+          </button>
+
           {/* DUAL PORTAL SWITCHER BUTTONS */}
           <div 
             id="tour-portal-toggle"
@@ -158,7 +175,10 @@ export const JobPortal: React.FC<JobPortalProps> = ({
               </span>
             </button>
           </div>
+          </div>
         </div>
+
+        <PostProjectModal open={postProjectOpen} onClose={() => setPostProjectOpen(false)} />
 
         {/* Certified Tier Explanation Callout */}
         {selectedTier === 'certified' && (

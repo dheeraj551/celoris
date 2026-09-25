@@ -6,6 +6,21 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 // only, following this codebase's existing /admin/* convention.
 export const dynamic = 'force-dynamic'
 
+// Structured schedule: nextClassAt is an ISO string ('' clears it).
+function parseSchedule(body: any) {
+  const out: Record<string, any> = {}
+  if (body.nextClassAt !== undefined) {
+    const raw = String(body.nextClassAt || '').trim()
+    const d = raw ? new Date(raw) : null
+    out.next_class_at = d && !Number.isNaN(d.getTime()) ? d.toISOString() : null
+  }
+  if (body.classDurationMinutes !== undefined) {
+    out.class_duration_minutes = Math.min(480, Math.max(15, parseInt(body.classDurationMinutes, 10) || 60))
+  }
+  if (body.repeatsWeekly !== undefined) out.repeats_weekly = !!body.repeatsWeekly
+  return out
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: roomId } = await params
@@ -53,6 +68,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (body.courseImageUrl !== undefined) updates.course_image_url = String(body.courseImageUrl).trim() || null
     if (body.courseDescription !== undefined) updates.course_description = String(body.courseDescription).trim() || null
     if (body.isActive !== undefined) updates.is_active = !!body.isActive
+    Object.assign(updates, parseSchedule(body))
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })

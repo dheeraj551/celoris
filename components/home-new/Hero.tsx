@@ -77,7 +77,7 @@ function ScrollingTicker() {
 
 export const Hero: React.FC = () => {
     const [presenceData, setPresenceData] = useState<any>({
-        lobby: { count: 0, users: [], label: 'Play Cafe' },
+        lobby: { count: 0, users: [], label: 'Classrooms' },
         general: { count: 0, users: [], label: 'General Hub' },
         quantum: { count: 0, users: [], label: 'Quantum Room' },
         ai: { count: 0, users: [], label: 'AI Classroom' }
@@ -88,7 +88,7 @@ export const Hero: React.FC = () => {
     useEffect(() => {
         const supabase = createClient();
         const channels = [
-            { id: 'lobby', name: 'room:lobby', label: 'Play Cafe', hasAi: false },
+            { id: 'lobby', name: 'room:lobby', label: 'Classrooms', hasAi: false },
             { id: 'general', name: 'room:classroom_general', label: 'General Hub', hasAi: false },
             { id: 'quantum', name: 'room:classroom_quantum-science', label: 'Quantum Room', hasAi: true },
             { id: 'ai', name: 'room:classroom_ai-courses', label: 'AI Classroom', hasAi: true }
@@ -272,17 +272,17 @@ export const Hero: React.FC = () => {
 
                                 <div className="hidden sm:block w-px h-8 bg-white/10" />
 
-                                {/* Cafe Status - Moved to Right */}
+                                {/* Classrooms Status - Moved to Right */}
                                 <div className="flex flex-col">
-                                    <div className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-1.5 flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shadow-[0_0_10px_rgba(20,184,166,0.8)]" />
-                                        Play Cafe
+                                    <div className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] mb-1.5 flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                                        Live Classrooms
                                     </div>
                                     <div className="text-sm font-black text-white uppercase italic tracking-tight">
-                                        {cafeData.count} Online Now
+                                        {cafeData.count} In Session
                                     </div>
                                     <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5 whitespace-nowrap">
-                                        Community Hub
+                                        Interactive Cohorts
                                     </div>
                                 </div>
                             </div>

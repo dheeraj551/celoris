@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Courses } from "@/components/home-new/Courses"
 import StudentInquiries from "@/components/StudentInquiries"
-import { FreeOnlineClasses } from "@/components/learn/FreeOnlineClasses"
+import { FreeOnlineClasses, type UpcomingClass } from "@/components/learn/FreeOnlineClasses"
 import { BenefitBanner } from "@/components/learn/BenefitBanner"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
@@ -328,7 +328,7 @@ function OnlineTrainersList({ onConnect }: { onConnect: (trainer: any) => void }
   );
 }
 
-export default function LearnClient({ initialCourses, initialNotices }: { initialCourses: any[], initialNotices: any[] }) {
+export default function LearnClient({ initialCourses, initialNotices, upcomingClasses = [] }: { initialCourses: any[], initialNotices: any[], upcomingClasses?: UpcomingClass[] }) {
   const { profile, user } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
@@ -473,7 +473,7 @@ export default function LearnClient({ initialCourses, initialNotices }: { initia
         className="py-12 relative z-10 border-b border-white/5"
       >
         <div className="max-w-6xl mx-auto">
-          <FreeOnlineClasses initialCourses={initialCourses} />
+          <FreeOnlineClasses upcomingClasses={upcomingClasses} />
         </div>
       </motion.section>
 

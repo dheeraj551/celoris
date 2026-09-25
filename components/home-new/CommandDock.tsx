@@ -102,18 +102,18 @@ const DOCK_ITEMS: DockItem[] = [
         iconColor: "text-emerald-400",
     },
     {
-        id: "live-cafe",
-        label: "Live Cafe",
-        shortLabel: "Cafe",
-        icon: Coffee,
+        id: "live-classrooms",
+        label: "Classrooms",
+        shortLabel: "Classes",
+        icon: GraduationCap,
         href: "/social",
-        badge: "Online",
+        badge: "Live",
         hotkey: "5",
-        color: "from-rose-400 to-pink-500",
-        glowRgba: "rgba(244, 63, 94, 0.45)",
-        bgHover: "hover:bg-rose-500/10",
-        borderHover: "hover:border-rose-500/40",
-        iconColor: "text-rose-400",
+        color: "from-purple-500 to-indigo-500",
+        glowRgba: "rgba(168, 85, 247, 0.45)",
+        bgHover: "hover:bg-purple-500/10",
+        borderHover: "hover:border-purple-500/40",
+        iconColor: "text-purple-400",
     },
 ];
 
@@ -248,16 +248,16 @@ const PALETTE_COMMANDS: PaletteCommand[] = [
     },
     {
         category: "Community & Media",
-        title: "Celoris Cafe Lounge",
-        description: "Live voice lounges, study rooms, and synchronized creators",
+        title: "Live Classrooms",
+        description: "Interactive 3D virtual aula, shared whiteboards & trainer-led cohorts",
         href: "/social",
-        icon: Coffee,
+        icon: GraduationCap,
         badge: "Live",
         shortcut: "5",
-        color: "from-rose-400 to-pink-500",
-        glowRgba: "rgba(244, 63, 94, 0.45)",
-        iconColor: "text-rose-400",
-        badgeStyle: "bg-rose-500/15 text-rose-300 border-rose-400/30",
+        color: "from-purple-400 to-indigo-500",
+        glowRgba: "rgba(168, 85, 247, 0.45)",
+        iconColor: "text-purple-400",
+        badgeStyle: "bg-purple-500/15 text-purple-300 border-purple-400/30",
     },
     {
         category: "Community & Media",
@@ -638,7 +638,7 @@ export function CommandDock() {
                                     <div className="py-12 text-center">
                                         <Search className="w-8 h-8 text-neutral-600 mx-auto mb-3" />
                                         <p className="text-sm font-semibold text-neutral-300">No matching commands found</p>
-                                        <p className="text-xs text-neutral-500 mt-1">Try searching for &quot;video&quot;, &quot;jobs&quot;, &quot;courses&quot;, or &quot;cafe&quot;</p>
+                                        <p className="text-xs text-neutral-500 mt-1">Try searching for &quot;video&quot;, &quot;jobs&quot;, &quot;courses&quot;, or &quot;classrooms&quot;</p>
                                     </div>
                                 ) : (
                                     filteredCommands.map((cmd, idx) => {

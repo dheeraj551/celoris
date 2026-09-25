@@ -852,42 +852,42 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         </div>
                     </BentoCard>
 
-                    {/* BENTO CARD 2: Celoris Cafe (5 cols) */}
+                    {/* BENTO CARD 2: Live Classrooms (5 cols) */}
                     <BentoCard
                         className="lg:col-span-5 min-h-[420px]"
-                        glowColor="rgba(244, 63, 94, 0.14)"
-                        borderGlow="rgba(244, 63, 94, 0.35)"
+                        glowColor="rgba(168, 85, 247, 0.14)"
+                        borderGlow="rgba(168, 85, 247, 0.35)"
                     >
                         <div>
                             {/* Card Top Meta */}
                             <div className="flex items-center justify-between mb-4">
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-[11px] font-medium">
-                                    <Coffee className="w-3.5 h-3.5 text-rose-400" />
-                                    Celoris Cafe
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-[11px] font-medium font-mono">
+                                    <GraduationCap className="w-3.5 h-3.5 text-purple-400" />
+                                    Live Classrooms
                                 </div>
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-medium">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-medium font-mono">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    Active Lounge
+                                    Interactive Batches
                                 </div>
                             </div>
 
                             {/* Headline */}
                             <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
-                                Chill. Connect. <span className="bg-gradient-to-r from-rose-400 to-amber-400 bg-clip-text text-transparent">Vibe.</span>
+                                Learn Live. <span className="bg-gradient-to-r from-purple-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">Collaborate.</span>
                             </h3>
                             <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed mb-5">
-                                Live study rooms, casual voice lounges, and a synchronized community that is always online to collaborate.
+                                Interactive 3D virtual lecture halls, collaborative whiteboard studios, and small cohorts led by verified mentors.
                             </p>
 
                             {/* Interactive Audio Waveform Card */}
                             <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] mb-5 flex items-center justify-between backdrop-blur-xl">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-amber-500/20 border border-rose-500/30 flex items-center justify-center">
-                                        <Coffee className="w-5 h-5 text-rose-400" />
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/30 flex items-center justify-center">
+                                        <GraduationCap className="w-5 h-5 text-purple-400" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold text-white">Cafe Focus Lounge</p>
-                                        <p className="text-[10px] text-neutral-400">Ambient Study &amp; Lofi Beats</p>
+                                        <p className="text-xs font-bold text-white">3D Aula &amp; Whiteboard Studios</p>
+                                        <p className="text-[10px] text-neutral-400">Live Voice, Screen Share &amp; Digital Lectern</p>
                                     </div>
                                 </div>
                                 {/* Animated Equalizer Bars */}
@@ -902,7 +902,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                                 ease: "easeInOut",
                                                 delay: i * 0.1,
                                             }}
-                                            className="w-1 rounded-full bg-gradient-to-t from-rose-500 to-amber-400"
+                                            className="w-1 rounded-full bg-gradient-to-t from-purple-500 to-emerald-400"
                                         />
                                     ))}
                                 </div>
@@ -913,10 +913,10 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         <div className="pt-5 border-t border-white/5">
                             <Link
                                 href="/social"
-                                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 text-rose-100 hover:text-white border border-rose-400/30 hover:border-rose-300/50 font-medium text-xs sm:text-sm transition-all shadow-[0_0_25px_rgba(244,63,94,0.25)] hover:scale-[1.02] active:scale-97 cursor-pointer"
+                                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-600/30 via-indigo-600/30 to-emerald-600/30 hover:from-purple-600/50 hover:to-emerald-600/50 text-purple-100 hover:text-white border border-purple-400/40 hover:border-emerald-300/60 font-medium text-xs sm:text-sm transition-all shadow-[0_0_25px_rgba(168,85,247,0.25)] hover:scale-[1.02] active:scale-97 cursor-pointer"
                             >
-                                <Users className="w-4 h-4 text-rose-300" />
-                                Enter Cafe Lounge
+                                <GraduationCap className="w-4 h-4 text-purple-300" />
+                                Enter Classrooms
                             </Link>
                         </div>
                     </BentoCard>

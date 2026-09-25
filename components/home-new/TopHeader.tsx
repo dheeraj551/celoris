@@ -230,18 +230,18 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                         <span>Teach</span>
                     </Link>
 
-                    {/* Cafe */}
+                    {/* Classrooms */}
                     <Link
                         href="/social"
                         className={cn(
                             "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
                             pathname.startsWith('/social')
-                                ? "bg-rose-500/15 border border-rose-400/30 text-rose-200 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                                ? "bg-purple-500/15 border border-purple-400/30 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                                 : "text-neutral-300 hover:text-white hover:bg-white/[0.06] border border-transparent"
                         )}
                     >
-                        <Coffee className="w-3.5 h-3.5 text-rose-400" />
-                        <span>Café</span>
+                        <GraduationCap className="w-3.5 h-3.5 text-purple-400" />
+                        <span>Classrooms</span>
                     </Link>
 
                     {/* Job Center */}
@@ -645,8 +645,8 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
                                         >
-                                            <Coffee className="w-4 h-4 text-rose-400" />
-                                            <span className="text-sm font-medium">Café</span>
+                                            <GraduationCap className="w-4 h-4 text-purple-400" />
+                                            <span className="text-sm font-medium">Classrooms</span>
                                         </Link>
                                         <Link
                                             href="/job-center"

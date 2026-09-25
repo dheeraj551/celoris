@@ -895,4 +895,6 @@
 # uploads/
 # downloads/
 .minimax/
+/classroom.glb
+/laracroft.glb
 

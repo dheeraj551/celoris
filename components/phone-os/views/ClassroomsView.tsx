@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
+import { formatClassTime, nextSession } from '@/lib/class-schedule';
 
 interface ClassroomsViewProps {
   onBack: () => void;
@@ -33,6 +34,9 @@ interface LiveRoom {
   current_students: number | null;
   class_status: string | null;
   next_batch_info: string | null;
+  next_class_at: string | null;
+  class_duration_minutes: number | null;
+  repeats_weekly: boolean | null;
   requires_student_code: boolean | null;
 }
 
@@ -59,7 +63,7 @@ export function ClassroomsView({ onBack, onClose }: ClassroomsViewProps) {
           .catch(() => {});
         const { data, error } = await supabase
           .from('cafe_classrooms')
-          .select('id, name, category, trainer_name, max_students, current_students, class_status, next_batch_info, requires_student_code')
+          .select('id, name, category, trainer_name, max_students, current_students, class_status, next_batch_info, requires_student_code, next_class_at, class_duration_minutes, repeats_weekly')
           .eq('is_active', true)
           .in('category', ['classroom', 'whiteboard'])
           .order('created_at', { ascending: false })
@@ -83,8 +87,16 @@ export function ClassroomsView({ onBack, onClose }: ClassroomsViewProps) {
   const lobbyHref = signedIn ? CLASSROOM_LOBBY_HREF : '/login';
 
   const isLive = (room: LiveRoom) => {
+    if (nextSession(room)?.isLive) return true;
     const s = (room.class_status || '').toLowerCase();
     return s.includes('live') || s.includes('progress');
+  };
+
+  // Real scheduled time if set, else the free-text batch note.
+  const whenText = (room: LiveRoom) => {
+    const session = nextSession(room);
+    if (session) return session.isLive ? 'Class in progress' : `Next class ${formatClassTime(session.start)} IST`;
+    return room.next_batch_info;
   };
 
   return (
@@ -215,10 +227,10 @@ export function ClassroomsView({ onBack, onClose }: ClassroomsViewProps) {
               {room.trainer_name && (
                 <p className="text-[9.5px] text-slate-400 leading-tight">By {room.trainer_name}</p>
               )}
-              {room.next_batch_info && (
+              {whenText(room) && (
                 <p className="text-[9px] text-amber-300/90 leading-tight mt-1 flex items-start gap-1">
                   <Clock className="w-2.5 h-2.5 mt-[1px] shrink-0" />
-                  <span className="line-clamp-2">{room.next_batch_info}</span>
+                  <span className="line-clamp-2">{whenText(room)}</span>
                 </p>
               )}
 

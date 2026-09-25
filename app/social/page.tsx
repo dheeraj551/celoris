@@ -239,7 +239,7 @@ export default function App() {
   };
 
   const inviteUserToTable = (userName: string) => {
-    alert(`Invitation sent to ${userName} to sit down at your active learning table. They've received a prompt inside their lobby dashboard!`);
+    alert(`Invitation sent to ${userName} to join your active classroom session. They've received a prompt inside their lobby dashboard!`);
   };
 
   const handleDeleteRoom = async (roomId: string) => {
@@ -286,16 +286,16 @@ export default function App() {
           
           {/* Active room session header callout if viewing another tab */}
           {joinedRoomId && joinedRoom && activeTab !== 'cafe' && (
-            <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-[#0d1e18] to-[#071410] border border-emerald-500/20 flex items-center justify-between text-xs text-emerald-400 animate-fade-in">
+            <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-purple-950/40 to-[#0d1624] border border-purple-500/30 flex items-center justify-between text-xs text-purple-300 animate-fade-in">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span>You are currently seated at <strong className="text-white">"{joinedRoom.name}"</strong> table.</span>
+                <span>You are currently inside <strong className="text-white">"{joinedRoom.name}"</strong> classroom.</span>
               </div>
               <button 
                 onClick={() => setActiveTab('cafe')}
                 className="font-bold underline text-emerald-400 hover:text-emerald-300"
               >
-                Return to Table Space
+                Return to Classroom
               </button>
             </div>
           )}
@@ -334,29 +334,30 @@ export default function App() {
                 />
               </div>
 
-              {/* Bottom CTA banner */}
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-8 md:p-12 text-center text-[#0a0a0a] shadow-2xl group border border-emerald-400/20">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+              {/* Bottom Classroom CTA Banner */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-950/60 via-[#0d101a] to-emerald-950/40 p-8 md:p-12 text-center text-white shadow-2xl group border border-purple-500/25">
+                <div className="absolute top-0 right-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
                 
-                <div className="max-w-2xl mx-auto space-y-6">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 mb-1">
-                    <Coffee className="w-4 h-4 text-[#0a0a0a] fill-current" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">CHAI WITH COHORTS</span>
+                <div className="max-w-2xl mx-auto space-y-5 relative z-10">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 mb-1">
+                    <GraduationCap className="w-4 h-4 text-purple-300" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-200">INTERACTIVE LIVE COHORTS</span>
                   </div>
 
-                  <h3 className="text-3xl md:text-5xl font-display font-black italic tracking-tight leading-none uppercase">
-                    Pull Up a Chair
+                  <h3 className="text-3xl md:text-5xl font-display font-black italic tracking-tight leading-none uppercase text-white">
+                    Step Into the Classroom
                   </h3>
                   
-                  <p className="text-xs md:text-sm text-[#0a0a0a]/80 leading-relaxed font-medium">
-                    Join thousands of skill-learners from India's top colleges. Exchange resources, clear doubts, get mentored, and hang out in our dark-mode community.
+                  <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
+                    Learn live with verified mentors and batchmates from top colleges across India. Ask questions in real time, collaborate on shared whiteboards, and build industry-ready portfolio projects.
                   </p>
 
                   <button
                     onClick={() => { setActiveTab('cafe'); setJoinedRoomId(null); }}
-                    className="mt-4 px-8 py-4 rounded-2xl bg-[#0a0a0a] text-emerald-400 font-bold text-sm transition-all duration-300 hover:scale-[1.03] shadow-xl hover:bg-zinc-900 cursor-pointer flex items-center justify-center gap-2 mx-auto group-hover:shadow-2xl"
+                    className="mt-4 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-black font-extrabold text-sm transition-all duration-300 hover:scale-[1.03] shadow-xl hover:shadow-emerald-500/25 cursor-pointer flex items-center justify-center gap-2 mx-auto"
                   >
-                    <span>Open Classrooms</span>
+                    <span>Browse All Classrooms</span>
                     <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                   </button>
                 </div>
@@ -390,19 +391,22 @@ export default function App() {
                   />
                 )
               ) : (
-                // Cafe Lobby Roster View
+                // Classroom Lobby View
                 <div className="space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-emerald-950/20">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-                          Active Lobby
+                        <span className="text-[10px] bg-purple-500/15 text-purple-300 border border-purple-500/30 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider font-mono">
+                          Active Classroom Batches
                         </span>
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                       </div>
                       <h2 className="text-xl md:text-2xl font-display font-black italic text-white tracking-wide mt-1 uppercase">
                         CELORIS CLASSROOMS
                       </h2>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Interactive 3D Virtual Aula and Realtime Whiteboard sessions led by verified instructors.
+                      </p>
                     </div>
                   </div>
 
@@ -451,8 +455,8 @@ export default function App() {
           onClick={() => { setActiveTab('cafe'); }}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-3.5 rounded-xl transition-colors ${activeTab === 'cafe' && !joinedRoomId ? 'text-emerald-400' : 'text-gray-500'}`}
         >
-          <Coffee className="w-5 h-5" />
-          <span className="text-[10px] font-bold">Lobby</span>
+          <GraduationCap className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Classrooms</span>
         </button>
 
         {joinedRoomId && (
@@ -638,12 +642,12 @@ export default function App() {
             </button>
 
             <div className="text-center space-y-2">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-2">
-                <Lock className="w-5 h-5 text-emerald-400" />
+              <div className="w-10 h-10 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center mx-auto mb-2">
+                <Lock className="w-5 h-5 text-purple-400" />
               </div>
-              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Room Code Required</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Classroom Code Required</h3>
               <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
-                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> is locked. Enter your student or trainer code to get in.
+                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> is protected. Enter your student or trainer code to enter the classroom.
               </p>
             </div>
 
@@ -651,10 +655,10 @@ export default function App() {
               <input
                 type="text"
                 autoFocus
-                placeholder="Enter your code"
+                placeholder="Enter classroom code"
                 value={admitCodeInput}
                 onChange={(e) => { setAdmitCodeInput(e.target.value); setAdmitCodeError(null); }}
-                className="w-full bg-[#121212] border border-emerald-950/40 focus:border-emerald-500/50 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none text-center tracking-wider"
+                className="w-full bg-[#121212] border border-white/[0.1] focus:border-purple-500/50 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none text-center tracking-wider font-mono"
                 required
               />
 
@@ -665,9 +669,9 @@ export default function App() {
               <button
                 type="submit"
                 disabled={verifyingAdmitCode || !admitCodeInput.trim()}
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.15)] cursor-pointer"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-50 text-black font-extrabold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.2)] cursor-pointer"
               >
-                {verifyingAdmitCode ? 'Checking...' : 'Enter Room'}
+                {verifyingAdmitCode ? 'Verifying Code...' : 'Enter Classroom'}
               </button>
             </form>
           </div>
@@ -675,11 +679,11 @@ export default function App() {
       )}
 
       {/* FOOTER PLATFORM */}
-      <footer className="bg-[#0b0b0b] border-t border-emerald-950/40 py-10 px-4 mt-auto">
+      <footer className="bg-[#0b0b0b] border-t border-white/[0.08] py-10 px-4 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-center md:text-left">
-            <span className="font-display font-black italic tracking-widest text-white block">CELORIS CAFÉ</span>
-            <span className="text-[11px] text-gray-500 uppercase tracking-widest block mt-1">THE VIRTUAL THIRD-PLACE FOR INDIAN STUDENTS</span>
+            <span className="font-display font-black italic tracking-widest text-white block">CELORIS CLASSROOMS</span>
+            <span className="text-[11px] text-gray-400 uppercase tracking-widest block mt-1 font-mono">INTERACTIVE LIVE LEARNING &amp; COLLABORATIVE STUDIOS</span>
           </div>
 
           <div className="flex flex-wrap justify-center gap-6 text-xs text-gray-500">
