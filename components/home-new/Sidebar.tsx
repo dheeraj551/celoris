@@ -155,15 +155,15 @@ export function Sidebar({ className }: { className?: string }) {
                 </Link>
 
                 <Link
-                    href="/social"
+                    href="/classrooms"
                     className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-xl transition-all group",
-                        pathname.startsWith('/social')
+                        pathname.startsWith('/classrooms')
                             ? "bg-purple-500/10 text-purple-400 font-bold"
                             : "text-slate-400 hover:bg-white/5 hover:text-white"
                     )}
                 >
-                    <GraduationCap className={cn("w-4 h-4", pathname.startsWith('/social') ? "text-purple-400" : "text-slate-500 group-hover:text-purple-400")} />
+                    <GraduationCap className={cn("w-4 h-4", pathname.startsWith('/classrooms') ? "text-purple-400" : "text-slate-500 group-hover:text-purple-400")} />
                     <span className="text-sm font-bold uppercase tracking-tight">CLASSROOMS</span>
                 </Link>
 

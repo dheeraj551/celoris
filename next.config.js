@@ -22,6 +22,9 @@ const nextConfig = {
       { source: '/cancellation-policy', destination: '/refund-policy', permanent: true },
       { source: '/refund', destination: '/refund-policy', permanent: true },
       { source: '/refunds', destination: '/refund-policy', permanent: true },
+      // Classrooms moved from /social to /classrooms (only the page itself;
+      // /social/* sub-pages are unchanged). Query strings like ?tab=cafe carry over.
+      { source: '/social', destination: '/classrooms', permanent: true },
       // Old UUID course links → clean course URLs (real 308s, so Google
       // merges them; the layout's redirect only works in the browser).
       { source: '/learn/course/e7698318-7f57-421f-866e-0101ee239c01', destination: '/learn/course/digital-marketing-mastery', permanent: true },

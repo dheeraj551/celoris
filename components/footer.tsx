@@ -13,7 +13,7 @@ const footerSections = [
       { name: "Pricing & Plans", href: "/pricing" },
       { name: "Learn", href: "/learn" },
       { name: "Job Center", href: "/job-center" },
-      { name: "Social", href: "/social" },
+      { name: "Classrooms", href: "/classrooms" },
       { name: "Apps", href: "/apps" },
     ],
   },
@@ -70,6 +70,7 @@ export default function Footer() {
     pathname?.startsWith("/learn") ||
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||
+    pathname?.startsWith("/classrooms") ||
     pathname === "/chat" ||
     pathname?.startsWith("/ai-explorer") ||
     pathname?.startsWith("/video-studio") ||
@@ -97,6 +98,7 @@ export default function Footer() {
     pathname === "/learn" ||
     pathname === "/earn" ||
     pathname === "/social" ||
+    pathname === "/classrooms" ||
     pathname === "/apps" ||
     pathname === "/refund-policy" ||
     pathname === "/terms" ||

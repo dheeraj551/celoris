@@ -65,7 +65,7 @@ function eventsJsonLd(classes: UpcomingClass[]) {
         endDate: c.end,
         eventStatus: "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-        location: { "@type": "VirtualLocation", url: `${SITE}/social?tab=cafe` },
+        location: { "@type": "VirtualLocation", url: `${SITE}/classrooms?tab=cafe` },
         organizer: { "@type": "Organization", name: "Celoris Designs", url: SITE },
         ...(c.trainerName ? { performer: { "@type": "Person", name: c.trainerName } } : {}),
         url: `${SITE}/learn`,

@@ -887,7 +887,7 @@ export default function CelorisChatApp() {
       <p className="mt-1 max-w-sm text-sm text-slate-400">
         Private chats with your friends on Celoris. Add a friend with their share code, then pick a chat on the left.
       </p>
-      <Link href="/social?tab=cafe" className="mt-5 text-xs text-sky-400 hover:text-sky-300 font-semibold">
+      <Link href="/classrooms?tab=cafe" className="mt-5 text-xs text-sky-400 hover:text-sky-300 font-semibold">
         Looking for your class? Open Classrooms →
       </Link>
     </section>

@@ -25,7 +25,7 @@ const publicNavigation = [
   { name: "Learn", href: "/learn" },
   { name: "Job Center", href: "/job-center" },
   { name: "Pricing", href: "/pricing" },
-  { name: "Play", href: "/social" },
+  { name: "Play", href: "/classrooms" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ]
@@ -34,7 +34,7 @@ const authenticatedNavigation = [
   { name: "Learn", href: "/learn" },
   { name: "Job Center", href: "/job-center" },
   { name: "Pricing", href: "/pricing" },
-  { name: "Play", href: "/social" },
+  { name: "Play", href: "/classrooms" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ]
@@ -56,6 +56,7 @@ export default function Header() {
     pathname?.startsWith("/learn") ||
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||
+    pathname?.startsWith("/classrooms") ||
     pathname === "/chat" ||
     pathname?.startsWith("/ai-explorer") ||
     pathname?.startsWith("/video-studio") ||
@@ -91,6 +92,7 @@ export default function Header() {
     pathname === "/learn" ||
     pathname === "/earn" ||
     pathname === "/social" ||
+    pathname === "/classrooms" ||
     pathname === "/apps" ||
     pathname === "/ai-explorer" ||
     pathname === "/video-studio" ||

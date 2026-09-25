@@ -152,7 +152,7 @@ export default async function HomePage() {
       meta: b.is_featured ? 'Featured' : (b.category?.trim() || 'New on the blog'),
       href: `/blog/${b.slug}`,
     })),
-    { category: 'cafe' as const, label: 'Live Classrooms', meta: 'join a class with your trainer', href: '/social?tab=cafe' },
+    { category: 'cafe' as const, label: 'Live Classrooms', meta: 'join a class with your trainer', href: '/classrooms?tab=cafe' },
     { category: 'chat' as const, label: 'Celoris Chat', meta: 'private chats with your batchmates', href: '/chat' },
     { category: 'apps' as const, label: 'Video Studio', meta: 'free, no card needed', href: '/video-studio' },
     { category: 'apps' as const, label: 'Image Studio', meta: 'free photo editor', href: '/image-studio' },

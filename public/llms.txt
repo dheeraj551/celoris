@@ -8,7 +8,7 @@ India's free creative studio since 2019. Free video editor, image studio, 20+ AI
 - [Teach & Earn Platform](https://www.celorisdesigns.com/teach) - Join as a trainer, host classes, and monetize expertise.
 - [Earn Gigs Marketplace](https://www.celorisdesigns.com/earn) - Daily freelance and creation gigs for creators.
 - [PolyVault](https://www.celorisdesigns.com/polyvault) - Marketplace for buying, selling, and generating low-poly 3D models with AI generators.
-- [Classrooms](https://www.celorisdesigns.com/social) - Live trainer-led classrooms (3D classroom and whiteboard rooms) with small batches and a join queue.
+- [Classrooms](https://www.celorisdesigns.com/classrooms) - Live trainer-led classrooms (3D classroom and whiteboard rooms) with small batches and a join queue.
 
 ## Featured Syllabi
 

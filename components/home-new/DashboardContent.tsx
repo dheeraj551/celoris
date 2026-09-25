@@ -912,7 +912,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         {/* Card Footer CTAs */}
                         <div className="pt-5 border-t border-white/5">
                             <Link
-                                href="/social"
+                                href="/classrooms"
                                 className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-600/30 via-indigo-600/30 to-emerald-600/30 hover:from-purple-600/50 hover:to-emerald-600/50 text-purple-100 hover:text-white border border-purple-400/40 hover:border-emerald-300/60 font-medium text-xs sm:text-sm transition-all shadow-[0_0_25px_rgba(168,85,247,0.25)] hover:scale-[1.02] active:scale-97 cursor-pointer"
                             >
                                 <GraduationCap className="w-4 h-4 text-purple-300" />

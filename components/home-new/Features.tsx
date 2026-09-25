@@ -71,7 +71,7 @@ export const Features: React.FC = () => {
             tag: "Nexus Link",
             icon: Users,
             actionText: "Join Nexus",
-            link: "/social"
+            link: "/classrooms"
         },
         {
             title: "Apps",

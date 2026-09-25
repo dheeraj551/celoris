@@ -232,10 +232,10 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
 
                     {/* Classrooms */}
                     <Link
-                        href="/social"
+                        href="/classrooms"
                         className={cn(
                             "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
-                            pathname.startsWith('/social')
+                            pathname.startsWith('/classrooms')
                                 ? "bg-purple-500/15 border border-purple-400/30 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                                 : "text-neutral-300 hover:text-white hover:bg-white/[0.06] border border-transparent"
                         )}
@@ -641,7 +641,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <span className="text-sm font-medium">Teach</span>
                                         </Link>
                                         <Link
-                                            href="/social"
+                                            href="/classrooms"
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
                                         >

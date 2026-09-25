@@ -22,7 +22,7 @@ This document provides complete plain-text schemas and syllabus outlines for the
 - **Description**: A community marketplace for low-poly 3D models. Creators can generate models with built-in AI generators or upload their own, then list them for other users to browse, preview, and download. Supports common export formats, PBR textures, rigging, and animation metadata.
 
 ### Classrooms (Live Classes)
-- **URL**: https://www.celorisdesigns.com/social
+- **URL**: https://www.celorisdesigns.com/classrooms
 - **Description**: Live trainer-led classes in small batches, held in a 3D classroom or a 2D whiteboard room with voice, screen share and a join queue.
 
 ### Celoris Chat (Members Only)

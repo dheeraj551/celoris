@@ -23,7 +23,7 @@ interface ClassroomsViewProps {
 }
 
 // Real rooms from the Café's `cafe_classrooms` table (the same list the
-// classroom lobby at /social shows). Public read is allowed by RLS for
+// classroom lobby at /classrooms shows). Public read is allowed by RLS for
 // active rooms; the entry codes are never selected (and aren't readable).
 interface LiveRoom {
   id: string;
@@ -42,7 +42,7 @@ interface LiveRoom {
 
 // Where every card and the footer button lead: the Café page opened
 // straight on the classroom lobby (see the ?tab= handling in app/social/page.tsx).
-const CLASSROOM_LOBBY_HREF = '/social?tab=cafe';
+const CLASSROOM_LOBBY_HREF = '/classrooms?tab=cafe';
 
 export function ClassroomsView({ onBack, onClose }: ClassroomsViewProps) {
   const [rooms, setRooms] = useState<LiveRoom[] | null>(null);
