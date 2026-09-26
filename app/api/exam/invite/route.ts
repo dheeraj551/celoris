@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { isExamAdmin } from '@/lib/exam-admin'
 import nodemailer from 'nodemailer'
 import { PREBUILT_EXAMS } from '@/components/skillverify/data/mockData'
 
@@ -11,6 +12,13 @@ import { PREBUILT_EXAMS } from '@/components/skillverify/data/mockData'
 // examId against the real exam list rather than trusting the request blindly.
 export async function POST(request: Request) {
     try {
+        // Admins only (checked on the server). Candidate names, emails and
+        // answers must never be readable by the public, and invites are
+        // emails sent from Celoris, so random visitors can't trigger them.
+        if (!(await isExamAdmin())) {
+            return NextResponse.json({ error: 'Admin access required.' }, { status: 403 })
+        }
+
         const body = await request.json()
         const { examId, candidateName, candidateEmail } = body as {
             examId?: string

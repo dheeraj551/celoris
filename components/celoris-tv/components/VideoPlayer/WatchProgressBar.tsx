@@ -1,35 +1,32 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Video } from '../../types';
 import { formatTime } from '../../utils/formatters';
 import {
-  CheckCircle2,
   Clock,
+  CheckCircle2,
   RotateCcw,
   Check,
-  Sparkles,
   Layers,
-  Play,
-  Flame,
   Gauge,
+  Play,
 } from 'lucide-react';
-
-const SPEED_OPTIONS = [0.5, 1, 1.5, 2];
 
 interface Props {
   video: Video;
 }
 
+const SPEED_OPTIONS = [0.5, 1, 1.5, 2];
+
 export const WatchProgressBar: React.FC<Props> = ({ video }) => {
   const {
-    currentUser,
     videoCurrentTime,
     seekToTime,
-    updateWatchProgress,
-    markVideoCompleted,
-    resetVideoProgress,
+    currentUser,
     playbackSpeed,
     setPlaybackSpeed,
+    markVideoCompleted,
+    resetVideoProgress,
   } = useApp();
 
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -37,30 +34,23 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
   const [hoverChapter, setHoverChapter] = useState<string | null>(null);
 
   const duration = video.duration || 600;
-  // Calculate progress ratio from current playback if active, or fall back to stored AppContext progress
-  const storedProgress = currentUser.watchProgress[video.id] ?? 0;
-  const currentRatio = duration > 0 ? Math.min(1, Math.max(0, videoCurrentTime / duration)) : 0;
-  
-  // Use the higher value or the active playback ratio to ensure immediate real-time tracking
-  const effectiveRatio = Math.max(storedProgress, currentRatio);
+  const storedProgress = currentUser.watchProgress[video.id] || 0;
+  const effectiveRatio = Math.max(videoCurrentTime / (duration || 1), storedProgress);
   const progressPercent = Math.min(100, Math.round(effectiveRatio * 100));
-  const isCompleted = effectiveRatio >= 0.95;
+  const isCompleted = storedProgress >= 0.98;
 
   const remainingSeconds = Math.max(0, duration - videoCurrentTime);
   const remainingMinutes = Math.ceil(remainingSeconds / 60);
 
-  // Next chapter milestone
+  // Determine current or upcoming chapter based on current playback timestamp
   const nextChapter = video.chapters?.find(ch => ch.timestamp > videoCurrentTime);
 
   const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressBarRef.current) return;
     const rect = progressBarRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
-    const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
-    const targetTime = clickRatio * duration;
-    
-    seekToTime(targetTime);
-    updateWatchProgress(video.id, clickRatio);
+    const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+    seekToTime(ratio * duration);
   };
 
   const handleProgressBarHover = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -72,8 +62,12 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
     setHoverTime(time);
 
     if (video.chapters && video.chapters.length > 0) {
-      const chapter = [...video.chapters].reverse().find(c => time >= c.timestamp);
-      setHoverChapter(chapter ? chapter.title : null);
+      const ch = [...video.chapters]
+        .reverse()
+        .find(c => time >= c.timestamp);
+      setHoverChapter(ch ? ch.title : null);
+    } else {
+      setHoverChapter(null);
     }
   };
 
@@ -86,34 +80,34 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
   };
 
   return (
-    <div className="p-4 sm:p-5 bg-[#161B16] border border-[#242A24] rounded-2xl shadow-xl space-y-3.5 text-[#E0E5E0]">
+    <div className="p-4 sm:p-5 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-xl space-y-3.5 text-slate-200 select-none">
       {/* Header Info & Progress Metric */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-[#7F9172]/20 border border-[#7F9172]/30 rounded-xl text-[#7F9172]">
+          <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
             <Clock className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                 Lecture Progress
               </h3>
               {isCompleted ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#5C8A67]/20 border border-[#5C8A67]/40 text-[#A8B89C]">
-                  <CheckCircle2 className="w-3 h-3 text-[#5C8A67]" /> Completed
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Completed
                 </span>
               ) : effectiveRatio > 0 ? (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#7F9172]/15 border border-[#7F9172]/30 text-[#A8B89C]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#7F9172] animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   In Progress
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#1E241E] border border-[#2A322A] text-[#95A395]">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.05] border border-white/10 text-slate-400">
                   Not Started
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-[#95A395] mt-0.5">
+            <p className="text-[11px] text-slate-400 mt-0.5">
               {isCompleted
                 ? 'All learning objectives covered for this lecture'
                 : remainingSeconds > 0
@@ -129,15 +123,15 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
             <span className="text-base font-bold font-mono text-white">
               {progressPercent}%
             </span>
-            <span className="text-[10px] text-[#95A395] block">Tracked in Session</span>
+            <span className="text-[10px] text-slate-500 block font-mono">Tracked in Session</span>
           </div>
 
           <button
             onClick={handleToggleComplete}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs ${
               isCompleted
-                ? 'bg-[#263D28] hover:bg-[#314E34] text-[#C4E3C9] border border-[#5C8A67]/50'
-                : 'bg-[#1E241E] hover:bg-[#2A332A] text-[#A8B89C] border border-[#2E382E]'
+                ? 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/10'
             }`}
             title={isCompleted ? 'Reset completion status' : 'Mark lecture as finished'}
           >
@@ -157,14 +151,14 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
             setHoverTime(null);
             setHoverChapter(null);
           }}
-          className="relative w-full h-3 bg-[#0D0F0D] border border-[#2A322A] rounded-full cursor-pointer overflow-hidden group/bar transition-all hover:h-4"
+          className="relative w-full h-3 bg-black/60 border border-white/10 rounded-full cursor-pointer overflow-hidden group/bar transition-all hover:h-4 shadow-inner"
         >
           {/* Filled Progress Bar */}
           <div
             className={`absolute top-0 left-0 h-full rounded-full transition-all duration-150 ${
               isCompleted
-                ? 'bg-gradient-to-r from-[#5C8A67] to-[#7F9172]'
-                : 'bg-gradient-to-r from-[#7F9172]/80 to-[#A8B89C]'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_12px_rgba(52,211,153,0.5)]'
+                : 'bg-gradient-to-r from-emerald-500 to-cyan-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]'
             }`}
             style={{ width: `${progressPercent}%` }}
           />
@@ -177,7 +171,7 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
               return (
                 <div
                   key={idx}
-                  className="absolute top-0 bottom-0 w-0.5 bg-[#0D0F0D] z-10 opacity-70 group-hover/bar:opacity-100"
+                  className="absolute top-0 bottom-0 w-0.5 bg-black/80 z-10 opacity-70 group-hover/bar:opacity-100"
                   style={{ left: `${posPercent}%` }}
                   title={`${ch.title} (${formatTime(ch.timestamp)})`}
                 />
@@ -188,35 +182,35 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
         {/* Hover Tooltip */}
         {hoverTime !== null && (
           <div
-            className="absolute -top-9 -translate-x-1/2 bg-[#121512] border border-[#2E382E] text-white text-[11px] px-2.5 py-1 rounded-lg shadow-2xl pointer-events-none whitespace-nowrap z-30"
+            className="absolute -top-9 -translate-x-1/2 bg-[#090b10] border border-white/15 text-white text-[11px] px-2.5 py-1 rounded-lg shadow-2xl pointer-events-none whitespace-nowrap z-30"
             style={{
               left: `${Math.max(8, Math.min(92, (hoverTime / duration) * 100))}%`,
             }}
           >
-            <span className="font-mono font-bold text-[#A8B89C]">{formatTime(hoverTime)}</span>
-            <span className="text-[#5E6C5E] mx-1">({Math.round((hoverTime / duration) * 100)}%)</span>
-            {hoverChapter && <span className="text-[#95A395]">• {hoverChapter}</span>}
+            <span className="font-mono font-bold text-emerald-400">{formatTime(hoverTime)}</span>
+            <span className="text-slate-500 mx-1">({Math.round((hoverTime / duration) * 100)}%)</span>
+            {hoverChapter && <span className="text-slate-300">• {hoverChapter}</span>}
           </div>
         )}
       </div>
 
       {/* Footer Info Row: Timestamp detail, Speed selector (0.5x, 1x, 1.5x, 2x), Next milestone, and controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#95A395] pt-0.5 border-t border-[#242A24]/60">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 pt-0.5 border-t border-white/[0.08]">
         <div className="flex items-center gap-3 font-mono text-[11px]">
           <div>
             <span className="text-white font-bold">{formatTime(videoCurrentTime)}</span>
-            <span className="text-[#5E6C5E]"> / </span>
-            <span>{formatTime(duration)}</span>
+            <span className="text-slate-500"> / </span>
+            <span className="text-slate-400">{formatTime(duration)}</span>
           </div>
 
           {nextChapter && (
             <button
               onClick={() => seekToTime(nextChapter.timestamp)}
-              className="hidden md:flex items-center gap-1 text-[11px] text-[#A8B89C] hover:text-white bg-[#1E241E] hover:bg-[#2A332A] px-2 py-0.5 rounded-md border border-[#2E382E] transition-colors"
+              className="hidden md:flex items-center gap-1 text-[11px] text-emerald-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2 py-0.5 rounded-md border border-white/10 transition-colors"
             >
-              <Layers className="w-3 h-3 text-[#7F9172]" />
+              <Layers className="w-3 h-3 text-emerald-400" />
               <span>Next: {nextChapter.title}</span>
-              <span className="font-mono text-[#7F9172]">@{formatTime(nextChapter.timestamp)}</span>
+              <span className="font-mono text-emerald-400 font-bold">@{formatTime(nextChapter.timestamp)}</span>
             </button>
           )}
         </div>
@@ -224,9 +218,9 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
         {/* Speed Selector (0.5x, 1x, 1.5x, 2x) & Quick Controls */}
         <div className="flex items-center gap-3">
           {/* Speed Selector Pills */}
-          <div className="flex items-center gap-1 bg-[#0D0F0D] border border-[#242A24] rounded-xl p-1">
-            <span className="text-[10px] font-semibold uppercase text-[#95A395] px-1.5 flex items-center gap-1">
-              <Gauge className="w-3 h-3 text-[#7F9172]" /> Speed:
+          <div className="flex items-center gap-1 bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-inner">
+            <span className="text-[10px] font-semibold uppercase text-slate-400 px-1.5 flex items-center gap-1 font-mono">
+              <Gauge className="w-3 h-3 text-emerald-400" /> Speed:
             </span>
             <div className="flex items-center gap-0.5">
               {SPEED_OPTIONS.map(speed => {
@@ -237,8 +231,8 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
                     onClick={() => setPlaybackSpeed(speed)}
                     className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition-all ${
                       isActive
-                        ? 'bg-[#7F9172] text-[#0D0F0D] shadow-xs'
-                        : 'text-[#95A395] hover:text-white hover:bg-[#1E241E]'
+                        ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black shadow-xs'
+                        : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
                     }`}
                     title={`Set playback speed to ${speed}x`}
                   >
@@ -254,7 +248,7 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
             {effectiveRatio > 0 && (
               <button
                 onClick={() => resetVideoProgress(video.id)}
-                className="flex items-center gap-1 text-[11px] text-[#95A395] hover:text-[#C87D55] px-2 py-1 rounded-lg hover:bg-[#1E241E] transition-colors"
+                className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-400 px-2 py-1 rounded-lg hover:bg-white/[0.05] transition-colors"
                 title="Reset progress to beginning"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -265,7 +259,7 @@ export const WatchProgressBar: React.FC<Props> = ({ video }) => {
             {storedProgress > 0 && videoCurrentTime < 5 && (
               <button
                 onClick={() => seekToTime(storedProgress * duration)}
-                className="flex items-center gap-1 text-[11px] font-bold text-[#0D0F0D] bg-[#7F9172] hover:bg-[#91A582] px-2.5 py-1 rounded-lg transition-all shadow-xs"
+                className="flex items-center gap-1 text-[11px] font-extrabold text-black bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-2.5 py-1 rounded-lg transition-all shadow-xs"
               >
                 <Play className="w-3 h-3 fill-current" />
                 <span>Resume ({formatTime(storedProgress * duration)})</span>

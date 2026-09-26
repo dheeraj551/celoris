@@ -86,6 +86,15 @@ export interface Coupon {
   isFeatured?: boolean;
 }
 
+/** Download speed from the member's plan (see app/api/polyvault/download-lane). */
+export interface DownloadLane {
+  tier: 'free' | 'basic' | 'pro' | 'max';
+  planLabel: string;
+  laneName: string;
+  /** Seconds in the queue before a download starts (0 = instant) */
+  waitSeconds: number;
+}
+
 export interface DownloadItem {
   id: string;
   assetId: string;

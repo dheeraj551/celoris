@@ -21,7 +21,7 @@ import type { CanvasCard, CardType, ScreenShareCard, ToolType, ViewportTransform
  *
  * Layout comes from the "Realistic Whiteboard" AI-Studio prototype (ink
  * engine, paper textures, office/media cards). The live plumbing is Celoris':
- * the same seat/queue, Agora voice + screen share and Supabase presence the
+ * the same seat/queue, Tencent RTC voice + screen share (the 3D room uses Agora) and Supabase presence the
  * 3D classroom uses, plus a server-checked event log for the board and chat
  * (only the trainer can change the board; everyone's chat name comes from
  * their real profile).

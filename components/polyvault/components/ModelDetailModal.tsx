@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ModelAsset, Coupon, UserProfile } from '../types';
+import { ModelAsset, Coupon, UserProfile, DownloadLane } from '../types';
 import { ThreeViewport } from './ThreeViewport';
 import {
   X,
@@ -25,6 +25,7 @@ import {
 interface ModelDetailModalProps {
   asset: ModelAsset | null;
   activeCoupon: Coupon | null;
+  lane?: DownloadLane | null;
   isOpen: boolean;
   onClose: () => void;
   onOpenDownload: (asset: ModelAsset) => void;
@@ -39,6 +40,7 @@ interface ModelDetailModalProps {
 export const ModelDetailModal: React.FC<ModelDetailModalProps> = ({
   asset,
   activeCoupon,
+  lane,
   isOpen,
   onClose,
   onOpenDownload,
@@ -212,15 +214,17 @@ export const ModelDetailModal: React.FC<ModelDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Coupon Speed Info Banner */}
-              {activeCoupon ? (
+              {/* Download speed from the plan */}
+              {lane && lane.waitSeconds <= 0 ? (
                 <div className="p-3 rounded-2xl bg-emerald-50/90 border border-emerald-300 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 text-emerald-950 font-medium">
-                    <Zap className="w-4 h-4 text-emerald-600 animate-pulse shrink-0" />
-                    <span>Turbo CDN Coupon <strong className="font-mono font-bold text-emerald-700">{activeCoupon.code}</strong> Active</span>
+                    <Zap className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
+                      <strong className="font-bold text-emerald-700">{lane.laneName}</strong> downloads on your {lane.planLabel} plan
+                    </span>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md font-bold">
-                    120 MB/s
+                    NO QUEUE
                   </span>
                 </div>
               ) : (
@@ -229,10 +233,11 @@ export const ModelDetailModal: React.FC<ModelDetailModalProps> = ({
                   onClick={onOpenCouponModal}
                   className="w-full py-2.5 px-3.5 rounded-2xl bg-white hover:bg-zinc-50 border border-zinc-200 flex items-center justify-between text-xs text-zinc-700 transition-colors cursor-pointer shadow-xs"
                 >
-                  <span className="flex items-center gap-2 text-emerald-700 font-medium">
-                    <Tag className="w-3.5 h-3.5 text-emerald-600" /> Unlock 120 MB/s Gigabit Speed
+                  <span className="flex items-center gap-2 text-zinc-700 font-medium">
+                    <Tag className="w-3.5 h-3.5 text-emerald-600" />
+                    {lane?.laneName || 'Standard'} downloads · {lane?.waitSeconds ?? 30}s queue
                   </span>
-                  <span className="text-emerald-600 font-bold underline">Apply Coupon</span>
+                  <span className="text-emerald-600 font-bold underline">Go faster</span>
                 </button>
               )}
 
@@ -244,8 +249,8 @@ export const ModelDetailModal: React.FC<ModelDetailModalProps> = ({
                 onClick={() => onOpenDownload(asset)}
                 className="relative overflow-hidden w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
-                {activeCoupon ? <Zap className="w-4 h-4 animate-pulse" /> : <Download className="w-4 h-4" />}
-                <span>{activeCoupon ? 'Fast Speed Turbo Download' : 'Download 3D Package'}</span>
+                {lane && lane.waitSeconds <= 0 ? <Zap className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+                <span>{lane && lane.waitSeconds <= 0 ? 'Instant Download' : 'Download 3D Package'}</span>
               </motion.button>
             </div>
 

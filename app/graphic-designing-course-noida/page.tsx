@@ -7,6 +7,7 @@ import {
     Megaphone, Share2, Palette, Image as ImageIcon, PenTool, Printer, Briefcase, IndianRupee
 } from "lucide-react"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { CourseReviews } from "@/components/reviews/CourseReviews"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -594,6 +595,7 @@ export default function GraphicDesigningCourseNoida() {
                                 </div>
                                 What Our Students Say
                             </h2>
+                            <p className="-mt-4 text-[11px] text-slate-500 font-bold uppercase tracking-widest italic">From students of our earlier Celoris website</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {pageData.testimonials.map((t, i) => (
                                     <Card key={i} className="bg-[#0d1321]/40 border-white/5 rounded-[2.5rem] p-8 shadow-2xl hover:border-emerald-500/20 transition-all">
@@ -609,6 +611,9 @@ export default function GraphicDesigningCourseNoida() {
                                 ))}
                             </div>
                         </section>
+
+                        {/* Verified student reviews (written and checked on Celoris) */}
+                        <CourseReviews courseKey="graphic-designing-course-noida" courseTitle={pageData.title} />
 
                         {/* FAQ */}
                         <section className="space-y-12 bg-[#0d1321]/20 p-12 rounded-[3rem] border border-white/5 shadow-inner">

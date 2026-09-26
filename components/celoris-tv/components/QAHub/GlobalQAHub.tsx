@@ -1,54 +1,50 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useApp } from '../../context/AppContext';
-import { QAQuestion, Video } from '../../types';
+import { QAQuestion } from '../../types';
 import { formatTime } from '../../utils/formatters';
 import { CATEGORIES } from '../../data/mockData';
 import {
-  MessageSquare,
   HelpCircle,
-  Clock,
-  ThumbsUp,
-  Award,
-  CheckCircle2,
-  Play,
   Search,
-  Filter,
-  Sparkles,
-  ChevronDown,
-  ChevronUp,
+  Award,
+  ThumbsUp,
   MessageCircle,
-  Send,
+  Play,
+  CheckCircle2,
   ShieldCheck,
-  Check,
+  Send,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 
 export const GlobalQAHub: React.FC = () => {
   const {
     questions,
     videos,
-    playVideo,
-    currentUser,
     currentRole,
+    playVideo,
     addAnswer,
     upvoteQuestion,
     upvoteAnswer,
     endorseAnswer,
+    seekToTime,
+    setCurrentView,
   } = useApp();
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('All Subjects');
   const [filterType, setFilterType] = useState<'all' | 'unanswered' | 'verified' | 'mine'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [expandedQIds, setExpandedQIds] = useState<string[]>([]);
   const [replyMap, setReplyMap] = useState<Record<string, string>>({});
 
   const filteredQuestions = questions.filter(q => {
-    // Find associated video
-    const video = videos.find(v => v.id === q.videoId);
-
     // Subject filter
-    if (selectedSubject !== 'All Subjects' && video && video.subject !== selectedSubject && video.category !== selectedSubject) {
-      return false;
+    const video = videos.find(v => v.id === q.videoId);
+    if (selectedSubject !== 'All Subjects') {
+      if (!video || (video.subject !== selectedSubject && video.category !== selectedSubject)) {
+        return false;
+      }
     }
 
     // Search query
@@ -59,32 +55,30 @@ export const GlobalQAHub: React.FC = () => {
 
     // Status filter
     if (filterType === 'unanswered') {
-      return q.answers.length === 0 && !q.isResolved;
+      return !q.isResolved && q.answers.length === 0;
     }
     if (filterType === 'verified') {
       return q.answers.some(a => a.isEndorsedByTeacher || a.author.role === 'teacher' || a.author.role === 'professor');
-    }
-    if (filterType === 'mine') {
-      return q.author.id === currentUser.id;
     }
 
     return true;
   });
 
-  const handleJumpToVideo = (q: QAQuestion) => {
-    const video = videos.find(v => v.id === q.videoId);
-    if (video) {
-      playVideo(video);
-      if (q.timestampSec !== null) {
-        // Will seek automatically via state
-      }
-    }
-  };
-
   const toggleExpand = (qId: string) => {
     setExpandedQIds(prev =>
       prev.includes(qId) ? prev.filter(id => id !== qId) : [...prev, qId]
     );
+  };
+
+  const handleJumpToVideo = (q: QAQuestion) => {
+    const video = videos.find(v => v.id === q.videoId);
+    if (video) {
+      playVideo(video);
+      setCurrentView('watch');
+      if (q.timestampSec !== null) {
+        setTimeout(() => seekToTime(q.timestampSec!), 300);
+      }
+    }
   };
 
   const handleSendReply = (qId: string) => {
@@ -99,29 +93,29 @@ export const GlobalQAHub: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-[#E0E5E0]">
+    <div className="max-w-7xl mx-auto space-y-6 text-slate-100 select-none pb-12">
       {/* Header Banner */}
-      <div className="p-6 bg-[#161B16] border border-[#242A24] rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+      <div className="p-6 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="p-2.5 bg-[#7F9172]/20 text-[#A8B89C] rounded-xl border border-[#7F9172]/30">
-              <HelpCircle className="w-6 h-6 text-[#7F9172]" />
+            <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+              <HelpCircle className="w-6 h-6 text-emerald-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl font-extrabold tracking-tight text-white">
               Academic Q&A Forum Hub
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-[#95A395] max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
             Collaborative doubt-clearing network across all course lectures. Search academic doubts, answer peers, or get instructor verification.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="px-4 py-2 bg-[#1E241E] border border-[#242A24] rounded-xl text-xs text-[#95A395]">
+          <div className="px-4 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-slate-400 font-mono">
             <strong className="text-white font-bold">{questions.length}</strong> Total Questions
           </div>
-          <div className="px-4 py-2 bg-[#7F9172]/15 border border-[#7F9172]/30 rounded-xl text-xs text-[#A8B89C]">
-            <strong className="text-[#E0E5E0] font-bold">
+          <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 font-mono">
+            <strong className="text-white font-bold">
               {questions.filter(q => q.answers.some(a => a.isEndorsedByTeacher)).length}
             </strong> Teacher Verified
           </div>
@@ -129,17 +123,17 @@ export const GlobalQAHub: React.FC = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="space-y-3 bg-[#161B16] p-4 border border-[#242A24] rounded-2xl">
+      <div className="space-y-3 bg-[#0e121e]/85 backdrop-blur-xl p-4 border border-white/[0.08] rounded-2xl shadow-xl">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
           {/* Search */}
           <div className="md:col-span-8 relative">
-            <Search className="w-4 h-4 text-[#95A395] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search across all lecture questions, code, theorems, or authors..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-[#E0E5E0] placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+              className="w-full pl-10 pr-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 shadow-inner"
             />
           </div>
 
@@ -148,10 +142,10 @@ export const GlobalQAHub: React.FC = () => {
             <select
               value={selectedSubject}
               onChange={e => setSelectedSubject(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-[#E0E5E0] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+              className="w-full px-3.5 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 shadow-inner"
             >
               {CATEGORIES.map(cat => (
-                <option key={cat} value={cat}>
+                <option key={cat} value={cat} className="bg-[#0e121e] text-white">
                   {cat}
                 </option>
               ))}
@@ -163,10 +157,10 @@ export const GlobalQAHub: React.FC = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
           <button
             onClick={() => setFilterType('all')}
-            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all ${
               filterType === 'all'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold'
-                : 'bg-[#1E241E] text-[#95A395] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
             All Questions ({questions.length})
@@ -174,34 +168,34 @@ export const GlobalQAHub: React.FC = () => {
 
           <button
             onClick={() => setFilterType('unanswered')}
-            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 ${
               filterType === 'unanswered'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold'
-                : 'bg-[#1E241E] text-[#95A395] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            <HelpCircle className={`w-3.5 h-3.5 ${filterType === 'unanswered' ? 'text-[#0D0F0D]' : 'text-[#C87D55]'}`} />
+            <HelpCircle className="w-3.5 h-3.5 text-rose-400" />
             Unanswered / Needs Help
           </button>
 
           <button
             onClick={() => setFilterType('verified')}
-            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 ${
               filterType === 'verified'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold'
-                : 'bg-[#1E241E] text-[#95A395] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            <Award className={`w-3.5 h-3.5 ${filterType === 'verified' ? 'text-[#0D0F0D]' : 'text-[#D2B48C]'}`} />
+            <Award className="w-3.5 h-3.5 text-amber-400" />
             Teacher Verified
           </button>
 
           <button
             onClick={() => setFilterType('mine')}
-            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all ${
               filterType === 'mine'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold'
-                : 'bg-[#1E241E] text-[#95A395] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
             My Activity
@@ -220,7 +214,7 @@ export const GlobalQAHub: React.FC = () => {
           className="space-y-4"
         >
           {filteredQuestions.length === 0 ? (
-          <div className="p-12 text-center bg-[#161B16]/60 border border-[#242A24] rounded-3xl text-[#95A395] text-xs">
+          <div className="p-12 text-center bg-[#0e121e]/80 border border-white/[0.08] rounded-3xl text-slate-400 text-xs">
             No questions matching your search filters.
           </div>
         ) : (
@@ -236,25 +230,25 @@ export const GlobalQAHub: React.FC = () => {
                 key={q.id}
                 className={`p-5 rounded-2xl border transition-all ${
                   hasTeacherAnswer
-                    ? 'bg-[#161B16] border-[#7F9172]/40 shadow-lg'
-                    : 'bg-[#161B16] border-[#242A24] hover:border-[#384238]'
+                    ? 'bg-[#0e121e]/90 border-emerald-500/40 shadow-lg'
+                    : 'bg-[#0e121e]/75 border-white/[0.08] hover:border-white/20'
                 }`}
               >
                 {/* Associated Video Link Banner */}
                 {video && (
-                  <div className="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-[#242A24]">
+                  <div className="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-white/[0.08]">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="px-2 py-0.5 rounded-md bg-[#7F9172]/20 text-[#A8B89C] border border-[#7F9172]/30 text-[10px] font-bold">
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
                         {video.subject}
                       </span>
-                      <span className="text-xs text-[#95A395] font-medium truncate">
+                      <span className="text-xs text-slate-400 font-medium truncate">
                         Lecture: <strong className="text-white">{video.title}</strong>
                       </span>
                     </div>
 
                     <button
                       onClick={() => handleJumpToVideo(q)}
-                      className="flex items-center gap-1.5 px-3 py-1 bg-[#7F9172]/20 hover:bg-[#7F9172] text-[#A8B89C] hover:text-[#0D0F0D] rounded-lg text-xs font-bold transition-all flex-shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black rounded-lg text-xs font-bold transition-all flex-shrink-0 shadow-xs"
                     >
                       <Play className="w-3.5 h-3.5 fill-current" />
                       <span>
@@ -270,22 +264,22 @@ export const GlobalQAHub: React.FC = () => {
                     <img
                       src={q.author.avatar}
                       alt={q.author.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#2E382E]"
+                      className="w-8 h-8 rounded-full object-cover border border-white/10"
                     />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white">{q.author.name}</span>
                         {q.author.role === 'teacher' || q.author.role === 'professor' ? (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#7F9172]/20 text-[#A8B89C] font-semibold border border-[#7F9172]/30">
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">
                             Instructor
                           </span>
                         ) : (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#1E241E] text-[#95A395]">
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-white/[0.05] text-slate-400">
                             Student
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-[#95A395]">
+                      <span className="text-[10px] text-slate-500 font-mono">
                         {q.author.institution} • {q.createdAt}
                       </span>
                     </div>
@@ -293,12 +287,12 @@ export const GlobalQAHub: React.FC = () => {
 
                   <div className="flex items-center gap-2">
                     {hasTeacherAnswer && (
-                      <span className="flex items-center gap-1 px-2.5 py-1 bg-[#D2B48C]/15 text-[#D2B48C] border border-[#D2B48C]/30 rounded-lg text-[10px] font-bold">
-                        <Award className="w-3 h-3 text-[#D2B48C]" /> Instructor Verified
+                      <span className="flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/20 rounded-lg text-[10px] font-bold">
+                        <Award className="w-3 h-3 text-amber-400" /> Instructor Verified
                       </span>
                     )}
                     {q.isResolved && (
-                      <span className="p-1 text-[#5C8A67] bg-[#5C8A67]/15 rounded-lg">
+                      <span className="p-1 text-emerald-400 bg-emerald-500/15 rounded-lg border border-emerald-500/30">
                         <CheckCircle2 className="w-4 h-4" />
                       </span>
                     )}
@@ -308,23 +302,23 @@ export const GlobalQAHub: React.FC = () => {
                 <h3 className="text-base font-bold text-white mb-2 leading-snug">
                   {q.title}
                 </h3>
-                <p className="text-xs text-[#E0E5E0] leading-relaxed whitespace-pre-line mb-3">
+                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line mb-3">
                   {q.content}
                 </p>
 
                 {q.codeSnippet && (
-                  <pre className="p-3 mb-3 bg-[#0D0F0D] border border-[#242A24] rounded-xl font-mono text-xs text-[#A8B89C] overflow-x-auto custom-scrollbar">
+                  <pre className="p-3 mb-3 bg-black/60 border border-white/10 rounded-xl font-mono text-xs text-emerald-300 overflow-x-auto custom-scrollbar">
                     <code>{q.codeSnippet}</code>
                   </pre>
                 )}
 
                 {/* Footer Controls */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#242A24]">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.08]">
                   <div className="flex items-center gap-1.5">
                     {q.tags.map(t => (
                       <span
                         key={t}
-                        className="text-[10px] px-2 py-0.5 bg-[#1E241E] text-[#95A395] rounded-md border border-[#2E382E]"
+                        className="text-[10px] px-2 py-0.5 bg-white/[0.04] text-slate-400 rounded-md border border-white/10"
                       >
                         #{t}
                       </span>
@@ -334,17 +328,17 @@ export const GlobalQAHub: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => upvoteQuestion(q.id)}
-                      className="flex items-center gap-1.5 px-3 py-1 bg-[#1E241E] hover:bg-[#7F9172]/20 border border-[#2E382E] text-[#E0E5E0] hover:text-[#A8B89C] rounded-lg text-xs font-semibold transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white rounded-lg text-xs font-semibold transition-colors"
                     >
-                      <ThumbsUp className="w-3.5 h-3.5" />
+                      <ThumbsUp className="w-3.5 h-3.5 text-emerald-400" />
                       <span>{q.upvotes}</span>
                     </button>
 
                     <button
                       onClick={() => toggleExpand(q.id)}
-                      className="flex items-center gap-1.5 px-3 py-1 bg-[#1E241E] hover:bg-[#2A332A] text-[#E0E5E0] rounded-lg text-xs font-semibold transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white rounded-lg text-xs font-semibold transition-colors"
                     >
-                      <MessageCircle className="w-3.5 h-3.5 text-[#7F9172]" />
+                      <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
                       <span>{q.answers.length} Replies</span>
                       {isExpanded ? (
                         <ChevronUp className="w-3.5 h-3.5" />
@@ -357,7 +351,7 @@ export const GlobalQAHub: React.FC = () => {
 
                 {/* Expanded Replies */}
                 {isExpanded && (
-                  <div className="mt-4 pt-3 border-t border-[#242A24] space-y-3 animate-fadeIn">
+                  <div className="mt-4 pt-3 border-t border-white/[0.08] space-y-3 animate-fadeIn">
                     {q.answers.map(ans => {
                       const isTeacher =
                         ans.author.role === 'teacher' || ans.author.role === 'professor';
@@ -367,8 +361,8 @@ export const GlobalQAHub: React.FC = () => {
                           key={ans.id}
                           className={`p-3.5 rounded-xl border text-xs ${
                             ans.isEndorsedByTeacher || isTeacher
-                              ? 'bg-[#1E261E] border-[#7F9172]/40 shadow-xs'
-                              : 'bg-[#0D0F0D] border-[#242A24]'
+                              ? 'bg-emerald-950/20 border-emerald-500/40 shadow-xs'
+                              : 'bg-black/40 border-white/10'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2 mb-2">
@@ -376,37 +370,37 @@ export const GlobalQAHub: React.FC = () => {
                               <img
                                 src={ans.author.avatar}
                                 alt={ans.author.name}
-                                className="w-6 h-6 rounded-full object-cover"
+                                className="w-6 h-6 rounded-full object-cover border border-white/10"
                               />
                               <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-white">{ans.author.name}</span>
                                 {isTeacher && (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-[#7F9172]/20 text-[#A8B89C] border border-[#7F9172]/30 flex items-center gap-0.5">
+                                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-0.5">
                                     <ShieldCheck className="w-2.5 h-2.5" /> Verified Instructor
                                   </span>
                                 )}
                               </div>
                             </div>
-                            <span className="text-[10px] text-[#95A395]">{ans.createdAt}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">{ans.createdAt}</span>
                           </div>
 
-                          <p className="text-[#E0E5E0] leading-relaxed whitespace-pre-line mb-2">
+                          <p className="text-slate-200 leading-relaxed whitespace-pre-line mb-2">
                             {ans.content}
                           </p>
 
                           <div className="flex items-center justify-between pt-1 text-[11px]">
                             <button
                               onClick={() => upvoteAnswer(q.id, ans.id)}
-                              className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#1E241E] text-[#E0E5E0]"
+                              className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-300 hover:text-white"
                             >
-                              <ThumbsUp className="w-3 h-3" />
+                              <ThumbsUp className="w-3 h-3 text-emerald-400" />
                               <span>{ans.upvotes}</span>
                             </button>
 
                             {currentRole === 'teacher' && (
                               <button
                                 onClick={() => endorseAnswer(q.id, ans.id)}
-                                className="text-[#D2B48C] hover:text-white font-semibold flex items-center gap-1"
+                                className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1"
                               >
                                 <Award className="w-3 h-3" />
                                 {ans.isEndorsedByTeacher ? 'Remove Endorsement' : 'Endorse Answer'}
@@ -432,13 +426,13 @@ export const GlobalQAHub: React.FC = () => {
                             handleSendReply(q.id);
                           }
                         }}
-                        className="flex-1 px-3.5 py-2 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-[#E0E5E0] placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                        className="flex-1 px-3.5 py-2 bg-black/60 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
                       />
                       <button
                         onClick={() => handleSendReply(q.id)}
-                        className="px-4 py-2 bg-[#7F9172] hover:bg-[#91A582] text-[#0D0F0D] rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                        className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black rounded-xl text-xs font-extrabold transition-all flex items-center gap-1"
                       >
-                        <Send className="w-3.5 h-3.5 text-[#0D0F0D]" />
+                        <Send className="w-3.5 h-3.5 text-black" />
                         <span>Reply</span>
                       </button>
                     </div>

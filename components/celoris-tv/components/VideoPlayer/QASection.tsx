@@ -7,19 +7,15 @@ import {
   HelpCircle,
   Clock,
   CheckCircle2,
-  Sparkles,
   Send,
-  Filter,
-  Search,
-  Check,
   Award,
   ChevronDown,
   ChevronUp,
   MessageCircle,
   Plus,
-  Tag,
   ShieldCheck,
-  Flame,
+  Search,
+  Check,
 } from 'lucide-react';
 import { AskQuestionModal } from '../Modals/AskQuestionModal';
 
@@ -38,8 +34,6 @@ export const QASection: React.FC<Props> = ({ video }) => {
     currentRole,
     addAnswer,
     endorseAnswer,
-    acceptAnswer,
-    toggleResolveQuestion,
   } = useApp();
 
   const [activeFilter, setActiveFilter] = useState<QAFilter>('all');
@@ -92,29 +86,29 @@ export const QASection: React.FC<Props> = ({ video }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 select-none">
       {/* Q&A Header & Ask Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#161B16] border border-[#242A24] rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-xl">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-[#7F9172]" />
+            <h3 className="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-emerald-400" />
               Integrated Academic Q&A
             </h3>
-            <span className="px-2 py-0.5 rounded-full bg-[#7F9172]/20 text-[#A8B89C] font-mono text-xs font-bold">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono text-xs font-bold">
               {videoQuestions.length}
             </span>
           </div>
-          <p className="text-xs text-[#95A395] mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Ask doubts anchored to video timestamps & receive verified instructor answers
           </p>
         </div>
 
         <button
           onClick={() => setShowAskModal(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#7F9172] hover:bg-[#91A582] text-[#0D0F0D] text-xs font-bold rounded-xl shadow-lg shadow-[#7F9172]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Plus className="w-4 h-4 text-[#0D0F0D]" /> Ask a Question
+          <Plus className="w-4 h-4 stroke-[2.5]" /> Ask a Question
         </button>
       </div>
 
@@ -122,13 +116,13 @@ export const QASection: React.FC<Props> = ({ video }) => {
       <div className="space-y-2.5">
         {/* Search input */}
         <div className="relative">
-          <Search className="w-4 h-4 text-[#95A395] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search questions by concept, formula, or author..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#161B16] border border-[#242A24] rounded-xl text-xs text-white placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172] transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all shadow-inner"
           />
         </div>
 
@@ -136,10 +130,10 @@ export const QASection: React.FC<Props> = ({ video }) => {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar text-xs">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all ${
               activeFilter === 'all'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold shadow-xs'
-                : 'bg-[#161B16] border border-[#242A24] text-[#95A395] hover:bg-[#1E241E] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
             All Questions ({videoQuestions.length})
@@ -147,34 +141,34 @@ export const QASection: React.FC<Props> = ({ video }) => {
 
           <button
             onClick={() => setActiveFilter('teacher_verified')}
-            className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all ${
               activeFilter === 'teacher_verified'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold shadow-xs'
-                : 'bg-[#161B16] border border-[#242A24] text-[#95A395] hover:bg-[#1E241E] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            <Award className={`w-3.5 h-3.5 ${activeFilter === 'teacher_verified' ? 'text-[#0D0F0D]' : 'text-[#D2B48C]'}`} />
+            <Award className="w-3.5 h-3.5 text-amber-400" />
             Teacher Verified
           </button>
 
           <button
             onClick={() => setActiveFilter('unresolved')}
-            className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all ${
               activeFilter === 'unresolved'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold shadow-xs'
-                : 'bg-[#161B16] border border-[#242A24] text-[#95A395] hover:bg-[#1E241E] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            <HelpCircle className={`w-3.5 h-3.5 ${activeFilter === 'unresolved' ? 'text-[#0D0F0D]' : 'text-[#C87D55]'}`} />
+            <HelpCircle className="w-3.5 h-3.5 text-rose-400" />
             Unresolved Doubts
           </button>
 
           <button
             onClick={() => setActiveFilter('my_questions')}
-            className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all ${
               activeFilter === 'my_questions'
-                ? 'bg-[#7F9172] text-[#0D0F0D] font-bold shadow-xs'
-                : 'bg-[#161B16] border border-[#242A24] text-[#95A395] hover:bg-[#1E241E] hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-xs'
+                : 'bg-white/[0.04] border border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
             My Questions
@@ -185,17 +179,17 @@ export const QASection: React.FC<Props> = ({ video }) => {
       {/* Questions List */}
       <div className="space-y-3">
         {filteredQuestions.length === 0 ? (
-          <div className="p-8 bg-[#161B16] border border-[#242A24] rounded-2xl text-center">
-            <div className="w-12 h-12 rounded-2xl bg-[#7F9172]/15 text-[#7F9172] flex items-center justify-center mx-auto mb-3">
+          <div className="p-8 bg-[#0e121e]/80 border border-white/[0.08] rounded-2xl text-center">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-3">
               <MessageSquare className="w-6 h-6" />
             </div>
             <h4 className="text-sm font-bold text-white mb-1">No Questions Found</h4>
-            <p className="text-xs text-[#95A395] max-w-sm mx-auto mb-4">
+            <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
               Have a question about this lecture? Post a question to get answers from the instructor and peers.
             </p>
             <button
               onClick={() => setShowAskModal(true)}
-              className="px-4 py-2 bg-[#7F9172] hover:bg-[#91A582] text-[#0D0F0D] text-xs font-bold rounded-xl transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-black text-xs font-extrabold rounded-xl shadow-md transition-all"
             >
               Ask Question at {formatTime(videoCurrentTime)}
             </button>
@@ -212,8 +206,8 @@ export const QASection: React.FC<Props> = ({ video }) => {
                 key={q.id}
                 className={`p-4 rounded-2xl border transition-all ${
                   hasTeacherAnswer
-                    ? 'bg-[#161B16] border-[#7F9172]/40 shadow-md'
-                    : 'bg-[#161B16] border-[#242A24] hover:border-[#2E382E]'
+                    ? 'bg-[#0e121e]/90 border-emerald-500/40 shadow-md'
+                    : 'bg-[#0e121e]/70 border-white/[0.08] hover:border-white/20'
                 }`}
               >
                 {/* Question Author & Badges */}
@@ -222,17 +216,17 @@ export const QASection: React.FC<Props> = ({ video }) => {
                     <img
                       src={q.author.avatar}
                       alt={q.author.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#2E382E]"
+                      className="w-8 h-8 rounded-full object-cover border border-white/10"
                     />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white">{q.author.name}</span>
                         {q.author.role === 'teacher' || q.author.role === 'professor' ? (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#7F9172]/20 text-[#A8B89C] font-semibold border border-[#7F9172]/30">
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">
                             Instructor
                           </span>
                         ) : (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#1E241E] text-[#95A395] font-medium">
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-white/[0.05] text-slate-400 font-medium">
                             Student
                           </span>
                         )}
@@ -245,10 +239,10 @@ export const QASection: React.FC<Props> = ({ video }) => {
                     {q.timestampSec !== null && (
                       <button
                         onClick={() => seekToTime(q.timestampSec!)}
-                        className="flex items-center gap-1 px-2.5 py-1 bg-[#7F9172]/20 hover:bg-[#7F9172]/35 border border-[#7F9172]/40 text-[#A8B89C] hover:text-white rounded-lg font-mono text-[11px] font-bold transition-all shadow-xs"
+                        className="flex items-center gap-1 px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 hover:text-white rounded-lg font-mono text-[11px] font-bold transition-all shadow-xs"
                         title="Jump video to this timestamp"
                       >
-                        <Clock className="w-3 h-3" />
+                        <Clock className="w-3 h-3 text-emerald-400" />
                         <span>▶ {formatTime(q.timestampSec)}</span>
                       </button>
                     )}
@@ -256,17 +250,17 @@ export const QASection: React.FC<Props> = ({ video }) => {
                     {/* Teacher verified badge */}
                     {hasTeacherAnswer && (
                       <span
-                        className="flex items-center gap-1 px-2 py-1 bg-[#D2B48C]/15 text-[#D2B48C] border border-[#D2B48C]/30 rounded-lg text-[10px] font-bold"
+                        className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/20 rounded-lg text-[10px] font-bold"
                         title="Has verified instructor answer"
                       >
-                        <Award className="w-3 h-3 text-[#D2B48C]" />
-                        <span className="hidden sm:inline">Verified Answer</span>
+                        <Award className="w-3 h-3 text-amber-400" />
+                        <span className="hidden sm:inline">Verified</span>
                       </span>
                     )}
 
                     {q.isResolved && (
                       <span
-                        className="p-1 text-[#5C8A67] bg-[#263D28]/50 rounded-lg"
+                        className="p-1 text-emerald-400 bg-emerald-500/10 rounded-lg border border-emerald-500/20"
                         title="Marked as resolved"
                       >
                         <CheckCircle2 className="w-4 h-4" />
@@ -279,24 +273,24 @@ export const QASection: React.FC<Props> = ({ video }) => {
                 <h4 className="text-sm font-bold text-white mb-1.5 leading-snug">
                   {q.title}
                 </h4>
-                <p className="text-xs text-[#E0E5E0] leading-relaxed whitespace-pre-line mb-3">
+                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line mb-3">
                   {q.content}
                 </p>
 
                 {/* Optional code snippet */}
                 {q.codeSnippet && (
-                  <pre className="p-3 mb-3 bg-[#0D0F0D] border border-[#242A24] rounded-xl font-mono text-xs text-[#A8B89C] overflow-x-auto custom-scrollbar">
+                  <pre className="p-3 mb-3 bg-black/60 border border-white/10 rounded-xl font-mono text-xs text-emerald-300 overflow-x-auto custom-scrollbar">
                     <code>{q.codeSnippet}</code>
                   </pre>
                 )}
 
                 {/* Tags and Actions Row */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#242A24]">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.08]">
                   <div className="flex items-center gap-1.5">
                     {q.tags.map(t => (
                       <span
                         key={t}
-                        className="text-[10px] px-2 py-0.5 bg-[#181D18] text-[#95A395] rounded-md border border-[#2A322A]"
+                        className="text-[10px] px-2 py-0.5 bg-white/[0.04] text-slate-400 rounded-md border border-white/10"
                       >
                         #{t}
                       </span>
@@ -307,9 +301,9 @@ export const QASection: React.FC<Props> = ({ video }) => {
                     {/* Replies count button */}
                     <button
                       onClick={() => toggleExpand(q.id)}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#181D18] hover:bg-[#222922] border border-[#2A322A] text-[#95A395] hover:text-white text-xs font-semibold transition-colors"
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white text-xs font-semibold transition-colors"
                     >
-                      <MessageCircle className="w-3.5 h-3.5 text-[#7F9172]" />
+                      <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
                       <span>{q.answers.length} Answers</span>
                       {isExpanded ? (
                         <ChevronUp className="w-3.5 h-3.5" />
@@ -322,9 +316,9 @@ export const QASection: React.FC<Props> = ({ video }) => {
 
                 {/* Answers Thread */}
                 {isExpanded && (
-                  <div className="mt-4 pt-3 border-t border-[#242A24] space-y-3 animate-fadeIn">
+                  <div className="mt-4 pt-3 border-t border-white/[0.08] space-y-3 animate-fadeIn">
                     {q.answers.length === 0 ? (
-                      <p className="text-xs text-[#5E6C5E] italic py-1">
+                      <p className="text-xs text-slate-500 italic py-1">
                         No answers yet. If you know the solution, post your answer below!
                       </p>
                     ) : (
@@ -337,8 +331,8 @@ export const QASection: React.FC<Props> = ({ video }) => {
                             key={ans.id}
                             className={`p-3.5 rounded-xl border text-xs ${
                               ans.isEndorsedByTeacher || isTeacher
-                                ? 'bg-[#181F18] border-[#7F9172]/40 shadow-xs'
-                                : 'bg-[#121512] border-[#242A24]'
+                                ? 'bg-emerald-950/20 border-emerald-500/40 shadow-xs'
+                                : 'bg-white/[0.03] border-white/10'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2 mb-2">
@@ -346,18 +340,18 @@ export const QASection: React.FC<Props> = ({ video }) => {
                                 <img
                                   src={ans.author.avatar}
                                   alt={ans.author.name}
-                                  className="w-6 h-6 rounded-full object-cover border border-[#2E382E]"
+                                  className="w-6 h-6 rounded-full object-cover border border-white/10"
                                 />
                                 <div>
                                   <div className="flex items-center gap-1.5">
                                     <span className="font-bold text-white">{ans.author.name}</span>
                                     {isTeacher && (
-                                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-[#7F9172]/20 text-[#A8B89C] border border-[#7F9172]/30 flex items-center gap-0.5">
+                                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-0.5">
                                         <ShieldCheck className="w-2.5 h-2.5" /> Instructor
                                       </span>
                                     )}
                                   </div>
-                                  <span className="text-[10px] text-[#95A395]">
+                                  <span className="text-[10px] text-slate-500">
                                     {ans.createdAt}
                                   </span>
                                 </div>
@@ -365,20 +359,20 @@ export const QASection: React.FC<Props> = ({ video }) => {
 
                               <div className="flex items-center gap-1.5">
                                 {ans.isEndorsedByTeacher && (
-                                  <span className="px-2 py-0.5 rounded-md bg-[#D2B48C]/15 text-[#D2B48C] border border-[#D2B48C]/30 text-[10px] font-bold flex items-center gap-1">
-                                    <Award className="w-3 h-3 text-[#D2B48C]" /> Endorsed
+                                  <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold flex items-center gap-1">
+                                    <Award className="w-3 h-3 text-amber-400" /> Endorsed
                                   </span>
                                 )}
 
                                 {ans.isAccepted && (
-                                  <span className="px-2 py-0.5 rounded-md bg-[#263D28] text-[#C4E3C9] border border-[#5C8A67] text-[10px] font-bold flex items-center gap-1">
-                                    <Check className="w-3 h-3 text-[#5C8A67]" /> Accepted
+                                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold flex items-center gap-1">
+                                    <Check className="w-3 h-3 text-emerald-400" /> Accepted
                                   </span>
                                 )}
                               </div>
                             </div>
 
-                            <p className="text-[#E0E5E0] leading-relaxed whitespace-pre-line mb-2.5">
+                            <p className="text-slate-300 leading-relaxed whitespace-pre-line mb-2.5">
                               {ans.content}
                             </p>
 
@@ -387,7 +381,7 @@ export const QASection: React.FC<Props> = ({ video }) => {
                               <div className="flex items-center justify-end pt-1 text-[11px]">
                                 <button
                                   onClick={() => endorseAnswer(q.id, ans.id)}
-                                  className="text-[#D2B48C] hover:text-white font-semibold flex items-center gap-1"
+                                  className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1"
                                 >
                                   <Award className="w-3 h-3" />
                                   {ans.isEndorsedByTeacher ? 'Remove Endorsement' : 'Endorse Answer'}
@@ -414,13 +408,13 @@ export const QASection: React.FC<Props> = ({ video }) => {
                             handleReplySubmit(q.id);
                           }
                         }}
-                        className="flex-1 px-3.5 py-2 bg-[#121512] border border-[#242A24] rounded-xl text-xs text-white placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                        className="flex-1 px-3.5 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50"
                       />
                       <button
                         onClick={() => handleReplySubmit(q.id)}
-                        className="px-4 py-2 bg-[#7F9172] hover:bg-[#91A582] text-[#0D0F0D] rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                        className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shadow-sm"
                       >
-                        <Send className="w-3.5 h-3.5 text-[#0D0F0D]" />
+                        <Send className="w-3.5 h-3.5 text-black" />
                         <span className="hidden sm:inline">Reply</span>
                       </button>
                     </div>

@@ -101,6 +101,10 @@ export interface ExamResult {
   badgeEarned?: VerifiedBadge;
   xpEarned: number;
   detailedFeedback?: string;
+  /** When the next attempt at this exam opens (from the server) */
+  nextAttemptAt?: string | null;
+  /** They already held this badge before this attempt (no XP paid again) */
+  alreadyCertified?: boolean;
 }
 
 export interface JobAlertConfig {

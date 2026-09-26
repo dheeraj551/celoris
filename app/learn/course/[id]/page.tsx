@@ -11,6 +11,7 @@ import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
 import { CourseTrainerBooth } from "@/components/learn/CourseTrainerBooth"
 import { CourseNoticeBoard } from "@/components/learn/CourseNoticeBoard"
 import { CourseNoticeBoardMini } from "@/components/learn/CourseNoticeBoardMini"
+import { CourseReviews } from "@/components/reviews/CourseReviews"
 interface CourseTopic {
   id: string
   order_in_module: number
@@ -271,13 +272,17 @@ export default function CourseDetailPage() {
     { name: "Karan Bhatia", time: "1 week ago", stars: 5, text: "I run reports every week for my team and this course cut my prep time nearly in half. The PivotTable and charting prompts in Module 4 alone paid for the course. Well organized from start to finish." },
   ];
 
+  // Reviews carried over from the earlier Celoris website — shown only on the
+  // course they were written for (they used to appear on every course).
   const getTestimonialsForCourse = (courseTitle: string) => {
     const title = courseTitle.toLowerCase();
     if (title.includes("copilot")) {
       return copilotTestimonials;
     }
-    // Preserves existing behavior for every other course (unchanged from before).
-    return webDevTestimonials;
+    if (title.includes("web development")) {
+      return webDevTestimonials;
+    }
+    return [];
   };
 
   const faqs = course ? getFaqsForCourse(course.title) : [];
@@ -502,11 +507,13 @@ export default function CourseDetailPage() {
               <CourseTrainerBooth courseId={course.id} />
             </div>
 
-            {/* Testimonials */}
+            {/* Testimonials carried over from the earlier Celoris website */}
+            {testimonials.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-foreground mb-1 flex items-center gap-2">
                 <span>⭐</span> Student Reviews
               </h2>
+              <p className="text-xs text-slate-400 mb-5">From students of our earlier Celoris website</p>
               <div className="relative overflow-hidden">
                 {/* Left fade */}
                 <div className="pointer-events-none absolute top-0 left-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10" />
@@ -534,7 +541,7 @@ export default function CourseDetailPage() {
                           </div>
                           <div>
                             <p className="text-sm font-bold text-slate-800">{t.name}</p>
-                            <p className="text-xs text-slate-400">{t.time}</p>
+                            <p className="text-xs text-slate-400">Earlier Celoris student</p>
                           </div>
                         </div>
                         <div className="flex gap-0.5 flex-shrink-0">
@@ -548,6 +555,12 @@ export default function CourseDetailPage() {
                   ))}
                 </div>
               </div>
+            </div>
+            )}
+
+            {/* Verified student reviews (written and checked on Celoris) */}
+            <div className="mt-10">
+              <CourseReviews courseKey={`learn-course:${course.id}`} courseTitle={course.title} theme="light" />
             </div>
           </div>
 

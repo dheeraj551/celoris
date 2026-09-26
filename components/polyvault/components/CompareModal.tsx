@@ -359,9 +359,6 @@ export const CompareModal: React.FC<CompareDrawerProps> = ({
                       className="py-3 px-3 rounded-xl bg-white border border-zinc-200/80 text-xs font-mono font-semibold text-zinc-700 flex items-center justify-between"
                     >
                       <span>{asset.fileSizeMb} MB</span>
-                      <span className="text-[10px] text-emerald-700 font-sans">
-                        {activeCoupon ? '~0.3s Turbo' : '~4.2s Standard'}
-                      </span>
                     </div>
                   ))}
 

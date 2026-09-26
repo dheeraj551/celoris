@@ -138,58 +138,60 @@ export function triggerFileDownload(blob: Blob, filename: string) {
 }
 
 /**
- * Downloads a real asset file that was previously published to Cloudflare
- * R2 (see UploadModal). Asks the server for a short-lived signed URL for
- * the given object key, then navigates the browser to it — R2 returns the
- * file with a Content-Disposition header carrying the given filename, so
- * this works the same as a same-origin download.
+ * A few showcase models ship with the site (public/models). Returns their
+ * URL, or null for normal uploads that live in Cloudflare R2.
  */
-export async function downloadRealAssetFile(key: string, filename: string): Promise<void> {
+export async function staticModelUrl(key: string, filename: string): Promise<string | null> {
   const safeFilename = filename.toLowerCase();
   const safeKey = key.toLowerCase();
-
-  // If this is Lara Croft or local model file, trigger direct browser download
-  if (safeFilename.includes('laracroft') || safeKey.includes('laracroft')) {
-    const anchor = document.createElement('a');
-    anchor.href = '/models/laracroft.glb';
-    anchor.download = filename.endsWith('.glb') ? filename : `${filename}.glb`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-    return;
-  }
-
-  // Check if static file exists in /models/
+  if (safeFilename.includes('laracroft') || safeKey.includes('laracroft')) return '/models/laracroft.glb';
   try {
-    const headCheck = await fetch(`/models/${filename}`, { method: 'HEAD' });
-    if (headCheck.ok) {
-      const anchor = document.createElement('a');
-      anchor.href = `/models/${filename}`;
-      anchor.download = filename;
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      return;
-    }
+    const headCheck = await fetch(`/models/${encodeURIComponent(filename)}`, { method: 'HEAD' });
+    if (headCheck.ok) return `/models/${encodeURIComponent(filename)}`;
   } catch {
     // ignore
   }
+  return null;
+}
 
+export interface QueueResult {
+  /** Present when the plan has no queue — download right away. */
+  downloadUrl?: string;
+  ticketId?: string;
+  readyAt?: string;
+  waitSeconds?: number;
+}
+
+/** Joins the plan's download queue for an R2 file (app/api/polyvault/sign-download). */
+export async function queueRealDownload(key: string, filename: string): Promise<QueueResult> {
   const res = await fetch('/api/polyvault/sign-download', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ key, filename }),
+    body: JSON.stringify({ action: 'queue', key, filename }),
   });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body?.error || 'Failed to prepare the download');
+  return body;
+}
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body?.error || 'Failed to prepare download link');
-  }
+/** After the queue: asks for the real link. Returns readyAt if asked a moment too early. */
+export async function claimRealDownload(ticketId: string): Promise<{ downloadUrl?: string; readyAt?: string }> {
+  const res = await fetch('/api/polyvault/sign-download', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'claim', ticketId }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (res.status === 425 && body?.readyAt) return { readyAt: body.readyAt };
+  if (!res.ok) throw new Error(body?.error || 'Failed to start the download');
+  return { downloadUrl: body.downloadUrl };
+}
 
-  const { downloadUrl } = await res.json();
-
+/** Starts the browser download for a URL. */
+export function openDownloadUrl(url: string, filename?: string) {
   const anchor = document.createElement('a');
-  anchor.href = downloadUrl;
+  anchor.href = url;
+  if (filename) anchor.download = filename;
   anchor.rel = 'noopener noreferrer';
   document.body.appendChild(anchor);
   anchor.click();

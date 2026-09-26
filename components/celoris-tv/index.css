@@ -1,20 +1,20 @@
-/* Custom aesthetic scrollbar for Celoris TV */
+/* Celoris Dark & Emerald Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0D0F0D;
+  background: #07080c;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A322A;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7F9172;
+  background: #10b981;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -24,9 +24,9 @@
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #2A322A;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #7F9172;
+  background: #10b981;
 }

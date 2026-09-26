@@ -22,7 +22,7 @@ const MainContent: React.FC = () => {
       : currentView;
 
   return (
-    <div className="min-h-screen bg-[#0D0F0D] text-[#E0E5E0] flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-[#07080c] text-slate-100 flex flex-col font-sans transition-colors selection:bg-emerald-500/30">
       {/* Top Navigation Bar */}
       <Navbar onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)} />
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck,
@@ -24,6 +24,15 @@ import { ExamDefinition, UserProfile } from '../types';
 import { AnimatedTooltip } from './AnimatedTooltip';
 import { soundFx } from '../utils/audio';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { ExamCourseSuggestion } from './ExamCourseSuggestion';
+import { timeUntil } from '@/lib/exam-courses';
+
+// Per-exam attempt status from /api/job-center/exam/attempts.
+interface AttemptStatus {
+  nextAvailableAt: string | null;
+  inProgress?: { attemptId: string; startedAt: string };
+  last?: { score: number | null; passed: boolean | null; status: string };
+}
 
 interface ExamsHubProps {
   exams: ExamDefinition[];
@@ -46,6 +55,26 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
   const { user: authUser } = useAuth();
   const isAdmin = !!authUser?.email && ADMIN_EMAILS.includes(authUser.email);
   const [inviteExam, setInviteExam] = useState<ExamDefinition | null>(null);
+  const [attempts, setAttempts] = useState<Record<string, AttemptStatus>>({});
+  const [retakeDays, setRetakeDays] = useState<number | null>(null);
+
+  // Refresh whenever the list is shown again (e.g. after finishing an exam).
+  const historyLength = user.examHistory.length;
+  useEffect(() => {
+    if (!authUser) return;
+    let cancelled = false;
+    fetch('/api/job-center/exam/attempts', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setAttempts(data.exams || {});
+        if (typeof data.retakeDays === 'number') setRetakeDays(data.retakeDays);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [authUser, historyLength]);
 
   return (
     <div className="space-y-6">
@@ -139,7 +168,7 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
               Available Certification Assessments ({exams.length})
             </h2>
             <p className="text-xs text-slate-400">
-              Each exam takes 10 minutes with instant grading and verified badge issuance.
+              Instant grading and verified badge issuance · one attempt per exam every {retakeDays ?? 7} day{(retakeDays ?? 7) === 1 ? '' : 's'}.
             </p>
           </div>
         </div>
@@ -149,6 +178,9 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
             const hasEarned = user.verifiedBadges.some(
               (b) => b.badgeTitle.toLowerCase() === exam.badgeTitle.toLowerCase()
             );
+            const st = attempts[exam.id];
+            const waiting = !!st?.nextAvailableAt;
+            const lastFailed = !!st?.last && st.last.passed !== true && !hasEarned;
 
             return (
               <div
@@ -190,6 +222,14 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                     {exam.description}
                   </p>
 
+                  {waiting && (
+                    <p className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-300">
+                      <Clock className="w-3.5 h-3.5" />
+                      {typeof st?.last?.score === 'number' ? `Last score ${st.last.score}% · ` : ''}next attempt {timeUntil(st!.nextAvailableAt!)}
+                    </p>
+                  )}
+                  {lastFailed && <ExamCourseSuggestion examId={exam.id} compact />}
+
                   <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 pt-1">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-slate-500" />
@@ -230,13 +270,23 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                         <span className="hidden sm:inline">Invite</span>
                       </button>
                     )}
-                    <button
-                      type="button"
-                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-extrabold shadow-sm transition-all flex items-center gap-1 active:scale-98"
-                    >
-                      <span>{hasEarned ? 'Retake Exam' : 'Start Assessment'}</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
+                    {waiting ? (
+                      <button
+                        type="button"
+                        className="px-3.5 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-slate-300 text-xs font-bold flex items-center gap-1"
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>Opens {timeUntil(st!.nextAvailableAt!)}</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-extrabold shadow-sm transition-all flex items-center gap-1 active:scale-98"
+                      >
+                        <span>{st?.inProgress ? 'Continue Exam' : hasEarned ? 'Retake Exam' : 'Start Assessment'}</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

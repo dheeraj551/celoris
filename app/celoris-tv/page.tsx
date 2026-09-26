@@ -23,8 +23,8 @@ const CelorisTvApp = dynamic(() => import('@/components/celoris-tv/App'), {
 
 function LoadingSpinner() {
     return (
-        <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 border-4 border-red-500/10 border-t-red-600 rounded-full animate-spin mx-auto mb-6" />
+        <div className="flex items-center justify-center py-20 min-h-screen bg-[#07080c]">
+            <div className="h-12 w-12 border-4 border-emerald-500/15 border-t-emerald-500 rounded-full animate-spin mx-auto mb-6 shadow-[0_0_20px_rgba(16,185,129,0.2)]" />
         </div>
     )
 }

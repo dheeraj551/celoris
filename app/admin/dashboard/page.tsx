@@ -226,6 +226,13 @@ export default function AdminDashboard() {
       color: "bg-teal-600 hover:bg-teal-700"
     },
     {
+      title: "Course Reviews",
+      description: "Approve verified student reviews and add offline students",
+      icon: Star,
+      href: "/admin/reviews",
+      color: "bg-amber-600 hover:bg-amber-700"
+    },
+    {
       title: "Blog Management",
       description: "Create, edit, and publish blog posts",
       icon: FileText,

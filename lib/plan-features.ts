@@ -26,6 +26,10 @@ export interface PlanFeatures {
   max_parallel_videos: number
   /** Start voice & video calls in Celoris Chat */
   chat_calls: boolean
+  /** Days to wait before retaking the same Job Center exam */
+  exam_retake_days: number
+  /** PolyVault: seconds in the download queue before a file starts (0 = instant) */
+  polyvault_download_wait_seconds: number
 }
 
 export type FeatureKey = keyof PlanFeatures
@@ -34,7 +38,7 @@ export interface FeatureDef {
   key: FeatureKey
   label: string
   help: string
-  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat'
+  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault'
   type: 'bool' | 'int'
   min?: number
   max?: number
@@ -67,6 +71,26 @@ export const FEATURE_DEFS: FeatureDef[] = [
   { key: 'max_parallel_images', label: 'Images at once', help: 'Image generations that can run at the same time', group: 'Generations', type: 'int', min: 1, max: 20 },
   { key: 'max_parallel_videos', label: 'Videos at once', help: 'Video renders that can run at the same time', group: 'Generations', type: 'int', min: 1, max: 10 },
   { key: 'chat_calls', label: 'Voice & video calls', help: 'Can start calls in Celoris Chat (friends answer free)', group: 'Celoris Chat', type: 'bool' },
+  {
+    key: 'exam_retake_days',
+    label: 'Exam retake wait',
+    help: 'Days before the same Job Center exam can be taken again (counts from when the last attempt started)',
+    group: 'Job Center',
+    type: 'int',
+    min: 1,
+    max: 30,
+    unit: 'days',
+  },
+  {
+    key: 'polyvault_download_wait_seconds',
+    label: 'Download queue',
+    help: 'Seconds a PolyVault download waits before it starts (0 = starts instantly). Shorter wait = faster downloads.',
+    group: 'PolyVault',
+    type: 'int',
+    min: 0,
+    max: 120,
+    unit: 's',
+  },
 ]
 
 export interface TierSettings {
@@ -90,6 +114,8 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       max_parallel_images: 1,
       max_parallel_videos: 1,
       chat_calls: false,
+      exam_retake_days: 7,
+      polyvault_download_wait_seconds: 30,
     },
   },
   basic: {
@@ -105,6 +131,8 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       max_parallel_images: 2,
       max_parallel_videos: 1,
       chat_calls: true,
+      exam_retake_days: 5,
+      polyvault_download_wait_seconds: 15,
     },
   },
   pro: {
@@ -120,6 +148,8 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       max_parallel_images: 3,
       max_parallel_videos: 2,
       chat_calls: true,
+      exam_retake_days: 3,
+      polyvault_download_wait_seconds: 5,
     },
   },
   max: {
@@ -135,6 +165,8 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       max_parallel_images: 8,
       max_parallel_videos: 3,
       chat_calls: true,
+      exam_retake_days: 1,
+      polyvault_download_wait_seconds: 0,
     },
   },
 }
@@ -175,4 +207,11 @@ export const VIDEO_MODEL_FEATURE: Record<string, FeatureKey> = {
 export function canUseVideoModel(features: PlanFeatures, modelId: string): boolean {
   const key = VIDEO_MODEL_FEATURE[modelId]
   return key ? features[key] === true : true
+}
+
+/** The name shown for a PolyVault download queue length. */
+export function polyvaultLaneName(waitSeconds: number): 'High speed' | 'Fast' | 'Standard' {
+  if (waitSeconds <= 0) return 'High speed'
+  if (waitSeconds <= 10) return 'Fast'
+  return 'Standard'
 }

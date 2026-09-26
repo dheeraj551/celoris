@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Coupon, UserProfile } from '../types';
+import { DownloadLane, UserProfile } from '../types';
 import {
   Box,
   Zap,
@@ -32,7 +32,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface NavbarProps {
-  activeCoupon: Coupon | null;
+  lane: DownloadLane | null;
   currentUser: UserProfile;
   onOpenCouponModal: () => void;
   onOpenUploadModal: () => void;
@@ -40,7 +40,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  activeCoupon,
+  lane,
   currentUser,
   onOpenCouponModal,
   onOpenUploadModal,
@@ -115,33 +115,33 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Center/Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Turbo Speed & Coupon Pill */}
+          {/* Download speed (from the Celoris plan) */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             id="btn-navbar-coupon"
             onClick={onOpenCouponModal}
             className={`px-3 sm:px-3.5 py-1.5 rounded-2xl border text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer shadow-xs ${
-              activeCoupon
+              lane && lane.waitSeconds <= 0
                 ? 'bg-emerald-50/90 border-emerald-300 text-emerald-900 shadow-emerald-500/10'
                 : 'bg-white/90 border-zinc-200/90 text-zinc-700 hover:border-emerald-300 hover:bg-emerald-50/50'
             }`}
           >
             <div className="relative">
-              <Zap className={`w-4 h-4 ${activeCoupon ? 'text-emerald-600 animate-pulse' : 'text-emerald-500'}`} />
-              {activeCoupon && (
+              <Zap className={`w-4 h-4 ${lane && lane.waitSeconds <= 0 ? 'text-emerald-600 animate-pulse' : 'text-emerald-500'}`} />
+              {lane && lane.waitSeconds <= 0 && (
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute -top-0.5 -right-0.5 animate-ping" />
               )}
             </div>
             <div className="text-left hidden xs:block">
               <div className="text-[11px] font-bold leading-tight flex items-center gap-1">
-                <span>{activeCoupon ? `${activeCoupon.code} Active` : 'Speed Coupons'}</span>
-                {activeCoupon && (
-                  <span className="bg-emerald-600 text-white text-[9px] px-1 rounded font-mono">120 MB/s</span>
+                <span>{lane?.laneName || 'Standard'} downloads</span>
+                {lane && lane.tier !== 'free' && (
+                  <span className="bg-emerald-600 text-white text-[9px] px-1 rounded font-mono">{lane.planLabel.toUpperCase()}</span>
                 )}
               </div>
               <div className="text-[9px] text-zinc-500 leading-tight">
-                {activeCoupon ? 'Direct Gigabit Pipeline' : 'Unlock Turbo Download'}
+                {lane && lane.waitSeconds <= 0 ? 'No queue' : lane ? `${lane.waitSeconds}s queue · go faster` : 'Speed by plan'}
               </div>
             </div>
           </motion.button>

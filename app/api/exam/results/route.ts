@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { isExamAdmin } from '@/lib/exam-admin'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 
 // Backs the admin-only "Candidate Results" list (app/job-center/exam-results).
@@ -6,6 +7,13 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 // enabled with no policies — it's intentionally unreachable via the anon key.
 export async function GET(request: Request) {
     try {
+        // Admins only (checked on the server). Candidate names, emails and
+        // answers must never be readable by the public, and invites are
+        // emails sent from Celoris, so random visitors can't trigger them.
+        if (!(await isExamAdmin())) {
+            return NextResponse.json({ error: 'Admin access required.' }, { status: 403 })
+        }
+
         const { searchParams } = new URL(request.url)
         const examId = searchParams.get('examId')
 

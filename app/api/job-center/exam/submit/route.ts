@@ -3,6 +3,7 @@ import { GoogleGenAI, Type } from '@google/genai'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { PREBUILT_EXAMS } from '@/components/skillverify/data/mockData'
+import { getEntitlements } from '@/lib/plans'
 
 // Authoritative, server-side grading + XP/badge issuance for the Job
 // Center's in-app anti-cheat exams (components/skillverify/*).
@@ -39,6 +40,13 @@ import { PREBUILT_EXAMS } from '@/components/skillverify/data/mockData'
 // fully means changing the in-app exam flow to fetch questions without
 // answers the way the public candidate page already does — a larger,
 // separate change that's a reasonable next step, not done silently here.
+//
+// Attempts (Sept 2026): every submission must belong to an attempt started
+// through /api/job-center/exam/attempts (one attempt per exam every N days,
+// N from the member's plan). The attempt is claimed atomically, so the same
+// attempt can't be submitted twice, and it must arrive within the exam's time
+// limit (+ a short grace). The exam's XP reward is paid only the first time
+// someone passes an exam; a retake that scores higher just updates the badge.
 
 let aiClient: GoogleGenAI | null = null
 function getAI(): GoogleGenAI {
@@ -100,8 +108,9 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json().catch(() => ({}))
-    const { examId, answers, timeSpentSeconds, violationsCount } = body as {
+    const { examId, attemptId, answers, timeSpentSeconds, violationsCount } = body as {
       examId?: string
+      attemptId?: string
       answers?: Record<string, number | string>
       timeSpentSeconds?: number
       violationsCount?: number
@@ -114,6 +123,35 @@ export async function POST(request: Request) {
     const exam = PREBUILT_EXAMS.find((e) => e.id === examId)
     if (!exam) {
       return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
+    }
+
+    const supabase = createSupabaseClientForServer()
+
+    // The attempt this submission belongs to.
+    if (!attemptId || typeof attemptId !== 'string') {
+      return NextResponse.json(
+        { error: 'This exam session has expired. Please refresh the page and start the exam again.' },
+        { status: 409 }
+      )
+    }
+    const { data: attempt } = await (supabase as any)
+      .from('job_center_exam_attempts')
+      .select('id, status, started_at')
+      .eq('id', attemptId)
+      .eq('user_id', user.id)
+      .eq('exam_id', exam.id)
+      .maybeSingle()
+    if (!attempt || attempt.status !== 'started') {
+      return NextResponse.json({ error: 'This attempt has already been submitted or closed.' }, { status: 409 })
+    }
+    const deadline = Date.parse(attempt.started_at) + (exam.timeLimitMinutes + 3) * 60_000
+    if (Date.now() > deadline) {
+      await (supabase as any)
+        .from('job_center_exam_attempts')
+        .update({ status: 'abandoned', finished_at: new Date().toISOString() })
+        .eq('id', attempt.id)
+        .eq('status', 'started')
+      return NextResponse.json({ error: 'Time ran out for this attempt, so it could not be graded.' }, { status: 410 })
     }
 
     // strikeCount is client-reported anti-cheat telemetry (tab switches,
@@ -165,9 +203,32 @@ export async function POST(request: Request) {
     }
 
     const passed = finalScore >= exam.passingScorePercent && strikes < 3
-    const xpEarned = passed ? exam.xpReward : 35
 
-    const supabase = createSupabaseClientForServer()
+    // Already certified for this exam? Then a retake doesn't pay the XP again.
+    const { data: existingBadge } = await supabase
+      .from('job_center_badges')
+      .select('id, score')
+      .eq('user_id', user.id)
+      .eq('badge_title', exam.badgeTitle)
+      .maybeSingle()
+    const xpEarned = passed ? (existingBadge ? 0 : exam.xpReward) : 35
+
+    // Claim the attempt — only one submission per attempt can get past this.
+    const { data: claimed } = await (supabase as any)
+      .from('job_center_exam_attempts')
+      .update({
+        status: 'submitted',
+        finished_at: new Date().toISOString(),
+        score: finalScore,
+        passed,
+        xp_awarded: xpEarned,
+      })
+      .eq('id', attempt.id)
+      .eq('status', 'started')
+      .select('id')
+    if (!claimed || claimed.length === 0) {
+      return NextResponse.json({ error: 'This attempt has already been submitted.' }, { status: 409 })
+    }
 
     const { data: existingProgress } = await supabase
       .from('job_center_progress')
@@ -186,31 +247,46 @@ export async function POST(request: Request) {
     })
 
     let badgeEarned: any = undefined
-    if (passed) {
-      const randomHash = Math.random().toString(36).substring(2, 6).toUpperCase()
-      const verificationHash = `SV-2026-${exam.skillName.substring(0, 4).toUpperCase()}-${randomHash}`
-
-      const { data: badgeRow, error: badgeError } = await supabase
-        .from('job_center_badges')
-        .upsert(
-          {
-            user_id: user.id,
-            badge_title: exam.badgeTitle,
-            skill_name: exam.skillName,
-            industry: exam.industry,
-            verification_hash: verificationHash,
-            score: finalScore,
-            proctor_score: honorScore,
-            badge_color: exam.badgeColor,
-            earned_date: new Date().toISOString(),
-          },
-          { onConflict: 'user_id,badge_title' }
-        )
-        .select('*')
-        .single()
+    if (passed && (!existingBadge || finalScore > (existingBadge.score ?? 0))) {
+      let badgeRow: any = null
+      let badgeError: any = null
+      if (existingBadge) {
+        // Better score on a retake — keep the same badge and verification code.
+        const res = await supabase
+          .from('job_center_badges')
+          .update({ score: finalScore, proctor_score: honorScore, earned_date: new Date().toISOString() })
+          .eq('id', existingBadge.id)
+          .select('*')
+          .single()
+        badgeRow = res.data
+        badgeError = res.error
+      } else {
+        const randomHash = Math.random().toString(36).substring(2, 6).toUpperCase()
+        const verificationHash = `SV-2026-${exam.skillName.substring(0, 4).toUpperCase()}-${randomHash}`
+        const res = await supabase
+          .from('job_center_badges')
+          .upsert(
+            {
+              user_id: user.id,
+              badge_title: exam.badgeTitle,
+              skill_name: exam.skillName,
+              industry: exam.industry,
+              verification_hash: verificationHash,
+              score: finalScore,
+              proctor_score: honorScore,
+              badge_color: exam.badgeColor,
+              earned_date: new Date().toISOString(),
+            },
+            { onConflict: 'user_id,badge_title' }
+          )
+          .select('*')
+          .single()
+        badgeRow = res.data
+        badgeError = res.error
+      }
 
       if (badgeError) {
-        console.error('Job Center badge upsert error:', badgeError)
+        console.error('Job Center badge save error:', badgeError)
       }
 
       if (badgeRow) {
@@ -226,6 +302,15 @@ export async function POST(request: Request) {
           badgeColor: badgeRow.badge_color,
         }
       }
+    }
+
+    // When the next attempt at this exam opens (for the result screen).
+    let nextAttemptAt: string | null = null
+    try {
+      const ent = await getEntitlements(supabase as any, user.id)
+      nextAttemptAt = new Date(Date.parse(attempt.started_at) + ent.features.exam_retake_days * 86_400_000).toISOString()
+    } catch {
+      // Not critical for the result.
     }
 
     return NextResponse.json({
@@ -244,6 +329,8 @@ export async function POST(request: Request) {
         badgeEarned,
         xpEarned,
         detailedFeedback: lastScenarioFeedback || undefined,
+        nextAttemptAt,
+        alreadyCertified: !!existingBadge,
       },
       progress: {
         currentXP: nextXP,

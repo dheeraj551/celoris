@@ -24,6 +24,18 @@ import { ExamDefinition, ExamResult } from '../types';
 import { soundFx } from '../utils/audio';
 import { AnimatedTooltip } from './AnimatedTooltip';
 import confetti from 'canvas-confetti';
+import { ExamCourseSuggestion } from './ExamCourseSuggestion';
+import { timeUntil } from '@/lib/exam-courses';
+
+// Attempt status from /api/job-center/exam/attempts (one attempt per exam
+// every N days — N comes from the member's plan).
+type CooldownInfo = {
+  nextAvailableAt: string;
+  retakeDays?: number;
+  fasterPlan?: { label: string; days: number } | null;
+  lastScore?: number | null;
+  lastPassed?: boolean | null;
+};
 
 interface AntiCheatExamModalProps {
   exam: ExamDefinition;
@@ -60,6 +72,24 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [finalResult, setFinalResult] = useState<ExamResult | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // A submission the server refused for good (attempt closed / time ran out).
+  const [fatalError, setFatalError] = useState<string | null>(null);
+
+  // Attempts
+  const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState<CooldownInfo | null>(null);
+  const [retakeDays, setRetakeDays] = useState<number | null>(null);
+  const [inProgress, setInProgress] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
+
+  // The timer and anti-cheat listeners are set up once per phase, so they
+  // read the latest answers / attempt through refs.
+  const answersRef = useRef<Record<string, number | string>>({});
+  answersRef.current = answers;
+  const attemptIdRef = useRef<string | null>(null);
+  attemptIdRef.current = attemptId;
+  const submitRef = useRef<() => void>(() => undefined);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const examContainerRef = useRef<HTMLDivElement | null>(null);
@@ -78,10 +108,42 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
       setProctorLogs([`[${new Date().toLocaleTimeString()}] Anti-Cheat Session initialized for ${exam.title}`]);
       setFinalResult(null);
       setSubmitError(null);
+      setFatalError(null);
+      setAttemptId(null);
+      setCooldown(null);
+      setInProgress(false);
+      setStartError(null);
     } else {
       stopWebcam();
     }
   }, [isOpen, exam]);
+
+  // Is this exam available right now, or waiting for the next attempt?
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    fetch('/api/job-center/exam/attempts', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        if (typeof data.retakeDays === 'number') setRetakeDays(data.retakeDays);
+        const st = data.exams?.[exam.id];
+        if (st?.inProgress) setInProgress(true);
+        if (st?.nextAvailableAt) {
+          setCooldown({
+            nextAvailableAt: st.nextAvailableAt,
+            retakeDays: data.retakeDays,
+            fasterPlan: data.fasterPlan,
+            lastScore: st.last?.score ?? null,
+            lastPassed: st.last?.passed ?? null,
+          });
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, exam.id]);
 
   // Anti-Cheat Tab-Switch & Blur Detection
   useEffect(() => {
@@ -144,9 +206,18 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
     setShowViolationWarning(reason);
 
     if (newStrikes >= 3) {
-      // Disqualify immediately
+      // Disqualify immediately — the attempt is used up.
       setPhase('disqualified');
       stopWebcam();
+      const id = attemptIdRef.current;
+      if (id) {
+        fetch('/api/job-center/exam/attempts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'disqualify', attemptId: id }),
+          keepalive: true,
+        }).catch(() => undefined);
+      }
     }
   };
 
@@ -157,7 +228,8 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
         setTimeLeftSeconds((prev) => {
           if (prev <= 1) {
             clearInterval(timerRef.current!);
-            handleSubmitExam();
+            // Through the ref so the latest answers are sent.
+            submitRef.current();
             return 0;
           }
           return prev - 1;
@@ -200,6 +272,44 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
   };
 
   const handleStartExam = async () => {
+    if (starting) return;
+    setStarting(true);
+    setStartError(null);
+
+    // Start (or resume) the attempt on the server first.
+    let timeLeft = exam.timeLimitMinutes * 60;
+    try {
+      const res = await fetch('/api/job-center/exam/attempts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start', examId: exam.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 429 && data?.nextAvailableAt) {
+        setCooldown({ nextAvailableAt: data.nextAvailableAt, retakeDays: data.retakeDays, fasterPlan: data.fasterPlan });
+        setStarting(false);
+        return;
+      }
+      if (!res.ok || !data?.ok) {
+        setStartError(res.status === 401 ? 'Please sign in to take this exam.' : data?.error || "Couldn't start the exam. Please try again.");
+        setStarting(false);
+        return;
+      }
+      if (data.attemptId) {
+        setAttemptId(data.attemptId);
+        attemptIdRef.current = data.attemptId;
+        if (data.endsAt) {
+          timeLeft = Math.max(5, Math.floor((Date.parse(data.endsAt) - Date.now()) / 1000));
+        }
+      }
+    } catch {
+      setStartError("Couldn't reach Celoris. Check your connection and try again.");
+      setStarting(false);
+      return;
+    }
+    setTimeLeftSeconds(timeLeft);
+    setStarting(false);
+
     soundFx.playNotification();
     await startWebcam();
     // Attempt fullscreen
@@ -245,12 +355,21 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           examId: exam.id,
-          answers,
+          attemptId: attemptIdRef.current,
+          answers: answersRef.current,
           timeSpentSeconds: timeSpent,
           violationsCount: strikeCount,
         }),
       });
       const data = await response.json();
+
+      // The attempt is closed (already submitted, or time ran out) — retrying won't help.
+      if (response.status === 409 || response.status === 410) {
+        setIsSubmitting(false);
+        setFatalError(data?.error || 'This attempt could not be graded.');
+        setPhase('completed');
+        return;
+      }
 
       if (!response.ok || !data?.success || !data?.result) {
         throw new Error(data?.error || 'Grading failed');
@@ -278,6 +397,8 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
       setPhase('active');
     }
   };
+
+  submitRef.current = handleSubmitExam;
 
   const currentQ = exam.questions[currentQuestionIndex];
 
@@ -474,6 +595,50 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
                 <span className="text-[#A3B899] font-bold">₹160k - ₹320k+ Tier</span>
               </div>
 
+              {/* Attempt rules / waiting period */}
+              {cooldown ? (
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl bg-[#2C2523] border border-[#D4A373]/40 text-xs text-[#EDE6DE] space-y-1.5">
+                    <p className="flex items-center gap-2 font-bold text-[#D4A373]">
+                      <Clock className="w-4 h-4" />
+                      Your next attempt opens {timeUntil(cooldown.nextAvailableAt)}
+                    </p>
+                    <p className="text-[#C9BFB4] leading-relaxed">
+                      {typeof cooldown.lastScore === 'number'
+                        ? `Last time you scored ${cooldown.lastScore}% (pass mark ${exam.passingScorePercent}%). `
+                        : ''}
+                      Each exam can be taken once every {cooldown.retakeDays ?? retakeDays ?? 7} day{(cooldown.retakeDays ?? retakeDays ?? 7) === 1 ? '' : 's'}, so badges stay meaningful to employers
+                      ({new Date(cooldown.nextAvailableAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}).
+                    </p>
+                    {cooldown.fasterPlan && (
+                      <p className="text-[#A3B899]">
+                        {cooldown.fasterPlan.label} members can retake every {cooldown.fasterPlan.days} day{cooldown.fasterPlan.days === 1 ? '' : 's'}.{' '}
+                        <a href="/pricing" className="underline font-semibold hover:text-white">See plans</a>
+                      </p>
+                    )}
+                  </div>
+                  {cooldown.lastPassed !== true && (
+                    <ExamCourseSuggestion examId={exam.id} score={cooldown.lastScore} passingScore={exam.passingScorePercent} />
+                  )}
+                </div>
+              ) : (
+                <div className="p-3.5 rounded-xl bg-[#2C2523] border border-[#3D3530] text-xs text-[#D5CABE] flex items-start gap-2">
+                  <Info className="w-4 h-4 text-[#D4A373] shrink-0 mt-0.5" />
+                  <span>
+                    {inProgress
+                      ? 'You have an attempt in progress — starting will continue it with the time that is left.'
+                      : `Starting uses your attempt: you can take this exam once every ${retakeDays ?? 7} day${(retakeDays ?? 7) === 1 ? '' : 's'}, even if you close the window or get disqualified.`}
+                  </span>
+                </div>
+              )}
+
+              {startError && (
+                <div className="p-3 rounded-xl bg-[#2C1916] border border-[#522923] text-xs text-[#F5C4B8] flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-[#E07A5F] shrink-0 mt-0.5" />
+                  <span>{startError}</span>
+                </div>
+              )}
+
               {/* Launch Button */}
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
@@ -486,10 +651,12 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
                 <button
                   type="button"
                   onClick={handleStartExam}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#7C9070] to-[#5B6E50] hover:from-[#6B7F5F] hover:to-[#4A5D40] text-white text-sm font-bold shadow-lg shadow-[#7C9070]/30 flex items-center gap-2 transition-all hover:scale-[1.02]"
+                  disabled={!!cooldown || starting}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#7C9070] to-[#5B6E50] hover:from-[#6B7F5F] hover:to-[#4A5D40] text-white text-sm font-bold shadow-lg shadow-[#7C9070]/30 flex items-center gap-2 transition-all hover:scale-[1.02] disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
                 >
-                  <span>Start Anti-Cheat Exam</span>
-                  <ChevronRight className="w-4 h-4" />
+                  {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : cooldown ? <Lock className="w-4 h-4" /> : null}
+                  <span>{cooldown ? 'Not available yet' : inProgress ? 'Continue Exam' : 'Start Anti-Cheat Exam'}</span>
+                  {!cooldown && !starting && <ChevronRight className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -720,6 +887,24 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
           )}
 
           {/* PHASE 4: COMPLETED SCORECARD & BADGE ISSUANCE */}
+          {phase === 'completed' && fatalError && !finalResult && (
+            <div className="max-w-md mx-auto text-center py-8 space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-[#E07A5F]/20 border border-[#E07A5F]/40 flex items-center justify-center mx-auto text-[#E07A5F]">
+                <Clock className="w-9 h-9" />
+              </div>
+              <h3 className="text-xl font-bold text-white font-serif-heading">This attempt couldn't be graded</h3>
+              <p className="text-xs text-[#F5C4B8] leading-relaxed bg-[#2C1916] p-3 rounded-xl border border-[#522923]">{fatalError}</p>
+              <ExamCourseSuggestion examId={exam.id} />
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-2.5 rounded-xl bg-[#332B27] hover:bg-[#3D3430] text-white text-xs font-semibold transition-colors"
+              >
+                Return to Hub
+              </button>
+            </div>
+          )}
+
           {phase === 'completed' && finalResult && (
             <div className="max-w-xl mx-auto space-y-6 py-2">
               <div className="text-center space-y-2">
@@ -780,6 +965,25 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
                 </div>
               )}
 
+              {finalResult.passed && finalResult.alreadyCertified && (
+                <p className="text-center text-[11px] text-[#A3968C]">
+                  You already held this badge, so no extra XP this time
+                  {finalResult.badgeEarned ? ' — your badge now shows your new best score.' : '.'}
+                </p>
+              )}
+
+              {!finalResult.passed && (
+                <div className="space-y-3">
+                  <ExamCourseSuggestion examId={exam.id} score={finalResult.score} passingScore={exam.passingScorePercent} />
+                  {finalResult.nextAttemptAt && (
+                    <p className="text-center text-[11px] text-[#A3968C]">
+                      Your next attempt opens {timeUntil(finalResult.nextAttemptAt)} (
+                      {new Date(finalResult.nextAttemptAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}).
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Proctor & AI Feedback */}
               {finalResult.detailedFeedback && (
                 <div className="p-3.5 rounded-xl bg-[#1C1816] border border-[#332B27] text-xs text-[#D5CABE] space-y-1">
@@ -795,7 +999,7 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
                   onClick={onClose}
                   className="px-6 py-2.5 rounded-xl bg-[#7C9070] hover:bg-[#5B6E50] text-white font-bold text-xs shadow-lg transition-all"
                 >
-                  View Unlocked Jobs & Progression
+                  {finalResult.passed ? 'View Unlocked Jobs & Progression' : 'Back to Exams'}
                 </button>
               </div>
             </div>
@@ -812,8 +1016,9 @@ export const AntiCheatExamModal: React.FC<AntiCheatExamModalProps> = ({
                 Maximum anti-cheat strikes (3/3) reached due to tab switching, loss of active window focus, or clipboard tampering.
               </p>
               <div className="text-xs text-[#A3968C]">
-                Honor Score decreased by -30. You can review the study materials and re-attempt this assessment after maintaining active platform engagement.
+                This attempt has been used. You can take this exam again {retakeDays ? `after ${retakeDays} day${retakeDays === 1 ? '' : 's'}` : 'after the waiting period'} — use the time to prepare:
               </div>
+              <ExamCourseSuggestion examId={exam.id} />
               <button
                 type="button"
                 onClick={onClose}

@@ -1,13 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type {
-  IAgoraRTCClient,
-  IAgoraRTCRemoteUser,
-  ILocalAudioTrack,
-  ILocalVideoTrack,
-  IMicrophoneAudioTrack,
-} from "agora-rtc-sdk-ng";
 import { createClient } from "@/lib/supabase-client";
 import { applyBoardOp, BoardOp, BoardState, compactStroke, EMPTY_BOARD } from "../boardState";
 import type { CanvasCard, RemoteUser, Stroke, ToolType } from "../types";
@@ -16,7 +9,9 @@ import type { CanvasCard, RemoteUser, Stroke, ToolType } from "../types";
  * Everything live about a whiteboard room, wired to the same stack as the 3D
  * classroom:
  *   - seat + capacity  → /api/social/cafe/classroom-presence (heartbeat)
- *   - audio + screen   → Agora (token from /api/agora/token)
+ *   - audio + screen   → Tencent RTC (UserSig from /api/tencent/classroom-sig).
+ *                        The 3D classroom stays on Agora, so the two room
+ *                        types don't depend on the same provider.
  *   - who's here, hands, mic permission → Supabase Realtime presence/broadcast
  *     on the same `classroom_<roomId>` channel name the 3D room uses
  *   - the board + chat → /api/social/cafe/room-events (server-checked writes)
@@ -119,10 +114,11 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
   const sendingRef = useRef(false);
   const signalRef = useRef<any>(null);
   const eventsChannelRef = useRef<any>(null);
-  const clientRef = useRef<IAgoraRTCClient | null>(null);
-  const agoraRef = useRef<any>(null);
-  const micTrackRef = useRef<IMicrophoneAudioTrack | null>(null);
-  const screenTrackRef = useRef<ILocalVideoTrack | [ILocalVideoTrack, ILocalAudioTrack] | null>(null);
+  // Tencent RTC (trtc-sdk-v5) client, its TRTC module, and whether our mic started.
+  const trtcRef = useRef<any>(null);
+  const trtcModRef = useRef<any>(null);
+  const micReadyRef = useRef(false);
+  const sharingRef = useRef(false);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hostIdsRef = useRef<Set<string>>(new Set());
   const streamTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -432,7 +428,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
     [roomId]
   );
 
-  // ---------------------------------------------------------------- presence, signaling, Agora
+  // ---------------------------------------------------------------- presence, signaling, Tencent RTC
   const trackPresence = useCallback(() => {
     if (!signalRef.current || !userId) return;
     const s = selfStateRef.current;
@@ -454,20 +450,6 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
     if (!userId) return;
     let cancelled = false;
 
-    const handleUserPublished = async (remoteUser: IAgoraRTCRemoteUser, mediaType: "audio" | "video") => {
-      const client = clientRef.current;
-      if (!client) return;
-      await client.subscribe(remoteUser, mediaType);
-      if (mediaType === "audio") remoteUser.audioTrack?.play();
-      if (mediaType === "video" && remoteUser.videoTrack) {
-        const track = remoteUser.videoTrack.getMediaStreamTrack();
-        if (track) setScreenStream(new MediaStream([track]));
-      }
-    };
-    const handleUserUnpublished = (_u: IAgoraRTCRemoteUser, mediaType: "audio" | "video") => {
-      if (mediaType === "video") setScreenStream(null);
-    };
-
     const subscribeSignaling = () => {
       const channel = supabase
         .channel(`classroom_${roomId}`, { config: { presence: { key: userId } } })
@@ -475,16 +457,16 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
           if (payload?.userId !== userId) return;
           setCanSpeak(true);
           setHandRaised(false);
-          if (micTrackRef.current) {
-            micTrackRef.current.setMuted(false);
+          if (micReadyRef.current && trtcRef.current) {
+            trtcRef.current.updateLocalAudio({ mute: false }).catch(() => undefined);
             setMicOn(true);
           }
         })
         .on("broadcast", { event: "revoke_speak" }, ({ payload }: any) => {
           if (payload?.userId !== userId) return;
           setCanSpeak(false);
-          if (micTrackRef.current) {
-            micTrackRef.current.setMuted(true);
+          if (micReadyRef.current && trtcRef.current) {
+            trtcRef.current.updateLocalAudio({ mute: true }).catch(() => undefined);
             setMicOn(false);
           }
         })
@@ -561,40 +543,75 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
       subscribeSignaling();
 
       try {
-        const AgoraRTC = (await import("agora-rtc-sdk-ng")).default;
+        // Voice + screen share on Tencent RTC.
+        const sigRes = await fetch("/api/tencent/classroom-sig", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId }),
+        });
+        const sig = await sigRes.json().catch(() => ({}));
+        if (!sigRes.ok || !sig.userSig) throw new Error(sig.error || "Could not get voice credentials");
         if (cancelled) return;
-        agoraRef.current = AgoraRTC;
-        const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-        clientRef.current = client;
-        client.on("user-published", handleUserPublished);
-        client.on("user-unpublished", handleUserUnpublished);
-        client.enableAudioVolumeIndicator();
-        client.on("volume-indicator", (volumes: any[]) => {
+
+        // @ts-ignore — trtc-sdk-v5 ships its own types; kept loose here.
+        const mod: any = await import("trtc-sdk-v5");
+        if (cancelled) return;
+        const TRTC = mod.default || mod;
+        trtcModRef.current = TRTC;
+        const trtc = TRTC.create();
+        trtcRef.current = trtc;
+
+        const SUB = TRTC.TYPE.STREAM_TYPE_SUB;
+        trtc.on(TRTC.EVENT.REMOTE_VIDEO_AVAILABLE, async (event: any) => {
+          if (event.streamType !== SUB) return; // only screen shares are used here
+          try {
+            // Pull the stream without rendering; the board shows it as a card.
+            await trtc.startRemoteVideo({ userId: event.userId, streamType: SUB, view: null });
+            const track: MediaStreamTrack | null = trtc.getVideoTrack({ userId: event.userId, streamType: SUB });
+            if (track) setScreenStream(new MediaStream([track]));
+          } catch (e) {
+            console.error("Whiteboard room: couldn't show the shared screen", e);
+          }
+        });
+        trtc.on(TRTC.EVENT.REMOTE_VIDEO_UNAVAILABLE, (event: any) => {
+          if (event.streamType === SUB) setScreenStream(null);
+        });
+        trtc.on(TRTC.EVENT.SCREEN_SHARE_STOPPED, () => {
+          sharingRef.current = false;
+          setSharingScreen(false);
+          setScreenStream(null);
+        });
+        trtc.on(TRTC.EVENT.AUDIO_VOLUME, (event: any) => {
+          const list: any[] = event?.result || [];
           setVolumeByUid((prev) => {
             const next = { ...prev };
-            volumes.forEach((v) => {
-              next[String(v.uid)] = Math.min(v.level / 100, 1);
+            list.forEach((v) => {
+              // Our own volume comes back with an empty userId.
+              const id = v.userId ? String(v.userId) : String(userId);
+              next[id] = Math.min((Number(v.volume) || 0) / 100, 1);
             });
             return next;
           });
         });
+        trtc.on(TRTC.EVENT.ERROR, (error: any) => console.error("Whiteboard room: TRTC error", error));
 
-        const channelName = `classroom_${roomId}`;
-        const tokenRes = await fetch("/api/agora/token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ channelName, uid: userId, role: isHost ? "publisher" : "subscriber" }),
+        await trtc.enterRoom({
+          sdkAppId: sig.sdkAppId,
+          userId: sig.userId,
+          userSig: sig.userSig,
+          strRoomId: sig.roomId,
+          scene: "rtc",
         });
-        const tokenBody = await tokenRes.json();
-        if (!tokenRes.ok || tokenBody.error) throw new Error(tokenBody.error || "Could not get a voice token");
-        if (cancelled) return;
-        await client.join(tokenBody.appId, channelName, tokenBody.token, userId);
+        if (cancelled) {
+          trtc.exitRoom().catch(() => {});
+          return;
+        }
+        trtc.enableAudioVolumeEvaluation(500);
 
         try {
-          const mic = await AgoraRTC.createMicrophoneAudioTrack();
-          if (!isHost) await mic.setMuted(true);
-          micTrackRef.current = mic;
-          await client.publish([mic]);
+          await trtc.startLocalAudio();
+          micReadyRef.current = true;
+          if (!isHost) await trtc.updateLocalAudio({ mute: true });
         } catch (deviceErr) {
           console.warn("Whiteboard room: microphone unavailable", deviceErr);
         }
@@ -616,19 +633,24 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
         body: JSON.stringify({ action: "leave", roomId }),
         keepalive: true,
       }).catch(() => {});
-      micTrackRef.current?.close();
-      micTrackRef.current = null;
-      const st = screenTrackRef.current;
-      if (Array.isArray(st)) st.forEach((t) => t.close());
-      else st?.close();
-      screenTrackRef.current = null;
-      const client = clientRef.current;
-      if (client) {
-        client.off("user-published", handleUserPublished);
-        client.off("user-unpublished", handleUserUnpublished);
-        client.leave().catch(() => {});
+      const trtc = trtcRef.current;
+      trtcRef.current = null;
+      micReadyRef.current = false;
+      sharingRef.current = false;
+      if (trtc) {
+        (async () => {
+          try {
+            await trtc.exitRoom();
+          } catch {
+            // already gone
+          }
+          try {
+            trtc.destroy();
+          } catch {
+            // ignore
+          }
+        })();
       }
-      clientRef.current = null;
       if (signalRef.current) {
         supabase.removeChannel(signalRef.current);
         signalRef.current = null;
@@ -679,47 +701,47 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
 
   // ---------------------------------------------------------------- media controls
   const toggleMic = useCallback(async () => {
-    const mic = micTrackRef.current;
-    if (!canSpeak || !mic) return;
-    await mic.setMuted(micOn);
-    setMicOn(!micOn);
+    const trtc = trtcRef.current;
+    if (!canSpeak || !trtc || !micReadyRef.current) return;
+    try {
+      await trtc.updateLocalAudio({ mute: micOn });
+      setMicOn(!micOn);
+    } catch (e) {
+      console.error("Whiteboard room: mic toggle failed", e);
+    }
   }, [canSpeak, micOn]);
 
   const stopScreenShare = useCallback(async () => {
-    const st = screenTrackRef.current;
-    if (!st) return;
+    const trtc = trtcRef.current;
+    if (!sharingRef.current) return;
+    sharingRef.current = false;
     try {
-      await clientRef.current?.unpublish(st);
+      await trtc?.stopScreenShare();
     } catch {
       // already gone
     }
-    if (Array.isArray(st)) st.forEach((t) => t.close());
-    else st.close();
-    screenTrackRef.current = null;
     setScreenStream(null);
     setSharingScreen(false);
   }, []);
 
   const startScreenShare = useCallback(async () => {
-    if (!isHost || !clientRef.current || !agoraRef.current || screenTrackRef.current) return;
+    const trtc = trtcRef.current;
+    const TRTC = trtcModRef.current;
+    if (!isHost || !trtc || !TRTC || sharingRef.current) return;
     try {
-      const track = await agoraRef.current.createScreenVideoTrack({ encoderConfig: "1080p_1" }, "auto");
-      await clientRef.current.publish(track);
-      screenTrackRef.current = track;
-      const video: ILocalVideoTrack = Array.isArray(track) ? track[0] : track;
-      video.on("track-ended", () => {
-        stopScreenShare();
-      });
-      const raw = video.getMediaStreamTrack();
+      await trtc.startScreenShare({ option: { profile: "1080p", systemAudio: true } });
+      sharingRef.current = true;
+      const raw: MediaStreamTrack | null = trtc.getVideoTrack({ streamType: TRTC.TYPE.STREAM_TYPE_SUB });
       if (raw) setScreenStream(new MediaStream([raw]));
       setSharingScreen(true);
     } catch (err: any) {
-      if (err?.name !== "NotAllowedError" && err?.code !== "PERMISSION_DENIED") {
+      const name = String(err?.name || err?.originError?.name || "");
+      if (!/NotAllowedError|PermissionDenied/i.test(name) && !/permission|denied|cancel/i.test(String(err?.message || ""))) {
         console.error("Screen share failed", err);
         setBoardError("Screen sharing couldn't start. Check your browser's screen-share permission.");
       }
     }
-  }, [isHost, stopScreenShare]);
+  }, [isHost]);
 
   const toggleHand = useCallback(() => setHandRaised((h) => !h), []);
 

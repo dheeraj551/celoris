@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserProfile, ModelAsset, Coupon, DownloadItem } from '../types';
+import { UserProfile, ModelAsset, Coupon, DownloadItem, DownloadLane } from '../types';
 import {
   X,
   User,
@@ -21,6 +21,7 @@ import {
 interface UserProfileModalProps {
   user: UserProfile;
   activeCoupon: Coupon | null;
+  lane?: DownloadLane | null;
   userUploads: ModelAsset[];
   downloadHistory: DownloadItem[];
   isOpen: boolean;
@@ -34,6 +35,7 @@ interface UserProfileModalProps {
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   user,
   activeCoupon,
+  lane,
   userUploads,
   downloadHistory,
   isOpen,
@@ -96,9 +98,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                   <Award className="w-3 h-3 text-emerald-600" /> {user.role}
                 </span>
-                {activeCoupon && (
+                {lane && lane.tier !== 'free' && (
                   <span className="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-emerald-600" /> TURBO MEMBER
+                    <Zap className="w-3 h-3 text-emerald-600" /> {lane.planLabel.toUpperCase()} MEMBER
                   </span>
                 )}
               </div>
@@ -134,16 +136,16 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <div className="text-base font-bold text-zinc-900 mt-0.5">{user.salesCount}</div>
             </div>
             <div className="bg-zinc-50 p-2.5 rounded-xl border border-zinc-200">
-              <span className="text-zinc-500 text-[10px] uppercase font-bold">Download CDN Speed</span>
+              <span className="text-zinc-500 text-[10px] uppercase font-bold">Download Speed</span>
               <div className="text-base font-bold text-emerald-700 mt-0.5 flex items-center gap-1">
                 <Zap className="w-3.5 h-3.5" />
-                <span>{activeCoupon ? '120 MB/s Gigabit' : '350 KB/s Standard'}</span>
+                <span>{lane?.laneName || 'Standard'}</span>
               </div>
             </div>
             <div className="bg-zinc-50 p-2.5 rounded-xl border border-zinc-200">
-              <span className="text-zinc-500 text-[10px] uppercase font-bold">Active Coupon</span>
-              <div className="text-base font-mono font-bold text-emerald-700 mt-0.5">
-                {activeCoupon ? activeCoupon.code : 'None'}
+              <span className="text-zinc-500 text-[10px] uppercase font-bold">Celoris Plan</span>
+              <div className="text-base font-bold text-emerald-700 mt-0.5">
+                {lane?.planLabel || 'Free'}
               </div>
             </div>
           </div>
@@ -184,7 +186,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 : 'border-transparent text-zinc-500 hover:text-zinc-900'
             }`}
           >
-            <Tag className="w-3.5 h-3.5" /> Coupons & Turbo Pass
+            <Tag className="w-3.5 h-3.5" /> Download Speed
           </button>
 
           <button
@@ -236,7 +238,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                             <span>{item.fileSizeMb} MB</span>
                             {item.turboApplied && (
                               <span className="text-emerald-700 font-bold flex items-center gap-0.5">
-                                <Zap className="w-3 h-3 text-emerald-600" /> Gigabit Turbo
+                                <Zap className="w-3 h-3 text-emerald-600" /> Fast lane
                               </span>
                             )}
                           </div>
@@ -293,17 +295,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
           )}
 
-          {/* 3. Coupons & Turbo Pass */}
+          {/* 3. Download speed (from the Celoris plan) */}
           {activeTab === 'coupons' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between shadow-xs">
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-3 shadow-xs">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-emerald-600 animate-pulse" />
-                    <h3 className="font-bold text-zinc-900 text-sm">Turbo Speed Membership</h3>
+                    <Zap className="w-5 h-5 text-emerald-600" />
+                    <h3 className="font-bold text-zinc-900 text-sm">
+                      {lane?.laneName || 'Standard'} downloads · {lane?.planLabel || 'Free'} plan
+                    </h3>
                   </div>
                   <p className="text-xs text-zinc-600 mt-1">
-                    Your account has unthrottled gigabit access when any promo coupon code is active.
+                    {lane && lane.waitSeconds <= 0
+                      ? 'Your downloads start instantly — no queue.'
+                      : `Your downloads wait ${lane?.waitSeconds ?? 30} seconds in the queue before they start. Higher Celoris plans start sooner.`}
                   </p>
                 </div>
 
@@ -311,30 +317,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   onClick={onOpenCouponModal}
                   className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition-all shrink-0 cursor-pointer"
                 >
-                  Manage Coupons
+                  Compare speeds
                 </button>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-zinc-600 uppercase tracking-wider">
-                  Active Coupons in Wallet
-                </h4>
-                {activeCoupon ? (
-                  <div className="p-3.5 rounded-xl bg-white border border-zinc-200 flex items-center justify-between shadow-xs">
-                    <div>
-                      <span className="font-mono font-bold text-emerald-700 text-sm">{activeCoupon.code}</span>
-                      <p className="text-xs text-zinc-700 mt-0.5">{activeCoupon.title}</p>
-                      <span className="text-[11px] text-emerald-700 font-semibold">{activeCoupon.speedBoost}</span>
-                    </div>
-                    <span className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded font-bold">
-                      ACTIVATED
-                    </span>
-                  </div>
-                ) : (
-                  <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200 text-center text-xs text-zinc-500">
-                    No coupon currently active. Use code <strong className="text-emerald-700">TURBO100</strong> for free Gigabit speed!
-                  </div>
-                )}
               </div>
             </div>
           )}

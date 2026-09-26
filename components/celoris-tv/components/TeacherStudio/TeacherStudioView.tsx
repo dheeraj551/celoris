@@ -225,103 +225,103 @@ export const TeacherStudioView: React.FC = () => {
 
   if (!hasTeacherAccess) {
     return (
-      <div className="max-w-2xl mx-auto py-16 text-center text-[#E0E5E0]">
-        <div className="w-16 h-16 rounded-2xl bg-[#7F9172]/15 border border-[#7F9172]/30 text-[#A8B89C] flex items-center justify-center mx-auto mb-5">
+      <div className="max-w-2xl mx-auto py-16 text-center text-slate-200 select-none">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-5 shadow-inner">
           <Lock className="w-7 h-7" />
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">Teacher Studio is Locked</h1>
-        <p className="text-sm text-[#95A395] max-w-md mx-auto mb-6">
+        <h1 className="text-xl font-extrabold text-white mb-2">Teacher Studio is Gated</h1>
+        <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
           Publishing lectures and managing courses on Celoris TV requires{' '}
-          <strong className="text-[#A8B89C]">{TEACHER_ACCESS_CREDIT_THRESHOLD.toLocaleString()} credits</strong>{' '}
+          <strong className="text-emerald-400 font-mono">{TEACHER_ACCESS_CREDIT_THRESHOLD.toLocaleString()} credits</strong>{' '}
           in your wallet.
         </p>
-        <div className="inline-flex items-center gap-2.5 px-5 py-3 bg-[#161B16] border border-[#242A24] rounded-2xl text-sm">
-          <Wallet className="w-4 h-4 text-[#7F9172]" />
-          <span className="text-[#95A395]">Your balance:</span>
-          <span className="font-bold text-white">{walletBalance.toLocaleString()} credits</span>
+        <div className="inline-flex items-center gap-2.5 px-5 py-3 bg-[#0e121e]/85 border border-white/10 rounded-2xl text-sm shadow-xl">
+          <Wallet className="w-4 h-4 text-emerald-400" />
+          <span className="text-slate-400">Your balance:</span>
+          <span className="font-bold text-white font-mono">{walletBalance.toLocaleString()} credits</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 text-[#E0E5E0] pb-12">
+    <div className="max-w-7xl mx-auto space-y-8 text-slate-100 select-none pb-12">
       {/* Studio Header */}
-      <div className="p-6 bg-[#161B16] border border-[#242A24] rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+      <div className="p-6 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-[#7F9172]/20 text-[#A8B89C] rounded-2xl border border-[#7F9172]/30">
-            <GraduationCap className="w-8 h-8 text-[#7F9172]" />
+          <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20">
+            <GraduationCap className="w-8 h-8 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl font-extrabold tracking-tight text-white">
               Instructor Studio & Course Management
             </h1>
-            <p className="text-xs text-[#95A395]">
+            <p className="text-xs text-slate-400">
               Publish video lectures, attach syllabus slide decks, and address student Q&A queues
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 bg-[#5C8A67]/15 text-[#5C8A67] border border-[#5C8A67]/30 rounded-xl text-xs font-bold flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4" /> Verified Educator
+          <span className="px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl text-xs font-bold flex items-center gap-1.5 font-mono">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Verified Educator
           </span>
         </div>
       </div>
 
       {/* Analytics KPI Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 bg-[#161B16] border border-[#242A24] rounded-2xl shadow-md">
-          <div className="flex items-center justify-between mb-2 text-[#95A395] text-xs font-medium">
+        <div className="p-5 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-xl">
+          <div className="flex items-center justify-between mb-2 text-slate-400 text-xs font-medium font-mono">
             <span>Published Lectures</span>
-            <VideoIcon className="w-4 h-4 text-[#7F9172]" />
+            <VideoIcon className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-white">{teacherVideos.length}</p>
-          <span className="text-[10px] text-[#5E6C5E] mt-1 block">Active course videos</span>
+          <p className="text-2xl font-extrabold text-white font-mono">{teacherVideos.length}</p>
+          <span className="text-[10px] text-slate-500 mt-1 block font-mono">Active course videos</span>
         </div>
 
-        <div className="p-5 bg-[#161B16] border border-[#242A24] rounded-2xl shadow-md">
-          <div className="flex items-center justify-between mb-2 text-[#95A395] text-xs font-medium">
+        <div className="p-5 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-xl">
+          <div className="flex items-center justify-between mb-2 text-slate-400 text-xs font-medium font-mono">
             <span>Likes / Dislikes</span>
-            <ThumbsUp className="w-4 h-4 text-[#7F9172]" />
+            <ThumbsUp className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-white">
-            {totalLikes} <span className="text-[#5E6C5E] text-base font-medium">/</span>{' '}
-            <span className="text-[#C87D55]">{totalDislikes}</span>
+          <p className="text-2xl font-extrabold text-white font-mono">
+            {totalLikes} <span className="text-slate-500 text-base font-medium">/</span>{' '}
+            <span className="text-rose-400">{totalDislikes}</span>
           </p>
-          <span className="text-[10px] text-[#5E6C5E] mt-1 block">Across all published lectures</span>
+          <span className="text-[10px] text-slate-500 mt-1 block font-mono">Across published lectures</span>
         </div>
 
-        <div className="p-5 bg-[#161B16] border border-[#242A24] rounded-2xl shadow-md">
-          <div className="flex items-center justify-between mb-2 text-[#95A395] text-xs font-medium">
-            <span>Student Doubts Pending</span>
-            <HelpCircle className="w-4 h-4 text-[#C87D55]" />
+        <div className="p-5 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-xl">
+          <div className="flex items-center justify-between mb-2 text-slate-400 text-xs font-medium font-mono">
+            <span>Pending Doubts</span>
+            <HelpCircle className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-[#D2B48C]">{unansweredDoubts.length}</p>
-          <span className="text-[10px] text-[#95A395] mt-1 block">Requires instructor review</span>
+          <p className="text-2xl font-extrabold text-amber-400 font-mono">{unansweredDoubts.length}</p>
+          <span className="text-[10px] text-slate-500 mt-1 block font-mono">Requires instructor review</span>
         </div>
 
-        <div className="p-5 bg-[#161B16] border border-[#242A24] rounded-2xl shadow-md">
-          <div className="flex items-center justify-between mb-2 text-[#95A395] text-xs font-medium">
+        <div className="p-5 bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-xl">
+          <div className="flex items-center justify-between mb-2 text-slate-400 text-xs font-medium font-mono">
             <span>Verified Endorsements</span>
-            <Award className="w-4 h-4 text-[#5C8A67]" />
+            <Award className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-[#A8B89C]">
+          <p className="text-2xl font-extrabold text-emerald-400 font-mono">
             {questions.filter(q => q.answers.some(a => a.isEndorsedByTeacher)).length}
           </p>
-          <span className="text-[10px] text-[#5E6C5E] mt-1 block">Answers endorsed</span>
+          <span className="text-[10px] text-slate-500 mt-1 block font-mono">Answers endorsed</span>
         </div>
       </div>
 
       {/* Your Published Lectures — edit or remove anything you've published */}
-      <div className="bg-[#161B16] border border-[#242A24] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
-        <div className="flex items-center gap-2 pb-4 border-b border-[#242A24]">
-          <VideoIcon className="w-5 h-5 text-[#7F9172]" />
+      <div className="bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
+        <div className="flex items-center gap-2 pb-4 border-b border-white/[0.08]">
+          <VideoIcon className="w-5 h-5 text-emerald-400" />
           <h2 className="text-lg font-bold text-white">Your Published Lectures</h2>
         </div>
 
         {teacherVideos.length === 0 ? (
-          <p className="text-xs text-[#95A395] py-2">
+          <p className="text-xs text-slate-400 py-2">
             You haven't published any lectures yet — use the form below to publish your first one.
           </p>
         ) : (
@@ -331,21 +331,21 @@ export const TeacherStudioView: React.FC = () => {
                 key={video.id}
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border transition-colors ${
                   editingVideoId === video.id
-                    ? 'bg-[#7F9172]/10 border-[#7F9172]/40'
-                    : 'bg-[#0D0F0D] border-[#242A24]'
+                    ? 'bg-emerald-500/10 border-emerald-500/40 shadow-xs'
+                    : 'bg-black/40 border-white/10'
                 }`}
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white truncate">{video.title}</p>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[10px] text-[#95A395]">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[10px] text-slate-400 font-mono">
                     <span>{video.subject}</span>
                     <span>•</span>
                     <span>{video.difficulty}</span>
                     <span className="flex items-center gap-1">
-                      <ThumbsUp className="w-3 h-3 text-[#7F9172]" /> {video.likes || 0}
+                      <ThumbsUp className="w-3 h-3 text-emerald-400" /> {video.likes || 0}
                     </span>
                     <span className="flex items-center gap-1">
-                      <ThumbsDown className="w-3 h-3 text-[#C87D55]" /> {video.dislikes || 0}
+                      <ThumbsDown className="w-3 h-3 text-rose-400" /> {video.dislikes || 0}
                     </span>
                   </div>
                 </div>
@@ -354,15 +354,15 @@ export const TeacherStudioView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleEditClick(video)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#1E241E] hover:bg-[#2A332A] text-[#E0E5E0] transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-white/[0.05] hover:bg-white/10 text-white transition-colors border border-white/10"
                   >
-                    <Pencil className="w-3.5 h-3.5" /> Edit
+                    <Pencil className="w-3.5 h-3.5 text-emerald-400" /> Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteVideo(video)}
                     disabled={deletingVideoId === video.id}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#2A1616] hover:bg-[#3A1E1E] text-[#E0B7B7] disabled:opacity-50 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 disabled:opacity-50 transition-colors border border-rose-500/20"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> {deletingVideoId === video.id ? 'Deleting…' : 'Delete'}
                   </button>
@@ -374,12 +374,12 @@ export const TeacherStudioView: React.FC = () => {
       </div>
 
       {/* Publish New / Edit Lecture Form */}
-      <div ref={formSectionRef} className="bg-[#161B16] border border-[#242A24] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-        <div className="flex items-center gap-2 pb-4 border-b border-[#242A24]">
+      <div ref={formSectionRef} className="bg-[#0e121e]/85 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="flex items-center gap-2 pb-4 border-b border-white/[0.08]">
           {editingVideoId ? (
-            <Pencil className="w-5 h-5 text-[#7F9172]" />
+            <Pencil className="w-5 h-5 text-emerald-400" />
           ) : (
-            <Upload className="w-5 h-5 text-[#7F9172]" />
+            <Upload className="w-5 h-5 text-emerald-400" />
           )}
           <h2 className="text-lg font-bold text-white">
             {editingVideoId ? 'Edit Course Lecture' : 'Publish New Course Lecture'}
@@ -388,7 +388,7 @@ export const TeacherStudioView: React.FC = () => {
             <button
               type="button"
               onClick={handleCancelEdit}
-              className="ml-auto flex items-center gap-1 text-[11px] font-bold text-[#95A395] hover:text-white"
+              className="ml-auto flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-white"
             >
               <X className="w-3.5 h-3.5" /> Cancel Edit
             </button>
@@ -398,8 +398,8 @@ export const TeacherStudioView: React.FC = () => {
         <form onSubmit={handlePublish} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
-                Lecture Title <span className="text-[#7F9172]">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
+                Lecture Title <span className="text-emerald-400">*</span>
               </label>
               <input
                 type="text"
@@ -407,21 +407,21 @@ export const TeacherStudioView: React.FC = () => {
                 placeholder="e.g. Graph Algorithms: Dijkstra & A* Heuristic Search with Proofs"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-sm text-white placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Subject
               </label>
               <select
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
               >
                 {CATEGORIES.filter(c => c !== 'All Subjects').map(c => (
-                  <option key={c} value={c}>
+                  <option key={c} value={c} className="bg-[#0e121e]">
                     {c}
                   </option>
                 ))}
@@ -429,22 +429,22 @@ export const TeacherStudioView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Difficulty Level
               </label>
               <select
                 value={difficulty}
                 onChange={e => setDifficulty(e.target.value as any)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
               >
-                <option value="Beginner">Beginner / Freshman</option>
-                <option value="Intermediate">Intermediate / Core</option>
-                <option value="Advanced">Advanced / Graduate</option>
+                <option value="Beginner" className="bg-[#0e121e]">Beginner / Freshman</option>
+                <option value="Intermediate" className="bg-[#0e121e]">Intermediate / Core</option>
+                <option value="Advanced" className="bg-[#0e121e]">Advanced / Graduate</option>
               </select>
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Syllabus & Lecture Overview
               </label>
               <textarea
@@ -452,13 +452,13 @@ export const TeacherStudioView: React.FC = () => {
                 placeholder="Describe key learning outcomes, prerequisites, theorems covered..."
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-white placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172] resize-none"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 resize-none"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
-                YouTube Link (listed or unlisted) <span className="text-[#7F9172]">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
+                YouTube Link (listed or unlisted) <span className="text-emerald-400">*</span>
               </label>
               <input
                 type="text"
@@ -466,15 +466,15 @@ export const TeacherStudioView: React.FC = () => {
                 placeholder="https://youtu.be/... or https://www.youtube.com/watch?v=..."
                 value={youtubeLink}
                 onChange={e => setYoutubeLink(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-sm text-white placeholder-[#5E6C5E] focus:outline-hidden focus:ring-2 focus:ring-[#7F9172] font-mono"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 font-mono"
               />
-              <p className="text-[10px] text-[#5E6C5E] mt-1.5">
+              <p className="text-[10px] text-slate-500 mt-1.5">
                 Students must be signed in to watch — the link itself is never exposed in the page source.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Estimated Duration (Minutes)
               </label>
               <input
@@ -483,45 +483,45 @@ export const TeacherStudioView: React.FC = () => {
                 max={180}
                 value={durationMin}
                 onChange={e => setDurationMin(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#E0E5E0] mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Target Audience / Grade Level
               </label>
               <input
                 type="text"
                 value={gradeLevel}
                 onChange={e => setGradeLevel(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#0D0F0D] border border-[#242A24] rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-[#7F9172]"
+                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
               />
             </div>
           </div>
 
           {/* Chapter Markers Manager */}
-          <div className="p-4 bg-[#0D0F0D] border border-[#242A24] rounded-2xl space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#E0E5E0] flex items-center gap-2">
-              <Layers className="w-4 h-4 text-[#7F9172]" /> Chapter Timestamps
+          <div className="p-4 bg-black/40 border border-white/10 rounded-2xl space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2 font-mono">
+              <Layers className="w-4 h-4 text-emerald-400" /> Chapter Timestamps
             </h3>
 
             <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
               {chapters.map((ch, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-2.5 bg-[#161B16] border border-[#242A24] rounded-xl text-xs"
+                  className="flex items-center justify-between p-2.5 bg-white/[0.03] border border-white/10 rounded-xl text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-[#7F9172]/20 text-[#A8B89C] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-400 font-mono font-bold rounded">
                       {formatTime(ch.timestamp)}
                     </span>
-                    <span className="text-[#E0E5E0] font-medium">{ch.title}</span>
+                    <span className="text-slate-200 font-medium">{ch.title}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveChapter(idx)}
-                    className="text-[#5E6C5E] hover:text-[#C87D55] p-1"
+                    className="text-slate-500 hover:text-rose-400 p-1"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -535,34 +535,34 @@ export const TeacherStudioView: React.FC = () => {
                 placeholder="Chapter title (e.g. Proof of Lemma 2)"
                 value={newChapterTitle}
                 onChange={e => setNewChapterTitle(e.target.value)}
-                className="flex-1 px-3 py-1.5 bg-[#161B16] border border-[#242A24] rounded-lg text-xs text-white placeholder-[#5E6C5E]"
+                className="flex-1 px-3 py-1.5 bg-white/[0.04] border border-white/10 rounded-lg text-xs text-white placeholder-slate-500"
               />
               <input
                 type="text"
                 placeholder="Time (e.g. 12:45)"
                 value={newChapterTime}
                 onChange={e => setNewChapterTime(e.target.value)}
-                className="w-28 px-3 py-1.5 bg-[#161B16] border border-[#242A24] rounded-lg text-xs text-white placeholder-[#5E6C5E] font-mono"
+                className="w-28 px-3 py-1.5 bg-white/[0.04] border border-white/10 rounded-lg text-xs text-white placeholder-slate-500 font-mono"
               />
               <button
                 type="button"
                 onClick={handleAddChapter}
-                className="px-3 py-1.5 bg-[#1E241E] hover:bg-[#2A332A] text-[#E0E5E0] rounded-lg text-xs font-bold"
+                className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/10 text-white rounded-lg text-xs font-bold border border-white/10"
               >
                 + Add Chapter
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#242A24]">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.08]">
             {formError && (
-              <p className="text-xs text-[#F3C4C4] mr-auto">{formError}</p>
+              <p className="text-xs text-rose-400 mr-auto">{formError}</p>
             )}
             {editingVideoId && (
               <button
                 type="button"
                 onClick={handleCancelEdit}
-                className="px-5 py-3 bg-[#1E241E] hover:bg-[#2A332A] text-[#E0E5E0] rounded-xl text-xs font-bold transition-colors"
+                className="px-5 py-3 bg-white/[0.05] hover:bg-white/10 text-slate-300 rounded-xl text-xs font-bold transition-colors border border-white/10"
               >
                 Cancel
               </button>
@@ -570,9 +570,9 @@ export const TeacherStudioView: React.FC = () => {
             <button
               type="submit"
               disabled={isPublishing}
-              className="flex items-center gap-2 px-6 py-3 bg-[#7F9172] hover:bg-[#91A582] disabled:opacity-60 disabled:cursor-not-allowed text-[#0D0F0D] rounded-xl text-xs font-bold shadow-lg shadow-[#7F9172]/20 transition-all hover:scale-102"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 disabled:opacity-60 disabled:cursor-not-allowed text-black rounded-xl text-xs font-extrabold shadow-lg shadow-emerald-500/20 transition-all hover:scale-102 active:scale-98"
             >
-              {editingVideoId ? <Pencil className="w-4 h-4 text-[#0D0F0D]" /> : <Upload className="w-4 h-4 text-[#0D0F0D]" />}{' '}
+              {editingVideoId ? <Pencil className="w-4 h-4 text-black" /> : <Upload className="w-4 h-4 text-black" />}{' '}
               {isPublishing
                 ? editingVideoId
                   ? 'Updating…'

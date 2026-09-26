@@ -2,7 +2,9 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Clock, ShieldAlert, CheckCircle2, XCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { Clock, ShieldAlert, CheckCircle2, XCircle, Loader2, ChevronLeft, ChevronRight, GraduationCap, BookOpen } from 'lucide-react'
+import { courseSuggestionFor } from '@/lib/exam-courses'
 
 // Standalone, no-login exam runner for candidates who reach an exam via an
 // emailed invite link (see app/api/exam/invite) or a shared /exam/[examId]
@@ -371,12 +373,50 @@ export function PublicExamRunner({ examId }: { examId: string }) {
                         Thanks, {candidateName}. The Celoris hiring team has been notified of your result and will
                         follow up if there's a match.
                     </p>
+                    {!result.passed && <PublicCourseSuggestion examId={exam.id} />}
                 </div>
             </Centered>
         )
     }
 
     return null
+}
+
+// "Didn't pass? Learn it with Celoris" — same links as the in-app exam result.
+function PublicCourseSuggestion({ examId }: { examId: string }) {
+    const s = courseSuggestionFor(examId)
+    return (
+        <div className="pt-4 border-t border-slate-100 text-left space-y-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-amber-700">Want to get there?</p>
+            <p className="text-xs text-slate-500">These Celoris courses cover exactly what this assessment tests:</p>
+            {s.live && (
+                <Link
+                    href={s.live.href}
+                    className="flex items-center gap-3 rounded-xl bg-amber-400 px-3.5 py-2.5 text-black hover:bg-amber-300 transition-colors"
+                >
+                    <GraduationCap className="w-4 h-4 shrink-0" />
+                    <span className="min-w-0">
+                        <span className="block text-xs font-extrabold truncate">{s.live.title}</span>
+                        <span className="block text-[10px] font-semibold opacity-75">Learn with a trainer · book a free demo</span>
+                    </span>
+                    <ChevronRight className="w-4 h-4 shrink-0 ml-auto" />
+                </Link>
+            )}
+            {s.free && (
+                <Link
+                    href={s.free.href}
+                    className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 hover:bg-slate-100 transition-colors"
+                >
+                    <BookOpen className="w-4 h-4 shrink-0 text-amber-600" />
+                    <span className="min-w-0">
+                        <span className="block text-xs font-bold truncate">{s.free.title}</span>
+                        <span className="block text-[10px] text-slate-500">Free recorded course</span>
+                    </span>
+                    <ChevronRight className="w-4 h-4 shrink-0 ml-auto text-slate-400" />
+                </Link>
+            )}
+        </div>
+    )
 }
 
 function Centered({ children, wide }: { children: React.ReactNode; wide?: boolean }) {

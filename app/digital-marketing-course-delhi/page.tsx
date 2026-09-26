@@ -6,6 +6,7 @@ import {
     TrendingUp, BarChart3, Target, Megaphone, Share2, Mail, FileText, MousePointer2, Search
 } from "lucide-react"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { CourseReviews } from "@/components/reviews/CourseReviews"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -544,6 +545,9 @@ export default function DigitalMarketingCourseDelhi() {
                                 Every batch is fully online — there's no commute, wherever in Delhi NCR you're joining from.
                             </p>
                         </section>
+
+                        {/* Verified student reviews (written and checked on Celoris) */}
+                        <CourseReviews courseKey="digital-marketing-course-delhi" courseTitle={pageData.title} />
 
                         {/* FAQ */}
                         <section className="space-y-12 bg-[#0d1321]/20 p-12 rounded-[3rem] border border-white/5 shadow-inner">

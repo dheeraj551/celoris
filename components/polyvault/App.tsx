@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ModelAsset, FilterState, Coupon, UserProfile, DownloadItem, ModelFormat, AssetCategory } from './types';
-import { INITIAL_COUPONS, INITIAL_USER } from './data/mockAssets';
+import { ModelAsset, FilterState, UserProfile, DownloadItem, ModelFormat, AssetCategory, DownloadLane } from './types';
+import { INITIAL_USER } from './data/mockAssets';
 import { Navbar } from './components/Navbar';
 import { Hero3DStage } from './components/Hero3DStage';
 import { ModelCard } from './components/ModelCard';
 import { SearchAndFilters } from './components/SearchAndFilters';
 import { ModelDetailModal } from './components/ModelDetailModal';
 import { DownloadModal } from './components/DownloadModal';
-import { CouponSystem } from './components/CouponSystem';
+import { DownloadSpeedModal } from './components/DownloadSpeedModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { UploadModal } from './components/UploadModal';
 import { CompareModal } from './components/CompareModal';
@@ -41,10 +41,29 @@ export default function App() {
     return saved ? JSON.parse(saved) : INITIAL_USER;
   });
 
-  const [activeCoupon, setActiveCoupon] = useState<Coupon | null>(() => {
-    const saved = localStorage.getItem('polyvault_coupon');
-    return saved ? JSON.parse(saved) : INITIAL_COUPONS[0]; // Default TURBO100 active
-  });
+  // Download speed comes from the member's Celoris plan (Free / Basic / Pro /
+  // Max), not from coupons — see app/api/polyvault/download-lane.
+  const [lane, setLane] = useState<DownloadLane | null>(null);
+  const [lanes, setLanes] = useState<DownloadLane[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    try {
+      localStorage.removeItem('polyvault_coupon'); // old speed coupons
+    } catch {
+      // ignore
+    }
+    fetch('/api/polyvault/download-lane', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setLane(data.lane || null);
+        setLanes(data.lanes || []);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   const [downloadHistory, setDownloadHistory] = useState<DownloadItem[]>(() => {
     const saved = localStorage.getItem('polyvault_downloads');
@@ -132,14 +151,6 @@ export default function App() {
   }, [currentUser]);
 
   useEffect(() => {
-    if (activeCoupon) {
-      localStorage.setItem('polyvault_coupon', JSON.stringify(activeCoupon));
-    } else {
-      localStorage.removeItem('polyvault_coupon');
-    }
-  }, [activeCoupon]);
-
-  useEffect(() => {
     localStorage.setItem('polyvault_downloads', JSON.stringify(downloadHistory));
   }, [downloadHistory]);
 
@@ -186,10 +197,10 @@ export default function App() {
       fileSizeMb: asset.fileSizeMb,
       progress: 100,
       status: 'completed',
-      speedMbps: activeCoupon ? 120 : 1.4,
+      speedMbps: 0,
       etaSec: 0,
-      turboApplied: !!activeCoupon,
-      couponCode: activeCoupon?.code,
+      turboApplied: !!lane && lane.waitSeconds <= 10,
+      couponCode: lane ? `${lane.planLabel} · ${lane.laneName}` : undefined,
       timestamp: Date.now(),
     };
 
@@ -306,7 +317,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-50/60 text-zinc-900 flex flex-col font-sans">
         <Navbar
-          activeCoupon={activeCoupon}
+          lane={lane}
           currentUser={currentUser}
           onOpenCouponModal={() => setIsCouponModalOpen(true)}
           onOpenUploadModal={() => setIsUploadModalOpen(true)}
@@ -358,7 +369,7 @@ export default function App() {
 
       {/* Top Navbar */}
       <Navbar
-        activeCoupon={activeCoupon}
+        lane={lane}
         currentUser={currentUser}
         onOpenCouponModal={() => setIsCouponModalOpen(true)}
         onOpenUploadModal={() => setIsUploadModalOpen(true)}
@@ -431,8 +442,8 @@ export default function App() {
               <Zap className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-extrabold text-zinc-950 truncate tracking-tight">Gigabit Edge CDN</div>
-              <div className="text-[10px] text-zinc-500 font-medium">Direct High-Speed Pipeline</div>
+              <div className="text-xs font-extrabold text-zinc-950 truncate tracking-tight">Fast Cloud Downloads</div>
+              <div className="text-[10px] text-zinc-500 font-medium">Speed by your Celoris plan</div>
             </div>
           </motion.div>
         </section>
@@ -453,24 +464,21 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-2">
-              {activeCoupon ? (
-                <div
-                  onClick={() => setIsCouponModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-emerald-50/90 border border-emerald-300 text-xs text-emerald-900 cursor-pointer hover:border-emerald-400 transition-colors shadow-xs"
-                  title="Manage active speed coupons"
-                >
-                  <Zap className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-                  <span>Turbo CDN: <strong className="font-mono font-bold text-emerald-700">{activeCoupon.code}</strong> (120 MB/s)</span>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setIsCouponModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-white hover:bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 hover:text-zinc-950 transition-colors cursor-pointer shadow-xs"
-                >
-                  <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Apply Speed Coupon</span>
-                </button>
-              )}
+              <button
+                onClick={() => setIsCouponModalOpen(true)}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-2xl border text-xs transition-colors cursor-pointer shadow-xs ${
+                  lane && lane.waitSeconds <= 0
+                    ? 'bg-emerald-50/90 border-emerald-300 text-emerald-900 hover:border-emerald-400'
+                    : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-700 hover:text-zinc-950'
+                }`}
+                title="Download speed by plan"
+              >
+                <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                <span>
+                  Downloads: <strong className="font-bold">{lane?.laneName || 'Standard'}</strong>
+                  {lane && lane.waitSeconds > 0 ? ` (${lane.waitSeconds}s queue)` : lane ? ' (no queue)' : ''}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -492,7 +500,7 @@ export default function App() {
                 <ModelCard
                   key={asset.id}
                   asset={asset}
-                  activeCoupon={activeCoupon}
+                  activeCoupon={null}
                   onInspect={(a) => setInspectingAsset(a)}
                   onDownload={(a) => setDownloadingAsset(a)}
                   isLiked={likedIds.includes(asset.id)}
@@ -552,7 +560,7 @@ export default function App() {
 
           <div className="flex items-center gap-4 text-[11px] font-medium">
             <button onClick={() => setIsCouponModalOpen(true)} className="hover:text-emerald-600 transition-colors cursor-pointer">
-              Speed Coupons
+              Download Speeds
             </button>
             <span>•</span>
             <button onClick={() => setIsUploadModalOpen(true)} className="hover:text-emerald-600 transition-colors cursor-pointer">
@@ -569,7 +577,8 @@ export default function App() {
       {/* 3D Model Inspection Studio Modal */}
       <ModelDetailModal
         asset={inspectingAsset}
-        activeCoupon={activeCoupon}
+        activeCoupon={null}
+        lane={lane}
         isOpen={!!inspectingAsset}
         onClose={() => setInspectingAsset(null)}
         onOpenDownload={(a) => {
@@ -590,18 +599,17 @@ export default function App() {
       {/* Download Manager Modal */}
       <DownloadModal
         asset={downloadingAsset}
-        activeCoupon={activeCoupon}
-        onApplyCoupon={(c) => setActiveCoupon(c)}
+        lane={lane}
+        onOpenSpeedInfo={() => setIsCouponModalOpen(true)}
         isOpen={!!downloadingAsset}
         onClose={() => setDownloadingAsset(null)}
         onDownloadCompleted={handleDownloadCompleted}
       />
 
-      {/* Coupon & Turbo Speed Modal */}
-      <CouponSystem
-        activeCoupon={activeCoupon}
-        onApplyCoupon={(c) => setActiveCoupon(c)}
-        onRemoveCoupon={() => setActiveCoupon(null)}
+      {/* Download speeds by plan (replaces the old speed coupons) */}
+      <DownloadSpeedModal
+        lane={lane}
+        lanes={lanes}
         isOpen={isCouponModalOpen}
         onClose={() => setIsCouponModalOpen(false)}
       />
@@ -609,7 +617,8 @@ export default function App() {
       {/* User Profile Modal */}
       <UserProfileModal
         user={currentUser}
-        activeCoupon={activeCoupon}
+        activeCoupon={null}
+        lane={lane}
         userUploads={userUploads}
         downloadHistory={downloadHistory}
         isOpen={isProfileModalOpen}
@@ -649,7 +658,7 @@ export default function App() {
         onClearAll={handleClearCompare}
         onInspectAsset={(a) => setInspectingAsset(a)}
         onDownloadAsset={(a) => setDownloadingAsset(a)}
-        activeCoupon={activeCoupon}
+        activeCoupon={null}
       />
     </div>
   );
