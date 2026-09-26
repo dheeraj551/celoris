@@ -502,7 +502,16 @@ export default function App() {
   const unreadAlertsCount = alerts.filter((a) => !a.read).length;
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#453C38] flex flex-col font-sans transition-colors selection:bg-[#7C9070]/20 selection:text-[#2C2523]">
+    <div 
+      className="min-h-screen bg-[#07080c] text-slate-200 flex flex-col font-sans transition-colors selection:bg-emerald-500/30 selection:text-white"
+      style={{
+        backgroundImage: `
+          radial-gradient(ellipse at top, rgba(16, 185, 129, 0.05) 0%, rgba(7, 8, 12, 0.98) 60%),
+          radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)
+        `,
+        backgroundSize: '100% 100%, 24px 24px'
+      }}
+    >
       
       {/* Top Main Navigation Header */}
       <Header

@@ -72,26 +72,26 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2D2420]/60 backdrop-blur-sm pointer-events-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md pointer-events-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="relative w-full max-w-lg bg-[#FDFBF7] border-2 border-[#7C9070]/60 rounded-2xl shadow-2xl p-6 text-[#453C38] space-y-5"
+        className="relative w-full max-w-lg bg-[#0c0e17] border border-emerald-500/40 rounded-2xl shadow-2xl p-6 text-slate-200 space-y-5 shadow-emerald-500/10"
       >
         {/* Floating header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#7C9070]/20 text-[#425439] border border-[#7C9070]/40 text-xs font-bold font-mono">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold font-mono">
               {currentStep.badgeLabel}
             </span>
-            <span className="text-xs text-[#8C7E74] font-medium">Beginner Walkthrough</span>
+            <span className="text-xs text-slate-400 font-medium">Beginner Walkthrough</span>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-[#8C7E74] hover:text-[#2D2420] transition-colors"
+            className="p-1 rounded-lg text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -99,14 +99,14 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
 
         {/* Content */}
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-[#F0ECE1] border border-[#DDD5C7] flex items-center justify-center shrink-0 shadow-inner">
+          <div className="w-12 h-12 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 shadow-inner text-emerald-400">
             {renderIcon(currentStep.icon)}
           </div>
           <div className="space-y-1.5">
-            <h3 className="text-lg font-bold text-[#2D2420] tracking-tight font-serif-heading">
+            <h3 className="text-lg font-bold text-white tracking-tight">
               {currentStep.title}
             </h3>
-            <p className="text-xs sm:text-sm text-[#5C504A] leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
               {currentStep.content}
             </p>
           </div>
@@ -119,22 +119,22 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 idx === currentStepIndex
-                  ? 'w-6 bg-[#7C9070]'
+                  ? 'w-6 bg-emerald-400'
                   : idx < currentStepIndex
-                  ? 'w-2 bg-[#5B6E50]'
-                  : 'w-2 bg-[#DDD5C7]'
+                  ? 'w-2 bg-emerald-600'
+                  : 'w-2 bg-white/20'
               }`}
             />
           ))}
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-[#E8E2D9]">
+        <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
           <button
             type="button"
             disabled={currentStepIndex === 0}
             onClick={handlePrev}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[#8C7E74] hover:text-[#2D2420] disabled:opacity-30 disabled:pointer-events-none transition-colors flex items-center gap-1"
+            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors flex items-center gap-1"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
             <span>Previous</span>
@@ -144,14 +144,14 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#8C7E74] hover:text-[#2D2420] transition-colors"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-colors"
             >
               Skip
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#7C9070] to-[#5B6E50] hover:from-[#6B7F5F] hover:to-[#4A5D40] text-white text-xs font-bold shadow-md shadow-[#7C9070]/30 flex items-center gap-1.5 transition-all hover:scale-[1.02]"
+              className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-extrabold shadow-md shadow-emerald-500/20 flex items-center gap-1.5 transition-all hover:scale-[1.02]"
             >
               {currentStepIndex === GUIDED_TOUR_STEPS.length - 1 ? (
                 <>

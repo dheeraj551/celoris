@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/providers/AuthProvider"
+import { XpMenuRow } from "@/components/xp/XpHeaderBits"
 import { Capacitor } from '@capacitor/core'
 import { useEffect } from "react"
 
@@ -211,6 +212,9 @@ export default function Header() {
                     Manage →
                   </span>
                 </Link>
+
+                {/* XP */}
+                <XpMenuRow />
 
                 <div className="h-[1px] bg-white/[0.08] mb-1.5" />
 

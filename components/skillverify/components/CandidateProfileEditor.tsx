@@ -223,26 +223,26 @@ export function CandidateProfileEditor() {
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto select-none">
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' as const }}
-        className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-10"
+        className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-8"
       >
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Candidate Profile</h1>
-          <p className="text-slate-500 mt-1 font-medium">Build your candidate profile and share it as a public resume</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Candidate Profile</h1>
+          <p className="text-slate-400 mt-1 text-xs sm:text-sm font-medium">Build your candidate profile and share it as a public verified resume</p>
         </div>
         <motion.button
           onClick={handleSave}
           disabled={loading}
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.97 }}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2 group disabled:opacity-50"
+          className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black px-7 py-3 rounded-2xl font-extrabold text-xs transition-all shadow-[0_0_20px_rgba(52,211,153,0.35)] flex items-center gap-2 group disabled:opacity-50 active:scale-98"
         >
           {loading ? (
-            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
           ) : (
             <Save className="h-4 w-4 transition-transform group-hover:scale-110" />
           )}
@@ -266,76 +266,78 @@ export function CandidateProfileEditor() {
           initial="hidden"
           animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-          className="lg:col-span-1 space-y-8"
+          className="lg:col-span-1 space-y-6"
         >
-          <motion.div variants={fadeUpItem} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col items-center text-center relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-emerald-50 to-teal-50 -z-0" />
+          <motion.div variants={fadeUpItem} className="bg-[#0d1017]/95 backdrop-blur-xl p-7 rounded-3xl border border-white/[0.08] shadow-2xl flex flex-col items-center text-center relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 -z-0" />
 
             <div className="relative mt-4">
-              <div className="w-32 h-32 rounded-[2rem] bg-emerald-100 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center">
+              <div className="w-32 h-32 rounded-3xl bg-[#131620] border-4 border-white/10 shadow-lg overflow-hidden flex items-center justify-center">
                 {profile?.avatar_url || profile?.profile_pic_url ? (
                   <img src={profile.avatar_url || profile.profile_pic_url} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <User size={48} className="text-emerald-500" />
+                  <User size={48} className="text-emerald-400" />
                 )}
               </div>
               <button
                 onClick={handleAvatarUpload}
-                className="absolute -bottom-2 -right-2 bg-emerald-600 p-3 rounded-2xl text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
+                className="absolute -bottom-2 -right-2 bg-gradient-to-r from-emerald-500 to-cyan-500 p-2.5 rounded-2xl text-black shadow-lg hover:scale-110 transition-transform cursor-pointer"
               >
-                <Camera size={18} />
+                <Camera size={16} />
               </button>
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" />
             </div>
 
-            <div className="mt-8 relative w-full">
-              <h3 className="text-xl font-black text-slate-900 leading-tight">{formData.full_name || 'Your Name'}</h3>
-              <p className={`text-emerald-600 font-black text-[11px] uppercase tracking-[0.15em] mt-1 italic ${!formData.headline && 'opacity-30'}`}>
+            <div className="mt-6 relative w-full">
+              <h3 className="text-lg font-black text-white leading-tight">{formData.full_name || 'Your Name'}</h3>
+              <p className={`text-emerald-400 font-bold text-[11px] uppercase tracking-wider mt-1 ${!formData.headline && 'opacity-30'}`}>
                 {formData.headline || 'Add a professional headline'}
               </p>
 
-              <div className="mt-6 pt-6 border-t border-slate-50 flex flex-col gap-4 text-left">
-                <div className="flex items-center gap-3 text-slate-500">
-                  <Mail size={16} className="text-emerald-500" />
-                  <span className="text-sm font-bold line-clamp-1">{user?.email}</span>
+              <div className="mt-5 pt-5 border-t border-white/[0.08] flex flex-col gap-3 text-left">
+                <div className="flex items-center gap-3 text-slate-400">
+                  <Mail size={15} className="text-emerald-400 shrink-0" />
+                  <span className="text-xs font-semibold line-clamp-1 text-slate-300">{user?.email}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-500">
-                  <MapPin size={16} className="text-emerald-500" />
-                  <span className={`text-sm font-bold ${!formData.location && 'opacity-30'}`}>{formData.location || 'Location Not Set'}</span>
+                <div className="flex items-center gap-3 text-slate-400">
+                  <MapPin size={15} className="text-emerald-400 shrink-0" />
+                  <span className={`text-xs font-semibold text-slate-300 ${!formData.location && 'opacity-40'}`}>{formData.location || 'Location Not Set'}</span>
                 </div>
               </div>
             </div>
           </motion.div>
 
           {/* Share as Public Candidate Resume */}
-          <motion.div variants={fadeUpItem} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 space-y-5">
-            <h4 className="font-black text-sm text-slate-900 uppercase tracking-widest italic flex items-center gap-2">
-              <Share2 className="text-emerald-600" size={18} /> Share Your Profile
+          <motion.div variants={fadeUpItem} className="bg-[#0d1017]/95 backdrop-blur-xl p-6 rounded-3xl border border-white/[0.08] shadow-2xl space-y-4">
+            <h4 className="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-2">
+              <Share2 className="text-emerald-400" size={16} /> Share Your Profile
             </h4>
 
             <button
               type="button"
               onClick={() => setFormData({ ...formData, isPublic: !formData.isPublic })}
-              className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${formData.isPublic ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}`}
+              className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all ${
+                formData.isPublic ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-[#131620] border-white/10'
+              }`}
             >
-              <span className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                {formData.isPublic ? <Eye size={16} className="text-emerald-600" /> : <EyeOff size={16} className="text-slate-400" />}
-                {formData.isPublic ? 'Public — anyone with the link can view' : 'Private — only visible to you'}
+              <span className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                {formData.isPublic ? <Eye size={15} className="text-emerald-400" /> : <EyeOff size={15} className="text-slate-400" />}
+                {formData.isPublic ? 'Public Resume' : 'Private'}
               </span>
-              <div className={`relative w-10 h-5 rounded-full transition-colors ${formData.isPublic ? 'bg-emerald-500' : 'bg-slate-300'}`}>
+              <div className={`relative w-10 h-5 rounded-full transition-colors ${formData.isPublic ? 'bg-emerald-500' : 'bg-slate-700'}`}>
                 <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${formData.isPublic ? 'translate-x-5' : 'translate-x-0'}`} />
               </div>
             </button>
 
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-xl px-3.5 py-2.5">
               <LinkIcon size={14} className="text-slate-400 flex-shrink-0" />
-              <span className="text-xs font-mono text-slate-600 truncate flex-1">{profileUrl || 'Sign in to get your link'}</span>
+              <span className="text-xs font-mono text-slate-400 truncate flex-1">{profileUrl || 'Sign in to get your link'}</span>
             </div>
 
             <button
               type="button"
               onClick={handleCopyLink}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-xs font-bold transition-all shadow-xs"
             >
               <Copy size={14} /> {copied ? 'Copied!' : 'Copy Link'}
             </button>
@@ -344,39 +346,38 @@ export function CandidateProfileEditor() {
               href={profileUrl || undefined}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 text-slate-700 text-xs font-bold transition-all"
+              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition-all"
             >
               <ExternalLink size={14} /> View Public Profile
             </a>
           </motion.div>
 
-          <motion.div variants={fadeUpItem} className="bg-emerald-900 p-8 rounded-[2.5rem] text-white shadow-xl shadow-emerald-900/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16" />
-            <h4 className="font-black text-xs uppercase tracking-widest text-emerald-400 mb-6 italic">Profile Strength</h4>
+          <motion.div variants={fadeUpItem} className="bg-gradient-to-br from-emerald-950/40 via-[#0e1620] to-[#0d1017] p-6 rounded-3xl border border-emerald-500/25 text-white shadow-2xl relative overflow-hidden">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-emerald-400 mb-4">Profile Strength</h4>
             <div className="flex justify-between items-end mb-2">
-              <span className="text-3xl font-black tracking-tighter italic">{strength}%</span>
-              <span className="text-xs font-bold text-emerald-300">
+              <span className="text-3xl font-extrabold tracking-tight font-mono">{strength}%</span>
+              <span className="text-xs font-bold text-emerald-400">
                 {strength < 50 ? 'Getting started' : strength < 80 ? 'Good!' : 'Great!'}
               </span>
             </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-8">
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-6">
               <div
-                className="h-full bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)] transition-all duration-500"
+                className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)] transition-all duration-500"
                 style={{ width: `${strength}%` }}
               />
             </div>
-            <ul className="space-y-3">
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.bio ? 'text-emerald-400' : 'opacity-60'}`}>
+            <ul className="space-y-2.5 text-xs">
+              <li className={`flex items-center gap-2 text-[10.5px] font-bold ${formData.bio ? 'text-emerald-400' : 'text-slate-500'}`}>
                 {formData.bio ? <CheckCircle size={12} /> : <Plus size={12} />} Add Bio
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.headline ? 'text-emerald-400' : 'opacity-60'}`}>
+              <li className={`flex items-center gap-2 text-[10.5px] font-bold ${formData.headline ? 'text-emerald-400' : 'text-slate-500'}`}>
                 {formData.headline ? <CheckCircle size={12} /> : <Plus size={12} />} Add Headline
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.location ? 'text-emerald-400' : 'opacity-60'}`}>
+              <li className={`flex items-center gap-2 text-[10.5px] font-bold ${formData.location ? 'text-emerald-400' : 'text-slate-500'}`}>
                 {formData.location ? <CheckCircle size={12} /> : <Plus size={12} />} Add Location
               </li>
-              <li className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest ${formData.specialty ? 'text-emerald-400' : 'opacity-60'}`}>
-                {formData.specialty ? <CheckCircle size={12} /> : <Plus size={12} className="animate-pulse" />} Add Specialties
+              <li className={`flex items-center gap-2 text-[10.5px] font-bold ${formData.specialty ? 'text-emerald-400' : 'text-slate-500'}`}>
+                {formData.specialty ? <CheckCircle size={12} /> : <Plus size={12} />} Add Specialties
               </li>
             </ul>
           </motion.div>
@@ -387,71 +388,71 @@ export function CandidateProfileEditor() {
           initial="hidden"
           animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } } }}
-          className="lg:col-span-2 space-y-8"
+          className="lg:col-span-2 space-y-6"
         >
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-            <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 italic">
-              <Pencil className="text-emerald-600" size={24} /> Basic Information
+          <motion.div variants={fadeUpItem} className="bg-[#0d1017]/95 backdrop-blur-xl p-7 rounded-3xl border border-white/[0.08] shadow-2xl">
+            <h3 className="text-xl font-black text-white mb-6 flex items-center gap-2.5">
+              <Pencil className="text-emerald-400" size={20} /> Basic Information
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Display Name</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Display Name</label>
                 <input
                   type="text"
                   value={formData.full_name}
                   onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
+                  className="w-full bg-[#131620] border border-white/10 focus:border-emerald-500 focus:bg-[#181d2a] px-4 py-3 rounded-xl outline-none transition-all font-semibold text-white shadow-inner text-xs"
                   placeholder="e.g. Priya Sharma"
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Years of Experience</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Years of Experience</label>
                 <input
                   type="text"
                   value={formData.experience}
                   onChange={e => setFormData({ ...formData, experience: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
+                  className="w-full bg-[#131620] border border-white/10 focus:border-emerald-500 focus:bg-[#181d2a] px-4 py-3 rounded-xl outline-none transition-all font-semibold text-white shadow-inner text-xs"
                   placeholder="e.g. 3+ Years"
                 />
               </div>
-              <div className="md:col-span-2 space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Professional Headline</label>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Professional Headline</label>
                 <input
                   type="text"
                   value={formData.headline}
                   onChange={e => setFormData({ ...formData, headline: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
+                  className="w-full bg-[#131620] border border-white/10 focus:border-emerald-500 focus:bg-[#181d2a] px-4 py-3 rounded-xl outline-none transition-all font-semibold text-white shadow-inner text-xs"
                   placeholder="e.g. AI Video Editor & Motion Designer"
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Location</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Location</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={e => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
+                  className="w-full bg-[#131620] border border-white/10 focus:border-emerald-500 focus:bg-[#181d2a] px-4 py-3 rounded-xl outline-none transition-all font-semibold text-white shadow-inner text-xs"
                   placeholder="e.g. Noida, India"
                 />
               </div>
-              <div className="md:col-span-2 space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Desired Roles / Specialties</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Desired Roles / Specialties</label>
                 <input
                   type="text"
                   value={formData.specialty}
                   onChange={e => setFormData({ ...formData, specialty: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-6 py-4 rounded-2xl outline-none transition-all font-bold text-slate-900 shadow-inner"
+                  className="w-full bg-[#131620] border border-white/10 focus:border-emerald-500 focus:bg-[#181d2a] px-4 py-3 rounded-xl outline-none transition-all font-semibold text-white shadow-inner text-xs"
                   placeholder="e.g. Video Editing, Content Design, Social Media"
                 />
               </div>
-              <div className="md:col-span-2 space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Professional Bio</label>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Professional Bio</label>
                 <textarea
-                  rows={6}
+                  rows={5}
                   value={formData.bio}
                   onChange={e => setFormData({ ...formData, bio: e.target.value })}
-                  className="w-full bg-slate-50 border border-transparent focus:border-emerald-500/50 focus:bg-white px-8 py-6 rounded-[2rem] outline-none transition-all font-bold text-slate-900 shadow-inner leading-relaxed"
+                  className="w-full bg-[#131620] border border-white/10 focus:border-emerald-500 focus:bg-[#181d2a] px-4 py-3 rounded-2xl outline-none transition-all font-medium text-white shadow-inner leading-relaxed text-xs"
                   placeholder="Tell employers about your background, what you're looking for, and what makes you a great hire..."
                 />
               </div>
@@ -459,28 +460,28 @@ export function CandidateProfileEditor() {
           </motion.div>
 
           {/* Verified Badges (real, from Progression / Exams) */}
-          <motion.div variants={fadeUpItem} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-            <h3 className="text-2xl font-black text-slate-900 mb-2 flex items-center gap-3 italic">
-              <Award className="text-emerald-600" size={24} /> Verified Badges
+          <motion.div variants={fadeUpItem} className="bg-[#0d1017]/95 backdrop-blur-xl p-7 rounded-3xl border border-white/[0.08] shadow-2xl">
+            <h3 className="text-xl font-black text-white mb-2 flex items-center gap-2.5">
+              <Award className="text-emerald-400" size={20} /> Verified Badges
             </h3>
-            <p className="text-xs text-slate-500 font-medium mb-8">
+            <p className="text-xs text-slate-400 font-medium mb-6">
               Automatically pulled from your Progression tab — these show up on your public profile too.
             </p>
 
             {badges.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium text-center py-4">
+              <p className="text-xs text-slate-500 font-medium text-center py-6">
                 No verified badges yet. Earn one from the Exams tab.
               </p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {badges.map((badge) => (
-                  <div key={badge.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white flex-shrink-0 bg-emerald-600">
+                  <div key={badge.id} className="p-4 rounded-2xl bg-[#131620] border border-white/10 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0 bg-emerald-600 shadow-xs">
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-sm text-slate-900 truncate">{badge.badgeTitle}</p>
-                      <p className="text-xs text-slate-500 truncate">{badge.skillName} • {badge.verificationHash}</p>
+                      <p className="font-bold text-xs text-white truncate">{badge.badgeTitle}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{badge.skillName} • {badge.verificationHash}</p>
                     </div>
                   </div>
                 ))}

@@ -135,11 +135,11 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900">
+            <h2 className="text-base sm:text-lg font-bold text-white">
               Available Certification Assessments ({exams.length})
             </h2>
-            <p className="text-xs text-slate-500">
-              Each exam takes 10 minutes with instant grading and badge issuance.
+            <p className="text-xs text-slate-400">
+              Each exam takes 10 minutes with instant grading and verified badge issuance.
             </p>
           </div>
         </div>
@@ -157,7 +157,7 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                   soundFx.playClick();
                   onSelectExam(exam);
                 }}
-                className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                className="p-5 rounded-2xl bg-[#0d1017]/95 hover:bg-[#121622] border border-white/[0.08] hover:border-emerald-500/40 shadow-xl hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
@@ -169,39 +169,39 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                         <Award className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-700 transition-colors">
+                        <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-emerald-400 transition-colors">
                           {exam.badgeTitle}
                         </h3>
-                        <p className="text-xs text-slate-500">
-                          {exam.industry} • <span className="text-emerald-700 font-semibold">{exam.difficulty}</span>
+                        <p className="text-xs text-slate-400">
+                          {exam.industry} • <span className="text-emerald-400 font-semibold">{exam.difficulty}</span>
                         </p>
                       </div>
                     </div>
 
                     {hasEarned && (
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold flex items-center gap-1">
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 text-[10px] font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
                         Certified
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
                     {exam.description}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 pt-1">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <Clock className="w-3.5 h-3.5 text-slate-500" />
                       {exam.timeLimitMinutes} mins
                     </span>
-                    <span>•</span>
+                    <span className="text-slate-600">•</span>
                     <span className="flex items-center gap-1">
-                      <BookOpen className="w-3.5 h-3.5 text-slate-400" />
+                      <BookOpen className="w-3.5 h-3.5 text-slate-500" />
                       {exam.questions.length} Questions
                     </span>
-                    <span>•</span>
-                    <span className="text-emerald-700 font-bold flex items-center gap-1">
+                    <span className="text-slate-600">•</span>
+                    <span className="text-emerald-400 font-bold flex items-center gap-1">
                       <Zap className="w-3.5 h-3.5" />
                       +{exam.xpReward} XP Reward
                     </span>
@@ -209,8 +209,8 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                 </div>
 
                 {/* Bottom Target Roles & Action Button */}
-                <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
-                  <span className="text-[11px] text-slate-500 truncate max-w-[160px]">
+                <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-400 truncate max-w-[160px] font-mono">
                     Unlocks: {exam.targetRoleExamples[0]}
                   </span>
 
@@ -224,7 +224,7 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                           setInviteExam(exam);
                         }}
                         title="Invite a candidate to take this exam by email"
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold shadow-xs transition-all flex items-center gap-1"
+                        className="px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-slate-300 text-xs font-bold transition-all flex items-center gap-1"
                       >
                         <Send className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">Invite</span>
@@ -232,7 +232,7 @@ export const ExamsHub: React.FC<ExamsHubProps> = ({
                     )}
                     <button
                       type="button"
-                      className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1"
+                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-extrabold shadow-sm transition-all flex items-center gap-1 active:scale-98"
                     >
                       <span>{hasEarned ? 'Retake Exam' : 'Start Assessment'}</span>
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -296,22 +296,22 @@ const InviteCandidateModal: React.FC<{ exam: ExamDefinition; onClose: () => void
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 space-y-4"
+        className="w-full max-w-md bg-[#0e1118] border border-white/10 rounded-2xl shadow-2xl p-6 space-y-4 text-white"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">Invite a candidate</h3>
-            <p className="text-xs text-slate-500 mt-0.5">{exam.title}</p>
+            <h3 className="font-bold text-white text-sm">Invite a candidate</h3>
+            <p className="text-xs text-slate-400 mt-0.5">{exam.title}</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-400">
           No Celoris account needed — they'll get a direct link to take this exam and you'll be emailed the result.
         </p>
 
@@ -320,40 +320,40 @@ const InviteCandidateModal: React.FC<{ exam: ExamDefinition; onClose: () => void
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Candidate name"
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
           />
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Candidate email"
             type="email"
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
           />
         </div>
 
         {status === 'sent' ? (
-          <div className="flex items-center gap-2 text-sm text-emerald-700 font-semibold py-2">
+          <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold py-2">
             <Check className="w-4 h-4" /> Invite sent to {email}
           </div>
         ) : (
           <button
             onClick={handleSend}
             disabled={!name.trim() || !email.trim() || status === 'sending'}
-            className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-sm font-bold flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 disabled:opacity-50 text-black text-xs font-extrabold flex items-center justify-center gap-2 transition-all shadow-sm"
           >
             {status === 'sending' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {status === 'sending' ? 'Sending…' : 'Send via Email'}
           </button>
         )}
         {status === 'error' && (
-          <p className="text-xs text-rose-600">Couldn't send that email — try again in a moment.</p>
+          <p className="text-xs text-rose-400">Couldn't send that email — try again in a moment.</p>
         )}
 
-        <div className="pt-2 border-t border-slate-100">
+        <div className="pt-2 border-t border-white/10">
           <button
             onClick={handleCopy}
             disabled={!name.trim() || !email.trim()}
-            className="w-full py-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5"
+            className="w-full py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-40 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
           >
             <Link2 className="w-3.5 h-3.5" />
             {copied ? 'Link copied!' : 'Or copy the link instead'}

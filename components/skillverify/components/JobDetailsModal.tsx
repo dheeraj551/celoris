@@ -97,47 +97,47 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-3 sm:p-6 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden text-slate-800 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-3 sm:p-6 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#0c0e17] border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden text-slate-200 flex flex-col max-h-[90vh]">
         
         {/* Header banner */}
-        <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-start justify-between gap-4">
+        <div className="p-6 bg-[#121522] border-b border-white/[0.08] flex items-start justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-3xl shadow-xs shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-3xl shadow-inner shrink-0">
               {job.logo}
             </div>
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
+                <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">
                   {job.title}
                 </h2>
                 {job.tier === 'certified' ? (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-amber-600" />
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-amber-400" />
                     Certified Pro Tier
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold">
                     Public Portal
                   </span>
                 )}
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-600 font-medium">
+              <p className="text-xs sm:text-sm text-slate-300 font-medium">
                 {job.company} • <span className="text-slate-400">{job.industry}</span>
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
-                <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                  <IndianRupee className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 pt-1">
+                <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                  <IndianRupee className="w-3.5 h-3.5 text-emerald-400" />
                   {job.salaryRange}
                 </span>
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
                   {job.location}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                  <Briefcase className="w-3.5 h-3.5 text-slate-500" />
                   {job.workMode}
                 </span>
               </div>
@@ -146,41 +146,41 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-6 overflow-y-auto flex-1">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1 text-slate-300">
           
           {/* Gating Status Alert if Locked */}
           {!isUnlocked && (
-            <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2.5">
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 font-bold text-xs text-amber-900">
-                  <Lock className="w-4 h-4 text-amber-600" />
+                <span className="flex items-center gap-1.5 font-bold text-xs text-amber-300">
+                  <Lock className="w-4 h-4 text-amber-400" />
                   Locked High-End Role — Verification Required
                 </span>
-                <span className="text-[10px] text-amber-700 font-semibold">Level {job.minLevelRequired}+</span>
+                <span className="text-[10px] text-amber-400 font-semibold">Level {job.minLevelRequired}+</span>
               </div>
-              <p className="text-xs text-amber-800 leading-relaxed">
+              <p className="text-xs text-amber-200/90 leading-relaxed">
                 This employer fast-tracks candidates with validated anti-cheat credentials. Complete the required certification exam to unlock direct application rights!
               </p>
               
               {missingBadges.length > 0 && (
                 <div className="pt-1 space-y-1.5">
-                  <span className="text-[11px] text-slate-600 font-semibold">Required Exam Badges:</span>
+                  <span className="text-[11px] text-slate-300 font-semibold">Required Exam Badges:</span>
                   <div className="flex flex-wrap gap-2">
                     {missingBadges.map((b) => (
                       <button
                         key={b}
                         type="button"
                         onClick={() => onLaunchExamForJob(b)}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all"
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-500/20 transition-all"
                       >
-                        <Award className="w-3.5 h-3.5 text-emerald-200" />
+                        <Award className="w-3.5 h-3.5 text-black" />
                         <span>Take "{b}" Exam</span>
                       </button>
                     ))}
@@ -193,7 +193,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
           {/* Description */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Role Overview</h3>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
               {job.description}
             </p>
           </div>
@@ -209,11 +209,11 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                     key={skill}
                     className={`px-2.5 py-1 rounded-lg text-xs font-medium border flex items-center gap-1 ${
                       userHasSkill
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 font-semibold'
-                        : 'bg-slate-100 text-slate-700 border-slate-200'
+                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 font-semibold'
+                        : 'bg-white/[0.04] text-slate-300 border-white/[0.08]'
                     }`}
                   >
-                    {userHasSkill && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
+                    {userHasSkill && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
                     {skill}
                   </span>
                 );
@@ -224,10 +224,10 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
           {/* Responsibilities */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Key Responsibilities</h3>
-            <ul className="space-y-1.5 text-xs sm:text-sm text-slate-600">
+            <ul className="space-y-1.5 text-xs sm:text-sm text-slate-300">
               {job.responsibilities.map((resp, idx) => (
                 <li key={idx} className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0" />
                   <span>{resp}</span>
                 </li>
               ))}
@@ -237,10 +237,10 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
           {/* Benefits & Perks */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Perks & Compensation</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
               {job.benefits.map((benefit, idx) => (
-                <div key={idx} className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div key={idx} className="p-2.5 rounded-lg bg-[#131622] border border-white/[0.08] flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>{benefit}</span>
                 </div>
               ))}
@@ -248,10 +248,10 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
           </div>
 
           {/* AI Match & Pitch Analyzer Widget */}
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+          <div className="p-4 rounded-xl bg-[#131622] border border-white/[0.08] space-y-3">
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-xs font-bold text-slate-800">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
                 AI Profile Match & Verified Pitch
               </span>
               {!aiMatchAnalysis && (
@@ -259,7 +259,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                   type="button"
                   onClick={handleAnalyzeMatch}
                   disabled={aiMatchLoading}
-                  className="px-3 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 text-xs font-medium transition-all"
+                  className="px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-medium transition-all"
                 >
                   {aiMatchLoading ? (
                     <span className="flex items-center gap-1">
@@ -275,17 +275,17 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
 
             {aiMatchAnalysis && (
               <div className="space-y-3 text-xs">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-                  <span className="text-slate-700">Overall Candidate Match:</span>
-                  <span className="font-bold text-emerald-800 text-sm">{aiMatchAnalysis.matchPercentage}% ({aiMatchAnalysis.matchRating})</span>
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                  <span className="text-slate-300">Overall Candidate Match:</span>
+                  <span className="font-bold text-emerald-400 text-sm">{aiMatchAnalysis.matchPercentage}% ({aiMatchAnalysis.matchRating})</span>
                 </div>
                 {aiMatchAnalysis.tailoredPitch && (
-                  <div className="p-3 rounded-lg bg-white border border-slate-200 text-slate-600 italic">
+                  <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-slate-300 italic">
                     "{aiMatchAnalysis.tailoredPitch}"
                   </div>
                 )}
                 {aiMatchAnalysis.missingSkills?.length > 0 && (
-                  <div className="text-slate-500 text-[11px]">
+                  <div className="text-slate-400 text-[11px]">
                     Recommended focus areas: {aiMatchAnalysis.missingSkills.join(', ')}
                   </div>
                 )}
@@ -296,19 +296,19 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-4">
+        <div className="p-4 bg-[#121522] border-t border-white/[0.08] flex items-center justify-end gap-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-800 text-xs font-medium"
+              className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-xs font-medium transition-colors"
             >
               Close
             </button>
 
             {isApplied ? (
-              <div className="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <div className="px-5 py-2 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>Application Submitted (+25 XP)</span>
               </div>
             ) : isUnlocked ? (
@@ -316,7 +316,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                 type="button"
                 onClick={handleApplyClick}
                 disabled={isApplying}
-                className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-2 transition-all hover:scale-[1.02]"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all hover:scale-[1.02]"
               >
                 {isApplying ? (
                   <>
@@ -338,7 +338,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                     onLaunchExamForJob(missingBadges[0]);
                   }
                 }}
-                className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
               >
                 <Lock className="w-3.5 h-3.5" />
                 <span>Unlock via Skill Exam</span>

@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect, useState } from 'react'
+
 // Small browser helpers for Celoris XP.
 //
 // Other parts of the app can celebrate XP the server just awarded (e.g. after
@@ -33,7 +35,8 @@ export interface XpPrefs {
   sound: boolean
 }
 
-const PREFS_KEY = 'celoris-xp-prefs'
+// v2: sound is on by default now that XP has a proper "credited" sound.
+const PREFS_KEY = 'celoris-xp-prefs-v2'
 
 export function loadXpPrefs(): XpPrefs {
   let reduce = false
@@ -42,12 +45,15 @@ export function loadXpPrefs(): XpPrefs {
   } catch {
     // ignore
   }
-  const fallback: XpPrefs = { animations: !reduce, sound: false }
+  const fallback: XpPrefs = { animations: !reduce, sound: true }
   try {
     const raw = window.localStorage.getItem(PREFS_KEY)
     if (!raw) return fallback
     const p = JSON.parse(raw)
-    return { animations: typeof p.animations === 'boolean' ? p.animations : fallback.animations, sound: !!p.sound }
+    return {
+      animations: typeof p.animations === 'boolean' ? p.animations : fallback.animations,
+      sound: typeof p.sound === 'boolean' ? p.sound : fallback.sound,
+    }
   } catch {
     return fallback
   }
@@ -82,15 +88,50 @@ export function istToday(): string {
   return new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10)
 }
 
-// Tiny sounds with WebAudio (no files). Only used when the member turns sound on.
+// Sounds. XP being credited (chest claim, daily check-in, rewards, converting)
+// plays the cash-register clip; the per-minute tick and level-up are tiny
+// WebAudio tones. Nothing plays unless the member has sound on.
+const CREDIT_SOUND_URL = '/sounds/xp-credit.mp3'
+let creditAudio: HTMLAudioElement | null = null
+
+export function preloadXpSounds() {
+  try {
+    if (creditAudio || typeof Audio === 'undefined') return
+    creditAudio = new Audio(CREDIT_SOUND_URL)
+    creditAudio.preload = 'auto'
+    creditAudio.volume = 0.6
+  } catch {
+    // ignore
+  }
+}
+
+function playCreditSound() {
+  try {
+    preloadXpSounds()
+    if (!creditAudio) return
+    // A fresh copy so two quick rewards can overlap instead of cutting off.
+    const a = creditAudio.cloneNode(true) as HTMLAudioElement
+    a.volume = 0.6
+    const p = a.play()
+    // Browsers block sound before the first click on the page — that's fine.
+    if (p && typeof p.catch === 'function') p.catch(() => undefined)
+  } catch {
+    // ignore
+  }
+}
+
 let ctx: AudioContext | null = null
 export function playXpSound(kind: 'tick' | 'coins' | 'level') {
+  if (kind === 'coins') {
+    playCreditSound()
+    return
+  }
   try {
     const Ctx: any = (window as any).AudioContext || (window as any).webkitAudioContext
     if (!Ctx) return
     if (!ctx) ctx = new Ctx()
     const c = ctx!
-    const notes = kind === 'tick' ? [880] : kind === 'coins' ? [988, 1319, 1568] : [523, 659, 784, 1047]
+    const notes = kind === 'tick' ? [880] : [523, 659, 784, 1047]
     notes.forEach((f, i) => {
       const osc = c.createOscillator()
       const gain = c.createGain()
@@ -107,4 +148,46 @@ export function playXpSound(kind: 'tick' | 'coins' | 'level') {
   } catch {
     // ignore
   }
+}
+
+// ---------------------------------------------------------------------------
+// XP summary for the rest of the app (header pills, account menu). The XP
+// layer publishes it whenever the numbers change; anything can ask the layer
+// to open the XP panel.
+// ---------------------------------------------------------------------------
+
+export const XP_SUMMARY_EVENT = 'celoris:xp-summary'
+export const XP_OPEN_EVENT = 'celoris:xp-open'
+
+export interface XpSummary {
+  balanceXp: number
+  lifetimeXp: number
+  level: number
+  streakDays: number
+  chestFull: boolean
+}
+
+let lastSummary: XpSummary | null = null
+
+export function publishXpSummary(s: XpSummary | null) {
+  lastSummary = s
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new CustomEvent<XpSummary | null>(XP_SUMMARY_EVENT, { detail: s }))
+}
+
+export function openXpPanel() {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new CustomEvent(XP_OPEN_EVENT))
+}
+
+/** Latest XP numbers for the signed-in member (null until loaded / signed out). */
+export function useXpSummary(): XpSummary | null {
+  const [s, setS] = useState<XpSummary | null>(lastSummary)
+  useEffect(() => {
+    setS(lastSummary)
+    const on = (e: Event) => setS((e as CustomEvent<XpSummary | null>).detail)
+    window.addEventListener(XP_SUMMARY_EVENT, on)
+    return () => window.removeEventListener(XP_SUMMARY_EVENT, on)
+  }, [])
+  return s
 }

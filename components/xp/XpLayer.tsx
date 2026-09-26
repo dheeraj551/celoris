@@ -6,7 +6,8 @@
 //    minutes) and asks the server for 1 XP a minute. The server decides
 //    everything; this only shows it.
 //  • XP chip (bottom-left): level ring, spendable XP, chest. A small "+1"
-//    floats up each active minute.
+//    floats up each active minute. On full-screen workspaces the chip hides,
+//    but the header's XP pill / account menu can still open the panel.
 //  • Chest: fills while you're active; when full it glows and you tap Claim.
 //  • Daily check-in card on the first visit of the day (7-day streak cycle).
 //  • Level-up celebration, "Did you know?" tips, convert XP → credits.
@@ -16,17 +17,20 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { AnimatePresence, m } from "framer-motion"
-import { Coins, Flame, Gift, Lightbulb, Sparkles, Trophy, Volume2, VolumeX, X, Zap } from "lucide-react"
+import { CalendarCheck, Coins, Gift, Lightbulb, Sparkles, Trophy, Volume2, VolumeX, X, Zap } from "lucide-react"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { fmtXp, levelInfo, levelTitle, type XpState } from "@/lib/xp-shared"
 import { XP_TIPS, type XpTip } from "@/lib/xp-tips"
 import {
   XP_EVENT,
+  XP_OPEN_EVENT,
   type XpEventDetail,
   type XpPrefs,
   istToday,
   loadXpPrefs,
   playXpSound,
+  preloadXpSounds,
+  publishXpSummary,
   saveXpPrefs,
   storageGet,
   storageSet,
@@ -120,7 +124,11 @@ export function XpLayer() {
   const tipRef = useRef(tip)
   tipRef.current = tip
 
-  useEffect(() => setPrefs(loadXpPrefs()), [])
+  useEffect(() => {
+    const p = loadXpPrefs()
+    setPrefs(p)
+    if (p.sound) preloadXpSounds()
+  }, [])
 
   const updatePrefs = (p: XpPrefs) => {
     setPrefs(p)
@@ -167,6 +175,21 @@ export function XpLayer() {
     if (loading || !userId || noXp) return
     load()
   }, [userId, loading, noXp, load])
+
+  // Signed out → forget the numbers.
+  useEffect(() => {
+    if (!loading && !userId) setXp(null)
+  }, [userId, loading])
+
+  // The header pill / account menu ask for the panel.
+  useEffect(() => {
+    const open = () => {
+      setPanelOpen(true)
+      if (!xpRef.current) load()
+    }
+    window.addEventListener(XP_OPEN_EVENT, open)
+    return () => window.removeEventListener(XP_OPEN_EVENT, open)
+  }, [load])
 
   useEffect(() => {
     let lastMove = 0
@@ -335,6 +358,15 @@ export function XpLayer() {
   const lvl = useMemo(() => levelInfo(xp?.lifetimeXp || 0), [xp?.lifetimeXp])
   const chestFull = !!xp && xp.chestXp >= xp.chestSize
 
+  // Share the numbers with the header (XP pill) and account menu.
+  useEffect(() => {
+    publishXpSummary(
+      xp && userId
+        ? { balanceXp: xp.balanceXp, lifetimeXp: xp.lifetimeXp, level: lvl.level, streakDays: xp.streakDays, chestFull }
+        : null,
+    )
+  }, [xp, userId, lvl.level, chestFull])
+
   // The "chest is full" nudge comes back each time the chest fills up again.
   useEffect(() => {
     if (!chestFull) setChestNudgeHidden(false)
@@ -349,7 +381,8 @@ export function XpLayer() {
 
   // ---------------------------------------------------------------- render
 
-  const showChip = !!userId && !!xp && !quiet
+  // Workspaces hide the chip, unless the member opened the panel from the header.
+  const showChip = !!userId && !!xp && (!quiet || panelOpen)
   const anim = prefs.animations
 
   const tipCard = (
@@ -466,17 +499,12 @@ export function XpLayer() {
           className={`relative flex items-center gap-2 rounded-full border bg-[#0a0d14]/90 backdrop-blur-xl pl-1 pr-3 py-1 text-white shadow-2xl transition-colors ${
             chestFull ? "border-amber-300/60 shadow-amber-500/20" : "border-white/15 hover:border-white/30"
           }`}
-          aria-label={`Level ${lvl.level}, ${fmtXp(xp!.balanceXp)} XP`}
+          aria-label={`Your XP: ${fmtXp(xp!.balanceXp)} XP, level ${lvl.level}. Open XP details`}
+          title="Your XP — tap for details"
         >
           <LevelRing level={lvl.level} progress={lvl.progress} />
           <span className="text-sm font-extrabold tabular-nums">{fmtXp(xp!.balanceXp)}</span>
           <span className="text-[10px] font-bold text-lime-300">XP</span>
-          {xp!.streakDays > 0 && (
-            <span className="ml-0.5 inline-flex items-center text-[11px] font-bold text-orange-300">
-              <Flame className="w-3.5 h-3.5" />
-              {xp!.streakDays}
-            </span>
-          )}
           <ChestIcon fill={xp!.chestXp / Math.max(1, xp!.chestSize)} full={chestFull} anim={anim} />
         </button>
 
@@ -498,19 +526,32 @@ export function XpLayer() {
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="flex items-center gap-3">
-                <LevelRing level={lvl.level} progress={lvl.progress} size={48} />
-                <div>
-                  <p className="text-base font-extrabold leading-tight">Level {lvl.level}</p>
-                  <p className="text-xs text-slate-400">{levelTitle(lvl.level)}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Your XP</p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <div className="rounded-xl border border-lime-300/25 bg-lime-300/[0.06] px-3 py-2">
+                  <p className="text-[10px] font-semibold text-lime-200/80">XP balance</p>
+                  <p className="text-xl font-extrabold tabular-nums text-lime-300 leading-tight">{fmtXp(xp!.balanceXp)}</p>
+                  <p className="text-[10px] text-slate-400">yours to spend</p>
+                </div>
+                <div className="rounded-xl border border-white/[0.1] bg-white/[0.03] px-3 py-2">
+                  <p className="text-[10px] font-semibold text-slate-300">Total earned</p>
+                  <p className="text-xl font-extrabold tabular-nums leading-tight">{fmtXp(xp!.lifetimeXp)}</p>
+                  <p className="text-[10px] text-slate-400">all time</p>
                 </div>
               </div>
-              <div className="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-lime-400 to-emerald-400" style={{ width: `${Math.round(lvl.progress * 100)}%` }} />
+
+              <div className="mt-3 flex items-center gap-3">
+                <LevelRing level={lvl.level} progress={lvl.progress} size={40} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-extrabold leading-tight">
+                    Level {lvl.level} <span className="font-medium text-slate-400">· {levelTitle(lvl.level)}</span>
+                  </p>
+                  <div className="mt-1.5 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-gradient-to-r from-lime-400 to-emerald-400" style={{ width: `${Math.round(lvl.progress * 100)}%` }} />
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-400">{fmtXp(lvl.needed - lvl.into)} XP to level {lvl.level + 1}</p>
+                </div>
               </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                {fmtXp(lvl.needed - lvl.into)} XP to level {lvl.level + 1} · {fmtXp(xp!.lifetimeXp)} earned in total
-              </p>
 
               {/* Chest */}
               <div className="mt-4 rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
@@ -548,9 +589,14 @@ export function XpLayer() {
 
               {/* Streak */}
               <div className="mt-3 flex items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                <p className="text-sm font-bold flex items-center gap-1.5">
-                  <Flame className="w-4 h-4 text-orange-400" /> {xp!.streakDays}-day streak
-                </p>
+                <div>
+                  <p className="text-sm font-bold flex items-center gap-1.5">
+                    <CalendarCheck className="w-4 h-4 text-orange-400" /> Daily check-in
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    {xp!.streakDays > 0 ? `${xp!.streakDays} day${xp!.streakDays === 1 ? "" : "s"} in a row` : "Check in every day for bonus XP"}
+                  </p>
+                </div>
                 {xp!.checkedInToday ? (
                   <span className="text-[11px] text-emerald-300">Checked in today ✓</span>
                 ) : (
@@ -766,7 +812,7 @@ function CheckinModal({
                 transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 1.5 }}
                 className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-rose-500 shadow-lg shadow-orange-500/30"
               >
-                <Flame className="h-7 w-7 text-white" />
+                <CalendarCheck className="h-7 w-7 text-white" />
               </m.div>
               <h2 className="mt-3 text-xl font-extrabold">Daily check-in</h2>
               <p className="mt-1 text-sm text-slate-400">

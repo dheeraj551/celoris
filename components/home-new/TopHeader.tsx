@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { XpHeaderPill, XpMenuRow } from '@/components/xp/XpHeaderBits';
 import { cn } from '@/lib/utils';
 import {
     Sheet,
@@ -330,6 +331,9 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                         </Link>
                     )}
 
+                    {/* XP pill */}
+                    {user && <XpHeaderPill className="hidden sm:inline-flex" />}
+
                     {/* Auth Status: Avatar or Sign In */}
                     {loading ? (
                         <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 animate-pulse" />
@@ -401,6 +405,9 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         Manage →
                                     </span>
                                 </Link>
+
+                                {/* XP */}
+                                <XpMenuRow />
 
                                 <div className="h-[1px] bg-white/[0.08] mb-1.5" />
 

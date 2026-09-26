@@ -58,17 +58,19 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 select-none">
       
+      {/* ------------------------------------------------------------- */}
       {/* TOP PROGRESSION SUMMARY HERO */}
+      {/* ------------------------------------------------------------- */}
       <div 
         id="tour-badge-passport"
-        className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-800/30 shadow-lg text-white space-y-6"
+        className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-[#0c1017] via-emerald-950/40 to-[#07090e] border border-emerald-500/25 shadow-2xl text-white space-y-6"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 Verified Candidate Progression
               </span>
@@ -89,15 +91,15 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
 
           {/* Quick Metrics Capsule Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center">
+            <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
               <span className="text-[11px] text-slate-400 font-medium block">Total XP</span>
               <span className="text-lg font-extrabold text-emerald-400 font-mono">{user.currentXP}</span>
             </div>
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center">
+            <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
               <span className="text-[11px] text-slate-400 font-medium block">Platform Time</span>
               <span className="text-lg font-extrabold text-emerald-400 font-mono">{formatSeconds(user.totalTimeSpentSeconds)}</span>
             </div>
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-900/40 text-center col-span-2 sm:col-span-1">
+            <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-center col-span-2 sm:col-span-1">
               <span className="text-[11px] text-slate-400 font-medium block">Honor Integrity</span>
               <span className="text-lg font-extrabold text-emerald-300 font-mono">{user.honorScore}%</span>
             </div>
@@ -105,7 +107,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
         </div>
 
         {/* XP Progress Bar to Next Level */}
-        <div className="space-y-2 bg-slate-900/60 p-4 rounded-xl border border-emerald-900/40">
+        <div className="space-y-2 bg-black/30 p-4 rounded-xl border border-white/10">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-slate-300">
               Level {user.level} ({currentTierInfo.name})
@@ -118,16 +120,16 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
             </span>
           </div>
 
-          <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-emerald-900/40">
+          <div className="w-full h-3 bg-black/60 rounded-full overflow-hidden p-0.5 border border-white/10">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full transition-all duration-700 shadow-xs"
+              className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-700 shadow-xs"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
             <span>Need {user.nextLevelXP - user.currentXP} XP to unlock Level {nextLevel}</span>
-            <span className="text-emerald-300 font-medium">Unlocks {nextTierInfo.perks[0]}</span>
+            <span className="text-emerald-400 font-medium">Unlocks {nextTierInfo.perks[0]}</span>
           </div>
         </div>
 
@@ -136,7 +138,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
           <button
             type="button"
             onClick={onOpenExamsTab}
-            className="p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-left transition-all group"
+            className="p-3.5 rounded-xl bg-[#131620] hover:bg-[#181d2a] border border-white/10 text-left transition-all group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-white group-hover:text-emerald-400">Take Anti-Cheat Exam</span>
@@ -148,7 +150,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
           <button
             type="button"
             onClick={onOpenAIExamModal}
-            className="p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-left transition-all group"
+            className="p-3.5 rounded-xl bg-[#131620] hover:bg-[#181d2a] border border-white/10 text-left transition-all group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-white group-hover:text-emerald-400">Skill Dataset Exam</span>
@@ -157,7 +159,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
             <p className="text-[11px] text-slate-400 mt-1">Domain question dataset test on specialized stacks.</p>
           </button>
 
-          <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 text-left">
+          <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-left shadow-xs">
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-white">Active Platform Time</span>
               <span className="text-xs font-mono font-bold text-emerald-400">+5 XP / min</span>
@@ -168,16 +170,18 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
 
       </div>
 
+      {/* ------------------------------------------------------------- */}
       {/* VERIFIED SKILL BADGES PASSPORT */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+      {/* ------------------------------------------------------------- */}
+      <div className="p-6 rounded-2xl bg-[#0d1017]/95 backdrop-blur-xl border border-white/[0.08] shadow-2xl space-y-4">
         
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Award className="w-5 h-5 text-emerald-600" />
+            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <Award className="w-5 h-5 text-emerald-400" />
               <span>Verified Skill Badges ({user.verifiedBadges.length})</span>
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Cryptographically timestamped credentials validated via anti-cheat proctored exams.
             </p>
           </div>
@@ -185,23 +189,23 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
           <button
             type="button"
             onClick={onOpenExamsTab}
-            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-extrabold shadow-sm transition-all active:scale-98"
           >
             + Earn New Badge
           </button>
         </div>
 
         {user.verifiedBadges.length === 0 ? (
-          <div className="p-8 text-center rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-            <Award className="w-10 h-10 text-slate-400 mx-auto" />
-            <h3 className="text-sm font-bold text-slate-900">No verified badges yet</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <div className="p-8 text-center rounded-xl bg-black/40 border border-white/10 space-y-3">
+            <Award className="w-10 h-10 text-slate-500 mx-auto" />
+            <h3 className="text-sm font-bold text-white">No verified badges yet</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
               Take an anti-cheat proctored exam to earn your first certified credential and unlock ₹150k+ roles.
             </p>
             <button
               type="button"
               onClick={onOpenExamsTab}
-              className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700"
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
             >
               Explore Available Exams
             </button>
@@ -211,7 +215,7 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
             {user.verifiedBadges.map((badge) => (
               <div
                 key={badge.id}
-                className="p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs space-y-3 relative overflow-hidden"
+                className="p-5 rounded-2xl bg-[#131620] hover:bg-[#181d2a] border border-white/10 hover:border-emerald-500/40 shadow-xl space-y-3 relative overflow-hidden transition-all"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -222,44 +226,44 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
                       <ShieldCheck className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">
+                      <h3 className="font-bold text-sm text-white">
                         {badge.badgeTitle}
                       </h3>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-400">
                         {badge.industry} • Earned {badge.earnedDate}
                       </p>
                     </div>
                   </div>
 
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 text-[10px] font-bold">
                     Score: {badge.score}%
                   </span>
                 </div>
 
                 {/* Cryptographic verification ID & Copy */}
-                <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between text-xs font-mono">
-                  <div className="flex items-center gap-1.5 text-slate-700">
-                    <span className="text-[10px] text-slate-400">VERIFY ID:</span>
-                    <span className="font-bold text-emerald-700">{badge.verificationHash}</span>
+                <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-xs font-mono">
+                  <div className="flex items-center gap-1.5 text-slate-300">
+                    <span className="text-[10px] text-slate-500">VERIFY ID:</span>
+                    <span className="font-bold text-emerald-400">{badge.verificationHash}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleCopyHash(badge.verificationHash)}
-                    className="p-1 rounded text-slate-400 hover:text-emerald-700 transition-colors"
+                    className="p-1 rounded text-slate-400 hover:text-emerald-400 transition-colors"
                     title="Copy verification hash"
                   >
                     {copiedHash === badge.verificationHash ? (
-                      <span className="text-[10px] text-emerald-700 font-bold font-sans">Copied!</span>
+                      <span className="text-[10px] text-emerald-400 font-bold font-sans">Copied!</span>
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1">
-                  <span>Proctor Integrity: <strong className="text-emerald-700">{badge.proctorScore}%</strong></span>
-                  <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Unlocks ₹150k+ Tier
+                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                  <span>Proctor Integrity: <strong className="text-emerald-400">{badge.proctorScore}%</strong></span>
+                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Unlocks ₹150k+ Tier
                   </span>
                 </div>
               </div>
@@ -269,15 +273,17 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
 
       </div>
 
+      {/* ------------------------------------------------------------- */}
       {/* ALL LEVEL TIERS ROADMAP */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+      {/* ------------------------------------------------------------- */}
+      <div className="p-6 rounded-2xl bg-[#0d1017]/95 backdrop-blur-xl border border-white/[0.08] shadow-2xl space-y-4">
         
         <div className="space-y-0.5">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
+          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-emerald-400" />
             <span>Career Tier Roadmap & Job Unlocks</span>
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-400">
             Higher verified levels unlock executive leadership, staff architect roles, and higher compensation tiers.
           </p>
         </div>
@@ -293,10 +299,10 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
                 key={lvl}
                 className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                   isCurrent
-                    ? 'bg-emerald-50/60 border-emerald-500 shadow-xs'
+                    ? 'bg-emerald-500/10 border-emerald-500/40 shadow-xs'
                     : isUnlocked
-                    ? 'bg-slate-50 border-slate-200'
-                    : 'bg-slate-50/40 border-slate-200 opacity-60'
+                    ? 'bg-[#131620] border-white/10'
+                    : 'bg-[#0f121a]/50 border-white/5 opacity-50'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -308,16 +314,16 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-sm text-slate-900">
+                      <h3 className="font-bold text-sm text-white">
                         {info.name}
                       </h3>
                       {isCurrent && (
-                        <span className="px-2 py-0.2 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
+                        <span className="px-2 py-0.2 rounded-full bg-emerald-500 text-black text-[10px] font-black">
                           Current Level
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500">{info.desc}</p>
+                    <p className="text-xs text-slate-400">{info.desc}</p>
                   </div>
                 </div>
 
@@ -327,8 +333,8 @@ export const ProgressionDashboard: React.FC<ProgressionDashboardProps> = ({
                       key={idx}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-medium ${
                         isUnlocked
-                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                          : 'bg-slate-200 text-slate-500'
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
+                          : 'bg-white/5 text-slate-500'
                       }`}
                     >
                       {isUnlocked ? '✓ ' : '🔒 '}
