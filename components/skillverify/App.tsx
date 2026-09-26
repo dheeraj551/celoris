@@ -245,6 +245,17 @@ export default function App() {
   // clickable (its id comes from the row inserted into public.public_jobs).
   const [alerts, setAlerts] = useState<LiveAlertNotification[]>([
     {
+      id: 'alert-init-video-editor',
+      jobId: '81521596-1826-4c46-ae9b-c2ab2c9c01b0',
+      jobTitle: 'Creative Video Editor (Reels & YouTube)',
+      company: 'Celoris Designs',
+      salaryRange: 'Contract / Per Video',
+      matchScore: 95,
+      timestamp: 'Just now',
+      read: false,
+      tier: 'public',
+    },
+    {
       id: 'alert-init-1',
       jobId: 'c81a9b48-1924-4c5a-91c9-a2149657f5e7',
       jobTitle: 'AI Video Editor',

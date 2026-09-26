@@ -23,6 +23,10 @@ export interface Room {
       set — not gated on `status === 'Full'`, so a trainer's note is never
       silently hidden just because the room still has open seats. */
   nextBatchInfo?: string;
+  /** Structured schedule (see lib/class-schedule.ts): first/next class start (ISO), length, weekly repeat. */
+  nextClassAt?: string | null;
+  classDurationMinutes?: number | null;
+  repeatsWeekly?: boolean | null;
   /** True when a student code is set on this room — the code ITSELF never
       reaches the browser via this Room object; only this boolean does (see
       app/social/page.tsx fetchRooms, which never selects the actual code

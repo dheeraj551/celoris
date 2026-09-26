@@ -8,7 +8,7 @@
 // image is ready -> show /api/ai/jobs/{id}/image (served from R2).
 // No request ever waits for the render, so Vercel's timeouts can't kill it.
 
-export type AiApp = 'vio' | 'photolite' | 'motion-swap'
+export type AiApp = 'vio' | 'photolite' | 'motion-swap' | 'seedance'
 export type AiJobStatus = 'queued' | 'in_progress' | 'completed' | 'failed' | 'nsfw' | 'canceled'
 
 export interface AiJob {
@@ -22,7 +22,10 @@ export interface AiJob {
   imageUrl: string | null
   /** Motion Swap Studio only */
   videoUrl?: string | null
-  mode?: 'motion-transfer' | 'objects-swap' | null
+  mode?: string | null
+  /** Seedance only: 'seedance-2.5' | 'seedance-2.0' */
+  model?: string | null
+  generateAudio?: boolean | null
   resolution?: string | null
   durationSeconds?: number | null
   creditsCharged: number
@@ -50,13 +53,32 @@ export interface StartJobInput {
   /** '1k' | '2k' | '4k' for images, '480p' | '720p' for Motion Swap videos */
   resolution?: '1k' | '2k' | '4k' | '480p' | '720p'
   quality?: 'low' | 'medium' | 'high'
-  /** Motion Swap Studio */
-  mode?: 'motion-transfer' | 'objects-swap'
+  /** Motion Swap Studio ('motion-transfer' | 'objects-swap') or Seedance mode */
+  mode?: string
+  /** Seedance */
+  model?: string
+  duration?: number
+  generateAudio?: boolean
+  videos?: { key?: string; url?: string; token?: string }[]
+  audios?: { key?: string; url?: string; token?: string }[]
+  sourceJobId?: string
   videoKey?: string
   videoUrl?: string
   videoToken?: string
   videoName?: string
   durationSeconds?: number
+}
+
+/** What the member's plan allows in Motion Swap Studio (from GET /api/ai/jobs?app=motion-swap). */
+export interface MotionSwapPlan {
+  tier: 'free' | 'basic' | 'pro' | 'max'
+  label: string
+  allowed: boolean
+  upgradeTo: string
+  freeGensPerMonth: number
+  freeGensLeft: number
+  freeMaxSeconds: number
+  maxParallelVideos: number
 }
 
 export class AiJobsError extends Error {
@@ -193,7 +215,7 @@ export function uploadReferenceImage(source: string | Blob | HTMLCanvasElement, 
 // ------------------------------------------------------------------ jobs
 
 export function startAiJob(input: StartJobInput) {
-  return call<{ job: AiJob; balance?: number }>('/api/ai/jobs', {
+  return call<{ job: AiJob; balance?: number; freeGen?: boolean; plan?: MotionSwapPlan }>('/api/ai/jobs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -210,9 +232,11 @@ export async function listAiJobs(app: AiApp): Promise<AiJob[]> {
 }
 
 /** History plus the current wallet balance (null if it couldn't be read). */
-export async function listAiJobsWithBalance(app: AiApp): Promise<{ jobs: AiJob[]; balance: number | null }> {
-  const res = await call<{ jobs: AiJob[]; balance?: number | null }>(`/api/ai/jobs?app=${app}`)
-  return { jobs: res.jobs || [], balance: typeof res.balance === 'number' ? res.balance : null }
+export async function listAiJobsWithBalance(
+  app: AiApp
+): Promise<{ jobs: AiJob[]; balance: number | null; plan: MotionSwapPlan | null }> {
+  const res = await call<{ jobs: AiJob[]; balance?: number | null; plan?: MotionSwapPlan | null }>(`/api/ai/jobs?app=${app}`)
+  return { jobs: res.jobs || [], balance: typeof res.balance === 'number' ? res.balance : null, plan: res.plan || null }
 }
 
 // ------------------------------------------------------------------ videos
@@ -258,13 +282,14 @@ function putWithProgress(url: string, file: Blob, headers: Record<string, string
  */
 export async function uploadReferenceVideo(
   file: File,
-  onProgress?: (fraction: number) => void
+  onProgress?: (fraction: number) => void,
+  purpose?: 'seedance'
 ): Promise<{ videoKey?: string; videoUrl?: string; videoToken?: string }> {
   const contentType = file.type || 'video/mp4'
   const r2 = await call<{ uploadUrl: string; headers: Record<string, string>; videoKey: string }>('/api/ai/video-uploads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contentType, size: file.size }),
+    body: JSON.stringify({ contentType, size: file.size, purpose }),
   })
   try {
     await putWithProgress(r2.uploadUrl, file, r2.headers, onProgress)
@@ -276,7 +301,7 @@ export async function uploadReferenceVideo(
   const hf = await call<{ uploadUrl: string; headers: Record<string, string>; videoUrl: string; videoToken: string }>('/api/ai/video-uploads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contentType, size: file.size, target: 'higgsfield' }),
+    body: JSON.stringify({ contentType, size: file.size, target: 'higgsfield', purpose }),
   })
   await putWithProgress(hf.uploadUrl, file, { 'Content-Type': contentType, ...hf.headers }, onProgress)
   return { videoUrl: hf.videoUrl, videoToken: hf.videoToken }

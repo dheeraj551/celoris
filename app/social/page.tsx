@@ -110,7 +110,7 @@ export default function App() {
       // /api/social/cafe/verify-admit-code for where they're actually checked.
       const { data, error } = await supabase
         .from('cafe_classrooms')
-        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_student_code, requires_trainer_code, course_url, course_title, course_image_url, course_description, created_at')
+        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_student_code, requires_trainer_code, course_url, course_title, course_image_url, course_description, next_class_at, class_duration_minutes, repeats_weekly, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -135,6 +135,9 @@ export default function App() {
             maxStudents: r.max_students || 15,
             status: (r.class_status as any) || 'Ready',
             nextBatchInfo: r.next_batch_info || undefined,
+            nextClassAt: r.next_class_at || null,
+            classDurationMinutes: r.class_duration_minutes ?? null,
+            repeatsWeekly: !!r.repeats_weekly,
             requiresStudentCode: !!r.requires_student_code,
             requiresTrainerCode: !!r.requires_trainer_code,
             courseUrl: r.course_url || undefined,

@@ -39,7 +39,7 @@ export async function GET() {
       ...outgoing.map((r: any) => r.to_user),
       ...blocks.map((b: any) => b.blocked_id),
     ])
-    const person = (id: string) => profiles.get(id) || { id, name: 'Celoris member', avatarUrl: null }
+    const person = (id: string) => profiles.get(id) || { id, name: 'Celoris member', avatarUrl: null, bio: null, interests: [] as string[] }
 
     const last = new Map<string, { body: string; at: string; fromMe: boolean }>()
     for (const m of recentRes.data || []) {
@@ -60,10 +60,13 @@ export async function GET() {
         avatarUrl: me.avatar_url,
         shareCode: me.share_code,
         isBanned: me.is_banned,
+        discoverable: me.discoverable,
+        bio: me.bio || '',
+        interests: me.interests || [],
       },
       friends,
-      incoming: incoming.map((r: any) => ({ id: r.id, from: person(r.from_user), createdAt: r.created_at })),
-      outgoing: outgoing.map((r: any) => ({ id: r.id, to: person(r.to_user), createdAt: r.created_at })),
+      incoming: incoming.map((r: any) => ({ id: r.id, from: person(r.from_user), createdAt: r.created_at, source: r.source })),
+      outgoing: outgoing.map((r: any) => ({ id: r.id, to: person(r.to_user), createdAt: r.created_at, source: r.source })),
       blocked: blocks.map((b: any) => person(b.blocked_id)),
     })
   } catch (err: any) {

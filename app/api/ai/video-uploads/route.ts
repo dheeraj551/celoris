@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server'
 import { createR2SignedUploadUrl } from '@/lib/r2-client'
 import { currentUserId } from '../_auth'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import {
   createHiggsfieldUploadSlot,
-  getWalletBalance,
   HiggsfieldError,
-  MOTION_SWAP_REQUIRED_CREDITS,
   referenceVideoKeyPrefix,
   signVideoUrl,
 } from '@/lib/higgsfield-jobs'
+import { getEntitlements, loadPlanSettings, upgradeLabelFor } from '@/lib/plans'
+import { SEEDANCE_AUDIO_TYPES } from '@/lib/seedance-shared'
 
-// Motion Swap Studio reference videos. Videos are far bigger than Vercel's
+// Reference videos for Motion Swap Studio, and reference videos + audio for
+// Seedance (Video Studio; { purpose: 'seedance' }). Videos are far bigger than Vercel's
 // ~4.5 MB request limit, so the browser uploads them directly:
 //  - default: a 10-minute signed PUT URL into our private R2 bucket
 //    (the job route later gives Higgsfield a 24-hour signed read link);
@@ -30,25 +32,40 @@ export async function POST(request: Request) {
     const userId = await currentUserId()
     if (!userId) return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 })
 
-    const balance = await getWalletBalance(userId)
-    if (balance === null) return NextResponse.json({ error: "Couldn't check your credits. Please try again." }, { status: 503 })
-    if (balance < MOTION_SWAP_REQUIRED_CREDITS) {
+    const body = await request.json().catch(() => ({}))
+    const forSeedance = body.purpose === 'seedance'
+
+    // Only members whose plan includes the tool can upload for it.
+    const admin = createSupabaseClientForServer()
+    const ent = await getEntitlements(admin, userId)
+    const allowed = forSeedance ? ent.features.seedance_2_5 || ent.features.seedance_2_0 : ent.features.motion_swap
+    if (!allowed) {
+      const settings = await loadPlanSettings(admin)
+      const upgradeTo = upgradeLabelFor(settings, forSeedance ? 'seedance_2_0' : 'motion_swap')
       return NextResponse.json(
-        { error: `Motion Swap Studio needs at least ${MOTION_SWAP_REQUIRED_CREDITS.toLocaleString('en-IN')} credits in your wallet. Your balance is ${balance.toLocaleString('en-IN')} credits.` },
+        {
+          error: `${forSeedance ? 'Seedance' : 'Motion Swap Studio'} is included with the ${upgradeTo} plan and above. You're on ${ent.label}.`,
+          code: 'needs_plan',
+        },
         { status: 403 }
       )
     }
 
-    const body = await request.json().catch(() => ({}))
     const contentType = String(body.contentType || '').toLowerCase()
     const size = Number(body.size)
-    const ext = TYPES[contentType]
-    if (!ext) return NextResponse.json({ error: 'Please upload an MP4 or MOV video.' }, { status: 400 })
+    const isAudio = forSeedance && !!SEEDANCE_AUDIO_TYPES[contentType]
+    const ext = TYPES[contentType] || (isAudio ? SEEDANCE_AUDIO_TYPES[contentType] : undefined)
+    if (!ext) {
+      return NextResponse.json(
+        { error: forSeedance ? 'Please upload an MP4/MOV video or an MP3/WAV/M4A audio file.' : 'Please upload an MP4 or MOV video.' },
+        { status: 400 }
+      )
+    }
     if (!Number.isFinite(size) || size <= 0) return NextResponse.json({ error: 'Invalid file.' }, { status: 400 })
     if (size > MAX_BYTES) return NextResponse.json({ error: 'That video is too large. Please keep it under 200 MB.' }, { status: 413 })
 
     if (body.target === 'higgsfield') {
-      if (contentType !== 'video/mp4') {
+      if (!isAudio && contentType !== 'video/mp4') {
         return NextResponse.json({ error: 'Please convert the video to MP4 and try again.' }, { status: 400 })
       }
       const slot = await createHiggsfieldUploadSlot(contentType)

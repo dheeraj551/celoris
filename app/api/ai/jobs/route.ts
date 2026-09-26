@@ -9,9 +9,7 @@ import {
   GENJUTSU_RESOLUTIONS,
   GenjutsuInput,
   GenjutsuResolution,
-  MAX_ACTIVE_VIDEO_JOBS_PER_USER,
   MOTION_SWAP_CREDITS_PER_SECOND,
-  MOTION_SWAP_REQUIRED_CREDITS,
   motionSwapBilledSeconds,
   motionSwapPrice,
   referenceVideoUrlForKey,
@@ -23,23 +21,27 @@ import {
   HiggsfieldError,
   JobRow,
   MarketingStudioInput,
-  MAX_ACTIVE_JOBS_PER_USER,
   PRO_REQUIRED_CREDITS,
   publicJob,
   refreshJob,
   submitMarketingStudioImage,
 } from '@/lib/higgsfield-jobs'
+import { getEntitlements, istMonthStartIso, loadPlanSettings, upgradeLabelFor, type Entitlements } from '@/lib/plans'
+import { seedancePlanInfo, startSeedanceJob } from '@/lib/seedance-server'
 
 // POST: start a generation (returns immediately with a job id).
 //       ViO Studio / PhotoLite → Marketing Studio image;
-//       Motion Swap Studio → Higgsfield Genjutsu video (motion transfer / object swap).
+//       Motion Swap Studio → Higgsfield Genjutsu video (motion transfer / object swap);
+//       Video Studio → Seedance 2.5 / 2.0 video (lib/seedance-server.ts).
 // GET:  the signed-in user's recent generations for one app (history).
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
 const RATIOS = new Set(['auto', '1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9'])
-const APPS = new Set(['vio', 'photolite', 'motion-swap'])
+const APPS = new Set(['vio', 'photolite', 'motion-swap', 'seedance'])
+const IMAGE_APPS = ['vio', 'photolite']
+const VIDEO_APPS = ['motion-swap', 'seedance']
 
 // Genjutsu needs an instruction; these are used when the user leaves the
 // prompt switched off.
@@ -61,6 +63,7 @@ export async function POST(request: Request) {
     const app = body.app as AiApp
     if (!APPS.has(app)) return NextResponse.json({ error: 'Unknown app.' }, { status: 400 })
     if (app === 'motion-swap') return await startGenjutsuJob(userId, body)
+    if (app === 'seedance') return await startSeedanceJob(userId, body)
 
     const presetId = typeof body.presetId === 'string' && /^[0-9a-f-]{8,64}$/i.test(body.presetId) ? body.presetId : null
     const prompt = typeof body.prompt === 'string' ? body.prompt.trim().slice(0, 5000) : ''
@@ -91,14 +94,27 @@ export async function POST(request: Request) {
         { status: 403 }
       )
     }
+    // How many images can generate at once depends on the member's plan.
+    const ent = await getEntitlements(admin, userId)
+    const maxImages = ent.features.max_parallel_images
     const { count } = await admin
       .from('ai_generations')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
+      .in('app', IMAGE_APPS)
       .in('status', ['queued', 'in_progress'])
       .gte('created_at', new Date(Date.now() - 15 * 60 * 1000).toISOString())
-    if ((count || 0) >= MAX_ACTIVE_JOBS_PER_USER) {
-      return NextResponse.json({ error: `You already have ${count} images generating. Please wait for one to finish.` }, { status: 429 })
+    if ((count || 0) >= maxImages) {
+      return NextResponse.json(
+        {
+          error:
+            maxImages === 1
+              ? `Your ${ent.label} plan runs one image at a time. Please wait for it to finish, or upgrade to run more at once.`
+              : `Your ${ent.label} plan runs ${maxImages} images at a time. Please wait for one to finish.`,
+          code: 'parallel_limit',
+        },
+        { status: 429 }
+      )
     }
 
     const input: MarketingStudioInput = {
@@ -196,7 +212,13 @@ export async function GET(request: Request) {
     const refreshed = await Promise.all(pending.map((r) => refreshJob(r).catch(() => r)))
     const byId = new Map(refreshed.map((r) => [r.id, r]))
     const balance = await getWalletBalance(userId).catch(() => null)
-    return NextResponse.json({ jobs: rows.map((r) => publicJob(byId.get(r.id) || r)), balance })
+    const plan =
+      app === 'motion-swap'
+        ? await motionSwapPlanInfo(admin, userId).catch(() => null)
+        : app === 'seedance'
+          ? await seedancePlanInfo(admin, userId).catch(() => null)
+          : null
+    return NextResponse.json({ jobs: rows.map((r) => publicJob(byId.get(r.id) || r)), balance, plan })
   } catch (err: any) {
     console.error('[AI jobs] list error:', err)
     return NextResponse.json({ error: err?.message || 'Could not load your history.' }, { status: 500 })
@@ -262,37 +284,56 @@ async function startGenjutsuJob(userId: string, body: any) {
       { status: 400 }
     )
   }
-  const cost = motionSwapPrice(durationSeconds, resolution)
-
-  // Needs 5,000 credits in the wallet to use, and enough for this video;
-  // the price is charged up front and refunded automatically if the render
-  // fails. One video at a time.
-  const balance = await getWalletBalance(userId)
-  if (balance === null) return NextResponse.json({ error: "Couldn't check your credits. Please try again." }, { status: 503 })
-  const needed = Math.max(MOTION_SWAP_REQUIRED_CREDITS, cost)
-  if (balance < needed) {
+  // Motion Swap is a plan feature (Pro and Max by default — see Admin →
+  // Plans). Each plan can include a few free renders a month for short
+  // videos; everything else is charged per second, up front, and refunded
+  // automatically if the render fails.
+  const planInfo = await motionSwapPlanInfo(admin, userId)
+  if (!planInfo.allowed) {
     return NextResponse.json(
       {
-        error:
-          balance < MOTION_SWAP_REQUIRED_CREDITS
-            ? `Motion Swap Studio needs at least ${MOTION_SWAP_REQUIRED_CREDITS.toLocaleString('en-IN')} credits in your wallet. This video costs ${cost.toLocaleString('en-IN')} credits; your balance is ${balance.toLocaleString('en-IN')}.`
-            : `This video costs ${cost.toLocaleString('en-IN')} credits (${motionSwapBilledSeconds(durationSeconds)} s × ${MOTION_SWAP_CREDITS_PER_SECOND[resolution]} credits at ${resolution}). Your balance is ${balance.toLocaleString('en-IN')}.`,
-        currentBalance: balance,
-        requiredCredits: needed,
-        price: cost,
+        error: `Motion Swap Studio is included with the ${planInfo.upgradeTo} plan and above. You're on ${planInfo.label}.`,
+        code: 'needs_plan',
+        plan: planInfo,
       },
       { status: 403 }
+    )
+  }
+  const freeGen = planInfo.freeGensLeft > 0 && durationSeconds <= planInfo.freeMaxSeconds + 0.5
+  const cost = freeGen ? 0 : motionSwapPrice(durationSeconds, resolution)
+
+  const balance = await getWalletBalance(userId)
+  if (balance === null) return NextResponse.json({ error: "Couldn't check your credits. Please try again." }, { status: 503 })
+  if (balance < cost) {
+    return NextResponse.json(
+      {
+        error: `This video costs ${cost.toLocaleString('en-IN')} credits (${motionSwapBilledSeconds(durationSeconds)} s × ${MOTION_SWAP_CREDITS_PER_SECOND[resolution]} credits at ${resolution}). Your balance is ${balance.toLocaleString('en-IN')}.`,
+        code: 'needs_credits',
+        currentBalance: balance,
+        requiredCredits: cost,
+        price: cost,
+      },
+      { status: 402 }
     )
   }
   const { count } = await admin
     .from('ai_generations')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
-    .eq('app', app)
+    .in('app', VIDEO_APPS)
     .in('status', ['queued', 'in_progress'])
     .gte('created_at', new Date(Date.now() - 45 * 60 * 1000).toISOString())
-  if ((count || 0) >= MAX_ACTIVE_VIDEO_JOBS_PER_USER) {
-    return NextResponse.json({ error: 'You already have a video rendering. Please wait for it to finish.' }, { status: 429 })
+  if ((count || 0) >= planInfo.maxParallelVideos) {
+    return NextResponse.json(
+      {
+        error:
+          planInfo.maxParallelVideos === 1
+            ? 'You already have a video rendering. Please wait for it to finish.'
+            : `Your ${planInfo.label} plan renders ${planInfo.maxParallelVideos} videos at a time. Please wait for one to finish.`,
+        code: 'parallel_limit',
+      },
+      { status: 429 }
+    )
   }
 
   const input: GenjutsuInput = {
@@ -321,6 +362,8 @@ async function startGenjutsuJob(userId: string, body: any) {
         creditsPerSecond: MOTION_SWAP_CREDITS_PER_SECOND[resolution],
         videoKey: typeof body.videoKey === 'string' ? body.videoKey : null,
         videoName: typeof body.videoName === 'string' ? body.videoName.slice(0, 120) : null,
+        // Counted against the plan's free renders for the month.
+        freeGen,
       },
     })
     .select('*')
@@ -350,8 +393,13 @@ async function startGenjutsuJob(userId: string, body: any) {
       .eq('id', row.id)
       .select('*')
       .single()
-    console.log('[AI jobs] submitted motion-swap', row.id, '→', submitted.requestId)
-    return NextResponse.json({ job: publicJob(updated as JobRow), balance: newBalance })
+    console.log('[AI jobs] submitted motion-swap', row.id, '→', submitted.requestId, freeGen ? '(free render)' : '')
+    return NextResponse.json({
+      job: publicJob(updated as JobRow),
+      balance: newBalance,
+      freeGen,
+      plan: { ...planInfo, freeGensLeft: Math.max(0, planInfo.freeGensLeft - (freeGen ? 1 : 0)) },
+    })
   } catch (err: any) {
     const message = err instanceof HiggsfieldError ? err.message : `Couldn't reach Higgsfield: ${err?.message || 'unknown error'}`
     await admin.from('ai_generations').update({ status: 'failed', error: message, completed_at: new Date().toISOString() }).eq('id', row.id)
@@ -364,5 +412,33 @@ async function startGenjutsuJob(userId: string, body: any) {
       { error: message, balance: refundedBalance ?? balance },
       { status: err instanceof HiggsfieldError ? err.status : 502 }
     )
+  }
+}
+
+// What the member's plan allows in Motion Swap Studio right now.
+async function motionSwapPlanInfo(admin: ReturnType<typeof createSupabaseClientForServer>, userId: string) {
+  const [ent, settings] = await Promise.all([getEntitlements(admin, userId), loadPlanSettings(admin)])
+  const f = ent.features
+  let used = 0
+  if (f.motion_swap && f.motion_swap_free_gens > 0) {
+    const { count } = await admin
+      .from('ai_generations')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('app', 'motion-swap')
+      .eq('params->>freeGen', 'true')
+      .in('status', ['queued', 'in_progress', 'completed'])
+      .gte('created_at', istMonthStartIso())
+    used = count || 0
+  }
+  return {
+    tier: ent.tier as Entitlements['tier'],
+    label: ent.label,
+    allowed: f.motion_swap,
+    upgradeTo: upgradeLabelFor(settings, 'motion_swap'),
+    freeGensPerMonth: f.motion_swap ? f.motion_swap_free_gens : 0,
+    freeGensLeft: f.motion_swap ? Math.max(0, f.motion_swap_free_gens - used) : 0,
+    freeMaxSeconds: f.motion_swap_free_max_seconds,
+    maxParallelVideos: f.max_parallel_videos,
   }
 }

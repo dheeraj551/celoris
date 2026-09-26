@@ -13,6 +13,7 @@ import Header from './components/Header';
 import Canvas from './components/Canvas';
 import Timeline from './components/Timeline';
 import PropertiesPanel from './components/PropertiesPanel';
+import { CDanceStudio } from './components/CDanceStudio';
 
 export interface Clip {
     id: string;
@@ -98,6 +99,7 @@ export default function VideoStudio() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
 
+    const [viewMode, setViewMode] = useState<'editor' | 'cdance'>('editor');
     const [activeTab, setActiveTab] = useState('captions');
     const [textElement, setTextElement] = useState<TextElement>(initialTextElement);
 
@@ -456,56 +458,103 @@ export default function VideoStudio() {
                     canRedo={historyIndex < history.length - 1}
                     onDownload={handleDownload}
                     isExporting={isExporting}
+                    viewMode={viewMode}
+                    onViewModeChange={(mode) => {
+                        setViewMode(mode);
+                        if (mode === 'cdance') setActiveTab('cdance');
+                        else if (activeTab === 'cdance') setActiveTab('captions');
+                    }}
                 />
 
                 <div className="flex flex-1 overflow-hidden">
-                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-                    <SecondarySidebar
-                        activeTab={activeTab}
-                        setVideoSrc={setVideoSrc}
-                        setVideoName={setVideoName}
-                        setDuration={setDuration}
-                        setClips={setClips}
-                        currentTime={currentTime}
-                        selectedClipId={selectedClipId}
+                    <Sidebar 
+                        activeTab={viewMode === 'cdance' ? 'cdance' : activeTab} 
+                        setActiveTab={(tab) => {
+                            if (tab === 'cdance') {
+                                setViewMode('cdance');
+                                setActiveTab('cdance');
+                            } else {
+                                setViewMode('editor');
+                                setActiveTab(tab);
+                            }
+                        }} 
                     />
 
-                    <div className="flex flex-col flex-1 overflow-hidden relative">
-                        <Canvas
-                            textElement={textElement}
-                            setTextElement={setTextElement}
-                            activeTool={activeTool}
-                            canvasZoom={canvasZoom}
-                            setCanvasZoom={setCanvasZoom}
-                            isPlaying={isPlaying}
-                            currentTime={currentTime}
-                            setCurrentTime={setCurrentTime}
-                            videoSrc={videoSrc}
-                            setDuration={setDuration}
-                            clips={clips}
+                    {viewMode === 'cdance' ? (
+                        <CDanceStudio 
+                            onInsertToTimeline={(url, title) => {
+                                const newClipId = `clip-${Date.now()}`;
+                                const newClip: Clip = {
+                                    id: newClipId,
+                                    type: 'video',
+                                    start: 0,
+                                    end: 15,
+                                    content: title,
+                                    color: '#ccff00',
+                                    trackIndex: 1
+                                };
+                                setVideoSrc(url);
+                                setVideoName(title);
+                                setDuration(15);
+                                setClips(prev => [newClip, ...prev.filter(c => c.type !== 'video')]);
+                                setViewMode('editor');
+                                setActiveTab('captions');
+                            }}
+                            onBackToEditor={() => {
+                                setViewMode('editor');
+                                setActiveTab('captions');
+                            }}
                         />
-                        <Timeline
-                            isPlaying={isPlaying}
-                            setIsPlaying={setIsPlaying}
-                            currentTime={currentTime}
-                            setCurrentTime={setCurrentTime}
-                            duration={duration}
-                            setDuration={setDuration}
-                            videoName={videoName}
-                            clips={clips}
-                            setClips={setClips}
-                            selectedClipId={selectedClipId}
-                            setSelectedClipId={setSelectedClipId}
-                        />
-                        <PropertiesPanel
-                            textElement={textElement}
-                            setTextElement={setTextElement}
-                            clips={clips}
-                            setClips={setClips}
-                            selectedClipId={selectedClipId}
-                            duration={duration}
-                        />
-                    </div>
+                    ) : (
+                        <>
+                            <SecondarySidebar
+                                activeTab={activeTab}
+                                setVideoSrc={setVideoSrc}
+                                setVideoName={setVideoName}
+                                setDuration={setDuration}
+                                setClips={setClips}
+                                currentTime={currentTime}
+                                selectedClipId={selectedClipId}
+                            />
+
+                            <div className="flex flex-col flex-1 overflow-hidden relative">
+                                <Canvas
+                                    textElement={textElement}
+                                    setTextElement={setTextElement}
+                                    activeTool={activeTool}
+                                    canvasZoom={canvasZoom}
+                                    setCanvasZoom={setCanvasZoom}
+                                    isPlaying={isPlaying}
+                                    currentTime={currentTime}
+                                    setCurrentTime={setCurrentTime}
+                                    videoSrc={videoSrc}
+                                    setDuration={setDuration}
+                                    clips={clips}
+                                />
+                                <Timeline
+                                    isPlaying={isPlaying}
+                                    setIsPlaying={setIsPlaying}
+                                    currentTime={currentTime}
+                                    setCurrentTime={setCurrentTime}
+                                    duration={duration}
+                                    setDuration={setDuration}
+                                    videoName={videoName}
+                                    clips={clips}
+                                    setClips={setClips}
+                                    selectedClipId={selectedClipId}
+                                    setSelectedClipId={setSelectedClipId}
+                                />
+                                <PropertiesPanel
+                                    textElement={textElement}
+                                    setTextElement={setTextElement}
+                                    clips={clips}
+                                    setClips={setClips}
+                                    selectedClipId={selectedClipId}
+                                    duration={duration}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

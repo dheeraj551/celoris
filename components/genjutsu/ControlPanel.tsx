@@ -19,8 +19,9 @@ import {
   Check
 } from 'lucide-react';
 import Link from 'next/link';
-import { ModelOption, MOTION_SWAP_CREDITS_PER_SECOND, MOTION_SWAP_MIN_BALANCE, motionSwapPrice } from './genjutsuData';
+import { ModelOption, MOTION_SWAP_CREDITS_PER_SECOND, isFreeRender, motionSwapPrice } from './genjutsuData';
 import type { ReferenceVideoState } from './GenjutsuStudio';
+import type { MotionSwapPlan } from '@/lib/ai-jobs-client';
 
 export interface UploadedFile {
   id: string;
@@ -55,6 +56,7 @@ export function ControlPanel({
   generationStage,
   generateError,
   needsPro,
+  plan,
   onGenerate,
 }: {
   activeTab: 'create' | 'edit' | 'motion-control';
@@ -79,8 +81,10 @@ export function ControlPanel({
   generationStage: string;
   generateError: string | null;
   needsPro: boolean;
+  plan: MotionSwapPlan | null;
   onGenerate: () => void;
 }) {
+  const freeRender = !!referenceVideo && isFreeRender(plan, referenceVideo.seconds);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -458,7 +462,7 @@ export function ControlPanel({
               {generateError}
               {needsPro && (
                 <Link href="/pricing" className="block mt-1 font-semibold text-[#d4f634] hover:underline">
-                  Get more credits →
+                  {plan && !plan.allowed ? 'See plans →' : 'Get more credits →'}
                 </Link>
               )}
             </div>
@@ -488,15 +492,24 @@ export function ControlPanel({
             >
               {referenceVideo?.status === 'uploading'
                 ? 'Uploading video…'
+                : plan && !plan.allowed
+                ? `Available with ${plan.upgradeTo} plan`
                 : referenceVideo
-                ? `Generate · ${motionSwapPrice(referenceVideo.seconds, quality).toLocaleString('en-IN')} credits`
+                ? freeRender
+                  ? `Generate · Free (${plan!.freeGensLeft} left this month)`
+                  : `Generate · ${motionSwapPrice(referenceVideo.seconds, quality).toLocaleString('en-IN')} credits`
                 : 'Generate'}
             </button>
           )}
           <p className="text-[10px] text-zinc-500 text-center leading-snug">
             {MOTION_SWAP_CREDITS_PER_SECOND['720p']} credits/sec at 720p · {MOTION_SWAP_CREDITS_PER_SECOND['480p']} at 480p
-            (min 4 s). Needs {MOTION_SWAP_MIN_BALANCE.toLocaleString('en-IN')} credits in your wallet; failed renders are
-            refunded. Renders take a few minutes — finished videos appear in History.
+            (min 4 s).{' '}
+            {plan && plan.allowed && plan.freeGensPerMonth > 0
+              ? `Your ${plan.label} plan includes ${plan.freeGensPerMonth} free renders a month for videos up to ${plan.freeMaxSeconds} s (${plan.freeGensLeft} left). `
+              : plan && !plan.allowed
+              ? `Included with the ${plan.upgradeTo} plan and above. `
+              : ''}
+            Failed renders are refunded. Renders take a few minutes — finished videos appear in History.
           </p>
         </div>
 

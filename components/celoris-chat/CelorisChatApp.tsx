@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Ban,
   Check,
+  Compass,
   Copy,
   Flag,
   Lock,
@@ -31,6 +32,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { createClient } from "@/lib/supabase-client";
+import DiscoverPane from "./DiscoverPane";
+import CallLayer, { type CallLayerHandle, type CallStatusInfo } from "./CallLayer";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,16 +43,27 @@ interface Person {
   id: string;
   name: string;
   avatarUrl: string | null;
+  bio?: string | null;
+  interests?: string[];
 }
 interface Friend extends Person {
   lastMessage: { body: string; at: string; fromMe: boolean } | null;
   unread: number;
 }
 interface MeData {
-  me: { id: string; name: string; avatarUrl: string | null; shareCode: string; isBanned: boolean };
+  me: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+    shareCode: string;
+    isBanned: boolean;
+    discoverable: boolean;
+    bio: string;
+    interests: string[];
+  };
   friends: Friend[];
-  incoming: { id: string; from: Person; createdAt: string }[];
-  outgoing: { id: string; to: Person; createdAt: string }[];
+  incoming: { id: string; from: Person; createdAt: string; source?: "code" | "discover" }[];
+  outgoing: { id: string; to: Person; createdAt: string; source?: "code" | "discover" }[];
   blocked: Person[];
 }
 interface Message {
@@ -172,7 +186,10 @@ export default function CelorisChatApp() {
 
   const [data, setData] = useState<MeData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [tab, setTab] = useState<"chats" | "requests">("chats");
+  const [tab, setTab] = useState<"chats" | "requests" | "discover">("chats");
+  const [discoverRefresh, setDiscoverRefresh] = useState(0);
+  const [callInfo, setCallInfo] = useState<CallStatusInfo | null>(null);
+  const callLayerRef = useRef<CallLayerHandle>(null);
   const [search, setSearch] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -186,7 +203,7 @@ export default function CelorisChatApp() {
   const [addCode, setAddCode] = useState("");
   const [addBusy, setAddBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [reportOpen, setReportOpen] = useState(false);
+  const [reportTarget, setReportTarget] = useState<Person | null>(null);
   const [reportReason, setReportReason] = useState(REPORT_REASONS[0].value);
   const [reportDetails, setReportDetails] = useState("");
   const [reportAlsoBlock, setReportAlsoBlock] = useState(true);
@@ -223,11 +240,13 @@ export default function CelorisChatApp() {
   // ?add=CEL-XXXXXXXX (from a shared invite link) opens the add dialog prefilled.
   useEffect(() => {
     try {
-      const code = new URLSearchParams(window.location.search).get("add");
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("add");
       if (code) {
         setAddCode(code);
         setAddOpen(true);
       }
+      if (params.get("tab") === "discover") setTab("discover");
     } catch {
       // ignore
     }
@@ -478,16 +497,20 @@ export default function CelorisChatApp() {
   };
 
   const submitReport = async () => {
-    if (!activeId) return;
+    if (!reportTarget) return;
+    const target = reportTarget;
     try {
       await api("/api/celoris-chat/report", {
         method: "POST",
-        body: JSON.stringify({ userId: activeId, reason: reportReason, details: reportDetails }),
+        body: JSON.stringify({ userId: target.id, reason: reportReason, details: reportDetails }),
       });
-      setReportOpen(false);
+      setReportTarget(null);
       setReportDetails("");
-      if (reportAlsoBlock) await setBlock(activeId, true);
-      flash("ok", "Thanks — the Celoris team will review this conversation.");
+      if (reportAlsoBlock) {
+        await setBlock(target.id, true);
+        setDiscoverRefresh((n) => n + 1);
+      }
+      flash("ok", "Thanks — the Celoris team will review this report.");
     } catch (e: any) {
       flash("error", e.message);
     }
@@ -572,8 +595,8 @@ export default function CelorisChatApp() {
         </div>
 
         {/* Tabs */}
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-xl bg-white/[0.04] p-1">
-          {(["chats", "requests"] as const).map((t) => (
+        <div className="mt-3 grid grid-cols-3 gap-1 rounded-xl bg-white/[0.04] p-1">
+          {(["chats", "requests", "discover"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -581,7 +604,8 @@ export default function CelorisChatApp() {
                 tab === t ? "bg-[#131a28] text-white" : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              {t === "chats" ? "Chats" : "Requests"}
+              {t === "discover" && <Compass className="inline w-3.5 h-3.5 mr-1 -mt-0.5" />}
+              {t === "chats" ? "Chats" : t === "requests" ? "Requests" : "Discover"}
               {t === "requests" && requestCount > 0 && (
                 <span className="ml-1.5 inline-flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-sky-500 text-[10px] text-white">
                   {requestCount}
@@ -598,7 +622,23 @@ export default function CelorisChatApp() {
         </div>
       )}
 
-      {tab === "chats" ? (
+      {tab === "discover" ? (
+        <DiscoverPane
+          settings={{ discoverable: data.me.discoverable, bio: data.me.bio, interests: data.me.interests }}
+          isBanned={data.me.isBanned}
+          api={api}
+          flash={flash}
+          Avatar={Avatar}
+          refreshKey={discoverRefresh}
+          onSettingsSaved={(s) => setData((d) => (d ? { ...d, me: { ...d.me, ...s } } : d))}
+          onRequestSent={loadMe}
+          onReport={(p) => {
+            setReportReason(REPORT_REASONS[0].value);
+            setReportAlsoBlock(true);
+            setReportTarget(p);
+          }}
+        />
+      ) : tab === "chats" ? (
         <>
           <div className="px-4 pt-3">
             <div className="relative">
@@ -672,7 +712,13 @@ export default function CelorisChatApp() {
                     <Avatar person={r.from} size={36} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white truncate">{r.from.name}</p>
-                      <p className="text-[11px] text-slate-500">{timeLabel(r.createdAt)}</p>
+                      {r.source === "discover" && r.from.bio && (
+                        <p className="text-[11px] text-slate-400 line-clamp-2 break-words">{r.from.bio}</p>
+                      )}
+                      <p className="text-[11px] text-slate-500">
+                        {r.source === "discover" ? "Found you in Discover · " : ""}
+                        {timeLabel(r.createdAt)}
+                      </p>
                     </div>
                     <button
                       onClick={() => respond(r.id, "accept")}
@@ -740,10 +786,12 @@ export default function CelorisChatApp() {
         </div>
       )}
 
-      <div className="px-4 py-2.5 border-t border-white/[0.06] text-[11px] text-slate-500 flex items-center gap-1.5">
-        <ShieldCheck className="w-3.5 h-3.5 text-sky-400/70 shrink-0" />
-        Phone numbers, emails and outside chat links are hidden automatically.
-      </div>
+      {tab !== "discover" && (
+        <div className="px-4 py-2.5 border-t border-white/[0.06] text-[11px] text-slate-500 flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-sky-400/70 shrink-0" />
+          Phone numbers, emails and outside chat links are hidden automatically.
+        </div>
+      )}
     </aside>
   );
 
@@ -760,22 +808,27 @@ export default function CelorisChatApp() {
           <p className="text-[11px] text-slate-500">Friend on Celoris Chat</p>
         </div>
         <div className="flex items-center gap-0.5">
-          <button
-            title="Voice calls are coming soon for Premium members"
-            onClick={() => flash("ok", "Voice and video calls are coming soon for Premium members.")}
-            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5"
-          >
-            <Phone className="w-4.5 h-4.5" />
-            <Lock className="w-2.5 h-2.5 absolute bottom-1 right-1 text-amber-400" />
-          </button>
-          <button
-            title="Video calls are coming soon for Premium members"
-            onClick={() => flash("ok", "Voice and video calls are coming soon for Premium members.")}
-            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5"
-          >
-            <Video className="w-4.5 h-4.5" />
-            <Lock className="w-2.5 h-2.5 absolute bottom-1 right-1 text-amber-400" />
-          </button>
+          {(["voice", "video"] as const).map((kind) => {
+            const locked = !!callInfo && !callInfo.canCall;
+            return (
+              <button
+                key={kind}
+                title={
+                  locked
+                    ? `${kind === "voice" ? "Voice" : "Video"} calls need a paid plan`
+                    : `${kind === "voice" ? "Voice" : "Video"} call · ${callInfo?.ratePerMinute ?? 1} credit/min`
+                }
+                onClick={() => callLayerRef.current?.startCall(active.id, kind)}
+                disabled={data.me.isBanned}
+                className={`relative p-2 rounded-lg hover:bg-white/5 disabled:opacity-40 ${
+                  locked ? "text-slate-500 hover:text-slate-300" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                {kind === "voice" ? <Phone className="w-4.5 h-4.5" /> : <Video className="w-4.5 h-4.5" />}
+                {locked && <Lock className="w-2.5 h-2.5 absolute bottom-1 right-1 text-amber-400" />}
+              </button>
+            );
+          })}
           <button onClick={() => setMenuOpen((o) => !o)} className="p-2 rounded-lg text-slate-300 hover:bg-white/10" title="More">
             <MoreVertical className="w-4.5 h-4.5" />
           </button>
@@ -785,7 +838,9 @@ export default function CelorisChatApp() {
           <div className="absolute right-3 top-full mt-1 z-20 w-52 rounded-xl border border-white/10 bg-[#111725] shadow-2xl py-1 text-sm">
             <button
               onClick={() => {
-                setReportOpen(true);
+                setReportReason(REPORT_REASONS[0].value);
+                setReportAlsoBlock(true);
+                setReportTarget(active);
                 setMenuOpen(false);
               }}
               className="w-full flex items-center gap-2 px-3 py-2 text-left text-slate-200 hover:bg-white/5"
@@ -898,10 +953,12 @@ export default function CelorisChatApp() {
       {listPane}
       {conversationPane}
 
+      <CallLayer ref={callLayerRef} meId={data.me.id} people={data.friends} flash={flash} Avatar={Avatar} onStatus={setCallInfo} />
+
       {/* Toast */}
       {notice && (
         <div
-          className={`absolute left-1/2 -translate-x-1/2 bottom-20 z-40 max-w-[90%] rounded-xl px-4 py-2.5 text-sm shadow-2xl border ${
+          className={`absolute left-1/2 -translate-x-1/2 bottom-20 z-[70] max-w-[90%] rounded-xl px-4 py-2.5 text-sm shadow-2xl border ${
             notice.kind === "ok" ? "bg-[#0f1a2e] border-sky-500/30 text-sky-100" : "bg-[#2a1116] border-rose-500/30 text-rose-100"
           }`}
         >
@@ -948,12 +1005,12 @@ export default function CelorisChatApp() {
       )}
 
       {/* Report dialog */}
-      {reportOpen && active && (
-        <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setReportOpen(false)}>
+      {reportTarget && (
+        <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setReportTarget(null)}>
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0d1320] p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-base font-extrabold text-white">Report {active.name}</h3>
+            <h3 className="text-base font-extrabold text-white">Report {reportTarget.name}</h3>
             <p className="mt-1 text-xs text-slate-400">
-              The Celoris team will see this report and your recent messages with this person — nothing else.
+              The Celoris team will see this report and your recent messages with this person (if any) — nothing else.
             </p>
             <div className="mt-4 space-y-1.5">
               {REPORT_REASONS.map((r) => (
@@ -979,10 +1036,10 @@ export default function CelorisChatApp() {
             />
             <label className="mt-2 flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
               <input type="checkbox" checked={reportAlsoBlock} onChange={(e) => setReportAlsoBlock(e.target.checked)} className="accent-sky-500" />
-              Also block {active.name}
+              Also block {reportTarget.name}
             </label>
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setReportOpen(false)} className="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/10 text-sm font-semibold">
+              <button onClick={() => setReportTarget(null)} className="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/10 text-sm font-semibold">
                 Cancel
               </button>
               <button onClick={submitReport} className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold">

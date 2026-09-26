@@ -28,6 +28,7 @@ export const APP_CREDIT_COST: Record<AiApp, number> = {
   vio: 0, // ViO Studio: Pro-gated (2,000 credits) but not charged per image
   photolite: 100, // PhotoLite: 100 credits per image, refunded if it fails
   'motion-swap': 0, // Motion Swap Studio is priced per second — see motionSwapPrice()
+  seedance: 0, // Seedance is priced per second — see lib/seedance-shared.ts
 }
 
 /** Minimum wallet balance needed to use Motion Swap Studio at all. */
@@ -54,8 +55,16 @@ export function motionSwapPrice(seconds: number, resolution: '480p' | '720p'): n
 export const MAX_ACTIVE_JOBS_PER_USER = 3
 const STALE_AFTER_MS = 15 * 60 * 1000
 
-export type AiApp = 'vio' | 'photolite' | 'motion-swap'
-export const APP_LABEL: Record<AiApp, string> = { vio: 'ViO Studio', photolite: 'PhotoLite', 'motion-swap': 'Motion Swap Studio' }
+export type AiApp = 'vio' | 'photolite' | 'motion-swap' | 'seedance'
+export const APP_LABEL: Record<AiApp, string> = {
+  vio: 'ViO Studio',
+  photolite: 'PhotoLite',
+  'motion-swap': 'Motion Swap Studio',
+  seedance: 'Seedance (Video Studio)',
+}
+/** Apps whose result is a video (served by /api/ai/jobs/{id}/video). */
+export const VIDEO_APPS: AiApp[] = ['motion-swap', 'seedance']
+export const isVideoApp = (app: AiApp) => VIDEO_APPS.indexOf(app) !== -1
 
 // Genjutsu renders take minutes, so a video job is allowed longer before we
 // give up on it than an image.
@@ -172,6 +181,17 @@ export async function submitGenjutsu(input: GenjutsuInput): Promise<{ requestId:
   if (!requestId) {
     console.warn('[Higgsfield] Genjutsu submit returned no request_id. Keys:', Object.keys(body || {}))
     throw new HiggsfieldError('Higgsfield accepted the video job but returned no request id.', 502)
+  }
+  return { requestId: String(requestId), status: normalizeStatus(body?.status) }
+}
+
+/** Starts any Higgsfield model that follows the usual request/status flow. */
+export async function submitHiggsfieldModel(path: string, input: Record<string, unknown>): Promise<{ requestId: string; status: JobStatus }> {
+  const body = await hf(path, { method: 'POST', body: JSON.stringify(input) })
+  const requestId = body?.request_id || body?.id
+  if (!requestId) {
+    console.warn('[Higgsfield] submit returned no request_id for', path, 'keys:', Object.keys(body || {}))
+    throw new HiggsfieldError('Higgsfield accepted the job but returned no request id.', 502)
   }
   return { requestId: String(requestId), status: normalizeStatus(body?.status) }
 }
@@ -388,7 +408,7 @@ export async function refreshJob(job: JobRow): Promise<JobRow> {
     return markFailed('failed', 'The job was never accepted by Higgsfield.')
   }
 
-  const isVideo = job.app === 'motion-swap'
+  const isVideo = isVideoApp(job.app)
   const staleAfter = isVideo ? VIDEO_STALE_AFTER_MS : STALE_AFTER_MS
 
   let remote
@@ -474,9 +494,11 @@ export function publicJob(job: JobRow) {
     prompt: job.params?.displayPrompt ?? job.params?.prompt ?? '',
     presetName: job.params?.presetName ?? null,
     aspectRatio: job.params?.aspect_ratio ?? null,
-    imageUrl: job.status === 'completed' && job.result_key && job.app !== 'motion-swap' ? `/api/ai/jobs/${job.id}/image` : null,
-    videoUrl: job.status === 'completed' && job.result_key && job.app === 'motion-swap' ? `/api/ai/jobs/${job.id}/video` : null,
+    imageUrl: job.status === 'completed' && job.result_key && !isVideoApp(job.app) ? `/api/ai/jobs/${job.id}/image` : null,
+    videoUrl: job.status === 'completed' && job.result_key && isVideoApp(job.app) ? `/api/ai/jobs/${job.id}/video` : null,
     mode: job.params?.mode ?? null,
+    model: job.params?.model ?? null,
+    generateAudio: typeof job.params?.generate_audio === 'boolean' ? job.params.generate_audio : null,
     resolution: job.params?.resolution ?? null,
     durationSeconds: typeof job.params?.durationSeconds === 'number' ? job.params.durationSeconds : null,
     creditsCharged: Number(job.credits_charged) || 0,
@@ -543,4 +565,25 @@ export async function referenceVideoUrlForKey(userId: string, key: string): Prom
     throw new HiggsfieldError('That reference video does not belong to your account.', 403, 'input')
   }
   return createR2SignedReadUrl(key, 24 * 60 * 60)
+}
+
+/**
+ * A link Higgsfield can download one of this user's finished videos from
+ * (to edit or extend a previous Seedance / Motion Swap result).
+ */
+export async function finishedVideoUrlForJob(userId: string, jobId: string): Promise<{ url: string; seconds: number | null }> {
+  if (!/^[0-9a-f-]{36}$/i.test(jobId)) throw new HiggsfieldError('Unknown video.', 400, 'input')
+  const admin = createSupabaseClientForServer()
+  const { data } = await admin
+    .from('ai_generations')
+    .select('app, status, result_key, params')
+    .eq('id', jobId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (!data || !isVideoApp(data.app as AiApp) || data.status !== 'completed' || !data.result_key) {
+    throw new HiggsfieldError('That video is not available to edit.', 404, 'input')
+  }
+  const url = data.result_key.startsWith('ext:') ? data.result_key.slice(4) : await createR2SignedReadUrl(data.result_key, 24 * 60 * 60)
+  const secs = Number(data.params?.outputSeconds ?? data.params?.durationSeconds)
+  return { url, seconds: Number.isFinite(secs) && secs > 0 ? secs : null }
 }

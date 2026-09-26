@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { currentUserId } from '../_auth'
 import { getWalletBalance, HiggsfieldError, PRO_REQUIRED_CREDITS, storeReferenceImage } from '@/lib/higgsfield-jobs'
+import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { getEntitlements } from '@/lib/plans'
 
 // Receives one reference image (product photo, model photo, or a PhotoLite
 // canvas layer), already downscaled in the browser, stores it in R2 and on
@@ -16,10 +18,16 @@ export async function POST(request: Request) {
     const userId = await currentUserId()
     if (!userId) return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 })
 
-    const balance = await getWalletBalance(userId)
-    if (balance === null) return NextResponse.json({ error: "Couldn't check your credits. Please try again." }, { status: 503 })
-    if (balance < PRO_REQUIRED_CREDITS) {
-      return NextResponse.json({ error: `This is a Pro feature (needs ${PRO_REQUIRED_CREDITS.toLocaleString('en-IN')} credits).` }, { status: 403 })
+    // Allowed for members whose plan includes a photo-based AI tool (Motion
+    // Swap, Seedance), or who have the Pro credit balance ViO / PhotoLite need.
+    const ent = await getEntitlements(createSupabaseClientForServer(), userId)
+    const planAllows = ent.features.motion_swap || ent.features.seedance_2_0 || ent.features.seedance_2_5
+    if (!planAllows) {
+      const balance = await getWalletBalance(userId)
+      if (balance === null) return NextResponse.json({ error: "Couldn't check your credits. Please try again." }, { status: 503 })
+      if (balance < PRO_REQUIRED_CREDITS) {
+        return NextResponse.json({ error: `This is a Pro feature (needs ${PRO_REQUIRED_CREDITS.toLocaleString('en-IN')} credits).` }, { status: 403 })
+      }
     }
 
     const { dataUrl } = await request.json().catch(() => ({}))

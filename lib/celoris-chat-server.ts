@@ -28,7 +28,13 @@ export interface ChatProfileRow {
   is_banned: boolean
   ban_reason: string | null
   code_reset_at: string | null
+  bio: string | null
+  interests: string[]
+  discoverable_since: string | null
 }
+
+const PROFILE_COLUMNS =
+  'user_id, share_code, display_name, avatar_url, discoverable, is_banned, ban_reason, code_reset_at, bio, interests, discoverable_since'
 
 export function jsonError(error: string, status = 400) {
   return NextResponse.json({ error }, { status })
@@ -99,7 +105,7 @@ export async function getOrCreateChatProfile(
 ): Promise<ChatProfileRow> {
   const { data: existing, error } = await admin
     .from('celoris_chat_profiles')
-    .select('user_id, share_code, display_name, avatar_url, discoverable, is_banned, ban_reason, code_reset_at')
+    .select(PROFILE_COLUMNS)
     .eq('user_id', user.id)
     .maybeSingle()
   if (error) throw new Error(`Chat profile lookup failed: ${error.message}`)
@@ -123,7 +129,7 @@ export async function getOrCreateChatProfile(
     const { data: created, error: insertError } = await admin
       .from('celoris_chat_profiles')
       .insert({ user_id: user.id, share_code: generateShareCode(), display_name: name, avatar_url: avatar })
-      .select('user_id, share_code, display_name, avatar_url, discoverable, is_banned, ban_reason, code_reset_at')
+      .select(PROFILE_COLUMNS)
       .single()
     if (!insertError && created) return created as ChatProfileRow
     // 23505 = unique violation: either the code collided (retry) or a
@@ -131,7 +137,7 @@ export async function getOrCreateChatProfile(
     if (insertError?.code !== '23505') throw new Error(`Chat profile create failed: ${insertError?.message}`)
     const { data: raced } = await admin
       .from('celoris_chat_profiles')
-      .select('user_id, share_code, display_name, avatar_url, discoverable, is_banned, ban_reason, code_reset_at')
+      .select(PROFILE_COLUMNS)
       .eq('user_id', user.id)
       .maybeSingle()
     if (raced) return raced as ChatProfileRow
@@ -139,15 +145,29 @@ export async function getOrCreateChatProfile(
   throw new Error('Could not create a share code, please try again')
 }
 
+export interface PublicProfile {
+  id: string
+  name: string
+  avatarUrl: string | null
+  bio: string | null
+  interests: string[]
+}
+
 export async function getPublicProfiles(admin: AdminClient, ids: string[]) {
-  const map = new Map<string, { id: string; name: string; avatarUrl: string | null }>()
+  const map = new Map<string, PublicProfile>()
   if (ids.length === 0) return map
   const { data } = await admin
     .from('celoris_chat_profiles')
-    .select('user_id, display_name, avatar_url')
+    .select('user_id, display_name, avatar_url, bio, interests')
     .in('user_id', Array.from(new Set(ids)))
   for (const row of data || []) {
-    map.set(row.user_id, { id: row.user_id, name: row.display_name, avatarUrl: row.avatar_url })
+    map.set(row.user_id, {
+      id: row.user_id,
+      name: row.display_name,
+      avatarUrl: row.avatar_url,
+      bio: row.bio || null,
+      interests: row.interests || [],
+    })
   }
   return map
 }

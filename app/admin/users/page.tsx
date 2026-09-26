@@ -26,7 +26,9 @@ import {
     Trash2,
     Wallet,
     Eye,
-    EyeOff
+    EyeOff,
+    Crown,
+    SlidersHorizontal
 } from "lucide-react"
 
 import {
@@ -39,6 +41,8 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { MembershipPlanCard } from "@/components/admin/MembershipPlanCard"
+import { SetPlanDialog, activeTier, TIER_STYLE, type MemberPlan, type TierInfo } from "@/components/admin/SetPlanDialog"
+import type { PlanTier } from "@/lib/plan-features"
 import { usePresence } from "@/components/providers/PresenceProvider"
 
 interface User {
@@ -68,6 +72,11 @@ export default function UserManagementPage() {
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [recharging, setRecharging] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
+    // Membership plans (Free / Basic / Pro / Max)
+    const [plans, setPlans] = useState<Record<string, MemberPlan>>({})
+    const [tiers, setTiers] = useState<TierInfo[]>([])
+    const [planUser, setPlanUser] = useState<User | null>(null)
+    const [planFilter, setPlanFilter] = useState<PlanTier | "all">("all")
     const router = useRouter()
     const { onlineUsers } = usePresence()
 
@@ -124,7 +133,29 @@ export default function UserManagementPage() {
         }
     }
 
+    const fetchPlans = async () => {
+        try {
+            const [plansRes, tiersRes] = await Promise.all([
+                fetch('/api/admin/plans?list=1', { cache: 'no-store' }),
+                fetch('/api/admin/plan-settings', { cache: 'no-store' }),
+            ])
+            if (plansRes.ok) {
+                const { plans: rows } = await plansRes.json()
+                const map: Record<string, MemberPlan> = {}
+                for (const row of rows || []) map[row.user_id] = row
+                setPlans(map)
+            }
+            if (tiersRes.ok) {
+                const { tiers: t } = await tiersRes.json()
+                setTiers((t || []).map((x: any) => ({ tier: x.tier, label: x.label, monthlyCredits: x.monthlyCredits })))
+            }
+        } catch (error) {
+            console.error("Error fetching plans:", error)
+        }
+    }
+
     const fetchUsers = async () => {
+        fetchPlans()
         try {
             const response = await fetch('/api/admin/users')
             if (!response.ok) {
@@ -262,10 +293,12 @@ export default function UserManagementPage() {
     }
 
     const filteredUsers = users.filter(user =>
+        (planFilter === "all" || activeTier(plans[user.id]) === planFilter) && (
         user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.id.toLowerCase().includes(searchQuery.toLowerCase())
+        user.id.toLowerCase().includes(searchQuery.toLowerCase()))
     )
+    const tierLabel = (t: PlanTier) => tiers.find(x => x.tier === t)?.label || t
 
     if (loading) {
         return (
@@ -301,6 +334,20 @@ export default function UserManagementPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
+                        <Link
+                            href="/admin/plans"
+                            className="inline-flex items-center gap-2 h-9 px-3 rounded-md border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 text-sm"
+                        >
+                            <SlidersHorizontal className="h-4 w-4" />
+                            <span>Plan settings</span>
+                        </Link>
+                        <Link
+                            href="/admin/xp"
+                            className="inline-flex items-center gap-2 h-9 px-3 rounded-md border border-lime-400/40 text-lime-300 hover:bg-lime-400/10 text-sm"
+                        >
+                            <span className="font-bold">XP</span>
+                            <span>settings</span>
+                        </Link>
                         <Button
                             variant="outline"
                             size="sm"
@@ -344,7 +391,17 @@ export default function UserManagementPage() {
                                     className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 focus:ring-blue-500"
                                 />
                             </div>
-                            {/* Add more filters here if needed */}
+                            <select
+                                value={planFilter}
+                                onChange={(e) => setPlanFilter(e.target.value as PlanTier | "all")}
+                                className="h-10 px-3 rounded-md bg-slate-900 border border-slate-700 text-white text-sm"
+                                title="Filter by plan"
+                            >
+                                <option value="all">All plans</option>
+                                {(["free", "basic", "pro", "max"] as PlanTier[]).map(t => (
+                                    <option key={t} value={t}>{tierLabel(t)}</option>
+                                ))}
+                            </select>
                         </div>
                     </CardContent>
                 </Card>
@@ -362,6 +419,7 @@ export default function UserManagementPage() {
                                         <TableHead className="text-slate-400">User</TableHead>
                                         <TableHead className="text-slate-400">Status</TableHead>
                                         <TableHead className="text-slate-400">Role</TableHead>
+                                        <TableHead className="text-slate-400">Plan</TableHead>
                                         <TableHead className="text-slate-400">Wallet</TableHead>
                                         <TableHead className="text-slate-400">Joined</TableHead>
                                         <TableHead className="text-slate-400 text-right">Actions</TableHead>
@@ -370,7 +428,7 @@ export default function UserManagementPage() {
                                 <TableBody>
                                     {filteredUsers.length === 0 ? (
                                         <TableRow className="border-slate-700">
-                                            <TableCell colSpan={5} className="text-center py-8 text-slate-500">
+                                            <TableCell colSpan={7} className="text-center py-8 text-slate-500">
                                                 No users found
                                             </TableCell>
                                         </TableRow>
@@ -430,6 +488,31 @@ export default function UserManagementPage() {
                                                         </span>
                                                     </TableCell>
                                                     <TableCell>
+                                                        {(() => {
+                                                            const p = plans[user.id]
+                                                            const t = activeTier(p)
+                                                            return (
+                                                                <button
+                                                                    onClick={() => setPlanUser(user)}
+                                                                    className="flex flex-col items-start gap-0.5 text-left"
+                                                                    title="Change plan"
+                                                                >
+                                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${TIER_STYLE[t]}`}>
+                                                                        {tierLabel(t)}
+                                                                    </span>
+                                                                    {t !== "free" && (
+                                                                        <span className="text-[11px] text-slate-400">
+                                                                            {p?.expires_at ? `until ${new Date(p.expires_at).toLocaleDateString()}` : "no end date"}
+                                                                        </span>
+                                                                    )}
+                                                                    {t === "free" && p && p.plan_tier !== "free" && (
+                                                                        <span className="text-[11px] text-red-400">{tierLabel(p.plan_tier)} expired</span>
+                                                                    )}
+                                                                </button>
+                                                            )
+                                                        })()}
+                                                    </TableCell>
+                                                    <TableCell>
                                                         <span className="text-emerald-400 font-medium">
                                                             ₹{user.wallet_balance?.toFixed(2) || '0.00'}
                                                         </span>
@@ -459,6 +542,15 @@ export default function UserManagementPage() {
                                                                 ) : (
                                                                     <Eye className="w-4 h-4" />
                                                                 )}
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-amber-400 hover:text-amber-300 hover:bg-amber-900/20"
+                                                                onClick={() => setPlanUser(user)}
+                                                                title="Set plan"
+                                                            >
+                                                                <Crown className="w-4 h-4" />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
@@ -494,6 +586,25 @@ export default function UserManagementPage() {
                 </Card>
             </div>
 
+
+            <SetPlanDialog
+                open={!!planUser}
+                onOpenChange={(open) => { if (!open) setPlanUser(null) }}
+                member={planUser ? { id: planUser.id, name: planUser.full_name || planUser.username || "member" } : null}
+                current={planUser ? plans[planUser.id] || null : null}
+                tiers={tiers}
+                onSaved={({ plan, creditsAdded, walletBalance }) => {
+                    setPlans(prev => ({ ...prev, [plan.user_id]: { ...prev[plan.user_id], ...plan } }))
+                    if (walletBalance !== null) {
+                        setUsers(prev => prev.map(u => u.id === plan.user_id ? { ...u, wallet_balance: walletBalance } : u))
+                    }
+                    alert(
+                        plan.plan_tier === "free"
+                            ? "Plan removed."
+                            : `Saved: now on ${tierLabel(plan.plan_tier)}.${creditsAdded > 0 ? ` ${creditsAdded.toLocaleString("en-IN")} credits added to their wallet.` : ""}`
+                    )
+                }}
+            />
 
             <Dialog open={rechargeModalOpen} onOpenChange={setRechargeModalOpen}>
                 <DialogContent className="bg-slate-800 border-slate-700 text-white">

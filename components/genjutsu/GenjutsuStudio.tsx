@@ -11,7 +11,7 @@ import {
   PRESET_MOTIONS,
   PresetMotion,
   GenerationHistoryItem,
-  MOTION_SWAP_MIN_BALANCE,
+  isFreeRender,
   motionSwapPrice,
 } from './genjutsuData';
 import {
@@ -26,6 +26,7 @@ import {
   AiJobsError,
   isPendingJob,
   listAiJobsWithBalance,
+  type MotionSwapPlan,
   readVideoDuration,
   startAiJob,
   uploadReferenceImage,
@@ -123,6 +124,9 @@ export function GenjutsuStudio() {
   // History, wallet & results
   const [history, setHistory] = useState<GenerationHistoryItem[]>([]);
   const [balance, setBalance] = useState<number | null>(null);
+  // What the member's plan allows here (Motion Swap is a Pro/Max feature,
+  // with a few free renders a month — set in Admin → Plans).
+  const [plan, setPlan] = useState<MotionSwapPlan | null>(null);
   const [activeResult, setActiveResult] = useState<ResultView | null>(null);
 
   // Generation Progress
@@ -183,9 +187,12 @@ export function GenjutsuStudio() {
         });
         upsertHistory(done);
         // A failed render is refunded — refresh the balance shown.
-        if (done.status !== 'completed' && done.creditsCharged > 0) {
+        if (done.status !== 'completed') {
           listAiJobsWithBalance('motion-swap')
-            .then(({ balance: b }) => b !== null && setBalance(b))
+            .then(({ balance: b, plan: p }) => {
+              if (b !== null) setBalance(b);
+              if (p) setPlan(p);
+            })
             .catch(() => {});
         }
         if (done.status === 'completed' && done.videoUrl) {
@@ -212,10 +219,12 @@ export function GenjutsuStudio() {
   useEffect(() => {
     let cancelled = false;
     listAiJobsWithBalance('motion-swap')
-      .then(({ jobs, balance: b }) => {
+      .then(({ jobs, balance: b, plan: p }) => {
         if (cancelled) return;
         setHistory(jobs.map(jobToHistory));
         setBalance(b);
+        setPlan(p);
+        if (p && !p.allowed) setNeedsPro(true);
         const pending = jobs.find(isPendingJob);
         if (pending) followJob(pending);
       })
@@ -338,16 +347,18 @@ export function GenjutsuStudio() {
       );
       return;
     }
-    // Quick check before uploading photos (the server checks again, using
+    // Quick checks before uploading photos (the server checks again, using
     // the video's real length).
-    const price = motionSwapPrice(referenceVideo.seconds, quality);
-    if (balance !== null && balance < Math.max(MOTION_SWAP_MIN_BALANCE, price)) {
+    if (plan && !plan.allowed) {
       setNeedsPro(true);
-      setGenerateError(
-        balance < MOTION_SWAP_MIN_BALANCE
-          ? `Motion Swap Studio needs at least ${MOTION_SWAP_MIN_BALANCE.toLocaleString('en-IN')} credits in your wallet. This video costs ${price.toLocaleString('en-IN')} credits; your balance is ${balance.toLocaleString('en-IN')}.`
-          : `This video costs ${price.toLocaleString('en-IN')} credits. Your balance is ${balance.toLocaleString('en-IN')}.`
-      );
+      setGenerateError(`Motion Swap Studio is included with the ${plan.upgradeTo} plan and above. You're on ${plan.label}.`);
+      return;
+    }
+    const free = isFreeRender(plan, referenceVideo.seconds);
+    const price = free ? 0 : motionSwapPrice(referenceVideo.seconds, quality);
+    if (balance !== null && balance < price) {
+      setNeedsPro(true);
+      setGenerateError(`This video costs ${price.toLocaleString('en-IN')} credits. Your balance is ${balance.toLocaleString('en-IN')}.`);
       return;
     }
 
@@ -370,7 +381,7 @@ export function GenjutsuStudio() {
       await Promise.all([worker(), worker(), worker(), worker()]);
 
       setGenerationStage('Sending to Higgsfield Genjutsu…');
-      const { job, balance: b } = await startAiJob({
+      const started = await startAiJob({
         app: 'motion-swap',
         mode,
         prompt: promptEnabled ? prompt.trim() : '',
@@ -382,11 +393,14 @@ export function GenjutsuStudio() {
         videoName: referenceVideo.name,
         durationSeconds: referenceVideo.seconds,
       });
+      const { job, balance: b } = started;
       if (typeof b === 'number') setBalance(b);
+      if (started.plan) setPlan(started.plan);
       upsertHistory(job);
       await followJob(job);
     } catch (err: any) {
-      if (err instanceof AiJobsError && err.status === 403) setNeedsPro(true);
+      if (err instanceof AiJobsError && (err.status === 403 || err.status === 402)) setNeedsPro(true);
+      if (err instanceof AiJobsError && err.data?.plan) setPlan(err.data.plan);
       setGenerateError(err?.message || 'Could not start the render.');
       setIsGenerating(false);
       setGenerationProgress(0);
@@ -479,6 +493,7 @@ export function GenjutsuStudio() {
           generationStage={generationStage}
           generateError={generateError}
           needsPro={needsPro}
+          plan={plan}
           onGenerate={handleGenerate}
         />
 

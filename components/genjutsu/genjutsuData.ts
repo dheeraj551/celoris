@@ -1,3 +1,4 @@
+import type { MotionSwapPlan } from '@/lib/ai-jobs-client';
 export interface PresetMotion {
   id: string;
   title: string;
@@ -55,7 +56,13 @@ export interface GenerationHistoryItem {
  * Wallet balance needed to use the studio, and the per-second price.
  * Keep in sync with lib/higgsfield-jobs.ts (the server is what charges).
  */
+/** @deprecated Motion Swap access now comes from the member's plan (Admin → Plans), not a wallet minimum. */
 export const MOTION_SWAP_MIN_BALANCE = 5000;
+
+/** True when this video fits in one of the plan's free renders this month. */
+export function isFreeRender(plan: MotionSwapPlan | null, seconds: number): boolean {
+  return !!plan && plan.allowed && plan.freeGensLeft > 0 && seconds <= plan.freeMaxSeconds + 0.5;
+}
 export const MOTION_SWAP_CREDITS_PER_SECOND: Record<string, number> = { '480p': 50, '720p': 100 };
 
 /** Billed on whole seconds, rounded up, minimum 4 s (same as the server). */

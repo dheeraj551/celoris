@@ -12,6 +12,7 @@ import { GlobalAd } from "@/components/GlobalAd"
 import { MotionProvider } from "@/components/providers/MotionProvider"
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider"
 import { SupportBotGate } from "@/components/SupportBotGate"
+import { XpGate } from "@/components/xp/XpGate"
 
 const inter = Inter({ subsets: ["latin"] })
 const outfit = Outfit({ subsets: ["latin"] })
@@ -216,6 +217,8 @@ export default function RootLayout({
 
                   <Footer />
                 </div>
+                {/* XP chip, +1 animations, daily check-in, "Did you know?" tips */}
+                <XpGate />
               </MotionProvider>
             </PresenceProvider>
           </AuthProvider>

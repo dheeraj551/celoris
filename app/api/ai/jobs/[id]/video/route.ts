@@ -3,7 +3,7 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { currentUserId } from '../../../_auth'
 import { signedResultUrl } from '@/lib/higgsfield-jobs'
 
-// A finished Motion Swap Studio video. Redirects to a short-lived signed R2
+// A finished Motion Swap Studio / Seedance video. Redirects to a short-lived signed R2
 // link (or Higgsfield's own link until the R2 copy is done) instead of
 // streaming the file through a serverless function — videos are large and
 // players need range requests. ?download=1 saves it as a file.
@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     .select('result_key, app')
     .eq('id', id)
     .eq('user_id', userId)
-    .eq('app', 'motion-swap')
+    .in('app', ['motion-swap', 'seedance'])
     .maybeSingle()
   if (!data?.result_key) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
@@ -35,7 +35,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     target = await signedResultUrl(
       data.result_key,
       60 * 60,
-      download ? `attachment; filename="celoris-motion-swap-${id.slice(0, 8)}.${ext}"` : undefined
+      download ? `attachment; filename="celoris-${data.app}-${id.slice(0, 8)}.${ext}"` : undefined
     )
   }
   return NextResponse.redirect(target, { status: 302, headers: { 'Cache-Control': 'private, no-store' } })

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Smartphone, RotateCw } from 'lucide-react';
+import { Smartphone, Monitor, Square, RotateCw, Maximize2, Move, Sparkles } from 'lucide-react';
 import { TextElement, Clip } from '../page';
+
+export type AspectRatioType = '9:16' | '16:9' | '1:1';
 
 interface CanvasProps {
   textElement: TextElement;
@@ -31,6 +33,8 @@ export default function Canvas({
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatioType>('9:16');
+  
   const [isDragging, setIsDragging] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
@@ -57,7 +61,6 @@ export default function Canvas({
   useEffect(() => {
     if (videoRef.current && activeVideoClip) {
       const targetTime = (currentTime - activeVideoClip.start) + (activeVideoClip.mediaOffset || 0);
-      // Only update video time if it's significantly different to avoid stuttering
       if (Math.abs(videoRef.current.currentTime - targetTime) > 0.5) {
         videoRef.current.currentTime = targetTime;
       }
@@ -99,7 +102,7 @@ export default function Canvas({
       const centerY = rect.top + (rect.height * textElement.y) / 100;
 
       const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-      setDragStart({ x: angle, y: 0 }); // store initial angle in x
+      setDragStart({ x: angle, y: 0 });
       setInitialRotation(textElement.rotation);
     }
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -120,8 +123,8 @@ export default function Canvas({
 
       setTextElement(prev => ({
         ...prev,
-        x: initialPos.x + deltaX,
-        y: initialPos.y + deltaY
+        x: Math.max(5, Math.min(95, initialPos.x + deltaX)),
+        y: Math.max(5, Math.min(95, initialPos.y + deltaY))
       }));
     } else if (isRotating && containerRef.current && activeTool === 'pointer') {
       const rect = containerRef.current.getBoundingClientRect();
@@ -167,32 +170,129 @@ export default function Canvas({
     }
   };
 
+  // Dimensions based on aspect ratio
+  const getAspectRatioStyle = () => {
+    switch (aspectRatio) {
+      case '16:9':
+        return {
+          aspectRatio: '16/9',
+          width: '88%',
+          maxWidth: '820px',
+          maxHeight: '85%'
+        };
+      case '1:1':
+        return {
+          aspectRatio: '1/1',
+          height: '80%',
+          maxHeight: '520px',
+          maxWidth: '520px'
+        };
+      case '9:16':
+      default:
+        return {
+          aspectRatio: '9/16',
+          height: '88%',
+          maxHeight: '100%',
+          maxWidth: '100%'
+        };
+    }
+  };
+
+  const getResolutionBadge = () => {
+    switch (aspectRatio) {
+      case '16:9': return '1920 × 1080 • YouTube';
+      case '1:1': return '1080 × 1080 • Square';
+      case '9:16':
+      default: return '1080 × 1920 • Reels / Shorts';
+    }
+  };
+
   return (
     <div
-      className={`flex-1 bg-[#0e0e0e] relative flex items-center justify-center overflow-hidden ${activeTool === 'hand' ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''}`}
+      className={`flex-1 relative flex items-center justify-center overflow-hidden bg-[#07080c] select-none ${
+        activeTool === 'hand' ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''
+      }`}
+      style={{
+        backgroundImage: `
+          radial-gradient(circle at center, rgba(16, 185, 129, 0.03) 0%, rgba(9, 11, 16, 0.95) 100%),
+          radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px)
+        `,
+        backgroundSize: '100% 100%, 24px 24px'
+      }}
       onPointerDown={activeTool === 'hand' ? handlePointerDown : undefined}
       onPointerMove={activeTool === 'hand' ? handlePointerMove : undefined}
       onPointerUp={activeTool === 'hand' ? handlePointerUp : undefined}
       onPointerCancel={activeTool === 'hand' ? handlePointerUp : undefined}
     >
-      {/* Aspect Ratio Selector */}
-      <div className="absolute top-4 left-4 bg-[#1a1a1a] rounded-md border border-white/10 p-1 flex flex-col gap-1 z-10">
+      {/* ------------------------------------------------------------- */}
+      {/* TOP FLOATING CONTROLS: ASPECT RATIO SWITCHER & RESOLUTION */}
+      {/* ------------------------------------------------------------- */}
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+        {/* Aspect Ratio Segmented Pill */}
+        <div className="bg-[#0f121a]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-1 flex items-center gap-1 shadow-2xl">
+          <button
+            type="button"
+            onClick={() => setAspectRatio('9:16')}
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              aspectRatio === '9:16'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+            }`}
+            title="9:16 Vertical (Reels, TikTok, Shorts)"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>9:16</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAspectRatio('16:9')}
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              aspectRatio === '16:9'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+            }`}
+            title="16:9 Landscape (YouTube, Cinema)"
+          >
+            <Monitor className="w-3.5 h-3.5" />
+            <span>16:9</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAspectRatio('1:1')}
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              aspectRatio === '1:1'
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+            }`}
+            title="1:1 Square (Instagram Posts)"
+          >
+            <Square className="w-3.5 h-3.5" />
+            <span>1:1</span>
+          </button>
+        </div>
+
+        {/* Resolution Badge */}
+        <div className="hidden sm:flex items-center gap-2 bg-[#0f121a]/80 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-2xl text-[11px] font-mono text-slate-300 shadow-xl">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>{getResolutionBadge()}</span>
+        </div>
+
+        {/* Fit to Screen Action */}
         <button
-          className="p-2 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors"
+          type="button"
           onClick={handleFitToScreen}
-          title="Fit to Screen"
+          className="p-2 rounded-2xl bg-[#0f121a]/80 backdrop-blur-xl hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white transition-all shadow-xl"
+          title="Reset Zoom & Fit to Screen"
         >
-          <Smartphone className="w-4 h-4" />
-        </button>
-        <div className="text-[10px] text-center text-gray-400 font-medium">9:16</div>
-        <button className="p-2 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-          </svg>
+          <Maximize2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Video Preview Area */}
+      {/* ------------------------------------------------------------- */}
+      {/* VIDEO PREVIEW VIEWPORT AREA */}
+      {/* ------------------------------------------------------------- */}
       <div
         className="relative w-full h-full flex items-center justify-center p-8 transition-transform duration-200 ease-out"
         style={{
@@ -201,18 +301,16 @@ export default function Canvas({
       >
         <div
           ref={containerRef}
-          className="relative bg-black rounded overflow-hidden shadow-2xl ring-1 ring-white/10"
-          style={{
-            aspectRatio: '9/16',
-            height: '100%',
-            maxHeight: '100%',
-            maxWidth: '100%'
-          }}
+          className="relative bg-black rounded-2xl overflow-hidden shadow-[0_20px_70px_rgba(0,0,0,0.85)] ring-1 ring-white/15 transition-all duration-300"
+          style={getAspectRatioStyle()}
         >
+          {/* Main Video Stream */}
           <video
             ref={videoRef}
             src={videoSrc || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}
-            className={`w-full h-full object-cover pointer-events-none select-none ${activeVideoClip ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-full h-full object-cover pointer-events-none select-none transition-opacity duration-300 ${
+              activeVideoClip ? 'opacity-100' : 'opacity-10'
+            }`}
             style={activeVideoClip ? {
               filter: `
                 blur(${activeVideoClip.blur ?? 0}px)
@@ -230,10 +328,23 @@ export default function Canvas({
             playsInline
           />
 
-          {/* Text Overlay */}
+          {/* Idle Placeholder when no active video clip */}
+          {!activeVideoClip && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-b from-[#0b0d14]/90 to-black/95 text-slate-400 p-6 text-center pointer-events-none">
+              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
+                <Sparkles className="w-6 h-6 text-emerald-400" />
+              </div>
+              <p className="text-sm font-bold text-white">Timeline Position Idle</p>
+              <p className="text-xs text-slate-500 max-w-xs">
+                Move playhead over a video clip or add media to preview.
+              </p>
+            </div>
+          )}
+
+          {/* Text Overlay Layer */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div
-              className="absolute pointer-events-auto cursor-move group"
+              className="absolute pointer-events-auto cursor-move group select-none"
               style={{
                 left: `${textElement.x}%`,
                 top: `${textElement.y}%`,
@@ -245,27 +356,33 @@ export default function Canvas({
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
             >
-              {/* Bounding Box */}
-              <div className="absolute -inset-2 border border-[#00a8ff] rounded-sm hidden group-hover:block pointer-events-none">
-                <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-nwse-resize"></div>
-                <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-nesw-resize"></div>
-                <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-swne-resize"></div>
-                <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border border-[#00a8ff] rounded-full pointer-events-auto cursor-nwse-resize"></div>
+              {/* Celoris Modern Bounding Box with Cyan & Emerald accents */}
+              <div className="absolute -inset-2.5 border-2 border-emerald-400/80 rounded-lg hidden group-hover:block pointer-events-none shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+                {/* 4 Corner resize handles */}
+                <div className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-emerald-500 rounded-full pointer-events-auto cursor-nwse-resize shadow-md" />
+                <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-emerald-500 rounded-full pointer-events-auto cursor-nesw-resize shadow-md" />
+                <div className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-emerald-500 rounded-full pointer-events-auto cursor-swne-resize shadow-md" />
+                <div className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-emerald-500 rounded-full pointer-events-auto cursor-nwse-resize shadow-md" />
 
-                {/* Rotate handle */}
+                {/* Connecting stem line */}
+                <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-emerald-400" />
+
+                {/* Rotate handle knob */}
                 <div
-                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md cursor-grab text-black pointer-events-auto"
+                  className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-6 h-6 bg-white hover:bg-emerald-400 border border-emerald-500 rounded-full flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing text-black pointer-events-auto transition-colors"
                   onPointerDown={handleRotatePointerDown}
+                  title="Rotate Title"
                 >
                   <RotateCw className="w-3 h-3 pointer-events-none" />
                 </div>
               </div>
 
+              {/* Rendered Text Element */}
               <h1
                 className={`font-bold whitespace-nowrap px-2 select-none ${getAnimationClass()}`}
                 style={{
                   fontFamily: textElement.fontFamily,
-                  fontSize: `${textElement.fontSize / 3}px`, // Scale down for preview
+                  fontSize: `${textElement.fontSize / 3}px`,
                   color: textElement.fill,
                   fontWeight: textElement.isBold ? 'bold' : 'normal',
                   fontStyle: textElement.isItalic ? 'italic' : 'normal',

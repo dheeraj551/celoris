@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { Crown, Search, Loader2 } from "lucide-react"
 
-// Admin: set a member's plan after their payment is confirmed. The plan gives
-// them priority in free-class queues (Max > Pro > Basic > Free) and held
-// seats for the first minutes of each class.
+// Admin: set a member's plan by email after their payment is confirmed (the
+// same thing the crown button in the users table does). The plan unlocks the
+// features set in Admin → Plans, adds its monthly credits, and gives priority
+// in free-class queues (Max > Pro > Basic > Free).
 
 const PLANS = [
   { id: "free", label: "Free" },
@@ -68,7 +69,11 @@ export function MembershipPlanCard() {
       const body = await res.json().catch(() => ({}))
       if (!res.ok) setMessage({ ok: false, text: body.error || "Could not save." })
       else {
-        setMessage({ ok: true, text: `Saved: ${email.trim()} is now on ${plan.toUpperCase()}.` })
+        const added = Number(body.credits_added) || 0
+        setMessage({
+          ok: true,
+          text: `Saved: ${email.trim()} is now on ${plan.toUpperCase()}.${added > 0 ? ` ${added.toLocaleString("en-IN")} credits added.` : ""}`,
+        })
         setCurrent(plan)
       }
     } catch {
@@ -87,7 +92,7 @@ export function MembershipPlanCard() {
         <h2 className="text-white font-semibold">Membership plans</h2>
       </div>
       <p className="text-sm text-slate-400 mb-4">
-        After confirming a payment, set the member's plan here. Members get priority in the free-class waiting lines and held seats for late arrivals.
+        After confirming a payment, set the member's plan here (or use the crown button in the table below). A new or upgraded plan adds its monthly credits right away and then every month; what each plan unlocks is set in Plan settings.
       </p>
       <div className="grid gap-3 md:grid-cols-[2fr_1.3fr_1fr_1.5fr_auto]">
         <div className="flex gap-2">
