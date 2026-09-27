@@ -53,6 +53,65 @@ interface Options {
   isHost: boolean;
   userId: string | undefined;
   displayName: string;
+  /** False when this student's plan doesn't include speaking — a call-on is then ignored. */
+  speakAllowedRef?: { current: boolean };
+}
+
+export interface MicrophoneOption {
+  id: string;
+  label: string;
+}
+
+// ---------------------------------------------------------------- microphone choice
+// Chrome/Edge list the OS default mic as deviceId "default" (and on Windows a
+// second "communications" alias). Without an explicit device the voice SDK can
+// end up on whichever mic it finds first (or fall back to another one when the
+// default is busy), so we ask for the OS default by name, and let people pick
+// a different one — remembered on this browser.
+const MIC_PREF_KEY = "celoris-room-microphone";
+
+function readMicPref(): string | null {
+  try {
+    return localStorage.getItem(MIC_PREF_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveMicPref(id: string) {
+  try {
+    if (id === "default") localStorage.removeItem(MIC_PREF_KEY);
+    else localStorage.setItem(MIC_PREF_KEY, id);
+  } catch {
+    // storage blocked — the choice just won't be remembered
+  }
+}
+
+async function listMicrophones(): Promise<MediaDeviceInfo[]> {
+  if (typeof navigator === "undefined" || !navigator.mediaDevices?.enumerateDevices) return [];
+  try {
+    const all = await navigator.mediaDevices.enumerateDevices();
+    // Empty ids = no permission yet. "communications" is a Windows alias of a real mic.
+    return all.filter((d) => d.kind === "audioinput" && d.deviceId && d.deviceId !== "communications");
+  } catch {
+    return [];
+  }
+}
+
+function micLabel(d: MediaDeviceInfo, i: number) {
+  if (d.deviceId === "default") {
+    const name = d.label.replace(/^default\s*-\s*/i, "").trim();
+    return name ? `System default (${name})` : "System default";
+  }
+  return d.label || `Microphone ${i + 1}`;
+}
+
+/** The mic to use: the one picked on this browser (if still plugged in), else the OS default. */
+function preferredMic(list: MediaDeviceInfo[]): string | undefined {
+  const saved = readMicPref();
+  if (saved && list.some((d) => d.deviceId === saved)) return saved;
+  if (list.some((d) => d.deviceId === "default")) return "default";
+  return undefined; // Firefox/Safari have no "default" entry; the browser's default applies.
 }
 
 const PALETTE = ["#6366f1", "#2563eb", "#f59e0b", "#10b981", "#ec4899", "#8b5cf6", "#06b6d4", "#f97316", "#14b8a6", "#ef4444", "#22c55e", "#f43f5e"];
@@ -80,7 +139,7 @@ function rowToChat(row: EventRow, me: string | undefined): RoomChatMessage {
   };
 }
 
-export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Options) {
+export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAllowedRef }: Options) {
   const supabase = useMemo(() => createClient(), []);
   const sid = useMemo(() => Math.random().toString(36).slice(2, 12), []);
 
@@ -102,6 +161,8 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
   const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
   const [remoteStreamingStrokes, setRemoteStreamingStrokes] = useState<Map<string, Stroke>>(new Map());
   const [trainerCursors, setTrainerCursors] = useState<Record<string, RemoteUser>>({});
+  const [microphones, setMicrophones] = useState<MicrophoneOption[]>([]);
+  const [selectedMicId, setSelectedMicId] = useState<string | null>(null);
 
   // ---------------------------------------------------------------- refs
   const boardRef = useRef<BoardState>(EMPTY_BOARD);
@@ -118,6 +179,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
   const trtcRef = useRef<any>(null);
   const trtcModRef = useRef<any>(null);
   const micReadyRef = useRef(false);
+  const selectedMicRef = useRef<string | null>(null);
   const sharingRef = useRef(false);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hostIdsRef = useRef<Set<string>>(new Set());
@@ -446,6 +508,38 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
     trackPresence();
   }, [handRaised, canSpeak, micOn, displayName, trackPresence]);
 
+  /**
+   * Refresh the microphone list and make sure we're on the right one: the
+   * saved choice if it's plugged in, otherwise the OS default. Re-applying
+   * "default" also follows the OS when its default mic changes (the SDK only
+   * re-captures if the default actually moved).
+   */
+  const syncMicrophones = useCallback(async (trtc: any) => {
+    const list = await listMicrophones();
+    setMicrophones(list.map((d, i) => ({ id: d.deviceId, label: micLabel(d, i) })));
+    if (!trtc || trtc !== trtcRef.current || !micReadyRef.current) return;
+
+    const wanted = preferredMic(list);
+    let actual: string | undefined;
+    try {
+      actual = trtc.getAudioTrack?.()?.getSettings?.().deviceId;
+    } catch {
+      actual = undefined;
+    }
+    if (wanted && (wanted !== actual || wanted === "default")) {
+      try {
+        // Keep the current mute state on the new device.
+        const muted = !(selfStateRef.current.micOn && selfStateRef.current.canSpeak);
+        await trtc.updateLocalAudio({ mute: muted, option: { microphoneId: wanted } });
+        actual = wanted;
+      } catch (e) {
+        console.warn("Whiteboard room: couldn't switch to the preferred microphone", e);
+      }
+    }
+    selectedMicRef.current = actual || wanted || null;
+    setSelectedMicId(selectedMicRef.current);
+  }, []);
+
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
@@ -455,6 +549,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
         .channel(`classroom_${roomId}`, { config: { presence: { key: userId } } })
         .on("broadcast", { event: "allow_speak" }, ({ payload }: any) => {
           if (payload?.userId !== userId) return;
+          if (!isHost && speakAllowedRef && !speakAllowedRef.current) return;
           setCanSpeak(true);
           setHandRaised(false);
           if (micReadyRef.current && trtcRef.current) {
@@ -609,9 +704,18 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
         trtc.enableAudioVolumeEvaluation(500);
 
         try {
-          await trtc.startLocalAudio();
+          // Ask for the OS default mic (or this browser's saved choice) by id.
+          const wanted = preferredMic(await listMicrophones());
+          try {
+            await trtc.startLocalAudio(wanted ? { option: { microphoneId: wanted } } : undefined);
+          } catch (firstErr) {
+            if (!wanted) throw firstErr;
+            // That mic is busy or gone — let the browser choose instead.
+            await trtc.startLocalAudio();
+          }
           micReadyRef.current = true;
           if (!isHost) await trtc.updateLocalAudio({ mute: true });
+          if (!cancelled) await syncMicrophones(trtc);
         } catch (deviceErr) {
           console.warn("Whiteboard room: microphone unavailable", deviceErr);
         }
@@ -636,6 +740,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
       const trtc = trtcRef.current;
       trtcRef.current = null;
       micReadyRef.current = false;
+      selectedMicRef.current = null;
       sharingRef.current = false;
       if (trtc) {
         (async () => {
@@ -661,6 +766,42 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, userId, isHost, queueRetryToken]);
+
+  // A mic plugged in / unplugged, or the OS default changed.
+  useEffect(() => {
+    if (!joined || typeof navigator === "undefined" || !navigator.mediaDevices?.addEventListener) return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const onChange = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        syncMicrophones(trtcRef.current).catch(() => undefined);
+      }, 400);
+    };
+    navigator.mediaDevices.addEventListener("devicechange", onChange);
+    return () => {
+      if (timer) clearTimeout(timer);
+      navigator.mediaDevices.removeEventListener("devicechange", onChange);
+    };
+  }, [joined, syncMicrophones]);
+
+  const selectMicrophone = useCallback(async (id: string) => {
+    const trtc = trtcRef.current;
+    saveMicPref(id);
+    if (!trtc || !micReadyRef.current) {
+      selectedMicRef.current = id;
+      setSelectedMicId(id);
+      return;
+    }
+    try {
+      const muted = !(selfStateRef.current.micOn && selfStateRef.current.canSpeak);
+      await trtc.updateLocalAudio({ mute: muted, option: { microphoneId: id } });
+      selectedMicRef.current = id;
+      setSelectedMicId(id);
+    } catch (e) {
+      console.error("Whiteboard room: microphone switch failed", e);
+      setBoardError("Couldn't switch to that microphone — another app may be using it.");
+    }
+  }, []);
 
   // ---------------------------------------------------------------- participants
   const participants: RoomParticipant[] = useMemo(() => {
@@ -792,6 +933,9 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName }: Optio
     canSpeak,
     handRaised,
     toggleMic,
+    microphones,
+    selectedMicId,
+    selectMicrophone,
     toggleHand,
     allowToSpeak,
     revokeSpeak,

@@ -11,6 +11,9 @@ import { Classroom3DCanvas } from './Classroom3DCanvas';
 import { StudentActionModal } from './StudentActionModal';
 import { ClassroomQueueGate } from './ClassroomQueueGate';
 import { Student, ChatMessage, CameraPreset } from '../types';
+import { useClassroomQA } from '@/components/classroom-qa/useClassroomQA';
+import { QuestionsPanel } from '@/components/classroom-qa/QuestionsPanel';
+import { SuperQuestionSpotlight } from '@/components/classroom-qa/SuperQuestionSpotlight';
 
 let client: IAgoraRTCClient;
 
@@ -125,10 +128,35 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     courseDescription: '',
   });
 
+  // Live Q&A: questions, Lecture/Q&A mode, Super Questions, and whether this
+  // person's plan lets them be called on to speak (trainers always can).
+  const qa = useClassroomQA({ roomId, userId: user?.id, enabled: !roomFullError });
+  const planLetsMeSpeak = isHost || (qa.me ? qa.me.canSpeak : !!qa.loadError);
+  const planLetsMeSpeakRef = useRef(planLetsMeSpeak);
+  planLetsMeSpeakRef.current = planLetsMeSpeak;
+  const lectureMode = qa.mode === 'lecture';
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showToast = (text: string) => {
+    setToast(text);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(null), 3500);
+  };
+
   const supabase = createClient();
   const AgoraRef = useRef<any>(null);
   const channelRef = useRef<any>(null);
   const heartbeatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Live handles for the Agora tracks. The Realtime handlers (trainer mutes /
+  // un-mutes a student) and the leave cleanup are created once, so they must
+  // read these refs — the state values they closed over are the first
+  // render's (null), which is why "trainer muted you" never silenced the mic.
+  const localAudioTrackRef = useRef<IMicrophoneAudioTrack | null>(null);
+  const localScreenTrackRef = useRef<ILocalVideoTrack | [ILocalVideoTrack, ILocalAudioTrack] | null>(null);
+  // Everyone we're hearing, keyed by uid, so the speaker button can silence them.
+  const remoteAudioRef = useRef<Map<string, any>>(new Map());
+  const soundMutedRef = useRef(false);
 
   const presenceTrack = (overrides: Partial<{ handRaised: boolean; canSpeak: boolean; micOn: boolean }> = {}) => {
     if (!channelRef.current || !user) return;
@@ -182,6 +210,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
       client.on('user-published', handleUserPublished);
       client.on('user-unpublished', handleUserUnpublished);
+      client.on('user-left', handleUserLeft);
       client.enableAudioVolumeIndicator();
       client.on('volume-indicator', (volumes: any[]) => {
         setVolumeByUid((prev) => {
@@ -208,6 +237,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       if (client) {
         client.off('user-published', handleUserPublished);
         client.off('user-unpublished', handleUserUnpublished);
+        client.off('user-left', handleUserLeft);
       }
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
@@ -282,6 +312,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       try {
         const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
         if (!isHost) await audioTrack.setMuted(true);
+        localAudioTrackRef.current = audioTrack;
         setLocalAudioTrack(audioTrack);
         await client.publish([audioTrack]);
       } catch (deviceErr) {
@@ -295,13 +326,22 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   };
 
   const leaveChannelInternal = async () => {
-    localAudioTrack?.close();
-    if (Array.isArray(localScreenTrack)) {
-      localScreenTrack[0].close();
-      if (localScreenTrack[1]) localScreenTrack[1].close();
-    } else if (localScreenTrack) {
-      localScreenTrack.close();
+    // Refs, not state: this also runs from the unmount cleanup, where the
+    // state values are stale — without this the mic stayed open after leaving.
+    localAudioTrackRef.current?.close();
+    localAudioTrackRef.current = null;
+    const screen = localScreenTrackRef.current;
+    if (Array.isArray(screen)) {
+      screen[0].close();
+      if (screen[1]) screen[1].close();
+    } else if (screen) {
+      screen.close();
     }
+    localScreenTrackRef.current = null;
+    remoteAudioRef.current.forEach((track) => {
+      try { track.stop(); } catch { /* already stopped */ }
+    });
+    remoteAudioRef.current.clear();
     await client?.leave();
     setJoined(false);
   };
@@ -313,7 +353,11 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
   const handleUserPublished = async (remoteUser: any, mediaType: 'audio' | 'video') => {
     await client.subscribe(remoteUser, mediaType);
-    if (mediaType === 'audio') remoteUser.audioTrack?.play();
+    if (mediaType === 'audio' && remoteUser.audioTrack) {
+      remoteAudioRef.current.set(String(remoteUser.uid), remoteUser.audioTrack);
+      // Respect the speaker button for people who start talking after it was pressed.
+      if (!soundMutedRef.current) remoteUser.audioTrack.play();
+    }
     if (mediaType === 'video' && remoteUser.videoTrack) {
       // Pull the raw MediaStreamTrack (rather than letting Agora's SDK
       // mount its own <video> into a DOM panel) so it can be sampled
@@ -323,13 +367,33 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     }
   };
 
-  const handleUserUnpublished = (_remoteUser: any, mediaType: 'audio' | 'video') => {
+  const handleUserUnpublished = (remoteUser: any, mediaType: 'audio' | 'video') => {
     if (mediaType === 'video') setBoardMediaStream(null);
+    if (mediaType === 'audio') remoteAudioRef.current.delete(String(remoteUser.uid));
   };
 
+  const handleUserLeft = (remoteUser: any) => {
+    remoteAudioRef.current.delete(String(remoteUser.uid));
+  };
+
+  // Speaker button: silence / restore everyone we're hearing (trainer and
+  // students alike). Only affects this listener — nobody else is muted.
+  useEffect(() => {
+    soundMutedRef.current = isSoundMuted;
+    remoteAudioRef.current.forEach((track) => {
+      try {
+        if (isSoundMuted) track.stop();
+        else if (!track.isPlaying) track.play();
+      } catch (err) {
+        console.warn('Could not change classroom audio', err);
+      }
+    });
+  }, [isSoundMuted]);
+
   const toggleMic = async () => {
-    if (!canSpeak || !localAudioTrack) return;
-    await localAudioTrack.setMuted(micOn);
+    const track = localAudioTrackRef.current;
+    if (!canSpeak || !track) return;
+    await track.setMuted(micOn);
     setMicOn(!micOn);
   };
 
@@ -344,6 +408,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         await client.unpublish(localScreenTrack);
         localScreenTrack.close();
       }
+      localScreenTrackRef.current = null;
       setLocalScreenTrack(null);
       setBoardMediaStream(null);
       setScreenSharing(false);
@@ -352,6 +417,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         const AgoraRTC = AgoraRef.current;
         const screenTrack = await AgoraRTC.createScreenVideoTrack({}, 'auto');
         await client.publish(screenTrack);
+        localScreenTrackRef.current = screenTrack;
         setLocalScreenTrack(screenTrack);
         // 'auto' can return either a lone video track or a [video, audio]
         // tuple depending on whether the browser let the user share system
@@ -375,10 +441,13 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       })
       .on('broadcast', { event: 'allow_speak' }, ({ payload }: { payload: any }) => {
         if (payload.userId === user?.id) {
+          // Speaking in class is a plan feature — ignore a call-on we aren't entitled to.
+          if (!planLetsMeSpeakRef.current) return;
           setCanSpeak(true);
           setHandRaisedSelf(false);
-          if (localAudioTrack) {
-            localAudioTrack.setMuted(false);
+          const track = localAudioTrackRef.current;
+          if (track) {
+            track.setMuted(false).catch(() => {});
             setMicOn(true);
           }
         }
@@ -386,10 +455,9 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       .on('broadcast', { event: 'revoke_speak' }, ({ payload }: { payload: any }) => {
         if (payload.userId === user?.id) {
           setCanSpeak(false);
-          if (localAudioTrack) {
-            localAudioTrack.setMuted(true);
-            setMicOn(false);
-          }
+          // Always switch the state off, even if the mic never started.
+          localAudioTrackRef.current?.setMuted(true).catch(() => {});
+          setMicOn(false);
         }
       })
       .on('broadcast', { event: 'dismiss_hand' }, ({ payload }: { payload: any }) => {
@@ -428,6 +496,16 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   };
 
   const toggleOwnHand = () => {
+    if (!isHost && !handRaisedSelf) {
+      if (!planLetsMeSpeak) {
+        showToast(`Speaking in class comes with ${qa.me?.speakPlan || 'Pro'}. You can still type a question.`);
+        return;
+      }
+      if (lectureMode) {
+        showToast('Lecture in progress — type your question and the trainer will take it at Q&A time.');
+        return;
+      }
+    }
     const next = !handRaisedSelf;
     setHandRaisedSelf(next);
     // presenceTrack() picks this up via the effect above; nothing else to broadcast.
@@ -435,6 +513,11 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
   const callOnStudent = (student: Student) => {
     if (!isHost) return;
+    if (qa.me && !qa.loadError && !qa.speakers.has(student.id)) {
+      showToast(`${student.name} is on a plan without speaking — they can type a question instead.`);
+      qa.reload();
+      return;
+    }
     channelRef.current?.send({ type: 'broadcast', event: 'allow_speak', payload: { userId: student.id } });
   };
 
@@ -469,6 +552,24 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       micOn: !!p.micOn,
       speakingLevel: volumeByUid[p.userId] || 0,
     }));
+
+  // Trainer: refresh who may speak whenever someone joins or leaves.
+  const rosterKey = students.map((s) => s.id).join(',');
+  useEffect(() => {
+    if (!isHost) return;
+    const t = setTimeout(() => qa.reload(), 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rosterKey, isHost]);
+
+  // Student: Lecture mode lowers my hand.
+  useEffect(() => {
+    if (!isHost && lectureMode && handRaisedSelf) setHandRaisedSelf(false);
+  }, [isHost, lectureMode, handRaisedSelf]);
+
+  const lowerAllHands = () => {
+    students.filter((s) => s.isHandRaised && !s.isHost).forEach((s) => dismissStudentHand(s.id));
+  };
 
   const presentCount = students.filter((s) => s.status === 'present').length;
   const handsCount = students.filter((s) => s.isHandRaised).length;
@@ -543,6 +644,20 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
             viewerId={user?.id ?? null}
             capacity={classInfo.maxStudents}
           />
+
+          <SuperQuestionSpotlight
+            question={qa.spotlight}
+            isHost={isHost}
+            myId={user?.id}
+            onClose={qa.dismissSpotlight}
+            onAnswered={isHost ? (id) => qa.setStatus(id, 'answered') : undefined}
+          />
+
+          {toast && (
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-[46] px-4 py-2 rounded-xl bg-black/85 border border-slate-700 text-slate-100 text-xs shadow-xl max-w-[90%] text-center">
+              {toast}
+            </div>
+          )}
         </main>
 
         <RightSidebar
@@ -560,6 +675,19 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           screenSharing={screenSharing}
           onToggleScreenShare={toggleScreenShare}
           classInfo={classInfo}
+          speakLock={
+            isHost
+              ? null
+              : !planLetsMeSpeak
+              ? { reason: `Speaking in class comes with ${qa.me?.speakPlan || 'Pro'}`, upgrade: true }
+              : lectureMode
+              ? { reason: 'Lecture in progress — hands open at Q&A time', upgrade: false }
+              : null
+          }
+          speakerIds={isHost && qa.me && !qa.loadError ? qa.speakers : null}
+          qaSlot={
+            <QuestionsPanel qa={qa} isHost={isHost} myId={user?.id} theme="dark" onLectureStarted={lowerAllHands} className="p-4" />
+          }
         />
       </div>
 

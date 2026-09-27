@@ -32,6 +32,12 @@ export interface PlanFeatures {
   polyvault_download_wait_seconds: number
   /** Celoris TV: use Teacher Studio (publish lectures) */
   celoris_tv_studio: boolean
+  /** Live classes: can be called on to speak (raise hand → trainer lets you talk) */
+  classroom_speak: boolean
+  /** Live classes: typed questions per class (100 = unlimited) */
+  classroom_questions_per_class: number
+  /** Live classes: send Super Questions (credits go to the trainer) */
+  classroom_super_questions: boolean
 }
 
 export type FeatureKey = keyof PlanFeatures
@@ -40,7 +46,7 @@ export interface FeatureDef {
   key: FeatureKey
   label: string
   help: string
-  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault' | 'Celoris TV'
+  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault' | 'Celoris TV' | 'Live classes'
   type: 'bool' | 'int'
   min?: number
   max?: number
@@ -100,6 +106,29 @@ export const FEATURE_DEFS: FeatureDef[] = [
     group: 'Celoris TV',
     type: 'bool',
   },
+  {
+    key: 'classroom_speak',
+    label: 'Speak in class',
+    help: 'Can raise a hand and be let to talk in live classes (trainers always can)',
+    group: 'Live classes',
+    type: 'bool',
+  },
+  {
+    key: 'classroom_questions_per_class',
+    label: 'Questions per class',
+    help: 'Typed questions a student can ask in one class. 100 = unlimited',
+    group: 'Live classes',
+    type: 'int',
+    min: 0,
+    max: 100,
+  },
+  {
+    key: 'classroom_super_questions',
+    label: 'Super Questions',
+    help: 'Can attach credits to a question: it pops up on screen, goes to the top, and the trainer gets the credits',
+    group: 'Live classes',
+    type: 'bool',
+  },
 ]
 
 export interface TierSettings {
@@ -126,6 +155,9 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       exam_retake_days: 7,
       polyvault_download_wait_seconds: 30,
       celoris_tv_studio: false,
+      classroom_speak: false,
+      classroom_questions_per_class: 2,
+      classroom_super_questions: false,
     },
   },
   basic: {
@@ -144,6 +176,9 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       exam_retake_days: 5,
       polyvault_download_wait_seconds: 15,
       celoris_tv_studio: false,
+      classroom_speak: false,
+      classroom_questions_per_class: 5,
+      classroom_super_questions: false,
     },
   },
   pro: {
@@ -162,6 +197,9 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       exam_retake_days: 3,
       polyvault_download_wait_seconds: 5,
       celoris_tv_studio: true,
+      classroom_speak: true,
+      classroom_questions_per_class: 100,
+      classroom_super_questions: true,
     },
   },
   max: {
@@ -180,6 +218,9 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       exam_retake_days: 1,
       polyvault_download_wait_seconds: 0,
       celoris_tv_studio: true,
+      classroom_speak: true,
+      classroom_questions_per_class: 100,
+      classroom_super_questions: true,
     },
   },
 }

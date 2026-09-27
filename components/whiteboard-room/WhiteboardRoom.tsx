@@ -12,6 +12,9 @@ import { RoomTopBar } from "./RoomTopBar";
 import { RoomSidePanel } from "./RoomSidePanel";
 import { BoardReadOnlyContext } from "./boardContext";
 import { useWhiteboardRoom } from "./hooks/useWhiteboardRoom";
+import { useClassroomQA } from "@/components/classroom-qa/useClassroomQA";
+import { QuestionsPanel } from "@/components/classroom-qa/QuestionsPanel";
+import { SuperQuestionSpotlight } from "@/components/classroom-qa/SuperQuestionSpotlight";
 import { screenShareService } from "./services/screenShareRegistry";
 import { exportToHighResPng } from "./utils/inkEngine";
 import type { CanvasCard, CardType, ScreenShareCard, ToolType, ViewportTransform } from "./types";
@@ -40,7 +43,15 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
   const { user, profile } = useAuth() as any;
   const displayName: string = (profile?.full_name || "").trim() || (isHost ? "Trainer" : "Student");
 
-  const room = useWhiteboardRoom({ roomId, isHost, userId: user?.id, displayName });
+  const speakAllowedRef = useRef<boolean>(isHost);
+  const room = useWhiteboardRoom({ roomId, isHost, userId: user?.id, displayName, speakAllowedRef });
+
+  // Live Q&A: questions, Lecture/Q&A mode, Super Questions, and whether this
+  // student's plan lets them be called on to speak.
+  const qa = useClassroomQA({ roomId, userId: user?.id, enabled: !room.joinError });
+  const planLetsMeSpeak = isHost || (qa.me ? qa.me.canSpeak : !!qa.loadError);
+  speakAllowedRef.current = planLetsMeSpeak;
+  const lectureMode = qa.mode === "lecture";
 
   // ------------------------------------------------------------ view + tools
   const [viewport, setViewport] = useState<ViewportTransform>({ x: 60, y: 40, zoom: 0.95 });
@@ -59,6 +70,52 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 3500);
   }, []);
+
+  // Raise hand only when the plan includes speaking and the trainer isn't lecturing.
+  const handleToggleHand = useCallback(() => {
+    if (!isHost && !room.handRaised) {
+      if (!planLetsMeSpeak) {
+        showToast(`Speaking in class comes with ${qa.me?.speakPlan || "Pro"}. You can still type a question in Q&A.`);
+        return;
+      }
+      if (lectureMode) {
+        showToast("Lecture in progress — type your question in Q&A and the trainer will take it at Q&A time.");
+        return;
+      }
+    }
+    room.toggleHand();
+  }, [isHost, room, planLetsMeSpeak, lectureMode, qa.me, showToast]);
+
+  // Student: Lecture mode lowers my hand.
+  useEffect(() => {
+    if (!isHost && lectureMode && room.handRaised) room.toggleHand();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHost, lectureMode, room.handRaised]);
+
+  // Trainer: refresh who may speak whenever someone joins or leaves.
+  const rosterKey = room.participants.map((p) => p.id).join(",");
+  useEffect(() => {
+    if (!isHost) return;
+    const t = setTimeout(() => qa.reload(), 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rosterKey, isHost]);
+
+  const allowToSpeakChecked = useCallback(
+    (id: string) => {
+      if (qa.me && !qa.loadError && !qa.speakers.has(id)) {
+        showToast("This student's plan doesn't include speaking — they can type a question instead.");
+        qa.reload();
+        return;
+      }
+      room.allowToSpeak(id);
+    },
+    [qa, room, showToast]
+  );
+
+  const lowerAllHands = useCallback(() => {
+    room.participants.filter((p) => p.handRaised && !p.isHost).forEach((p) => room.dismissHand(p.id));
+  }, [room]);
 
   useEffect(() => {
     if (room.boardError && room.boardLoaded) showToast(room.boardError);
@@ -407,8 +464,13 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
           micOn={room.micOn}
           canSpeak={room.canSpeak}
           onToggleMic={room.toggleMic}
+          microphones={room.microphones}
+          selectedMicId={room.selectedMicId}
+          onSelectMicrophone={room.selectMicrophone}
           handRaised={room.handRaised}
-          onToggleHand={room.toggleHand}
+          onToggleHand={handleToggleHand}
+          handLocked={!isHost && !room.handRaised && (!planLetsMeSpeak || lectureMode)}
+          questionsBadge={isHost ? qa.openCount : 0}
           panelOpen={panelOpen}
           unread={unread}
           onTogglePanel={() => setPanelOpen((o) => !o)}
@@ -484,6 +546,14 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
             </div>
           )}
 
+          <SuperQuestionSpotlight
+            question={qa.spotlight}
+            isHost={isHost}
+            myId={user?.id}
+            onClose={qa.dismissSpotlight}
+            onAnswered={isHost ? (id) => qa.setStatus(id, "answered") : undefined}
+          />
+
           {toast && (
             <div className="absolute left-1/2 -translate-x-1/2 bottom-24 z-50 px-4 py-2 rounded-xl bg-neutral-900 text-white text-xs shadow-xl max-w-[90%] text-center">
               {toast}
@@ -499,7 +569,12 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
             chat={room.chat}
             onSend={room.sendChat}
             participants={room.participants}
-            onAllowSpeak={room.allowToSpeak}
+            onAllowSpeak={allowToSpeakChecked}
+            speakerIds={isHost && qa.me && !qa.loadError ? qa.speakers : null}
+            questionsCount={qa.openCount}
+            questionsSlot={
+              <QuestionsPanel qa={qa} isHost={isHost} myId={user?.id} theme="light" onLectureStarted={lowerAllHands} />
+            }
             onRevokeSpeak={room.revokeSpeak}
             onDismissHand={room.dismissHand}
           />

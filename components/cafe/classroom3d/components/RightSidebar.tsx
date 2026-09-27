@@ -13,7 +13,9 @@ import {
   UserPlus,
   RefreshCw,
   Crown,
+  Lock,
 } from 'lucide-react';
+import Link from 'next/link';
 import { ClassSchedulePanel } from '@/components/cafe/ClassSchedulePanel';
 
 interface RightSidebarProps {
@@ -50,6 +52,12 @@ interface RightSidebarProps {
       from the Café Rooms panel in the admin dashboard, not from inside the
       room. */
   classInfo: ClassInfo;
+  /** Student can't raise a hand right now (plan without speaking, or Lecture mode). */
+  speakLock?: { reason: string; upgrade: boolean } | null;
+  /** Trainer only: present students whose plan lets them speak (null = unknown, allow all). */
+  speakerIds?: Set<string> | null;
+  /** Live Q&A panel (questions, Lecture/Q&A switch, Super Questions). */
+  qaSlot?: React.ReactNode;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -67,6 +75,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   screenSharing,
   onToggleScreenShare,
   classInfo,
+  speakLock = null,
+  speakerIds = null,
+  qaSlot,
 }) => {
   const [inputText, setInputText] = useState('');
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -193,7 +204,22 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         )}
 
         {/* Request to speak (student only) */}
-        {!isHost && (
+        {!isHost && speakLock && !handRaisedSelf && (
+          <section className="p-4">
+            <div className="w-full min-h-9 px-3 py-2 rounded-lg text-[11px] flex items-center justify-between gap-2 bg-[#131a29] border border-slate-800 text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                {speakLock.reason}
+              </span>
+              {speakLock.upgrade && (
+                <Link href="/pricing" className="font-bold text-amber-400 hover:underline shrink-0">
+                  Upgrade
+                </Link>
+              )}
+            </div>
+          </section>
+        )}
+        {!isHost && !(speakLock && !handRaisedSelf) && (
           <section className="p-4">
             <button
               onClick={onToggleOwnHand}
@@ -209,6 +235,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </button>
           </section>
         )}
+
+        {qaSlot}
 
         {/* Students grid */}
         <section className="p-4 space-y-2.5">
@@ -233,6 +261,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   onSelect={() => onSelectStudent(selectedStudentId === student.id ? null : student.id)}
                   onToggleOwnHand={onToggleOwnHand}
                   onCallOn={() => onCallOnStudent(student)}
+                  speakLocked={!!speakerIds && !speakerIds.has(student.id)}
                 />
               ))}
             </div>
@@ -247,6 +276,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   onSelect={() => onSelectStudent(selectedStudentId === student.id ? null : student.id)}
                   onToggleOwnHand={onToggleOwnHand}
                   onCallOn={() => onCallOnStudent(student)}
+                  speakLocked={!!speakerIds && !speakerIds.has(student.id)}
                 />
               ))}
             </div>
@@ -323,6 +353,8 @@ interface StudentCardProps {
   onSelect: () => void;
   onToggleOwnHand: () => void;
   onCallOn: () => void;
+  /** Trainer view: this student's plan doesn't include speaking. */
+  speakLocked?: boolean;
 }
 
 const StudentCard: React.FC<StudentCardProps> = ({
@@ -333,6 +365,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
   onSelect,
   onToggleOwnHand,
   onCallOn,
+  speakLocked = false,
 }) => {
   const isAway = student.status === 'away';
 
@@ -382,10 +415,18 @@ const StudentCard: React.FC<StudentCardProps> = ({
               AWAY
             </span>
           )}
+          {isHost && !isSelf && speakLocked && (
+            <span
+              className="text-[9px] font-semibold text-slate-500 px-1 rounded bg-slate-800/80"
+              title="Their plan doesn't include speaking — they can type questions"
+            >
+              TEXT ONLY
+            </span>
+          )}
         </div>
       </div>
 
-      {isHost && student.isHandRaised && !isSelf && (
+      {isHost && student.isHandRaised && !isSelf && !speakLocked && (
         <div className="mt-1.5 pt-1 border-t border-slate-800 flex items-center justify-between text-[10px]">
           <button
             onClick={(e) => {

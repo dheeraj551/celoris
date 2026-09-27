@@ -17,6 +17,11 @@ interface RoomSidePanelProps {
   onAllowSpeak: (id: string) => void;
   onRevokeSpeak: (id: string) => void;
   onDismissHand: (id: string) => void;
+  /** Trainer only: students whose plan lets them speak (null = unknown, allow all). */
+  speakerIds?: Set<string> | null;
+  /** Live Q&A panel and its open-question count. */
+  questionsSlot?: React.ReactNode;
+  questionsCount?: number;
 }
 
 function timeLabel(iso: string) {
@@ -39,8 +44,11 @@ export const RoomSidePanel: React.FC<RoomSidePanelProps> = ({
   onAllowSpeak,
   onRevokeSpeak,
   onDismissHand,
+  speakerIds = null,
+  questionsSlot,
+  questionsCount = 0,
 }) => {
-  const [tab, setTab] = useState<"chat" | "people">("chat");
+  const [tab, setTab] = useState<"chat" | "qa" | "people">("chat");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
@@ -71,7 +79,7 @@ export const RoomSidePanel: React.FC<RoomSidePanelProps> = ({
       aria-hidden={!open}
     >
       <div className="h-12 shrink-0 px-2 flex items-center gap-1 border-b border-neutral-200">
-        {(["chat", "people"] as const).map((t) => (
+        {(questionsSlot ? (["chat", "qa", "people"] as const) : (["chat", "people"] as const)).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -79,7 +87,10 @@ export const RoomSidePanel: React.FC<RoomSidePanelProps> = ({
               tab === t ? "bg-indigo-50 text-indigo-700" : "text-neutral-500 hover:bg-neutral-50"
             }`}
           >
-            {t === "people" ? `People (${participants.length})` : "Class chat"}
+            {t === "people" ? `People (${participants.length})` : t === "qa" ? "Q&A" : "Class chat"}
+            {t === "qa" && questionsCount > 0 && (
+              <span className="ml-1.5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px]">{questionsCount}</span>
+            )}
             {t === "people" && hands.length > 0 && isHost && (
               <span className="ml-1.5 inline-flex items-center gap-0.5 text-amber-600">
                 <Hand className="w-3 h-3" />
@@ -153,6 +164,8 @@ export const RoomSidePanel: React.FC<RoomSidePanelProps> = ({
             </div>
           </form>
         </>
+      ) : tab === "qa" ? (
+        <div className="flex-1 overflow-y-auto p-3">{questionsSlot}</div>
       ) : (
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
           {isHost && <ClassSchedulePanel roomId={roomId} theme="light" />}
@@ -197,6 +210,13 @@ export const RoomSidePanel: React.FC<RoomSidePanelProps> = ({
                       >
                         Mute
                       </button>
+                    ) : speakerIds && !speakerIds.has(p.id) ? (
+                      <span
+                        className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-neutral-100 text-neutral-400"
+                        title="Their plan doesn't include speaking — they can type questions in Q&A"
+                      >
+                        Text only
+                      </span>
                     ) : (
                       <button
                         onClick={() => onAllowSpeak(p.id)}

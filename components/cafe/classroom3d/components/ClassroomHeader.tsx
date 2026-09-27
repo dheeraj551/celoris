@@ -116,12 +116,17 @@ export const ClassroomHeader: React.FC<ClassroomHeaderProps> = ({
           {micOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
         </button>
 
-        {/* Sound effects toggle (chimes) */}
+        {/* Speaker — mutes / unmutes the class audio for this listener only */}
         {onSoundToggle && (
           <button
             onClick={onSoundToggle}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-            title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+            className={`p-2 rounded-lg border transition-colors ${
+              isMuted
+                ? 'bg-red-950/60 border-red-500/40 text-red-400 hover:bg-red-900/60'
+                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+            title={isMuted ? 'Unmute class audio' : 'Mute class audio (only for you)'}
+            aria-pressed={isMuted}
           >
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>

@@ -25,7 +25,7 @@ import {
   Youtube,
 } from "lucide-react";
 import type { CardType } from "./types";
-import type { RoomParticipant } from "./hooks/useWhiteboardRoom";
+import type { MicrophoneOption, RoomParticipant } from "./hooks/useWhiteboardRoom";
 
 interface RoomTopBarProps {
   roomName: string;
@@ -51,8 +51,15 @@ interface RoomTopBarProps {
   micOn: boolean;
   canSpeak: boolean;
   onToggleMic: () => void;
+  microphones?: MicrophoneOption[];
+  selectedMicId?: string | null;
+  onSelectMicrophone?: (id: string) => void;
   handRaised: boolean;
   onToggleHand: () => void;
+  /** Student can't raise a hand right now (plan without speaking, or Lecture mode). */
+  handLocked?: boolean;
+  /** Trainer: open questions waiting (shown on the Chat button). */
+  questionsBadge?: number;
   // panels
   panelOpen: boolean;
   unread: number;
@@ -96,8 +103,13 @@ export const RoomTopBar: React.FC<RoomTopBarProps> = (props) => {
     micOn,
     canSpeak,
     onToggleMic,
+    microphones = [],
+    selectedMicId = null,
+    onSelectMicrophone,
     handRaised,
     onToggleHand,
+    handLocked = false,
+    questionsBadge = 0,
     panelOpen,
     unread,
     onTogglePanel,
@@ -107,6 +119,17 @@ export const RoomTopBar: React.FC<RoomTopBarProps> = (props) => {
   const [insertOpen, setInsertOpen] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const insertRef = useRef<HTMLDivElement>(null);
+  const [micMenuOpen, setMicMenuOpen] = useState(false);
+  const micMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!micMenuOpen) return;
+    const close = (e: MouseEvent) => {
+      if (micMenuRef.current && !micMenuRef.current.contains(e.target as Node)) setMicMenuOpen(false);
+    };
+    window.addEventListener("mousedown", close);
+    return () => window.removeEventListener("mousedown", close);
+  }, [micMenuOpen]);
 
   useEffect(() => {
     if (!insertOpen) return;
@@ -275,25 +298,72 @@ export const RoomTopBar: React.FC<RoomTopBarProps> = (props) => {
           <button
             onClick={onToggleHand}
             className={`h-9 px-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-colors ${
-              handRaised ? "bg-amber-400 text-amber-950 border-amber-400" : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50"
+              handRaised
+                ? "bg-amber-400 text-amber-950 border-amber-400"
+                : handLocked
+                ? "bg-neutral-50 text-neutral-400 border-neutral-200"
+                : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50"
             }`}
-            title={handRaised ? "Lower your hand" : "Raise your hand to ask to speak"}
+            title={handRaised ? "Lower your hand" : handLocked ? "Raising a hand isn't available right now — ask in Q&A" : "Raise your hand to ask to speak"}
           >
             <Hand className="w-4 h-4" />
             <span className="hidden sm:inline">{handRaised ? "Hand raised" : "Raise hand"}</span>
           </button>
         )}
 
-        <button
-          onClick={onToggleMic}
-          disabled={!canSpeak}
-          className={`h-9 w-9 rounded-xl flex items-center justify-center border transition-colors disabled:opacity-40 ${
-            micOn && canSpeak ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-white text-neutral-500 border-neutral-200"
-          }`}
-          title={!canSpeak ? "The trainer can let you speak after you raise your hand" : micOn ? "Mute" : "Unmute"}
-        >
-          {micOn && canSpeak ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-        </button>
+        <div ref={micMenuRef} className="relative flex items-center">
+          <button
+            onClick={onToggleMic}
+            disabled={!canSpeak}
+            className={`h-9 w-9 flex items-center justify-center border transition-colors disabled:opacity-40 ${
+              onSelectMicrophone && microphones.length > 0 ? "rounded-l-xl" : "rounded-xl"
+            } ${micOn && canSpeak ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-white text-neutral-500 border-neutral-200"}`}
+            title={!canSpeak ? "The trainer can let you speak after you raise your hand" : micOn ? "Mute" : "Unmute"}
+          >
+            {micOn && canSpeak ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+          </button>
+          {onSelectMicrophone && microphones.length > 0 && (
+            <button
+              onClick={() => setMicMenuOpen((o) => !o)}
+              className={`h-9 w-6 -ml-px rounded-r-xl flex items-center justify-center border transition-colors ${
+                micMenuOpen ? "bg-neutral-100 text-neutral-900 border-neutral-300" : "bg-white text-neutral-500 border-neutral-200 hover:bg-neutral-50"
+              }`}
+              title="Choose microphone"
+              aria-haspopup="menu"
+              aria-expanded={micMenuOpen}
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {micMenuOpen && (
+            <div
+              role="menu"
+              className="absolute right-0 top-11 w-72 max-w-[85vw] rounded-2xl border border-neutral-200 bg-white shadow-xl p-1.5 z-50"
+            >
+              <p className="px-2.5 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">Microphone</p>
+              {microphones.map((m) => {
+                const active = m.id === selectedMicId;
+                return (
+                  <button
+                    key={m.id}
+                    role="menuitemradio"
+                    aria-checked={active}
+                    onClick={() => {
+                      setMicMenuOpen(false);
+                      if (!active) onSelectMicrophone?.(m.id);
+                    }}
+                    className={`w-full text-left px-2.5 py-2 rounded-xl text-xs flex items-center gap-2 transition-colors ${
+                      active ? "bg-emerald-50 text-emerald-800 font-semibold" : "text-neutral-700 hover:bg-neutral-50"
+                    }`}
+                  >
+                    <Mic className={`w-3.5 h-3.5 shrink-0 ${active ? "text-emerald-600" : "text-neutral-400"}`} />
+                    <span className="truncate">{m.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <button
           onClick={onTogglePanel}
@@ -309,6 +379,14 @@ export const RoomTopBar: React.FC<RoomTopBarProps> = (props) => {
           {unread > 0 && !panelOpen && (
             <span className="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
               {unread > 9 ? "9+" : unread}
+            </span>
+          )}
+          {questionsBadge > 0 && !panelOpen && (
+            <span
+              className="absolute -bottom-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-amber-950 text-[10px] font-bold flex items-center justify-center ring-2 ring-white"
+              title="Open questions"
+            >
+              ?{questionsBadge > 9 ? "9+" : questionsBadge}
             </span>
           )}
         </button>
