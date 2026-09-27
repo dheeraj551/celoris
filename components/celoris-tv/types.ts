@@ -68,6 +68,8 @@ export interface Video {
   transcript: TranscriptItem[];
   quizzes?: QuizQuestion[];
   isFeatured?: boolean;
+  /** A vertical short (e.g. a YouTube Short) — shown in the Shorts feed, not the lecture grid */
+  isShort?: boolean;
 }
 
 export interface QAAnswer {
@@ -142,4 +144,4 @@ export interface UserProfile {
 }
 
 export type ActiveTab = 'qa' | 'transcript' | 'notes' | 'resources' | 'quiz';
-export type ViewMode = 'explore' | 'watch' | 'playlists' | 'playlist-detail' | 'qa-hub' | 'notes' | 'history' | 'teacher-studio';
+export type ViewMode = 'explore' | 'watch' | 'playlists' | 'playlist-detail' | 'qa-hub' | 'notes' | 'history' | 'teacher-studio' | 'shorts';

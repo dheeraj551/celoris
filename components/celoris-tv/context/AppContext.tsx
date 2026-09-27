@@ -35,6 +35,9 @@ interface AppContextType {
   currentPlaylistIndex: number;
   currentView: ViewMode;
   setCurrentView: (view: ViewMode) => void;
+  /** Shorts feed: which short to start on (null = the newest) */
+  activeShortId: string | null;
+  openShorts: (videoId?: string) => void;
   selectedPlaylistForDetail: Playlist | null;
   setSelectedPlaylistForDetail: (playlist: Playlist | null) => void;
   searchQuery: string;
@@ -205,6 +208,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
   const [currentPlaylistIndex, setCurrentPlaylistIndex] = useState<number>(0);
   const [currentView, setCurrentView] = useState<ViewMode>('explore');
+  const [activeShortId, setActiveShortId] = useState<string | null>(null);
+  const openShorts = (videoId?: string) => {
+    setActiveShortId(videoId || null);
+    setCurrentView('shorts');
+  };
   const [selectedPlaylistForDetail, setSelectedPlaylistForDetail] = useState<Playlist | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All Subjects');
@@ -907,6 +915,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           tags: data.tags,
           chapters: data.chapters,
           resources: data.resources,
+          isShort: data.isShort === true,
           teacherName: realProfile?.full_name || realUser?.email?.split('@')[0],
           teacherAvatarUrl: realProfile?.avatar_url,
         }),
@@ -952,6 +961,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           tags: data.tags,
           chapters: data.chapters,
           resources: data.resources,
+          isShort: typeof data.isShort === 'boolean' ? data.isShort : undefined,
         }),
       });
 
@@ -1057,6 +1067,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         currentPlaylistIndex,
         currentView,
         setCurrentView,
+        activeShortId,
+        openShorts,
         selectedPlaylistForDetail,
         setSelectedPlaylistForDetail,
         searchQuery,

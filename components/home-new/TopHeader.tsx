@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
-import { XpHeaderPill, XpMenuRow } from '@/components/xp/XpHeaderBits';
+import { XpMenuRow } from '@/components/xp/XpHeaderBits';
 import { cn } from '@/lib/utils';
 import {
     Sheet,
@@ -310,30 +310,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                         <span className="tracking-tight">Pricing</span>
                     </Link>
 
-                    {/* Credits Counter (Apple Dynamic Island Nano-Glass Wallet Pill) */}
-                    {user && (
-                        <Link
-                            href="/account/payment-settings"
-                            className="group relative hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.03] hover:from-white/[0.12] hover:to-white/[0.06] backdrop-blur-2xl border border-white/[0.14] hover:border-emerald-400/50 text-neutral-200 hover:text-white text-xs font-medium shadow-[0_4px_16px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.22)] hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer select-none"
-                            title="View Credits & Payment Settings"
-                        >
-                            <div className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-[0_0_8px_rgba(52,211,153,0.5)]">
-                                <IndianRupee className="w-2.5 h-2.5 stroke-[2.5]" />
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="font-mono font-bold text-white text-xs tracking-tight">
-                                    {profile?.wallet_balance?.toString() || '0'}
-                                </span>
-                                <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">
-                                    Credits
-                                </span>
-                            </div>
-                        </Link>
-                    )}
-
-                    {/* XP pill */}
-                    {user && <XpHeaderPill className="hidden sm:inline-flex" />}
-
+                    {/* Credits and XP live in the account menu (and the XP chip, bottom-left) to keep the bar uncluttered. */}
                     {/* Auth Status: Avatar or Sign In */}
                     {loading ? (
                         <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 animate-pulse" />

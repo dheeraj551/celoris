@@ -30,6 +30,8 @@ export interface PlanFeatures {
   exam_retake_days: number
   /** PolyVault: seconds in the download queue before a file starts (0 = instant) */
   polyvault_download_wait_seconds: number
+  /** Celoris TV: use Teacher Studio (publish lectures) */
+  celoris_tv_studio: boolean
 }
 
 export type FeatureKey = keyof PlanFeatures
@@ -38,7 +40,7 @@ export interface FeatureDef {
   key: FeatureKey
   label: string
   help: string
-  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault'
+  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault' | 'Celoris TV'
   type: 'bool' | 'int'
   min?: number
   max?: number
@@ -91,6 +93,13 @@ export const FEATURE_DEFS: FeatureDef[] = [
     max: 120,
     unit: 's',
   },
+  {
+    key: 'celoris_tv_studio',
+    label: 'Teacher Studio',
+    help: 'Can open Teacher Studio in Celoris TV and publish lectures',
+    group: 'Celoris TV',
+    type: 'bool',
+  },
 ]
 
 export interface TierSettings {
@@ -116,6 +125,7 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: false,
       exam_retake_days: 7,
       polyvault_download_wait_seconds: 30,
+      celoris_tv_studio: false,
     },
   },
   basic: {
@@ -133,6 +143,7 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: true,
       exam_retake_days: 5,
       polyvault_download_wait_seconds: 15,
+      celoris_tv_studio: false,
     },
   },
   pro: {
@@ -150,6 +161,7 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: true,
       exam_retake_days: 3,
       polyvault_download_wait_seconds: 5,
+      celoris_tv_studio: true,
     },
   },
   max: {
@@ -167,6 +179,7 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: true,
       exam_retake_days: 1,
       polyvault_download_wait_seconds: 0,
+      celoris_tv_studio: true,
     },
   },
 }

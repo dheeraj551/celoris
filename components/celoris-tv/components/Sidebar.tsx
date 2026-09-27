@@ -13,6 +13,7 @@ import {
   Layers,
   ChevronRight,
   TrendingUp,
+  Smartphone,
 } from 'lucide-react';
 
 interface Props {
@@ -34,6 +35,7 @@ export const Sidebar: React.FC<Props> = ({ isOpenOnMobile, onCloseMobile }) => {
 
   const navItems: { id: ViewMode; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'explore', label: 'Explore Lectures', icon: <Compass className="w-4 h-4" /> },
+    { id: 'shorts', label: 'Shorts', icon: <Smartphone className="w-4 h-4" /> },
     { id: 'watch', label: 'Video Player', icon: <PlaySquare className="w-4 h-4" /> },
     {
       id: 'playlists',

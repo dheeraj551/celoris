@@ -456,18 +456,20 @@ export function cropCanvas(
     const newCanvas = createCanvas(newW, newH);
     const ctx = newCanvas.getContext('2d');
     if (ctx) {
-      // Draw sub-rectangle from old canvas
-      ctx.drawImage(
-        layer.canvas,
-        x,
-        y,
-        newW,
-        newH,
-        0,
-        0,
-        newW,
-        newH
-      );
+      ctx.save();
+      // Draw layer relative to cropped origin
+      // The layer is at (layer.x, layer.y) in old canvas space.
+      // In the new canvas where top-left is (x, y), destination is (layer.x - x, layer.y - y).
+      if (layer.angle) {
+        const cx = (layer.x - x) + layer.width / 2;
+        const cy = (layer.y - y) + layer.height / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((layer.angle * Math.PI) / 180);
+        ctx.drawImage(layer.canvas, -layer.width / 2, -layer.height / 2);
+      } else {
+        ctx.drawImage(layer.canvas, layer.x - x, layer.y - y);
+      }
+      ctx.restore();
     }
     return {
       ...layer,
@@ -475,7 +477,15 @@ export function cropCanvas(
       y: 0,
       width: newW,
       height: newH,
+      angle: 0,
       canvas: newCanvas,
+      textData: layer.textData
+        ? {
+            ...layer.textData,
+            x: layer.textData.x !== undefined ? layer.textData.x + layer.x - x : undefined,
+            y: layer.textData.y !== undefined ? layer.textData.y + layer.y - y : undefined,
+          }
+        : undefined,
     };
   });
 }

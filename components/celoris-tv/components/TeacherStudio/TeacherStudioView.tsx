@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Video, VideoChapter, VideoResource } from '../../types';
@@ -22,7 +23,8 @@ import {
   Award,
   Video as VideoIcon,
   Lock,
-  Wallet,
+  Crown,
+  Loader2,
   Pencil,
   X,
 } from 'lucide-react';
@@ -40,12 +42,12 @@ const DEFAULT_RESOURCES: VideoResource[] = [
   { id: 'res-code', title: 'Reference Lab Repository (GitHub)', type: 'code', size: '15 KB', url: '#' },
 ];
 
-// Teacher Studio is gated behind a wallet balance — publishing lectures
-// (and everything else in this view) is only available to accounts holding
-// at least this many credits. Enforced here for the UI and again server-side
-// in POST /api/celoris-tv/videos, since a client-side check alone can be
-// bypassed by hitting the API directly.
-const TEACHER_ACCESS_CREDIT_THRESHOLD = 5000;
+// Teacher Studio is for members whose plan includes it (Pro and Max by
+// default — Admin → Plans → Celoris TV → "Teacher Studio") and for admins.
+// Checked here for the UI (GET /api/celoris-tv/studio-access) and again
+// server-side in POST /api/celoris-tv/videos, since a client-side check alone
+// can be bypassed by hitting the API directly.
+type StudioAccess = { allowed: boolean; planLabel: string; requiredPlan: string };
 
 export const TeacherStudioView: React.FC = () => {
   const {
@@ -60,9 +62,26 @@ export const TeacherStudioView: React.FC = () => {
     setCurrentView,
   } = useApp();
 
-  const { profile } = useAuth();
-  const walletBalance = profile?.wallet_balance ?? 0;
-  const hasTeacherAccess = walletBalance >= TEACHER_ACCESS_CREDIT_THRESHOLD;
+  const { user } = useAuth();
+  const [access, setAccess] = useState<StudioAccess | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    setAccess(null);
+    fetch('/api/celoris-tv/studio-access', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled) {
+          setAccess({ allowed: !!data?.allowed, planLabel: data?.planLabel || 'Free', requiredPlan: data?.requiredPlan || 'Pro' });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setAccess({ allowed: false, planLabel: 'Free', requiredPlan: 'Pro' });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+  const hasTeacherAccess = !!access?.allowed;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -71,6 +90,9 @@ export const TeacherStudioView: React.FC = () => {
   const [difficulty, setDifficulty] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
   const [youtubeLink, setYoutubeLink] = useState('');
   const [durationMin, setDurationMin] = useState('18');
+  // Lecture (16:9, lecture grid) or Short (vertical, Shorts feed).
+  const [isShort, setIsShort] = useState(false);
+  const [shortSeconds, setShortSeconds] = useState('45');
   const [isPublishing, setIsPublishing] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -107,6 +129,8 @@ export const TeacherStudioView: React.FC = () => {
     setDifficulty('Intermediate');
     setYoutubeLink('');
     setDurationMin('18');
+    setIsShort(false);
+    setShortSeconds('45');
     setChapters(DEFAULT_CHAPTERS);
     setResources(DEFAULT_RESOURCES);
     setFormError(null);
@@ -121,6 +145,8 @@ export const TeacherStudioView: React.FC = () => {
     setDifficulty((video.difficulty as 'Beginner' | 'Intermediate' | 'Advanced') || 'Intermediate');
     setYoutubeLink(video.youtubeId ? `https://www.youtube.com/watch?v=${video.youtubeId}` : '');
     setDurationMin(String(Math.max(1, Math.round((video.duration || 900) / 60))));
+    setIsShort(!!video.isShort);
+    setShortSeconds(String(Math.max(1, Math.min(180, Math.round(video.duration || 45)))));
     setChapters(video.chapters && video.chapters.length ? video.chapters : DEFAULT_CHAPTERS);
     setResources(video.resources && video.resources.length ? video.resources : DEFAULT_RESOURCES);
     setFormError(null);
@@ -182,10 +208,13 @@ export const TeacherStudioView: React.FC = () => {
       gradeLevel,
       difficulty,
       youtubeLink: youtubeLink.trim(),
-      duration: (parseInt(durationMin) || 15) * 60,
-      chapters: chapters.sort((a, b) => a.timestamp - b.timestamp),
+      duration: isShort
+        ? Math.max(1, Math.min(180, parseInt(shortSeconds) || 45))
+        : (parseInt(durationMin) || 15) * 60,
+      isShort,
+      chapters: isShort ? [] : chapters.sort((a, b) => a.timestamp - b.timestamp),
       resources,
-      tags: [subject, 'Lecture', difficulty],
+      tags: [subject, isShort ? 'Short' : 'Lecture', difficulty],
     };
 
     const result = editingVideoId
@@ -223,22 +252,37 @@ export const TeacherStudioView: React.FC = () => {
     playVideo(result);
   };
 
+  if (!access) {
+    return (
+      <div className="max-w-2xl mx-auto py-24 flex justify-center">
+        <Loader2 className="w-7 h-7 animate-spin text-slate-500" />
+      </div>
+    );
+  }
+
   if (!hasTeacherAccess) {
     return (
       <div className="max-w-2xl mx-auto py-16 text-center text-slate-200 select-none">
         <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-5 shadow-inner">
           <Lock className="w-7 h-7" />
         </div>
-        <h1 className="text-xl font-extrabold text-white mb-2">Teacher Studio is Gated</h1>
+        <h1 className="text-xl font-extrabold text-white mb-2">Teacher Studio is for {access.requiredPlan} members</h1>
         <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
-          Publishing lectures and managing courses on Celoris TV requires{' '}
-          <strong className="text-emerald-400 font-mono">{TEACHER_ACCESS_CREDIT_THRESHOLD.toLocaleString()} credits</strong>{' '}
-          in your wallet.
+          Publishing lectures and managing courses on Celoris TV is included in the{' '}
+          <strong className="text-emerald-400">{access.requiredPlan}</strong> plan and higher.
         </p>
-        <div className="inline-flex items-center gap-2.5 px-5 py-3 bg-[#0e121e]/85 border border-white/10 rounded-2xl text-sm shadow-xl">
-          <Wallet className="w-4 h-4 text-emerald-400" />
-          <span className="text-slate-400">Your balance:</span>
-          <span className="font-bold text-white font-mono">{walletBalance.toLocaleString()} credits</span>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="inline-flex items-center gap-2.5 px-5 py-3 bg-[#0e121e]/85 border border-white/10 rounded-2xl text-sm shadow-xl">
+            <Crown className="w-4 h-4 text-amber-400" />
+            <span className="text-slate-400">Your plan:</span>
+            <span className="font-bold text-white">{access.planLabel}</span>
+          </div>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-xl"
+          >
+            See plans
+          </Link>
         </div>
       </div>
     );
@@ -458,14 +502,44 @@ export const TeacherStudioView: React.FC = () => {
 
             <div className="md:col-span-2">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
+                Video type
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { short: false, title: 'Lecture', hint: 'Landscape · shows in the lecture grid' },
+                  { short: true, title: 'Short', hint: 'Vertical · up to 3 min · shows in Shorts' },
+                ].map(opt => (
+                  <button
+                    key={opt.title}
+                    type="button"
+                    onClick={() => setIsShort(opt.short)}
+                    className={`px-4 py-2.5 rounded-xl border text-left transition-colors ${
+                      isShort === opt.short
+                        ? 'bg-emerald-500/15 border-emerald-500/50 text-white'
+                        : 'bg-black/40 border-white/10 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span className="block text-sm font-bold">{opt.title}</span>
+                    <span className="block text-[11px] text-slate-400">{opt.hint}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 YouTube Link (listed or unlisted) <span className="text-emerald-400">*</span>
               </label>
               <input
                 type="text"
                 required
-                placeholder="https://youtu.be/... or https://www.youtube.com/watch?v=..."
+                placeholder={isShort ? 'https://youtube.com/shorts/...' : 'https://youtu.be/... or https://www.youtube.com/watch?v=...'}
                 value={youtubeLink}
-                onChange={e => setYoutubeLink(e.target.value)}
+                onChange={e => {
+                  setYoutubeLink(e.target.value);
+                  // A youtube.com/shorts/ link is a Short.
+                  if (/youtube\.com\/shorts\//i.test(e.target.value)) setIsShort(true);
+                }}
                 className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 font-mono"
               />
               <p className="text-[10px] text-slate-500 mt-1.5">
@@ -475,16 +549,27 @@ export const TeacherStudioView: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
-                Estimated Duration (Minutes)
+                {isShort ? 'Length (Seconds)' : 'Estimated Duration (Minutes)'}
               </label>
-              <input
-                type="number"
-                min={1}
-                max={180}
-                value={durationMin}
-                onChange={e => setDurationMin(e.target.value)}
-                className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
-              />
+              {isShort ? (
+                <input
+                  type="number"
+                  min={1}
+                  max={180}
+                  value={shortSeconds}
+                  onChange={e => setShortSeconds(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
+                />
+              ) : (
+                <input
+                  type="number"
+                  min={1}
+                  max={180}
+                  value={durationMin}
+                  onChange={e => setDurationMin(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40"
+                />
+              )}
             </div>
 
             <div>

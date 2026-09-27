@@ -9,6 +9,8 @@ import {
   Sparkles,
   ListPlus,
   TrendingUp,
+  Smartphone,
+  ChevronRight,
 } from 'lucide-react';
 import { AddToPlaylistModal } from '../Modals/AddToPlaylistModal';
 
@@ -20,13 +22,23 @@ export const ExploreView: React.FC = () => {
     setSelectedCategory,
     searchQuery,
     currentUser,
+    openShorts,
   } = useApp();
 
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
   const [selectedVideoForPlaylist, setSelectedVideoForPlaylist] = useState<Video | null>(null);
 
   // Filter videos based on category, search, and difficulty
+  // Shorts have their own row and feed; the lecture grid shows full lectures.
+  const shorts = videos.filter(v => v.isShort).filter(v => {
+    if (!searchQuery.trim()) return true;
+    const matchText = `${v.title} ${v.description} ${v.author.name} ${v.subject} ${v.tags.join(' ')}`.toLowerCase();
+    return matchText.includes(searchQuery.toLowerCase());
+  }).filter(v => selectedCategory === 'All Subjects' || v.category === selectedCategory || v.subject === selectedCategory);
+
   const filteredVideos = videos.filter(video => {
+    if (video.isShort) return false;
+
     // Search query
     if (searchQuery.trim()) {
       const matchText = `${video.title} ${video.description} ${video.author.name} ${video.subject} ${video.tags.join(' ')}`.toLowerCase();
@@ -46,7 +58,8 @@ export const ExploreView: React.FC = () => {
     return true;
   });
 
-  const featuredVideo = videos.find(v => v.isFeatured) || videos[0];
+  const lectures = videos.filter(v => !v.isShort);
+  const featuredVideo = lectures.find(v => v.isFeatured) || lectures[0];
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 text-slate-100 pb-12 select-none">
@@ -143,6 +156,50 @@ export const ExploreView: React.FC = () => {
                 {formatTime(featuredVideo.duration)}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shorts row */}
+      {shorts.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Smartphone className="w-5 h-5 text-emerald-400" />
+              <h3 className="text-lg font-bold text-white tracking-tight">Shorts</h3>
+              <span className="px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-emerald-400 text-xs font-bold font-mono">
+                {shorts.length}
+              </span>
+            </div>
+            <button
+              onClick={() => openShorts()}
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+            >
+              Watch all <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar snap-x">
+            {shorts.map(short => (
+              <button
+                key={short.id}
+                onClick={() => openShorts(short.id)}
+                className="snap-start shrink-0 w-36 sm:w-40 text-left group"
+              >
+                <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-black/60 border border-white/[0.08] group-hover:border-emerald-500/40 transition-colors">
+                  <img
+                    src={short.thumbnailUrl}
+                    alt={short.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <p className="absolute left-2.5 right-2.5 bottom-2.5 text-xs font-bold text-white line-clamp-2 leading-snug">
+                    {short.title}
+                  </p>
+                </div>
+                <p className="mt-1.5 text-[11px] text-slate-400 truncate">{short.author.name}</p>
+              </button>
+            ))}
           </div>
         </div>
       )}

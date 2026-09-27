@@ -73,6 +73,7 @@ function mapRowToVideo(row: any, userReaction: 'like' | 'dislike' | null = null)
     transcript: [],
     quizzes: [],
     isFeatured: false,
+    isShort: !!row.is_short,
   };
 }
 
@@ -106,6 +107,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       tags,
       chapters,
       resources,
+      isShort,
     } = body || {};
 
     const update: Record<string, any> = {};
@@ -142,6 +144,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (Array.isArray(tags)) update.tags = tags;
     if (Array.isArray(chapters)) update.chapters = chapters;
     if (Array.isArray(resources)) update.resources = resources;
+    if (typeof isShort === 'boolean') update.is_short = isShort;
 
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ error: 'No changes provided' }, { status: 400 });

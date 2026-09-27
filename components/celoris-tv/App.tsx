@@ -10,6 +10,7 @@ import { PlaylistDetailView } from './components/Playlists/PlaylistDetailView';
 import { GlobalQAHub } from './components/QAHub/GlobalQAHub';
 import { TeacherStudioView } from './components/TeacherStudio/TeacherStudioView';
 import { NotesHistoryView } from './components/Notes/NotesHistoryView';
+import { ShortsView } from './components/Shorts/ShortsView';
 
 const MainContent: React.FC = () => {
   const { currentView, selectedPlaylistForDetail, playlists } = useApp();
@@ -52,6 +53,7 @@ const MainContent: React.FC = () => {
               )}
               {currentView === 'qa-hub' && <GlobalQAHub />}
               {currentView === 'teacher-studio' && <TeacherStudioView />}
+              {currentView === 'shorts' && <ShortsView />}
               {(currentView === 'notes' || currentView === 'history') && <NotesHistoryView />}
             </motion.div>
           </AnimatePresence>

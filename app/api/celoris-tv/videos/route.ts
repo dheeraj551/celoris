@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteClient } from '@/lib/supabase-server';
+import { createSupabaseClientForServer } from '@/lib/supabase-client';
+import { celorisTvStudioAccess } from '@/lib/celoris-tv-access';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -76,6 +78,7 @@ function mapRowToVideo(row: any, userReaction: 'like' | 'dislike' | null = null)
     transcript: [],
     quizzes: [],
     isFeatured: false,
+    isShort: !!row.is_short,
   };
 }
 
@@ -140,21 +143,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    // Teacher Studio (and publishing specifically) requires holding at least
-    // this many credits. Checked here — not just in the UI — since the UI
-    // gate alone can be bypassed by calling this route directly.
-    const { data: userRow, error: userRowError } = await supabase
-      .from('users')
-      .select('wallet_balance')
-      .eq('id', user.id)
-      .single();
-
-    if (userRowError) throw userRowError;
-
-    const TEACHER_ACCESS_CREDIT_THRESHOLD = 5000;
-    if ((userRow?.wallet_balance || 0) < TEACHER_ACCESS_CREDIT_THRESHOLD) {
+    // Teacher Studio (and publishing specifically) is for members whose plan
+    // includes it (Pro and Max by default — Admin → Plans → Celoris TV) and
+    // for admins. Checked here — not just in the UI — since the UI gate alone
+    // can be bypassed by calling this route directly.
+    const access = await celorisTvStudioAccess(createSupabaseClientForServer(), user.id);
+    if (!access.allowed) {
       return NextResponse.json(
-        { error: `Publishing requires at least ${TEACHER_ACCESS_CREDIT_THRESHOLD.toLocaleString()} credits in your wallet.` },
+        { error: `Publishing lectures needs the ${access.requiredPlan} plan or higher.` },
         { status: 403 }
       );
     }
@@ -173,6 +169,7 @@ export async function POST(request: NextRequest) {
       resources,
       teacherName,
       teacherAvatarUrl,
+      isShort,
     } = body || {};
 
     if (!title || typeof title !== 'string' || !title.trim()) {
@@ -187,7 +184,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const durationSeconds = Math.max(1, Math.round((Number(durationMinutes) || 15) * 60));
+    // Shorts: vertical videos shown in the Shorts feed. Set by the Studio's
+    // "Short" option, or automatically for youtube.com/shorts/ links.
+    const short = isShort === true || /youtube\.com\/shorts\//i.test(String(youtubeLink || ''));
+    const durationSeconds = short
+      ? Math.max(1, Math.min(180, Math.round((Number(durationMinutes) || 1) * 60)))
+      : Math.max(1, Math.round((Number(durationMinutes) || 15) * 60));
 
     const { data, error } = await supabase
       .from('celoris_tv_videos')
@@ -206,6 +208,7 @@ export async function POST(request: NextRequest) {
         teacher_id: user.id,
         teacher_name: teacherName || user.email?.split('@')[0] || 'Celoris Instructor',
         teacher_avatar_url: teacherAvatarUrl || null,
+        is_short: short,
       })
       .select('*')
       .single();

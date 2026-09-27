@@ -62,6 +62,7 @@ interface CanvasViewportProps {
   setCropBox: (box: CropBox | ((prev: CropBox) => CropBox)) => void;
   cropAspectRatio: number | null;
   onApplyCrop: () => void;
+  onCancelCrop?: () => void;
   shapeType: 'rect' | 'circle' | 'line';
   shapeStrokeWidth: number;
   zoom: number;
@@ -113,6 +114,48 @@ const PEN_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 
 const PEN_CLOSE_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpolygon points='12.5,17.5 15,20 20,15 17.5,12.5' fill='%2327272a' stroke='%23000000' stroke-width='1.2'/%3E%3Cpolygon points='1,1 5,15.5 12.5,17.5 17.5,12.5 15.5,5' fill='%23ffffff' stroke='%23000000' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='1' y1='1' x2='8.5' y2='8.5' stroke='%23000000' stroke-width='1.2' stroke-linecap='round'/%3E%3Ccircle cx='9.5' cy='9.5' r='1.2' fill='%23000000'/%3E%3Ccircle cx='18' cy='18' r='3.2' fill='%23ffffff' stroke='%2316a34a' stroke-width='1.6'/%3E%3C/svg%3E") 1 1, crosshair`;
 
+// Photoshop-style Dual-Contrast Crop Tool Cursor
+const CROP_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 2v16h16' stroke='%23000000' stroke-width='4' stroke-linecap='square'/%3E%3Cpath d='M6 2v16h16' stroke='%23ffffff' stroke-width='2' stroke-linecap='square'/%3E%3Cpath d='M18 22V6H2' stroke='%23000000' stroke-width='4' stroke-linecap='square'/%3E%3Cpath d='M18 22V6H2' stroke='%23ffffff' stroke-width='2' stroke-linecap='square'/%3E%3C/svg%3E") 6 6, crosshair`;
+
+// Helper to detect hit on Crop Tool handles, edges, or interior
+const getCropHit = (
+  coords: { x: number; y: number },
+  box: CropBox,
+  zoom: number
+): string | null => {
+  const { x, y, width, height } = box;
+  const handleRadius = Math.max(14 / zoom, 8);
+  const edgeDist = Math.max(8 / zoom, 5);
+
+  // 1. Check 4 corners first (highest priority)
+  if (Math.hypot(coords.x - x, coords.y - y) <= handleRadius) return 'tl';
+  if (Math.hypot(coords.x - (x + width), coords.y - y) <= handleRadius) return 'tr';
+  if (Math.hypot(coords.x - x, coords.y - (y + height)) <= handleRadius) return 'bl';
+  if (Math.hypot(coords.x - (x + width), coords.y - (y + height)) <= handleRadius) return 'br';
+
+  // 2. Check 4 midpoint handles
+  if (Math.hypot(coords.x - (x + width / 2), coords.y - y) <= handleRadius) return 'tm';
+  if (Math.hypot(coords.x - (x + width / 2), coords.y - (y + height)) <= handleRadius) return 'bm';
+  if (Math.hypot(coords.x - x, coords.y - (y + height / 2)) <= handleRadius) return 'ml';
+  if (Math.hypot(coords.x - (x + width), coords.y - (y + height / 2)) <= handleRadius) return 'mr';
+
+  // 3. Check 4 edges
+  const inX = coords.x >= x - edgeDist && coords.x <= x + width + edgeDist;
+  const inY = coords.y >= y - edgeDist && coords.y <= y + height + edgeDist;
+
+  if (inX && Math.abs(coords.y - y) <= edgeDist) return 'edge-t';
+  if (inX && Math.abs(coords.y - (y + height)) <= edgeDist) return 'edge-b';
+  if (inY && Math.abs(coords.x - x) <= edgeDist) return 'edge-l';
+  if (inY && Math.abs(coords.x - (x + width)) <= edgeDist) return 'edge-r';
+
+  // 4. Inside Crop box
+  if (coords.x >= x && coords.x <= x + width && coords.y >= y && coords.y <= y + height) {
+    return 'move';
+  }
+
+  return null;
+};
+
 export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   canvasWidth,
   canvasHeight,
@@ -134,6 +177,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   setCropBox,
   cropAspectRatio,
   onApplyCrop,
+  onCancelCrop,
   shapeType,
   shapeStrokeWidth,
   zoom,
@@ -183,6 +227,12 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   const startPanRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const lastMousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const activeCropHandleRef = useRef<string | null>(null);
+  const [cropHoverHandle, setCropHoverHandle] = useState<string | null>(null);
+  const cropDragStartRef = useRef<{
+    startBox: CropBox;
+    startCoords: { x: number; y: number };
+    handle: string;
+  } | null>(null);
 
   // Active layer start position for Move tool
   const activeLayerStartPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -237,6 +287,14 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       setIsPenClosedPopupDismissed(false);
     }
   }, [activeTool, penPath.points.length]);
+
+  // Reset crop hover & drag state if tool changes
+  useEffect(() => {
+    if (activeTool !== 'crop') {
+      setCropHoverHandle(null);
+      cropDragStartRef.current = null;
+    }
+  }, [activeTool]);
 
   // When path is closed, re-enable closed popup
   useEffect(() => {
@@ -339,6 +397,20 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       if (e.code === 'Space' && !isSpacePressedRef.current && !isInput) {
         isSpacePressedRef.current = true;
       }
+      // Crop tool keyboard shortcuts
+      if (!isInput && activeTool === 'crop') {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onApplyCrop();
+          return;
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          onCancelCrop?.();
+          return;
+        }
+      }
+
       if (!isInput && activeTool === 'pen') {
         if (e.key === 'Delete' || e.key === 'Backspace') {
           if (selectedPenPointIndex !== null && selectedPenPointIndex >= 0) {
@@ -373,7 +445,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [activeTool, selectedPenPointIndex, setPenPath]);
+  }, [activeTool, selectedPenPointIndex, setPenPath, onApplyCrop, onCancelCrop]);
 
   // Calculate zoom to fit entire canvas in current viewport
   const fitToScreen = useCallback(() => {
@@ -592,26 +664,31 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       ctx.restore();
     }
 
-    // 5. Draw Crop Tool bounding box with 8 handles & Rule of Thirds
+    // 5. Draw Crop Tool bounding box with Photoshop-style L-brackets, Edge Grips & Dimension Badge
     if (activeTool === 'crop') {
       const { x, y, width, height } = cropBox;
       ctx.save();
 
       // Dim outside area
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
       ctx.fillRect(0, 0, canvasWidth, y);
       ctx.fillRect(0, y + height, canvasWidth, canvasHeight - (y + height));
       ctx.fillRect(0, y, x, height);
       ctx.fillRect(x + width, y, canvasWidth - (x + width), height);
 
-      // Crop boundary
+      // Crop boundary outer shadow + crisp white inner
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.lineWidth = 2.5 / zoom;
+      ctx.strokeRect(x, y, width, height);
+
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.2 / zoom;
       ctx.strokeRect(x, y, width, height);
 
       // Rule of thirds grid
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 1 / zoom;
+      ctx.setLineDash([3 / zoom, 3 / zoom]);
       ctx.beginPath();
       // vertical lines
       ctx.moveTo(x + width / 3, y);
@@ -624,26 +701,78 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       ctx.moveTo(x, y + (height * 2) / 3);
       ctx.lineTo(x + width, y + (height * 2) / 3);
       ctx.stroke();
+      ctx.setLineDash([]);
 
-      // 8 Handles
-      const handles = [
-        { id: 'tl', hx: x, hy: y },
-        { id: 'tm', hx: x + width / 2, hy: y },
-        { id: 'tr', hx: x + width, hy: y },
-        { id: 'ml', hx: x, hy: y + height / 2 },
-        { id: 'mr', hx: x + width, hy: y + height / 2 },
-        { id: 'bl', hx: x, hy: y + height },
-        { id: 'bm', hx: x + width / 2, hy: y + height },
-        { id: 'br', hx: x + width, hy: y + height },
-      ];
+      // Photoshop-style Corner L-brackets & Edge bars
+      const t = 3.5 / zoom;
+      const L = 16 / zoom;
 
       ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 1;
-      handles.forEach((h) => {
-        ctx.fillRect(h.hx - 4, h.hy - 4, 8, 8);
-        ctx.strokeRect(h.hx - 4, h.hy - 4, 8, 8);
-      });
+      ctx.lineWidth = 1 / zoom;
+
+      const drawGrip = (gx: number, gy: number, gw: number, gh: number) => {
+        ctx.fillRect(gx, gy, gw, gh);
+        ctx.strokeRect(gx, gy, gw, gh);
+      };
+
+      // Corner L-brackets
+      // Top-Left
+      drawGrip(x - t, y - t, L, t * 2);
+      drawGrip(x - t, y - t, t * 2, L);
+
+      // Top-Right
+      drawGrip(x + width - L + t, y - t, L, t * 2);
+      drawGrip(x + width - t, y - t, t * 2, L);
+
+      // Bottom-Left
+      drawGrip(x - t, y + height - t, L, t * 2);
+      drawGrip(x - t, y + height - L + t, t * 2, L);
+
+      // Bottom-Right
+      drawGrip(x + width - L + t, y + height - t, L, t * 2);
+      drawGrip(x + width - t, y + height - L + t, t * 2, L);
+
+      // Edge center bars
+      // Top-Middle
+      drawGrip(x + width / 2 - L / 2, y - t, L, t * 2);
+      // Bottom-Middle
+      drawGrip(x + width / 2 - L / 2, y + height - t, L, t * 2);
+      // Middle-Left
+      drawGrip(x - t, y + height / 2 - L / 2, t * 2, L);
+      // Middle-Right
+      drawGrip(x + width - t, y + height / 2 - L / 2, t * 2, L);
+
+      // Floating dimension pill badge
+      const badgeText = `${Math.round(width)} × ${Math.round(height)} px`;
+      const fontSize = Math.max(10, Math.min(14, 12 / zoom));
+      ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
+      const textMetrics = ctx.measureText(badgeText);
+      const badgeW = textMetrics.width + (16 / zoom);
+      const badgeH = fontSize * 1.8;
+      const badgeX = x + width / 2 - badgeW / 2;
+      let badgeY = y + height + (8 / zoom);
+      if (badgeY + badgeH > canvasHeight) {
+        badgeY = y + height - badgeH - (8 / zoom);
+      }
+
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.88)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.lineWidth = 1 / zoom;
+      const radius = 4 / zoom;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, radius);
+      } else {
+        ctx.rect(badgeX, badgeY, badgeW, badgeH);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(badgeText, badgeX + badgeW / 2, badgeY + badgeH / 2);
 
       ctx.restore();
     }
@@ -801,6 +930,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     dashOffset,
     selectedPenPointIndex,
     penHoverTarget,
+    cropHoverHandle,
     zoom,
   ]);
 
@@ -1083,29 +1213,28 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 
     // Crop Tool Handle Check
     if (activeTool === 'crop') {
-      const { x, y, width, height } = cropBox;
-      const hitRadius = 12 / zoom;
-      const handleHits = [
-        { id: 'tl', hx: x, hy: y },
-        { id: 'tm', hx: x + width / 2, hy: y },
-        { id: 'tr', hx: x + width, hy: y },
-        { id: 'ml', hx: x, hy: y + height / 2 },
-        { id: 'mr', hx: x + width, hy: y + height / 2 },
-        { id: 'bl', hx: x, hy: y + height },
-        { id: 'bm', hx: x + width / 2, hy: y + height },
-        { id: 'br', hx: x + width, hy: y + height },
-      ];
-
-      for (const h of handleHits) {
-        if (Math.hypot(coords.x - h.hx, coords.y - h.hy) <= hitRadius) {
-          activeCropHandleRef.current = h.id;
-          return;
-        }
-      }
-      // Or move entire crop box
-      if (coords.x >= x && coords.x <= x + width && coords.y >= y && coords.y <= y + height) {
-        activeCropHandleRef.current = 'move';
-        return;
+      const hit = getCropHit(coords, cropBox, zoom);
+      if (hit) {
+        activeCropHandleRef.current = hit;
+        cropDragStartRef.current = {
+          startBox: { ...cropBox },
+          startCoords: { ...coords },
+          handle: hit,
+        };
+      } else {
+        // User clicked outside existing crop box: drag to create new crop box
+        activeCropHandleRef.current = 'create';
+        cropDragStartRef.current = {
+          startBox: { x: coords.x, y: coords.y, width: 0, height: 0 },
+          startCoords: { ...coords },
+          handle: 'create',
+        };
+        setCropBox({
+          x: Math.round(Math.max(0, Math.min(canvasWidth, coords.x))),
+          y: Math.round(Math.max(0, Math.min(canvasHeight, coords.y))),
+          width: 1,
+          height: 1,
+        });
       }
       return;
     }
@@ -1244,6 +1373,12 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     if (activeTool === 'pen' && !isInteractingRef.current) {
       const hit = findPenHit(coords, zoom);
       setPenHoverTarget(hit);
+    }
+
+    // Track Crop hover target when idle
+    if (activeTool === 'crop' && !isInteractingRef.current) {
+      const hit = getCropHit(coords, cropBox, zoom);
+      setCropHoverHandle(hit);
     }
 
     if (!isInteractingRef.current) return;
@@ -1427,47 +1562,114 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       return;
     }
 
-    // Crop box resize / move
-    if (activeTool === 'crop' && activeCropHandleRef.current) {
-      const handle = activeCropHandleRef.current;
-      setCropBox((prev) => {
-        let { x, y, width, height } = prev;
-        const dx = coords.x - lastMousePosRef.current.x;
-        const dy = coords.y - lastMousePosRef.current.y;
+    // Crop box resize / move / create
+    if (activeTool === 'crop' && activeCropHandleRef.current && cropDragStartRef.current) {
+      const { startBox, startCoords, handle } = cropDragStartRef.current;
+      const totalDx = coords.x - startCoords.x;
+      const totalDy = coords.y - startCoords.y;
 
-        if (handle === 'move') {
-          x = Math.max(0, Math.min(canvasWidth - width, x + dx));
-          y = Math.max(0, Math.min(canvasHeight - height, y + dy));
-        } else {
-          if (handle.includes('r')) width += dx;
-          if (handle.includes('l')) {
-            x += dx;
-            width -= dx;
-          }
-          if (handle.includes('b')) height += dy;
-          if (handle.includes('t')) {
-            y += dy;
-            height -= dy;
-          }
+      if (handle === 'move') {
+        let newX = startBox.x + totalDx;
+        let newY = startBox.y + totalDy;
+        newX = Math.max(0, Math.min(canvasWidth - startBox.width, newX));
+        newY = Math.max(0, Math.min(canvasHeight - startBox.height, newY));
+        setCropBox({
+          x: Math.round(newX),
+          y: Math.round(newY),
+          width: startBox.width,
+          height: startBox.height,
+        });
+      } else if (handle === 'create') {
+        const x1 = Math.max(0, Math.min(canvasWidth, startCoords.x));
+        const y1 = Math.max(0, Math.min(canvasHeight, startCoords.y));
+        const x2 = Math.max(0, Math.min(canvasWidth, coords.x));
+        const y2 = Math.max(0, Math.min(canvasHeight, coords.y));
 
-          // Aspect ratio enforcement
-          if (cropAspectRatio !== null) {
-            if (handle.includes('r') || handle.includes('l')) {
-              height = width / cropAspectRatio;
+        let left = Math.min(x1, x2);
+        let top = Math.min(y1, y2);
+        let w = Math.abs(x2 - x1);
+        let h = Math.abs(y2 - y1);
+
+        if (cropAspectRatio !== null && cropAspectRatio > 0) {
+          if (w / Math.max(1, h) > cropAspectRatio) {
+            h = w / cropAspectRatio;
+          } else {
+            w = h * cropAspectRatio;
+          }
+        }
+
+        setCropBox({
+          x: Math.round(left),
+          y: Math.round(top),
+          width: Math.max(10, Math.round(w)),
+          height: Math.max(10, Math.round(h)),
+        });
+      } else {
+        // Resizing existing crop box
+        let curLeft = startBox.x;
+        let curRight = startBox.x + startBox.width;
+        let curTop = startBox.y;
+        let curBottom = startBox.y + startBox.height;
+
+        // Apply horizontal changes
+        if (handle === 'tl' || handle === 'bl' || handle === 'ml' || handle === 'edge-l') {
+          curLeft = startBox.x + totalDx;
+        } else if (handle === 'tr' || handle === 'br' || handle === 'mr' || handle === 'edge-r') {
+          curRight = startBox.x + startBox.width + totalDx;
+        }
+
+        // Apply vertical changes
+        if (handle === 'tl' || handle === 'tr' || handle === 'tm' || handle === 'edge-t') {
+          curTop = startBox.y + totalDy;
+        } else if (handle === 'bl' || handle === 'br' || handle === 'bm' || handle === 'edge-b') {
+          curBottom = startBox.y + startBox.height + totalDy;
+        }
+
+        // Normalize if flipped
+        let nLeft = Math.min(curLeft, curRight);
+        let nRight = Math.max(curLeft, curRight);
+        let nTop = Math.min(curTop, curBottom);
+        let nBottom = Math.max(curTop, curBottom);
+
+        let nWidth = Math.max(10, nRight - nLeft);
+        let nHeight = Math.max(10, nBottom - nTop);
+
+        // Aspect ratio enforcement
+        if (cropAspectRatio !== null && cropAspectRatio > 0) {
+          if (handle === 'tm' || handle === 'bm' || handle === 'edge-t' || handle === 'edge-b') {
+            nWidth = nHeight * cropAspectRatio;
+            const midX = (startBox.x * 2 + startBox.width) / 2;
+            nLeft = midX - nWidth / 2;
+            nRight = nLeft + nWidth;
+          } else if (handle === 'ml' || handle === 'mr' || handle === 'edge-l' || handle === 'edge-r') {
+            nHeight = nWidth / cropAspectRatio;
+            const midY = (startBox.y * 2 + startBox.height) / 2;
+            nTop = midY - nHeight / 2;
+            nBottom = nTop + nHeight;
+          } else {
+            // Corner handles (tl, tr, bl, br)
+            nHeight = nWidth / cropAspectRatio;
+            if (handle.includes('t')) {
+              nTop = nBottom - nHeight;
             } else {
-              width = height * cropAspectRatio;
+              nBottom = nTop + nHeight;
             }
           }
         }
 
-        return {
-          x: Math.round(x),
-          y: Math.round(y),
-          width: Math.max(20, Math.round(width)),
-          height: Math.max(20, Math.round(height)),
-        };
-      });
-      lastMousePosRef.current = coords;
+        // Clamp to canvas bounds
+        nLeft = Math.max(0, Math.min(canvasWidth - 10, nLeft));
+        nTop = Math.max(0, Math.min(canvasHeight - 10, nTop));
+        nWidth = Math.max(10, Math.min(canvasWidth - nLeft, nWidth));
+        nHeight = Math.max(10, Math.min(canvasHeight - nTop, nHeight));
+
+        setCropBox({
+          x: Math.round(nLeft),
+          y: Math.round(nTop),
+          width: Math.round(nWidth),
+          height: Math.round(nHeight),
+        });
+      }
       return;
     }
 
@@ -1523,6 +1725,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     if (!isInteractingRef.current) return;
     isInteractingRef.current = false;
     activeCropHandleRef.current = null;
+    cropDragStartRef.current = null;
 
     // Pen tool drag finalize
     if (activeTool === 'pen' && penDragRef.current) {
@@ -1639,9 +1842,23 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     }
   };
 
-  // Canvas Double Click (double click text layer to edit text)
+  // Canvas Double Click (double click text layer to edit text, or crop box to apply crop)
   const handleDoubleClick = (e: React.MouseEvent) => {
     const coords = clientToCanvasCoord(e.clientX, e.clientY);
+
+    // Double-click inside crop box to apply crop
+    if (activeTool === 'crop') {
+      if (
+        coords.x >= cropBox.x &&
+        coords.x <= cropBox.x + cropBox.width &&
+        coords.y >= cropBox.y &&
+        coords.y <= cropBox.y + cropBox.height
+      ) {
+        onApplyCrop();
+        return;
+      }
+    }
+
     for (let i = layers.length - 1; i >= 0; i--) {
       const l = layers[i];
       if (!l.visible || l.type !== 'text') continue;
@@ -1675,7 +1892,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     }
   };
 
-  // Cursor style based on tool
+  // Cursor style based on tool & hover/drag handle
   let cursorStyle = 'default';
   if (isSpacePressedRef.current || activeTool === 'hand') {
     cursorStyle = isInteractingRef.current ? 'grabbing' : 'grab';
@@ -1690,7 +1907,20 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   } else if (activeTool === 'rotate') {
     cursorStyle = isRotatingRef.current ? 'grabbing' : 'crosshair';
   } else if (activeTool === 'crop') {
-    cursorStyle = 'crosshair';
+    const currentHandle = isInteractingRef.current ? activeCropHandleRef.current : cropHoverHandle;
+    if (currentHandle === 'tl' || currentHandle === 'br') {
+      cursorStyle = 'nwse-resize';
+    } else if (currentHandle === 'tr' || currentHandle === 'bl') {
+      cursorStyle = 'nesw-resize';
+    } else if (currentHandle === 'tm' || currentHandle === 'bm' || currentHandle === 'edge-t' || currentHandle === 'edge-b') {
+      cursorStyle = 'ns-resize';
+    } else if (currentHandle === 'ml' || currentHandle === 'mr' || currentHandle === 'edge-l' || currentHandle === 'edge-r') {
+      cursorStyle = 'ew-resize';
+    } else if (currentHandle === 'move') {
+      cursorStyle = isInteractingRef.current ? 'grabbing' : 'move';
+    } else {
+      cursorStyle = CROP_CURSOR;
+    }
   } else if (activeTool === 'wand' || activeTool === 'bucket') {
     cursorStyle = 'crosshair';
   } else if (activeTool === 'lasso' || activeTool === 'marquee') {
@@ -1713,7 +1943,10 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
+      onPointerLeave={() => {
+        setCropHoverHandle(null);
+        handlePointerUp();
+      }}
       onDoubleClick={handleDoubleClick}
       style={{ cursor: cursorStyle }}
       className="relative flex-1 overflow-hidden bg-[#1a1a1a] select-none touch-none flex items-center justify-center"
@@ -1997,6 +2230,36 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
           </div>
         )}
       </div>
+
+      {/* Floating Crop Action Bar */}
+      {activeTool === 'crop' && (
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#18181b]/95 backdrop-blur-md border border-neutral-700/80 shadow-[0_8px_32px_rgba(0,0,0,0.7)] text-xs text-white">
+          <div className="flex items-center gap-1.5 pr-2.5 border-r border-neutral-700 font-mono text-cyan-400 font-semibold">
+            <span>{Math.round(cropBox.width)} × {Math.round(cropBox.height)} px</span>
+          </div>
+          <span className="text-gray-400 text-[11px] hidden sm:inline">
+            Press <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-gray-200 border border-neutral-600 font-mono text-[10px]">Enter ↵</kbd> or double-click to crop
+          </span>
+          <button
+            type="button"
+            onClick={onApplyCrop}
+            className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+            title="Apply Crop (Enter)"
+          >
+            <Check className="w-3.5 h-3.5" />
+            <span>Apply</span>
+          </button>
+          <button
+            type="button"
+            onClick={onCancelCrop}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-800 hover:bg-neutral-700 text-gray-300 hover:text-white font-medium text-xs border border-neutral-700 transition-all cursor-pointer active:scale-95"
+            title="Cancel Crop (Esc)"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Cancel</span>
+          </button>
+        </div>
+      )}
 
       {/* Bottom Floating Canvas Status Bar with Zoom Controls */}
       <div className="absolute bottom-2 left-3 z-30 flex items-center gap-2 rounded bg-[#2b2b2b] px-2.5 py-1 text-[10px] font-mono text-gray-400 border border-black shadow-md">

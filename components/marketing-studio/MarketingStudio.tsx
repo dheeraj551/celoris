@@ -6,6 +6,7 @@ import { Curved3DCarousel } from './Curved3DCarousel';
 import { StudioDock, MAX_VARIATIONS } from './StudioDock';
 import { PresetPickerModal } from './PresetPickerModal';
 import { CreationsGallery, ResultViewerModal } from './CreationsGallery';
+import { ExploreTemplatesSection, ExploreTemplate } from './ExploreTemplatesSection';
 import { CarouselCard, SHOWCASE_CARDS, DemoProduct, DEMO_PRODUCTS, DemoAvatar, SHOT_ANGLES } from './marketingStudioData';
 import {
   AiJob,
@@ -216,6 +217,27 @@ export function MarketingStudio() {
     }
   };
 
+  const [selectedExploreTemplateId, setSelectedExploreTemplateId] = useState<string | null>(null);
+
+  const handleSelectExploreTemplate = (template: ExploreTemplate) => {
+    setSelectedExploreTemplateId(template.id);
+    setPrompt(template.prompt);
+    setSelectedRatio(template.ratio);
+    if (template.angle) setSelectedAngle(template.angle);
+    if (template.media === 'video') {
+      setMode('video');
+    } else {
+      setMode('image');
+    }
+    setSelectedPreset(null);
+    setGenerationError(null);
+
+    const dock = document.getElementById('studio-dock-container');
+    if (dock) {
+      dock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const reusePrompt = (job: AiJob) => {
     setMode('image');
     if (!job.presetName) setPrompt(job.prompt);
@@ -294,6 +316,12 @@ export function MarketingStudio() {
           </p>
         )}
       </div>
+      
+      {/* Explore Templates (Higgsfield Style Showcase) */}
+      <ExploreTemplatesSection
+        onSelectTemplate={handleSelectExploreTemplate}
+        selectedTemplateId={selectedExploreTemplateId}
+      />
 
       <CreationsGallery jobs={jobs} loading={jobsLoading} notice={jobsNotice} onOpen={setViewerJob} onReusePrompt={reusePrompt} />
 

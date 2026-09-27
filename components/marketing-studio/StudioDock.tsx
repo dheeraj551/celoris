@@ -89,7 +89,7 @@ export function StudioDock({
 
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 relative z-30">
+      <div id="studio-dock-container" className="w-full max-w-6xl mx-auto px-3 sm:px-6 relative z-30 scroll-mt-24">
         <div className="relative bg-[#111217]/95 backdrop-blur-3xl border border-white/[0.12] rounded-3xl p-2.5 sm:p-3.5 shadow-[0_30px_70px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.12)] flex flex-col md:flex-row items-stretch md:items-center gap-2.5">
           {/* Image / Video switch */}
           <div className="flex md:flex-col bg-white/[0.04] p-1 rounded-2xl border border-white/5 shrink-0 justify-center">

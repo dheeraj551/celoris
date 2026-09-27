@@ -88,6 +88,8 @@ export default function App() {
 
   // Crop Tool
   const [cropBox, setCropBox] = useState<CropBox>({ x: 0, y: 0, width: 960, height: 600 });
+  const cropBoxRef = useRef<CropBox>(cropBox);
+  cropBoxRef.current = cropBox;
   const [cropAspectRatio, setCropAspectRatio] = useState<number | null>(null);
 
   // Shape Tool
@@ -355,6 +357,7 @@ export default function App() {
           }
         } else if (e.key === 'Enter') {
           if (activeTool === 'crop') {
+            e.preventDefault();
             handleApplyCrop();
           }
         } else if (activeTool === 'select' && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
@@ -964,10 +967,10 @@ export default function App() {
 
   // Crop Canvas Execution
   const handleApplyCrop = () => {
-    const { x, y, width, height } = cropBox;
+    const { x, y, width, height } = cropBoxRef.current;
     if (width <= 10 || height <= 10) return;
 
-    const croppedLayers = cropCanvas(layers, cropBox);
+    const croppedLayers = cropCanvas(layers, cropBoxRef.current);
     const newW = Math.round(width);
     const newH = Math.round(height);
 
@@ -1508,6 +1511,7 @@ export default function App() {
           setCropBox={setCropBox}
           cropAspectRatio={cropAspectRatio}
           onApplyCrop={handleApplyCrop}
+          onCancelCrop={() => setActiveTool('select')}
           shapeType={shapeType}
           shapeStrokeWidth={shapeStrokeWidth}
           zoom={zoom}
