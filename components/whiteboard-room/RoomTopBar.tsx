@@ -13,6 +13,8 @@ import {
   MessageSquare,
   Mic,
   MicOff,
+  Volume2,
+  VolumeX,
   Minus,
   MonitorUp,
   MonitorX,
@@ -54,6 +56,9 @@ interface RoomTopBarProps {
   microphones?: MicrophoneOption[];
   selectedMicId?: string | null;
   onSelectMicrophone?: (id: string) => void;
+  /** Speaker: mute / unmute the class audio for this person only. */
+  speakerMuted?: boolean;
+  onToggleSpeaker?: () => void;
   handRaised: boolean;
   onToggleHand: () => void;
   /** Student can't raise a hand right now (plan without speaking, or Lecture mode). */
@@ -106,6 +111,8 @@ export const RoomTopBar: React.FC<RoomTopBarProps> = (props) => {
     microphones = [],
     selectedMicId = null,
     onSelectMicrophone,
+    speakerMuted = false,
+    onToggleSpeaker,
     handRaised,
     onToggleHand,
     handLocked = false,
@@ -308,6 +315,19 @@ export const RoomTopBar: React.FC<RoomTopBarProps> = (props) => {
           >
             <Hand className="w-4 h-4" />
             <span className="hidden sm:inline">{handRaised ? "Hand raised" : "Raise hand"}</span>
+          </button>
+        )}
+
+        {onToggleSpeaker && (
+          <button
+            onClick={onToggleSpeaker}
+            className={`h-9 w-9 rounded-xl flex items-center justify-center border transition-colors ${
+              speakerMuted ? "bg-rose-50 text-rose-600 border-rose-200" : "bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50"
+            }`}
+            title={speakerMuted ? "Unmute class audio" : "Mute class audio (only for you)"}
+            aria-pressed={speakerMuted}
+          >
+            {speakerMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
         )}
 

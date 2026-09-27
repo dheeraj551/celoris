@@ -163,6 +163,9 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
   const [trainerCursors, setTrainerCursors] = useState<Record<string, RemoteUser>>({});
   const [microphones, setMicrophones] = useState<MicrophoneOption[]>([]);
   const [selectedMicId, setSelectedMicId] = useState<string | null>(null);
+  // Speaker: silence everyone you hear (only for you — nobody else is muted).
+  const [speakerMuted, setSpeakerMuted] = useState(false);
+  const speakerMutedRef = useRef(false);
 
   // ---------------------------------------------------------------- refs
   const boardRef = useRef<BoardState>(EMPTY_BOARD);
@@ -689,6 +692,10 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
           });
         });
         trtc.on(TRTC.EVENT.ERROR, (error: any) => console.error("Whiteboard room: TRTC error", error));
+        // Someone starts talking while the speaker is off → keep them silent too.
+        trtc.on(TRTC.EVENT.REMOTE_AUDIO_AVAILABLE, (event: any) => {
+          if (speakerMutedRef.current && event?.userId) trtc.muteRemoteAudio(event.userId, true).catch(() => undefined);
+        });
 
         await trtc.enterRoom({
           sdkAppId: sig.sdkAppId,
@@ -702,6 +709,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
           return;
         }
         trtc.enableAudioVolumeEvaluation(500);
+        if (speakerMutedRef.current) trtc.muteRemoteAudio("*", true).catch(() => undefined);
 
         try {
           // Ask for the OS default mic (or this browser's saved choice) by id.
@@ -852,6 +860,21 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
     }
   }, [canSpeak, micOn]);
 
+  const toggleSpeaker = useCallback(async () => {
+    const next = !speakerMutedRef.current;
+    speakerMutedRef.current = next;
+    setSpeakerMuted(next);
+    const trtc = trtcRef.current;
+    if (!trtc) return; // applied when voice connects
+    try {
+      await trtc.muteRemoteAudio("*", next);
+    } catch (e) {
+      console.error("Whiteboard room: speaker toggle failed", e);
+      speakerMutedRef.current = !next;
+      setSpeakerMuted(!next);
+    }
+  }, []);
+
   const stopScreenShare = useCallback(async () => {
     const trtc = trtcRef.current;
     if (!sharingRef.current) return;
@@ -936,6 +959,8 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
     microphones,
     selectedMicId,
     selectMicrophone,
+    speakerMuted,
+    toggleSpeaker,
     toggleHand,
     allowToSpeak,
     revokeSpeak,

@@ -467,6 +467,8 @@ export default function WhiteboardRoom({ roomId, roomName, isHost, onLeave }: Wh
           microphones={room.microphones}
           selectedMicId={room.selectedMicId}
           onSelectMicrophone={room.selectMicrophone}
+          speakerMuted={room.speakerMuted}
+          onToggleSpeaker={room.toggleSpeaker}
           handRaised={room.handRaised}
           onToggleHand={handleToggleHand}
           handLocked={!isHost && !room.handRaised && (!planLetsMeSpeak || lectureMode)}
