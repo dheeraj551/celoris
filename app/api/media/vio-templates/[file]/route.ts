@@ -49,7 +49,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     );
     return res;
   } catch (err) {
-    console.error('[vio-templates media] sign error:', err);
-    return NextResponse.json({ error: 'Media unavailable' }, { status: 503 });
+    console.error('[vio-templates media] sign error, redirecting to local static fallback:', err);
+    return NextResponse.redirect(new URL(`/templates/vio/${file}`, _request.url), 307);
   }
 }

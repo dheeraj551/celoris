@@ -16,6 +16,8 @@ interface CanvasProps {
   videoSrc?: string;
   setDuration?: React.Dispatch<React.SetStateAction<number>>;
   clips?: Clip[];
+  aspectRatio?: AspectRatioType;
+  setAspectRatio?: React.Dispatch<React.SetStateAction<AspectRatioType>>;
 }
 
 export default function Canvas({
@@ -29,11 +31,16 @@ export default function Canvas({
   setCurrentTime,
   videoSrc,
   setDuration,
-  clips = []
+  clips = [],
+  aspectRatio: externalAspectRatio,
+  setAspectRatio: externalSetAspectRatio
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [aspectRatio, setAspectRatio] = useState<AspectRatioType>('9:16');
+  const [internalAspectRatio, setInternalAspectRatio] = useState<AspectRatioType>('9:16');
+  
+  const aspectRatio = externalAspectRatio ?? internalAspectRatio;
+  const setAspectRatio = externalSetAspectRatio ?? setInternalAspectRatio;
   
   const [isDragging, setIsDragging] = useState(false);
   const [isRotating, setIsRotating] = useState(false);

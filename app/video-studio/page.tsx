@@ -10,7 +10,7 @@ import { DashboardShell } from "@/components/home-new/DashboardShell";
 import Sidebar from './components/Sidebar';
 import SecondarySidebar from './components/SecondarySidebar';
 import Header from './components/Header';
-import Canvas from './components/Canvas';
+import Canvas, { AspectRatioType } from './components/Canvas';
 import Timeline from './components/Timeline';
 import PropertiesPanel from './components/PropertiesPanel';
 import { CDanceStudio } from './components/CDanceStudio';
@@ -106,6 +106,7 @@ export default function VideoStudio() {
     // Toolbar state
     const [activeTool, setActiveTool] = useState<'pointer' | 'hand'>('pointer');
     const [canvasZoom, setCanvasZoom] = useState(100);
+    const [aspectRatio, setAspectRatio] = useState<AspectRatioType>('9:16');
 
     // Playback state
     const [isPlaying, setIsPlaying] = useState(false);
@@ -515,6 +516,10 @@ export default function VideoStudio() {
                                 setClips={setClips}
                                 currentTime={currentTime}
                                 selectedClipId={selectedClipId}
+                                videoSrc={videoSrc}
+                                setTextElement={setTextElement}
+                                setAspectRatio={setAspectRatio}
+                                setCurrentTime={setCurrentTime}
                             />
 
                             <div className="flex flex-col flex-1 overflow-hidden relative">
@@ -530,6 +535,8 @@ export default function VideoStudio() {
                                     videoSrc={videoSrc}
                                     setDuration={setDuration}
                                     clips={clips}
+                                    aspectRatio={aspectRatio}
+                                    setAspectRatio={setAspectRatio}
                                 />
                                 <Timeline
                                     isPlaying={isPlaying}
