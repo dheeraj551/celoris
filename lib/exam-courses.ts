@@ -53,6 +53,7 @@ export const EXAM_COURSES: Record<string, ExamCourseSuggestion> = {
   'exam-instagram-video-engagement': { live: LIVE.socialMedia, free: FREE.smmAi },
   'exam-instagram-reels-video-editor': { live: LIVE.videoEditing, free: FREE.capcut },
   'exam-instagram-fashion-marketing-specialist': { live: LIVE.socialMedia, free: FREE.smmAi },
+  'exam-educational-instagram-reels-creator': { live: LIVE.videoEditing, free: FREE.capcut },
 }
 
 const FALLBACK: ExamCourseSuggestion = { free: { title: 'Browse free Celoris courses', href: '/learn' } }
