@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import { SupportAvatar } from '@/components/home-new/ShowcaseMedia';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bot, 
@@ -214,9 +215,7 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-md bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <Bot className="w-3.5 h-3.5" />
-            </div>
+            <SupportAvatar className="w-6 h-6" />
             <div>
               <span className="text-xs font-bold tracking-tight text-white block">Celoris Support</span>
             </div>

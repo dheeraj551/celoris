@@ -162,3 +162,19 @@ export function TrainerReelButton({ className = '' }: { className?: string }) {
     </>
   );
 }
+
+/**
+ * The Celoris Support assistant's face: a tiny looping clip (≈26 KB, muted)
+ * of the story character. The chat still says it's an AI assistant.
+ */
+export function SupportAvatar({ className = 'w-8 h-8' }: { className?: string }) {
+  return (
+    <span className={`relative inline-block shrink-0 rounded-full overflow-hidden bg-emerald-900/60 ring-1 ring-emerald-400/50 ${className}`}>
+      <LazyLoopVideo
+        src={`${SHOWCASE_MEDIA}support-avatar.mp4`}
+        poster={`${SHOWCASE_MEDIA}support-avatar.jpg`}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+    </span>
+  );
+}

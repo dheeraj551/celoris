@@ -134,14 +134,14 @@ export function VideoStudioFeature() {
           </div>
 
           {/* Interactive UI Mockup */}
-          <div className="relative w-full aspect-[16/9] md:aspect-auto md:h-[500px] mb-12 flex items-center justify-center">
+          <div className="relative w-full h-[440px] sm:h-[480px] md:h-[500px] mb-12 flex items-center justify-center">
             
             {/* Center Video Preview Container */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
-              className="absolute md:top-10 md:left-1/2 md:-translate-x-1/2 w-[85%] md:w-[600px] h-[250px] md:h-[300px] bg-[#0d0d0d] rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.15)] overflow-hidden flex items-center justify-center z-20"
+              className="absolute top-0 md:top-10 md:left-1/2 md:-translate-x-1/2 w-[85%] md:w-[600px] h-[250px] md:h-[300px] bg-[#0d0d0d] rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.15)] overflow-hidden flex items-center justify-center z-20"
             >
               {/* The showcase reel (muted loop from Cloudflare R2) */}
               <LazyLoopVideo

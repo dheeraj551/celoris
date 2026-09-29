@@ -139,8 +139,10 @@ function BeforeAfter({
       aria-valuenow={Math.round(pos)}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft') set(pos - 5);
-        if (e.key === 'ArrowRight') set(pos + 5);
+        const keys: Record<string, number> = { ArrowLeft: pos - 5, ArrowRight: pos + 5, Home: 0, End: 100 };
+        if (!(e.key in keys)) return;
+        e.preventDefault(); // don't scroll the page
+        set(keys[e.key]);
         idleUntil.current = performance.now() + 3500;
       }}
     >
