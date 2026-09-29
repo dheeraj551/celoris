@@ -14,13 +14,16 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { LazyLoopVideo, SHOWCASE_MEDIA } from './ShowcaseMedia';
 
-const TILES = [
+const TILES: { title: string; format: string; image: string; video?: string; tag: string; rotate: string }[] = [
   {
-    title: 'Titan Vanguard Mech',
-    format: 'GLTF',
-    image: '/3d/mech-model.jpeg',
-    tag: 'Rigged',
+    // A showcase clip (not a listing for sale) — muted loop from Cloudflare R2.
+    title: 'Character Turntable',
+    format: 'PREVIEW',
+    image: `${SHOWCASE_MEDIA}character-turntable.jpg`,
+    video: `${SHOWCASE_MEDIA}character-turntable.mp4`,
+    tag: 'Showcase',
     rotate: '-rotate-1',
   },
   {
@@ -111,11 +114,19 @@ export function PolyVaultFeature() {
                     key={i}
                     className={`relative aspect-square rounded-xl bg-[#141416] border border-white/10 ${tile.rotate} shadow-lg overflow-hidden group/tile flex flex-col justify-between`}
                   >
-                    <img
-                      src={tile.image}
-                      alt={tile.title}
-                      className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-110 transition-transform duration-500"
-                    />
+                    {tile.video ? (
+                      <LazyLoopVideo
+                        src={tile.video}
+                        poster={tile.image}
+                        className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <img
+                        src={tile.image}
+                        alt={tile.title}
+                        className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-110 transition-transform duration-500"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
 
                     {/* Top badge */}
@@ -165,8 +176,8 @@ export function PolyVaultFeature() {
               </div>
               <div className="flex flex-col gap-1.5">
                 {[
-                  { name: 'Titan Mech', rating: '4.95', img: '/3d/mech-model.jpeg' },
                   { name: 'GT3 Hypercar', rating: '4.98', img: '/3d/sports-car.jpeg' },
+                  { name: 'Brick Building', rating: '4.92', img: '/3d/modular-building.jpeg' },
                 ].map((item) => (
                   <div key={item.name} className="flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
                     <img src={item.img} alt={item.name} className="w-4 h-4 rounded object-cover border border-emerald-500/30 shrink-0" />
@@ -185,13 +196,13 @@ export function PolyVaultFeature() {
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[88%] md:w-[105%] bg-[#0a0a0a]/80 backdrop-blur-md rounded-2xl border border-white/5 shadow-2xl p-3 flex items-center gap-3 z-30"
             >
               <div className="w-8 h-8 rounded-lg overflow-hidden border border-emerald-500/30 shrink-0 relative bg-black">
-                <img src="/3d/mech-model.jpeg" alt="Titan Vanguard Mech" className="w-full h-full object-cover" />
+                <img src="/3d/sports-car.jpeg" alt="GT3 Aero Hypercar" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                   <Download className="w-3.5 h-3.5 text-emerald-400" />
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] font-bold text-white truncate">Titan Vanguard Mech (GLTF)</div>
+                <div className="text-[10px] font-bold text-white truncate">GT3 Aero Hypercar (FBX)</div>
                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mt-1">
                   <div className="h-full w-3/4 bg-emerald-500 rounded-full" />
                 </div>

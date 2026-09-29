@@ -18,6 +18,8 @@ const ALLOWED = new Set([
   'celoris-tv-host-loop.jpg',
   'trainer-pitch-reel.mp4',
   'trainer-pitch-reel.jpg',
+  'character-turntable.mp4',
+  'character-turntable.jpg',
 ]);
 
 // Signed links live for an hour; the redirect itself is cached for 30 minutes,
