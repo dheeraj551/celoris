@@ -23,6 +23,7 @@ import {
   PenPoint,
   PenPath,
   CropBox,
+  ShapeType,
 } from '../types';
 import {
   renderCompositeCanvas,
@@ -32,6 +33,8 @@ import {
   createCanvas,
   cloneCanvas,
   tracePenPath,
+  drawShape,
+  ShapeDrawParams,
 } from '../utils/canvasUtils';
 import {
   drawMarchingAnts,
@@ -63,8 +66,14 @@ interface CanvasViewportProps {
   cropAspectRatio: number | null;
   onApplyCrop: () => void;
   onCancelCrop?: () => void;
-  shapeType: 'rect' | 'circle' | 'line';
+  shapeType: ShapeType;
   shapeStrokeWidth: number;
+  shapeFillEnabled?: boolean;
+  shapeFillColor?: string;
+  shapeStrokeEnabled?: boolean;
+  shapeStrokeColor?: string;
+  shapeMode?: 'new' | 'current';
+  onCreateShape?: (params: ShapeDrawParams & { mode: 'new' | 'current' }) => void;
   zoom: number;
   setZoom: (z: number | ((prev: number) => number)) => void;
   pan: { x: number; y: number };
@@ -180,6 +189,12 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   onCancelCrop,
   shapeType,
   shapeStrokeWidth,
+  shapeFillEnabled = true,
+  shapeFillColor = '#3b82f6',
+  shapeStrokeEnabled = true,
+  shapeStrokeColor = '#ffffff',
+  shapeMode = 'new',
+  onCreateShape,
   zoom,
   setZoom,
   pan,
@@ -252,6 +267,9 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   const tempPolygonRef = useRef<{ x: number; y: number }[]>([]);
   const tempRectRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
   const tempShapeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const tempShapeCurrentRef = useRef<{ x: number; y: number } | null>(null);
+  const tempShapeShiftRef = useRef<boolean>(false);
+  const tempShapeAltRef = useRef<boolean>(false);
 
   // Marching ants animation offset
   const [dashOffset, setDashOffset] = useState(0);
@@ -570,6 +588,109 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         Math.abs(width),
         Math.abs(height)
       );
+      ctx.restore();
+    }
+
+    // 4. Draw in-progress Shape Tool preview & dimension HUD
+    if (activeTool === 'shape' && isInteractingRef.current && tempShapeStartRef.current && tempShapeCurrentRef.current) {
+      const start = tempShapeStartRef.current;
+      const current = tempShapeCurrentRef.current;
+      const isShift = tempShapeShiftRef.current;
+      const isAlt = tempShapeAltRef.current;
+
+      let sx = start.x;
+      let sy = start.y;
+      let ex = current.x;
+      let ey = current.y;
+
+      if (isShift) {
+        if (shapeType === 'line' || shapeType === 'arrow') {
+          const dx = ex - sx;
+          const dy = ey - sy;
+          const dist = Math.hypot(dx, dy);
+          let angle = Math.atan2(dy, dx);
+          const snap = Math.PI / 4;
+          angle = Math.round(angle / snap) * snap;
+          ex = sx + Math.cos(angle) * dist;
+          ey = sy + Math.sin(angle) * dist;
+        } else {
+          const dx = ex - sx;
+          const dy = ey - sy;
+          const size = Math.max(Math.abs(dx), Math.abs(dy));
+          ex = sx + (dx >= 0 ? size : -size);
+          ey = sy + (dy >= 0 ? size : -size);
+        }
+      }
+
+      if (isAlt) {
+        const dx = ex - sx;
+        const dy = ey - sy;
+        sx = start.x - dx;
+        sy = start.y - dy;
+        ex = start.x + dx;
+        ey = start.y + dy;
+      }
+
+      const bx = Math.min(sx, ex);
+      const by = Math.min(sy, ey);
+      const bw = Math.abs(ex - sx);
+      const bh = Math.abs(ey - sy);
+
+      // Draw real-time preview of the shape
+      drawShape(ctx, {
+        shapeType,
+        x: bx,
+        y: by,
+        width: bw,
+        height: bh,
+        startX: sx,
+        startY: sy,
+        endX: ex,
+        endY: ey,
+        fillEnabled: shapeFillEnabled,
+        fillColor: shapeFillColor,
+        strokeEnabled: shapeStrokeEnabled,
+        strokeColor: shapeStrokeColor,
+        strokeWidth: shapeStrokeWidth,
+      });
+
+      // Draw subtle bounding box indicator
+      ctx.save();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.strokeRect(bx, by, bw, bh);
+
+      // Dimension HUD badge near pointer
+      const label =
+        shapeType === 'line' || shapeType === 'arrow'
+          ? `${Math.round(Math.hypot(ex - sx, ey - sy))}px`
+          : `${Math.round(bw)} × ${Math.round(bh)} px`;
+
+      ctx.font = '10px "Segoe UI", Roboto, sans-serif';
+      ctx.textBaseline = 'middle';
+      const textMetrics = ctx.measureText(label);
+      const padX = 6;
+      const pillW = textMetrics.width + padX * 2;
+      const pillH = 18;
+      const pillX = Math.min(canvasWidth - pillW - 4, Math.max(4, ex + 12));
+      const pillY = Math.min(canvasHeight - pillH - 4, Math.max(4, ey + 12));
+
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(pillX, pillY, pillW, pillH, 4);
+      } else {
+        ctx.rect(pillX, pillY, pillW, pillH);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText(label, pillX + padX, pillY + pillH / 2);
       ctx.restore();
     }
 
@@ -1326,8 +1447,11 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     }
 
     // Shape Tool
-    if (activeTool === 'shape' && activeLayer && !activeLayer.locked) {
+    if (activeTool === 'shape') {
       tempShapeStartRef.current = { x: coords.x, y: coords.y };
+      tempShapeCurrentRef.current = { x: coords.x, y: coords.y };
+      tempShapeShiftRef.current = e.shiftKey;
+      tempShapeAltRef.current = e.altKey;
       return;
     }
 
@@ -1690,6 +1814,15 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       return;
     }
 
+    // Shape tool drag
+    if (activeTool === 'shape' && isInteractingRef.current && tempShapeStartRef.current) {
+      tempShapeCurrentRef.current = { x: coords.x, y: coords.y };
+      tempShapeShiftRef.current = e.shiftKey;
+      tempShapeAltRef.current = e.altKey;
+      lastMousePosRef.current = coords;
+      return;
+    }
+
     // Brush or Eraser stroke
     if ((activeTool === 'brush' || activeTool === 'eraser') && activeLayer && !activeLayer.locked) {
       const ctx = activeLayer.canvas.getContext('2d');
@@ -1806,39 +1939,103 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     }
 
     // Shape complete
-    if (activeTool === 'shape' && activeLayer && !activeLayer.locked && tempShapeStartRef.current) {
+    if (activeTool === 'shape' && tempShapeStartRef.current) {
       const start = tempShapeStartRef.current;
-      const end = lastMousePosRef.current;
-      const ctx = activeLayer.canvas.getContext('2d');
-      if (ctx) {
-        ctx.save();
-        ctx.strokeStyle = foregroundColor;
-        ctx.fillStyle = backgroundColor;
-        ctx.lineWidth = shapeStrokeWidth;
+      const current = tempShapeCurrentRef.current || lastMousePosRef.current;
+      const isShift = tempShapeShiftRef.current;
+      const isAlt = tempShapeAltRef.current;
 
-        const lx = start.x - activeLayer.x;
-        const ly = start.y - activeLayer.y;
-        const lw = end.x - start.x;
-        const lh = end.y - start.y;
+      let sx = start.x;
+      let sy = start.y;
+      let ex = current.x;
+      let ey = current.y;
 
-        if (shapeType === 'rect') {
-          ctx.strokeRect(lw < 0 ? lx + lw : lx, lh < 0 ? ly + lh : ly, Math.abs(lw), Math.abs(lh));
-        } else if (shapeType === 'circle') {
-          const rx = Math.abs(lw) / 2;
-          const ry = Math.abs(lh) / 2;
-          ctx.beginPath();
-          ctx.ellipse(lx + lw / 2, ly + lh / 2, Math.max(1, rx), Math.max(1, ry), 0, 0, Math.PI * 2);
-          ctx.stroke();
-        } else if (shapeType === 'line') {
-          ctx.beginPath();
-          ctx.moveTo(lx, ly);
-          ctx.lineTo(lx + lw, ly + lh);
-          ctx.stroke();
+      const dragDist = Math.hypot(ex - sx, ey - sy);
+      if (dragDist < 4) {
+        // Simple click without drag: generate a standard sized shape centered on click
+        if (shapeType === 'line' || shapeType === 'arrow') {
+          ex = sx + 120;
+          ey = sy;
+        } else {
+          const defaultSize = 120;
+          sx = start.x - defaultSize / 2;
+          sy = start.y - defaultSize / 2;
+          ex = start.x + defaultSize / 2;
+          ey = start.y + defaultSize / 2;
         }
-        ctx.restore();
-        onLayerPixelChange(activeLayer.id, 'Draw Shape');
+      } else {
+        if (isShift) {
+          if (shapeType === 'line' || shapeType === 'arrow') {
+            const dx = ex - sx;
+            const dy = ey - sy;
+            const dist = Math.hypot(dx, dy);
+            let angle = Math.atan2(dy, dx);
+            const snap = Math.PI / 4;
+            angle = Math.round(angle / snap) * snap;
+            ex = sx + Math.cos(angle) * dist;
+            ey = sy + Math.sin(angle) * dist;
+          } else {
+            const dx = ex - sx;
+            const dy = ey - sy;
+            const size = Math.max(Math.abs(dx), Math.abs(dy));
+            ex = sx + (dx >= 0 ? size : -size);
+            ey = sy + (dy >= 0 ? size : -size);
+          }
+        }
+
+        if (isAlt) {
+          const dx = ex - sx;
+          const dy = ey - sy;
+          sx = start.x - dx;
+          sy = start.y - dy;
+          ex = start.x + dx;
+          ey = start.y + dy;
+        }
       }
+
+      const bx = Math.min(sx, ex);
+      const by = Math.min(sy, ey);
+      const bw = Math.abs(ex - sx);
+      const bh = Math.abs(ey - sy);
+
+      const shapeParams = {
+        shapeType,
+        x: bx,
+        y: by,
+        width: bw,
+        height: bh,
+        startX: sx,
+        startY: sy,
+        endX: ex,
+        endY: ey,
+        fillEnabled: shapeFillEnabled,
+        fillColor: shapeFillColor,
+        strokeEnabled: shapeStrokeEnabled,
+        strokeColor: shapeStrokeColor,
+        strokeWidth: shapeStrokeWidth,
+        mode: shapeMode,
+      };
+
+      if (onCreateShape) {
+        onCreateShape(shapeParams);
+      } else if (activeLayer && !activeLayer.locked) {
+        const ctx = activeLayer.canvas.getContext('2d');
+        if (ctx) {
+          drawShape(ctx, {
+            ...shapeParams,
+            x: bx - activeLayer.x,
+            y: by - activeLayer.y,
+            startX: sx - activeLayer.x,
+            startY: sy - activeLayer.y,
+            endX: ex - activeLayer.x,
+            endY: ey - activeLayer.y,
+          });
+          onLayerPixelChange(activeLayer.id, 'Draw Shape');
+        }
+      }
+
       tempShapeStartRef.current = null;
+      tempShapeCurrentRef.current = null;
     }
   };
 
@@ -1923,7 +2120,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     }
   } else if (activeTool === 'wand' || activeTool === 'bucket') {
     cursorStyle = 'crosshair';
-  } else if (activeTool === 'lasso' || activeTool === 'marquee') {
+  } else if (activeTool === 'lasso' || activeTool === 'marquee' || activeTool === 'shape') {
     cursorStyle = 'crosshair';
   } else if (activeTool === 'pen') {
     if (penHoverTarget?.type === 'close') {

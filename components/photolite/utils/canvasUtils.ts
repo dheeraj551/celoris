@@ -1,4 +1,4 @@
-import { BlendMode, Layer, SerializedLayer, PenPath } from '../types';
+import { BlendMode, Layer, SerializedLayer, PenPath, ShapeType } from '../types';
 
 export const BLEND_MODES: { value: BlendMode; label: string }[] = [
   { value: 'source-over', label: 'Normal' },
@@ -1377,5 +1377,124 @@ export function samplePenPath(penPath: PenPath, segmentsPerCurve = 16): { x: num
   }
 
   return result;
+}
+
+export interface ShapeDrawParams {
+  shapeType: ShapeType;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  startX?: number;
+  startY?: number;
+  endX?: number;
+  endY?: number;
+  fillEnabled?: boolean;
+  fillColor?: string;
+  strokeEnabled?: boolean;
+  strokeColor?: string;
+  strokeWidth?: number;
+}
+
+export function drawShape(ctx: CanvasRenderingContext2D, params: ShapeDrawParams) {
+  const {
+    shapeType,
+    x,
+    y,
+    width,
+    height,
+    startX,
+    startY,
+    endX,
+    endY,
+    fillEnabled = true,
+    fillColor = '#3b82f6',
+    strokeEnabled = true,
+    strokeColor = '#ffffff',
+    strokeWidth = 2,
+  } = params;
+
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const w = Math.max(0.1, width);
+  const h = Math.max(0.1, height);
+
+  if (shapeType === 'line' || shapeType === 'arrow') {
+    const sx = startX ?? x;
+    const sy = startY ?? y;
+    const ex = endX ?? (x + width);
+    const ey = endY ?? (y + height);
+    const col = strokeEnabled && strokeColor ? strokeColor : (fillEnabled && fillColor ? fillColor : '#ffffff');
+    const sw = Math.max(1, strokeWidth);
+
+    ctx.strokeStyle = col;
+    ctx.lineWidth = sw;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+
+    if (shapeType === 'arrow') {
+      const angle = Math.atan2(ey - sy, ex - sx);
+      const headLen = Math.max(12, sw * 3.5);
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - headLen * Math.cos(angle - Math.PI / 6), ey - headLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(ex - headLen * 0.7 * Math.cos(angle), ey - headLen * 0.7 * Math.sin(angle));
+      ctx.lineTo(ex - headLen * Math.cos(angle + Math.PI / 6), ey - headLen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fillStyle = col;
+      ctx.fill();
+    }
+  } else {
+    ctx.beginPath();
+    if (shapeType === 'rect') {
+      ctx.rect(x, y, w, h);
+    } else if (shapeType === 'rounded-rect') {
+      const radius = Math.min(16, w / 4, h / 4);
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(x, y, w, h, radius);
+      } else {
+        ctx.rect(x, y, w, h);
+      }
+    } else if (shapeType === 'circle') {
+      const rx = w / 2;
+      const ry = h / 2;
+      ctx.ellipse(x + rx, y + ry, rx, ry, 0, 0, Math.PI * 2);
+    } else if (shapeType === 'triangle') {
+      ctx.moveTo(x + w / 2, y);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x, y + h);
+      ctx.closePath();
+    } else if (shapeType === 'star') {
+      const cx = x + w / 2;
+      const cy = y + h / 2;
+      const outerR = Math.min(w, h) / 2;
+      const innerR = outerR * 0.4;
+      for (let i = 0; i < 10; i++) {
+        const angle = (i * Math.PI) / 5 - Math.PI / 2;
+        const r = i % 2 === 0 ? outerR : innerR;
+        const px = cx + Math.cos(angle) * r;
+        const py = cy + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+    }
+
+    if (fillEnabled && fillColor && fillColor !== 'transparent') {
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+    }
+    if (strokeEnabled && strokeWidth > 0 && strokeColor && strokeColor !== 'transparent') {
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeWidth;
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
 }
 

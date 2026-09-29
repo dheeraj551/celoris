@@ -38,6 +38,8 @@ export interface LayerFilter {
   invert: boolean;
 }
 
+export type ShapeType = 'rect' | 'rounded-rect' | 'circle' | 'triangle' | 'star' | 'line' | 'arrow';
+
 export interface Layer {
   id: string;
   name: string;
@@ -68,7 +70,7 @@ export interface Layer {
   };
   // shape specific properties
   shapeData?: {
-    shapeType: 'rect' | 'circle' | 'line';
+    shapeType: ShapeType;
     fill: string;
     stroke: string;
     strokeWidth: number;
@@ -105,7 +107,7 @@ export interface SerializedLayer {
     lineHeight?: number;
   };
   shapeData?: {
-    shapeType: 'rect' | 'circle' | 'line';
+    shapeType: ShapeType;
     fill: string;
     stroke: string;
     strokeWidth: number;

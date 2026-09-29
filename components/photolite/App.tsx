@@ -7,6 +7,7 @@ import {
   CropBox,
   HistoryStep,
   LayerFilter,
+  ShapeType,
 } from './types';
 import {
   createCanvas,
@@ -20,6 +21,8 @@ import {
   renderTextToLayerCanvas,
   tracePenPath,
   samplePenPath,
+  drawShape,
+  ShapeDrawParams,
 } from './utils/canvasUtils';
 import { createInitialProject } from './utils/sampleData';
 import {
@@ -93,8 +96,13 @@ export default function App() {
   const [cropAspectRatio, setCropAspectRatio] = useState<number | null>(null);
 
   // Shape Tool
-  const [shapeType, setShapeType] = useState<'rect' | 'circle' | 'line'>('rect');
+  const [shapeType, setShapeType] = useState<ShapeType>('rect');
   const [shapeStrokeWidth, setShapeStrokeWidth] = useState<number>(3);
+  const [shapeFillEnabled, setShapeFillEnabled] = useState<boolean>(true);
+  const [shapeFillColor, setShapeFillColor] = useState<string>('#3b82f6');
+  const [shapeStrokeEnabled, setShapeStrokeEnabled] = useState<boolean>(true);
+  const [shapeStrokeColor, setShapeStrokeColor] = useState<string>('#ffffff');
+  const [shapeMode, setShapeMode] = useState<'new' | 'current'>('new');
 
   // Text Tool
   const [textString, setTextString] = useState<string>('Creative Studio');
@@ -896,6 +904,81 @@ export default function App() {
     recordHistory('Add Text Layer', updated, canvasWidth, canvasHeight, newLayer.id);
   };
 
+  // Draw Shape Handler (Create new Shape Layer or draw on active layer)
+  const handleCreateShape = (shapeParams: ShapeDrawParams & { mode: 'new' | 'current' }) => {
+    const active = layers.find((l) => l.id === activeLayerId);
+    const shouldCreateNewLayer =
+      shapeParams.mode === 'new' || !active || active.locked || active.type === 'text';
+
+    const shapeLabels: Record<string, string> = {
+      rect: 'Rectangle',
+      'rounded-rect': 'Rounded Rectangle',
+      circle: 'Ellipse',
+      triangle: 'Triangle',
+      star: 'Star',
+      line: 'Line',
+      arrow: 'Arrow',
+    };
+    const label = shapeLabels[shapeParams.shapeType] || 'Shape';
+
+    if (shouldCreateNewLayer) {
+      const shapeCanvas = createCanvas(canvasWidth, canvasHeight);
+      const ctx = shapeCanvas.getContext('2d');
+      if (ctx) {
+        drawShape(ctx, shapeParams);
+      }
+
+      const count = layers.filter((l) => l.name.startsWith(label)).length + 1;
+      const newLayer: Layer = {
+        id: `layer-shape-${Date.now()}`,
+        name: `${label} ${count}`,
+        type: 'shape',
+        visible: true,
+        locked: false,
+        opacity: 1,
+        blendMode: 'source-over',
+        x: 0,
+        y: 0,
+        width: canvasWidth,
+        height: canvasHeight,
+        canvas: shapeCanvas,
+        shapeData: {
+          shapeType: shapeParams.shapeType,
+          fill: shapeParams.fillEnabled ? (shapeParams.fillColor || '#3b82f6') : 'transparent',
+          stroke: shapeParams.strokeEnabled ? (shapeParams.strokeColor || '#ffffff') : 'transparent',
+          strokeWidth: shapeParams.strokeWidth || 3,
+        },
+      };
+
+      const activeIndex = layers.findIndex((l) => l.id === activeLayerId);
+      const updated = [...layers];
+      if (activeIndex >= 0) {
+        updated.splice(activeIndex + 1, 0, newLayer);
+      } else {
+        updated.push(newLayer);
+      }
+
+      setLayers(updated);
+      setActiveLayerId(newLayer.id);
+      recordHistory(`Draw ${label}`, updated, canvasWidth, canvasHeight, newLayer.id);
+    } else {
+      // Draw directly on active layer
+      const ctx = active.canvas.getContext('2d');
+      if (ctx) {
+        drawShape(ctx, {
+          ...shapeParams,
+          x: shapeParams.x - active.x,
+          y: shapeParams.y - active.y,
+          startX: shapeParams.startX !== undefined ? shapeParams.startX - active.x : undefined,
+          startY: shapeParams.startY !== undefined ? shapeParams.startY - active.y : undefined,
+          endX: shapeParams.endX !== undefined ? shapeParams.endX - active.x : undefined,
+          endY: shapeParams.endY !== undefined ? shapeParams.endY - active.y : undefined,
+        });
+        recordHistory(`Draw ${label}`);
+      }
+    }
+  };
+
   // Update Active Text Layer
   const handleUpdateActiveText = (
     overrideText?: string,
@@ -1453,6 +1536,16 @@ export default function App() {
         setShapeType={setShapeType}
         shapeStrokeWidth={shapeStrokeWidth}
         setShapeStrokeWidth={setShapeStrokeWidth}
+        shapeFillEnabled={shapeFillEnabled}
+        setShapeFillEnabled={setShapeFillEnabled}
+        shapeFillColor={shapeFillColor}
+        setShapeFillColor={setShapeFillColor}
+        shapeStrokeEnabled={shapeStrokeEnabled}
+        setShapeStrokeEnabled={setShapeStrokeEnabled}
+        shapeStrokeColor={shapeStrokeColor}
+        setShapeStrokeColor={setShapeStrokeColor}
+        shapeMode={shapeMode}
+        setShapeMode={setShapeMode}
         textString={textString}
         setTextString={setTextString}
         textFontSize={textFontSize}
@@ -1514,6 +1607,12 @@ export default function App() {
           onCancelCrop={() => setActiveTool('select')}
           shapeType={shapeType}
           shapeStrokeWidth={shapeStrokeWidth}
+          shapeFillEnabled={shapeFillEnabled}
+          shapeFillColor={shapeFillColor}
+          shapeStrokeEnabled={shapeStrokeEnabled}
+          shapeStrokeColor={shapeStrokeColor}
+          shapeMode={shapeMode}
+          onCreateShape={handleCreateShape}
           zoom={zoom}
           setZoom={setZoom}
           pan={pan}

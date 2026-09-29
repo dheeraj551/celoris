@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Crop,
   Check,
@@ -11,6 +10,9 @@ import {
   Square,
   Circle,
   Minus,
+  Triangle,
+  Star,
+  ArrowRight,
   Maximize2,
   RotateCw,
   RotateCcw,
@@ -20,7 +22,7 @@ import {
   Plus,
   Type,
 } from 'lucide-react';
-import { ToolType, SelectionState, PenPath, Layer } from '../types';
+import { ToolType, SelectionState, PenPath, Layer, ShapeType } from '../types';
 
 interface ToolOptionsBarProps {
   activeTool: ToolType;
@@ -51,10 +53,20 @@ interface ToolOptionsBarProps {
   onApplyCrop: () => void;
   onCancelCrop: () => void;
   // Shape options
-  shapeType: 'rect' | 'circle' | 'line';
-  setShapeType: (t: 'rect' | 'circle' | 'line') => void;
+  shapeType: ShapeType;
+  setShapeType: (t: ShapeType) => void;
   shapeStrokeWidth: number;
   setShapeStrokeWidth: (w: number) => void;
+  shapeFillEnabled?: boolean;
+  setShapeFillEnabled?: (b: boolean) => void;
+  shapeFillColor?: string;
+  setShapeFillColor?: (c: string) => void;
+  shapeStrokeEnabled?: boolean;
+  setShapeStrokeEnabled?: (b: boolean) => void;
+  shapeStrokeColor?: string;
+  setShapeStrokeColor?: (c: string) => void;
+  shapeMode?: 'new' | 'current';
+  setShapeMode?: (m: 'new' | 'current') => void;
   // Text options
   textString: string;
   setTextString: (s: string) => void;
@@ -116,6 +128,16 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
   setShapeType,
   shapeStrokeWidth,
   setShapeStrokeWidth,
+  shapeFillEnabled = true,
+  setShapeFillEnabled,
+  shapeFillColor = '#3b82f6',
+  setShapeFillColor,
+  shapeStrokeEnabled = true,
+  setShapeStrokeEnabled,
+  shapeStrokeColor = '#ffffff',
+  setShapeStrokeColor,
+  shapeMode = 'new',
+  setShapeMode,
   textString,
   setTextString,
   textFontSize,
@@ -353,52 +375,171 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
 
       {/* Shape Tool options */}
       {activeTool === 'shape' && (
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center rounded bg-[#1a1a1a] p-0.5 border border-black">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Shape Types */}
+          <div className="flex items-center rounded bg-[#1a1a1a] p-0.5 border border-black gap-0.5">
             <button
+              type="button"
               onClick={() => setShapeType('rect')}
-              className={`p-1 rounded cursor-pointer ${shapeType === 'rect' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'rect' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
               title="Rectangle"
             >
               <Square className="h-3 w-3" />
             </button>
             <button
+              type="button"
+              onClick={() => setShapeType('rounded-rect')}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'rounded-rect' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
+              title="Rounded Rectangle"
+            >
+              <div className="h-3 w-3 border border-current rounded-[3px]" />
+            </button>
+            <button
+              type="button"
               onClick={() => setShapeType('circle')}
-              className={`p-1 rounded cursor-pointer ${shapeType === 'circle' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'circle' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
               title="Circle / Ellipse"
             >
               <Circle className="h-3 w-3" />
             </button>
             <button
+              type="button"
+              onClick={() => setShapeType('triangle')}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'triangle' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
+              title="Triangle"
+            >
+              <Triangle className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setShapeType('star')}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'star' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
+              title="5-Point Star"
+            >
+              <Star className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
               onClick={() => setShapeType('line')}
-              className={`p-1 rounded cursor-pointer ${shapeType === 'line' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'line' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
               title="Line"
             >
               <Minus className="h-3 w-3" />
             </button>
+            <button
+              type="button"
+              onClick={() => setShapeType('arrow')}
+              className={`p-1 rounded cursor-pointer transition-colors ${shapeType === 'arrow' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white hover:bg-[#333]'}`}
+              title="Arrow"
+            >
+              <ArrowRight className="h-3 w-3" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <span className="text-gray-400">Stroke:</span>
+          {/* Mode: New Layer vs Current Layer */}
+          {setShapeMode && (
+            <div className="flex items-center rounded bg-[#1a1a1a] p-0.5 border border-black gap-0.5 text-[10px]">
+              <button
+                type="button"
+                onClick={() => setShapeMode('new')}
+                className={`px-2 py-0.5 rounded cursor-pointer font-medium transition-colors ${shapeMode === 'new' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white'}`}
+                title="Create a new Shape layer on canvas"
+              >
+                New Layer
+              </button>
+              <button
+                type="button"
+                onClick={() => setShapeMode('current')}
+                className={`px-2 py-0.5 rounded cursor-pointer font-medium transition-colors ${shapeMode === 'current' ? 'bg-blue-600 text-white shadow-xs' : 'text-gray-400 hover:text-white'}`}
+                title="Draw shape directly on active layer"
+              >
+                Current Layer
+              </button>
+            </div>
+          )}
+
+          {/* Fill Controls */}
+          {shapeType !== 'line' && shapeType !== 'arrow' && (
+            <div className="flex items-center gap-1.5 pl-1.5 border-l border-neutral-700">
+              <label className="flex items-center gap-1 cursor-pointer select-none text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={shapeFillEnabled}
+                  onChange={(e) => {
+                    const next = e.target.checked;
+                    setShapeFillEnabled?.(next);
+                    if (!next && !shapeStrokeEnabled) setShapeStrokeEnabled?.(true);
+                  }}
+                  className="rounded border border-black accent-blue-500 h-3 w-3 cursor-pointer"
+                />
+                <span>Fill:</span>
+              </label>
+              <label
+                className={`relative flex items-center justify-center h-4 w-4 rounded-xs border border-black cursor-pointer shadow-xs ${!shapeFillEnabled ? 'opacity-30' : 'hover:scale-105 active:scale-95 transition-transform'}`}
+                style={{ backgroundColor: shapeFillColor }}
+                title="Choose Fill Color"
+              >
+                <input
+                  type="color"
+                  value={shapeFillColor}
+                  disabled={!shapeFillEnabled}
+                  onChange={(e) => setShapeFillColor?.(e.target.value)}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+          )}
+
+          {/* Stroke Controls */}
+          <div className="flex items-center gap-1.5 pl-1.5 border-l border-neutral-700">
+            <label className="flex items-center gap-1 cursor-pointer select-none text-gray-300">
+              <input
+                type="checkbox"
+                checked={shapeStrokeEnabled}
+                onChange={(e) => {
+                  const next = e.target.checked;
+                  setShapeStrokeEnabled?.(next);
+                  if (!next && !shapeFillEnabled && shapeType !== 'line' && shapeType !== 'arrow') {
+                    setShapeFillEnabled?.(true);
+                  }
+                }}
+                className="rounded border border-black accent-blue-500 h-3 w-3 cursor-pointer"
+              />
+              <span>Stroke:</span>
+            </label>
+            <label
+              className={`relative flex items-center justify-center h-4 w-4 rounded-xs border border-black cursor-pointer shadow-xs ${!shapeStrokeEnabled ? 'opacity-30' : 'hover:scale-105 active:scale-95 transition-transform'}`}
+              style={{ backgroundColor: shapeStrokeColor }}
+              title="Choose Stroke Color"
+            >
+              <input
+                type="color"
+                value={shapeStrokeColor}
+                disabled={!shapeStrokeEnabled}
+                onChange={(e) => setShapeStrokeColor?.(e.target.value)}
+                className="sr-only"
+              />
+            </label>
             <input
               type="range"
               min="1"
-              max="30"
+              max="50"
+              disabled={!shapeStrokeEnabled}
               value={shapeStrokeWidth}
               onChange={(e) => setShapeStrokeWidth(Number(e.target.value))}
-              className="h-1 w-16 cursor-pointer accent-blue-500"
+              className="h-1 w-16 cursor-pointer accent-blue-500 disabled:opacity-40"
             />
             <span className="w-7 font-mono text-[10px] text-gray-300">{shapeStrokeWidth}px</span>
           </div>
 
-          <span className="text-gray-400 text-[10px]">
-            Drag to draw shape with current foreground color.
+          <span className="text-gray-400 text-[10px] hidden lg:inline border-l border-neutral-700 pl-2">
+            Drag to draw • <span className="text-cyan-400 font-mono">Shift</span> 1:1 ratio • <span className="text-cyan-400 font-mono">Alt</span> from center
           </span>
         </div>
       )}
 
-      {/* Text Tool options or Active Text Layer */}
-      {(activeTool === 'text' || activeLayer?.type === 'text') && (
+      {/* Text Tool options or Active Text Layer (only when Text tool or Select tool on text layer is active) */}
+      {(activeTool === 'text' || (activeTool === 'select' && activeLayer?.type === 'text')) && (
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5">
             <span className="text-cyan-400 font-medium text-[11px] whitespace-nowrap">
