@@ -42,6 +42,7 @@ import { PolyVaultFeature } from './PolyVaultFeature';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { CommandDock } from './CommandDock';
 import { SocialProofCounters } from './SocialProofCounters';
+import { LazyLoopVideo, SHOWCASE_MEDIA, TrainerReelButton } from './ShowcaseMedia';
 
 // Cosmic fireworks with violet, purple, and celestial neon tones that burst around the hero heading.
 const FIREWORKS: { left: string; top: string; colors: string[]; delay: number; size?: number }[] = [
@@ -849,6 +850,8 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 <Star className="w-4 h-4 text-emerald-400" />
                                 Become an Instructor
                             </Link>
+                            {/* Trainer pitch reel (with sound), from Cloudflare R2 */}
+                            <TrainerReelButton />
                         </div>
                     </BentoCard>
 
@@ -1007,7 +1010,27 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
 
                             {/* Simulated Video Player Preview */}
                             <div className="relative rounded-2xl overflow-hidden border border-white/[0.12] bg-black/60 aspect-[21/9] sm:aspect-[24/9] mb-5 group/tv shadow-lg">
-                                <img src="/Celoristv.png" alt="Celoris TV" className="w-full h-full object-cover object-center opacity-70 group-hover/tv:opacity-90 group-hover/tv:scale-105 transition-all duration-700" />
+                                <img
+                                    src="/Celoristv.png"
+                                    alt="Celoris TV"
+                                    className="w-full h-full object-cover object-center opacity-70 group-hover/tv:opacity-90 group-hover/tv:scale-105 transition-all duration-700"
+                                    // Keep the photo's headline on the left; the live clip takes the right side.
+                                    style={{
+                                        WebkitMaskImage: 'linear-gradient(to right, black 42%, transparent 60%)',
+                                        maskImage: 'linear-gradient(to right, black 42%, transparent 60%)',
+                                    }}
+                                />
+                                {/* Live host loop (muted, from Cloudflare R2) over the photo's right side */}
+                                <LazyLoopVideo
+                                    src={`${SHOWCASE_MEDIA}celoris-tv-host-loop.mp4`}
+                                    poster={`${SHOWCASE_MEDIA}celoris-tv-host-loop.jpg`}
+                                    className="absolute inset-y-0 right-0 h-full w-[52%] sm:w-[46%] object-cover opacity-90 group-hover/tv:opacity-100 transition-opacity duration-700"
+                                    style={{
+                                        objectPosition: '50% 32%',
+                                        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 28%)',
+                                        maskImage: 'linear-gradient(to right, transparent 0%, black 28%)',
+                                    }}
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="w-10 h-10 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center shadow-[0_0_25px_rgba(239,68,68,0.6)] group-hover/tv:scale-110 transition-transform">

@@ -1,19 +1,24 @@
-// Uploads the ViO Studio "Explore Templates" media to Cloudflare R2.
+// Uploads the site's showcase media to Cloudflare R2.
 //
-// Run once from the celoris folder (and again whenever you add/replace a file):
+// Run from the celoris folder (again whenever you add/replace a file):
 //   node scripts/upload-vio-templates.mjs
 //
 // Reads the R2_* values from .env.local (they never leave your computer) and
-// uploads every file in new_higgs/upload/ to  <bucket>/public/vio-templates/.
-// The website serves them through /api/media/vio-templates/<file>.
+// uploads:
+//   new_higgs/upload/    → <bucket>/public/vio-templates/   (ViO Studio templates,
+//                          served by /api/media/vio-templates/<file>)
+//   new_higgs/showcase/  → <bucket>/public/showcase/        (homepage videos,
+//                          served by /api/media/showcase/<file>)
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, extname } from 'node:path';
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 
 const ROOT = process.cwd();
-const SOURCE_DIR = join(ROOT, 'new_higgs', 'upload');
-const PREFIX = 'public/vio-templates/';
+const SOURCES = [
+  { dir: join(ROOT, 'new_higgs', 'upload'), prefix: 'public/vio-templates/' },
+  { dir: join(ROOT, 'new_higgs', 'showcase'), prefix: 'public/showcase/' },
+];
 
 function loadEnvFile(file) {
   if (!existsSync(file)) return;
@@ -42,11 +47,6 @@ if (missing.length) {
   console.error(`Missing in .env.local: ${missing.join(', ')}`);
   process.exit(1);
 }
-if (!existsSync(SOURCE_DIR)) {
-  console.error(`Folder not found: ${SOURCE_DIR}`);
-  process.exit(1);
-}
-
 const TYPES = {
   '.mp4': 'video/mp4',
   '.webm': 'video/webm',
@@ -63,37 +63,44 @@ const client = new S3Client({
 });
 const Bucket = R2_BUCKET_NAME.trim();
 
-const files = readdirSync(SOURCE_DIR).filter((f) => {
-  const p = join(SOURCE_DIR, f);
-  return statSync(p).isFile() && TYPES[extname(f).toLowerCase()];
-});
-
-if (!files.length) {
-  console.log('Nothing to upload.');
-  process.exit(0);
-}
-
+// Upload files that are new or changed (same size already in R2 = skipped).
 let ok = 0;
-for (const name of files) {
-  const body = readFileSync(join(SOURCE_DIR, name));
-  const Key = PREFIX + name;
-  try {
-    await client.send(
-      new PutObjectCommand({
-        Bucket,
-        Key,
-        Body: body,
-        ContentType: TYPES[extname(name).toLowerCase()],
-        CacheControl: 'public, max-age=31536000, immutable',
-      })
-    );
-    const head = await client.send(new HeadObjectCommand({ Bucket, Key }));
-    console.log(`✓ ${Key}  (${(head.ContentLength / 1024).toFixed(0)} KB)`);
-    ok++;
-  } catch (err) {
-    console.error(`✗ ${Key}: ${err?.name || ''} ${err?.message || err}`);
+let skipped = 0;
+let failed = 0;
+for (const { dir, prefix } of SOURCES) {
+  if (!existsSync(dir)) continue;
+  const files = readdirSync(dir).filter((f) => {
+    const p = join(dir, f);
+    return statSync(p).isFile() && TYPES[extname(f).toLowerCase()];
+  });
+  for (const name of files) {
+    const path = join(dir, name);
+    const Key = prefix + name;
+    const size = statSync(path).size;
+    try {
+      const existing = await client.send(new HeadObjectCommand({ Bucket, Key })).catch(() => null);
+      if (existing && existing.ContentLength === size) {
+        skipped++;
+        continue;
+      }
+      await client.send(
+        new PutObjectCommand({
+          Bucket,
+          Key,
+          Body: readFileSync(path),
+          ContentType: TYPES[extname(name).toLowerCase()],
+          CacheControl: 'public, max-age=31536000, immutable',
+        })
+      );
+      const head = await client.send(new HeadObjectCommand({ Bucket, Key }));
+      console.log(`✓ ${Key}  (${(head.ContentLength / 1024).toFixed(0)} KB)`);
+      ok++;
+    } catch (err) {
+      console.error(`✗ ${Key}: ${err?.name || ''} ${err?.message || err}`);
+      failed++;
+    }
   }
 }
 
-console.log(`\n${ok}/${files.length} files uploaded to R2 (${Bucket}/${PREFIX}).`);
-process.exit(ok === files.length ? 0 : 1);
+console.log(`\nUploaded ${ok}, already up to date ${skipped}, failed ${failed} (bucket: ${Bucket}).`);
+process.exit(failed ? 1 : 0);

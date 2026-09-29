@@ -900,3 +900,4 @@
 
 # ViO Studio template media: source files live in Cloudflare R2 (scripts/upload-vio-templates.mjs)
 /new_higgs/
+/gallary/
