@@ -350,7 +350,7 @@ export function MainStage({
                     </p>
 
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5 text-[10px] text-zinc-500">
-                      <span>{preset.views} views</span>
+                      <span>{preset.views ? `${preset.views} views` : 'Real result'}</span>
                       <span className="text-zinc-400 group-hover:text-white font-medium">Use Motion →</span>
                     </div>
                   </div>

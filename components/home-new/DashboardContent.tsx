@@ -465,6 +465,21 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 Interactive 3D virtual lecture halls, collaborative whiteboard studios, and small cohorts led by verified mentors.
                             </p>
 
+                            {/* Classroom preview loop (muted, from Cloudflare R2) */}
+                            <div className="relative rounded-2xl overflow-hidden border border-white/[0.1] bg-black/60 aspect-[16/7] mb-4">
+                                <LazyLoopVideo
+                                    src={`${SHOWCASE_MEDIA}classroom-live-loop.mp4`}
+                                    poster={`${SHOWCASE_MEDIA}classroom-live-loop.jpg`}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                    style={{ objectPosition: '60% 35%' }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                                <span className="absolute bottom-2 left-3 inline-flex items-center gap-1.5 text-[10px] font-semibold text-white drop-shadow">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                                    Classroom preview
+                                </span>
+                            </div>
+
                             {/* Interactive Audio Waveform Card */}
                             <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] mb-5 flex items-center justify-between backdrop-blur-xl">
                                 <div className="flex items-center gap-3">

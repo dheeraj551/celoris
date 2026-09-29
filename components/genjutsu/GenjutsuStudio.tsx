@@ -111,7 +111,10 @@ export function GenjutsuStudio() {
   const [prompt, setPrompt] = useState<string>('');
 
   // Hero Display & Presets
-  const [activeHeroVideo, setActiveHeroVideo] = useState<PresetMotion>(PRESET_MOTIONS[4] || PRESET_MOTIONS[0]);
+  const [activeHeroVideo, setActiveHeroVideo] = useState<PresetMotion>(
+    // Open on the real Motion Swap result.
+    PRESET_MOTIONS.find((p) => p.id === 'suv-stunt-recast') || PRESET_MOTIONS[0]
+  );
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
 
   // Modals

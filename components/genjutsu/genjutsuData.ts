@@ -92,6 +92,23 @@ export const QUALITY_OPTIONS = [
 
 export const PRESET_MOTIONS: PresetMotion[] = [
   {
+    // A real Motion Swap result: the original clip (left) recast with a new
+    // character (right). Served from Cloudflare R2 via /api/media/showcase.
+    id: 'suv-stunt-recast',
+    title: 'SUV Stunt · Recast',
+    category: 'community',
+    motionType: 'action',
+    thumbnailUrl: '/api/media/showcase/motion-swap-suv-thumb.jpg',
+    videoUrl: '/api/media/showcase/motion-swap-suv.mp4',
+    duration: '0:12',
+    description: 'Same stunt, same camera move — the person in the chair swapped for a new character.',
+    promptSuggestion:
+      'A confident woman in a camel suit and sunglasses sitting calmly on a camping chair in a dry field as an SUV jumps over her in a cloud of dust',
+    views: '',
+    likes: '',
+    badge: 'Made with Motion Swap',
+  },
+  {
     id: 'duo-dance-lipsync',
     title: 'Duo Vocal Groove',
     category: 'community',

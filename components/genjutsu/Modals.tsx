@@ -259,12 +259,18 @@ export function MotionLibraryModal({
                 </div>
                 <div className="pt-3 mt-3 border-t border-white/5 flex items-center justify-between">
                   <div className="flex items-center gap-3 text-[10px] text-zinc-500">
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" /> {preset.views}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Heart className="w-3 h-3" /> {preset.likes}
-                    </span>
+                    {preset.views ? (
+                      <>
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" /> {preset.views}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3 h-3" /> {preset.likes}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-[#d4f634]/80">Real Motion Swap result</span>
+                    )}
                   </div>
                   <button
                     onClick={() => {
