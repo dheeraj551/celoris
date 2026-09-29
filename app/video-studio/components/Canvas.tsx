@@ -327,6 +327,7 @@ export default function Canvas({
                 hue-rotate(${activeVideoClip.hueRotate ?? 0}deg)
                 sepia(${activeVideoClip.sepia ?? 0}%)
                 grayscale(${activeVideoClip.grayscale ?? 0}%)
+                invert(${activeVideoClip.invert ?? 0}%)
               `,
               transform: `scale(${(activeVideoClip.scaleX ?? 100) / 100}, ${(activeVideoClip.scaleY ?? 100) / 100}) rotate(${activeVideoClip.rotation ?? 0}deg)`
             } : {}}
@@ -334,6 +335,38 @@ export default function Canvas({
             muted
             playsInline
           />
+
+          {/* Overlay FX Layers */}
+          {activeVideoClip?.overlayFx === 'vignette' && (
+            <div className="absolute inset-0 pointer-events-none z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.85)_100%)] mix-blend-multiply transition-opacity duration-300" />
+          )}
+
+          {activeVideoClip?.overlayFx === 'grain' && (
+            <div 
+              className="absolute inset-0 pointer-events-none z-10 opacity-30 mix-blend-overlay transition-opacity duration-300"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E")`,
+                backgroundSize: '160px 160px',
+              }}
+            />
+          )}
+
+          {activeVideoClip?.overlayFx === 'scanlines' && (
+            <div 
+              className="absolute inset-0 pointer-events-none z-10 opacity-35 mix-blend-overlay pointer-events-none"
+              style={{
+                backgroundImage: `repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0px, rgba(0, 0, 0, 0.7) 2px, transparent 2px, transparent 4px)`
+              }}
+            />
+          )}
+
+          {activeVideoClip?.overlayFx === 'light-leak' && (
+            <div className="absolute inset-0 pointer-events-none z-10 bg-[radial-gradient(circle_at_top_right,rgba(251,146,60,0.65)_0%,rgba(244,63,94,0.3)_35%,transparent_70%)] mix-blend-screen transition-opacity duration-300" />
+          )}
+
+          {activeVideoClip?.overlayFx === 'rgb-split' && (
+            <div className="absolute inset-0 pointer-events-none z-10 mix-blend-screen opacity-50 shadow-[inset_4px_0_0_rgba(255,0,0,0.6),inset_-4px_0_0_rgba(0,255,255,0.6)]" />
+          )}
 
           {/* Idle Placeholder when no active video clip */}
           {!activeVideoClip && (

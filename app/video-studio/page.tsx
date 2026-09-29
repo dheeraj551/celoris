@@ -34,9 +34,15 @@ export interface Clip {
     hueRotate?: number;
     sepia?: number;
     grayscale?: number;
+    invert?: number;
     scaleX?: number;
     scaleY?: number;
     rotation?: number;
+
+    // Effect Preset & Overlays
+    effectPreset?: string;
+    effectIntensity?: number;
+    overlayFx?: 'none' | 'vignette' | 'grain' | 'scanlines' | 'rgb-split' | 'light-leak';
 }
 
 export interface TextElement {
@@ -215,15 +221,16 @@ export default function VideoStudio() {
                     // Apply filters if any
                     let filterString = '';
                     if (activeVideo.blur) filterString += `blur(${activeVideo.blur}px) `;
-                    if (activeVideo.brightness) filterString += `brightness(${activeVideo.brightness}%) `;
-                    if (activeVideo.contrast) filterString += `contrast(${activeVideo.contrast}%) `;
-                    if (activeVideo.saturation) filterString += `saturate(${activeVideo.saturation}%) `;
-                    if (activeVideo.hueRotate) filterString += `hue-rotate(${activeVideo.hueRotate}deg) `;
+                    if (activeVideo.brightness !== undefined && activeVideo.brightness !== 100) filterString += `brightness(${activeVideo.brightness}%) `;
+                    if (activeVideo.contrast !== undefined && activeVideo.contrast !== 100) filterString += `contrast(${activeVideo.contrast}%) `;
+                    if (activeVideo.saturation !== undefined && activeVideo.saturation !== 100) filterString += `saturate(${activeVideo.saturation}%) `;
+                    if (activeVideo.hueRotate !== undefined && activeVideo.hueRotate !== 0) filterString += `hue-rotate(${activeVideo.hueRotate}deg) `;
                     if (activeVideo.sepia) filterString += `sepia(${activeVideo.sepia}%) `;
                     if (activeVideo.grayscale) filterString += `grayscale(${activeVideo.grayscale}%) `;
+                    if (activeVideo.invert) filterString += `invert(${activeVideo.invert}%) `;
                     
                     if (filterString) {
-                        ctx.filter = filterString;
+                        ctx.filter = filterString.trim();
                     }
 
                     // Apply transformation
@@ -246,6 +253,30 @@ export default function VideoStudio() {
                         drawH = width / vAspect;
                     }
                     ctx.drawImage(sourceVideo, -drawW / 2, -drawH / 2, drawW, drawH);
+
+                    // Overlay FX
+                    if (activeVideo.overlayFx === 'vignette') {
+                        const radius = Math.max(drawW, drawH) / 2;
+                        const vigGrad = ctx.createRadialGradient(0, 0, radius * 0.4, 0, 0, radius);
+                        vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+                        vigGrad.addColorStop(1, 'rgba(0,0,0,0.85)');
+                        ctx.save();
+                        ctx.filter = 'none';
+                        ctx.fillStyle = vigGrad;
+                        ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
+                        ctx.restore();
+                    } else if (activeVideo.overlayFx === 'light-leak') {
+                        const leakGrad = ctx.createRadialGradient(drawW / 3, -drawH / 3, 0, drawW / 3, -drawH / 3, drawW * 0.7);
+                        leakGrad.addColorStop(0, 'rgba(251, 146, 60, 0.5)');
+                        leakGrad.addColorStop(0.5, 'rgba(244, 63, 94, 0.2)');
+                        leakGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                        ctx.save();
+                        ctx.filter = 'none';
+                        ctx.globalCompositeOperation = 'screen';
+                        ctx.fillStyle = leakGrad;
+                        ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
+                        ctx.restore();
+                    }
                 } else {
                     ctx.fillStyle = '#000000';
                     ctx.fillRect(0, 0, width, height);
@@ -513,9 +544,11 @@ export default function VideoStudio() {
                                 setVideoSrc={setVideoSrc}
                                 setVideoName={setVideoName}
                                 setDuration={setDuration}
+                                clips={clips}
                                 setClips={setClips}
                                 currentTime={currentTime}
                                 selectedClipId={selectedClipId}
+                                setSelectedClipId={setSelectedClipId}
                                 videoSrc={videoSrc}
                                 setTextElement={setTextElement}
                                 setAspectRatio={setAspectRatio}

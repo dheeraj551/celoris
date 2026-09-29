@@ -23,7 +23,14 @@ import {
   Languages,
   Layers,
   Flame,
-  Volume2
+  Volume2,
+  RotateCcw,
+  Sliders,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  Film
 } from 'lucide-react';
 import { Clip, TextElement } from '../page';
 
@@ -237,14 +244,242 @@ export const VIDEO_TEMPLATES: VideoTemplate[] = [
   },
 ];
 
+export interface EffectPresetItem {
+  id: string;
+  name: string;
+  category: 'all' | 'cinematic' | 'cyber' | 'retro' | 'mood' | 'vibrant' | 'overlay';
+  badge?: string;
+  color: string;
+  description: string;
+  effects: {
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+    blur?: number;
+    hueRotate?: number;
+    sepia?: number;
+    grayscale?: number;
+    invert?: number;
+  };
+  overlayFx?: 'none' | 'vignette' | 'grain' | 'scanlines' | 'rgb-split' | 'light-leak';
+}
+
+export const EFFECT_PRESETS: EffectPresetItem[] = [
+  {
+    id: 'cinematic-teal',
+    name: 'Cinematic Teal',
+    category: 'cinematic',
+    badge: 'POPULAR',
+    color: 'from-cyan-900 to-emerald-950',
+    description: 'Teal & Orange Hollywood grade with deep rich shadows',
+    effects: { brightness: 106, contrast: 125, saturation: 130, hueRotate: 185, sepia: 15 }
+  },
+  {
+    id: 'warm-sunset',
+    name: 'Warm Sunset',
+    category: 'cinematic',
+    badge: 'WARM',
+    color: 'from-amber-900 to-rose-950',
+    description: 'Golden hour warmth with rich amber and sunset glow',
+    effects: { brightness: 110, contrast: 115, saturation: 140, hueRotate: 350, sepia: 30 }
+  },
+  {
+    id: 'cyberpunk-glow',
+    name: 'Cyberpunk Glow',
+    category: 'cyber',
+    badge: 'NEON',
+    color: 'from-purple-900 to-blue-950',
+    description: 'Electric violet & neon blue dystopian sci-fi aesthetic',
+    effects: { brightness: 115, contrast: 135, saturation: 175, hueRotate: 285 }
+  },
+  {
+    id: 'bw-contrast',
+    name: 'B&W Contrast',
+    category: 'mood',
+    badge: 'MONO',
+    color: 'from-slate-800 to-black',
+    description: 'Dramatic black and white with high dynamic punch',
+    effects: { brightness: 105, contrast: 155, saturation: 0, grayscale: 100 }
+  },
+  {
+    id: 'vintage-90s',
+    name: 'Vintage 90s',
+    category: 'retro',
+    badge: 'RETRO',
+    color: 'from-yellow-950 to-amber-900',
+    description: 'Nostalgic analog VHS warmth with faded contrast',
+    effects: { brightness: 108, contrast: 90, saturation: 85, hueRotate: 345, sepia: 40 }
+  },
+  {
+    id: 'bleach-bypass',
+    name: 'Bleach Bypass',
+    category: 'cinematic',
+    badge: 'FILM',
+    color: 'from-blue-950 to-slate-900',
+    description: 'Desaturated silver-halide film look with crushing contrast',
+    effects: { brightness: 104, contrast: 160, saturation: 40 }
+  },
+  {
+    id: 'neon-tokyo',
+    name: 'Neon Tokyo',
+    category: 'cyber',
+    badge: 'TOKYO',
+    color: 'from-fuchsia-900 to-indigo-950',
+    description: 'Hyper-saturated Tokyo night market neon palette',
+    effects: { brightness: 110, contrast: 130, saturation: 165, hueRotate: 160 }
+  },
+  {
+    id: 'matrix-emerald',
+    name: 'Matrix Emerald',
+    category: 'cyber',
+    badge: 'CYBER',
+    color: 'from-emerald-950 to-green-900',
+    description: 'Phosphor green cybercode tint and terminal aesthetic',
+    effects: { brightness: 96, contrast: 135, saturation: 145, hueRotate: 90, sepia: 20 }
+  },
+  {
+    id: 'moody-noir',
+    name: 'Moody Noir',
+    category: 'mood',
+    badge: 'NOIR',
+    color: 'from-zinc-900 to-neutral-950',
+    description: 'Deep crushed blacks and dramatic mystery movie lighting',
+    effects: { brightness: 85, contrast: 165, saturation: 20, grayscale: 80 }
+  },
+  {
+    id: 'silver-screen',
+    name: 'Silver Screen',
+    category: 'mood',
+    badge: '1940s',
+    color: 'from-stone-800 to-zinc-950',
+    description: 'Golden age of cinema silky smooth monochrome grade',
+    effects: { brightness: 105, contrast: 120, saturation: 0, grayscale: 100 }
+  },
+  {
+    id: '70s-warmth',
+    name: '70s Warmth',
+    category: 'retro',
+    badge: 'KODAK',
+    color: 'from-amber-950 to-orange-900',
+    description: 'Kodachrome summer glow with mellow pastel tones',
+    effects: { brightness: 112, contrast: 105, saturation: 125, sepia: 35, hueRotate: 15 }
+  },
+  {
+    id: 'polaroid-faded',
+    name: 'Polaroid Faded',
+    category: 'retro',
+    badge: 'INSTANT',
+    color: 'from-rose-950 to-amber-950',
+    description: 'Creamy lifted shadows with classic instant camera nostalgia',
+    effects: { brightness: 115, contrast: 85, saturation: 90, sepia: 25 }
+  },
+  {
+    id: 'vibrant-pop',
+    name: 'Vibrant Pop',
+    category: 'vibrant',
+    badge: 'REELS',
+    color: 'from-pink-900 to-rose-950',
+    description: 'High-energy vivid saturation calibrated for viral reels',
+    effects: { brightness: 108, contrast: 125, saturation: 165 }
+  },
+  {
+    id: 'cold-nordic',
+    name: 'Cold Nordic',
+    category: 'mood',
+    badge: 'ICE',
+    color: 'from-sky-950 to-slate-900',
+    description: 'Chilled arctic blue grading for suspense and drama',
+    effects: { brightness: 102, contrast: 125, saturation: 80, hueRotate: 195 }
+  },
+  {
+    id: 'dreamy-glow',
+    name: 'Dreamy Glow',
+    category: 'vibrant',
+    badge: 'SOFT',
+    color: 'from-violet-950 to-pink-950',
+    description: 'Ethereal bloom with soft highlight diffusion and pastel blush',
+    effects: { brightness: 120, contrast: 90, saturation: 120, blur: 1 }
+  },
+  {
+    id: 'solar-flare',
+    name: 'Solar Flare',
+    category: 'vibrant',
+    badge: 'GLOW',
+    color: 'from-yellow-900 to-amber-950',
+    description: 'Luminous high-exposure golden sun flare with warm highlights',
+    effects: { brightness: 130, contrast: 110, saturation: 135, sepia: 20 }
+  },
+  {
+    id: 'cinematic-vignette',
+    name: 'Cinematic Vignette',
+    category: 'overlay',
+    badge: 'FOCUS',
+    color: 'from-neutral-900 to-black',
+    description: 'Center spotlight focus with darkened feathered corners',
+    effects: { brightness: 100, contrast: 115, saturation: 105 },
+    overlayFx: 'vignette'
+  },
+  {
+    id: '35mm-grain',
+    name: '35mm Film Grain',
+    category: 'overlay',
+    badge: 'GRAIN',
+    color: 'from-stone-900 to-zinc-900',
+    description: 'Authentic 35mm motion picture analog grain texture',
+    effects: { brightness: 102, contrast: 110, saturation: 95 },
+    overlayFx: 'grain'
+  },
+  {
+    id: 'retro-crt-scanlines',
+    name: 'CRT Scanlines',
+    category: 'overlay',
+    badge: 'VHS',
+    color: 'from-cyan-950 to-blue-950',
+    description: 'Vintage arcade and 90s CRT monitor horizontal scanlines',
+    effects: { brightness: 105, contrast: 120, saturation: 110 },
+    overlayFx: 'scanlines'
+  },
+  {
+    id: 'golden-light-leak',
+    name: 'Golden Light Leak',
+    category: 'overlay',
+    badge: 'LEAK',
+    color: 'from-amber-900 to-orange-950',
+    description: 'Warm corner lens flare and organic sunlight bleed',
+    effects: { brightness: 112, contrast: 105, saturation: 120 },
+    overlayFx: 'light-leak'
+  },
+  {
+    id: 'rgb-split',
+    name: 'RGB Chromatic',
+    category: 'overlay',
+    badge: 'GLITCH',
+    color: 'from-red-950 to-cyan-950',
+    description: 'Stylized chromatic aberration edge splitting distortion',
+    effects: { brightness: 105, contrast: 130, saturation: 135 },
+    overlayFx: 'rgb-split'
+  },
+  {
+    id: 'inverted-matrix',
+    name: 'Inverted Matrix',
+    category: 'cyber',
+    badge: 'FX',
+    color: 'from-indigo-950 to-stone-900',
+    description: 'Surreal negative color matrix inversion for music videos',
+    effects: { brightness: 100, contrast: 120, saturation: 100, invert: 100 }
+  }
+];
+
 interface SecondarySidebarProps {
   activeTab: string;
   setVideoSrc?: React.Dispatch<React.SetStateAction<string>>;
   setVideoName?: React.Dispatch<React.SetStateAction<string>>;
   setDuration?: React.Dispatch<React.SetStateAction<number>>;
+  clips?: Clip[];
   setClips?: React.Dispatch<React.SetStateAction<Clip[]>>;
   currentTime?: number;
   selectedClipId?: string | null;
+  setSelectedClipId?: React.Dispatch<React.SetStateAction<string | null>>;
   videoSrc?: string;
   setTextElement?: React.Dispatch<React.SetStateAction<TextElement>>;
   setAspectRatio?: (ratio: '9:16' | '16:9' | '1:1') => void;
@@ -256,9 +491,11 @@ export default function SecondarySidebar({
   setVideoSrc, 
   setVideoName, 
   setDuration, 
+  clips,
   setClips, 
   currentTime = 0, 
   selectedClipId,
+  setSelectedClipId,
   videoSrc,
   setTextElement,
   setAspectRatio,
@@ -272,6 +509,171 @@ export default function SecondarySidebar({
   const [templateSearch, setTemplateSearch] = useState('');
   const [templateCategory, setTemplateCategory] = useState<'all' | 'vio' | 'ugc' | 'product' | 'ads' | 'motion'>('all');
   const [appliedTemplateId, setAppliedTemplateId] = useState<string | null>(null);
+
+  // Effects & Filters State
+  const [effectSearch, setEffectSearch] = useState('');
+  const [effectCategory, setEffectCategory] = useState<'all' | 'cinematic' | 'cyber' | 'retro' | 'mood' | 'vibrant' | 'overlay'>('all');
+  const [showFineTune, setShowFineTune] = useState(false);
+  const [appliedEffectToast, setAppliedEffectToast] = useState<string | null>(null);
+
+  // Find the target video clip
+  const targetVideoClip = 
+    (clips && selectedClipId ? clips.find(c => c.id === selectedClipId && c.type === 'video') : null) ||
+    (clips ? clips.find(c => c.type === 'video' && currentTime >= c.start && currentTime <= c.end) : null) ||
+    (clips ? clips.find(c => c.type === 'video') : null);
+
+  const activePresetId = targetVideoClip?.effectPreset;
+  const currentIntensity = targetVideoClip?.effectIntensity ?? 100;
+  const activeOverlay = targetVideoClip?.overlayFx || 'none';
+
+  const handleApplyPreset = (preset: EffectPresetItem) => {
+    if (!setClips) return;
+    if (!targetVideoClip) return;
+
+    if (setSelectedClipId && selectedClipId !== targetVideoClip.id) {
+      setSelectedClipId(targetVideoClip.id);
+    }
+
+    setClips(prev => prev.map(c => {
+      if (c.id === targetVideoClip.id) {
+        return {
+          ...c,
+          brightness: preset.effects.brightness ?? 100,
+          contrast: preset.effects.contrast ?? 100,
+          saturation: preset.effects.saturation ?? 100,
+          blur: preset.effects.blur ?? 0,
+          hueRotate: preset.effects.hueRotate ?? 0,
+          sepia: preset.effects.sepia ?? 0,
+          grayscale: preset.effects.grayscale ?? 0,
+          invert: preset.effects.invert ?? 0,
+          overlayFx: preset.overlayFx || 'none',
+          effectPreset: preset.id,
+          effectIntensity: 100,
+        };
+      }
+      return c;
+    }));
+
+    setAppliedEffectToast(`Applied ${preset.name}`);
+    setTimeout(() => setAppliedEffectToast(null), 2000);
+  };
+
+  const handleResetEffects = () => {
+    if (!setClips || !targetVideoClip) return;
+
+    setClips(prev => prev.map(c => {
+      if (c.id === targetVideoClip.id) {
+        return {
+          ...c,
+          brightness: 100,
+          contrast: 100,
+          saturation: 100,
+          blur: 0,
+          hueRotate: 0,
+          sepia: 0,
+          grayscale: 0,
+          invert: 0,
+          overlayFx: 'none',
+          effectPreset: undefined,
+          effectIntensity: 100,
+        };
+      }
+      return c;
+    }));
+
+    setAppliedEffectToast("Effects reset to original");
+    setTimeout(() => setAppliedEffectToast(null), 2000);
+  };
+
+  const handleIntensityChange = (val: number) => {
+    if (!setClips || !targetVideoClip || !targetVideoClip.effectPreset) return;
+    const preset = EFFECT_PRESETS.find(p => p.id === targetVideoClip.effectPreset);
+    if (!preset) return;
+
+    const t = Math.max(0, Math.min(100, val)) / 100;
+    const b = preset.effects.brightness ?? 100;
+    const c = preset.effects.contrast ?? 100;
+    const s = preset.effects.saturation ?? 100;
+    const bl = preset.effects.blur ?? 0;
+    const h = preset.effects.hueRotate ?? 0;
+    const sp = preset.effects.sepia ?? 0;
+    const g = preset.effects.grayscale ?? 0;
+    const inv = preset.effects.invert ?? 0;
+
+    setClips(prev => prev.map(clip => {
+      if (clip.id === targetVideoClip.id) {
+        return {
+          ...clip,
+          effectIntensity: val,
+          brightness: Math.round(100 + (b - 100) * t),
+          contrast: Math.round(100 + (c - 100) * t),
+          saturation: Math.round(100 + (s - 100) * t),
+          blur: Number((bl * t).toFixed(1)),
+          hueRotate: Math.round(h * t),
+          sepia: Math.round(sp * t),
+          grayscale: Math.round(g * t),
+          invert: Math.round(inv * t),
+        };
+      }
+      return clip;
+    }));
+  };
+
+  const handleApplyToAllClips = () => {
+    if (!setClips || !targetVideoClip) return;
+
+    setClips(prev => prev.map(c => {
+      if (c.type === 'video') {
+        return {
+          ...c,
+          brightness: targetVideoClip.brightness,
+          contrast: targetVideoClip.contrast,
+          saturation: targetVideoClip.saturation,
+          blur: targetVideoClip.blur,
+          hueRotate: targetVideoClip.hueRotate,
+          sepia: targetVideoClip.sepia,
+          grayscale: targetVideoClip.grayscale,
+          invert: targetVideoClip.invert,
+          overlayFx: targetVideoClip.overlayFx,
+          effectPreset: targetVideoClip.effectPreset,
+          effectIntensity: targetVideoClip.effectIntensity,
+        };
+      }
+      return c;
+    }));
+
+    setAppliedEffectToast("Applied effect to all video clips");
+    setTimeout(() => setAppliedEffectToast(null), 2000);
+  };
+
+  const handleToggleOverlay = (fx: 'none' | 'vignette' | 'grain' | 'scanlines' | 'rgb-split' | 'light-leak') => {
+    if (!setClips || !targetVideoClip) return;
+
+    if (setSelectedClipId && selectedClipId !== targetVideoClip.id) {
+      setSelectedClipId(targetVideoClip.id);
+    }
+
+    setClips(prev => prev.map(c => {
+      if (c.id === targetVideoClip.id) {
+        return {
+          ...c,
+          overlayFx: c.overlayFx === fx ? 'none' : fx
+        };
+      }
+      return c;
+    }));
+  };
+
+  const handleFineTune = (key: string, val: number) => {
+    if (!setClips || !targetVideoClip) return;
+
+    setClips(prev => prev.map(c => {
+      if (c.id === targetVideoClip.id) {
+        return { ...c, [key]: val };
+      }
+      return c;
+    }));
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -899,30 +1301,283 @@ export default function SecondarySidebar({
       // EFFECTS & FILTERS
       // -------------------------------------------------------------
       case 'effects':
-      case 'filters':
+      case 'filters': {
+        const filteredPresets = EFFECT_PRESETS.filter(p => {
+          const matchesCat = effectCategory === 'all' || p.category === effectCategory;
+          const matchesSearch = !effectSearch || 
+            p.name.toLowerCase().includes(effectSearch.toLowerCase()) || 
+            p.description.toLowerCase().includes(effectSearch.toLowerCase());
+          return matchesCat && matchesSearch;
+        });
+
         return (
-          <div className="p-4 flex flex-col gap-3">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Color & Grading Presets</span>
-            <div className="grid grid-cols-2 gap-2.5">
-              {[
-                { name: 'Cinematic Teal', color: 'from-cyan-900 to-emerald-950' },
-                { name: 'Warm Sunset', color: 'from-amber-900 to-rose-950' },
-                { name: 'Cyberpunk Glow', color: 'from-purple-900 to-blue-950' },
-                { name: 'B&W Contrast', color: 'from-slate-800 to-black' },
-                { name: 'Vintage 90s', color: 'from-yellow-950 to-amber-900' },
-                { name: 'Bleach Bypass', color: 'from-blue-950 to-slate-900' },
-              ].map((f, i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-xl border border-white/5 hover:border-emerald-400/40 p-2.5 flex flex-col justify-end relative overflow-hidden group cursor-pointer transition-all"
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${f.color} opacity-60 group-hover:opacity-80 transition-opacity`} />
-                  <span className="relative z-10 text-[11px] font-bold text-white">{f.name}</span>
+          <div className="p-4 flex flex-col gap-4">
+            {/* Feedback notification toast */}
+            {appliedEffectToast && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs font-semibold shadow-md">
+                <Check className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{appliedEffectToast}</span>
+              </div>
+            )}
+
+            {/* Target Video Track Status */}
+            <div className="bg-[#121520] border border-white/[0.07] rounded-xl p-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                  <Video className="w-3.5 h-3.5" />
                 </div>
-              ))}
+                <div className="overflow-hidden">
+                  <p className="text-[10px] text-slate-400 font-medium">Target Clip</p>
+                  <p className="text-[11px] font-bold text-white truncate max-w-[130px]">
+                    {targetVideoClip ? targetVideoClip.content : 'No Video Clip'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                {activePresetId && (
+                  <button
+                    type="button"
+                    onClick={handleResetEffects}
+                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-rose-400 bg-white/5 hover:bg-rose-500/10 border border-white/5 hover:border-rose-500/30 px-2 py-1 rounded-lg transition-colors"
+                    title="Reset to Original"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Active Effect Strength & Controls */}
+            {activePresetId && targetVideoClip && (
+              <div className="bg-gradient-to-br from-emerald-950/40 to-[#0e121d] border border-emerald-500/30 rounded-xl p-3 space-y-2.5 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                    <span className="text-xs font-bold text-white">
+                      {EFFECT_PRESETS.find(p => p.id === activePresetId)?.name || 'Custom Grade'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleApplyToAllClips}
+                    className="text-[10px] text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all"
+                    title="Apply this effect to all video tracks"
+                  >
+                    <Layers className="w-3 h-3" />
+                    <span>All Clips</span>
+                  </button>
+                </div>
+
+                {/* Strength / Intensity Slider */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px]">
+                    <span className="text-slate-400 font-medium">Effect Strength</span>
+                    <span className="font-mono text-emerald-400 font-bold">{currentIntensity}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={currentIntensity}
+                    onChange={(e) => handleIntensityChange(parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Cinematic Overlays */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Film className="w-3.5 h-3.5 text-cyan-400" />
+                  Cinematic Overlays
+                </span>
+                {activeOverlay !== 'none' && (
+                  <button 
+                    type="button" 
+                    onClick={() => handleToggleOverlay('none')}
+                    className="text-[10px] text-slate-400 hover:text-white"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: 'vignette', label: 'Vignette' },
+                  { id: 'grain', label: '35mm Grain' },
+                  { id: 'scanlines', label: 'CRT Scan' },
+                  { id: 'light-leak', label: 'Light Leak' },
+                  { id: 'rgb-split', label: 'RGB Glitch' },
+                  { id: 'none', label: 'None' },
+                ].map((item) => {
+                  const isSelected = activeOverlay === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleToggleOverlay(item.id as any)}
+                      className={`py-1.5 px-1.5 rounded-lg text-[10.5px] font-semibold border transition-all text-center truncate ${
+                        isSelected
+                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
+                          : 'bg-white/[0.03] text-slate-400 border-white/5 hover:text-white hover:bg-white/[0.08]'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Search and Category Filter */}
+            <div className="space-y-2">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search 22+ presets..."
+                  value={effectSearch}
+                  onChange={(e) => setEffectSearch(e.target.value)}
+                  className="w-full bg-[#121520] border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
+                />
+                {effectSearch && (
+                  <button 
+                    type="button" 
+                    onClick={() => setEffectSearch('')} 
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Category Pills */}
+              <div className="flex items-center gap-1 overflow-x-auto pb-1 custom-scrollbar text-[11px]">
+                {[
+                  { id: 'all', label: 'All' },
+                  { id: 'cinematic', label: 'Cinematic' },
+                  { id: 'cyber', label: 'Cyber' },
+                  { id: 'retro', label: 'Retro' },
+                  { id: 'mood', label: 'B&W' },
+                  { id: 'vibrant', label: 'Vibrant' },
+                  { id: 'overlay', label: 'Overlays' },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setEffectCategory(cat.id as any)}
+                    className={`px-2.5 py-1 rounded-lg font-semibold shrink-0 transition-all ${
+                      effectCategory === cat.id
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        : 'text-slate-400 hover:text-white bg-white/[0.02] hover:bg-white/[0.06] border border-transparent'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Presets Grid */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Color & Grading Presets</span>
+              <div className="grid grid-cols-2 gap-2.5">
+                {filteredPresets.map((preset) => {
+                  const isApplied = activePresetId === preset.id;
+                  return (
+                    <div
+                      key={preset.id}
+                      onClick={() => handleApplyPreset(preset)}
+                      className={`aspect-square rounded-xl p-2.5 flex flex-col justify-between relative overflow-hidden group cursor-pointer transition-all border ${
+                        isApplied
+                          ? 'border-emerald-400 ring-2 ring-emerald-400/40 shadow-[0_0_20px_rgba(52,211,153,0.35)] scale-[1.02]'
+                          : 'border-white/10 hover:border-emerald-400/50 hover:shadow-lg'
+                      }`}
+                    >
+                      {/* Background Gradient */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${preset.color} ${isApplied ? 'opacity-90' : 'opacity-65 group-hover:opacity-85'} transition-opacity`} />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+
+                      {/* Header Badge */}
+                      <div className="relative z-10 flex items-center justify-between w-full">
+                        {preset.badge && (
+                          <span className="text-[7.5px] font-mono font-bold tracking-tight px-1.5 py-0.5 rounded bg-black/60 text-slate-300 backdrop-blur-xs border border-white/10 uppercase">
+                            {preset.badge}
+                          </span>
+                        )}
+                        {isApplied && (
+                          <span className="text-[8px] font-mono font-black px-1.5 py-0.5 rounded bg-emerald-400 text-black shadow-sm flex items-center gap-0.5 ml-auto">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            ACTIVE
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Title & Description */}
+                      <div className="relative z-10 space-y-0.5">
+                        <span className="block text-[11px] font-bold text-white group-hover:text-emerald-300 transition-colors leading-tight">
+                          {preset.name}
+                        </span>
+                        <span className="block text-[9px] text-slate-300 line-clamp-1 opacity-75 group-hover:opacity-100 transition-opacity">
+                          {preset.description}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Fine-Tune Adjustments Drawer */}
+            <div className="border-t border-white/[0.08] pt-3 space-y-2.5">
+              <button
+                type="button"
+                onClick={() => setShowFineTune(!showFineTune)}
+                className="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white py-1"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+                  Quick Adjustments
+                </span>
+                {showFineTune ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+
+              {showFineTune && targetVideoClip && (
+                <div className="space-y-3 bg-[#121520] border border-white/5 p-3 rounded-xl animate-fade-in">
+                  {[
+                    { label: 'Brightness', key: 'brightness', min: 0, max: 200, unit: '%', def: 100 },
+                    { label: 'Contrast', key: 'contrast', min: 0, max: 200, unit: '%', def: 100 },
+                    { label: 'Saturation', key: 'saturation', min: 0, max: 200, unit: '%', def: 100 },
+                    { label: 'Blur', key: 'blur', min: 0, max: 15, unit: 'px', def: 0 },
+                    { label: 'Hue Rotate', key: 'hueRotate', min: 0, max: 360, unit: '°', def: 0 },
+                  ].map((item) => {
+                    const val = (targetVideoClip as any)?.[item.key] ?? item.def;
+                    return (
+                      <div key={item.key} className="space-y-1">
+                        <div className="flex justify-between text-[10.5px] text-slate-400">
+                          <span>{item.label}</span>
+                          <span className="font-mono text-slate-200">{val}{item.unit}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={item.min}
+                          max={item.max}
+                          value={val}
+                          onChange={(e) => handleFineTune(item.key, parseInt(e.target.value))}
+                          className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         );
+      }
 
       default:
         return (
@@ -941,7 +1596,7 @@ export default function SecondarySidebar({
           {activeTab}
         </h2>
         <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full font-bold">
-          TOOL
+          {activeTab === 'effects' ? '22+ FX' : activeTab === 'filters' ? 'LUTs' : 'TOOL'}
         </span>
       </div>
 

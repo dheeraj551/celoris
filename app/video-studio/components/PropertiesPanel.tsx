@@ -72,9 +72,13 @@ export default function PropertiesPanel({
           hueRotate: 0,
           sepia: 0,
           grayscale: 0,
+          invert: 0,
           scaleX: 100,
           scaleY: 100,
-          rotation: 0
+          rotation: 0,
+          effectPreset: undefined,
+          effectIntensity: 100,
+          overlayFx: 'none'
         } : c
       ));
     }
@@ -178,6 +182,17 @@ export default function PropertiesPanel({
                 </button>
               </div>
 
+              {/* Active Preset Badge if preset applied */}
+              {selectedClip?.effectPreset && (
+                <div className="flex items-center justify-between px-3 py-2 bg-emerald-500/10 border border-emerald-500/25 rounded-xl text-emerald-400 text-[11px] font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Preset: <strong className="text-white capitalize">{selectedClip.effectPreset}</strong>
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-300">{selectedClip.effectIntensity ?? 100}%</span>
+                </div>
+              )}
+
               {/* Sliders Grid */}
               <div className="space-y-3.5 bg-black/30 border border-white/5 p-3 rounded-xl">
                 {[
@@ -188,6 +203,7 @@ export default function PropertiesPanel({
                   { label: 'Hue Rotate', key: 'hueRotate', min: 0, max: 360, unit: '°', def: 0 },
                   { label: 'Sepia', key: 'sepia', min: 0, max: 100, unit: '%', def: 0 },
                   { label: 'Grayscale', key: 'grayscale', min: 0, max: 100, unit: '%', def: 0 },
+                  { label: 'Invert', key: 'invert', min: 0, max: 100, unit: '%', def: 0 },
                 ].map(item => {
                   const val = (selectedClip as any)?.[item.key] ?? item.def;
                   return (
