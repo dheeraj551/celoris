@@ -16,39 +16,6 @@ import Link from 'next/link';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { LazyLoopVideo, SHOWCASE_MEDIA } from './ShowcaseMedia';
 
-const TILES: { title: string; format: string; image: string; video?: string; tag: string; rotate: string }[] = [
-  {
-    // A showcase clip (not a listing for sale) — muted loop from Cloudflare R2.
-    title: 'Character Turntable',
-    format: 'PREVIEW',
-    image: `${SHOWCASE_MEDIA}character-turntable.jpg`,
-    video: `${SHOWCASE_MEDIA}character-turntable.mp4`,
-    tag: 'Showcase',
-    rotate: '-rotate-1',
-  },
-  {
-    title: 'GT3 Aero Hypercar',
-    format: 'FBX',
-    image: '/3d/sports-car.jpeg',
-    tag: '4K PBR',
-    rotate: 'rotate-1',
-  },
-  {
-    title: 'Toon Character Rig',
-    format: 'BLEND',
-    image: '/3d/character-cat.jpeg',
-    tag: 'Animated',
-    rotate: 'rotate-1',
-  },
-  {
-    title: 'Modular Brick Building',
-    format: 'OBJ',
-    image: '/3d/modular-building.jpeg',
-    tag: 'Game Ready',
-    rotate: '-rotate-1',
-  },
-];
-
 export function PolyVaultFeature() {
   return (
     <div className="w-full max-w-md md:max-w-xl mx-auto my-16 px-4">
@@ -107,46 +74,32 @@ export function PolyVaultFeature() {
                 <span className="w-2 h-2 rounded-full bg-green-500/80" />
                 <span className="ml-2 text-[9px] text-slate-500 font-mono">polyvault.celoris.app</span>
               </div>
-              {/* Model card grid */}
-              <div className="relative flex-1 p-2.5 grid grid-cols-2 gap-2 bg-[#0c0c0e]">
-                {TILES.map((tile, i) => (
-                  <div
-                    key={i}
-                    className={`relative aspect-square rounded-xl bg-[#141416] border border-white/10 ${tile.rotate} shadow-lg overflow-hidden group/tile flex flex-col justify-between`}
-                  >
-                    {tile.video ? (
-                      <LazyLoopVideo
-                        src={tile.video}
-                        poster={tile.image}
-                        className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <img
-                        src={tile.image}
-                        alt={tile.title}
-                        className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-110 transition-transform duration-500"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
+              {/* Showcase: one character turntable clip filling the window
+                  (muted loop from Cloudflare R2 — a showcase, not a listing for sale) */}
+              <div className="relative flex-1 overflow-hidden bg-[#0c0c0e] group/tile">
+                <LazyLoopVideo
+                  src={`${SHOWCASE_MEDIA}character-turntable.mp4`}
+                  poster={`${SHOWCASE_MEDIA}character-turntable.jpg`}
+                  className="absolute inset-0 w-full h-full object-cover object-center group-hover/tile:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
 
-                    {/* Top badge */}
-                    <div className="relative z-10 p-1.5 flex items-center justify-between">
-                      <span className="text-[7px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-md uppercase tracking-wider">
-                        {tile.format}
-                      </span>
-                      <span className="text-[6px] font-bold px-1 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/20">
-                        {tile.tag}
-                      </span>
-                    </div>
+                {/* Top badges */}
+                <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                  <span className="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-md uppercase tracking-wider">
+                    Preview
+                  </span>
+                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 backdrop-blur-md">
+                    Showcase
+                  </span>
+                </div>
 
-                    {/* Bottom title */}
-                    <div className="relative z-10 p-1.5">
-                      <div className="text-[8px] font-bold text-white truncate drop-shadow-sm">
-                        {tile.title}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {/* Bottom title */}
+                {/* (right-aligned so the floating "Top Rated" panel doesn't cover it) */}
+                <div className="absolute bottom-2.5 left-3 right-3 text-right">
+                  <div className="text-xs font-bold text-white drop-shadow">Character Turntable</div>
+                  <div className="text-[9px] text-slate-300/80">360° viewport inspection</div>
+                </div>
               </div>
             </motion.div>
 
