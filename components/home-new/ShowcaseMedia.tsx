@@ -25,11 +25,14 @@ export function LazyLoopVideo({
   poster,
   className = '',
   style,
+  videoRef,
 }: {
   src: string;
   poster: string;
   className?: string;
   style?: React.CSSProperties;
+  /** Optional handle on the <video> (e.g. to follow its playing time). */
+  videoRef?: React.MutableRefObject<HTMLVideoElement | null>;
 }) {
   const ref = useRef<HTMLVideoElement | null>(null);
   const [load, setLoad] = useState(false);
@@ -64,7 +67,10 @@ export function LazyLoopVideo({
 
   return (
     <video
-      ref={ref}
+      ref={(el) => {
+        ref.current = el;
+        if (videoRef) videoRef.current = el;
+      }}
       src={load ? src : undefined}
       poster={poster}
       muted

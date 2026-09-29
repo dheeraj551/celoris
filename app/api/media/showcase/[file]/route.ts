@@ -20,6 +20,12 @@ const ALLOWED = new Set([
   'trainer-pitch-reel.jpg',
   'character-turntable.mp4',
   'character-turntable.jpg',
+  'video-studio-reel.mp4',
+  'video-studio-reel.jpg',
+  'video-studio-clip1.jpg',
+  'video-studio-clip2.jpg',
+  'video-studio-clip3.jpg',
+  'video-studio-clip4.jpg',
 ]);
 
 // Signed links live for an hour; the redirect itself is cached for 30 minutes,

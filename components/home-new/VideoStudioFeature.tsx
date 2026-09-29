@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Play, 
@@ -15,8 +15,86 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { LazyLoopVideo, SHOWCASE_MEDIA } from './ShowcaseMedia';
+
+// The showcase reel: four AI clips of the same character cut into one 12s
+// loop (one small muted file from Cloudflare R2). The timeline below follows
+// the playing video, and clicking a clip jumps to it.
+const REEL_SECONDS = 12;
+const SEGMENTS = [
+  { label: 'Racetrack selfie', start: 0, dur: 3.5, thumb: 'video-studio-clip1.jpg' },
+  { label: 'Neon street drift', start: 3.5, dur: 2.5, thumb: 'video-studio-clip2.jpg' },
+  { label: 'Stadium concert', start: 6, dur: 3.5, thumb: 'video-studio-clip3.jpg' },
+  { label: 'Tiny me', start: 9.5, dur: 2.5, thumb: 'video-studio-clip4.jpg' },
+];
+
+function segmentAt(t: number) {
+  for (let i = SEGMENTS.length - 1; i >= 0; i--) if (t >= SEGMENTS[i].start) return i;
+  return 0;
+}
+
+function timecode(t: number) {
+  const s = Math.max(0, Math.floor(t));
+  return `0:${s < 10 ? '0' : ''}${s}`;
+}
 
 export function VideoStudioFeature() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const playheadRef = useRef<HTMLDivElement | null>(null);
+  const timeRef = useRef<HTMLSpanElement | null>(null);
+  const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
+
+  // Move the playhead with the video (straight on the DOM — no re-render per frame).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    let raf = 0;
+    const tick = () => {
+      const t = (v.currentTime || 0) % REEL_SECONDS;
+      if (playheadRef.current) playheadRef.current.style.left = `${(t / REEL_SECONDS) * 100}%`;
+      if (timeRef.current) timeRef.current.textContent = timecode(t);
+      const i = segmentAt(t);
+      if (i !== activeRef.current) {
+        activeRef.current = i;
+        setActive(i);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    const start = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    };
+    const stop = () => cancelAnimationFrame(raf);
+    // A jump while paused still moves the playhead once.
+    const onSeeked = () => {
+      if (!v.paused) return;
+      tick();
+      stop();
+    };
+    v.addEventListener('play', start);
+    v.addEventListener('pause', stop);
+    v.addEventListener('seeked', onSeeked);
+    if (!v.paused) start();
+    return () => {
+      stop();
+      v.removeEventListener('play', start);
+      v.removeEventListener('pause', stop);
+      v.removeEventListener('seeked', onSeeked);
+    };
+  }, []);
+
+  const jumpTo = (i: number) => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      v.currentTime = SEGMENTS[i].start + 0.05;
+      v.play?.().catch(() => undefined);
+    } catch {
+      // not loaded yet
+    }
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto my-32 px-4">
       <SpotlightCard
@@ -65,12 +143,24 @@ export function VideoStudioFeature() {
               transition={{ duration: 0.7 }}
               className="absolute md:top-10 md:left-1/2 md:-translate-x-1/2 w-[85%] md:w-[600px] h-[250px] md:h-[300px] bg-[#0d0d0d] rounded-2xl border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.15)] overflow-hidden flex items-center justify-center z-20"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-              {/* Mountain Image Mock */}
-              <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-80" alt="Mountain Landscape" />
-              
-              <div className="relative z-20 w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-105 transition-all">
-                <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
+              {/* The showcase reel (muted loop from Cloudflare R2) */}
+              <LazyLoopVideo
+                videoRef={videoRef}
+                src={`${SHOWCASE_MEDIA}video-studio-reel.mp4`}
+                poster={`${SHOWCASE_MEDIA}video-studio-reel.jpg`}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none" />
+
+              {/* Now playing */}
+              <div className="absolute bottom-3 left-14 right-3 z-20 flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-white">
+                  <Play className="w-3 h-3 text-blue-400" fill="currentColor" />
+                  {SEGMENTS[active].label}
+                </span>
+                <span className="px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-[10px] font-mono text-slate-200">
+                  Clip {active + 1}/{SEGMENTS.length}
+                </span>
               </div>
 
               {/* Mock Video Controls UI */}
@@ -130,20 +220,42 @@ export function VideoStudioFeature() {
               <div className="flex items-center px-4 py-2 border-b border-white/5 bg-black/20">
                 <div className="w-2 h-2 rounded-full bg-blue-500 mr-4" />
                 <div className="flex gap-4 text-[10px] text-slate-500 font-mono tracking-widest opacity-50">
-                  <span>0:00</span><span>0:05</span><span>0:10</span><span>0:15</span><span>0:20</span>
+                  <span>0:00</span><span>0:03</span><span>0:06</span><span>0:09</span><span>0:12</span>
                 </div>
+                <span ref={timeRef} className="ml-auto text-[10px] font-mono text-blue-300">0:00</span>
               </div>
               
               {/* Video Track */}
-              <div className="px-4 py-3 flex gap-2 overflow-hidden items-center border-b border-white/5 relative">
-                <div className="absolute left-1/3 top-0 bottom-0 w-px bg-blue-500 z-10 shadow-[0_0_10px_rgba(59,130,246,1)]">
-                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-sm border-2 border-blue-500" />
-                </div>
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="flex-shrink-0 w-24 h-12 bg-slate-800 rounded border border-white/10 overflow-hidden relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
-                     <img src={`https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400&auto=format&fit=crop&sig=${i}`} className="w-full h-full object-cover" alt="" />
+              <div className="px-4 py-3 border-b border-white/5">
+                <div className="relative flex gap-1.5 items-center">
+                  {/* Playhead (follows the reel) */}
+                  <div
+                    ref={playheadRef}
+                    className="absolute -top-3 -bottom-3 w-px bg-blue-500 z-10 shadow-[0_0_10px_rgba(59,130,246,1)] pointer-events-none"
+                    style={{ left: '0%' }}
+                  >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-sm border-2 border-blue-500" />
                   </div>
-                ))}
+                  {SEGMENTS.map((seg, i) => (
+                    <button
+                      key={seg.label}
+                      type="button"
+                      onClick={() => jumpTo(i)}
+                      title={seg.label}
+                      aria-label={`Jump to ${seg.label}`}
+                      className={`h-12 min-w-0 rounded border overflow-hidden transition-all cursor-pointer ${
+                        i === active ? 'border-blue-400 opacity-100 ring-1 ring-blue-400/60' : 'border-white/10 opacity-60 hover:opacity-100'
+                      }`}
+                      style={{
+                        flex: `${seg.dur} 1 0%`,
+                        backgroundImage: `url(${SHOWCASE_MEDIA}${seg.thumb})`,
+                        backgroundSize: 'auto 100%',
+                        backgroundRepeat: 'repeat-x',
+                        backgroundColor: '#1e293b',
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Audio Track */}
