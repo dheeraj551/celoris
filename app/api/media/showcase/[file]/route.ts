@@ -26,6 +26,10 @@ const ALLOWED = new Set([
   'video-studio-clip2.jpg',
   'video-studio-clip3.jpg',
   'video-studio-clip4.jpg',
+  'photolite-pair1-before.jpg',
+  'photolite-pair1-after.jpg',
+  'photolite-pair2-before.jpg',
+  'photolite-pair2-after.jpg',
 ]);
 
 // Signed links live for an hour; the redirect itself is cached for 30 minutes,
