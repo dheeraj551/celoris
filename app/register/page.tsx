@@ -114,9 +114,32 @@ export default function RegisterPage() {
     script.async = true
     document.body.appendChild(script)
 
+    // Ensure the button text says "Verify Phone Number" instead of "Sign in With Phone"
+    const updateButtonText = () => {
+      const textElem = document.getElementById("btn_ph_login_text")
+      if (textElem && textElem.textContent !== "Verify Phone Number") {
+        textElem.textContent = "Verify Phone Number"
+      }
+    }
+
+    const observer = new MutationObserver(() => {
+      updateButtonText()
+    })
+
+    const checkInterval = setInterval(updateButtonText, 100)
+    const timeout = setTimeout(() => clearInterval(checkInterval), 5000)
+
+    const container = document.querySelector(".pe_signin_button")
+    if (container) {
+      observer.observe(container, { childList: true, subtree: true, characterData: true })
+    }
+
     return () => {
       const s = document.getElementById(scriptId)
       if (s) s.remove()
+      observer.disconnect()
+      clearInterval(checkInterval)
+      clearTimeout(timeout)
     }
   }, [phoneVerificationEnabled, phoneClientId, isPhoneVerified])
 
@@ -389,6 +412,29 @@ export default function RegisterPage() {
                         className="pe_signin_button"
                         data-client-id={phoneClientId}
                       />
+
+                      <style>{`
+                        #btn_ph_login {
+                          display: inline-flex !important;
+                          align-items: center !important;
+                          justify-content: center !important;
+                          background: #059669 !important;
+                          border-radius: 1rem !important;
+                          font-weight: 800 !important;
+                          font-size: 11px !important;
+                          letter-spacing: 0.08em !important;
+                          text-transform: uppercase !important;
+                          padding: 12px 24px !important;
+                          box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25) !important;
+                          border: none !important;
+                          cursor: pointer !important;
+                          transition: all 0.2s ease !important;
+                        }
+                        #btn_ph_login:hover {
+                          background: #10b981 !important;
+                          transform: scale(1.02) !important;
+                        }
+                      `}</style>
 
                       {verifyingPhone && (
                         <div className="flex items-center space-x-2 text-xs text-emerald-400">
