@@ -81,6 +81,9 @@ interface CanvasViewportProps {
   onLayerPixelChange: (layerId: string, actionName: string) => void;
   onLayerPositionChange: (layerId: string, x: number, y: number) => void;
   onLayerAngleChange?: (layerId: string, angle: number, commit?: boolean) => void;
+  // Paint Bucket Tool props
+  bucketContiguous?: boolean;
+  bucketSampleAllLayers?: boolean;
   // Text Tool props
   textString?: string;
   setTextString?: (s: string) => void;
@@ -202,6 +205,8 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   onLayerPixelChange,
   onLayerPositionChange,
   onLayerAngleChange,
+  bucketContiguous = true,
+  bucketSampleAllLayers = false,
   textString = '',
   setTextString,
   textFontSize = 36,
@@ -1206,19 +1211,64 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     }
 
     // Paint Bucket Tool (click)
-    if (activeTool === 'bucket' && activeLayer && !activeLayer.locked) {
+    if (activeTool === 'bucket' && activeLayer) {
+      if (activeLayer.locked) {
+        return;
+      }
       const ctx = activeLayer.canvas.getContext('2d');
       if (ctx) {
-        floodFill(
-          ctx,
-          coords.x - activeLayer.x,
-          coords.y - activeLayer.y,
-          foregroundColor,
-          wandTolerance,
-          activeLayer.width,
-          activeLayer.height
-        );
-        onLayerPixelChange(activeLayer.id, 'Paint Bucket Fill');
+        // Calculate coordinate in layer local space taking position and rotation into account
+        let lx = coords.x - (activeLayer.x + activeLayer.width / 2);
+        let ly = coords.y - (activeLayer.y + activeLayer.height / 2);
+        if (activeLayer.angle) {
+          const rad = (-activeLayer.angle * Math.PI) / 180;
+          const cos = Math.cos(rad);
+          const sin = Math.sin(rad);
+          const rx = lx * cos - ly * sin;
+          const ry = lx * sin + ly * cos;
+          lx = rx;
+          ly = ry;
+        }
+        const localX = Math.floor(lx + activeLayer.width / 2);
+        const localY = Math.floor(ly + activeLayer.height / 2);
+
+        if (localX >= 0 && localX < activeLayer.width && localY >= 0 && localY < activeLayer.height) {
+          let selMask: HTMLCanvasElement | null = null;
+          if (selection.active) {
+            if (selection.maskCanvas) {
+              selMask = selection.maskCanvas;
+            } else if (selection.type === 'rect' && selection.rect) {
+              selMask = createRectMaskCanvas(selection.rect, canvasWidth, canvasHeight);
+            } else if (selection.type === 'lasso' && selection.polygon) {
+              selMask = createLassoMaskCanvas(selection.polygon, canvasWidth, canvasHeight);
+            }
+          }
+
+          const sampleCtx = bucketSampleAllLayers ? mainCanvasRef.current?.getContext('2d') : null;
+          const sampleOffset = bucketSampleAllLayers ? { x: activeLayer.x, y: activeLayer.y } : undefined;
+
+          floodFill(
+            ctx,
+            localX,
+            localY,
+            foregroundColor,
+            wandTolerance,
+            activeLayer.width,
+            activeLayer.height,
+            {
+              selectionMask: selMask,
+              selectionOffset: { x: activeLayer.x, y: activeLayer.y },
+              sampleCtx,
+              sampleOffset,
+              contiguous: bucketContiguous,
+              opacity: brushOpacity,
+            }
+          );
+
+          // Force immediate composite canvas redraw so the user sees the filled color right away!
+          renderComposite();
+          onLayerPixelChange(activeLayer.id, 'Paint Bucket Fill');
+        }
       }
       return;
     }
@@ -1485,6 +1535,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         ctx.lineTo(lx, ly);
         ctx.stroke();
         ctx.restore();
+        renderComposite();
       }
     }
   };
@@ -1849,6 +1900,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         ctx.lineTo(coords.x - activeLayer.x, coords.y - activeLayer.y);
         ctx.stroke();
         ctx.restore();
+        renderComposite();
       }
       lastMousePosRef.current = coords;
     }

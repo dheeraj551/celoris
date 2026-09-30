@@ -79,6 +79,10 @@ export default function App() {
   const [brushHardness, setBrushHardness] = useState<number>(0.8);
   const [wandTolerance, setWandTolerance] = useState<number>(32);
 
+  // Paint Bucket Tool
+  const [bucketContiguous, setBucketContiguous] = useState<boolean>(true);
+  const [bucketSampleAllLayers, setBucketSampleAllLayers] = useState<boolean>(false);
+
   // Selection
   const [selection, setSelection] = useState<SelectionState>({
     active: false,
@@ -611,6 +615,20 @@ export default function App() {
 
   // Pixel change in layer
   const handleLayerPixelChange = (layerId: string, actionName: string) => {
+    setLayers((prev) =>
+      prev.map((l) => {
+        if (l.id === layerId) {
+          const isPaintAction =
+            actionName.includes('Paint') ||
+            actionName.includes('Brush') ||
+            actionName.includes('Eraser') ||
+            actionName.includes('Fill');
+          const type = isPaintAction && l.type !== 'raster' ? 'raster' : l.type;
+          return { ...l, type };
+        }
+        return l;
+      })
+    );
     recordHistory(actionName);
   };
 
@@ -1568,6 +1586,10 @@ export default function App() {
             handleLayerAngleChange(activeLayerId, angle, commit);
           }
         }}
+        bucketContiguous={bucketContiguous}
+        setBucketContiguous={setBucketContiguous}
+        bucketSampleAllLayers={bucketSampleAllLayers}
+        setBucketSampleAllLayers={setBucketSampleAllLayers}
       />
 
       {/* Main Studio Workspace: Toolbar (Left) + Viewport (Center) + Sidebar (Right) */}
@@ -1596,6 +1618,8 @@ export default function App() {
           brushOpacity={brushOpacity}
           brushHardness={brushHardness}
           wandTolerance={wandTolerance}
+          bucketContiguous={bucketContiguous}
+          bucketSampleAllLayers={bucketSampleAllLayers}
           selection={selection}
           setSelection={setSelection}
           penPath={penPath}

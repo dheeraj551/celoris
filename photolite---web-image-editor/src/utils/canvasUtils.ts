@@ -104,17 +104,42 @@ export function deserializeLayer(sLayer: SerializedLayer): Promise<Layer> {
   });
 }
 
-// Convert hex color to RGBA components
-export function hexToRgba(hex: string): [number, number, number, number] {
-  let c = hex.replace('#', '');
+// Convert hex or css color to RGBA components
+export function hexToRgba(colorStr: string): [number, number, number, number] {
+  if (!colorStr) return [0, 0, 0, 255];
+  const s = colorStr.trim();
+  if (s.startsWith('rgb')) {
+    const parts = s.match(/[\d.]+/g);
+    if (parts && parts.length >= 3) {
+      const r = Math.max(0, Math.min(255, parseInt(parts[0], 10) || 0));
+      const g = Math.max(0, Math.min(255, parseInt(parts[1], 10) || 0));
+      const b = Math.max(0, Math.min(255, parseInt(parts[2], 10) || 0));
+      const rawA = parts[3] !== undefined ? parseFloat(parts[3]) : 1;
+      const a = Math.max(0, Math.min(255, Math.round(rawA <= 1 ? rawA * 255 : rawA)));
+      return [r, g, b, a];
+    }
+  }
+  let c = s.replace('#', '');
   if (c.length === 3) {
+    c = c.split('').map((x) => x + x).join('') + 'ff';
+  } else if (c.length === 4) {
     c = c.split('').map((x) => x + x).join('');
+  } else if (c.length === 6) {
+    c += 'ff';
+  } else if (c.length !== 8) {
+    return [0, 0, 0, 255];
   }
   const num = parseInt(c, 16);
-  return [(num >> 16) & 255, (num >> 8) & 255, num & 255, 255];
+  if (isNaN(num)) return [0, 0, 0, 255];
+  return [
+    (num >>> 24) & 255,
+    (num >>> 16) & 255,
+    (num >>> 8) & 255,
+    num & 255,
+  ];
 }
 
-// Magic Wand selection algorithm (BFS flood matching)
+// Magic Wand selection algorithm (fast BFS flood matching with proper alpha handling)
 export function magicWandSelection(
   compositeCanvas: HTMLCanvasElement,
   startX: number,
@@ -149,8 +174,8 @@ export function magicWandSelection(
   const targetB = srcData[startIdx + 2];
   const targetA = srcData[startIdx + 3];
 
-  // Tolerance scaled to RGB distance (max approx 441)
-  const maxDiff = (tolerance / 100) * 255;
+  const maxDiff = (Math.max(0, Math.min(100, tolerance)) / 100) * 441.67;
+  const maxDiffSq = maxDiff * maxDiff;
 
   const visited = new Uint8Array(width * height);
   const queue: number[] = [startX, startY];
@@ -167,7 +192,6 @@ export function magicWandSelection(
     maskData[idx + 2] = 255;
     maskData[idx + 3] = 255;
 
-    // Check 4 neighbors
     const neighbors = [
       [x + 1, y],
       [x - 1, y],
@@ -189,14 +213,15 @@ export function magicWandSelection(
           const b = srcData[nIdx + 2];
           const a = srcData[nIdx + 3];
 
-          const diff = Math.sqrt(
-            Math.pow(r - targetR, 2) +
-            Math.pow(g - targetG, 2) +
-            Math.pow(b - targetB, 2) +
-            Math.pow(a - targetA, 2)
-          );
+          let match = false;
+          if (targetA <= 10 && a <= 10) {
+            match = true;
+          } else {
+            const diffSq = (r - targetR) ** 2 + (g - targetG) ** 2 + (b - targetB) ** 2 + (a - targetA) ** 2;
+            match = diffSq <= maxDiffSq;
+          }
 
-          if (diff <= maxDiff) {
+          if (match) {
             queue.push(nx, ny);
           }
         }
@@ -208,7 +233,16 @@ export function magicWandSelection(
   return maskCanvas;
 }
 
-// Flood Fill (Paint Bucket tool)
+export interface FloodFillOptions {
+  selectionMask?: HTMLCanvasElement | null;
+  selectionOffset?: { x: number; y: number };
+  sampleCtx?: CanvasRenderingContext2D | null;
+  sampleOffset?: { x: number; y: number };
+  contiguous?: boolean;
+  opacity?: number;
+}
+
+// Flood Fill (Paint Bucket tool) using fast scanline algorithm
 export function floodFill(
   ctx: CanvasRenderingContext2D,
   startX: number,
@@ -216,79 +250,199 @@ export function floodFill(
   fillColorHex: string,
   tolerance: number,
   width: number,
-  height: number
+  height: number,
+  options?: FloodFillOptions
 ): void {
   startX = Math.floor(startX);
   startY = Math.floor(startY);
   if (startX < 0 || startX >= width || startY < 0 || startY >= height) return;
 
+  const {
+    selectionMask,
+    selectionOffset = { x: 0, y: 0 },
+    sampleCtx,
+    sampleOffset = { x: 0, y: 0 },
+    contiguous = true,
+    opacity = 1,
+  } = options || {};
+
   const imgData = ctx.getImageData(0, 0, width, height);
   const data = imgData.data;
 
-  const startIdx = (startY * width + startX) * 4;
-  const targetR = data[startIdx];
-  const targetG = data[startIdx + 1];
-  const targetB = data[startIdx + 2];
-  const targetA = data[startIdx + 3];
+  // Sample data source (composite canvas if sampleCtx provided, otherwise target layer)
+  let sampleData: Uint8ClampedArray | null = null;
+  let sampleW = 0;
+  let sampleH = 0;
+  if (sampleCtx) {
+    sampleW = sampleCtx.canvas.width;
+    sampleH = sampleCtx.canvas.height;
+    sampleData = sampleCtx.getImageData(0, 0, sampleW, sampleH).data;
+  }
+
+  // Selection mask data source
+  let selMaskData: Uint8ClampedArray | null = null;
+  let selMaskW = 0;
+  let selMaskH = 0;
+  if (selectionMask) {
+    selMaskW = selectionMask.width;
+    selMaskH = selectionMask.height;
+    const mCtx = selectionMask.getContext('2d');
+    if (mCtx) {
+      selMaskData = mCtx.getImageData(0, 0, selMaskW, selMaskH).data;
+    }
+  }
+
+  // Determine target color at startX, startY
+  let targetR: number, targetG: number, targetB: number, targetA: number;
+  if (sampleData) {
+    const smX = Math.floor(startX + sampleOffset.x);
+    const smY = Math.floor(startY + sampleOffset.y);
+    if (smX < 0 || smX >= sampleW || smY < 0 || smY >= sampleH) return;
+    const sIdx = (smY * sampleW + smX) * 4;
+    targetR = sampleData[sIdx];
+    targetG = sampleData[sIdx + 1];
+    targetB = sampleData[sIdx + 2];
+    targetA = sampleData[sIdx + 3];
+  } else {
+    const startIdx = (startY * width + startX) * 4;
+    targetR = data[startIdx];
+    targetG = data[startIdx + 1];
+    targetB = data[startIdx + 2];
+    targetA = data[startIdx + 3];
+  }
 
   const [fillR, fillG, fillB, fillA] = hexToRgba(fillColorHex);
 
-  // If already identical color, return
-  if (
-    Math.abs(targetR - fillR) < 2 &&
-    Math.abs(targetG - fillG) < 2 &&
-    Math.abs(targetB - fillB) < 2 &&
-    Math.abs(targetA - fillA) < 2
-  ) {
+  const colorsMatch = (
+    r1: number, g1: number, b1: number, a1: number,
+    r2: number, g2: number, b2: number, a2: number,
+    maxDiffSq: number
+  ): boolean => {
+    // If both pixels are practically transparent (alpha <= 10), they match
+    if (a1 <= 10 && a2 <= 10) return true;
+    const diffSq = (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2 + (a1 - a2) ** 2;
+    return diffSq <= maxDiffSq;
+  };
+
+  // If already identical color (within tiny tolerance) and full opacity, return early
+  if (colorsMatch(targetR, targetG, targetB, targetA, fillR, fillG, fillB, fillA, 4) && opacity >= 0.99) {
     return;
   }
 
-  const maxDiff = (tolerance / 100) * 255;
+  // Max Euclidean difference squared based on tolerance (1..100)
+  const maxDiff = (Math.max(0, Math.min(100, tolerance)) / 100) * 441.67;
+  const maxDiffSq = maxDiff * maxDiff;
+
+  const isMatch = (x: number, y: number): boolean => {
+    if (selMaskData) {
+      const mx = Math.floor(x + selectionOffset.x);
+      const my = Math.floor(y + selectionOffset.y);
+      if (mx < 0 || mx >= selMaskW || my < 0 || my >= selMaskH) return false;
+      const mIdx = (my * selMaskW + mx) * 4;
+      if (selMaskData[mIdx + 3] < 128) return false; // outside selection mask
+    }
+    let r: number, g: number, b: number, a: number;
+    if (sampleData) {
+      const smX = Math.floor(x + sampleOffset.x);
+      const smY = Math.floor(y + sampleOffset.y);
+      if (smX < 0 || smX >= sampleW || smY < 0 || smY >= sampleH) return false;
+      const sIdx = (smY * sampleW + smX) * 4;
+      r = sampleData[sIdx];
+      g = sampleData[sIdx + 1];
+      b = sampleData[sIdx + 2];
+      a = sampleData[sIdx + 3];
+    } else {
+      const idx = (y * width + x) * 4;
+      r = data[idx];
+      g = data[idx + 1];
+      b = data[idx + 2];
+      a = data[idx + 3];
+    }
+    return colorsMatch(r, g, b, a, targetR, targetG, targetB, targetA, maxDiffSq);
+  };
+
+  const setPixel = (x: number, y: number) => {
+    const idx = (y * width + x) * 4;
+    if (opacity < 0.99 || fillA < 255) {
+      const aFactor = (fillA * opacity) / 255;
+      const invA = 1 - aFactor;
+      data[idx] = Math.round(fillR * aFactor + data[idx] * invA);
+      data[idx + 1] = Math.round(fillG * aFactor + data[idx + 1] * invA);
+      data[idx + 2] = Math.round(fillB * aFactor + data[idx + 2] * invA);
+      data[idx + 3] = Math.min(255, Math.round(fillA * aFactor + data[idx + 3] * invA));
+    } else {
+      data[idx] = fillR;
+      data[idx + 1] = fillG;
+      data[idx + 2] = fillB;
+      data[idx + 3] = fillA;
+    }
+  };
+
+  // If non-contiguous, replace all matching pixels across the layer / selection
+  if (!contiguous) {
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (isMatch(x, y)) {
+          setPixel(x, y);
+        }
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return;
+  }
+
+  // Scanline Flood Fill
+  if (!isMatch(startX, startY)) return;
+
+  const stack = new Int32Array(width * height * 2);
+  let stackPtr = 0;
   const visited = new Uint8Array(width * height);
-  const queue: number[] = [startX, startY];
+
+  stack[stackPtr++] = startX;
+  stack[stackPtr++] = startY;
   visited[startY * width + startX] = 1;
 
-  let head = 0;
-  while (head < queue.length) {
-    const x = queue[head++];
-    const y = queue[head++];
+  while (stackPtr > 0) {
+    const curY = stack[--stackPtr];
+    const curX = stack[--stackPtr];
 
-    const idx = (y * width + x) * 4;
-    data[idx] = fillR;
-    data[idx + 1] = fillG;
-    data[idx + 2] = fillB;
-    data[idx + 3] = fillA;
+    let left = curX;
+    while (left > 0) {
+      const nx = left - 1;
+      const p = curY * width + nx;
+      if (visited[p] || !isMatch(nx, curY)) break;
+      visited[p] = 1;
+      left = nx;
+    }
 
-    const neighbors = [
-      [x + 1, y],
-      [x - 1, y],
-      [x, y + 1],
-      [x, y - 1],
-    ];
+    let right = curX;
+    while (right < width - 1) {
+      const nx = right + 1;
+      const p = curY * width + nx;
+      if (visited[p] || !isMatch(nx, curY)) break;
+      visited[p] = 1;
+      right = nx;
+    }
 
-    for (let i = 0; i < 4; i++) {
-      const nx = neighbors[i][0];
-      const ny = neighbors[i][1];
+    for (let x = left; x <= right; x++) {
+      setPixel(x, curY);
+    }
 
-      if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-        const nPos = ny * width + nx;
-        if (!visited[nPos]) {
-          visited[nPos] = 1;
-          const nIdx = nPos * 4;
-          const r = data[nIdx];
-          const g = data[nIdx + 1];
-          const b = data[nIdx + 2];
-          const a = data[nIdx + 3];
-
-          const diff = Math.sqrt(
-            Math.pow(r - targetR, 2) +
-            Math.pow(g - targetG, 2) +
-            Math.pow(b - targetB, 2) +
-            Math.pow(a - targetA, 2)
-          );
-
-          if (diff <= maxDiff) {
-            queue.push(nx, ny);
+    for (const ny of [curY - 1, curY + 1]) {
+      if (ny >= 0 && ny < height) {
+        let inSpan = false;
+        for (let x = left; x <= right; x++) {
+          const p = ny * width + x;
+          const match = !visited[p] && isMatch(x, ny);
+          if (match) {
+            visited[p] = 1;
+            if (!inSpan) {
+              stack[stackPtr++] = x;
+              stack[stackPtr++] = ny;
+              inSpan = true;
+            }
+          } else {
+            inSpan = false;
           }
         }
       }

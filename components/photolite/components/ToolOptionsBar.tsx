@@ -93,6 +93,11 @@ interface ToolOptionsBarProps {
     overrideAlign?: 'left' | 'center' | 'right',
     commit?: boolean
   ) => void;
+  // Paint Bucket options
+  bucketContiguous?: boolean;
+  setBucketContiguous?: (val: boolean) => void;
+  bucketSampleAllLayers?: boolean;
+  setBucketSampleAllLayers?: (val: boolean) => void;
   // Active layer & Rotation options
   activeLayer?: Layer | null;
   onUpdateLayerAngle?: (angle: number, commit?: boolean) => void;
@@ -156,6 +161,10 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
   onUpdateActiveText,
   activeLayer,
   onUpdateLayerAngle,
+  bucketContiguous = true,
+  setBucketContiguous,
+  bucketSampleAllLayers = false,
+  setBucketSampleAllLayers,
 }) => {
   return (
     <div
@@ -215,8 +224,8 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
         </div>
       )}
 
-      {/* Magic Wand & Bucket options */}
-      {(activeTool === 'wand' || activeTool === 'bucket') && (
+      {/* Magic Wand options */}
+      {activeTool === 'wand' && (
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="text-gray-400">Tolerance:</span>
@@ -230,11 +239,66 @@ export const ToolOptionsBar: React.FC<ToolOptionsBarProps> = ({
             />
             <span className="w-5 font-mono text-[10px] text-gray-300">{wandTolerance}</span>
           </div>
-          {activeTool === 'wand' && (
-            <span className="text-gray-400 text-[10px]">
-              Click canvas to flood-select matching pixels.
-            </span>
-          )}
+          <span className="text-gray-400 text-[10px]">
+            Click canvas to flood-select matching pixels.
+          </span>
+        </div>
+      )}
+
+      {/* Paint Bucket options */}
+      {activeTool === 'bucket' && (
+        <div className="flex items-center gap-3 text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="text-gray-400">Tolerance:</span>
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value={wandTolerance}
+              onChange={(e) => setWandTolerance(Number(e.target.value))}
+              className="h-1 w-20 cursor-pointer accent-blue-500"
+              title="Color similarity threshold (1 - 100)"
+            />
+            <span className="w-5 font-mono text-[10px] text-gray-300">{wandTolerance}</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 pl-2 border-l border-neutral-700">
+            <span className="text-gray-400">Opacity:</span>
+            <input
+              type="range"
+              min="5"
+              max="100"
+              value={Math.round(brushOpacity * 100)}
+              onChange={(e) => setBrushOpacity(Number(e.target.value) / 100)}
+              className="h-1 w-16 cursor-pointer accent-blue-500"
+              title="Fill opacity"
+            />
+            <span className="w-7 font-mono text-[10px] text-gray-300">{Math.round(brushOpacity * 100)}%</span>
+          </div>
+
+          <label className="flex items-center gap-1.5 cursor-pointer text-gray-300 hover:text-white select-none pl-2 border-l border-neutral-700 text-[11px]" title="Contiguous: When checked, fills only connected pixels. When unchecked, fills all matching pixels across the layer.">
+            <input
+              type="checkbox"
+              checked={bucketContiguous ?? true}
+              onChange={(e) => setBucketContiguous?.(e.target.checked)}
+              className="rounded bg-neutral-800 border-neutral-600 text-blue-500 focus:ring-0 cursor-pointer"
+            />
+            <span>Contiguous</span>
+          </label>
+
+          <label className="flex items-center gap-1.5 cursor-pointer text-gray-300 hover:text-white select-none text-[11px]" title="Sample All Layers: Uses colors visible on all layers to determine fill boundaries, and applies fill to current layer">
+            <input
+              type="checkbox"
+              checked={bucketSampleAllLayers ?? false}
+              onChange={(e) => setBucketSampleAllLayers?.(e.target.checked)}
+              className="rounded bg-neutral-800 border-neutral-600 text-blue-500 focus:ring-0 cursor-pointer"
+            />
+            <span>All Layers</span>
+          </label>
+
+          <span className="text-gray-500 text-[10px] hidden md:inline">
+            Click canvas to fill area with foreground color
+          </span>
         </div>
       )}
 
