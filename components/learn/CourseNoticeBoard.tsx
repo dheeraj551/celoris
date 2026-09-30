@@ -1,6 +1,8 @@
 "use client"
 
 import React from 'react';
+import { istDateTime, type CourseBatchInfo } from '@/lib/course-batch-types';
+import { liveBatchStatus } from '@/components/learn/CourseNoticeBoardMini';
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
@@ -206,9 +208,8 @@ const css = `
   .nb-strip-cta:hover { background: #f0a015; }
 `;
 
-// Per-course batch/seat/trainer stats for the notice board widgets. Keyed by
-// course title so each course can carry its own (still hand-entered, not
-// live) numbers instead of every course showing the same demo figures.
+// Hand-entered figures for courses NOT linked to a live classroom yet.
+// Courses with a linked classroom (see lib/course-batch.ts) show live data.
 function getBatchStats(courseTitle: string) {
   const title = (courseTitle || '').toLowerCase();
 
@@ -246,10 +247,11 @@ function getBatchStats(courseTitle: string) {
   };
 }
 
-export function CourseNoticeBoard({ course }: { course: any }) {
+export function CourseNoticeBoard({ course, batch }: { course: any; batch?: CourseBatchInfo | null }) {
+  const live = batch && batch.roomId ? batch : null;
+  if (live) return <LiveNoticeBoard course={course} batch={live} />;
+
   const title   = course?.title || 'AI-Powered Web Development';
-  const price   = course?.price ? `₹${course.price.toLocaleString('en-IN')}` : 'Free';
-  const totalModules = course?.course_modules?.length || 0;
   const totalMins    = course?.course_modules?.reduce((a: number, m: any) => a + (m.estimated_duration || 0), 0) || 0;
   const durationDisplay = totalMins > 60 ? `${Math.round(totalMins / 60 / 24)} weeks` : '6–8 weeks';
 
@@ -363,6 +365,123 @@ export function CourseNoticeBoard({ course }: { course: any }) {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           {stats.seatsOpen > 0 ? `Only ${stats.seatsOpen} Seats Left — Enroll Now →` : 'Batch Full — Reserve Next Batch →'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+/** Scroll to whichever enrollment card is visible (sidebar on desktop, top block on phones). */
+function scrollToEnroll() {
+  const el = Array.from(document.querySelectorAll<HTMLElement>('[data-enroll]')).find((n) => n.offsetParent !== null);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  else window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Notice board for a course with a linked live classroom — every figure here
+// is real: schedule, trainer, capacity, registrations and the launch offer.
+function LiveNoticeBoard({ course, batch }: { course: any; batch: CourseBatchInfo }) {
+  const status = liveBatchStatus(batch);
+  const seatsTotal = batch.seatsTotal ?? 0;
+  const seatsOpen = batch.seatsLeft ?? 0;
+  const seatsTaken = Math.max(0, Math.min(seatsTotal, seatsTotal - seatsOpen));
+  const weeks = course?.course_modules?.length || 0;
+  const price = Number(course?.price) > 0 ? `₹${Number(course.price).toLocaleString('en-IN')}` : 'Free';
+  const offer = batch.offer;
+  const offerOpen = !!offer && offer.active;
+  const batchName = batch.batchNumber ? `Batch #${batch.batchNumber}` : 'This batch';
+
+  return (
+    <div className="nb-wrap">
+      <style dangerouslySetInnerHTML={{ __html: css }} />
+
+      <div className="mb-2">
+        <span className="nb-hdr-pin" style={{ background: '#d64541' }} />
+        <span className="nb-hdr-pin" style={{ background: '#3d6fb4' }} />
+        <p className="nb-section-eyebrow" style={{ display: 'inline', marginLeft: 12 }}>Celoris · Notice Board</p>
+      </div>
+      <h2 className="nb-section-title">{batchName}: {course?.title}</h2>
+      <p className="nb-section-sub">Live from the classroom — schedule, seats and offer update automatically</p>
+
+      <div className="nb-cards-row">
+        {/* Current batch */}
+        <div className="nb-card nb-r1">
+          <div className="nb-tape" />
+          <div className="nb-pin" style={{ background: '#4c9a6a' }} />
+          <div className="nb-label">Current Batch</div>
+          <h3>{status.label}</h3>
+          <div className="nb-row">
+            <span className={`nb-dot ${status.dot}`} />
+            <strong>{batchName}</strong>
+          </div>
+          <div className="nb-row">
+            <span className={`nb-badge ${status.badge}`}>{status.badgeText}</span>
+            <span style={{ fontSize: 12 }}>Online · Live classroom</span>
+          </div>
+          {batch.scheduleLabel && (
+            <div className="nb-row" style={{ marginBottom: 0, opacity: 0.7, fontSize: 12 }}>{batch.scheduleLabel}</div>
+          )}
+        </div>
+
+        {/* Seats */}
+        <div className="nb-card nb-r2">
+          <div className="nb-tape" />
+          <div className="nb-pin" style={{ background: '#d64541' }} />
+          <div className="nb-label">Seats</div>
+          <h3>Live Class Seats</h3>
+          <div className="nb-seats">
+            {Array.from({ length: seatsTaken }).map((_, i) => <div key={`f-${i}`} className="nb-seat" />)}
+            {Array.from({ length: Math.max(0, seatsTotal - seatsTaken) }).map((_, i) => <div key={`o-${i}`} className="nb-seat open" />)}
+          </div>
+          <div className="nb-big">{seatsOpen}<span style={{ fontSize: 14, opacity: 0.55 }}> / {seatsTotal}</span></div>
+          <div className="nb-sub">{seatsTaken} registered · {seatsOpen} seats open</div>
+          <span className="nb-badge urgent" style={{ marginTop: 10, display: 'inline-flex' }}>
+            {seatsOpen <= 0 ? 'FULLY BOOKED' : seatsOpen <= 2 ? 'FILLING FAST' : 'SEATS OPEN'}
+          </span>
+        </div>
+
+        {/* Dates */}
+        <div className="nb-card nb-r3">
+          <div className="nb-tape" />
+          <div className="nb-pin" style={{ background: '#3d6fb4' }} />
+          <div className="nb-label">Dates</div>
+          <h3>{batch.batchStarted ? 'Next Class' : 'Batch Starts'}</h3>
+          <ul className="nb-list">
+            {batch.batchStart && <li><span>First class</span><span className="nb-val">{istDateTime(batch.batchStart)}</span></li>}
+            {batch.nextStart && batch.batchStarted && <li><span>Next class</span><span className="nb-val">{istDateTime(batch.nextStart)}</span></li>}
+            {batch.classMinutes ? <li><span>Each class</span><span className="nb-val">{batch.classMinutes} min</span></li> : null}
+            {offer && <li><span>{offerOpen ? 'Free passes close' : 'Offer closed'}</span><span className="nb-val">{istDateTime(offer.endsAt)}</span></li>}
+          </ul>
+        </div>
+
+        {/* Trainer */}
+        <div className="nb-card nb-r4">
+          <div className="nb-tape" />
+          <div className="nb-pin" style={{ background: '#4c9a6a' }} />
+          <div className="nb-label">Your Trainer</div>
+          <h3>{batch.trainerName || course?.instructor_name || 'Celoris Team'}</h3>
+          <div className="nb-avatars">
+            <div className="nb-avatar" style={{ width: 36, height: 36, fontSize: 12 }}>
+              {(batch.trainerName || course?.instructor_name || 'CT').split(/\s+/).map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
+            </div>
+          </div>
+          <div style={{ fontSize: 12, opacity: 0.7, marginTop: 6 }}>
+            {course?.instructor_bio ? String(course.instructor_bio).slice(0, 140) : 'Live classes with Q&A in the Celoris classroom.'}
+          </div>
+        </div>
+      </div>
+
+      <div className="nb-strip">
+        <div className="nb-stat"><div className="nb-n">{seatsTaken}/{seatsTotal}</div><div className="nb-t">Seats Filled</div></div>
+        {offer && (
+          <div className="nb-stat"><div className="nb-n" style={{ color: 'var(--mint)' }}>{offerOpen ? offer.left : 0}</div><div className="nb-t">Free Passes Left</div></div>
+        )}
+        {weeks > 0 && <div className="nb-stat"><div className="nb-n">{weeks}</div><div className="nb-t">Weekly Modules</div></div>}
+        <div className="nb-stat"><div className="nb-n">{course?.course_duration || '—'}</div><div className="nb-t">Total Duration</div></div>
+        <div className="nb-stat"><div className="nb-n">{price}</div><div className="nb-t">Course Fee</div></div>
+        <button className="nb-strip-cta" onClick={scrollToEnroll}>
+          {offerOpen ? `Claim 1 of ${offer!.left} free passes →` : seatsOpen > 0 ? 'Book a free demo class →' : 'Join the next batch →'}
         </button>
       </div>
     </div>

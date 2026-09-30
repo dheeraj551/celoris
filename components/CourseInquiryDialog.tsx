@@ -18,10 +18,25 @@ import { Loader2, UploadCloud, FileCheck2, LogIn } from "lucide-react"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { createClient } from "@/lib/supabase-client"
 
+type Intent = "enroll" | "pass" | "demo"
+
 interface CourseInquiryDialogProps {
     courseTitle: string
     buttonClassName?: string
     buttonText?: string
+    /** Course id — lets the server use the real course title and launch offer. */
+    courseId?: string
+    courseSlug?: string
+    /** "pass" = claim a launch-offer free pass, "demo" = book 1 free demo class. */
+    intent?: Intent
+    /** Called after a successful submit (e.g. to refresh live seat counts). */
+    onSubmitted?: () => void
+}
+
+const INTENT_COPY: Record<Intent, { title: string; lead: string; submit: string }> = {
+    enroll: { title: "Apply for a Free Seat", lead: "is free for students — upload your student ID and our team will confirm your seat.", submit: "Submit Application" },
+    pass: { title: "Claim your Free Pass", lead: "— the first students to apply get the full course free. Upload your student ID and our team will confirm your pass.", submit: "Claim Free Pass" },
+    demo: { title: "Book a Free Demo Class", lead: "— try one live class free before you decide. Upload your student ID and our team will confirm your demo seat.", submit: "Book Free Demo" },
 }
 
 // Classes are free for students now, so applying is gated behind an
@@ -32,7 +47,16 @@ interface CourseInquiryDialogProps {
 // buckets), and only its storage path is sent to /api/courses/inquiry,
 // which is what turns this into a real course_applications row an admin
 // can review.
-export function CourseInquiryDialog({ courseTitle, buttonClassName, buttonText = "Enroll in Course" }: CourseInquiryDialogProps) {
+export function CourseInquiryDialog({
+    courseTitle,
+    buttonClassName,
+    buttonText = "Enroll in Course",
+    courseId,
+    courseSlug,
+    intent = "enroll",
+    onSubmitted,
+}: CourseInquiryDialogProps) {
+    const copy = INTENT_COPY[intent]
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -108,6 +132,9 @@ export function CourseInquiryDialog({ courseTitle, buttonClassName, buttonText =
                 body: JSON.stringify({
                     ...formData,
                     courseTitle,
+                    courseId,
+                    courseSlug,
+                    intent,
                     studentIdPath: objectPath,
                 })
             })
@@ -115,11 +142,20 @@ export function CourseInquiryDialog({ courseTitle, buttonClassName, buttonText =
             const result = await response.json().catch(() => ({}))
 
             if (response.ok) {
+                const description =
+                    intent === "pass"
+                        ? result.offerPass
+                            ? "You got one of the free passes! Our team will verify your student ID and confirm shortly."
+                            : "The free passes just ran out — we've registered you for a free demo class instead. Our team will confirm shortly."
+                        : intent === "demo"
+                          ? "Your free demo class request is in — our team will confirm your seat shortly."
+                          : "We've received your application and student ID — our team will confirm your free seat shortly."
                 toast({
-                    title: "Application Sent!",
-                    description: "We've received your application and student ID — our team will confirm your free seat shortly.",
+                    title: intent === "pass" && result.offerPass ? "Free pass claimed! 🎉" : "Application Sent!",
+                    description,
                     variant: "default",
                 })
+                onSubmitted?.()
                 setOpen(false)
                 setFormData({ name: "", email: "", phone: "", message: "" })
                 setStudentIdFile(null)
@@ -155,10 +191,9 @@ export function CourseInquiryDialog({ courseTitle, buttonClassName, buttonText =
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-[#020617] text-slate-200 border-slate-800">
                 <DialogHeader>
-                    <DialogTitle className="text-white">Apply for a Free Seat</DialogTitle>
+                    <DialogTitle className="text-white">{copy.title}</DialogTitle>
                     <DialogDescription className="text-slate-400">
-                        <span className="text-cyan-400 font-semibold">{courseTitle}</span> is free for students —
-                        upload your student ID and our team will confirm your seat.
+                        <span className="text-cyan-400 font-semibold">{courseTitle}</span> {copy.lead}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -265,7 +300,7 @@ export function CourseInquiryDialog({ courseTitle, buttonClassName, buttonText =
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     Submitting...
                                 </>
-                            ) : "Submit Application"}
+                            ) : copy.submit}
                         </Button>
                     </form>
                 )}

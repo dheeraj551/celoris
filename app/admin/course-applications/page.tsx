@@ -36,6 +36,8 @@ interface CourseApplication {
     student_id_url: string
     status: 'pending' | 'approved' | 'rejected'
     reviewed_at: string | null
+    offer_pass?: boolean
+    intent?: string | null
 }
 
 const statusStyles: Record<CourseApplication['status'], string> = {
@@ -163,7 +165,14 @@ function CourseApplicationsContent() {
                                     ) : (
                                         applications.map((app) => (
                                             <TableRow key={app.id} className="border-slate-700 hover:bg-slate-750">
-                                                <TableCell className="font-medium text-white">{app.course_title}</TableCell>
+                                                <TableCell className="font-medium text-white">
+                                                    {app.course_title}
+                                                    {app.offer_pass ? (
+                                                        <Badge variant="outline" className="ml-2 border-amber-400/40 bg-amber-400/10 text-amber-300">Free pass</Badge>
+                                                    ) : app.intent === 'demo' ? (
+                                                        <Badge variant="outline" className="ml-2 border-sky-400/40 bg-sky-400/10 text-sky-300">Demo class</Badge>
+                                                    ) : null}
+                                                </TableCell>
                                                 <TableCell className="text-slate-300">{app.full_name}</TableCell>
                                                 <TableCell className="text-slate-300">{app.email}</TableCell>
                                                 <TableCell className="text-slate-300">{app.phone || '—'}</TableCell>

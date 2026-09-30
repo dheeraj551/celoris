@@ -15,10 +15,31 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client';
 // that stays (support still gets notified immediately), but the real
 // record is now the course_applications row, since an uploaded ID has to
 // be something an admin can actually go back and review/approve.
+// User-typed text goes into the notification email's HTML — escape it so a
+// name or message can't inject links/markup into the support inbox.
+function esc(value: unknown): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const INTENT_LABEL: Record<string, string> = {
+    enroll: 'Free seat application',
+    pass: 'Launch offer — free pass',
+    demo: 'Free demo class',
+};
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, email, phone, courseTitle, courseSlug, message, studentIdPath } = body;
+        const { name, email, phone, courseSlug, message, studentIdPath } = body;
+        let { courseTitle } = body;
+        const courseId = typeof body.courseId === 'string' && UUID.test(body.courseId) ? body.courseId : null;
+        const intent = body.intent === 'pass' || body.intent === 'demo' ? body.intent : 'enroll';
 
         if (!name || !email || !courseTitle) {
             return NextResponse.json(
@@ -54,18 +75,26 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid student ID upload.' }, { status: 400 });
         }
 
-        const { data: application, error: insertError } = await admin
+        // Use the course's real title (from the database) whenever we know the
+        // course — seat and free-pass counts are matched on it.
+        if (courseId) {
+            const { data: course } = await (admin as any).from('courses').select('title').eq('id', courseId).maybeSingle();
+            if (course?.title) courseTitle = course.title;
+        }
+
+        const { data: application, error: insertError } = await (admin as any)
             .from('course_applications')
             .insert({
                 user_id: user.id,
-                course_title: courseTitle,
+                course_title: String(courseTitle).slice(0, 300),
                 course_slug: courseSlug || null,
-                full_name: name,
-                email,
-                phone: phone || null,
-                message: message || null,
+                full_name: String(name).slice(0, 200),
+                email: String(email).slice(0, 320),
+                phone: phone ? String(phone).slice(0, 40) : null,
+                message: message ? String(message).slice(0, 2000) : null,
                 student_id_url: studentIdPath,
                 status: 'pending',
+                intent,
             })
             .select()
             .single();
@@ -77,6 +106,23 @@ export async function POST(request: NextRequest) {
                 { status: 500 }
             );
         }
+
+        // Launch offer: hand out a free pass if any are left (decided in the
+        // database, one at a time, so the limit can't be overshot). When they
+        // have just run out, the application stands as a free demo request.
+        let offerPass = false;
+        if (intent === 'pass' && courseId) {
+            const { data: won, error: claimError } = await (admin as any).rpc('course_offer_claim', {
+                p_course_id: courseId,
+                p_application_id: application.id,
+            });
+            if (claimError) console.error('course_offer_claim error:', claimError);
+            offerPass = won === true;
+            if (!offerPass) {
+                await (admin as any).from('course_applications').update({ intent: 'demo' }).eq('id', application.id);
+            }
+        }
+        const requestLabel = intent === 'pass' ? (offerPass ? INTENT_LABEL.pass : 'Free demo class (free passes had run out)') : INTENT_LABEL[intent];
 
         // Best-effort notification email — failing to send this should never
         // block the application itself, since the real record is now the DB
@@ -98,7 +144,7 @@ export async function POST(request: NextRequest) {
             const mailOptions = {
                 from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
                 to: 'support@celorisdesigns.com',
-                subject: `Course Application (free, ID uploaded): ${courseTitle}`,
+                subject: `${requestLabel}: ${String(courseTitle).replace(/[\r\n]+/g, ' ').slice(0, 150)}`,
                 html: `
           <!DOCTYPE html>
           <html>
@@ -122,24 +168,28 @@ export async function POST(request: NextRequest) {
               <div class="content">
                 <div class="field">
                   <div class="field-label">Course:</div>
-                  <div class="field-value">${courseTitle}</div>
+                  <div class="field-value">${esc(courseTitle)}</div>
+                </div>
+                <div class="field">
+                  <div class="field-label">Request:</div>
+                  <div class="field-value">${esc(requestLabel)}</div>
                 </div>
                 <div class="field">
                   <div class="field-label">Student Name:</div>
-                  <div class="field-value">${name}</div>
+                  <div class="field-value">${esc(name)}</div>
                 </div>
                 <div class="field">
                   <div class="field-label">Email:</div>
-                  <div class="field-value"><a href="mailto:${email}">${email}</a></div>
+                  <div class="field-value">${esc(email)}</div>
                 </div>
                 <div class="field">
                   <div class="field-label">Phone:</div>
-                  <div class="field-value">${phone || 'Not provided'}</div>
+                  <div class="field-value">${phone ? esc(phone) : 'Not provided'}</div>
                 </div>
                 ${message ? `
                 <div class="field">
                   <div class="field-label">Additional Message:</div>
-                  <div class="field-value">${message}</div>
+                  <div class="field-value">${esc(message)}</div>
                 </div>
                 ` : ''}
                 <div class="field">
@@ -164,7 +214,7 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json(
-            { message: 'Application submitted successfully', application },
+            { message: 'Application submitted successfully', offerPass, intent: intent === 'pass' && !offerPass ? 'demo' : intent },
             { status: 200 }
         );
     } catch (error) {

@@ -1,52 +1,28 @@
 import type { Metadata } from 'next'
 import { permanentRedirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase-server'
+import { loadCourseBatch, loadCoursePageData } from '@/lib/course-batch'
+import { COURSE_ID_TO_SLUG, COURSE_SEO } from '@/lib/course-slugs'
+import { getFaqsForCourse } from '@/lib/course-faqs'
 
-// Server-side SEO for /learn/course/[id].
+// Server-side SEO for /learn/course/[id]: the real course title/description,
+// a canonical URL, share (Open Graph) tags, and structured data — Course
+// (with its live batch schedule and offers), BreadcrumbList and FAQPage —
+// all in the HTML. Old UUID links are permanently redirected to each
+// course's clean URL on the server.
 //
-// The page itself is a client component, so before this layout every course
-// page was sent to Google with the homepage's title and description, no
-// canonical tag, and course structured data that only appeared after
-// JavaScript ran. This layout sends the real course title/description,
-// a canonical URL, share (Open Graph) tags and Course JSON-LD in the HTML.
-// It also permanently redirects old UUID links to each course's clean URL on
-// the server (the page used to do that only in the browser).
+// The course and batch loaders are cached per request, so the page itself
+// reuses the same queries.
 
 const SITE = 'https://www.celorisdesigns.com'
 
-// Clean URL slugs used by the flagship course pages.
-const SLUG_TO_ID: Record<string, string> = {
-  'digital-marketing-mastery': 'e7698318-7f57-421f-866e-0101ee239c01',
-  'web-development-bootcamp': '48713643-694c-491f-86d6-5b6e713c1cf3',
-  'ai-web-development': '879e499f-5517-413a-bd6a-76e2911b8331',
-  'master-copilot-excel': 'f00459e9-20a0-4866-ba05-79aa574f7dff',
-  'master-youtube-shorts-instagram-reels': 'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead',
-}
-
-// Old UUID links → their clean/premium URL (same list the page used).
+// Old UUID links → their clean/premium URL.
 const ID_REDIRECTS: Record<string, string> = {
   '1ca8cbea-1c9d-470d-ac69-f37882c31963': '/courses/build-real-time-ai-agents-with-livekit',
   '67bdf362-5e1c-49dd-9794-9c430ca351cb': '/courses/agentic-ai-for-beginners',
-  ...Object.fromEntries(Object.entries(SLUG_TO_ID).map(([slug, id]) => [id, `/learn/course/${slug}`])),
+  ...Object.fromEntries(Object.entries(COURSE_ID_TO_SLUG).map(([id, slug]) => [id, `/learn/course/${slug}`])),
 }
 
 type Params = Promise<{ id: string }>
-
-async function loadCourse(idOrSlug: string) {
-  const id = SLUG_TO_ID[idOrSlug] || idOrSlug
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null
-  try {
-    const supabase: any = await createServerClient()
-    const { data } = await supabase
-      .from('courses')
-      .select('id, title, description, subject, category, grade_level, difficulty_level, course_image_url, price, course_duration, duration, instructor_name, learning_outcomes, is_published')
-      .eq('id', id)
-      .maybeSingle()
-    return data && data.is_published !== false ? data : null
-  } catch {
-    return null
-  }
-}
 
 function plain(text: string | null | undefined, max: number) {
   const s = String(text || '').replace(/\s+/g, ' ').trim()
@@ -55,17 +31,27 @@ function plain(text: string | null | undefined, max: number) {
   return `${cut.slice(0, cut.lastIndexOf(' ') > 80 ? cut.lastIndexOf(' ') : cut.length)}…`
 }
 
+/** Site-relative or absolute image → absolute URL (share cards need absolute URLs). */
+function absolute(src: string | null | undefined): string | undefined {
+  if (!src) return undefined
+  if (/^https?:\/\//i.test(src)) return src
+  if (src.startsWith('/')) return `${SITE}${encodeURI(src)}`
+  return undefined
+}
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { id } = await params
-  const course = await loadCourse(id)
+  const course = await loadCoursePageData(id)
   if (!course) return { title: 'Course not found', robots: { index: false, follow: true } }
 
+  const seo = COURSE_SEO[course.id]
   const path = `/learn/course/${id}`
-  const description = plain(course.description, 158) || `Learn ${course.title} with Celoris Academy.`
-  const image = course.course_image_url && /^https?:\/\//i.test(course.course_image_url) ? course.course_image_url : undefined
+  const title = seo?.title || course.title
+  const description = seo?.description || plain(course.description, 158) || `Learn ${course.title} with Celoris Academy.`
+  const image = absolute(seo?.image || course.course_image_url)
 
   return {
-    title: course.title,
+    title,
     description,
     alternates: { canonical: path },
     openGraph: {
@@ -74,7 +60,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       title: course.title,
       description,
       siteName: 'Celoris',
-      ...(image ? { images: [{ url: image }] } : {}),
+      locale: 'en_IN',
+      ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: course.title }] } : {}),
     },
     twitter: {
       card: image ? 'summary_large_image' : 'summary',
@@ -89,55 +76,124 @@ export default async function CourseLayout({ children, params }: { children: Rea
   const { id } = await params
   if (ID_REDIRECTS[id]) permanentRedirect(ID_REDIRECTS[id])
 
-  const course = await loadCourse(id)
-  const url = `${SITE}/learn/course/${id}`
-  const price = course && course.price !== null && course.price !== undefined ? Number(course.price) : 0
+  const course = await loadCoursePageData(id)
+  if (!course) return <>{children}</>
 
-  const jsonLd = course
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'Course',
-        '@id': `${url}#course`,
-        name: course.title,
-        description: plain(course.description, 500),
-        url,
-        ...(course.course_image_url && /^https?:\/\//i.test(course.course_image_url) ? { image: course.course_image_url } : {}),
-        inLanguage: 'en-IN',
-        ...(course.grade_level || course.difficulty_level ? { educationalLevel: course.difficulty_level || course.grade_level } : {}),
-        ...(Array.isArray(course.learning_outcomes) && course.learning_outcomes.length
-          ? { teaches: course.learning_outcomes.slice(0, 10) }
-          : {}),
-        provider: {
-          '@type': 'Organization',
-          '@id': `${SITE}/#organization`,
-          name: 'Celoris Designs',
-          sameAs: SITE,
-        },
-        offers: {
-          '@type': 'Offer',
-          category: price > 0 ? 'Paid' : 'Free',
-          price: String(price),
-          priceCurrency: 'INR',
-          availability: 'https://schema.org/InStock',
-          url,
-        },
-        hasCourseInstance: {
-          '@type': 'CourseInstance',
-          courseMode: 'Online',
-          ...(course.instructor_name ? { instructor: { '@type': 'Person', name: course.instructor_name } } : {}),
-        },
-      }
-    : null
+  const batch = await loadCourseBatch(id)
+  const url = `${SITE}/learn/course/${id}`
+  const price = Number(course.price) > 0 ? Number(course.price) : 0
+  const image = absolute(COURSE_SEO[course.id]?.image || course.course_image_url)
+  const modules = Array.isArray(course.course_modules) ? course.course_modules.length : 0
+  const trainerNames: string[] = batch?.trainers?.length
+    ? batch.trainers.map((t) => t.name)
+    : [batch?.trainerName || course.instructor_name].filter(Boolean)
+  const offer = batch?.offer && batch.offer.active ? batch.offer : null
+  const faqs = getFaqsForCourse(course.title, { batch, price, modules })
+
+  const offers: any[] = [
+    {
+      '@type': 'Offer',
+      category: price > 0 ? 'Paid' : 'Free',
+      price: String(price),
+      priceCurrency: 'INR',
+      availability: 'https://schema.org/InStock',
+      url,
+    },
+  ]
+  if (offer) {
+    offers.push({
+      '@type': 'Offer',
+      name: `Launch offer: free pass for the first ${offer.passes} students`,
+      category: 'Free',
+      price: '0',
+      priceCurrency: 'INR',
+      availability: 'https://schema.org/LimitedAvailability',
+      validThrough: offer.endsAt,
+      inventoryLevel: { '@type': 'QuantitativeValue', value: offer.left },
+      url,
+    })
+  }
+
+  const instance: any = {
+    '@type': 'CourseInstance',
+    courseMode: 'Online',
+    location: { '@type': 'VirtualLocation', url: `${SITE}/classrooms` },
+    ...(trainerNames.length ? { instructor: trainerNames.map((name) => ({ '@type': 'Person', name })) } : {}),
+  }
+  if (batch?.batchStart) instance.startDate = batch.batchStart
+  if (batch?.repeatsWeekly && batch.batchStart) {
+    instance.courseSchedule = {
+      '@type': 'Schedule',
+      repeatFrequency: 'P1W',
+      ...(modules ? { repeatCount: modules } : {}),
+      ...(batch.classMinutes ? { duration: `PT${batch.classMinutes}M` } : {}),
+      startDate: batch.batchStart.slice(0, 10),
+      scheduleTimezone: 'Asia/Kolkata',
+    }
+  } else if (course.course_duration && /hour/i.test(course.course_duration)) {
+    const hours = parseInt(course.course_duration, 10)
+    if (hours > 0) instance.courseWorkload = `PT${hours}H`
+  }
+
+  const graph: any[] = [
+    {
+      '@type': 'Course',
+      '@id': `${url}#course`,
+      name: course.title,
+      description: plain(course.description, 500),
+      url,
+      ...(image ? { image } : {}),
+      inLanguage: 'en-IN',
+      ...(course.grade_level || course.difficulty_level ? { educationalLevel: course.difficulty_level || course.grade_level } : {}),
+      ...(Array.isArray(course.learning_outcomes) && course.learning_outcomes.length
+        ? { teaches: course.learning_outcomes.slice(0, 10) }
+        : {}),
+      ...(Array.isArray(course.requirements) && course.requirements.length
+        ? { coursePrerequisites: course.requirements.slice(0, 10) }
+        : {}),
+      ...(modules ? { syllabusSections: course.course_modules
+        .slice()
+        .sort((a: any, b: any) => a.module_number - b.module_number)
+        .map((m: any) => ({ '@type': 'Syllabus', name: `Module ${m.module_number}: ${m.title}`, ...(m.description ? { description: plain(m.description, 300) } : {}) })) } : {}),
+      provider: {
+        '@type': 'Organization',
+        '@id': `${SITE}/#organization`,
+        name: 'Celoris Designs',
+        url: SITE,
+      },
+      offers,
+      hasCourseInstance: instance,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
+        { '@type': 'ListItem', position: 2, name: 'Learn', item: `${SITE}/learn` },
+        { '@type': 'ListItem', position: 3, name: 'Courses', item: `${SITE}/learn/courses` },
+        { '@type': 'ListItem', position: 4, name: course.title, item: url },
+      ],
+    },
+  ]
+  if (faqs.length) {
+    graph.push({
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer },
+      })),
+    })
+  }
+
+  const jsonLd = { '@context': 'https://schema.org', '@graph': graph }
 
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          // JSON.stringify output; "<" escaped so course text can't close the script tag.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        // JSON.stringify output; "<" escaped so course text can't close the script tag.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       {children}
     </>
   )

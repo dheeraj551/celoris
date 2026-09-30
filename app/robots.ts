@@ -11,15 +11,18 @@ export default function robots(): MetadataRoute.Robots {
             {
                 userAgent: [
                     'GPTBot',
+                    'OAI-SearchBot',
                     'ChatGPT-User',
                     'Google-Extended',
                     'Anthropic-ai',
                     'Claude-Web',
                     'ClaudeBot',
+                    'Claude-SearchBot',
+                    'Claude-User',
                     'PerplexityBot',
                     'cohere-ai'
                 ],
-                allow: ['/', '/blog/', '/courses/', '/ai-tools/'],
+                allow: ['/', '/blog/', '/courses/', '/learn/', '/ai-tools/'],
                 disallow: ['/admin/', '/api/'],
             }
         ],

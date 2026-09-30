@@ -111,20 +111,37 @@ const css = `
   .mnb-list { list-style: none; padding: 0; margin: 0; font-size: 12px; }
   .mnb-list li { padding: 5px 0; border-bottom: 1px dashed rgba(0,0,0,0.13); display: flex; justify-content: space-between; }
   .mnb-list li:last-child { border-bottom: none; }
+  .mnb-date { display:flex; align-items:center; gap:10px; background:#fff; border:1.5px solid rgba(28,35,64,.12); border-radius:8px; padding:8px 10px; margin:0 0 10px; }
+  .mnb-date-cal { width:40px; flex-shrink:0; border-radius:6px; overflow:hidden; text-align:center; box-shadow:0 2px 0 rgba(0,0,0,.15); }
+  .mnb-date-cal span { display:block; background:var(--coral); color:#fff; font-family:'Space Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1px; padding:2px 0; }
+  .mnb-date-cal b { display:block; background:var(--paper); color:var(--navy); font-family:'Space Mono',monospace; font-size:18px; line-height:1.3; }
+  .mnb-date-k { font-family:'Space Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--coral); font-weight:700; }
+  .mnb-date-v { font-size:14px; font-weight:800; color:var(--navy); line-height:1.2; }
+  .mnb-date-t { font-size:11.5px; color:var(--ink); opacity:.7; }
+  .mnb-trainers { margin-top:8px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.14); }
+  .mnb-trainers-k { font-family:'Space Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--navy); opacity:.55; margin-bottom:5px; }
+  .mnb-avs { display:flex; margin-bottom:5px; }
+  .mnb-av { width:26px; height:26px; border-radius:50%; border:2px solid var(--paper); margin-left:-7px; object-fit:cover; background:linear-gradient(135deg,var(--mint),var(--navy)); color:#fff; font-family:'Space Mono',monospace; font-size:9px; display:inline-flex; align-items:center; justify-content:center; }
+  .mnb-av:first-child { margin-left:0; }
+  .mnb-trainers-n { font-size:11.5px; color:var(--ink); opacity:.8; line-height:1.4; }
   .mnb-list .val { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: var(--navy); }
 `;
 
-import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
+import { LaunchOfferCard } from "@/components/learn/CourseLaunchOffer"
+import { istFullDate, istTime, type CourseBatchInfo } from "@/lib/course-batch-types"
 
 interface Props {
   course: any;
   durationDisplay: string;
+  /** Live figures from the course's linked classroom (see lib/course-batch.ts). */
+  batch?: CourseBatchInfo | null;
+  onBatchChanged?: () => void;
 }
 
-// Per-course batch/seat/trainer stats for the notice board widgets. A course
-// with real batch_number/seats_total/batch_status set in the admin dashboard
-// uses those live values; everything else falls back to the previous
-// hand-entered demo numbers so existing courses keep looking the same.
+// Legacy per-course figures for courses that are NOT linked to a live
+// classroom yet: the admin-entered batch_number / seats_total / batch_status,
+// or the old hand-entered demo numbers. Courses with a linked classroom use
+// live data instead (liveStats below).
 function getBatchStats(course: any) {
   const title = (course?.title || '').toLowerCase();
 
@@ -148,9 +165,6 @@ function getBatchStats(course: any) {
       seatsTotal,
       seatsEnrolled,
       seatsBadgeText: isFull ? 'FULLY BOOKED' : seatsOpen <= 2 ? 'FILLING FAST' : 'SEATS OPEN',
-      trainersCount: 3,
-      trainerInitials: ['RM', 'PS', 'AV'],
-      trainersExtra: 0,
       homeTutorAvailable: !!course.home_tutor_available,
     };
   }
@@ -166,9 +180,6 @@ function getBatchStats(course: any) {
       seatsTotal: 5,
       seatsEnrolled: 5,
       seatsBadgeText: 'FULLY BOOKED',
-      trainersCount: 3,
-      trainerInitials: ['RM', 'PS', 'AV'],
-      trainersExtra: 0,
       homeTutorAvailable: true,
     };
   }
@@ -184,19 +195,45 @@ function getBatchStats(course: any) {
     seatsTotal: 15,
     seatsEnrolled: 12,
     seatsBadgeText: 'FILLING FAST',
-    trainersCount: 13,
-    trainerInitials: ['RM', 'PS', 'AV', 'NK', 'SC'],
-    trainersExtra: 8,
     homeTutorAvailable: true,
   };
 }
 
-export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
-  const price = course?.price ? `₹${course.price.toLocaleString('en-IN')}` : 'Free';
+/** Status line for a course with a linked live classroom. */
+export function liveBatchStatus(batch: CourseBatchInfo) {
+  if (batch.isLive) return { label: 'Class Live Now', dot: 'live', badge: 'live', badgeText: 'LIVE NOW' };
+  if (!batch.nextStart) return { label: 'Being Scheduled', dot: 'soon', badge: 'soon', badgeText: 'DATE SOON' };
+  if (!batch.batchStarted) return { label: 'Starting Soon', dot: 'soon', badge: 'soon', badgeText: 'STARTING SOON' };
+  return { label: 'Running Now', dot: 'live', badge: 'live', badgeText: 'RUNNING' };
+}
+
+export function CourseNoticeBoardMini({ course, durationDisplay, batch, onBatchChanged }: Props) {
+  const legacy = getBatchStats(course);
+  const live = batch && batch.roomId ? batch : null;
+  const price = Number(course?.price) > 0 ? `₹${Number(course.price).toLocaleString('en-IN')}` : 'Free';
+
+  // Seats: the linked classroom's capacity vs. students who applied.
+  const seatsTotal = live?.seatsTotal ?? legacy.seatsTotal;
+  const seatsOpen = live ? (live.seatsLeft ?? 0) : legacy.seatsOpen;
+  const seatsTaken = Math.max(0, Math.min(seatsTotal, seatsTotal - seatsOpen));
+  const seatsBadge = seatsOpen <= 0 ? 'FULLY BOOKED' : seatsOpen <= 2 ? 'FILLING FAST' : 'SEATS OPEN';
+  const status = live
+    ? liveBatchStatus(live)
+    : { label: legacy.batchLabel, dot: legacy.batchDotClass, badge: legacy.batchBadgeClass, badgeText: legacy.batchBadgeText };
+  const batchNumber = live?.batchNumber ? `#${live.batchNumber}` : legacy.batchNumber;
+  const scheduleText = live?.scheduleLabel || (live ? 'Live online classes' : 'Weekends');
+  const homeTutors = live ? !!course?.home_tutor_available : legacy.homeTutorAvailable;
+
+  // Old fallback (no linked classroom): first day of next month, as before.
   const now = new Date();
-  const nextBatchDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-  const stats = getBatchStats(course);
+  const legacyNext = new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const nextLabel = live ? (live.batchStarted ? 'Next class' : 'Batch starts') : 'Next batch';
+  // The date that matters right now: the batch start before it begins, the
+  // next class after that.
+  const keyDate = live ? (live.batchStarted ? live.nextStart : live.batchStart) : null;
+  const nextValue = live ? (keyDate ? `${istFullDate(keyDate)}, ${istTime(keyDate)}` : 'TBA') : legacyNext;
+  const trainers = live?.trainers?.length ? live.trainers : live?.trainerName ? [{ name: live.trainerName, avatarUrl: null }] : [];
+  const initials = (n: string) => n.split(/\s+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
   return (
     <div className="mnb-wrap">
@@ -208,28 +245,12 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
         Notice Board
       </div>
 
-      {/* Enroll CTA Card (replacing the white card) */}
-      <div className="mnb-card rot-flat" style={{ paddingBottom: '20px' }}>
+      {/* Enrollment — live launch offer / fee / free card */}
+      <div className="mnb-card rot-flat" style={{ paddingBottom: '18px' }} id="enroll" data-enroll>
         <div className="mnb-tape" />
         <div className="mnb-pin" style={{ background: '#f5a623' }} />
-        <div className="mnb-label" style={{ marginBottom: '12px' }}>Enrollment</div>
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          <div style={{ fontSize: '11px', color: '#35b0a0', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            ✓ Group Classes 100% Free
-          </div>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '32px', fontWeight: 'bold', color: 'var(--navy)', lineHeight: 1 }}>
-            FREE
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--ink)', opacity: 0.6, marginTop: '4px' }}>
-            Group Batch for All Students · ₹0
-          </div>
-        </div>
-        
-        <CourseInquiryDialog
-          courseTitle={course?.title || 'AI-Powered Web Development'}
-          buttonText="Join Free Group Batch"
-          buttonClassName="w-full h-12 text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-xl shadow-md"
-        />
+        <div className="mnb-label" style={{ marginBottom: '10px' }}>Enrollment</div>
+        <LaunchOfferCard course={course} batch={batch ?? null} onChanged={onBatchChanged} />
       </div>
 
       {/* Card 1 — Batch Status */}
@@ -237,30 +258,59 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
         <div className="mnb-tape" />
         <div className="mnb-pin" style={{ background: '#4c9a6a' }} />
         <div className="mnb-label">Current Batch</div>
-        <h4>{stats.batchLabel}</h4>
+        <h4>{status.label}</h4>
+        {live && keyDate && (
+          <div className="mnb-date">
+            <div className="mnb-date-cal" aria-hidden>
+              <span>{new Date(keyDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short' }).toUpperCase()}</span>
+              <b>{new Date(keyDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric' })}</b>
+            </div>
+            <div>
+              <div className="mnb-date-k">{live.batchStarted ? 'Next class' : 'Starts'}</div>
+              <div className="mnb-date-v">{istFullDate(keyDate)}</div>
+              <div className="mnb-date-t">{istTime(keyDate)} IST{live.repeatsWeekly ? ' · then weekly' : ''}</div>
+            </div>
+          </div>
+        )}
         <div className="mnb-row">
-          <span className={`mnb-dot ${stats.batchDotClass}`} />
-          <span><strong>Batch {stats.batchNumber}</strong> · Weekends</span>
+          <span className={`mnb-dot ${status.dot}`} />
+          <span><strong>Batch {batchNumber}</strong> · {scheduleText}</span>
         </div>
         <div className="mnb-row">
-          <span className={`mnb-badge ${stats.batchBadgeClass}`}>{stats.batchBadgeText}</span>
-          <span style={{ fontSize: 11, opacity: 0.7 }}>Online &amp; Home</span>
+          <span className={`mnb-badge ${status.badge}`}>{status.badgeText}</span>
+          <span style={{ fontSize: 11, opacity: 0.7 }}>{homeTutors ? 'Online & Home' : 'Online · Live classroom'}</span>
         </div>
+        {trainers.length > 0 && (
+          <div className="mnb-trainers">
+            <div className="mnb-trainers-k">{trainers.length === 1 ? 'Trainer' : `${trainers.length} Trainers`}</div>
+            <div className="mnb-avs">
+              {trainers.slice(0, 6).map((t) =>
+                t.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={t.name} src={t.avatarUrl} alt={t.name} title={t.name} className="mnb-av" loading="lazy" />
+                ) : (
+                  <span key={t.name} className="mnb-av" title={t.name}>{initials(t.name)}</span>
+                )
+              )}
+            </div>
+            <div className="mnb-trainers-n">{trainers.map((t) => t.name).join(' · ')}</div>
+          </div>
+        )}
       </div>
 
       {/* Card 2 — Seats */}
       <div className="mnb-card rot-pos">
         <div className="mnb-tape" />
         <div className="mnb-pin" style={{ background: '#d64541' }} />
-        <div className="mnb-label">Seats Available</div>
-        <h4>{stats.seatsOpen > 0 ? `Only ${stats.seatsOpen} Left!` : 'Fully Booked'}</h4>
+        <div className="mnb-label">{live ? 'Live Class Seats' : 'Seats Available'}</div>
+        <h4>{seatsOpen <= 0 ? 'Fully Booked' : seatsOpen <= 5 ? `Only ${seatsOpen} Left!` : `${seatsOpen} Seats Open`}</h4>
         <div className="mnb-seats">
-          {Array.from({ length: stats.seatsEnrolled }).map((_, i) => <div key={`f-${i}`} className="mnb-seat" />)}
-          {Array.from({ length: stats.seatsOpen }).map((_, i) => <div key={`o-${i}`} className="mnb-seat open" />)}
+          {Array.from({ length: seatsTaken }).map((_, i) => <div key={`f-${i}`} className="mnb-seat" />)}
+          {Array.from({ length: Math.max(0, seatsTotal - seatsTaken) }).map((_, i) => <div key={`o-${i}`} className="mnb-seat open" />)}
         </div>
-        <div className="mnb-big">{stats.seatsOpen}<span style={{ fontSize: 12, opacity: 0.5 }}> / {stats.seatsTotal}</span></div>
-        <div className="mnb-sub">{stats.seatsEnrolled} enrolled · {stats.seatsOpen} open</div>
-        <span className="mnb-badge urgent" style={{ marginTop: 8, display: 'inline-flex' }}>{stats.seatsBadgeText}</span>
+        <div className="mnb-big">{seatsOpen}<span style={{ fontSize: 12, opacity: 0.5 }}> / {seatsTotal}</span></div>
+        <div className="mnb-sub">{seatsTaken} registered · {seatsOpen} open</div>
+        <span className="mnb-badge urgent" style={{ marginTop: 8, display: 'inline-flex' }}>{seatsBadge}</span>
       </div>
 
       {/* Card 3 — Quick Info */}
@@ -270,10 +320,12 @@ export function CourseNoticeBoardMini({ course, durationDisplay }: Props) {
         <div className="mnb-label">At a Glance</div>
         <h4>Course Details</h4>
         <ul className="mnb-list">
-          <li><span>Next batch</span><span className="val">{fmt(nextBatchDate)}</span></li>
-          <li><span>Fee</span><span className="val">{price}</span></li>
+          <li><span>{nextLabel}</span><span className="val">{nextValue}</span></li>
+          {live?.scheduleLabel && <li><span>Schedule</span><span className="val">{live.scheduleLabel}</span></li>}
+          {live?.classMinutes ? <li><span>Each class</span><span className="val">{live.classMinutes} min</span></li> : null}
+          <li><span>Course fee</span><span className="val">{price}</span></li>
           <li><span>Duration</span><span className="val">{durationDisplay}</span></li>
-          {stats.homeTutorAvailable && (
+          {homeTutors && (
             <li><span>Home Tutors</span><span className="val" style={{ color: '#35b0a0' }}>✓ NCR</span></li>
           )}
           <li><span>Certificate</span><span className="val">Yes</span></li>
