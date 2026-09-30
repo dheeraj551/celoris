@@ -37,6 +37,7 @@ const ALLOWED = new Set([
   'motion-swap-suv.mp4',
   'motion-swap-suv.jpg',
   'motion-swap-suv-thumb.jpg',
+  'stickerposter.mp4',
 ]);
 
 // Signed links live for an hour; the redirect itself is cached for 30 minutes,

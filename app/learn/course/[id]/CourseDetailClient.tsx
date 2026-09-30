@@ -5,7 +5,7 @@
 // title, description, curriculum, FAQs, schedule — is in the HTML that
 // Google and AI crawlers read. Batch figures then refresh live in the browser.
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import {
   ArrowLeft,
   Play,
@@ -22,7 +22,9 @@ import {
   ExternalLink,
   Download,
   Copy,
-  Check
+  Check,
+  Volume2,
+  VolumeX
 } from "lucide-react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import Link from "next/link"
@@ -204,6 +206,11 @@ export default function CourseDetailClient({
   const [bonusActiveTab, setBonusActiveTab] = useState<"hooks" | "pitch" | "calendar" | "sfx">("hooks");
   const [copiedHookIndex, setCopiedHookIndex] = useState<number | null>(null);
 
+  // Hero interactive video player
+  const [heroMuted, setHeroMuted] = useState(true);
+  const [heroPlaying, setHeroPlaying] = useState(true);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
   const isShortForm =
     course.title.toLowerCase().includes("short-form") ||
     course.title.toLowerCase().includes("shorts") ||
@@ -304,26 +311,116 @@ export default function CourseDetailClient({
               {/* Course Stats Removed (Moved to Instructor Profile) */}
             </div>
 
-            {/* Course Image */}
-            <Card className="overflow-hidden border-slate-200">
-              <div className="aspect-video relative overflow-hidden bg-gray-100">
-                {heroImage ? (
-                  <img
-                    src={heroImage}
-                    alt={`${course.title} — course banner`}
-                    width={1280}
-                    height={720}
-                    fetchPriority="high"
-                    decoding="async"
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">
-                    <Play className="h-16 w-16 opacity-50" />
+            {/* Course Media: Interactive Video Player for Shorts/Reels, or Static Image for others */}
+            {isShortForm ? (
+              <Card className="overflow-hidden border-slate-800 bg-[#070b14] shadow-2xl relative group">
+                <div className="relative min-h-[420px] sm:min-h-[480px] md:min-h-[520px] flex items-center justify-center overflow-hidden p-3 sm:p-5">
+                  {/* Ambient background glow and light effect */}
+                  <div className="absolute inset-0 bg-radial from-amber-500/15 via-rose-500/10 to-transparent pointer-events-none" />
+                  
+                  {/* Subtle video backdrop blur for desktop */}
+                  <div className="absolute inset-0 opacity-25 filter blur-3xl scale-125 pointer-events-none overflow-hidden">
+                    <video
+                      src="/courses/stickerposter.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                )}
-              </div>
-            </Card>
+
+                  {/* Centered Vertical 9:16 Video Poster */}
+                  <div className="relative z-10 max-w-[280px] sm:max-w-[310px] md:max-w-[330px] w-full rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.85)] border border-white/20 bg-black">
+                    <video
+                      ref={heroVideoRef}
+                      src="/courses/stickerposter.mp4"
+                      autoPlay
+                      loop
+                      muted={heroMuted}
+                      playsInline
+                      className="w-full h-auto aspect-[9/16] object-cover cursor-pointer"
+                      onClick={() => {
+                        if (heroVideoRef.current) {
+                          if (heroVideoRef.current.paused) {
+                            heroVideoRef.current.play();
+                            setHeroPlaying(true);
+                          } else {
+                            heroVideoRef.current.pause();
+                            setHeroPlaying(false);
+                          }
+                        }
+                      }}
+                    />
+
+                    {/* Sound toggle button */}
+                    <div className="absolute bottom-3 right-3 z-20 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (heroVideoRef.current) {
+                            const newMuted = !heroMuted;
+                            heroVideoRef.current.muted = newMuted;
+                            setHeroMuted(newMuted);
+                          }
+                        }}
+                        className="px-3 py-1.5 rounded-full bg-black/80 hover:bg-black text-white text-[11px] font-semibold flex items-center gap-1.5 backdrop-blur-md border border-white/25 transition-all cursor-pointer shadow-lg active:scale-95"
+                      >
+                        {heroMuted ? (
+                          <>
+                            <VolumeX className="w-3.5 h-3.5 text-amber-400" />
+                            <span>🔊 Unmute ASMR</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                            <span>Sound On</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Play/Pause indicator */}
+                    {!heroPlaying && (
+                      <div
+                        className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 cursor-pointer"
+                        onClick={() => {
+                          if (heroVideoRef.current) {
+                            heroVideoRef.current.play();
+                            setHeroPlaying(true);
+                          }
+                        }}
+                      >
+                        <div className="w-14 h-14 rounded-full bg-white/95 text-slate-900 flex items-center justify-center shadow-xl">
+                          <Play className="w-6 h-6 fill-current ml-1" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <Card className="overflow-hidden border-slate-200">
+                <div className="aspect-video relative overflow-hidden bg-gray-100">
+                  {heroImage ? (
+                    <img
+                      src={heroImage}
+                      alt={`${course.title} — course banner`}
+                      width={1280}
+                      height={720}
+                      fetchPriority="high"
+                      decoding="async"
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      <Play className="h-16 w-16 opacity-50" />
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
 
             {/* Enrollment on phones (the sidebar sits at the very bottom there) */}
             <div className="lg:hidden rounded-2xl p-5 shadow-md" style={{ background: "#faf6ee", color: "#241c14" }} data-enroll>
