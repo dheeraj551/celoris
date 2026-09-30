@@ -512,83 +512,18 @@ export default function CourseDetailClient({
 
             {/* Free Bonus Pack (Value Stacking) */}
             {isShortForm && (
-              <Card className="border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30 relative overflow-hidden shadow-sm">
-                <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-orange-500 text-white font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-bl-xl shadow-xs">
-                  ₹12,500 Free Value
-                </div>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl">🎁</span>
-                    <h2 className={`${sectionTitle} text-slate-900`}>Exclusive Creator Bonus Pack</h2>
-                  </div>
-                  <p className="text-xs text-slate-600">
-                    Included <strong className="text-emerald-700 font-semibold">100% FREE</strong> for students enrolling in this live batch.
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[
-                      {
-                        title: "50+ Viral Hook Templates Cheat Sheet",
-                        val: "₹2,500",
-                        desc: "Plug-and-play 1.5-second opening lines for curiosity, contrast, and relatable Indian humor.",
-                        tag: "PDF Guide"
-                      },
-                      {
-                        title: "2026 Indian Creator Viral Calendar",
-                        val: "₹3,000",
-                        desc: "Dates, trending audio triggers & video concepts for Diwali, IPL, Holi, Exams & Weddings.",
-                        tag: "Calendar Sheet"
-                      },
-                      {
-                        title: "Brand Pitch Kit & Rate Card Formula",
-                        val: "₹4,000",
-                        desc: "Ready-to-send email and Instagram DM pitch scripts to close your first paid brand sponsors.",
-                        tag: "Templates & Calculator"
-                      },
-                      {
-                        title: "Royalty-Free B-Roll & SFX Audio Vault",
-                        val: "₹2,000",
-                        desc: "Essential whoosh sounds, pop text effects, aesthetic lofi beats, and transition clips.",
-                        tag: "Asset Pack"
-                      },
-                      {
-                        title: "Private Batch WhatsApp Mastermind",
-                        val: "₹1,000",
-                        desc: "Get instant peer feedback and trainer reviews on your video rough cuts before you publish.",
-                        tag: "VIP Community"
-                      },
-                    ].map((b, i) => (
-                      <div key={i} className="flex items-start justify-between p-3 rounded-xl bg-white border border-amber-100/80 shadow-xs">
-                        <div className="pr-3">
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-xs font-bold text-slate-900">{b.title}</span>
-                            <span className="text-[9px] bg-amber-100 text-amber-800 font-semibold px-1.5 py-0.5 rounded">{b.tag}</span>
-                          </div>
-                          <p className="text-xs text-slate-600 leading-relaxed">{b.desc}</p>
-                        </div>
-                        <span className="text-xs font-mono font-bold text-emerald-700 whitespace-nowrap line-through opacity-70">{b.val}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Interactive Preview Trigger */}
-                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-amber-100 mt-2">
-                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                      <span>Instantly unlocked upon enrollment</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setBonusModalOpen(true)}
-                      className="text-xs font-bold text-amber-800 hover:text-amber-900 bg-amber-100/90 hover:bg-amber-200/90 px-3.5 py-2 rounded-lg border border-amber-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Sneak Peek: View Sample Hooks &amp; Pitch Scripts</span>
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div
+                className="relative rounded-2xl overflow-hidden border border-amber-200/90 shadow-sm hover:shadow-xl transition-all cursor-pointer group bg-gradient-to-br from-amber-50 to-orange-50"
+                onClick={() => setBonusModalOpen(true)}
+                title="Click to view sample bonus templates & pitch scripts"
+              >
+                <img
+                  src="/exclusive-creator-bonus-pack.jpg"
+                  alt="Exclusive Creator Bonus Pack - Included 100% FREE for students enrolling in this live batch"
+                  className="w-full h-auto object-contain rounded-2xl group-hover:scale-[1.008] transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
             )}
 
             {/* Requirements */}
