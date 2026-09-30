@@ -31,6 +31,7 @@ import {
   Box
 } from "lucide-react"
 import LeadSync from "@/components/admin/LeadSync"
+import PhoneVerificationCard from "@/components/admin/PhoneVerificationCard"
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -413,6 +414,11 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Registration Phone Verification */}
+        <div className="mb-8">
+          <PhoneVerificationCard />
         </div>
 
         {/* Platform Controls */}

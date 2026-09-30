@@ -1,12 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, Lock, User, Eye, EyeOff, CheckCircle } from "lucide-react"
+import { Mail, Lock, User, Eye, EyeOff, CheckCircle, Smartphone, Loader2 } from "lucide-react"
+
+declare global {
+  interface Window {
+    phoneEmailListener?: (userObj: any) => void
+    phoneEmailReceiver?: (userObj: any) => void
+  }
+}
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -20,6 +27,98 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+
+  // Phone verification states
+  const [phoneVerificationEnabled, setPhoneVerificationEnabled] = useState(false)
+  const [phoneClientId, setPhoneClientId] = useState("")
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false)
+  const [verifiedPhone, setVerifiedPhone] = useState("")
+  const [verifyingPhone, setVerifyingPhone] = useState(false)
+  const [phoneError, setPhoneError] = useState("")
+
+  // Fetch phone verification settings on mount
+  useEffect(() => {
+    async function checkPhoneSettings() {
+      try {
+        const res = await fetch("/api/auth/phone-settings", { cache: "no-store" })
+        if (res.ok) {
+          const data = await res.json()
+          if (data.enabled && data.clientId) {
+            setPhoneVerificationEnabled(true)
+            setPhoneClientId(data.clientId)
+          }
+        }
+      } catch (err) {
+        console.error("Could not fetch phone settings:", err)
+      }
+    }
+    checkPhoneSettings()
+  }, [])
+
+  // Dynamically load Phone.email script and setup listener when verification is required
+  useEffect(() => {
+    if (!phoneVerificationEnabled || !phoneClientId || isPhoneVerified) return
+
+    const handlePhoneVerified = async (userObj: any) => {
+      try {
+        setVerifyingPhone(true)
+        setPhoneError("")
+        const { user_json_url, user_phone_number } = userObj || {}
+        let finalPhone = user_phone_number || ""
+
+        // Secure server-side validation of user_json_url
+        if (user_json_url) {
+          try {
+            const res = await fetch("/api/auth/verify-phone-email", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user_json_url }),
+            })
+            if (res.ok) {
+              const data = await res.json()
+              if (data.phone) {
+                finalPhone = data.phone
+              }
+            }
+          } catch (fetchErr) {
+            console.error("Error verifying phone URL:", fetchErr)
+          }
+        }
+
+        if (finalPhone) {
+          setVerifiedPhone(finalPhone)
+          setIsPhoneVerified(true)
+          setError("")
+        } else {
+          setPhoneError("Could not retrieve phone number. Please try again.")
+        }
+      } catch (err: any) {
+        setPhoneError("Phone verification failed. Please try again.")
+      } finally {
+        setVerifyingPhone(false)
+      }
+    }
+
+    window.phoneEmailListener = handlePhoneVerified
+    window.phoneEmailReceiver = handlePhoneVerified
+
+    const scriptId = "phone-email-script"
+    const existing = document.getElementById(scriptId)
+    if (existing) {
+      existing.remove()
+    }
+
+    const script = document.createElement("script")
+    script.id = scriptId
+    script.src = "https://www.phone.email/sign_in_button_v1.js"
+    script.async = true
+    document.body.appendChild(script)
+
+    return () => {
+      const s = document.getElementById(scriptId)
+      if (s) s.remove()
+    }
+  }, [phoneVerificationEnabled, phoneClientId, isPhoneVerified])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -35,6 +134,11 @@ export default function RegisterPage() {
     }
     if (!formData.email.trim()) {
       setError("Email is required")
+      return false
+    }
+    // If phone verification is enabled and configured, verify it first
+    if (phoneVerificationEnabled && phoneClientId && (!isPhoneVerified || !verifiedPhone)) {
+      setError("Please verify your mobile number with OTP before continuing")
       return false
     }
     if (formData.password.length < 6) {
@@ -66,6 +170,8 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: formData.fullName,
+            phone: verifiedPhone || undefined,
+            phone_verified: isPhoneVerified,
           }
         }
       })
@@ -237,6 +343,69 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
+
+              {/* Phone Verification Section (Controlled by Admin Switch) */}
+              {phoneVerificationEnabled && phoneClientId && (
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
+                    Mobile Number Verification <span className="text-emerald-400">*</span>
+                  </label>
+
+                  {isPhoneVerified ? (
+                    <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                          <CheckCircle className="h-4 w-4 text-emerald-400" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                            Phone Verified
+                          </p>
+                          <p className="text-xs font-mono font-bold text-white tracking-wide">
+                            {verifiedPhone}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsPhoneVerified(false)
+                          setVerifiedPhone("")
+                        }}
+                        className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider underline transition-colors"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center text-center space-y-3">
+                      <div className="flex items-center space-x-2 text-slate-400 text-xs">
+                        <Smartphone className="h-4 w-4 text-emerald-400" />
+                        <span>Verify your mobile number via free SMS OTP</span>
+                      </div>
+
+                      {/* Phone.email Button container */}
+                      <div
+                        className="pe_signin_button"
+                        data-client-id={phoneClientId}
+                      />
+
+                      {verifyingPhone && (
+                        <div className="flex items-center space-x-2 text-xs text-emerald-400">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <span>Verifying OTP code...</span>
+                        </div>
+                      )}
+
+                      {phoneError && (
+                        <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
+                          {phoneError}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label htmlFor="password" className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
