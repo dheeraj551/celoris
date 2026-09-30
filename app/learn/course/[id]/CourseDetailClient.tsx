@@ -30,6 +30,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import Link from "next/link"
 import { CourseTrainerBooth } from "@/components/learn/CourseTrainerBooth"
 import { CourseNoticeBoardMini } from "@/components/learn/CourseNoticeBoardMini"
+import { CourseVideoStudioShowcase } from "@/components/learn/CourseVideoStudioShowcase"
 import { LaunchOfferCard, useCourseBatch } from "@/components/learn/CourseLaunchOffer"
 import { CourseReviews } from "@/components/reviews/CourseReviews"
 import { getFaqsForCourse } from "@/lib/course-faqs"
@@ -483,115 +484,8 @@ export default function CourseDetailClient({
               </Card>
             )}
 
-            {/* Viral Formats You Will Master (Video Showcase) */}
-            {isShortForm && (
-              <Card className="border-slate-800 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white overflow-hidden shadow-xl">
-                <CardHeader className="pb-3 border-b border-slate-800/80">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">🎬</span>
-                      <h2 className="text-xl font-bold text-white tracking-tight">Viral Formats You Will Master</h2>
-                    </div>
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary-500/20 text-primary-300 border border-primary-500/30">
-                      Shot on Phone &amp; AI
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Real short-form formats covered step-by-step — from 1.5-second retention hooks to solo multi-character skits.
-                  </p>
-                </CardHeader>
-                <CardContent className="pt-5 pb-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {/* Card 1: F1 Track Hook */}
-                    <div className="rounded-xl overflow-hidden bg-slate-800/60 border border-slate-700/60 flex flex-col group">
-                      <div className="relative aspect-[9/16] bg-black overflow-hidden">
-                        <video
-                          src="/courses/reels-preview/f1-viral-hook.mp4"
-                          playsInline
-                          loop
-                          muted
-                          autoPlay
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute top-2 left-2 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                          0–2s Retention Hook
-                        </div>
-                      </div>
-                      <div className="p-3 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-sm font-bold text-white mb-1">Pattern Interrupt Hook</h3>
-                          <p className="text-xs text-slate-300 leading-relaxed">
-                            How to stop mid-scroll using unexpected sound &amp; high-speed background action before your intro.
-                          </p>
-                        </div>
-                        <div className="mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
-                          <span>Module 2: Hooks</span>
-                          <span className="text-primary-400 font-semibold">90%+ Retention</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Card 2: Clone Transition */}
-                    <div className="rounded-xl overflow-hidden bg-slate-800/60 border border-slate-700/60 flex flex-col group">
-                      <div className="relative aspect-[9/16] bg-black overflow-hidden">
-                        <video
-                          src="/courses/reels-preview/clone-transition.mp4"
-                          playsInline
-                          loop
-                          muted
-                          autoPlay
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute top-2 left-2 bg-indigo-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                          Solo Phone Skits
-                        </div>
-                      </div>
-                      <div className="p-3 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-sm font-bold text-white mb-1">Clone &amp; Split-Role Editing</h3>
-                          <p className="text-xs text-slate-300 leading-relaxed">
-                            Shoot conversational skits and client Q&amp;As playing multiple roles solo on a smartphone with CapCut masking.
-                          </p>
-                        </div>
-                        <div className="mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
-                          <span>Module 3: Fast-Cut</span>
-                          <span className="text-indigo-400 font-semibold">No Crew Needed</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Card 3: Classroom / AI Avatar Presentation */}
-                    <div className="rounded-xl overflow-hidden bg-slate-800/60 border border-slate-700/60 flex flex-col group">
-                      <div className="relative aspect-[9/16] bg-black overflow-hidden">
-                        <video
-                          src="/courses/reels-preview/classroom-teacher.mp4"
-                          playsInline
-                          loop
-                          muted
-                          autoPlay
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute top-2 left-2 bg-emerald-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                          Educational / Facecam
-                        </div>
-                      </div>
-                      <div className="p-3 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-sm font-bold text-white mb-1">High-Authority Teaching</h3>
-                          <p className="text-xs text-slate-300 leading-relaxed">
-                            Framing, lighting, and AI-assisted pacing to look and sound like a top 1% educator or niche consultant from Day 1.
-                          </p>
-                        </div>
-                        <div className="mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
-                          <span>Module 4: Delivery</span>
-                          <span className="text-emerald-400 font-semibold">Trust &amp; High Saves</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {/* Viral Video Studio Timeline Showcase */}
+            {isShortForm && <CourseVideoStudioShowcase />}
 
             {/* What You'll Learn */}
             <Card className="bg-white border-slate-200">
