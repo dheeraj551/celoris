@@ -56,6 +56,8 @@ export async function POST(request: NextRequest) {
     const phone = (data?.user_phone_number || '').trim()
     const countryCode = (data?.user_country_code || '').trim()
     const phoneNational = (data?.user_phone_number_without_country_code || '').trim()
+    const firstName = (data?.user_first_name || '').trim()
+    const lastName = (data?.user_last_name || '').trim()
 
     if (!phone) {
       return NextResponse.json(
@@ -69,6 +71,8 @@ export async function POST(request: NextRequest) {
       phone,
       countryCode,
       phoneNational,
+      firstName,
+      lastName,
     })
   } catch (error: any) {
     console.error('Error verifying phone email token:', error)

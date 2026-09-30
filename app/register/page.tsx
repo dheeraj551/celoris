@@ -66,6 +66,7 @@ export default function RegisterPage() {
         const { user_json_url, user_phone_number } = userObj || {}
         let finalPhone = user_phone_number || ""
 
+        let verifiedName = ""
         // Secure server-side validation of user_json_url
         if (user_json_url) {
           try {
@@ -79,6 +80,9 @@ export default function RegisterPage() {
               if (data.phone) {
                 finalPhone = data.phone
               }
+              if (data.firstName || data.lastName) {
+                verifiedName = `${data.firstName || ''} ${data.lastName || ''}`.trim()
+              }
             }
           } catch (fetchErr) {
             console.error("Error verifying phone URL:", fetchErr)
@@ -89,6 +93,12 @@ export default function RegisterPage() {
           setVerifiedPhone(finalPhone)
           setIsPhoneVerified(true)
           setError("")
+          if (verifiedName) {
+            setFormData(prev => ({
+              ...prev,
+              fullName: prev.fullName || verifiedName,
+            }))
+          }
         } else {
           setPhoneError("Could not retrieve phone number. Please try again.")
         }
