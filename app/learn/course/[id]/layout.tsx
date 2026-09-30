@@ -87,7 +87,7 @@ export default async function CourseLayout({ children, params }: { children: Rea
   const trainerNames: string[] = batch?.trainers?.length
     ? batch.trainers.map((t) => t.name)
     : [batch?.trainerName || course.instructor_name].filter(Boolean)
-  const offer = batch?.offer && batch.offer.active ? batch.offer : null
+  const offer = batch?.offer && batch.offer.active && batch.offer.endsAt ? batch.offer : null
   const faqs = getFaqsForCourse(course.title, { batch, price, modules })
 
   const offers: any[] = [
@@ -103,7 +103,7 @@ export default async function CourseLayout({ children, params }: { children: Rea
   if (offer) {
     offers.push({
       '@type': 'Offer',
-      name: `Launch offer: free pass for the first ${offer.passes} students`,
+      name: `Free pass (${offer.left} left this round)`,
       category: 'Free',
       price: '0',
       priceCurrency: 'INR',

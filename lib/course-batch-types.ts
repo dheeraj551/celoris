@@ -4,15 +4,32 @@
 // (Admin → Social → Café Rooms, matched by its "course URL"), the course's
 // launch offer, and the applications students send from the page.
 
+/**
+ * Free passes, released in rounds until the batch is full:
+ *  • round 1 runs until the first class starts, each later round until the
+ *    next class — so the countdown always points at a real class time
+ *  • up to `launch_offer_passes` (10) passes per round, never more than the
+ *    seats left
+ *  • once every seat is taken (or the last class has started) it stops for good
+ */
+export type OfferState = 'open' | 'round_full' | 'full' | 'ended'
+
 export interface CourseLaunchOffer {
-  /** How many free passes the offer has. */
+  state: OfferState
+  /** 1 = before the first class, 2 = before the second class, … */
+  round: number
+  /** Most passes any round can have (the course's launch_offer_passes). */
+  perRound: number
+  /** Passes in this round (claimed + left). */
   passes: number
-  /** Passes already given out (one per student). */
+  /** Passes already given out this round (one per student). */
   claimed: number
   left: number
-  /** When the offer closes (ISO). */
-  endsAt: string
-  /** Still open: before the deadline and passes left. */
+  /** When this round closes (the next class start, ISO). Null once full/ended. */
+  endsAt: string | null
+  /** When this round opened (the previous class start). Null in round 1. */
+  roundStart: string | null
+  /** Open right now: passes left and the round hasn't closed. */
   active: boolean
 }
 
@@ -53,7 +70,7 @@ export interface CourseBatchInfo {
 }
 
 export function offerIsOpen(offer: CourseLaunchOffer | null, now = Date.now()): boolean {
-  return !!offer && offer.left > 0 && Date.parse(offer.endsAt) > now
+  return !!offer && offer.state === 'open' && offer.left > 0 && !!offer.endsAt && Date.parse(offer.endsAt) > now
 }
 
 /** "Thu, 1 Oct · 3:00 PM" in India time. */

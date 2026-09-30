@@ -18,7 +18,7 @@ import { Loader2, UploadCloud, FileCheck2, LogIn } from "lucide-react"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { createClient } from "@/lib/supabase-client"
 
-type Intent = "enroll" | "pass" | "demo"
+type Intent = "enroll" | "pass" | "waitlist"
 
 interface CourseInquiryDialogProps {
     courseTitle: string
@@ -27,7 +27,7 @@ interface CourseInquiryDialogProps {
     /** Course id — lets the server use the real course title and launch offer. */
     courseId?: string
     courseSlug?: string
-    /** "pass" = claim a launch-offer free pass, "demo" = book 1 free demo class. */
+    /** "pass" = claim a free pass, "waitlist" = be first in line for the next batch. */
     intent?: Intent
     /** Called after a successful submit (e.g. to refresh live seat counts). */
     onSubmitted?: () => void
@@ -35,8 +35,8 @@ interface CourseInquiryDialogProps {
 
 const INTENT_COPY: Record<Intent, { title: string; lead: string; submit: string }> = {
     enroll: { title: "Apply for a Free Seat", lead: "is free for students — upload your student ID and our team will confirm your seat.", submit: "Submit Application" },
-    pass: { title: "Claim your Free Pass", lead: "— the first students to apply get the full course free. Upload your student ID and our team will confirm your pass.", submit: "Claim Free Pass" },
-    demo: { title: "Book a Free Demo Class", lead: "— try one live class free before you decide. Upload your student ID and our team will confirm your demo seat.", submit: "Book Free Demo" },
+    pass: { title: "Claim your Free Pass", lead: "— free passes are limited. Upload your student ID and our team will confirm your seat.", submit: "Claim Free Pass" },
+    waitlist: { title: "Join the Waitlist", lead: "— this batch is full. Join the waitlist and you'll be first in line when the next batch opens.", submit: "Join Waitlist" },
 }
 
 // Classes are free for students now, so applying is gated behind an
@@ -142,16 +142,17 @@ export function CourseInquiryDialog({
             const result = await response.json().catch(() => ({}))
 
             if (response.ok) {
+                const gotPass = intent === "pass" && result.offerPass
                 const description =
                     intent === "pass"
-                        ? result.offerPass
-                            ? "You got one of the free passes! Our team will verify your student ID and confirm shortly."
-                            : "The free passes just ran out — we've registered you for a free demo class instead. Our team will confirm shortly."
-                        : intent === "demo"
-                          ? "Your free demo class request is in — our team will confirm your seat shortly."
+                        ? gotPass
+                            ? "You got a free pass! Our team will verify your student ID and send your class code shortly."
+                            : "The free passes just ran out, so we've put you on the waitlist — you'll be first in line when seats open."
+                        : intent === "waitlist"
+                          ? "You're on the waitlist — we'll contact you as soon as the next batch opens."
                           : "We've received your application and student ID — our team will confirm your free seat shortly."
                 toast({
-                    title: intent === "pass" && result.offerPass ? "Free pass claimed! 🎉" : "Application Sent!",
+                    title: gotPass ? "Free pass claimed! 🎉" : intent === "enroll" ? "Application Sent!" : "You're on the waitlist",
                     description,
                     variant: "default",
                 })

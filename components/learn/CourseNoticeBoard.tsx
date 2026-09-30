@@ -451,7 +451,7 @@ function LiveNoticeBoard({ course, batch }: { course: any; batch: CourseBatchInf
             {batch.batchStart && <li><span>First class</span><span className="nb-val">{istDateTime(batch.batchStart)}</span></li>}
             {batch.nextStart && batch.batchStarted && <li><span>Next class</span><span className="nb-val">{istDateTime(batch.nextStart)}</span></li>}
             {batch.classMinutes ? <li><span>Each class</span><span className="nb-val">{batch.classMinutes} min</span></li> : null}
-            {offer && <li><span>{offerOpen ? 'Free passes close' : 'Offer closed'}</span><span className="nb-val">{istDateTime(offer.endsAt)}</span></li>}
+            {offer?.endsAt && <li><span>{offerOpen ? 'Free passes close' : 'Next round'}</span><span className="nb-val">{istDateTime(offer.endsAt)}</span></li>}
           </ul>
         </div>
 
@@ -481,7 +481,7 @@ function LiveNoticeBoard({ course, batch }: { course: any; batch: CourseBatchInf
         <div className="nb-stat"><div className="nb-n">{course?.course_duration || '—'}</div><div className="nb-t">Total Duration</div></div>
         <div className="nb-stat"><div className="nb-n">{price}</div><div className="nb-t">Course Fee</div></div>
         <button className="nb-strip-cta" onClick={scrollToEnroll}>
-          {offerOpen ? `Claim 1 of ${offer!.left} free passes →` : seatsOpen > 0 ? 'Book a free demo class →' : 'Join the next batch →'}
+          {offerOpen ? `Claim 1 of ${offer!.left} free passes →` : seatsOpen > 0 ? 'See seats →' : 'Join the waitlist →'}
         </button>
       </div>
     </div>

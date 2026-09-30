@@ -169,8 +169,8 @@ function CourseApplicationsContent() {
                                                     {app.course_title}
                                                     {app.offer_pass ? (
                                                         <Badge variant="outline" className="ml-2 border-amber-400/40 bg-amber-400/10 text-amber-300">Free pass</Badge>
-                                                    ) : app.intent === 'demo' ? (
-                                                        <Badge variant="outline" className="ml-2 border-sky-400/40 bg-sky-400/10 text-sky-300">Demo class</Badge>
+                                                    ) : app.intent === 'waitlist' ? (
+                                                        <Badge variant="outline" className="ml-2 border-sky-400/40 bg-sky-400/10 text-sky-300">Waitlist</Badge>
                                                     ) : null}
                                                 </TableCell>
                                                 <TableCell className="text-slate-300">{app.full_name}</TableCell>

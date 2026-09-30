@@ -90,6 +90,64 @@ function weeklyLabel(iso: string): string {
   return `${day}s · ${time.toUpperCase()} IST`
 }
 
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000
+
+/** Start time of every class in the batch (weekly: one per module). */
+function classStarts(batchStart: string, weekly: boolean, modules: number): number[] {
+  const first = Date.parse(batchStart)
+  const count = weekly ? Math.max(1, modules || 1) : 1
+  return Array.from({ length: count }, (_, i) => first + i * WEEK_MS)
+}
+
+/** The free-pass round we're in right now (see CourseLaunchOffer). */
+function computeOffer({
+  course,
+  room,
+  batchStart,
+  seatsLeft,
+  passRows,
+  now,
+}: {
+  course: any
+  room: any
+  batchStart: string | null
+  seatsLeft: number | null
+  passRows: { user_id: string; created_at: string }[]
+  now: Date
+}): CourseBatchInfo['offer'] {
+  const cap = Number(course.launch_offer_passes) || 0
+  if (cap <= 0 || !room || !batchStart || seatsLeft === null) return null
+
+  const t = now.getTime()
+  const modules = Array.isArray(course.course_modules) ? course.course_modules.length : 0
+  const starts = classStarts(batchStart, !!room.repeats_weekly, modules)
+  const started = starts.filter((s) => s <= t).length // classes already begun
+  const round = started + 1
+  const roundStart = started > 0 ? new Date(starts[started - 1]).toISOString() : null
+  const roundEnd = started < starts.length ? new Date(starts[started]).toISOString() : null
+  const hardStop = course.launch_offer_ends_at ? Date.parse(course.launch_offer_ends_at) : null
+
+  const base = { round, perRound: cap, roundStart, passes: 0, claimed: 0, left: 0, endsAt: null as string | null, active: false }
+  if (!roundEnd || (hardStop !== null && hardStop <= t)) return { ...base, state: 'ended' }
+  if (seatsLeft <= 0) return { ...base, state: 'full' }
+
+  const since = roundStart ? Date.parse(roundStart) : -Infinity
+  const claimed = new Set(passRows.filter((r) => Date.parse(r.created_at) >= since).map((r) => r.user_id)).size
+  const passes = Math.min(cap, claimed + seatsLeft)
+  const left = Math.max(0, passes - claimed)
+  return {
+    round,
+    perRound: cap,
+    roundStart,
+    passes,
+    claimed: Math.min(claimed, passes),
+    left,
+    endsAt: roundEnd,
+    active: left > 0,
+    state: left > 0 ? 'open' : 'round_full',
+  }
+}
+
 export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> {
   const db: any = createSupabaseClientForServer()
   // Active classrooms are publicly readable, so the room lookup uses the
@@ -103,13 +161,13 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     findLinkedRoom(publicDb, course).catch(() => null),
     db
       .from('course_applications')
-      .select('user_id')
+      .select('user_id, intent')
       .eq('course_title', course.title)
       .neq('status', 'rejected')
       .limit(2000),
     db
       .from('course_applications')
-      .select('user_id')
+      .select('user_id, created_at')
       .eq('course_title', course.title)
       .eq('offer_pass', true)
       .neq('status', 'rejected')
@@ -120,25 +178,24 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     room?.trainer_name ? [{ name: String(room.trainer_name), avatarUrl: null }] : []
   )
 
-  const registered = new Set(((apps?.data || []) as any[]).map((a) => a.user_id)).size
-  const claimed = new Set(((passes?.data || []) as any[]).map((a) => a.user_id)).size
+  // Seats are held by everyone who applied, except waitlist sign-ups.
+  const registered = new Set(
+    ((apps?.data || []) as any[]).filter((a) => a.intent !== 'waitlist').map((a) => a.user_id)
+  ).size
 
   const session = room ? nextSession(room, now) : null
   const batchStart = room?.next_class_at || null
   const seatsTotal = typeof room?.max_students === 'number' ? room.max_students : null
+  const seatsLeft = seatsTotal === null ? null : Math.max(0, seatsTotal - registered)
 
-  let offer: CourseBatchInfo['offer'] = null
-  if (Number(course.launch_offer_passes) > 0 && course.launch_offer_ends_at) {
-    const total = Number(course.launch_offer_passes)
-    const left = Math.max(0, total - claimed)
-    offer = {
-      passes: total,
-      claimed: Math.min(claimed, total),
-      left,
-      endsAt: new Date(course.launch_offer_ends_at).toISOString(),
-      active: left > 0 && Date.parse(course.launch_offer_ends_at) > now.getTime(),
-    }
-  }
+  const offer = computeOffer({
+    course,
+    room,
+    batchStart,
+    seatsLeft,
+    passRows: (passes?.data || []) as any[],
+    now,
+  })
 
   return {
     roomId: room?.id || null,
@@ -155,7 +212,7 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     scheduleLabel: session ? (room?.repeats_weekly ? weeklyLabel(session.start.toISOString()) : null) : null,
     seatsTotal,
     registered,
-    seatsLeft: seatsTotal === null ? null : Math.max(0, seatsTotal - registered),
+    seatsLeft,
     price,
     offer,
     updatedAt: now.toISOString(),

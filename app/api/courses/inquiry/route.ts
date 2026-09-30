@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { createRouteClient } from '@/lib/supabase-server';
 import { createSupabaseClientForServer } from '@/lib/supabase-client';
+import { computeCourseBatch, loadCoursePageData } from '@/lib/course-batch';
 
 // Course enrollment now requires a signed-in applicant and an uploaded
 // student ID (courses are free for students, so the ID is what gates that —
@@ -29,8 +30,8 @@ function esc(value: unknown): string {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const INTENT_LABEL: Record<string, string> = {
     enroll: 'Free seat application',
-    pass: 'Launch offer — free pass',
-    demo: 'Free demo class',
+    pass: 'Free pass',
+    waitlist: 'Waitlist for the next batch',
 };
 
 export async function POST(request: NextRequest) {
@@ -39,7 +40,8 @@ export async function POST(request: NextRequest) {
         const { name, email, phone, courseSlug, message, studentIdPath } = body;
         let { courseTitle } = body;
         const courseId = typeof body.courseId === 'string' && UUID.test(body.courseId) ? body.courseId : null;
-        const intent = body.intent === 'pass' || body.intent === 'demo' ? body.intent : 'enroll';
+        let intent: 'enroll' | 'pass' | 'waitlist' =
+            body.intent === 'pass' || body.intent === 'waitlist' ? body.intent : 'enroll';
 
         if (!name || !email || !courseTitle) {
             return NextResponse.json(
@@ -107,22 +109,40 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Launch offer: hand out a free pass if any are left (decided in the
-        // database, one at a time, so the limit can't be overshot). When they
-        // have just run out, the application stands as a free demo request.
+        // Free passes: hand one out if this round still has passes and the
+        // batch still has seats (decided in the database under a lock, so
+        // neither limit can be overshot). If they have just run out, the
+        // application is kept as a waitlist entry instead.
         let offerPass = false;
+        let passRound: number | null = null;
         if (intent === 'pass' && courseId) {
-            const { data: won, error: claimError } = await (admin as any).rpc('course_offer_claim', {
-                p_course_id: courseId,
-                p_application_id: application.id,
-            });
-            if (claimError) console.error('course_offer_claim error:', claimError);
-            offerPass = won === true;
+            const course = await loadCoursePageData(courseId);
+            const batch = course ? await computeCourseBatch(course).catch(() => null) : null;
+            const offer = batch?.offer;
+            if (course && offer && offer.state === 'open' && offer.endsAt && batch?.seatsTotal) {
+                const { data: won, error: claimError } = await (admin as any).rpc('course_offer_claim', {
+                    p_course_id: courseId,
+                    p_application_id: application.id,
+                    p_seat_limit: batch.seatsTotal,
+                    p_round_start: offer.roundStart,
+                    p_round_cap: Number(course.launch_offer_passes) || 0,
+                    p_deadline: offer.endsAt,
+                });
+                if (claimError) console.error('course_offer_claim error:', claimError);
+                offerPass = won === true;
+                passRound = offer.round;
+            }
             if (!offerPass) {
-                await (admin as any).from('course_applications').update({ intent: 'demo' }).eq('id', application.id);
+                intent = 'waitlist';
+                await (admin as any).from('course_applications').update({ intent: 'waitlist' }).eq('id', application.id);
             }
         }
-        const requestLabel = intent === 'pass' ? (offerPass ? INTENT_LABEL.pass : 'Free demo class (free passes had run out)') : INTENT_LABEL[intent];
+        const requestLabel =
+            intent === 'pass' && offerPass
+                ? `${INTENT_LABEL.pass}${passRound ? ` (round ${passRound})` : ''}`
+                : body.intent === 'pass'
+                  ? 'Waitlist (free passes had just run out)'
+                  : INTENT_LABEL[intent];
 
         // Best-effort notification email — failing to send this should never
         // block the application itself, since the real record is now the DB
@@ -214,7 +234,7 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json(
-            { message: 'Application submitted successfully', offerPass, intent: intent === 'pass' && !offerPass ? 'demo' : intent },
+            { message: 'Application submitted successfully', offerPass, intent },
             { status: 200 }
         );
     } catch (error) {

@@ -227,10 +227,14 @@ export default function CourseDetailClient({
     {
       label: "Fee",
       value: offer
-        ? `Free pass for the first ${offer.passes} students (${offer.left} left)${fee ? `, then ${inr(fee)}` : ""}`
-        : fee
-          ? `${inr(fee)} · 1 free demo class`
-          : "Free",
+        ? `Free pass — ${offer.left} of ${offer.passes} left this round${fee ? ` (worth ${inr(fee)})` : ""}`
+        : batch?.offer?.state === "full"
+          ? "Batch full — waitlist open for the next batch"
+          : batch?.offer?.state === "round_full"
+            ? "This round's free passes are claimed — next round opens at the next class"
+            : fee
+              ? inr(fee)
+              : "Free",
     },
     ...(trainerNames.length ? [{ label: trainerNames.length > 1 ? "Trainers" : "Trainer", value: trainerNames.join(", ") }] : []),
     { label: "Certificate", value: "Yes, on completion" },

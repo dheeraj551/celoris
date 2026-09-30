@@ -1,18 +1,20 @@
 "use client"
 
-// The enrollment card on a course page's notice board, driven by live data:
-//  • while a launch offer is open → "FREE PASS" for the first N students, a
-//    ticket strip showing passes left, and a real countdown to the deadline
-//  • once passes run out or the deadline passes → the regular fee plus a
-//    "book 1 free demo class" button
-// Numbers refresh on their own (see useCourseBatch) and the card switches
-// state the second the countdown reaches zero. Nothing here is invented:
-// the deadline, passes and fee all come from the course in the database.
+// The enrollment card on a course page's notice board, driven by live data.
+// Free passes come in rounds (see CourseLaunchOffer in lib/course-batch-types):
+//  • open round → "FREE PASS", a ticket strip of passes left and a countdown
+//    to the next real class time (round 1 = the first class)
+//  • round's passes gone but seats left → countdown to when the next round opens
+//  • every seat taken / last class started → "batch full", clock stops for good,
+//    and a waitlist button for the next batch
+// Numbers refresh on their own (see useCourseBatch) and the card moves to the
+// next round the second a countdown reaches zero. Nothing is invented: the
+// class times, seats and passes all come from the database.
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { CourseInquiryDialog } from "@/components/CourseInquiryDialog"
-import { inr, istFullDate, istTime, offerIsOpen, type CourseBatchInfo } from "@/lib/course-batch-types"
+import { inr, istFullDate, istTime, type CourseBatchInfo } from "@/lib/course-batch-types"
 
 const POLL_MS = 45_000
 
@@ -123,18 +125,18 @@ export function LaunchOfferCard({
   const now = useNow()
   const price = batch?.price ?? (Number(course.price) > 0 ? Number(course.price) : 0)
   const offer = batch?.offer || null
-  const open = offerIsOpen(offer, now ?? Date.now()) && (offer?.active ?? false)
   const batchLabel = batch?.batchNumber ? `Batch #${batch.batchNumber}` : "this batch"
+  const clockEnds = offer?.endsAt || null
+  const clockDone = !!clockEnds && now !== null && Date.parse(clockEnds) <= now
 
-  // When the clock hits zero, pull fresh figures so the card flips state.
-  const flipped = useRef(false)
+  // Each time a round's clock hits zero, pull fresh figures so the next round
+  // (or "batch full") shows up without a reload.
+  const flippedFor = useRef<string | null>(null)
   useEffect(() => {
-    if (!offer || flipped.current || now === null) return
-    if (Date.parse(offer.endsAt) <= now) {
-      flipped.current = true
-      onChanged?.()
-    }
-  }, [now, offer, onChanged])
+    if (!clockEnds || !clockDone || flippedFor.current === clockEnds) return
+    flippedFor.current = clockEnds
+    onChanged?.()
+  }, [clockEnds, clockDone, onChanged])
 
   const liveBar = batch?.isLive ? (
     <Link href="/classrooms?tab=cafe" className="lo-livebar">
@@ -144,94 +146,134 @@ export function LaunchOfferCard({
 
   const btn =
     "w-full h-12 text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-xl shadow-md"
+  const waitBtn =
+    "w-full h-11 text-sm font-bold bg-[#1c2340] hover:bg-[#2a3358] text-white rounded-xl shadow-md"
 
-  // No launch offer and a free course → the simple free card.
-  if (!offer && price === 0) {
+  const waitlist = (text: string) => (
+    <CourseInquiryDialog courseTitle={course.title} courseId={course.id} intent="waitlist" buttonText={text} buttonClassName={waitBtn} onSubmitted={onChanged} />
+  )
+
+  // No offer on this course.
+  if (!offer) {
     return (
       <div className="lo-card">
         <style dangerouslySetInnerHTML={{ __html: css }} />
         {liveBar}
-        <div className="lo-free">FREE</div>
-        <div className="lo-sub">Live group classes · ₹0</div>
+        <div className="lo-free">{price > 0 ? inr(price) : "FREE"}</div>
+        <div className="lo-sub">{price > 0 ? "Full course · live online classes" : "Live group classes · ₹0"}</div>
         <div style={{ marginTop: 14 }}>
-          <CourseInquiryDialog courseTitle={course.title} courseId={course.id} intent="enroll" buttonText="Join the free group batch" buttonClassName={btn} onSubmitted={onChanged} />
+          <CourseInquiryDialog courseTitle={course.title} courseId={course.id} intent="enroll" buttonText={price > 0 ? "Apply for a seat" : "Join the free group batch"} buttonClassName={btn} onSubmitted={onChanged} />
         </div>
       </div>
     )
   }
 
-  if (open && offer) {
+  // Batch full, or its last class has started: the offer stops for good.
+  if (offer.state === "full" || offer.state === "ended") {
+    const full = offer.state === "full"
     return (
       <div className="lo-card">
         <style dangerouslySetInnerHTML={{ __html: css }} />
         {liveBar}
-        <div className="lo-eyebrow">
-          <span className="lo-live" /> Launch offer · {batchLabel}
-        </div>
+        <div className="lo-chip">{full ? `${batchLabel.toUpperCase()} IS FULL` : "ENROLLMENT CLOSED"}</div>
         <div className="lo-price">
-          <span className="lo-free">FREE PASS</span>
-          {price > 0 && <span className="lo-was">{inr(price)}</span>}
+          <span className="lo-free" style={{ fontSize: 24 }}>{full ? "All seats taken" : "Batch in progress"}</span>
         </div>
-        <div className="lo-sub">Full course free for the first {offer.passes} students</div>
-
-        <div className="lo-tickets" aria-hidden>
-          {Array.from({ length: offer.passes }).map((_, i) =>
-            i < offer.claimed ? (
-              <div key={i} className="lo-ticket gone">
-                <span>✓</span>
-              </div>
-            ) : (
-              <div key={i} className="lo-ticket" style={{ animationDelay: `${(i % 5) * 0.18}s` }} />
-            )
-          )}
+        <div className="lo-sub">
+          {full
+            ? `All ${batch?.seatsTotal ?? ""} seats in ${batchLabel} are booked.`
+            : `${batchLabel} is on its final class — enrollment is closed.`}
         </div>
-        <div className="lo-left" aria-live="polite">
-          <b>{offer.left}</b> of {offer.passes} free passes left
-        </div>
-
-        <Countdown endsAt={offer.endsAt} now={now} />
-        <div className="lo-deadline">
-          Offer closes when {batchLabel} starts · <strong>{istFullDate(offer.endsAt)}, {istTime(offer.endsAt)} IST</strong>
-        </div>
-
-        <CourseInquiryDialog
-          courseTitle={course.title}
-          courseId={course.id}
-          intent="pass"
-          buttonText="Claim my free pass →"
-          buttonClassName={btn}
-          onSubmitted={onChanged}
-        />
-        <div className="lo-note">
-          Sign in and upload your student ID to claim.
-          {price > 0 ? <> After the offer: {inr(price)} — or try 1 free demo class first.</> : null}
-        </div>
+        <div style={{ marginTop: 14 }}>{waitlist("Join the waitlist for the next batch")}</div>
+        <div className="lo-note">You&apos;ll be the first to know when the next batch opens.</div>
       </div>
     )
   }
 
-  // Offer over (or never had one) on a paid course.
-  const soldOut = !!offer && offer.left === 0
+  const firstRound = offer.round === 1
+  const seatsLeft = batch?.seatsLeft ?? offer.left
+  const whenText = clockEnds ? `${istFullDate(clockEnds)}, ${istTime(clockEnds)} IST` : ""
+
+  // The round's clock just ran out — new figures are on their way.
+  if (clockDone) {
+    return (
+      <div className="lo-card">
+        <style dangerouslySetInnerHTML={{ __html: css }} />
+        {liveBar}
+        <div className="lo-eyebrow"><span className="lo-live" /> Round {offer.round} closed</div>
+        <div className="lo-sub" style={{ margin: "14px 0" }}>Checking seats for the next round…</div>
+      </div>
+    )
+  }
+
+  // This round's passes are gone but seats remain: next round opens at the next class.
+  if (offer.state === "round_full") {
+    return (
+      <div className="lo-card">
+        <style dangerouslySetInnerHTML={{ __html: css }} />
+        {liveBar}
+        <div className="lo-chip">ALL {offer.passes} PASSES FOR THIS ROUND CLAIMED</div>
+        <div className="lo-sub" style={{ fontSize: 13, opacity: 0.85 }}>
+          <strong>{seatsLeft} seat{seatsLeft === 1 ? "" : "s"}</strong> still open in {batchLabel}. The next round of free passes opens{" "}
+          {firstRound ? `when ${batchLabel} starts` : "when the next class starts"}.
+        </div>
+        <div className="lo-eyebrow" style={{ marginTop: 12, marginBottom: 0 }}>Next round opens in</div>
+        <Countdown endsAt={clockEnds!} now={now} />
+        <div className="lo-deadline">{whenText}</div>
+        {waitlist("Remind me when it opens")}
+      </div>
+    )
+  }
+
+  // Open round.
   return (
     <div className="lo-card">
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {liveBar}
-      {offer && <div className="lo-chip">{soldOut ? `ALL ${offer.passes} FREE PASSES CLAIMED` : "LAUNCH OFFER ENDED"}</div>}
+      <div className="lo-eyebrow">
+        <span className="lo-live" /> {firstRound ? `Launch offer · ${batchLabel}` : `Round ${offer.round} · ${batchLabel} is running`}
+      </div>
       <div className="lo-price">
-        <span className="lo-free">{inr(price)}</span>
+        <span className="lo-free">FREE PASS</span>
+        {price > 0 && <span className="lo-was">{inr(price)}</span>}
       </div>
-      <div className="lo-sub">Full course · live online classes</div>
-      <div style={{ marginTop: 14 }}>
-        <CourseInquiryDialog
-          courseTitle={course.title}
-          courseId={course.id}
-          intent="demo"
-          buttonText="Book 1 free demo class"
-          buttonClassName={btn}
-          onSubmitted={onChanged}
-        />
+      <div className="lo-sub">
+        {firstRound
+          ? `Full course free for the first ${offer.passes} students`
+          : `Join from the next class — ${seatsLeft} seat${seatsLeft === 1 ? "" : "s"} left in ${batchLabel}`}
       </div>
-      <div className="lo-note">Try one live class free before you decide.</div>
+
+      <div className="lo-tickets" aria-hidden>
+        {Array.from({ length: offer.passes }).map((_, i) =>
+          i < offer.claimed ? (
+            <div key={i} className="lo-ticket gone">
+              <span>✓</span>
+            </div>
+          ) : (
+            <div key={i} className="lo-ticket" style={{ animationDelay: `${(i % 5) * 0.18}s` }} />
+          )
+        )}
+      </div>
+      <div className="lo-left" aria-live="polite">
+        <b>{offer.left}</b> of {offer.passes} free passes left{firstRound ? "" : " this round"}
+      </div>
+
+      <Countdown endsAt={clockEnds!} now={now} />
+      <div className="lo-deadline">
+        {firstRound ? `Passes close when ${batchLabel} starts` : "This round closes when the next class starts"} · <strong>{whenText}</strong>
+      </div>
+
+      <CourseInquiryDialog
+        courseTitle={course.title}
+        courseId={course.id}
+        intent="pass"
+        buttonText="Claim my free pass →"
+        buttonClassName={btn}
+        onSubmitted={onChanged}
+      />
+      <div className="lo-note">
+        Sign in and upload your student ID to claim. If seats are still left when this round closes, a new round opens until the next class.
+      </div>
     </div>
   )
 }

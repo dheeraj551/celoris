@@ -48,16 +48,19 @@ function shortFormFaqs({ batch, price, modules }: FaqContext): CourseFaq[] {
   ]
   const offer = batch?.offer
   if (offer) {
+    const seats = batch?.seatsTotal
     faqs.push({
-      question: "What is the launch offer?",
+      question: "How do the free passes work?",
       answer:
-        `The first ${offer.passes} students who apply before ${istFullDate(offer.endsAt)}, ${istTime(offer.endsAt)} IST get a free pass for the full course.` +
-        (fee > 0 ? ` After that the course fee is ${inr(fee)}, and you can book one free demo class before you decide.` : ""),
+        `Free passes are released in rounds: up to ${offer.perRound} per round` +
+        (seats ? `, until all ${seats} seats in the batch are taken` : "") +
+        ". The first round closes when the first class starts; if seats are still left, a new round opens until the next class. Once the batch is full, you can join the waitlist for the next batch." +
+        (fee > 0 ? ` The course is worth ${inr(fee)}.` : ""),
     })
   } else if (fee > 0) {
     faqs.push({
       question: "How much does the course cost?",
-      answer: `The course fee is ${inr(fee)}. You can book one free demo class before you decide.`,
+      answer: `The course fee is ${inr(fee)}.`,
     })
   }
   faqs.push({
