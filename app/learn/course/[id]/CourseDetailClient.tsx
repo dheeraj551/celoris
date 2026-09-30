@@ -31,6 +31,7 @@ import Link from "next/link"
 import { CourseTrainerBooth } from "@/components/learn/CourseTrainerBooth"
 import { CourseNoticeBoardMini } from "@/components/learn/CourseNoticeBoardMini"
 import { CourseVideoStudioShowcase } from "@/components/learn/CourseVideoStudioShowcase"
+import { SHOWCASE_MEDIA } from "@/components/home-new/ShowcaseMedia"
 import { LaunchOfferCard, useCourseBatch } from "@/components/learn/CourseLaunchOffer"
 import { CourseReviews } from "@/components/reviews/CourseReviews"
 import { getFaqsForCourse } from "@/lib/course-faqs"
@@ -322,7 +323,7 @@ export default function CourseDetailClient({
                   {/* Subtle video backdrop blur for desktop */}
                   <div className="absolute inset-0 opacity-25 filter blur-3xl scale-125 pointer-events-none overflow-hidden">
                     <video
-                      src="/courses/stickerposter.mp4"
+                      src={`${SHOWCASE_MEDIA}stickerposter.mp4`}
                       autoPlay
                       loop
                       muted
@@ -335,7 +336,7 @@ export default function CourseDetailClient({
                   <div className="relative z-10 max-w-[280px] sm:max-w-[310px] md:max-w-[330px] w-full rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.85)] border border-white/20 bg-black">
                     <video
                       ref={heroVideoRef}
-                      src="/courses/stickerposter.mp4"
+                      src={`${SHOWCASE_MEDIA}stickerposter.mp4`}
                       autoPlay
                       loop
                       muted={heroMuted}
