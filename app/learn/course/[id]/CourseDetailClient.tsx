@@ -24,7 +24,9 @@ import {
   Copy,
   Check,
   Volume2,
-  VolumeX
+  VolumeX,
+  BadgeCheck,
+  Star,
 } from "lucide-react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import Link from "next/link"
@@ -737,24 +739,25 @@ export default function CourseDetailClient({
                 `}</style>
                 <div className="testimonial-marquee flex flex-row gap-4" style={{ width: 'max-content' }}>
                   {[...testimonials, ...testimonials].map((t, i) => (
-                    <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex-shrink-0" style={{ width: '320px' }}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                            {t.name.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-slate-800">{t.name}</p>
-                            <p className="text-xs text-slate-400 font-medium">{(t as any).role || "Earlier Celoris student"}</p>
-                          </div>
+                    <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex-shrink-0" style={{ width: '340px' }}>
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">{t.name}</p>
+                          <p className="text-xs text-slate-400 font-medium flex items-center gap-1 mt-0.5">
+                            <BadgeCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                            <span>Verified · Attended a live class · {t.time}</span>
+                          </p>
                         </div>
                         <div className="flex gap-0.5 flex-shrink-0">
                           {Array.from({ length: 5 }).map((_, si) => (
-                            <span key={si} className={`text-sm ${si < t.stars ? 'text-yellow-400' : 'text-slate-200'}`}>★</span>
+                            <Star
+                              key={si}
+                              className={`w-4 h-4 ${si < t.stars ? 'text-yellow-400 fill-current' : 'text-slate-200'}`}
+                            />
                           ))}
                         </div>
                       </div>
-                      <p className="text-sm text-slate-600 leading-relaxed">&quot;{t.text}&quot;</p>
+                      <p className="text-sm text-slate-600 leading-relaxed">&ldquo;{t.text}&rdquo;</p>
                     </div>
                   ))}
                 </div>

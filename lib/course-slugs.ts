@@ -60,8 +60,8 @@ export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
     soldOutBatch: 'Batch 03 (Sold Out)',
     batchStart: '2026-10-11T15:00:00.000+05:30',
     scheduleLabel: 'Sundays · 3:00 PM IST',
-    seatsTotal: 25,
-    registered: 10,
+    seatsTotal: 15,
+    registered: 0,
     passesTotal: 15,
   },
 }
