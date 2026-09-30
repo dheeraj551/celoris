@@ -2,17 +2,21 @@
 //
 // Someone can review when ANY of these is true:
 //   • an admin marked them as a student (Admin → Reviews → Verified students)
-//   • they sat in a live Celoris class for 10+ minutes
+//   • they joined a live Celoris class as a student (2D or 3D room — every
+//     join is recorded in class_attendance by a database trigger)
 //   • they have or had a paid plan (Basic / Pro / Max)
 //   • they passed a Job Center exam
-// Every review still waits for admin approval before it is shown.
+// Every review still waits for admin approval before it is shown, and a
+// person can write only a few a day, so a quick join can't be abused.
+//
+// (This used to need 10+ minutes in one class, so students who had joined a
+// shorter session were told "join a class and you can review" and still
+// couldn't. Any join now counts.)
 
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import type { ReviewVerifiedReason } from '@/lib/course-reviews'
 
 type AdminClient = ReturnType<typeof createSupabaseClientForServer>
-
-const MIN_CLASS_MS = 10 * 60 * 1000
 
 export async function reviewEligibility(admin: AdminClient, userId: string): Promise<ReviewVerifiedReason | null> {
   const db: any = admin
@@ -20,14 +24,11 @@ export async function reviewEligibility(admin: AdminClient, userId: string): Pro
   const { data: granted } = await db.from('verified_students').select('user_id').eq('user_id', userId).maybeSingle()
   if (granted) return 'admin_verified'
 
-  const { data: classes } = await db
+  const { count: classes } = await db
     .from('class_attendance')
-    .select('first_seen_at, last_seen_at')
+    .select('room_id', { count: 'exact', head: true })
     .eq('user_id', userId)
-    .limit(50)
-  for (const c of (classes || []) as any[]) {
-    if (Date.parse(c.last_seen_at) - Date.parse(c.first_seen_at) >= MIN_CLASS_MS) return 'attended_class'
-  }
+  if ((classes || 0) > 0) return 'attended_class'
 
   const { data: plan } = await db.from('user_plans').select('plan_tier, started_at').eq('user_id', userId).maybeSingle()
   if (plan && plan.plan_tier && plan.plan_tier !== 'free') return 'paid_plan'

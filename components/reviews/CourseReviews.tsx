@@ -209,11 +209,11 @@ export function CourseReviews({
             </p>
           ) : !me.eligible && !mine ? (
             <p className={`text-sm ${c.muted}`}>
-              Reviews are open to Celoris students. Join a free live class in{" "}
+              Reviews are open to Celoris students. Join any free live class in{" "}
               <Link href="/classrooms" className={c.link}>
                 Classrooms
               </Link>{" "}
-              and you can review right after.
+              and you can review straight after.
             </p>
           ) : !formOpen ? (
             <div className="flex flex-wrap items-center justify-between gap-3">

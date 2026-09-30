@@ -111,7 +111,7 @@ export async function POST(request: Request) {
     const reason = await reviewEligibility(admin, user.id)
     if (!reason) {
       return NextResponse.json(
-        { error: 'Reviews are open to Celoris students. Join a live class (free) and you can review right after.' },
+        { error: 'Reviews are open to Celoris students. Join any free live class in Classrooms and you can review straight after.' },
         { status: 403 }
       )
     }
