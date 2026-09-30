@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase-client'
+import { COURSE_ID_TO_SLUG } from '@/lib/course-slugs'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.celorisdesigns.com'
@@ -454,24 +455,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 2. Fetch courses if they exist dynamically in courses table
     const { data: dbCourses } = await supabase
       .from('courses')
-      .select('title, updated_at')
+      .select('id, title, updated_at')
       .eq('is_published', true)
 
     const dynamicCourses: MetadataRoute.Sitemap = (dbCourses || [])
       .map((course: any) => {
-        const slug = course.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)+/g, '')
+        const cleanSlug = COURSE_ID_TO_SLUG[course.id]
+        const targetUrl = cleanSlug
+          ? `${baseUrl}/learn/course/${cleanSlug}`
+          : `${baseUrl}/learn/course/${course.id}`
 
         return {
-          url: `${baseUrl}/courses/${slug}`,
+          url: targetUrl,
           lastModified: course.updated_at ? new Date(course.updated_at) : new Date(),
           changeFrequency: 'weekly' as const,
           priority: 0.8,
         }
       })
-      .filter((dyn: any) => !staticPages.some((stat: any) => stat.url === dyn.url))
+      .filter((dyn: any) => dyn && !staticPages.some((stat: any) => stat.url === dyn.url))
 
     return [...staticPages, ...dynamicBlogs, ...dynamicCourses]
   } catch (error) {

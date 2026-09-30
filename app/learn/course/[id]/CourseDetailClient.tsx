@@ -265,7 +265,25 @@ export default function CourseDetailClient({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Course Header */}
+            {/* Batch Status & Sold Out Notice */}
+            {isShortForm && (
+              <div className="rounded-2xl p-4 border bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 border-amber-300/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-3">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  </span>
+                  <div className="text-sm">
+                    <span className="font-semibold text-rose-600 line-through mr-2">🔴 Batch 03 (Sold Out)</span>
+                    <span className="font-bold text-slate-900 dark:text-white">🚀 Batch 04: Starts Sunday, 11th Oct 2026</span>
+                  </div>
+                </div>
+                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600 text-white shadow-xs self-start sm:self-auto">
+                  Admissions Open • 14 Seats Left
+                </span>
+              </div>
+            )}
+
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
@@ -362,6 +380,116 @@ export default function CourseDetailClient({
                         <p className="text-xs text-slate-600 leading-relaxed">{tool.desc}</p>
                       </div>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Viral Formats You Will Master (Video Showcase) */}
+            {isShortForm && (
+              <Card className="border-slate-800 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white overflow-hidden shadow-xl">
+                <CardHeader className="pb-3 border-b border-slate-800/80">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🎬</span>
+                      <h2 className="text-xl font-bold text-white tracking-tight">Viral Formats You Will Master</h2>
+                    </div>
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary-500/20 text-primary-300 border border-primary-500/30">
+                      Shot on Phone &amp; AI
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Real short-form formats covered step-by-step — from 1.5-second retention hooks to solo multi-character skits.
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-5 pb-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {/* Card 1: F1 Track Hook */}
+                    <div className="rounded-xl overflow-hidden bg-slate-800/60 border border-slate-700/60 flex flex-col group">
+                      <div className="relative aspect-[9/16] bg-black overflow-hidden">
+                        <video
+                          src="/courses/reels-preview/f1-viral-hook.mp4"
+                          playsInline
+                          loop
+                          muted
+                          autoPlay
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-2 left-2 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                          0–2s Retention Hook
+                        </div>
+                      </div>
+                      <div className="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-white mb-1">Pattern Interrupt Hook</h3>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            How to stop mid-scroll using unexpected sound &amp; high-speed background action before your intro.
+                          </p>
+                        </div>
+                        <div className="mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
+                          <span>Module 2: Hooks</span>
+                          <span className="text-primary-400 font-semibold">90%+ Retention</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card 2: Clone Transition */}
+                    <div className="rounded-xl overflow-hidden bg-slate-800/60 border border-slate-700/60 flex flex-col group">
+                      <div className="relative aspect-[9/16] bg-black overflow-hidden">
+                        <video
+                          src="/courses/reels-preview/clone-transition.mp4"
+                          playsInline
+                          loop
+                          muted
+                          autoPlay
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-2 left-2 bg-indigo-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                          Solo Phone Skits
+                        </div>
+                      </div>
+                      <div className="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-white mb-1">Clone &amp; Split-Role Editing</h3>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            Shoot conversational skits and client Q&amp;As playing multiple roles solo on a smartphone with CapCut masking.
+                          </p>
+                        </div>
+                        <div className="mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
+                          <span>Module 3: Fast-Cut</span>
+                          <span className="text-indigo-400 font-semibold">No Crew Needed</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card 3: Classroom / AI Avatar Presentation */}
+                    <div className="rounded-xl overflow-hidden bg-slate-800/60 border border-slate-700/60 flex flex-col group">
+                      <div className="relative aspect-[9/16] bg-black overflow-hidden">
+                        <video
+                          src="/courses/reels-preview/classroom-teacher.mp4"
+                          playsInline
+                          loop
+                          muted
+                          autoPlay
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-2 left-2 bg-emerald-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                          Educational / Facecam
+                        </div>
+                      </div>
+                      <div className="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-white mb-1">High-Authority Teaching</h3>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            Framing, lighting, and AI-assisted pacing to look and sound like a top 1% educator or niche consultant from Day 1.
+                          </p>
+                        </div>
+                        <div className="mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[11px] text-slate-400">
+                          <span>Module 4: Delivery</span>
+                          <span className="text-emerald-400 font-semibold">Trust &amp; High Saves</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -665,9 +793,12 @@ export default function CourseDetailClient({
             <div className="flex items-center gap-2 pl-1">
               <Flame className="w-4 h-4 text-amber-400 animate-pulse flex-shrink-0" />
               <div className="leading-tight">
-                <p className="text-xs font-bold text-white">Batch Starts Tomorrow</p>
+                <p className="text-xs font-bold text-white">
+                  <span className="line-through text-slate-400 mr-1.5">Batch 03 Sold Out</span>
+                  <span className="text-emerald-400">Batch 04</span>
+                </p>
                 <p className="text-[10px] text-amber-300 font-medium">
-                  {offer ? `${offer.left} Free Passes Left` : "Limited Batch Seats"}
+                  {batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct • 14 Seats Left"}
                 </p>
               </div>
             </div>

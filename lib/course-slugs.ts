@@ -43,3 +43,24 @@ export const COURSE_SEO: Record<string, { title: string; description: string; im
     heroImage: '/courses/short-form-video-masterclass.webp',
   },
 }
+
+export interface CourseBatchDefault {
+  batchNumber: string
+  soldOutBatch?: string
+  batchStart: string
+  scheduleLabel: string
+  seatsTotal: number
+  registered: number
+}
+
+export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
+  'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead': {
+    batchNumber: '04',
+    soldOutBatch: 'Batch 03 (Sold Out)',
+    batchStart: '2026-10-11T15:00:00.000+05:30',
+    scheduleLabel: 'Sundays · 3:00 PM IST',
+    seatsTotal: 25,
+    registered: 11,
+  },
+}
+

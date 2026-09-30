@@ -46,6 +46,7 @@ export interface CourseBatchInfo {
    *  with an active booth on the course page (lead trainer first). */
   trainers: CourseTrainer[]
   batchNumber: string | null
+  soldOutNotice?: string | null
   /** The next (or current) class, ISO. Null when nothing is scheduled. */
   nextStart: string | null
   nextEnd: string | null

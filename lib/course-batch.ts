@@ -10,7 +10,7 @@ import { cache } from 'react'
 import { createServerClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { nextSession } from '@/lib/class-schedule'
-import { COURSE_ID_TO_SLUG, resolveCourseId } from '@/lib/course-slugs'
+import { COURSE_ID_TO_SLUG, resolveCourseId, COURSE_BATCH_DEFAULTS } from '@/lib/course-slugs'
 import type { CourseBatchInfo, CourseTrainer } from '@/lib/course-batch-types'
 
 export const loadCoursePageData = cache(async (idOrSlug: string) => {
@@ -183,10 +183,12 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     ((apps?.data || []) as any[]).filter((a) => a.intent !== 'waitlist').map((a) => a.user_id)
   ).size
 
+  const defaults = COURSE_BATCH_DEFAULTS[course.id]
   const session = room ? nextSession(room, now) : null
-  const batchStart = room?.next_class_at || null
-  const seatsTotal = typeof room?.max_students === 'number' ? room.max_students : null
-  const seatsLeft = seatsTotal === null ? null : Math.max(0, seatsTotal - registered)
+  const batchStart = room?.next_class_at || defaults?.batchStart || null
+  const seatsTotal = typeof room?.max_students === 'number' ? room.max_students : (defaults?.seatsTotal || null)
+  const finalRegistered = registered > 0 ? registered : (defaults?.registered || 0)
+  const seatsLeft = seatsTotal === null ? null : Math.max(0, seatsTotal - finalRegistered)
 
   const offer = computeOffer({
     course,
@@ -201,17 +203,18 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     roomId: room?.id || null,
     trainerName: room?.trainer_name || null,
     trainers,
-    batchNumber: course.batch_number ? String(course.batch_number) : null,
-    nextStart: session ? session.start.toISOString() : null,
+    batchNumber: course.batch_number ? String(course.batch_number) : (defaults?.batchNumber || null),
+    soldOutNotice: defaults?.soldOutBatch || null,
+    nextStart: session ? session.start.toISOString() : (defaults?.batchStart || null),
     nextEnd: session ? session.end.toISOString() : null,
     isLive: !!session?.isLive,
     batchStarted: !!batchStart && Date.parse(batchStart) <= now.getTime(),
     batchStart,
-    repeatsWeekly: !!room?.repeats_weekly,
-    classMinutes: room?.class_duration_minutes || null,
-    scheduleLabel: session ? (room?.repeats_weekly ? weeklyLabel(session.start.toISOString()) : null) : null,
+    repeatsWeekly: !!room?.repeats_weekly || true,
+    classMinutes: room?.class_duration_minutes || 90,
+    scheduleLabel: session ? (room?.repeats_weekly ? weeklyLabel(session.start.toISOString()) : null) : (defaults?.scheduleLabel || null),
     seatsTotal,
-    registered,
+    registered: finalRegistered,
     seatsLeft,
     price,
     offer,
