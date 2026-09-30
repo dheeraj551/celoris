@@ -728,7 +728,7 @@ export default function App() {
     const active = layers.find((l) => l.id === activeLayerId);
     if (!active || active.locked) return;
 
-    clearSelectionFromLayer(active.canvas, selection);
+    clearSelectionFromLayer(active.canvas, selection, { x: active.x, y: active.y });
     recordHistory('Clear Selected Pixels');
   };
 
@@ -736,7 +736,14 @@ export default function App() {
     const active = layers.find((l) => l.id === activeLayerId);
     if (!active || active.locked) return;
 
-    fillSelectionOnLayer(active.canvas, selection, foregroundColor);
+    fillSelectionOnLayer(
+      active.canvas,
+      selection,
+      foregroundColor,
+      { x: active.x, y: active.y },
+      brushOpacity,
+      active.angle || 0
+    );
     recordHistory('Fill Selection');
   };
 

@@ -21,6 +21,34 @@ export function isPointInPolygon(
   return inside;
 }
 
+// Check if point in canvas coordinates is inside the active selection
+export function isPointInSelection(
+  p: { x: number; y: number },
+  selection: SelectionState
+): boolean {
+  if (!selection.active) return false;
+  if (selection.maskCanvas) {
+    const ctx = selection.maskCanvas.getContext('2d');
+    if (!ctx) return false;
+    const px = Math.floor(p.x);
+    const py = Math.floor(p.y);
+    if (px < 0 || px >= selection.maskCanvas.width || py < 0 || py >= selection.maskCanvas.height) return false;
+    const pixel = ctx.getImageData(px, py, 1, 1).data;
+    return pixel[3] > 64;
+  }
+  if (selection.type === 'rect' && selection.rect) {
+    const rx = selection.rect.width < 0 ? selection.rect.x + selection.rect.width : selection.rect.x;
+    const ry = selection.rect.height < 0 ? selection.rect.y + selection.rect.height : selection.rect.y;
+    const rw = Math.abs(selection.rect.width);
+    const rh = Math.abs(selection.rect.height);
+    return p.x >= rx && p.x <= rx + rw && p.y >= ry && p.y <= ry + rh;
+  }
+  if (selection.type === 'lasso' && selection.polygon && selection.polygon.length > 2) {
+    return isPointInPolygon(p, selection.polygon);
+  }
+  return false;
+}
+
 // Generate a mask canvas from polygon points (Lasso)
 export function createLassoMaskCanvas(
   polygon: { x: number; y: number }[],
@@ -180,46 +208,61 @@ export function fillSelectionOnLayer(
   layerCanvas: HTMLCanvasElement,
   selection: SelectionState,
   color: string,
-  layerOffset: { x: number; y: number } = { x: 0, y: 0 }
+  layerOffset: { x: number; y: number } = { x: 0, y: 0 },
+  opacity: number = 1,
+  layerAngle: number = 0
 ): void {
   const ctx = layerCanvas.getContext('2d');
   if (!ctx) return;
 
-  ctx.save();
-  ctx.translate(-layerOffset.x, -layerOffset.y);
+  const tempCanvas = createCanvas(layerCanvas.width, layerCanvas.height);
+  const tempCtx = tempCanvas.getContext('2d');
+  if (!tempCtx) return;
+
+  tempCtx.save();
+  if (layerAngle) {
+    tempCtx.translate(layerCanvas.width / 2, layerCanvas.height / 2);
+    tempCtx.rotate((-layerAngle * Math.PI) / 180);
+    tempCtx.translate(-(layerOffset.x + layerCanvas.width / 2), -(layerOffset.y + layerCanvas.height / 2));
+  } else {
+    tempCtx.translate(-layerOffset.x, -layerOffset.y);
+  }
 
   if (selection.active && selection.maskCanvas) {
-    // Create temporary fill canvas
-    const tempCanvas = createCanvas(layerCanvas.width, layerCanvas.height);
-    const tempCtx = tempCanvas.getContext('2d');
-    if (tempCtx) {
-      tempCtx.fillStyle = color;
-      tempCtx.fillRect(0, 0, layerCanvas.width, layerCanvas.height);
-      tempCtx.globalCompositeOperation = 'destination-in';
-      tempCtx.drawImage(selection.maskCanvas, 0, 0);
-    }
-    ctx.drawImage(tempCanvas, 0, 0);
+    tempCtx.drawImage(selection.maskCanvas, 0, 0);
   } else if (selection.active && selection.type === 'rect' && selection.rect) {
-    ctx.fillStyle = color;
     const { x, y, width, height } = selection.rect;
     const rx = width < 0 ? x + width : x;
     const ry = height < 0 ? y + height : y;
-    ctx.fillRect(rx, ry, Math.abs(width), Math.abs(height));
+    tempCtx.fillStyle = '#ffffff';
+    tempCtx.fillRect(rx, ry, Math.abs(width), Math.abs(height));
   } else if (selection.active && selection.type === 'lasso' && selection.polygon && selection.polygon.length > 2) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(selection.polygon[0].x, selection.polygon[0].y);
+    tempCtx.fillStyle = '#ffffff';
+    tempCtx.beginPath();
+    tempCtx.moveTo(selection.polygon[0].x, selection.polygon[0].y);
     for (let i = 1; i < selection.polygon.length; i++) {
-      ctx.lineTo(selection.polygon[i].x, selection.polygon[i].y);
+      tempCtx.lineTo(selection.polygon[i].x, selection.polygon[i].y);
     }
-    ctx.closePath();
-    ctx.fill();
+    tempCtx.closePath();
+    tempCtx.fill();
   } else {
     // Fill entire layer
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, layerCanvas.width, layerCanvas.height);
+    tempCtx.fillStyle = '#ffffff';
+    tempCtx.fillRect(layerOffset.x, layerOffset.y, layerCanvas.width, layerCanvas.height);
   }
+  tempCtx.restore();
 
+  // Tint mask with fill color using source-in
+  tempCtx.save();
+  tempCtx.globalCompositeOperation = 'source-in';
+  tempCtx.fillStyle = color;
+  tempCtx.fillRect(0, 0, layerCanvas.width, layerCanvas.height);
+  tempCtx.restore();
+
+  // Draw result onto layer canvas with desired opacity
+  ctx.save();
+  ctx.globalAlpha = Math.max(0, Math.min(1, opacity));
+  ctx.drawImage(tempCanvas, 0, 0);
   ctx.restore();
 }
 

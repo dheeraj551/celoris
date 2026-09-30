@@ -242,7 +242,7 @@ export interface FloodFillOptions {
   opacity?: number;
 }
 
-// Flood Fill (Paint Bucket tool) using fast scanline algorithm
+// Flood Fill (Paint Bucket tool) using fast 4-way BFS queue
 export function floodFill(
   ctx: CanvasRenderingContext2D,
   startX: number,
@@ -269,7 +269,7 @@ export function floodFill(
   const imgData = ctx.getImageData(0, 0, width, height);
   const data = imgData.data;
 
-  // Sample data source (composite canvas if sampleCtx provided, otherwise target layer)
+  // Sample data source (composite canvas if sampleCtx provided, otherwise target layer snapshot)
   let sampleData: Uint8ClampedArray | null = null;
   let sampleW = 0;
   let sampleH = 0;
@@ -278,6 +278,14 @@ export function floodFill(
     sampleH = sampleCtx.canvas.height;
     sampleData = sampleCtx.getImageData(0, 0, sampleW, sampleH).data;
   }
+
+  // Create an immutable snapshot of layer source data if sampleCtx is not used,
+  // preventing writes to `data` from corrupting color matching during fill.
+  const srcData = sampleData || new Uint8ClampedArray(data);
+  const srcW = sampleData ? sampleW : width;
+  const srcH = sampleData ? sampleH : height;
+  const offX = sampleData ? sampleOffset.x : 0;
+  const offY = sampleData ? sampleOffset.y : 0;
 
   // Selection mask data source
   let selMaskData: Uint8ClampedArray | null = null;
@@ -293,23 +301,14 @@ export function floodFill(
   }
 
   // Determine target color at startX, startY
-  let targetR: number, targetG: number, targetB: number, targetA: number;
-  if (sampleData) {
-    const smX = Math.floor(startX + sampleOffset.x);
-    const smY = Math.floor(startY + sampleOffset.y);
-    if (smX < 0 || smX >= sampleW || smY < 0 || smY >= sampleH) return;
-    const sIdx = (smY * sampleW + smX) * 4;
-    targetR = sampleData[sIdx];
-    targetG = sampleData[sIdx + 1];
-    targetB = sampleData[sIdx + 2];
-    targetA = sampleData[sIdx + 3];
-  } else {
-    const startIdx = (startY * width + startX) * 4;
-    targetR = data[startIdx];
-    targetG = data[startIdx + 1];
-    targetB = data[startIdx + 2];
-    targetA = data[startIdx + 3];
-  }
+  const smStartX = Math.floor(startX + offX);
+  const smStartY = Math.floor(startY + offY);
+  if (smStartX < 0 || smStartX >= srcW || smStartY < 0 || smStartY >= srcH) return;
+  const startIdx = (smStartY * srcW + smStartX) * 4;
+  const targetR = srcData[startIdx];
+  const targetG = srcData[startIdx + 1];
+  const targetB = srcData[startIdx + 2];
+  const targetA = srcData[startIdx + 3];
 
   const [fillR, fillG, fillB, fillA] = hexToRgba(fillColorHex);
 
@@ -341,23 +340,16 @@ export function floodFill(
       const mIdx = (my * selMaskW + mx) * 4;
       if (selMaskData[mIdx + 3] < 128) return false; // outside selection mask
     }
-    let r: number, g: number, b: number, a: number;
-    if (sampleData) {
-      const smX = Math.floor(x + sampleOffset.x);
-      const smY = Math.floor(y + sampleOffset.y);
-      if (smX < 0 || smX >= sampleW || smY < 0 || smY >= sampleH) return false;
-      const sIdx = (smY * sampleW + smX) * 4;
-      r = sampleData[sIdx];
-      g = sampleData[sIdx + 1];
-      b = sampleData[sIdx + 2];
-      a = sampleData[sIdx + 3];
-    } else {
-      const idx = (y * width + x) * 4;
-      r = data[idx];
-      g = data[idx + 1];
-      b = data[idx + 2];
-      a = data[idx + 3];
-    }
+
+    const smX = Math.floor(x + offX);
+    const smY = Math.floor(y + offY);
+    if (smX < 0 || smX >= srcW || smY < 0 || smY >= srcH) return false;
+    const sIdx = (smY * srcW + smX) * 4;
+    const r = srcData[sIdx];
+    const g = srcData[sIdx + 1];
+    const b = srcData[sIdx + 2];
+    const a = srcData[sIdx + 3];
+
     return colorsMatch(r, g, b, a, targetR, targetG, targetB, targetA, maxDiffSq);
   };
 
@@ -391,60 +383,56 @@ export function floodFill(
     return;
   }
 
-  // Scanline Flood Fill
+  // Contiguous 4-way BFS Flood Fill
   if (!isMatch(startX, startY)) return;
 
-  const stack = new Int32Array(width * height * 2);
-  let stackPtr = 0;
-  const visited = new Uint8Array(width * height);
+  const totalPixels = width * height;
+  const queue = new Int32Array(totalPixels);
+  const visited = new Uint8Array(totalPixels);
+  let head = 0;
+  let tail = 0;
 
-  stack[stackPtr++] = startX;
-  stack[stackPtr++] = startY;
-  visited[startY * width + startX] = 1;
+  const startPos = startY * width + startX;
+  queue[tail++] = startPos;
+  visited[startPos] = 1;
 
-  while (stackPtr > 0) {
-    const curY = stack[--stackPtr];
-    const curX = stack[--stackPtr];
+  while (head < tail) {
+    const pos = queue[head++];
+    const x = pos % width;
+    const y = (pos / width) | 0;
 
-    let left = curX;
-    while (left > 0) {
-      const nx = left - 1;
-      const p = curY * width + nx;
-      if (visited[p] || !isMatch(nx, curY)) break;
-      visited[p] = 1;
-      left = nx;
+    setPixel(x, y);
+
+    // Left
+    if (x > 0) {
+      const np = pos - 1;
+      if (!visited[np] && isMatch(x - 1, y)) {
+        visited[np] = 1;
+        queue[tail++] = np;
+      }
     }
-
-    let right = curX;
-    while (right < width - 1) {
-      const nx = right + 1;
-      const p = curY * width + nx;
-      if (visited[p] || !isMatch(nx, curY)) break;
-      visited[p] = 1;
-      right = nx;
+    // Right
+    if (x < width - 1) {
+      const np = pos + 1;
+      if (!visited[np] && isMatch(x + 1, y)) {
+        visited[np] = 1;
+        queue[tail++] = np;
+      }
     }
-
-    for (let x = left; x <= right; x++) {
-      setPixel(x, curY);
+    // Up
+    if (y > 0) {
+      const np = pos - width;
+      if (!visited[np] && isMatch(x, y - 1)) {
+        visited[np] = 1;
+        queue[tail++] = np;
+      }
     }
-
-    for (const ny of [curY - 1, curY + 1]) {
-      if (ny >= 0 && ny < height) {
-        let inSpan = false;
-        for (let x = left; x <= right; x++) {
-          const p = ny * width + x;
-          const match = !visited[p] && isMatch(x, ny);
-          if (match) {
-            visited[p] = 1;
-            if (!inSpan) {
-              stack[stackPtr++] = x;
-              stack[stackPtr++] = ny;
-              inSpan = true;
-            }
-          } else {
-            inSpan = false;
-          }
-        }
+    // Down
+    if (y < height - 1) {
+      const np = pos + width;
+      if (!visited[np] && isMatch(x, y + 1)) {
+        visited[np] = 1;
+        queue[tail++] = np;
       }
     }
   }

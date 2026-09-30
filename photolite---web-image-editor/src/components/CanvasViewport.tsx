@@ -38,6 +38,8 @@ import {
   createLassoMaskCanvas,
   createRectMaskCanvas,
   clearSelectionFromLayer,
+  fillSelectionOnLayer,
+  isPointInSelection,
   getSelectionBounds,
 } from '../utils/selectionUtils';
 
@@ -115,6 +117,9 @@ interface CanvasViewportProps {
 const PEN_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpolygon points='12.5,17.5 15,20 20,15 17.5,12.5' fill='%2327272a' stroke='%23000000' stroke-width='1.2'/%3E%3Cpolygon points='1,1 5,15.5 12.5,17.5 17.5,12.5 15.5,5' fill='%23ffffff' stroke='%23000000' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='1' y1='1' x2='8.5' y2='8.5' stroke='%23000000' stroke-width='1.2' stroke-linecap='round'/%3E%3Ccircle cx='9.5' cy='9.5' r='1.2' fill='%23000000'/%3E%3C/svg%3E") 1 1, crosshair`;
 
 const PEN_CLOSE_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpolygon points='12.5,17.5 15,20 20,15 17.5,12.5' fill='%2327272a' stroke='%23000000' stroke-width='1.2'/%3E%3Cpolygon points='1,1 5,15.5 12.5,17.5 17.5,12.5 15.5,5' fill='%23ffffff' stroke='%23000000' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='1' y1='1' x2='8.5' y2='8.5' stroke='%23000000' stroke-width='1.2' stroke-linecap='round'/%3E%3Ccircle cx='9.5' cy='9.5' r='1.2' fill='%23000000'/%3E%3Ccircle cx='18' cy='18' r='3.2' fill='%23ffffff' stroke='%2316a34a' stroke-width='1.6'/%3E%3C/svg%3E") 1 1, crosshair`;
+
+// Photoshop-style Dual-Contrast Paint Bucket Tool Cursor (hotspot at tip of pouring paint drop: 2, 20)
+const BUCKET_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M10 8 C9 3, 15 1, 18 4' stroke='%23000000' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M10 8 C9 3, 15 1, 18 4' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M6 12 L14 4 L20 10 L12 18 Z' fill='%23ffffff' stroke='%23000000' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M7 11 L14 4 L17 7 L10 14 Z' fill='%2338bdf8'/%3E%3Cpath d='M5.5 12.5 C 3.5 14, 1.5 17, 1.5 20 C 1.5 21.4 2.6 22.5 4 22.5 C 5.4 22.5 6.5 21.4 6.5 20 C 6.5 18 5 16 5.5 12.5 Z' fill='%2338bdf8' stroke='%23000000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 2 20, crosshair`;
 
 export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   canvasWidth,
@@ -964,6 +969,25 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       if (activeLayer.locked) {
         return;
       }
+
+      // If a selection is active, clicking inside the selection fills the complete selection in one go!
+      if (selection.active) {
+        if (isPointInSelection(coords, selection)) {
+          fillSelectionOnLayer(
+            activeLayer.canvas,
+            selection,
+            foregroundColor,
+            { x: activeLayer.x, y: activeLayer.y },
+            brushOpacity,
+            activeLayer.angle || 0
+          );
+          // Force immediate composite canvas redraw so the user sees the filled color right away!
+          renderComposite();
+          onLayerPixelChange(activeLayer.id, 'Paint Bucket Fill');
+        }
+        return;
+      }
+
       const ctx = activeLayer.canvas.getContext('2d');
       if (ctx) {
         // Calculate coordinate in layer local space taking position and rotation into account
@@ -982,17 +1006,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         const localY = Math.floor(ly + activeLayer.height / 2);
 
         if (localX >= 0 && localX < activeLayer.width && localY >= 0 && localY < activeLayer.height) {
-          let selMask: HTMLCanvasElement | null = null;
-          if (selection.active) {
-            if (selection.maskCanvas) {
-              selMask = selection.maskCanvas;
-            } else if (selection.type === 'rect' && selection.rect) {
-              selMask = createRectMaskCanvas(selection.rect, canvasWidth, canvasHeight);
-            } else if (selection.type === 'lasso' && selection.polygon) {
-              selMask = createLassoMaskCanvas(selection.polygon, canvasWidth, canvasHeight);
-            }
-          }
-
           const sampleCtx = bucketSampleAllLayers ? mainCanvasRef.current?.getContext('2d') : null;
           const sampleOffset = bucketSampleAllLayers ? { x: activeLayer.x, y: activeLayer.y } : undefined;
 
@@ -1005,8 +1018,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
             activeLayer.width,
             activeLayer.height,
             {
-              selectionMask: selMask,
-              selectionOffset: { x: activeLayer.x, y: activeLayer.y },
               sampleCtx,
               sampleOffset,
               contiguous: bucketContiguous,
@@ -1741,9 +1752,9 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     cursorStyle = 'move';
   } else if (activeTool === 'rotate') {
     cursorStyle = isRotatingRef.current ? 'grabbing' : 'crosshair';
-  } else if (activeTool === 'crop') {
-    cursorStyle = 'crosshair';
-  } else if (activeTool === 'wand' || activeTool === 'bucket') {
+  } else if (activeTool === 'bucket') {
+    cursorStyle = BUCKET_CURSOR;
+  } else if (activeTool === 'wand') {
     cursorStyle = 'crosshair';
   } else if (activeTool === 'lasso' || activeTool === 'marquee') {
     cursorStyle = 'crosshair';
