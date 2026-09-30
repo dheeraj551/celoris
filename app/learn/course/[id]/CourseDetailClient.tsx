@@ -267,19 +267,20 @@ export default function CourseDetailClient({
           <div className="lg:col-span-2 space-y-8">
             {/* Batch Status & Sold Out Notice */}
             {isShortForm && (
-              <div className="rounded-2xl p-4 border bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 border-amber-300/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="rounded-2xl p-3.5 sm:p-4 border bg-[#111625] border-amber-500/40 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
                 <div className="flex items-center gap-3">
-                  <span className="relative flex h-3 w-3">
+                  <span className="relative flex h-3 w-3 flex-shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
                   </span>
-                  <div className="text-sm">
-                    <span className="font-semibold text-rose-600 line-through mr-2">🔴 Batch 03 (Sold Out)</span>
-                    <span className="font-bold text-slate-900 dark:text-white">🚀 Batch 04: Starts Sunday, 11th Oct 2026</span>
+                  <div className="text-sm font-medium flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                    <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">Batch 03 (Sold Out)</span>
+                    <span className="text-slate-400 hidden sm:inline">•</span>
+                    <span className="font-bold text-amber-300 text-xs sm:text-sm">Batch 04: Starts Sunday, 11th Oct 2026</span>
                   </div>
                 </div>
-                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600 text-white shadow-xs self-start sm:self-auto">
-                  Admissions Open • 14 Seats Left
+                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                  15 Passes Open
                 </span>
               </div>
             )}
@@ -794,11 +795,11 @@ export default function CourseDetailClient({
               <Flame className="w-4 h-4 text-amber-400 animate-pulse flex-shrink-0" />
               <div className="leading-tight">
                 <p className="text-xs font-bold text-white">
-                  <span className="line-through text-slate-400 mr-1.5">Batch 03 Sold Out</span>
-                  <span className="text-emerald-400">Batch 04</span>
+                  <span className="line-through text-rose-400 mr-1.5">Batch 03 Sold Out</span>
+                  <span className="text-emerald-400">Batch 04 Open</span>
                 </p>
                 <p className="text-[10px] text-amber-300 font-medium">
-                  {batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct • 14 Seats Left"}
+                  {batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • 15 Passes Open
                 </p>
               </div>
             </div>

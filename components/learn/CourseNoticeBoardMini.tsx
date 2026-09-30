@@ -209,7 +209,7 @@ export function liveBatchStatus(batch: CourseBatchInfo) {
 
 export function CourseNoticeBoardMini({ course, durationDisplay, batch, onBatchChanged }: Props) {
   const legacy = getBatchStats(course);
-  const live = batch && batch.roomId ? batch : null;
+  const live = batch && (batch.roomId || batch.batchStart) ? batch : null;
   const price = Number(course?.price) > 0 ? `₹${Number(course.price).toLocaleString('en-IN')}` : 'Free';
 
   // Seats: the linked classroom's capacity vs. students who applied.
@@ -250,6 +250,38 @@ export function CourseNoticeBoardMini({ course, durationDisplay, batch, onBatchC
         <div className="mnb-tape" />
         <div className="mnb-pin" style={{ background: '#f5a623' }} />
         <div className="mnb-label" style={{ marginBottom: '10px' }}>Enrollment</div>
+
+        {batch?.soldOutNotice && (
+          <div style={{
+            background: '#1c2340',
+            color: '#faf6ee',
+            borderRadius: 8,
+            padding: '7px 10px',
+            marginBottom: 12,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 6,
+            fontSize: 11,
+            fontWeight: 700,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef6a5f' }} />
+              <span style={{ textDecoration: 'line-through', opacity: 0.7, fontSize: 10 }}>{batch.soldOutNotice}</span>
+            </div>
+            <span style={{
+              background: 'rgba(53, 176, 160, 0.25)',
+              color: '#35b0a0',
+              borderRadius: 4,
+              padding: '2px 6px',
+              fontSize: 9.5,
+              textTransform: 'uppercase',
+            }}>
+              Batch {batchNumber} Open
+            </span>
+          </div>
+        )}
+
         <LaunchOfferCard course={course} batch={batch ?? null} onChanged={onBatchChanged} />
       </div>
 

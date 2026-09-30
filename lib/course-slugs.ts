@@ -51,6 +51,7 @@ export interface CourseBatchDefault {
   scheduleLabel: string
   seatsTotal: number
   registered: number
+  passesTotal: number
 }
 
 export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
@@ -60,7 +61,8 @@ export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
     batchStart: '2026-10-11T15:00:00.000+05:30',
     scheduleLabel: 'Sundays · 3:00 PM IST',
     seatsTotal: 25,
-    registered: 11,
+    registered: 10,
+    passesTotal: 15,
   },
 }
 
