@@ -16,34 +16,38 @@ export interface FaqContext {
 }
 
 // The Short-Form Video Masterclass — built only from facts on record: the
-// course's requirements, its weekly modules, the linked classroom's schedule
+// course's requirements, its 10-hour curriculum modules, the linked classroom's schedule
 // and the launch offer in the database.
-function shortFormFaqs({ batch, price, modules }: FaqContext): CourseFaq[] {
+function shortFormFaqs({ batch, price }: FaqContext): CourseFaq[] {
   const fee = Number(price) > 0 ? Number(price) : 0
-  const weeks = modules && modules > 0 ? modules : 6
   const faqs: CourseFaq[] = [
     {
-      question: "Do I need a professional camera or editing software?",
+      question: "How long is this course and how are the live classes conducted?",
       answer:
-        "No. You only need a smartphone with a working camera. Basic lighting, a mic and a tripod (roughly ₹500–₹2,000) help but are optional.",
+        "This is a focused 10-hour live online masterclass conducted in the Celoris Classrooms." +
+        (batch?.scheduleLabel ? ` This batch meets ${batch.scheduleLabel}` + (batch.classMinutes ? ` for ${batch.classMinutes} minutes per session.` : ".") : "") +
+        (batch?.batchStart && !batch.batchStarted ? ` The first live class starts on ${istFullDate(batch.batchStart)} at ${istTime(batch.batchStart)} IST.` : "") +
+        (batch?.trainers && batch.trainers.length > 1 ? ` The batch is mentored by ${batch.trainers.length} creators: ${batch.trainers.map((t) => t.name).join(", ")}.` : " Every session includes live practical demonstrations and interactive Q&A."),
     },
     {
-      question: "How are the classes held?",
+      question: "Do I need a professional camera or expensive editing software?",
       answer:
-        `Live online classes in the Celoris Classrooms, one module a week for ${weeks} weeks.` +
-        (batch?.scheduleLabel ? ` This batch meets ${batch.scheduleLabel}` + (batch.classMinutes ? ` for ${batch.classMinutes} minutes.` : ".") : "") +
-        (batch?.batchStart && !batch.batchStarted ? ` The first class is on ${istFullDate(batch.batchStart)} at ${istTime(batch.batchStart)} IST.` : "") +
-        (batch?.trainers && batch.trainers.length > 1 ? ` The batch is taught by ${batch.trainers.length} trainers: ${batch.trainers.map((t) => t.name).join(", ")}.` : ""),
+        "No. You only need any standard smartphone with a working camera. You will learn how to shoot high-retention videos with natural lighting and edit smoothly using free mobile apps like CapCut, VN, and InShot.",
     },
     {
-      question: "Is this course for complete beginners?",
+      question: "Is this 10-hour masterclass suitable for complete beginners?",
       answer:
-        "Yes. Week 1 starts with the foundations and mindset of short-form video, and the course builds up to growth analytics and monetization, so beginners and people who already post can both join.",
+        "Yes, absolutely. The curriculum begins with creator mindset, niche selection, and camera confidence, and systematically progresses through 1.5-second hooks, mobile shooting, retention editing, algorithm growth, and monetization.",
     },
     {
-      question: "Will I learn how to earn money from Shorts and Reels?",
+      question: "What if I miss a live session? Are recordings provided?",
       answer:
-        "Yes. The final week covers monetization: brand deals, affiliate marketing, YouTube Shorts ad revenue sharing through the YouTube Partner Program, and selling your own products or services. Earnings depend on your content and consistency, so no income is guaranteed.",
+        "Yes! Every enrolled student gets lifetime access to high-definition recordings of all 10 hours of live sessions, plus downloadable script templates, swipe files, and the ₹12,500 Exclusive Creator Bonus Pack.",
+    },
+    {
+      question: "Will I learn how to earn money from YouTube Shorts and Instagram Reels?",
+      answer:
+        "Yes. Module 6 is dedicated to creator monetization: pitching Indian brands for paid sponsorships (with ready-to-use email/DM templates), rate cards in INR, affiliate marketing, YouTube Shorts ad revenue, and selling your own products or services.",
     },
   ]
   const offer = batch?.offer
@@ -65,7 +69,7 @@ function shortFormFaqs({ batch, price, modules }: FaqContext): CourseFaq[] {
   }
   faqs.push({
     question: "Do I get a certificate?",
-    answer: "Yes, a Celoris certificate of completion is provided at the end.",
+    answer: "Yes, an official Celoris certificate of completion is provided upon finishing the masterclass.",
   })
   return faqs
 }

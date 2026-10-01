@@ -1,8 +1,8 @@
 # The Short-Form Video Masterclass
 ### YouTube Shorts & Instagram Reels for the Indian Audience
 
-**Course Duration:** 6 Weeks (self-paced or live cohort)
-**Format:** Video lessons + templates + weekly assignments + live Q&A
+**Course Duration:** 10 Hours (Intensive Masterclass)
+**Format:** 6 Intensive Modules · Live Classes in Celoris Classrooms + Lifetime Session Recordings + ₹12,500 Bonus Pack
 **Target Audience:** Content creators, small business owners, students, freelancers, and marketers who want to build an audience using short-form vertical video in the Indian market
 
 ---
@@ -17,7 +17,7 @@ By the end of this course, a student will be able to:
 
 ---
 
-## MODULE 1 — Foundations & Mindset (Week 1)
+## MODULE 1 — Foundations & Mindset (1.5 Hours)
 
 **1.1 Why Short-Form Video, Why Now (India Context)**
 - Smartphone + cheap data revolution in India; regional language internet users
@@ -34,11 +34,11 @@ By the end of this course, a student will be able to:
 - Free/cheap apps: CapCut, InShot, VN, Canva, Alight Motion
 - Setting up YouTube Shorts channel & Instagram Reels-first profile correctly
 
-**Week 1 Assignment:** Define your niche, audience persona, and record your first unedited 15-second video.
+**Module 1 Assignment:** Define your niche, audience persona, and record your first unedited 15-second video.
 
 ---
 
-## MODULE 2 — Ideation & Scripting (Week 2)
+## MODULE 2 — Ideation & High-Retention Scripting (1.5 Hours)
 
 **2.1 The Hook Formula (First 1.5 Seconds Rule)**
 - Pattern interrupts, curiosity gaps, bold claims, visual hooks
@@ -54,11 +54,11 @@ By the end of this course, a student will be able to:
 - Using YouTube/Instagram trending pages, hashtag research, competitor remixing
 - Batch ideation: generating 30 ideas in 30 minutes
 
-**Week 2 Assignment:** Write 10 scripts using the hook formula; pick 3 to produce.
+**Module 2 Assignment:** Write 10 scripts using the hook formula; pick 3 to produce.
 
 ---
 
-## MODULE 3 — Shooting Like a Pro on a Phone (Week 3)
+## MODULE 3 — Shooting Like a Pro on a Smartphone (2 Hours)
 
 **3.1 Camera & Composition Basics**
 - Vertical framing (9:16), rule of thirds, eye-level vs low angle for authority/comedy
@@ -72,13 +72,13 @@ By the end of this course, a student will be able to:
 - Shooting 5–7 shots for one Reel to keep retention high
 - Using props, locations, and outfit changes for production value on a budget
 
-**Week 3 Assignment:** Shoot one full Reel/Short using at least 4 different shots.
+**Module 3 Assignment:** Shoot one full Reel/Short using at least 4 different shots.
 
 ---
 
-## MODULE 4 — Editing for Retention & Virality (Week 4)
+## MODULE 4 — Editing for Retention & Virality (2 Hours)
 
-**4.1 Editing Fundamentals (CapCut/InShot Workflow)**
+**4.1 Editing Fundamentals (CapCut/VN Workflow)**
 - Jump cuts, speed ramping, zoom punches to maintain attention
 - Adding captions (critical for India — many watch on mute/low data/public places)
 - Trending transitions and effects that are currently working
@@ -92,11 +92,11 @@ By the end of this course, a student will be able to:
 - Writing titles that work with YouTube search + Shorts feed simultaneously
 - Cover frame selection for Shorts shelf placement
 
-**Week 4 Assignment:** Fully edit and publish 3 Reels/Shorts with captions, trending audio, and a strong CTA.
+**Module 4 Assignment:** Fully edit and publish 3 Reels/Shorts with captions, trending audio, and a strong CTA.
 
 ---
 
-## MODULE 5 — Algorithm, Growth & Analytics (Week 5)
+## MODULE 5 — Shorts & Reels Algorithm & Growth (1.5 Hours)
 
 **5.1 How the Algorithms Actually Work**
 - YouTube Shorts: watch time %, swipe-away rate, loop rate
@@ -112,11 +112,11 @@ By the end of this course, a student will be able to:
 - Using comments, polls, and duets/stitches to build a loyal Indian audience
 - Collaborating with micro-creators in your niche/city
 
-**Week 5 Assignment:** Publish daily for 7 days; submit an analytics screenshot report with observations.
+**Module 5 Assignment:** Publish daily for 7 days; submit an analytics screenshot report with observations.
 
 ---
 
-## MODULE 6 — Monetization & Career Building (Week 6)
+## MODULE 6 — Monetization & Brand Deals (1.5 Hours)
 
 **6.1 Platform Monetization**
 - YouTube Shorts ad revenue/Partner Program eligibility for Indian creators
@@ -150,13 +150,13 @@ By the end of this course, a student will be able to:
 ## Suggested Grading/Completion Criteria
 | Component | Weight |
 |---|---|
-| Weekly Assignments (Modules 1–5) | 50% |
+| Hands-on Module Assignments (Modules 1–5) | 50% |
 | Final Capstone Project | 30% |
-| Participation (community, live Q&A) | 20% |
+| Live Session Participation & Q&A | 20% |
 
 ---
 
 ## Delivery Notes for Instructor
-- Keep every lesson video itself under 10 minutes — practice what you teach
-- Use real Indian creator examples (with permission/fair use) for case studies each week
-- Offer live doubt-clearing session weekly, ideally in Hindi/English mix to match audience comfort
+- Keep live demonstrations highly interactive — review student cuts live
+- Use real Indian creator examples (with permission/fair use) for case studies in each session
+- Offer live doubt-clearing sessions and WhatsApp support in Hindi/English mix to match audience comfort

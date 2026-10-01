@@ -127,42 +127,42 @@ export default function CourseDetailClient({
       role: "College Student, Delhi",
       time: "3 days ago",
       stars: 5,
-      text: "I was extremely camera-shy and thought I needed an iPhone or expensive Sony camera to make Reels. In Week 3, the trainer showed how to shoot crisp video on my basic Redmi Note using natural window light. The 1.5-second hook formula changed everything — my 5th reel crossed 48k views after being stuck at 200 views for months. Worth every rupee."
+      text: "I was extremely camera-shy and thought I needed an iPhone or expensive Sony camera to make Reels. In the smartphone shooting module, the trainer showed how to shoot crisp video on my basic Redmi Note using natural window light. The 1.5-second hook formula changed everything — my 5th reel crossed 48k views after being stuck at 200 views for months. Worth every rupee."
     },
     {
       name: "Pooja Sundaram",
       role: "Handmade Jewelry Brand, Bengaluru",
       time: "1 week ago",
       stars: 5,
-      text: "I was paying agencies ₹15,000/month with zero sales. This course taught me how to tell genuine product stories instead of boring ads. The Week 4 module on CapCut retention editing and sound design was pure gold. Last week, one of our packaging Reels hit 110k views and brought us 35 direct D2C orders in 48 hours."
+      text: "I was paying agencies ₹15,000/month with zero sales. This course taught me how to tell genuine product stories instead of boring ads. The module on CapCut retention editing and sound design was pure gold. Last week, one of our packaging Reels hit 110k views and brought us 35 direct D2C orders in 48 hours."
     },
     {
       name: "Rahul Nair",
       role: "Software Engineer & Tech Creator, Pune",
       time: "2 weeks ago",
       stars: 5,
-      text: "As a full-time IT professional, my biggest bottleneck was time. Week 2’s ideation framework and batch-shooting workflow allowed me to shoot 8 Reels in just 2 hours on a Sunday. The breakdown of the YouTube Shorts algorithm vs Instagram Reels algorithm was the clearest I've seen anywhere in India."
+      text: "As a full-time IT professional, my biggest bottleneck was time. The ideation framework and batch-shooting workflow allowed me to shoot 8 Reels in just 2 hours on a Sunday. The breakdown of the YouTube Shorts algorithm vs Instagram Reels algorithm was the clearest I've seen anywhere in India."
     },
     {
       name: "Simran Kaur",
       role: "Finance & Career Creator, Chandigarh",
       time: "5 days ago",
       stars: 5,
-      text: "Most courses only teach editing. This masterclass actually taught monetization in Week 6. Using the brand pitch templates provided in the course, I closed my first paid brand sponsorship (₹4,500) within 3 weeks of finishing the classes. If you're serious about taking creator income seriously, don't think twice."
+      text: "Most courses only teach editing. This 10-hour masterclass actually taught practical monetization in Module 6. Using the brand pitch templates provided in the bonus pack, I closed my first paid brand sponsorship (₹4,500) within 3 weeks of finishing the classes. If you're serious about creator income, don't think twice."
     },
     {
       name: "Tanmay Deshmukh",
       role: "Fitness Creator, Mumbai",
       time: "1 week ago",
       stars: 5,
-      text: "I used to post randomly and blame the algorithm when videos flopped. The course made me realize my retention was dropping in the first 3 seconds because of slow intros. Once I applied the pacing and text overlay rules taught in Week 4, my average watch percentage jumped from 45% to 82%, and I gained 3,200 subscribers in 30 days."
+      text: "I used to post randomly and blame the algorithm when videos flopped. The course made me realize my retention was dropping in the first 3 seconds because of slow intros. Once I applied the pacing and text overlay rules taught in the retention editing module, my average watch percentage jumped from 45% to 82%, and I gained 3,200 subscribers in 30 days."
     },
     {
       name: "Meghna Joshi",
       role: "Lifestyle & Food Creator, Jaipur",
       time: "4 days ago",
       stars: 5,
-      text: "The B-roll techniques in Week 3 completely elevated my videos. You don't realize how much audio and multi-angle shooting matters until you see before-and-after comparisons. Also, the trainer WhatsApp support for feedback on our rough cuts was invaluable!"
+      text: "The B-roll and multi-angle shooting techniques completely elevated my videos. You don't realize how much audio and framing matters until you see before-and-after comparisons. Also, the trainer WhatsApp support for feedback on our rough cuts was invaluable!"
     }
   ];
 
@@ -632,12 +632,12 @@ export default function CourseDetailClient({
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Have questions before joining tomorrow?</h3>
+                    <h3 className="text-sm font-bold text-slate-900">Have questions about the 10-Hour Masterclass?</h3>
                     <p className="text-xs text-slate-600">Ask about class timings, phone compatibility, or batch recordings directly on WhatsApp.</p>
                   </div>
                 </div>
                 <a
-                  href="https://wa.me/919084718101?text=Hi%20Celoris!%20I%20have%20a%20question%20about%20the%20YouTube%20Shorts%20%26%20Instagram%20Reels%20Masterclass%20batch%20starting%20tomorrow."
+                  href="https://wa.me/919084718101?text=Hi%20Celoris!%20I%20have%20a%20question%20about%20the%2010-Hour%20YouTube%20Shorts%20%26%20Instagram%20Reels%20Masterclass."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition-all whitespace-nowrap active:scale-95 cursor-pointer"

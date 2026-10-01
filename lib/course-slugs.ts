@@ -37,7 +37,7 @@ export const COURSE_SEO: Record<string, { title: string; description: string; im
   'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead': {
     title: 'YouTube Shorts & Instagram Reels Course in India',
     description:
-      'Live 6-week online course for Indian creators: script, shoot on a phone, edit for retention, grow with the Shorts & Reels algorithms and earn from your videos.',
+      'Live 10-hour online masterclass for Indian creators: script, shoot on a phone, edit for retention, grow with the Shorts & Reels algorithms and earn from your videos.',
     // 1200×630 share image and a 108 KB WebP banner (the original PNG is 2.6 MB).
     image: '/courses/short-form-video-masterclass-og.jpg',
     heroImage: '/courses/short-form-video-masterclass.webp',
