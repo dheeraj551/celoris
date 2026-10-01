@@ -27,12 +27,22 @@ export const metadata: Metadata = {
         'short form video masterclass celoris'
     ],
     alternates: {
-        canonical: '/blog/monetize-instagram-reels-youtube-shorts-india-2026',
+        canonical: 'https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026',
     },
     openGraph: {
         title: "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027) | Celoris",
         description: "Comprehensive blueprint to reach ₹50,000+/mo from short-form video in India: RPMs, comment-to-DM automation, platform fee comparison, and tax/ASCI compliance.",
-        images: ['/instgramreel.png'],
+        url: 'https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026',
+        siteName: 'Celoris',
+        locale: 'en_IN',
+        images: [
+            {
+                url: 'https://www.celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg',
+                width: 1200,
+                height: 675,
+                alt: 'How to Monetize Instagram Reels and YouTube Shorts in India 2026',
+            }
+        ],
         type: 'article',
         publishedTime: '2026-10-01T10:00:00Z',
         authors: ['Celoris Creator Lab'],
@@ -41,7 +51,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027)",
         description: "Master short-form video monetization, comment-to-DM automation, creator platform fees, and ASCI/GST compliance in India to reach ₹50,000+ monthly revenue.",
-        images: ['/instgramreel.png'],
+        images: ['https://www.celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg'],
     }
 };
 
@@ -49,10 +59,33 @@ const jsonLdData = {
     "@context": "https://schema.org",
     "@graph": [
         {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://www.celorisdesigns.com"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Blog",
+                    "item": "https://www.celorisdesigns.com/blog"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "How to Monetize Instagram Reels & YouTube Shorts in India",
+                    "item": "https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026"
+                }
+            ]
+        },
+        {
             "@type": "Article",
             "headline": "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027)",
             "description": "Master short-form video monetization, comment-to-DM automation, creator platform fees, and ASCI/GST compliance in India to reach ₹50,000+ monthly revenue.",
-            "image": "https://www.celorisdesigns.com/instgramreel.png",
+            "image": "https://www.celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg",
             "datePublished": "2026-10-01T10:00:00Z",
             "dateModified": "2026-10-01T10:00:00Z",
             "author": {
@@ -73,6 +106,31 @@ const jsonLdData = {
                 "@type": "WebPage",
                 "@id": "https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026"
             }
+        },
+        {
+            "@type": "HowTo",
+            "name": "How to Monetize Short-Form Video (Reels & Shorts) in India",
+            "description": "A 3-phase operational blueprint to reach ₹50,000/month through stacked monetization, comment-to-DM funnels, and creator storefronts.",
+            "step": [
+                {
+                    "@type": "HowToStep",
+                    "position": 1,
+                    "name": "Phase 1: Creator Infrastructure & Digital Product Launch",
+                    "text": "Switch to Professional creator accounts on Instagram and YouTube. Create a targeted ₹299–₹499 digital product or template and host it on Playto or Peerseek with Razorpay UPI."
+                },
+                {
+                    "@type": "HowToStep",
+                    "position": 2,
+                    "name": "Phase 2: Automated Comment-to-DM Funnel Setup",
+                    "text": "Connect Meta Graph API automation tools like ReplyKaro or ManyChat to trigger instant checkout delivery within 1 second of viewer comments."
+                },
+                {
+                    "@type": "HowToStep",
+                    "position": 3,
+                    "name": "Phase 3: Retention Scaling & Brand Partnerships",
+                    "text": "Publish high-retention short videos maintaining >70% APV, pitch regional brands for sponsored integrations, and file earnings under ITR Code 16021."
+                }
+            ]
         },
         {
             "@type": "FAQPage",
@@ -137,13 +195,22 @@ export default function MonetizeReelsShortsBlog() {
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 hover:scale-105"
                     style={{
-                        backgroundImage: 'url("/instgramreel.png")',
+                        backgroundImage: 'url("/how-to-monetize-instagram-reels-youtube-shorts-india.jpg")',
                     }}
                 />
                 {/* Dark Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-[#050810]/85 to-black/60" />
 
                 <div className="container relative z-10 pb-16 pt-32 text-white px-4 mx-auto max-w-5xl">
+                    {/* Visual Breadcrumb Navigation for SEO & UX */}
+                    <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs font-medium text-slate-400">
+                        <Link href="/" className="hover:text-emerald-400 transition-colors">Home</Link>
+                        <span>/</span>
+                        <Link href="/blog" className="hover:text-emerald-400 transition-colors">Blog</Link>
+                        <span>/</span>
+                        <span className="text-emerald-400 font-semibold truncate max-w-xs sm:max-w-md">How to Monetize Instagram Reels &amp; YouTube Shorts</span>
+                    </nav>
+
                     <Button
                         variant="ghost"
                         className="text-white w-fit mb-8 hover:bg-white/10 group bg-black/40 backdrop-blur-md border border-white/15 rounded-full pr-6"
@@ -206,6 +273,21 @@ export default function MonetizeReelsShortsBlog() {
 
                 <div className="max-w-4xl mx-auto space-y-12">
                     
+                    {/* High-Resolution Feature Image */}
+                    <figure className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/40">
+                        <img
+                            src="/how-to-monetize-instagram-reels-youtube-shorts-india.jpg"
+                            alt="How to Monetize Instagram Reels & YouTube Shorts in India 2026 - Celoris Creator Blueprint"
+                            className="w-full h-auto object-cover"
+                            width={1200}
+                            height={675}
+                            loading="eager"
+                        />
+                        <figcaption className="p-3 text-center text-xs text-slate-400 font-medium bg-[#0a0f1d] border-t border-white/5">
+                            The 2026–2027 India Creator Blueprint: YouTube Shorts RPM, Instagram comment-to-DM funnels, platform commissions, and regulatory compliance.
+                        </figcaption>
+                    </figure>
+                    
                     {/* 🤖 AIO Overview & Direct Answer Box */}
                     <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-[#0c1527] to-[#070c18] border-2 border-emerald-500/30 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -z-0" />
@@ -213,9 +295,9 @@ export default function MonetizeReelsShortsBlog() {
                             <Sparkles className="h-4 w-4" />
                             <span>AI Overview &amp; Direct Answer Summary (Key Takeaways)</span>
                         </div>
-                        <h3 className="text-xl sm:text-2xl font-black text-white mb-4">
+                        <h2 className="text-xl sm:text-2xl font-black text-white mb-4">
                             How do creators actually monetize short-form video in India in 2026–2027?
-                        </h3>
+                        </h2>
                         <div className="space-y-3.5 text-sm sm:text-base text-slate-300 leading-relaxed">
                             <div className="flex items-start gap-3">
                                 <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold shrink-0 mt-0.5">1</span>
@@ -292,30 +374,56 @@ export default function MonetizeReelsShortsBlog() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                            <div className="bg-[#0a0f1d] border border-red-500/20 rounded-2xl p-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center font-bold">YT</div>
-                                    <h3 className="text-lg font-bold text-white">YouTube Shorts (YPP)</h3>
+                            <div className="bg-[#0a0f1d] border border-red-500/20 rounded-2xl p-6 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-8 h-8 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center font-bold">YT</div>
+                                        <h3 className="text-lg font-bold text-white">YouTube Shorts (YPP)</h3>
+                                    </div>
+                                    <ul className="space-y-3 text-sm text-slate-300">
+                                        <li>• <strong>Model:</strong> Pooled ad-revenue sharing (45% distributed to creators based on view share).</li>
+                                        <li>• <strong>YPP Ad Qualification:</strong> 1,000 subscribers + 10 million public Shorts views in 90 days.</li>
+                                        <li>• <strong>Fan-Funding Tier:</strong> 500 subscribers + 3M views unlocks Super Thanks &amp; Memberships.</li>
+                                        <li>• <strong>India RPM:</strong> ₹2 to ₹60 per 1,000 views depending on niche and advertiser bid.</li>
+                                    </ul>
                                 </div>
-                                <ul className="space-y-3 text-sm text-slate-300">
-                                    <li>• <strong>Model:</strong> Pooled ad-revenue sharing (45% distributed to creators based on view share).</li>
-                                    <li>• <strong>YPP Ad Qualification:</strong> 1,000 subscribers + 10 million public Shorts views in 90 days.</li>
-                                    <li>• <strong>Fan-Funding Tier:</strong> 500 subscribers + 3M views unlocks Super Thanks &amp; Memberships.</li>
-                                    <li>• <strong>India RPM:</strong> ₹2 to ₹60 per 1,000 views depending on niche and advertiser bid.</li>
-                                </ul>
+                                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Official Policy:</span>
+                                    <a
+                                        href="https://support.google.com/youtube/answer/12504224"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 font-semibold hover:underline"
+                                    >
+                                        YouTube Shorts Monetization Policies <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                </div>
                             </div>
 
-                            <div className="bg-[#0a0f1d] border border-pink-500/20 rounded-2xl p-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-pink-600/20 text-pink-400 flex items-center justify-center font-bold">IG</div>
-                                    <h3 className="text-lg font-bold text-white">Instagram Reels (Meta)</h3>
+                            <div className="bg-[#0a0f1d] border border-pink-500/20 rounded-2xl p-6 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-8 h-8 rounded-lg bg-pink-600/20 text-pink-400 flex items-center justify-center font-bold">IG</div>
+                                        <h3 className="text-lg font-bold text-white">Instagram Reels (Meta)</h3>
+                                    </div>
+                                    <ul className="space-y-3 text-sm text-slate-300">
+                                        <li>• <strong>Direct View Payout:</strong> <span className="text-rose-400 font-bold">NONE</span> in India (Reels Play Bonus is currently inactive).</li>
+                                        <li>• <strong>Gifts on Reels:</strong> Unlocks at 500+ followers ($0.01 / ~₹0.85 per Star received).</li>
+                                        <li>• <strong>Subscriptions:</strong> 10k+ followers for recurring monthly fan badges ($0.99 to $99.99).</li>
+                                        <li>• <strong>Real Profit Vector:</strong> Creator Marketplace brand deals and comment-to-DM storefront funnels.</li>
+                                    </ul>
                                 </div>
-                                <ul className="space-y-3 text-sm text-slate-300">
-                                    <li>• <strong>Direct View Payout:</strong> <span className="text-rose-400 font-bold">NONE</span> in India (Reels Play Bonus is currently inactive).</li>
-                                    <li>• <strong>Gifts on Reels:</strong> Unlocks at 500+ followers ($0.01 / ~₹0.85 per Star received).</li>
-                                    <li>• <strong>Subscriptions:</strong> 10k+ followers for recurring monthly fan badges ($0.99 to $99.99).</li>
-                                    <li>• <strong>Real Profit Vector:</strong> Creator Marketplace brand deals and comment-to-DM storefront funnels.</li>
-                                </ul>
+                                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Official Portal:</span>
+                                    <a
+                                        href="https://creators.instagram.com/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-pink-400 hover:text-pink-300 inline-flex items-center gap-1 font-semibold hover:underline"
+                                    >
+                                        Meta for Creators Guide <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
@@ -473,7 +581,16 @@ export default function MonetizeReelsShortsBlog() {
                                 <Zap className="w-5 h-5 text-amber-400" /> How It Supercharges the Instagram Algorithm
                             </h3>
                             <p className="text-slate-300 text-sm leading-relaxed">
-                                Deploying tools like <strong>ReplyKaro</strong>, <strong>ManyChat</strong>, or <strong>FlowGent</strong> does two massive things simultaneously:
+                                Deploying tools integrated with the{" "}
+                                <a
+                                    href="https://developers.facebook.com/docs/messenger-platform/instagram"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-emerald-400 hover:text-emerald-300 font-semibold underline inline-flex items-center gap-1"
+                                >
+                                    Meta Graph API <ExternalLink className="w-3 h-3" />
+                                </a>
+                                —such as <strong>ReplyKaro</strong>, <strong>ManyChat</strong>, or <strong>FlowGent</strong>—does two massive things simultaneously:
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-300">
                                 <div className="p-4 bg-white/5 rounded-xl border border-white/5">
@@ -666,6 +783,39 @@ export default function MonetizeReelsShortsBlog() {
                                 <div>• <strong className="text-white">Seamless Loop Pacing:</strong> Connect your closing sentence directly into your opening hook so the video loops smoothly without viewer drop.</div>
                             </div>
                         </div>
+
+                        {/* Internal Topical Cross-Linking Hub */}
+                        <div className="rounded-2xl p-6 bg-[#0a1120] border border-cyan-500/20 my-6">
+                            <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider mb-4">
+                                <Target className="w-4 h-4" /> Recommended Deep Dives &amp; Editing Toolkits
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <Link 
+                                    href="/blog/how-to-go-viral-youtube-shorts-2026"
+                                    className="p-4 rounded-xl bg-white/5 hover:bg-cyan-500/10 border border-white/5 hover:border-cyan-500/30 transition-all group block"
+                                >
+                                    <span className="text-[11px] font-mono text-cyan-400 block mb-1">Related Guide →</span>
+                                    <p className="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors">How to Go Viral on YouTube Shorts</p>
+                                    <p className="text-xs text-slate-400 mt-1">Master seed audience distribution &amp; swipe rate psychology in 2026.</p>
+                                </Link>
+                                <Link 
+                                    href="/courses/capcut-pro-viral-reels"
+                                    className="p-4 rounded-xl bg-white/5 hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 transition-all group block"
+                                >
+                                    <span className="text-[11px] font-mono text-emerald-400 block mb-1">Celoris Course →</span>
+                                    <p className="font-bold text-white text-sm group-hover:text-emerald-300 transition-colors">CapCut Pro for Viral Reels</p>
+                                    <p className="text-xs text-slate-400 mt-1">Learn fast-paced retention cuts, keyframes, and sound design.</p>
+                                </Link>
+                                <Link 
+                                    href="/blog/top-10-free-ai-video-editing-tools-india-2026"
+                                    className="p-4 rounded-xl bg-white/5 hover:bg-teal-500/10 border border-white/5 hover:border-teal-500/30 transition-all group block"
+                                >
+                                    <span className="text-[11px] font-mono text-teal-400 block mb-1">Free Tool Guide →</span>
+                                    <p className="font-bold text-white text-sm group-hover:text-teal-300 transition-colors">Top 10 Free AI Video Editing Tools</p>
+                                    <p className="text-xs text-slate-400 mt-1">Top auto-captioning and AI b-roll generators for creators in India.</p>
+                                </Link>
+                            </div>
+                        </div>
                     </section>
 
                     {/* Section 7 */}
@@ -681,30 +831,56 @@ export default function MonetizeReelsShortsBlog() {
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-[#0a0f1d] border border-white/10 rounded-2xl p-6 space-y-3">
-                                <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold uppercase">
-                                    <Shield className="w-4 h-4" /> Income Tax &amp; GST
+                            <div className="bg-[#0a0f1d] border border-white/10 rounded-2xl p-6 space-y-3 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold uppercase mb-2">
+                                        <Shield className="w-4 h-4" /> Income Tax &amp; GST
+                                    </div>
+                                    <h3 className="text-white font-bold text-base mb-3">ITR Code 16021 &amp; GST Thresholds</h3>
+                                    <ul className="text-xs sm:text-sm text-slate-300 space-y-2">
+                                        <li>• <strong>ITR Activity Code 16021:</strong> Specific classification for social media influencers and creators. Enables legal deduction of operational expenses (cameras, lights, phones, software).</li>
+                                        <li>• <strong>Section 194R TDS (10%):</strong> Free gifts, smartphones, or barter perks exceeding ₹20,000/year trigger 10% TDS (exempt if returned after filming per CBDT Circular 12/2022).</li>
+                                        <li>• <strong>GST Mandate:</strong> Registration is mandatory once aggregate turnover exceeds <strong>₹20 Lakhs</strong> (₹10 Lakhs in special category states).</li>
+                                        <li>• <strong>Zero-Rated Exports:</strong> International ad payouts (e.g., Google AdSense from foreign entities) qualify as zero-rated exports if an annual Letter of Undertaking (LUT) is filed.</li>
+                                    </ul>
                                 </div>
-                                <h3 className="text-white font-bold text-base">ITR Code 16021 &amp; GST Thresholds</h3>
-                                <ul className="text-xs sm:text-sm text-slate-300 space-y-2">
-                                    <li>• <strong>ITR Activity Code 16021:</strong> Specific classification for social media influencers and creators. Enables legal deduction of operational expenses (cameras, lights, phones, software).</li>
-                                    <li>• <strong>Section 194R TDS (10%):</strong> Free gifts, smartphones, or barter perks exceeding ₹20,000/year trigger 10% TDS (exempt if returned after filming per CBDT Circular 12/2022).</li>
-                                    <li>• <strong>GST Mandate:</strong> Registration is mandatory once aggregate turnover exceeds <strong>₹20 Lakhs</strong> (₹10 Lakhs in special category states).</li>
-                                    <li>• <strong>Zero-Rated Exports:</strong> International ad payouts (e.g., Google AdSense from foreign entities) qualify as zero-rated exports if an annual Letter of Undertaking (LUT) is filed.</li>
-                                </ul>
+                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Official Portal:</span>
+                                    <a 
+                                        href="https://incometaxindia.gov.in/" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 font-semibold hover:underline"
+                                    >
+                                        Income Tax Department (CBDT) <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                </div>
                             </div>
 
-                            <div className="bg-[#0a0f1d] border border-white/10 rounded-2xl p-6 space-y-3">
-                                <div className="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase">
-                                    <AlertTriangle className="w-4 h-4" /> ASCI Guidelines (Addendum II)
+                            <div className="bg-[#0a0f1d] border border-white/10 rounded-2xl p-6 space-y-3 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-2">
+                                        <AlertTriangle className="w-4 h-4" /> ASCI Guidelines (Addendum II)
+                                    </div>
+                                    <h3 className="text-white font-bold text-base mb-3">Disclosure Norms &amp; Legal Credentials</h3>
+                                    <ul className="text-xs sm:text-sm text-slate-300 space-y-2">
+                                        <li>• <strong>Mandatory Upfront Labels:</strong> Sponsored posts must display <code className="text-amber-300">#Ad</code>, <code className="text-amber-300">#Sponsored</code>, <code className="text-amber-300">#Partnership</code>, or <code className="text-amber-300">#Free gift</code> in the first 3 seconds.</li>
+                                        <li>• <strong>Invalid Tag Warning:</strong> Using <code className="text-rose-400 line-through">#collab</code> or <code className="text-rose-400 line-through">#spotted</code> alone is <strong className="text-rose-300">legally non-compliant</strong> under ASCI rules.</li>
+                                        <li>• <strong>SEBI Finance Mandate:</strong> Influencers giving stock or investment advice <strong>must hold SEBI registration</strong> and disclose their registration number on-screen.</li>
+                                        <li>• <strong>Medical Credentials:</strong> Medical or nutrition health claims require certified medical degrees (MBBS, registered dietician).</li>
+                                    </ul>
                                 </div>
-                                <h3 className="text-white font-bold text-base">Disclosure Norms &amp; Legal Credentials</h3>
-                                <ul className="text-xs sm:text-sm text-slate-300 space-y-2">
-                                    <li>• <strong>Mandatory Upfront Labels:</strong> Sponsored posts must display <code className="text-amber-300">#Ad</code>, <code className="text-amber-300">#Sponsored</code>, <code className="text-amber-300">#Partnership</code>, or <code className="text-amber-300">#Free gift</code> in the first 3 seconds.</li>
-                                    <li>• <strong>Invalid Tag Warning:</strong> Using <code className="text-rose-400 line-through">#collab</code> or <code className="text-rose-400 line-through">#spotted</code> alone is <strong className="text-rose-300">legally non-compliant</strong> under ASCI rules.</li>
-                                    <li>• <strong>SEBI Finance Mandate:</strong> Influencers giving stock or investment advice <strong>must hold SEBI registration</strong> and disclose their registration number on-screen.</li>
-                                    <li>• <strong>Medical Credentials:</strong> Medical or nutrition health claims require certified medical degrees (MBBS, registered dietician).</li>
-                                </ul>
+                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                                    <span className="text-slate-400">Official Guidelines:</span>
+                                    <a 
+                                        href="https://ascionline.in/" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 font-semibold hover:underline"
+                                    >
+                                        ASCI Influencer Guidelines <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -745,7 +921,11 @@ export default function MonetizeReelsShortsBlog() {
                                     <span className="text-xs font-mono px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full font-bold">SCALE</span>
                                 </div>
                                 <p className="text-sm text-slate-300 leading-relaxed mb-3">
-                                    Publish 15–20 high-retention vertical videos monthly across YouTube Shorts and Instagram Reels simultaneously. Once videos hit 10k+ views consistently, pitch regional D2C brands for ₹5,000–₹15,000 sponsored integrations. Track all revenues under ITR Code 16021.
+                                    Publish 15–20 high-retention vertical videos monthly across YouTube Shorts and Instagram Reels simultaneously. Once videos hit 10k+ views consistently, pitch regional D2C brands for ₹5,000–₹15,000 sponsored integrations (learn outreach pitch scripts in our{" "}
+                                    <Link href="/courses/social-media-marketing-with-ai" className="text-purple-400 hover:text-purple-300 underline font-semibold">
+                                        Social Media Marketing with AI
+                                    </Link>{" "}
+                                    training). Track all revenues under ITR Code 16021.
                                 </p>
                             </div>
                         </div>
