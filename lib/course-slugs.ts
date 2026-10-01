@@ -52,6 +52,7 @@ export interface CourseBatchDefault {
   seatsTotal: number
   registered: number
   passesTotal: number
+  nextBatchDate?: string
 }
 
 export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
@@ -63,6 +64,16 @@ export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
     seatsTotal: 15,
     registered: 0,
     passesTotal: 15,
+  },
+  'e7698318-7f57-421f-866e-0101ee239c01': {
+    batchNumber: '43',
+    soldOutBatch: 'Batch #42 (Sold Out)',
+    batchStart: '2026-10-01T20:00:00.000+05:30',
+    scheduleLabel: 'Tonight · 8:00 PM IST',
+    seatsTotal: 15,
+    registered: 10,
+    passesTotal: 5,
+    nextBatchDate: '11 Oct 2026',
   },
 }
 

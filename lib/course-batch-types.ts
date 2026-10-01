@@ -68,6 +68,7 @@ export interface CourseBatchInfo {
   price: number
   offer: CourseLaunchOffer | null
   updatedAt: string
+  nextBatchDate?: string | null
 }
 
 export function offerIsOpen(offer: CourseLaunchOffer | null, now = Date.now()): boolean {

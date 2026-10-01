@@ -220,6 +220,8 @@ export default function CourseDetailClient({
     course.title.toLowerCase().includes("shorts") ||
     course.title.toLowerCase().includes("reels");
 
+  const isDigitalMarketing = course.title.toLowerCase().includes("digital marketing");
+
   const copyToClipboard = (text: string, index: number) => {
     if (typeof window !== "undefined" && navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(text);
@@ -277,7 +279,7 @@ export default function CourseDetailClient({
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Batch Status & Sold Out Notice */}
-            {isShortForm && (
+            {isShortForm ? (
               <div className="rounded-2xl p-3.5 sm:p-4 border bg-[#111625] border-amber-500/40 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
                 <div className="flex items-center gap-3">
                   <span className="relative flex h-3 w-3 flex-shrink-0">
@@ -294,7 +296,26 @@ export default function CourseDetailClient({
                   15 Passes Open
                 </span>
               </div>
-            )}
+            ) : isDigitalMarketing ? (
+              <div className="rounded-2xl p-3.5 sm:p-4 border bg-[#111625] border-amber-500/40 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <span className="relative flex h-3 w-3 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+                  </span>
+                  <div className="text-sm font-medium flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                    <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">Batch #42 (Sold Out)</span>
+                    <span className="text-slate-400 hidden sm:inline">•</span>
+                    <span className="font-bold text-amber-300 text-xs sm:text-sm">Batch #43: Launching Tonight · 8:00 PM IST</span>
+                    <span className="text-slate-400 hidden sm:inline">•</span>
+                    <span className="text-emerald-300 font-semibold text-xs sm:text-sm">Next Batch: 11 Oct</span>
+                  </div>
+                </div>
+                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                  Only 5 Seats Left
+                </span>
+              </div>
+            ) : null}
 
             <div>
               <div className="flex items-center space-x-2 mb-4">
@@ -625,19 +646,27 @@ export default function CourseDetailClient({
             </div>
 
             {/* WhatsApp Instant Query Card */}
-            {isShortForm && (
+            {(isShortForm || isDigitalMarketing) && (
               <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Have questions about the 10-Hour Masterclass?</h3>
-                    <p className="text-xs text-slate-600">Ask about class timings, phone compatibility, or batch recordings directly on WhatsApp.</p>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {isDigitalMarketing ? "Have questions before joining tonight at 8:00 PM?" : "Have questions about the 10-Hour Masterclass?"}
+                    </h3>
+                    <p className="text-xs text-slate-600">
+                      {isDigitalMarketing ? "Ask about curriculum, live campaign access, or batch schedule directly on WhatsApp." : "Ask about class timings, phone compatibility, or batch recordings directly on WhatsApp."}
+                    </p>
                   </div>
                 </div>
                 <a
-                  href="https://wa.me/919084718101?text=Hi%20Celoris!%20I%20have%20a%20question%20about%20the%2010-Hour%20YouTube%20Shorts%20%26%20Instagram%20Reels%20Masterclass."
+                  href={`https://wa.me/919084718101?text=${encodeURIComponent(
+                    isDigitalMarketing
+                      ? "Hi Celoris! I have a question about Digital Marketing Mastery Batch #43 launching tonight at 8:00 PM."
+                      : "Hi Celoris! I have a question about the 10-Hour YouTube Shorts & Instagram Reels Masterclass."
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition-all whitespace-nowrap active:scale-95 cursor-pointer"

@@ -230,6 +230,24 @@ function getBatchStats(courseTitle: string) {
     };
   }
 
+  if (title.includes('digital marketing')) {
+    return {
+      batchLabel: 'Starting Tonight',
+      batchDotClass: 'live',
+      batchBadgeClass: 'urgent',
+      batchBadgeText: 'TONIGHT 8 PM',
+      batchNumber: '#43',
+      seatsOpen: 5,
+      seatsTotal: 15,
+      seatsEnrolled: 10,
+      seatsBadgeText: 'FILLING FAST',
+      trainersCount: 2,
+      trainerInitials: ['DK', 'AJ'],
+      trainersExtra: 0,
+      nextBatchDate: '11 Oct',
+    };
+  }
+
   // Default — preserves existing behavior for every other course.
   return {
     batchLabel: 'Running Now',

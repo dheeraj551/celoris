@@ -184,6 +184,22 @@ function getBatchStats(course: any) {
     };
   }
 
+  if (title.includes('digital marketing')) {
+    return {
+      batchLabel: 'Starting Tonight',
+      batchDotClass: 'live',
+      batchBadgeClass: 'urgent',
+      batchBadgeText: 'TONIGHT 8 PM',
+      batchNumber: '#43',
+      seatsOpen: 5,
+      seatsTotal: 15,
+      seatsEnrolled: 10,
+      seatsBadgeText: 'FILLING FAST',
+      homeTutorAvailable: true,
+      nextBatchDate: '11 Oct',
+    };
+  }
+
   // Default — preserves existing behavior for every other course.
   return {
     batchLabel: 'Running Now',
@@ -203,7 +219,15 @@ function getBatchStats(course: any) {
 export function liveBatchStatus(batch: CourseBatchInfo) {
   if (batch.isLive) return { label: 'Class Live Now', dot: 'live', badge: 'live', badgeText: 'LIVE NOW' };
   if (!batch.nextStart) return { label: 'Being Scheduled', dot: 'soon', badge: 'soon', badgeText: 'DATE SOON' };
-  if (!batch.batchStarted) return { label: 'Starting Soon', dot: 'soon', badge: 'soon', badgeText: 'STARTING SOON' };
+  if (!batch.batchStarted) {
+    const isToday = batch.batchStart && new Date(batch.batchStart).toDateString() === new Date().toDateString();
+    return {
+      label: isToday ? 'Starting Tonight' : 'Starting Soon',
+      dot: 'live',
+      badge: isToday ? 'urgent' : 'soon',
+      badgeText: isToday ? 'TONIGHT 8 PM' : 'STARTING SOON'
+    };
+  }
   return { label: 'Running Now', dot: 'live', badge: 'live', badgeText: 'RUNNING' };
 }
 
@@ -226,7 +250,8 @@ export function CourseNoticeBoardMini({ course, durationDisplay, batch, onBatchC
 
   // Old fallback (no linked classroom): first day of next month, as before.
   const now = new Date();
-  const legacyNext = new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const legacyNext = (legacy as any).nextBatchDate || new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const nextBatchDisplay = live?.nextBatchDate || (legacy as any).nextBatchDate || legacyNext;
   const nextLabel = live ? (live.batchStarted ? 'Next class' : 'Batch starts') : 'Next batch';
   // The date that matters right now: the batch start before it begins, the
   // next class after that.
@@ -352,7 +377,14 @@ export function CourseNoticeBoardMini({ course, durationDisplay, batch, onBatchC
         <div className="mnb-label">At a Glance</div>
         <h4>Course Details</h4>
         <ul className="mnb-list">
-          <li><span>{nextLabel}</span><span className="val">{nextValue}</span></li>
+          {live?.batchStart && !live.batchStarted ? (
+            <>
+              <li><span>Batch starts</span><span className="val">Tonight · 8:00 PM IST</span></li>
+              <li><span>Next batch</span><span className="val">{nextBatchDisplay}</span></li>
+            </>
+          ) : (
+            <li><span>{nextLabel}</span><span className="val">{nextBatchDisplay || nextValue}</span></li>
+          )}
           {live?.scheduleLabel && <li><span>Schedule</span><span className="val">{live.scheduleLabel}</span></li>}
           {live?.classMinutes ? <li><span>Each class</span><span className="val">{live.classMinutes} min</span></li> : null}
           <li><span>Course fee</span><span className="val">{price}</span></li>

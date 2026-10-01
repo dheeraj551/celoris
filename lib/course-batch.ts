@@ -223,6 +223,7 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     price,
     offer,
     updatedAt: now.toISOString(),
+    nextBatchDate: defaults?.nextBatchDate || null,
   }
 }
 
