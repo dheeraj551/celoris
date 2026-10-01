@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, Lock, User, Eye, EyeOff, CheckCircle, Smartphone, Loader2 } from "lucide-react"
+import { Mail, Lock, User, Eye, EyeOff, CheckCircle, Smartphone, Loader2, MessageSquare, Send } from "lucide-react"
 
 declare global {
   interface Window {
@@ -31,10 +31,20 @@ export default function RegisterPage() {
   // Phone verification states
   const [phoneVerificationEnabled, setPhoneVerificationEnabled] = useState(false)
   const [phoneClientId, setPhoneClientId] = useState("")
+  const [whatsappOtpEnabled, setWhatsappOtpEnabled] = useState(false)
   const [isPhoneVerified, setIsPhoneVerified] = useState(false)
   const [verifiedPhone, setVerifiedPhone] = useState("")
   const [verifyingPhone, setVerifyingPhone] = useState(false)
   const [phoneError, setPhoneError] = useState("")
+
+  // WhatsApp OTP specific states
+  const [whatsappPhone, setWhatsappPhone] = useState("")
+  const [whatsappOtpCode, setWhatsappOtpCode] = useState("")
+  const [isOtpSent, setIsOtpSent] = useState(false)
+  const [isSendingOtp, setIsSendingOtp] = useState(false)
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false)
+  const [otpCountdown, setOtpCountdown] = useState(0)
+  const [verificationMethod, setVerificationMethod] = useState<"whatsapp" | "sms">("whatsapp")
 
   // Fetch phone verification settings on mount
   useEffect(() => {
@@ -47,6 +57,9 @@ export default function RegisterPage() {
             setPhoneVerificationEnabled(true)
             setPhoneClientId(data.clientId)
           }
+          if (data.whatsappOtpEnabled) {
+            setWhatsappOtpEnabled(true)
+          }
         }
       } catch (err) {
         console.error("Could not fetch phone settings:", err)
@@ -54,6 +67,65 @@ export default function RegisterPage() {
     }
     checkPhoneSettings()
   }, [])
+
+  // Resend OTP countdown timer
+  useEffect(() => {
+    if (otpCountdown <= 0) return
+    const timer = setInterval(() => setOtpCountdown((prev) => prev - 1), 1000)
+    return () => clearInterval(timer)
+  }, [otpCountdown])
+
+  const handleSendWhatsAppOtp = async () => {
+    if (!whatsappPhone || whatsappPhone.trim().length < 10) {
+      setPhoneError("Please enter a valid 10-digit mobile number")
+      return
+    }
+    setIsSendingOtp(true)
+    setPhoneError("")
+    try {
+      const res = await fetch("/api/auth/whatsapp-otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: whatsappPhone.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to send WhatsApp OTP")
+      setIsOtpSent(true)
+      setOtpCountdown(30)
+    } catch (err: any) {
+      setPhoneError(err.message || "Failed to send OTP via WhatsApp")
+    } finally {
+      setIsSendingOtp(false)
+    }
+  }
+
+  const handleVerifyWhatsAppOtp = async () => {
+    if (!whatsappOtpCode || whatsappOtpCode.trim().length !== 6) {
+      setPhoneError("Please enter the 6-digit code received on WhatsApp")
+      return
+    }
+    setIsVerifyingOtp(true)
+    setPhoneError("")
+    try {
+      const res = await fetch("/api/auth/whatsapp-otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: whatsappPhone.trim(),
+          otp: whatsappOtpCode.trim(),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Invalid OTP code")
+      setVerifiedPhone(data.phone || whatsappPhone.trim())
+      setIsPhoneVerified(true)
+      setPhoneError("")
+    } catch (err: any) {
+      setPhoneError(err.message || "Verification failed")
+    } finally {
+      setIsVerifyingOtp(false)
+    }
+  }
 
   // Dynamically load Phone.email script and setup listener when verification is required
   useEffect(() => {
@@ -170,7 +242,8 @@ export default function RegisterPage() {
       return false
     }
     // If phone verification is enabled and configured, verify it first
-    if (phoneVerificationEnabled && phoneClientId && (!isPhoneVerified || !verifiedPhone)) {
+    const isVerificationRequired = whatsappOtpEnabled || (phoneVerificationEnabled && Boolean(phoneClientId))
+    if (isVerificationRequired && (!isPhoneVerified || !verifiedPhone)) {
       setError("Please verify your mobile number with OTP before continuing")
       return false
     }
@@ -377,8 +450,8 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Phone Verification Section (Controlled by Admin Switch) */}
-              {phoneVerificationEnabled && phoneClientId && (
+              {/* Phone Verification Section (Controlled by Admin Switches) */}
+              {(whatsappOtpEnabled || (phoneVerificationEnabled && phoneClientId)) && (
                 <div className="space-y-2">
                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">
                     Mobile Number Verification <span className="text-emerald-400">*</span>
@@ -391,8 +464,8 @@ export default function RegisterPage() {
                           <CheckCircle className="h-4 w-4 text-emerald-400" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                            Phone Verified
+                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <MessageSquare className="h-3 w-3" /> Phone Verified
                           </p>
                           <p className="text-xs font-mono font-bold text-white tracking-wide">
                             {verifiedPhone}
@@ -404,6 +477,8 @@ export default function RegisterPage() {
                         onClick={() => {
                           setIsPhoneVerified(false)
                           setVerifiedPhone("")
+                          setIsOtpSent(false)
+                          setWhatsappOtpCode("")
                         }}
                         className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider underline transition-colors"
                       >
@@ -411,50 +486,184 @@ export default function RegisterPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center text-center space-y-3">
-                      <div className="flex items-center space-x-2 text-slate-400 text-xs">
-                        <Smartphone className="h-4 w-4 text-emerald-400" />
-                        <span>Verify your mobile number via free SMS OTP</span>
-                      </div>
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col space-y-3.5">
+                      {/* Optional Tabs if BOTH WhatsApp and Phone.email are active */}
+                      {whatsappOtpEnabled && phoneVerificationEnabled && phoneClientId && (
+                        <div className="flex items-center p-1 bg-slate-900/60 rounded-xl border border-slate-700/60">
+                          <button
+                            type="button"
+                            onClick={() => setVerificationMethod("whatsapp")}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                              verificationMethod === "whatsapp"
+                                ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/20"
+                                : "text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" /> WhatsApp OTP
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setVerificationMethod("sms")}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                              verificationMethod === "sms"
+                                ? "bg-teal-600 text-white shadow-md shadow-teal-500/20"
+                                : "text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <Smartphone className="h-3.5 w-3.5" /> SMS OTP
+                          </button>
+                        </div>
+                      )}
 
-                      {/* Phone.email Button container */}
-                      <div
-                        className="pe_signin_button"
-                        data-client-id={phoneClientId}
-                      />
+                      {/* WHATSAPP OTP VIEW */}
+                      {(whatsappOtpEnabled && (!phoneVerificationEnabled || !phoneClientId || verificationMethod === "whatsapp")) && (
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2 text-slate-300 text-xs">
+                            <MessageSquare className="h-4 w-4 text-emerald-400 shrink-0" />
+                            <span>Verify your mobile number via instant WhatsApp OTP</span>
+                          </div>
 
-                      <style>{`
-                        #btn_ph_login {
-                          display: inline-flex !important;
-                          align-items: center !important;
-                          justify-content: center !important;
-                          background: #059669 !important;
-                          border-radius: 1rem !important;
-                          font-weight: 800 !important;
-                          font-size: 11px !important;
-                          letter-spacing: 0.08em !important;
-                          text-transform: uppercase !important;
-                          padding: 12px 24px !important;
-                          box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25) !important;
-                          border: none !important;
-                          cursor: pointer !important;
-                          transition: all 0.2s ease !important;
-                        }
-                        #btn_ph_login:hover {
-                          background: #10b981 !important;
-                          transform: scale(1.02) !important;
-                        }
-                      `}</style>
+                          {!isOtpSent ? (
+                            <div className="flex gap-2">
+                              <div className="relative flex-1">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-slate-400">
+                                  +91
+                                </span>
+                                <Input
+                                  type="tel"
+                                  placeholder="9876543210"
+                                  value={whatsappPhone}
+                                  onChange={(e) => {
+                                    setWhatsappPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+                                    setPhoneError("")
+                                  }}
+                                  className="bg-slate-900/90 border-slate-700 text-white placeholder:text-slate-600 rounded-xl h-11 pl-12 text-xs font-mono tracking-wider focus:border-emerald-500"
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                onClick={handleSendWhatsAppOtp}
+                                disabled={isSendingOtp || whatsappPhone.length < 10}
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-11 px-4 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40"
+                              >
+                                {isSendingOtp ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Send className="h-3.5 w-3.5 mr-1.5" /> Send Code
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between text-[11px] text-slate-400 bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
+                                <span>Code sent to <strong className="text-white font-mono">+91 {whatsappPhone}</strong></span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setIsOtpSent(false)
+                                    setWhatsappOtpCode("")
+                                  }}
+                                  className="text-[10px] text-emerald-400 hover:underline font-bold"
+                                >
+                                  Change
+                                </button>
+                              </div>
 
-                      {verifyingPhone && (
-                        <div className="flex items-center space-x-2 text-xs text-emerald-400">
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          <span>Verifying OTP code...</span>
+                              <div className="flex gap-2">
+                                <Input
+                                  type="text"
+                                  placeholder="6-digit OTP"
+                                  maxLength={6}
+                                  value={whatsappOtpCode}
+                                  onChange={(e) => {
+                                    setWhatsappOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                                    setPhoneError("")
+                                  }}
+                                  className="bg-slate-900/90 border-slate-700 text-white text-center tracking-[0.4em] font-mono font-bold placeholder:text-slate-600 rounded-xl h-11 text-sm focus:border-emerald-500"
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={handleVerifyWhatsAppOtp}
+                                  disabled={isVerifyingOtp || whatsappOtpCode.length !== 6}
+                                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-11 px-5 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40"
+                                >
+                                  {isVerifyingOtp ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    "Verify"
+                                  )}
+                                </Button>
+                              </div>
+
+                              <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
+                                <span>Expires in 5 minutes</span>
+                                {otpCountdown > 0 ? (
+                                  <span>Resend in {otpCountdown}s</span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={handleSendWhatsAppOtp}
+                                    disabled={isSendingOtp}
+                                    className="text-emerald-400 hover:underline font-bold"
+                                  >
+                                    Resend code
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* SMS (PHONE.EMAIL) VIEW */}
+                      {phoneVerificationEnabled && phoneClientId && (!whatsappOtpEnabled || verificationMethod === "sms") && (
+                        <div className="flex flex-col items-center justify-center text-center space-y-3">
+                          <div className="flex items-center space-x-2 text-slate-400 text-xs">
+                            <Smartphone className="h-4 w-4 text-teal-400" />
+                            <span>Verify your mobile number via free SMS OTP</span>
+                          </div>
+
+                          <div
+                            className="pe_signin_button"
+                            data-client-id={phoneClientId}
+                          />
+
+                          <style>{`
+                            #btn_ph_login {
+                              display: inline-flex !important;
+                              align-items: center !important;
+                              justify-content: center !important;
+                              background: #0d9488 !important;
+                              border-radius: 1rem !important;
+                              font-weight: 800 !important;
+                              font-size: 11px !important;
+                              letter-spacing: 0.08em !important;
+                              text-transform: uppercase !important;
+                              padding: 12px 24px !important;
+                              box-shadow: 0 10px 25px -5px rgba(20, 184, 166, 0.25) !important;
+                              border: none !important;
+                              cursor: pointer !important;
+                              transition: all 0.2s ease !important;
+                            }
+                            #btn_ph_login:hover {
+                              background: #14b8a6 !important;
+                              transform: scale(1.02) !important;
+                            }
+                          `}</style>
+
+                          {verifyingPhone && (
+                            <div className="flex items-center space-x-2 text-xs text-teal-400">
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              <span>Verifying OTP code...</span>
+                            </div>
+                          )}
                         </div>
                       )}
 
                       {phoneError && (
-                        <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
+                        <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider text-center pt-1">
                           {phoneError}
                         </p>
                       )}

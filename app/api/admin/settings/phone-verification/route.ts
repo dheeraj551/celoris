@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseClientForServer()
     const { data, error } = await supabase
       .from('auth_settings')
-      .select('phone_verification_enabled, phone_email_client_id, updated_at')
+      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, updated_at')
       .eq('id', 1)
       .maybeSingle()
 
@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
+      whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? true),
       updatedAt: data?.updated_at || null,
     })
   } catch (err: any) {
@@ -50,6 +51,10 @@ export async function POST(request: NextRequest) {
       updatePayload.phone_verification_enabled = body.enabled
     }
 
+    if (typeof body.whatsappOtpEnabled === 'boolean') {
+      updatePayload.whatsapp_otp_enabled = body.whatsappOtpEnabled
+    }
+
     if (typeof body.clientId === 'string') {
       updatePayload.phone_email_client_id = body.clientId.trim()
     }
@@ -60,7 +65,7 @@ export async function POST(request: NextRequest) {
         id: 1,
         ...updatePayload,
       })
-      .select('phone_verification_enabled, phone_email_client_id, updated_at')
+      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, updated_at')
       .single()
 
     if (error) {
@@ -71,6 +76,7 @@ export async function POST(request: NextRequest) {
       success: true,
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
+      whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? true),
       updatedAt: data?.updated_at || null,
     })
   } catch (err: any) {
