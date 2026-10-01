@@ -31,7 +31,7 @@ export default function RegisterPage() {
   // Phone verification states
   const [phoneVerificationEnabled, setPhoneVerificationEnabled] = useState(false)
   const [phoneClientId, setPhoneClientId] = useState("")
-  const [whatsappOtpEnabled, setWhatsappOtpEnabled] = useState(false)
+  const [whatsappOtpEnabled, setWhatsappOtpEnabled] = useState(true)
   const [isPhoneVerified, setIsPhoneVerified] = useState(false)
   const [verifiedPhone, setVerifiedPhone] = useState("")
   const [verifyingPhone, setVerifyingPhone] = useState(false)
@@ -56,9 +56,11 @@ export default function RegisterPage() {
           if (data.enabled && data.clientId) {
             setPhoneVerificationEnabled(true)
             setPhoneClientId(data.clientId)
+          } else {
+            setPhoneVerificationEnabled(false)
           }
-          if (data.whatsappOtpEnabled) {
-            setWhatsappOtpEnabled(true)
+          if (typeof data.whatsappOtpEnabled === "boolean") {
+            setWhatsappOtpEnabled(data.whatsappOtpEnabled)
           }
         }
       } catch (err) {
