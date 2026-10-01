@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'monetize-instagram-reels-youtube-shorts-india-2026',
+      title: "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027)",
+      slug: 'monetize-instagram-reels-youtube-shorts-india-2026',
+      excerpt: "Master short-form video monetization, comment-to-DM automation, creator platform fees, and ASCI/GST compliance in India to reach ₹50,000+ monthly revenue.",
+      featured_image_url: "/instgramreel.png",
+      author_name: 'Celoris Creator Lab',
+      category: 'Creator Economy • Monetization',
+      reading_time: 16,
+      published_at: '2026-10-01T10:00:00Z',
+    },
+    {
       id: 'excel-copilot-modes-2026',
       title: "From Chaos to Control: How Microsoft Excel's New Copilot Modes Are Redefining Spreadsheet Productivity",
       slug: 'excel-copilot-modes-2026',

@@ -134,6 +134,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/blog/monetize-instagram-reels-youtube-shorts-india-2026`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
       url: `${baseUrl}/blog/best-social-media-marketing-course-noida`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
