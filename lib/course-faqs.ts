@@ -74,34 +74,79 @@ function shortFormFaqs({ batch, price }: FaqContext): CourseFaq[] {
   return faqs
 }
 
+function digitalMarketingFaqs({ batch, price }: FaqContext): CourseFaq[] {
+  const fee = Number(price) > 0 ? Number(price) : 0
+  const faqs: CourseFaq[] = [
+    {
+      question: "How are the live digital marketing classes conducted and what is the batch schedule?",
+      answer:
+        "Classes are conducted live and interactively in Celoris Classrooms." +
+        (batch?.scheduleLabel ? ` This batch meets ${batch.scheduleLabel}` + (batch.classMinutes ? ` (${batch.classMinutes} minutes per session).` : ".") : " Sessions include live ad account walkthroughs, screen sharing, and real-time Q&A.") +
+        (batch?.batchStart && !batch.batchStarted ? ` The upcoming live batch starts on ${istFullDate(batch.batchStart)} at ${istTime(batch.batchStart)} IST.` : "") +
+        " You learn directly from active performance marketers running live campaigns.",
+    },
+    {
+      question: "Do I need any prior marketing, coding, or math background?",
+      answer:
+        "No prior experience is required. The curriculum begins with marketing fundamentals and consumer psychology, then progresses step-by-step into hands-on tools like Meta Ads Manager, Google Ads, SEO, and GA4 analytics. A laptop or desktop is recommended for practicing on advertising dashboards.",
+    },
+    {
+      question: "Will I get to run real ad campaigns on Meta and Google?",
+      answer:
+        "Yes! Unlike theoretical courses with static slides, you will set up real campaigns in Meta Ads Manager (Facebook & Instagram) and Google Ads. You will learn audience targeting, conversion tracking pixels, budgeting, A/B testing, and calculating ROAS (Return on Ad Spend) using live and simulated campaign scenarios.",
+    },
+    {
+      question: "What modern AI marketing tools are covered in the curriculum?",
+      answer:
+        "You will learn 2026 AI-driven workflows: ChatGPT and Claude for crafting high-converting ad copy and email funnels, Canva and Celoris AI for creative ad graphics, and AI-assisted SEO keyword clustering tools to research and rank content faster.",
+    },
+    {
+      question: "Is the course taught in Hindi, English, or Hinglish?",
+      answer:
+        "Sessions are delivered in clear bilingual Hinglish (Hindi + English) so complex concepts are easy to grasp for Indian students and professionals. All marketing terms, frameworks, and client deliverables are provided in professional English.",
+    },
+    {
+      question: "Will this course help me start freelancing or land a digital marketing job in India?",
+      answer:
+        "Yes. You will complete real-world portfolio projects (Local Business Lead Generation, E-commerce ROAS Campaign, and a Technical SEO Audit). In India, entry-level digital marketers earn ₹3.5 LPA – ₹6 LPA, while freelancers typically charge ₹15,000 to ₹40,000/month per client retainer. We provide client pitch templates and freelancing contracts.",
+    },
+    {
+      question: "What if I miss a live class? Are recordings provided?",
+      answer:
+        "Yes. High-definition recordings of every live session are uploaded immediately to your Celoris dashboard with lifetime access, alongside session notes, prompt swipe files, and direct coordinator support on WhatsApp.",
+    },
+  ]
+  const offer = batch?.offer
+  if (offer) {
+    const seats = batch?.seatsTotal
+    faqs.push({
+      question: "How do the free passes work for this batch?",
+      answer:
+        `Free passes are released in rounds: up to ${offer.perRound} passes per round` +
+        (seats ? `, until all ${seats} seats in the batch are filled` : "") +
+        ". Once claimed, you get full access to the live batch, recordings, and projects at ₹0." +
+        (fee > 0 ? ` The standard course fee is ${inr(fee)}.` : ""),
+    })
+  } else if (fee > 0) {
+    faqs.push({
+      question: "What is the fee for the Digital Marketing Mastery course?",
+      answer: `The complete course fee is ${inr(fee)}, with no hidden software or examination charges.`,
+    })
+  }
+  faqs.push({
+    question: "Do I receive a verified certificate upon completion?",
+    answer: "Yes, upon submitting the capstone portfolio project, you receive an official Celoris Academy Certificate of Completion that can be added to your LinkedIn profile and CV.",
+  })
+  return faqs
+}
+
 export function getFaqsForCourse(courseTitle: string, ctx: FaqContext = {}): CourseFaq[] {
   const title = courseTitle.toLowerCase();
   if (title.includes("short-form video") || (title.includes("shorts") && title.includes("reels"))) {
     return shortFormFaqs(ctx);
   }
   if (title.includes("digital marketing")) {
-    return [
-      {
-        question: "Do I need any technical background?",
-        answer: "No. This course is beginner-friendly and builds up progressively."
-      },
-      {
-        question: "Will I get to run real ad campaigns during the course?",
-        answer: "Yes — you'll get hands-on practice with real ad platforms (Meta, Google) using either simulated or live budgets depending on batch structure."
-      },
-      {
-        question: "Is this course useful if I already run my own business?",
-        answer: "Absolutely — many students join specifically to market their own business rather than pursue a marketing job."
-      },
-      {
-        question: "What if I miss a live session?",
-        answer: "Recordings are provided so you can catch up before the next class."
-      },
-      {
-        question: "Is there a certificate?",
-        answer: "Yes, a Celoris certificate of completion is provided at the end."
-      }
-    ];
+    return digitalMarketingFaqs(ctx);
   }
   if (title.includes("web development")) {
     return [

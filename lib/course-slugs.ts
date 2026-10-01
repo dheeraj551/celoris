@@ -42,6 +42,12 @@ export const COURSE_SEO: Record<string, { title: string; description: string; im
     image: '/courses/short-form-video-masterclass-og.jpg',
     heroImage: '/courses/short-form-video-masterclass.webp',
   },
+  'e7698318-7f57-421f-866e-0101ee239c01': {
+    title: 'Digital Marketing Course with AI Tools & Live Ads',
+    description:
+      'Live practical digital marketing course in India: master Meta Ads, Google Ads, SEO, GA4 analytics & AI workflows. Build real campaigns & get certified.',
+    image: '/courses/digital-marketing-mastery-og.png',
+  },
 }
 
 export interface CourseBatchDefault {

@@ -166,12 +166,60 @@ export default function CourseDetailClient({
     }
   ];
 
+  const digitalMarketingTestimonials = [
+    {
+      name: "Alok Kumar",
+      role: "Freelance Performance Marketer, Noida",
+      time: "3 days ago",
+      stars: 5,
+      text: "I was overwhelmed by theoretical YouTube tutorials. In this masterclass, setting up live campaigns on Meta Ads Manager and reading GA4 conversion paths made everything click. Closed 2 local clinic retainer clients at ₹22,000/month within 6 weeks of finishing."
+    },
+    {
+      name: "Ritu Singhania",
+      role: "Founder, House of Chikankari D2C, Delhi",
+      time: "1 week ago",
+      stars: 5,
+      text: "I was spending ₹20k a month on external digital agencies with zero clarity on ROAS. Learning how to properly set up custom audiences, catalog ads, and conversion events helped me bring our customer acquisition cost down from ₹320 to ₹145."
+    },
+    {
+      name: "Shubham Deshmukh",
+      role: "Marketing Associate, Pune",
+      time: "2 weeks ago",
+      stars: 5,
+      text: "Most institutes in India charge ₹45,000 for outdated slides from 2018. Celoris taught modern 2026 workflows: combining ChatGPT for ad copy variations with Google Ads Performance Max campaigns. The capstone portfolio directly helped me clear my agency interview."
+    },
+    {
+      name: "Tanya Saxena",
+      role: "Social Media Specialist, Bengaluru",
+      time: "4 days ago",
+      stars: 5,
+      text: "The breakdown of organic growth vs paid ads was eye-opening. The module on Local SEO and Google Business Profile optimization alone helped me rank our boutique studio in the local 3-pack search results. Highly recommend for any freelancer."
+    },
+    {
+      name: "Harpreet Singh",
+      role: "E-commerce Entrepreneur, Ludhiana",
+      time: "5 days ago",
+      stars: 5,
+      text: "Practical, fast-paced, and zero fluff. The instructor walks through real advertising accounts and shows exactly why ads fail and how to fix fatigue with new angles. The free pass offer made it an unbeatable value."
+    },
+    {
+      name: "Anjali Menon",
+      role: "Career Switcher, Kochi",
+      time: "1 week ago",
+      stars: 5,
+      text: "Coming from a non-tech background, I was worried about analytics and tracking. The trainer explained Google Analytics 4 and UTM tracking so simply in bilingual Hinglish that I felt confident handling real client accounts right away."
+    }
+  ];
+
   // Reviews carried over from the earlier Celoris website — shown only on the
   // course they were written for (they used to appear on every course).
   const getTestimonialsForCourse = (courseTitle: string) => {
     const title = courseTitle.toLowerCase();
     if (title.includes("short-form") || title.includes("shorts") || title.includes("reels")) {
       return shortFormVideoTestimonials;
+    }
+    if (title.includes("digital marketing")) {
+      return digitalMarketingTestimonials;
     }
     if (title.includes("copilot")) {
       return copilotTestimonials;
@@ -508,6 +556,40 @@ export default function CourseDetailClient({
               </Card>
             )}
 
+            {/* Marketing Tools & Platforms You'll Master (Digital Marketing) */}
+            {isDigitalMarketing && (
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <h2 className={`${sectionTitle} flex items-center space-x-2 text-slate-900`}>
+                    <Sparkles className="h-5 w-5 text-emerald-600" />
+                    <span>Marketing Tools &amp; Platforms You&apos;ll Master</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">Zero prior tech setup required — practice on industry-standard ad networks and modern AI tools</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {[
+                      { name: "Meta Ads Manager", badge: "Paid Social Growth", desc: "Pixel tracking, custom audiences, CBO & ROAS optimization for FB & IG", color: "from-blue-500 to-indigo-600" },
+                      { name: "Google Ads (Search & PMax)", badge: "Search & Video Ads", desc: "High-intent keyword bidding, Quality Score improvement & YouTube campaigns", color: "from-emerald-500 to-green-600" },
+                      { name: "Google Analytics 4 (GA4)", badge: "Web & Conversion Analytics", desc: "User acquisition funnels, UTM tag architecture & client ROI reporting", color: "from-amber-500 to-orange-600" },
+                      { name: "Google Search Console & SEO", badge: "Organic Rankings", desc: "Keyword research, technical on-page audits & Google Local 3-Pack rankings", color: "from-cyan-500 to-sky-600" },
+                      { name: "ChatGPT & Claude for Marketers", badge: "AI Copywriting", desc: "High-converting ad copy angles, email sequences & consumer psychology hooks", color: "from-violet-500 to-purple-600" },
+                      { name: "Canva & Celoris AI", badge: "High-CTR Creatives", desc: "Scroll-stopping ad creatives, banner designs & video ad thumbnails", color: "from-rose-500 to-pink-600" },
+                    ].map((tool, idx) => (
+                      <div key={idx} className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-slate-50 transition-colors">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${tool.color}`} />
+                          <h3 className="font-bold text-slate-900 text-sm">{tool.name}</h3>
+                        </div>
+                        <span className="inline-block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">{tool.badge}</span>
+                        <p className="text-xs text-slate-600 leading-relaxed">{tool.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Viral Video Studio Timeline Showcase */}
             {isShortForm && <CourseVideoStudioShowcase />}
 
@@ -613,6 +695,57 @@ export default function CourseDetailClient({
               </Card>
             )}
 
+            {/* How Celoris Compares (Digital Marketing) */}
+            {isDigitalMarketing && (
+              <Card className="bg-white border-slate-200 overflow-hidden">
+                <CardHeader>
+                  <h2 className={`${sectionTitle} flex items-center space-x-2 text-slate-900`}>
+                    <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                    <span>How Celoris Digital Marketing Compares</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">Built for real-world agency campaigns and freelancing skills — not outdated textbook slides</p>
+                </CardHeader>
+                <CardContent className="p-0 overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[500px]">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="py-3 px-4 font-bold text-slate-700">Feature</th>
+                        <th className="py-3 px-4 font-bold text-emerald-700 bg-emerald-50/50">Celoris Live Masterclass</th>
+                        <th className="py-3 px-4 font-bold text-slate-500">Traditional Institutes / Pre-recorded</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Training Format</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">100% Live online in Celoris Classrooms with screen sharing &amp; direct Q&amp;A</td>
+                        <td className="py-3 px-4 text-slate-600">Pre-recorded 2020 videos or crowded 60-person lecture halls</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Hands-on Ads Practice</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">Live Meta &amp; Google Ads account setup with real budget scenarios</td>
+                        <td className="py-3 px-4 text-slate-600">Static slide screenshots with zero practical account access</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Modern AI Integration</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">ChatGPT, Claude, &amp; AI creatives integrated into every campaign</td>
+                        <td className="py-3 px-4 text-slate-600">Outdated curriculum ignoring generative AI marketing tools</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Portfolio &amp; Mentorship</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">3 real-world portfolio campaigns + WhatsApp coordinator support</td>
+                        <td className="py-3 px-4 text-slate-600">Generic MCQs or unreviewed simulated submissions</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Investment &amp; Access</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">Free launch pass tier open per round; affordable pricing</td>
+                        <td className="py-3 px-4 text-slate-600">Locked behind ₹35,000 to ₹75,000 upfront fees</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </CardContent>
+              </Card>
+            )}
+
             {/* FAQs Section */}
             {faqs.length > 0 && (
               <Card className="bg-white border-slate-200">
@@ -674,6 +807,32 @@ export default function CourseDetailClient({
                   <MessageCircle className="w-4 h-4" />
                   <span>Chat with Coordinator</span>
                 </a>
+              </div>
+            )}
+
+            {/* Related Courses & City Learning Hubs (Digital Marketing Internal Links) */}
+            {isDigitalMarketing && (
+              <div className="mt-8 p-5 rounded-2xl border border-slate-200 bg-slate-50/80">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                  Explore Related Learning Paths &amp; City Hubs
+                </h3>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <Link href="/courses/digital-marketing-using-ai-tools" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    🤖 Digital Marketing with AI Tools
+                  </Link>
+                  <Link href="/learn/course/master-youtube-shorts-instagram-reels" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📱 Short-Form Video &amp; Reels Masterclass
+                  </Link>
+                  <Link href="/digital-marketing-course-delhi" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📍 Digital Marketing Course Delhi
+                  </Link>
+                  <Link href="/digital-marketing-course-noida" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📍 Digital Marketing Course Noida
+                  </Link>
+                  <Link href="/blog/best-digital-marketing-course-noida" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📖 Career Guide: Digital Marketing in India
+                  </Link>
+                </div>
               </div>
             )}
 
@@ -747,18 +906,29 @@ export default function CourseDetailClient({
       </div>
 
       {/* Mobile Sticky Bottom CTA Bar */}
-      {isShortForm && (
+      {(isShortForm || isDigitalMarketing) && (
         <div className="lg:hidden fixed bottom-3 inset-x-3 z-40">
           <div className="bg-[#1c2340]/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-white/10 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 pl-1">
               <Flame className="w-4 h-4 text-amber-400 animate-pulse flex-shrink-0" />
               <div className="leading-tight">
                 <p className="text-xs font-bold text-white">
-                  <span className="line-through text-rose-400 mr-1.5">Batch 03 Sold Out</span>
-                  <span className="text-emerald-400">Batch 04 Open</span>
+                  {isDigitalMarketing ? (
+                    <>
+                      <span className="line-through text-rose-400 mr-1.5">Batch #42 Full</span>
+                      <span className="text-emerald-400">Batch #43 Tonight</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="line-through text-rose-400 mr-1.5">Batch 03 Sold Out</span>
+                      <span className="text-emerald-400">Batch 04 Open</span>
+                    </>
+                  )}
                 </p>
                 <p className="text-[10px] text-amber-300 font-medium">
-                  {batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • 15 Passes Open
+                  {isDigitalMarketing
+                    ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
+                    : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • 15 Passes Open`}
                 </p>
               </div>
             </div>
