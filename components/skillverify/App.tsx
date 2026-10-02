@@ -245,13 +245,24 @@ export default function App() {
   // clickable (its id comes from the row inserted into public.public_jobs).
   const [alerts, setAlerts] = useState<LiveAlertNotification[]>([
     {
+      id: 'alert-init-ai-animated-creator',
+      jobId: 'a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6',
+      jobTitle: 'AI-Animated Video Creator (YouTube Shorts & Reels)',
+      company: 'Celoris Designs',
+      salaryRange: '₹700 – ₹1,000 / video',
+      matchScore: 98,
+      timestamp: 'Just now',
+      read: false,
+      tier: 'public',
+    },
+    {
       id: 'alert-init-video-editor',
       jobId: '81521596-1826-4c46-ae9b-c2ab2c9c01b0',
       jobTitle: 'Creative Video Editor (Reels & YouTube)',
       company: 'Celoris Designs',
       salaryRange: 'Contract / Per Video',
       matchScore: 95,
-      timestamp: 'Just now',
+      timestamp: '2 hours ago',
       read: false,
       tier: 'public',
     },

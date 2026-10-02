@@ -334,9 +334,17 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                         {job.logo}
                       </div>
                       <div>
-                        <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
-                          {job.title}
-                        </h3>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                            {job.title}
+                          </h3>
+                          {job.featured && (
+                            <span className="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[10px] font-bold flex items-center gap-1 shrink-0 animate-pulse">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                              Urgent
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-400">
                           {job.company} • <span className="font-semibold text-slate-300">{job.industry}</span>
                         </p>

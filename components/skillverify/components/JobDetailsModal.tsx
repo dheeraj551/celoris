@@ -111,6 +111,12 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                 <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">
                   {job.title}
                 </h2>
+                {job.featured && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[10px] font-bold flex items-center gap-1.5 shrink-0 animate-pulse">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                    Urgent Hiring
+                  </span>
+                )}
                 {job.tier === 'certified' ? (
                   <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3 text-amber-400" />
