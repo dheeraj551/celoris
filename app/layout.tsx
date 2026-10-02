@@ -95,6 +95,7 @@ export const metadata: Metadata = {
     : {}),
   other: {
     "google-adsense-account": "ca-pub-2157452506602914",
+    "facebook-domain-verification": "9fgxoj6bch5pht54cp0mddc4tsbab7",
   },
   category: "Education",
   icons: {
