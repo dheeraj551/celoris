@@ -10,22 +10,46 @@ import { createRouteClient } from '@/lib/supabase-server';
 // row level security), so this check is what actually keeps random visitors
 // from approving/deleting reviews — verify the caller is really the admin
 // before doing anything.
-async function requireAdmin(): Promise<NextResponse | null> {
+const ADMIN_EMAILS = [
+    'support@celorisdesigns.com',
+    'celoris.designs@gmail.com',
+    'dheerajkushwaha551@gmail.com',
+    'ananyajairath@gmail.com'
+];
+const ADMIN_ROLES = ['admin', 'super_admin'];
+
+async function requireAdmin(request?: NextRequest): Promise<NextResponse | null> {
     try {
         const authClient = (await createRouteClient()) as any;
-        const { data: { user } } = await authClient.auth.getUser();
-        if (!user || user.email !== 'support@celorisdesigns.com') {
-            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        const bearer = request?.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1];
+        const { data: { user } } = bearer ? await authClient.auth.getUser(bearer) : await authClient.auth.getUser();
+
+        if (!user) {
+            return NextResponse.json({ success: false, error: 'Unauthorized: Not signed in' }, { status: 401 });
         }
-        return null;
-    } catch {
+
+        const email = user.email?.toLowerCase().trim() || '';
+        if (ADMIN_EMAILS.includes(email)) {
+            return null;
+        }
+
+        const adminClient = (createSupabaseClientForServer() as any);
+        const { data: row } = await adminClient.from('users').select('role').eq('id', user.id).maybeSingle();
+        const role = row?.role;
+        if (role && ADMIN_ROLES.includes(role)) {
+            return null;
+        }
+
+        return NextResponse.json({ success: false, error: 'Unauthorized: Admin privileges required' }, { status: 403 });
+    } catch (err: any) {
+        console.error('requireAdmin error:', err);
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 }
 
 export async function GET(request: NextRequest) {
     try {
-        const authError = await requireAdmin();
+        const authError = await requireAdmin(request);
         if (authError) return authError;
 
         const supabase = createSupabaseClientForServer();
@@ -55,7 +79,7 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
     try {
-        const authError = await requireAdmin();
+        const authError = await requireAdmin(request);
         if (authError) return authError;
 
         const supabase = createSupabaseClientForServer();
@@ -93,7 +117,7 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
     try {
-        const authError = await requireAdmin();
+        const authError = await requireAdmin(request);
         if (authError) return authError;
 
         const supabase = createSupabaseClientForServer();
