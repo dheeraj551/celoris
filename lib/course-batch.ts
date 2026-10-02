@@ -135,7 +135,7 @@ function computeOffer({
   if (seatsLeft <= 0) return { ...base, state: 'full' }
 
   const since = roundStart ? Date.parse(roundStart) : -Infinity
-  const claimed = passCap ? 0 : new Set(passRows.filter((r) => Date.parse(r.created_at) >= since).map((r) => r.user_id)).size
+  const claimed = new Set(passRows.filter((r) => Date.parse(r.created_at) >= since).map((r) => r.user_id)).size
   const passes = Math.min(cap, claimed + seatsLeft)
   const left = Math.max(0, passes - claimed)
   return {
@@ -190,7 +190,7 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
   const session = room ? nextSession(room, now) : null
   const batchStart = defaults?.batchStart || room?.next_class_at || null
   const seatsTotal = defaults?.seatsTotal ?? (typeof room?.max_students === 'number' ? room.max_students : null)
-  const finalRegistered = defaults ? defaults.registered : (registered > 0 ? registered : 0)
+  const finalRegistered = Math.max(defaults?.registered || 0, registered)
   const seatsLeft = seatsTotal === null ? null : Math.max(0, seatsTotal - finalRegistered)
 
   const offer = computeOffer({

@@ -341,7 +341,7 @@ export default function CourseDetailClient({
                   </div>
                 </div>
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  15 Passes Open
+                  {offer ? `${offer.left} Passes Left` : "15 Passes Open"}
                 </span>
               </div>
             ) : isDigitalMarketing ? (
@@ -928,7 +928,7 @@ export default function CourseDetailClient({
                 <p className="text-[10px] text-amber-300 font-medium">
                   {isDigitalMarketing
                     ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
-                    : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • 15 Passes Open`}
+                    : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • ${offer ? `${offer.left} Passes Left` : "15 Passes Open"}`}
                 </p>
               </div>
             </div>
