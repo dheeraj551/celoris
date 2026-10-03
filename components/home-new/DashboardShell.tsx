@@ -4,6 +4,7 @@ import React from 'react';
 import { TopHeader } from './TopHeader';
 import { Sidebar } from './Sidebar';
 import { GlobalScrollVideoBackground } from './GlobalScrollVideoBackground';
+import { MandatoryPhoneModal } from '@/components/auth/MandatoryPhoneModal';
 
 export function DashboardShell({
     children,
@@ -23,6 +24,7 @@ export function DashboardShell({
             {/* Living Scroll-Driven Video Canvas Background */}
             {showVideoBackground && <GlobalScrollVideoBackground />}
 
+            {hideTopBar && <MandatoryPhoneModal />}
             {!hideTopBar && <TopHeader headerContent={headerContent} />}
             <div className="flex flex-1 w-full relative z-10">
                 {showSidebar && <Sidebar className="hidden md:flex h-screen sticky top-0" />}

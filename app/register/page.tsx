@@ -39,6 +39,7 @@ export default function RegisterPage() {
 
   // WhatsApp OTP specific states
   const [whatsappPhone, setWhatsappPhone] = useState("")
+  const [directPhone, setDirectPhone] = useState("")
   const [whatsappOtpCode, setWhatsappOtpCode] = useState("")
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [isSendingOtp, setIsSendingOtp] = useState(false)
@@ -245,10 +246,19 @@ export default function RegisterPage() {
     }
     // If phone verification is enabled and configured, verify it first
     const isVerificationRequired = whatsappOtpEnabled || (phoneVerificationEnabled && Boolean(phoneClientId))
+    const phoneToUse = verifiedPhone || whatsappPhone.trim() || directPhone.trim()
+    const digitsOnly = phoneToUse.replace(/\D/g, '')
+
     if (isVerificationRequired && (!isPhoneVerified || !verifiedPhone)) {
       setError("Please verify your mobile number with OTP before continuing")
       return false
     }
+
+    if (!phoneToUse || digitsOnly.length < 10) {
+      setError("A valid 10-digit WhatsApp mobile number is mandatory to register.")
+      return false
+    }
+
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters long")
       return false
@@ -270,6 +280,15 @@ export default function RegisterPage() {
       return
     }
 
+    const phoneToUse = verifiedPhone || whatsappPhone.trim() || directPhone.trim()
+    const digitsOnly = phoneToUse.replace(/\D/g, '')
+    let formattedPhone = phoneToUse
+    if (digitsOnly.length === 10) {
+      formattedPhone = `+91 ${digitsOnly}`
+    } else if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+      formattedPhone = `+91 ${digitsOnly.slice(2)}`
+    }
+
     try {
       const supabase = createClient()
       const { data, error } = await supabase.auth.signUp({
@@ -278,7 +297,7 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: formData.fullName,
-            phone: verifiedPhone || undefined,
+            phone: formattedPhone,
             phone_verified: isPhoneVerified,
           }
         }
@@ -286,12 +305,34 @@ export default function RegisterPage() {
 
       if (error) {
         setError(error.message)
-      } else if (data.user && !data.session) {
-        // Email confirmation required
-        setSuccess(true)
-      } else {
-        // Direct login successful - redirect to home
-        window.location.href = "/"
+      } else if (data.user) {
+        // Immediate sync to public.users and public.profiles tables
+        try {
+          await (supabase as any).from('users').upsert({
+            id: data.user.id,
+            full_name: formData.fullName,
+            phone: formattedPhone,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' })
+
+          await (supabase as any).from('profiles').upsert({
+            id: data.user.id,
+            full_name: formData.fullName,
+            email: formData.email,
+            contact: formattedPhone,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' })
+        } catch (syncErr) {
+          console.warn('Initial profile sync error:', syncErr)
+        }
+
+        if (!data.session) {
+          // Email confirmation required
+          setSuccess(true)
+        } else {
+          // Direct login successful - redirect to home
+          window.location.href = "/"
+        }
       }
     } catch (err) {
       setError("An unexpected error occurred")
@@ -694,6 +735,32 @@ export default function RegisterPage() {
                       )}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Direct Phone Input if automated OTP switches are off */}
+              {!whatsappOtpEnabled && !(phoneVerificationEnabled && phoneClientId) && (
+                <div className="space-y-2">
+                  <label htmlFor="directPhone" className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
+                    <span>WhatsApp Mobile Number</span>
+                    <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Mandatory</span>
+                  </label>
+                  <div className="relative">
+                    <Smartphone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-emerald-400" />
+                    <Input
+                      id="directPhone"
+                      name="directPhone"
+                      type="tel"
+                      placeholder="+91 98765 43210"
+                      value={directPhone}
+                      onChange={(e) => setDirectPhone(e.target.value)}
+                      className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-700 focus:border-emerald-500/50 transition-all font-medium font-mono"
+                      required
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 ml-4">
+                    Required for live classroom links, mentor batch invites, and cert verification.
+                  </p>
                 </div>
               )}
 

@@ -21,7 +21,10 @@ import {
   Layers,
   Activity,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Smartphone,
+  Mail,
+  Phone
 } from "lucide-react"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { motion, AnimatePresence } from "framer-motion"
@@ -42,6 +45,7 @@ export default function SocialProfilePage() {
   const [formData, setFormData] = useState({
     username: '',
     full_name: '',
+    phone: '',
     bio: '',
     location: '',
     gender: '',
@@ -67,11 +71,10 @@ export default function SocialProfilePage() {
     if (!user) return
     try {
       const supabase = createClient()
-      const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle()
+      const [{ data: profile }, { data: userProfile }] = await Promise.all([
+        supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
+        supabase.from('profiles').select('contact').eq('id', user.id).maybeSingle(),
+      ])
 
       if (profile) {
         const profileData = profile as any
@@ -84,10 +87,13 @@ export default function SocialProfilePage() {
           profileData.profile_pic_url = publicUrlData.publicUrl
         }
 
+        const resolvedPhone = profileData.phone || userProfile?.contact || authProfile?.phone || authProfile?.contact || (user.user_metadata as any)?.phone || ''
+
         setProfile(profileData)
         setFormData({
           username: profileData.username || '',
           full_name: profileData.full_name || '',
+          phone: resolvedPhone,
           bio: profileData.bio || '',
           location: profileData.location || '',
           gender: profileData.gender || '',
@@ -128,6 +134,26 @@ export default function SocialProfilePage() {
     setSaving(true)
     setMessage({ type: '', text: '' })
 
+    // Validation: Phone number is mandatory for all Celoris members
+    const rawPhone = (formData.phone || '').trim()
+    const digitsOnly = rawPhone.replace(/\D/g, '')
+
+    if (!rawPhone || digitsOnly.length < 10) {
+      setMessage({
+        type: 'error',
+        text: 'A valid 10-digit WhatsApp mobile number is mandatory to save your profile.'
+      })
+      setSaving(false)
+      return
+    }
+
+    let formattedPhone = rawPhone
+    if (digitsOnly.length === 10) {
+      formattedPhone = `+91 ${digitsOnly}`
+    } else if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+      formattedPhone = `+91 ${digitsOnly.slice(2)}`
+    }
+
     try {
       const supabase = createClient()
       const { error: profileError } = await (supabase as any)
@@ -136,6 +162,7 @@ export default function SocialProfilePage() {
           id: user.id,
           username: formData.username || user.user_metadata?.username || user.email?.split('@')[0] || `user_${user.id.substring(0, 8)}`,
           full_name: formData.full_name,
+          phone: formattedPhone,
           bio: formData.bio,
           location: formData.location,
           gender: formData.gender,
@@ -144,6 +171,25 @@ export default function SocialProfilePage() {
         }, { onConflict: 'id' })
 
       if (profileError) throw profileError
+
+      // Sync to profiles table as well
+      await (supabase as any)
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: formData.full_name,
+          contact: formattedPhone,
+          email: user.email,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' })
+
+      // Update auth user metadata
+      await supabase.auth.updateUser({
+        data: {
+          phone: formattedPhone,
+          full_name: formData.full_name
+        }
+      })
 
       await (supabase as any)
         .from('user_preferences')
@@ -417,6 +463,47 @@ export default function SocialProfilePage() {
                         placeholder="Your Name"
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* Mobile Number (Mandatory) & Email */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300 px-1 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        WhatsApp Mobile Number *
+                      </span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        Mandatory
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+                      <Input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        className="bg-white/5 border-white/10 focus:bg-white/10 focus:border-emerald-500/50 text-white rounded-xl pl-11 h-12 tracking-wide font-mono"
+                        placeholder="+91 98765 43210"
+                        required
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400 px-1">
+                      Required for live classroom links, mentor batch invites, and Job Center alert notifications.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300 px-1">Account Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                      <Input
+                        value={user?.email || ''}
+                        disabled
+                        className="bg-white/[0.02] border-white/5 text-slate-400 rounded-xl pl-11 h-12 cursor-not-allowed"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-500 px-1">Tied to your secure Celoris login credentials.</p>
                   </div>
                 </div>
 

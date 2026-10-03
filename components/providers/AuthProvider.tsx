@@ -130,6 +130,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (userData || profileData) {
                 const mergedProfile = { ...userData, ...profileData }
 
+                // Synchronize phone and contact consistently across the app
+                const resolvedPhone = userData?.phone || profileData?.contact || profileData?.phone || userData?.contact || user?.user_metadata?.phone || null
+                mergedProfile.phone = resolvedPhone
+                mergedProfile.contact = resolvedPhone
+
                 // wallet_balance must always come from the canonical `users` table
                 // (the same source the admin panel reads). A stray/legacy row in
                 // `profiles` — e.g. from an old tutor-signup flow — can carry its
@@ -151,6 +156,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     mergedProfile.avatar_url = mergedProfile.profile_pic_url
                 }
                 setProfile(mergedProfile)
+            } else if (user) {
+                setProfile({
+                    id: user.id,
+                    email: user.email,
+                    phone: user.user_metadata?.phone || null,
+                    contact: user.user_metadata?.phone || null,
+                    full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                })
             }
         } catch (e) {
             console.error("Error loading profile", e)

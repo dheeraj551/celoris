@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
+import { MandatoryPhoneModal } from '@/components/auth/MandatoryPhoneModal';
 
 export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }) {
     const pathname = usePathname();
@@ -71,6 +72,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
 
     return (
         <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#08080c]/85 backdrop-blur-3xl shadow-[0_10px_30px_rgba(0,0,0,0.8),inset_0_-1px_0_rgba(255,255,255,0.06)]">
+            <MandatoryPhoneModal />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
 
                 {/* Left: Brand Logo & Tag */}
