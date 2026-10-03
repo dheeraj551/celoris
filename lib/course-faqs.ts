@@ -140,6 +140,67 @@ function digitalMarketingFaqs({ batch, price }: FaqContext): CourseFaq[] {
   return faqs
 }
 
+function copilotExcelFaqs({ batch, price }: FaqContext): CourseFaq[] {
+  const fee = Number(price) > 0 ? Number(price) : 0
+  const faqs: CourseFaq[] = [
+    {
+      question: "How are the live classes conducted and what is the batch schedule?",
+      answer:
+        "Classes are conducted live and interactively in Celoris Classrooms with screen sharing, live spreadsheet exercises, and direct Q&A." +
+        (batch?.scheduleLabel ? ` This batch meets ${batch.scheduleLabel}` + (batch.classMinutes ? ` (${batch.classMinutes} minutes per session).` : ".") : " Sessions include live formula prompt demos and real business dataset walkthroughs.") +
+        (batch?.batchStart && !batch.batchStarted ? ` The upcoming live batch starts on ${istFullDate(batch.batchStart)} at ${istTime(batch.batchStart)} IST.` : "") +
+        (batch?.trainers && batch.trainers.length ? ` Mentored by ${batch.trainers.map((t) => t.name).join(", ")}.` : " Led by senior data and financial analytics trainers."),
+    },
+    {
+      question: "Do I need an active Microsoft 365 Copilot license to take this course?",
+      answer:
+        "A Microsoft 365 Copilot license is recommended so you can practice prompts in real time inside Excel (desktop or web). However, every session is demonstrated with high-definition screen recordings, downloadable practice workbooks, and prompt templates, so you can master the frameworks even before your workplace activates Copilot.",
+    },
+    {
+      question: "I have only basic Excel experience. Is this course suitable for me?",
+      answer:
+        "Yes, absolutely. The course begins with the foundational principles of preparing clean tabular data and headers so Copilot can parse it accurately. You do not need to memorize complex formulas — Copilot will generate formulas (like XLOOKUP, SUMIFS, and nested logic) from your plain English instructions.",
+    },
+    {
+      question: "What is the difference between Copilot Plan Mode and Agent Mode in Excel?",
+      answer:
+        "Plan Mode explains the step-by-step logic for a specific task and waits for your confirmation before touching the spreadsheet. Agent Mode operates autonomously across multi-sheet workbooks to clean data, build PivotTables, generate summary reports, and run financial reconciliations, while pausing at safety checkpoints for your review.",
+    },
+    {
+      question: "Will I learn how to verify and prevent AI formula errors or hallucinations?",
+      answer:
+        "Yes. A critical module is dedicated to formula auditing and data verification. You will learn how to spot-check Copilot's calculations, inspect cell precedents, validate mathematical logic, and ensure total data integrity before presenting numbers to management or clients.",
+    },
+    {
+      question: "What if I miss a live class? Are recordings and practice files provided?",
+      answer:
+        "Yes! Every session recording is uploaded immediately to your Celoris student dashboard with lifetime access. You also receive downloadable sample business workbooks, exercise sheets, and the Celoris Copilot Prompt Swipe File with 100+ production-tested prompts.",
+    },
+  ]
+  const offer = batch?.offer
+  if (offer) {
+    const seats = batch?.seatsTotal
+    faqs.push({
+      question: "How do the free launch passes work for this batch?",
+      answer:
+        `Free passes are released in rounds: up to ${offer.perRound} passes per round` +
+        (seats ? `, until all ${seats} seats in the batch are claimed` : "") +
+        ". Once claimed, you receive 100% full tuition access to the live batch, recordings, and capstone project at ₹0." +
+        (fee > 0 ? ` Standard course fee is ${inr(fee)}.` : ""),
+    })
+  } else if (fee > 0) {
+    faqs.push({
+      question: "What is the fee for the Master Copilot in Excel course?",
+      answer: `The complete course fee is ${inr(fee)}, which covers all live sessions, practice workbooks, prompt files, and certification.`,
+    })
+  }
+  faqs.push({
+    question: "Do I receive a verified certificate upon completion?",
+    answer: "Yes, upon completing the hands-on capstone project, you earn a verified Celoris Academy Certificate of Completion that you can add to your LinkedIn profile and resume.",
+  })
+  return faqs
+}
+
 export function getFaqsForCourse(courseTitle: string, ctx: FaqContext = {}): CourseFaq[] {
   const title = courseTitle.toLowerCase();
   if (title.includes("short-form video") || (title.includes("shorts") && title.includes("reels"))) {
@@ -147,6 +208,9 @@ export function getFaqsForCourse(courseTitle: string, ctx: FaqContext = {}): Cou
   }
   if (title.includes("digital marketing")) {
     return digitalMarketingFaqs(ctx);
+  }
+  if (title.includes("copilot") || title.includes("excel")) {
+    return copilotExcelFaqs(ctx);
   }
   if (title.includes("web development")) {
     return [
@@ -201,30 +265,6 @@ export function getFaqsForCourse(courseTitle: string, ctx: FaqContext = {}): Cou
       {
         question: "Is there a certificate?",
         answer: "Yes, a Celoris certificate of completion is provided at the end."
-      }
-    ];
-  }
-  if (title.includes("copilot")) {
-    return [
-      {
-        question: "Do I need a Copilot license to take this course?",
-        answer: "You need a Microsoft 365 Copilot license to follow along inside Excel itself, but every lesson is also taught with recordings and screenshots, so you can learn the concepts even before you have access."
-      },
-      {
-        question: "I've never used Excel formulas before. Is this too advanced for me?",
-        answer: "No — the course starts from the basics of structuring a spreadsheet and builds up gradually. Basic familiarity with cells and simple formulas is enough to start."
-      },
-      {
-        question: "What's the difference between Plan mode and Agent Mode?",
-        answer: "Plan mode outlines the steps for a single task and waits for your approval before making changes. Agent Mode goes further — it can plan and execute a multi-step workflow on its own, with checkpoints for you to review. Both are covered in depth in this course."
-      },
-      {
-        question: "Will this teach me to blindly trust whatever Copilot generates?",
-        answer: "The opposite — a full module is dedicated to verifying and trusting Copilot's output, including spot-checking formulas and being mindful of what data you share with it."
-      },
-      {
-        question: "Is there a certificate?",
-        answer: "Yes, a Celoris certificate of completion is provided at the end, along with a capstone project you can show as a work sample."
       }
     ];
   }

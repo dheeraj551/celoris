@@ -269,6 +269,7 @@ export default function CourseDetailClient({
     course.title.toLowerCase().includes("reels");
 
   const isDigitalMarketing = course.title.toLowerCase().includes("digital marketing");
+  const isCopilot = course.title.toLowerCase().includes("copilot") || course.title.toLowerCase().includes("excel");
 
   const copyToClipboard = (text: string, index: number) => {
     if (typeof window !== "undefined" && navigator?.clipboard?.writeText) {
@@ -361,6 +362,25 @@ export default function CourseDetailClient({
                 </div>
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
                   Only 5 Seats Left
+                </span>
+              </div>
+            ) : isCopilot ? (
+              <div className="rounded-2xl p-3.5 sm:p-4 border bg-[#111625] border-emerald-500/40 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <span className="relative flex h-3 w-3 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+                  </span>
+                  <div className="text-sm font-medium flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                    <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">Batch 07 (Sold Out)</span>
+                    <span className="text-slate-400 hidden sm:inline">•</span>
+                    <span className="font-bold text-amber-300 text-xs sm:text-sm">Batch 08: Launching Tuesday, 13th Oct 2026 · 7:00 PM IST</span>
+                    <span className="text-slate-400 hidden sm:inline">•</span>
+                    <span className="text-emerald-300 font-semibold text-xs sm:text-sm">Next Batch: 20 Oct</span>
+                  </div>
+                </div>
+                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                  {offer ? `${offer.left} Passes Left` : "15 Passes Open"}
                 </span>
               </div>
             ) : null}
@@ -590,6 +610,40 @@ export default function CourseDetailClient({
               </Card>
             )}
 
+            {/* Copilot AI & Excel Capabilities You'll Master */}
+            {isCopilot && (
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <h2 className={`${sectionTitle} flex items-center space-x-2 text-slate-900`}>
+                    <Sparkles className="h-5 w-5 text-emerald-600" />
+                    <span>Copilot AI &amp; Advanced Excel Features You&apos;ll Master</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">Zero tedious manual formula typing — turn hours of spreadsheet work into seconds with AI</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {[
+                      { name: "Natural-Language Formulas", badge: "Smart Calculations", desc: "Ask in plain English — Copilot generates complex XLOOKUP, INDEX/MATCH, and nested IFS instantly", color: "from-emerald-500 to-green-600" },
+                      { name: "Automated Data Cleaning", badge: "Data Formatting", desc: "Fix messy dates, split text, remove duplicates, and standardize inconsistent formatting in 1 click", color: "from-blue-500 to-indigo-600" },
+                      { name: "Instant PivotTables & Trends", badge: "Business Analysis", desc: "Generate multi-variable PivotTables, trend lines, and dynamic charts from raw data without manual drag-and-drop", color: "from-amber-500 to-orange-600" },
+                      { name: "Copilot Agent Mode", badge: "Autonomous Workflows", desc: "Command Copilot Agent to execute multi-sheet reconciliations, monthly reporting flows, and cross-workbook summaries", color: "from-purple-500 to-indigo-600" },
+                      { name: "Formula Auditing & Logic Check", badge: "Error Prevention", desc: "Spot-check AI outputs, inspect formula precedents, detect calculation errors, and verify data accuracy", color: "from-rose-500 to-pink-600" },
+                      { name: "Executive KPI Dashboards", badge: "Presentation Ready", desc: "Transform raw transaction logs into clean, dynamic executive dashboards and automated visual scorecards", color: "from-teal-500 to-cyan-600" },
+                    ].map((tool, idx) => (
+                      <div key={idx} className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-slate-50 transition-colors">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${tool.color}`} />
+                          <h3 className="font-bold text-slate-900 text-sm">{tool.name}</h3>
+                        </div>
+                        <span className="inline-block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">{tool.badge}</span>
+                        <p className="text-xs text-slate-600 leading-relaxed">{tool.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Viral Video Studio Timeline Showcase */}
             {isShortForm && <CourseVideoStudioShowcase />}
 
@@ -746,6 +800,132 @@ export default function CourseDetailClient({
               </Card>
             )}
 
+            {/* How Celoris Compares (Copilot in Excel) */}
+            {isCopilot && (
+              <Card className="bg-white border-slate-200 overflow-hidden">
+                <CardHeader>
+                  <h2 className={`${sectionTitle} flex items-center space-x-2 text-slate-900`}>
+                    <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                    <span>How Celoris Copilot in Excel Compares</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">Built for real corporate spreadsheet workflows and data analysis — not outdated formula memorization</p>
+                </CardHeader>
+                <CardContent className="p-0 overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[500px]">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="py-3 px-4 font-bold text-slate-700">Feature</th>
+                        <th className="py-3 px-4 font-bold text-emerald-700 bg-emerald-50/50">Celoris Live Masterclass</th>
+                        <th className="py-3 px-4 font-bold text-slate-500">Traditional Excel Courses / Pre-recorded</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Training Format</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">100% Live in Celoris Classrooms with screen sharing &amp; real-time prompt tests</td>
+                        <td className="py-3 px-4 text-slate-600">Pre-recorded 2018 videos with zero AI or Copilot features</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Hands-on AI Practice</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">Live prompt engineering with messy real-world corporate datasets</td>
+                        <td className="py-3 px-4 text-slate-600">Static slides or basic VLOOKUP drills with clean toy examples</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Copilot Agent Mode</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">Full coverage of 2026 Agent Mode, Plan Mode &amp; multi-sheet workflows</td>
+                        <td className="py-3 px-4 text-slate-600">Outdated curriculum ignoring autonomous AI agent capabilities</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Formula Auditing &amp; Trust</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">Systematic frameworks to catch AI errors &amp; verify enterprise calculations</td>
+                        <td className="py-3 px-4 text-slate-600">Zero error verification or blind trust in AI outputs</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 font-semibold text-slate-800">Investment &amp; Access</td>
+                        <td className="py-3 px-4 text-emerald-700 font-medium bg-emerald-50/20">Free launch pass tier open per round with ₹0 tuition pass</td>
+                        <td className="py-3 px-4 text-slate-600">Corporate workshops charging ₹15,000 to ₹35,000 upfront</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Interactive Copilot in Excel Prompt Swipe File */}
+            {isCopilot && (
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <h2 className={`${sectionTitle} flex items-center space-x-2 text-slate-900`}>
+                    <Sparkles className="h-5 w-5 text-emerald-600" />
+                    <span>Live Sample: Production Excel Copilot Prompts</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Try these proven prompt structures in your own spreadsheets — click any prompt to copy it
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      {
+                        title: "1. Clean & Standardize Contact Data",
+                        tag: "Data Cleaning",
+                        prompt: "Clean this table: trim all leading and trailing spaces, format all phone numbers with '+91 ' prefix, capitalize customer names in Proper Case, and flag any rows with duplicate email addresses in a new column called 'Is_Duplicate'.",
+                      },
+                      {
+                        title: "2. Dynamic Multi-Condition Formula",
+                        tag: "Formulas & Logic",
+                        prompt: "Write a formula in Column G: If Region is 'North' and Sales > 50000, apply a 12% incentive bonus; if Region is 'South' and Sales > 40000, apply 10%; otherwise 5%. Round the result to the nearest rupee.",
+                      },
+                      {
+                        title: "3. Instant Executive Summary & Pivot",
+                        tag: "Analytics & Trends",
+                        prompt: "Create a summary PivotTable showing total Revenue and Units Sold by Product Category across Q1-Q4. Calculate Month-over-Month growth rate and highlight the top 3 highest margin products.",
+                      },
+                      {
+                        title: "4. Autonomous Multi-Sheet Reconciliation",
+                        tag: "Agent Mode Workflow",
+                        prompt: "Compare 'Sheet_Bank_Statement' against 'Sheet_Ledger'. Match records by Transaction ID and Amount, identify all un-reconciled line items, and generate a new Reconciliation Report sheet with total variance.",
+                      },
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-50 transition-colors flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-bold text-slate-900">{item.title}</span>
+                            <span className="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+                              {item.tag}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 font-mono bg-white p-2.5 rounded-lg border border-slate-200/80 leading-relaxed select-all">
+                            &quot;{item.prompt}&quot;
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(item.prompt, 100 + idx)}
+                          className="mt-2.5 inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                        >
+                          {copiedHookIndex === 100 + idx ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              <span className="text-emerald-400">Copied to Clipboard!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy Prompt</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* FAQs Section */}
             {faqs.length > 0 && (
               <Card className="bg-white border-slate-200">
@@ -779,7 +959,7 @@ export default function CourseDetailClient({
             </div>
 
             {/* WhatsApp Instant Query Card */}
-            {(isShortForm || isDigitalMarketing) && (
+            {(isShortForm || isDigitalMarketing || isCopilot) && (
               <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -787,18 +967,28 @@ export default function CourseDetailClient({
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">
-                      {isDigitalMarketing ? "Have questions before joining tonight at 8:00 PM?" : "Have questions about the 10-Hour Masterclass?"}
+                      {isCopilot
+                        ? "Have questions about the Copilot in Excel Masterclass?"
+                        : isDigitalMarketing
+                          ? "Have questions before joining tonight at 8:00 PM?"
+                          : "Have questions about the 10-Hour Masterclass?"}
                     </h3>
                     <p className="text-xs text-slate-600">
-                      {isDigitalMarketing ? "Ask about curriculum, live campaign access, or batch schedule directly on WhatsApp." : "Ask about class timings, phone compatibility, or batch recordings directly on WhatsApp."}
+                      {isCopilot
+                        ? "Ask about Microsoft 365 licensing, Excel versions, or batch schedule directly on WhatsApp."
+                        : isDigitalMarketing
+                          ? "Ask about curriculum, live campaign access, or batch schedule directly on WhatsApp."
+                          : "Ask about class timings, phone compatibility, or batch recordings directly on WhatsApp."}
                     </p>
                   </div>
                 </div>
                 <a
                   href={`https://wa.me/919084718101?text=${encodeURIComponent(
-                    isDigitalMarketing
-                      ? "Hi Celoris! I have a question about Digital Marketing Mastery Batch #43 launching tonight at 8:00 PM."
-                      : "Hi Celoris! I have a question about the 10-Hour YouTube Shorts & Instagram Reels Masterclass."
+                    isCopilot
+                      ? "Hi Celoris! I have a question about the Master Copilot in Excel Batch 08 launching 13 Oct 2026 at 7:00 PM IST."
+                      : isDigitalMarketing
+                        ? "Hi Celoris! I have a question about Digital Marketing Mastery Batch #43 launching tonight at 8:00 PM."
+                        : "Hi Celoris! I have a question about the 10-Hour YouTube Shorts & Instagram Reels Masterclass."
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -807,6 +997,32 @@ export default function CourseDetailClient({
                   <MessageCircle className="w-4 h-4" />
                   <span>Chat with Coordinator</span>
                 </a>
+              </div>
+            )}
+
+            {/* Related Courses & City Learning Hubs (Copilot Excel Internal Links) */}
+            {isCopilot && (
+              <div className="mt-8 p-5 rounded-2xl border border-slate-200 bg-slate-50/80">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                  Explore Related Learning Paths &amp; Tutorials
+                </h3>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <Link href="/learn/be-an-excel-expert" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📊 Be an Excel Expert: Foundations to Advanced
+                  </Link>
+                  <Link href="/microsoft-excel-training-noida" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📍 Microsoft Excel Training Noida
+                  </Link>
+                  <Link href="/courses/ai-tools-for-content-creation" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    🤖 AI Productivity Tools Masterclass
+                  </Link>
+                  <Link href="/blog/excel-formulas-every-working-professional-must-know-2026" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    📖 Essential 2026 Excel Formulas Guide
+                  </Link>
+                  <Link href="/blog/free-excel-course-online-india-2026" className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-700 hover:border-emerald-300 font-medium transition-colors shadow-2xs">
+                    💡 Free Excel Course Online India 2026
+                  </Link>
+                </div>
               </div>
             )}
 
@@ -906,14 +1122,19 @@ export default function CourseDetailClient({
       </div>
 
       {/* Mobile Sticky Bottom CTA Bar */}
-      {(isShortForm || isDigitalMarketing) && (
+      {(isShortForm || isDigitalMarketing || isCopilot) && (
         <div className="lg:hidden fixed bottom-3 inset-x-3 z-40">
           <div className="bg-[#1c2340]/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-white/10 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 pl-1">
               <Flame className="w-4 h-4 text-amber-400 animate-pulse flex-shrink-0" />
               <div className="leading-tight">
                 <p className="text-xs font-bold text-white">
-                  {isDigitalMarketing ? (
+                  {isCopilot ? (
+                    <>
+                      <span className="line-through text-rose-400 mr-1.5">Batch 07 Full</span>
+                      <span className="text-emerald-400">Batch 08 Launching</span>
+                    </>
+                  ) : isDigitalMarketing ? (
                     <>
                       <span className="line-through text-rose-400 mr-1.5">Batch #42 Full</span>
                       <span className="text-emerald-400">Batch #43 Tonight</span>
@@ -926,9 +1147,11 @@ export default function CourseDetailClient({
                   )}
                 </p>
                 <p className="text-[10px] text-amber-300 font-medium">
-                  {isDigitalMarketing
-                    ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
-                    : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • ${offer ? `${offer.left} Passes Left` : "15 Passes Open"}`}
+                  {isCopilot
+                    ? "Starts 13 Oct · 7:00 PM IST • 15 Passes Open"
+                    : isDigitalMarketing
+                      ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
+                      : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • ${offer ? `${offer.left} Passes Left` : "15 Passes Open"}`}
                 </p>
               </div>
             </div>

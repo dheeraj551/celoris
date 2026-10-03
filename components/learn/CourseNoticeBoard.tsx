@@ -215,18 +215,19 @@ function getBatchStats(courseTitle: string) {
 
   if (title.includes('copilot')) {
     return {
-      batchLabel: 'Ending Soon',
-      batchDotClass: 'soon',
-      batchBadgeClass: 'soon',
-      batchBadgeText: 'ENDING SOON',
-      batchNumber: '#1',
-      seatsOpen: 0,
-      seatsTotal: 5,
-      seatsEnrolled: 5,
-      seatsBadgeText: 'FULLY BOOKED',
-      trainersCount: 3,
-      trainerInitials: ['RM', 'PS', 'AV'],
+      batchLabel: 'Starting Soon',
+      batchDotClass: 'live',
+      batchBadgeClass: 'urgent',
+      batchBadgeText: '13 OCT 7 PM',
+      batchNumber: '#08',
+      seatsOpen: 15,
+      seatsTotal: 15,
+      seatsEnrolled: 0,
+      seatsBadgeText: 'PASSES OPEN',
+      trainersCount: 1,
+      trainerInitials: ['PS'],
       trainersExtra: 0,
+      nextBatchDate: '20 Oct',
     };
   }
 
