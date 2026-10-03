@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'how-to-earn-50k-month-ai-video-creator-india-2026',
+      title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint: Tools, Rates, and Retainers)",
+      slug: 'how-to-earn-50k-month-ai-video-creator-india-2026',
+      excerpt: "Traditional video editing rates are collapsing. Master generative AI tools (Runway, Pika, Midjourney), pricing per reel (₹700–₹1,500), monthly agency retainers, and the 48-hour commercial workflow.",
+      featured_image_url: "/how-to-earn-50k-month-ai-video-creator-india-2026.jpg",
+      author_name: 'Celoris Creative Career Lab',
+      category: 'AI Video & Freelancing',
+      reading_time: 11,
+      published_at: '2026-10-03T07:00:00Z',
+    },
+    {
       id: 'meta-advantage-plus-vs-manual-2026-guide',
       title: "Meta Advantage+ vs Manual Campaigns (2026 Strategy Guide): Benchmarks, Budgets, and the Hybrid Playbook",
       slug: 'meta-advantage-plus-vs-manual-2026-guide',

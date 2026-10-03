@@ -134,6 +134,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/blog/how-to-earn-50k-month-ai-video-creator-india-2026`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/blog/meta-advantage-plus-vs-manual-2026-guide`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
