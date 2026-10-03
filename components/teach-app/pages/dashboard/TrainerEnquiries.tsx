@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Mail, Phone, Calendar, MoreVertical, CheckCircle, XCircle, Clock, RefreshCw, Loader2, ChevronLeft, ChevronRight, ClipboardCheck, X, PartyPopper } from 'lucide-react';
+import { Search, Filter, Mail, Phone, Calendar, MoreVertical, CheckCircle, XCircle, Clock, RefreshCw, Loader2, ChevronLeft, ChevronRight, ClipboardCheck, X, PartyPopper, MessageSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -62,6 +62,22 @@ export function TrainerEnquiries() {
 
   useEffect(() => {
     fetchLeads(currentPage);
+
+    // Subscribe to realtime lead updates so student requests appear immediately
+    const channel = supabase
+      .channel('public:leads:enquiries')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'leads' },
+        () => {
+          fetchLeads(currentPage);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentPage]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -106,7 +122,8 @@ export function TrainerEnquiries() {
           trainerName: profile?.full_name || profile?.username || 'Trainer',
           trainerEmail: profile?.email || '',
           studentName,
-          studentEmail: enquiry.email || '',
+          studentEmail: enquiry.email || (enquiry.contact_info?.includes('@') ? enquiry.contact_info : '') || '',
+          studentPhone: enquiry.phone || enquiry.contact_info || '',
           course,
           leadId: enquiry.id,
         }),
@@ -299,21 +316,42 @@ export function TrainerEnquiries() {
                   <motion.tr key={enquiry.id} variants={rowVariants} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                          {enquiry.name?.charAt(0) || 'U'}
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">
+                          {enquiry.name?.charAt(0)?.toUpperCase() || 'U'}
                         </div>
-                        <div>
-                          <p className="font-bold text-gray-900 text-sm">{enquiry.name || 'Anonymous'}</p>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-gray-900 text-sm truncate">{enquiry.name || 'Anonymous'}</p>
+                            {enquiry.source === 'website_learn_page' && (
+                              <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                                Learn Page
+                              </span>
+                            )}
+                          </div>
+                          {(enquiry.phone || enquiry.email || enquiry.contact_info) && (
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 font-medium mt-0.5">
+                              {enquiry.phone && <span>📞 {enquiry.phone}</span>}
+                              {enquiry.email && <span>✉️ {enquiry.email}</span>}
+                              {!enquiry.phone && !enquiry.email && enquiry.contact_info && <span>{enquiry.contact_info}</span>}
+                            </div>
+                          )}
                           {(enquiry.requirement || enquiry.message) && (
-                            <p className="text-xs text-gray-500 truncate max-w-[200px]" title={enquiry.requirement || enquiry.message}>
+                            <p className="text-xs text-gray-500 truncate max-w-[220px] mt-0.5" title={enquiry.requirement || enquiry.message}>
                               {enquiry.requirement || enquiry.message}
                             </p>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-sm text-gray-700">{enquiry.course || 'General Inquiry'}</td>
-                    <td className="p-4 text-sm text-gray-700">{enquiry.mode || '—'}</td>
+                    <td className="p-4 text-sm text-gray-700 font-medium">{enquiry.course || 'General Inquiry'}</td>
+                    <td className="p-4 text-sm text-gray-700">
+                      <div>
+                        <span>{enquiry.mode || '—'}</span>
+                        {enquiry.location && (
+                          <p className="text-xs text-gray-400 font-normal">{enquiry.location}</p>
+                        )}
+                      </div>
+                    </td>
                     <td className="p-4">
                       <AnimatePresence mode="wait" initial={false}>
                         <motion.span
@@ -334,11 +372,35 @@ export function TrainerEnquiries() {
                       {enquiry.created_at ? formatDistanceToNow(new Date(enquiry.created_at), { addSuffix: true }) : 'Unknown'}
                     </td>
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1 sm:gap-2">
                         {actionLoading === enquiry.id ? (
                           <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
                         ) : (
                           <>
+                            {enquiry.phone && enquiry.phone.replace(/\D/g, '').length >= 10 && (
+                              <motion.a
+                                whileHover={{ scale: 1.15 }}
+                                whileTap={{ scale: 0.9 }}
+                                href={`https://wa.me/${enquiry.phone.replace(/\D/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                                title="Chat on WhatsApp"
+                              >
+                                <MessageSquare className="h-4 w-4" />
+                              </motion.a>
+                            )}
+                            {enquiry.email && (
+                              <motion.a
+                                whileHover={{ scale: 1.15 }}
+                                whileTap={{ scale: 0.9 }}
+                                href={`mailto:${enquiry.email}`}
+                                className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                title="Send Email"
+                              >
+                                <Mail className="h-4 w-4" />
+                              </motion.a>
+                            )}
                             <motion.button
                               whileHover={{ scale: 1.15 }}
                               whileTap={{ scale: 0.9 }}
@@ -365,13 +427,6 @@ export function TrainerEnquiries() {
                               onClick={() => navigate('/teach/dashboard/trainer/calendar')}
                             >
                               <Calendar className="h-4 w-4" />
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.15 }}
-                              whileTap={{ scale: 0.9 }}
-                              className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100"
-                            >
-                              <MoreVertical className="h-4 w-4" />
                             </motion.button>
                           </>
                         )}

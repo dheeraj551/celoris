@@ -7,18 +7,21 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { createClient } from "@/lib/supabase-client"
-import { Loader2, PlusCircle } from "lucide-react"
+import { Loader2, PlusCircle, Sparkles, CheckCircle2 } from "lucide-react"
 
 export function PostLearningNeedModal() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     name: "",
-    contact: "",
+    phone: "",
+    email: "",
     course: "",
     mode: "Online",
+    location: "",
     requirement: ""
   })
 
@@ -31,34 +34,75 @@ export function PostLearningNeedModal() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-      
-      const { error } = await supabase
-        .from('leads')
-        .insert([{
-          name: formData.name,
-          phone: formData.contact, // Storing in phone, but could be email
-          course: formData.course,
-          mode: formData.mode,
-          requirement: formData.requirement,
-          source: 'website_learn_page',
-          status: 'open'
-        }])
+      const payload = {
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim() || null,
+        contact: formData.phone.trim() + (formData.email.trim() ? ` / ${formData.email.trim()}` : ''),
+        course: formData.course.trim(),
+        mode: formData.mode,
+        location: formData.location.trim() || null,
+        requirement: formData.requirement.trim(),
+        source: 'website_learn_page'
+      }
 
-      if (error) throw error
+      let succeeded = false
 
+      // Primary: Post via secure server API endpoint (bypasses client RLS & triggers email alert)
+      try {
+        const response = await fetch('/api/leads/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+
+        if (response.ok) {
+          succeeded = true
+        } else {
+          const resJson = await response.json().catch(() => ({}))
+          console.warn('API lead submission returned non-200, attempting client fallback:', resJson)
+        }
+      } catch (apiErr) {
+        console.warn('API lead submission network error, attempting client fallback:', apiErr)
+      }
+
+      // Fallback: Direct client-side insert into Supabase leads table if API failed
+      if (!succeeded) {
+        const supabase = createClient()
+        const { error } = await supabase
+          .from('leads')
+          .insert([{
+            name: payload.name,
+            phone: payload.phone,
+            email: payload.email,
+            contact_info: payload.contact,
+            course: payload.course,
+            mode: payload.mode,
+            location: payload.location,
+            requirement: payload.requirement,
+            source: payload.source,
+            status: 'open'
+          }])
+
+        if (error) throw error
+      }
+
+      setSubmitted(true)
       toast({
-        title: "Request Submitted!",
-        description: "Your learning need has been posted successfully. We'll connect you with a trainer soon.",
+        title: "Requirement Posted Successfully!",
+        description: "Your request is now live in the Teach section. Trainers will review your requirement and reach out.",
       })
-      
-      setOpen(false)
-      setFormData({ name: "", contact: "", course: "", mode: "Online", requirement: "" })
+
+      setTimeout(() => {
+        setOpen(false)
+        setSubmitted(false)
+        setFormData({ name: "", phone: "", email: "", course: "", mode: "Online", location: "", requirement: "" })
+      }, 1800)
     } catch (error: any) {
       console.error("Error submitting lead:", error)
       toast({
         title: "Submission Failed",
-        description: error.message || "Something went wrong while posting your request.",
+        description: error.message || "Something went wrong while posting your request. Please try again.",
         variant: "destructive"
       })
     } finally {
@@ -67,91 +111,143 @@ export function PostLearningNeedModal() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(val) => {
+      setOpen(val)
+      if (!val) setSubmitted(false)
+    }}>
       <DialogTrigger asChild>
         <Button className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl h-14 px-8 font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 gap-2">
           <PlusCircle size={18} /> Post a Learning Request
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-[#0d1321] text-white border-white/10">
+      <DialogContent className="sm:max-w-[480px] bg-[#0d1321] text-white border-white/10 rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold italic uppercase">What do you want to learn?</DialogTitle>
-          <DialogDescription className="text-slate-400">
-            Tell us what you're looking for, and we'll match you with the right trainer.
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
+            <Sparkles size={14} /> Direct Trainer Connect
+          </div>
+          <DialogTitle className="text-2xl font-black italic uppercase tracking-tight">Post Your Learning Need</DialogTitle>
+          <DialogDescription className="text-slate-400 text-xs sm:text-sm">
+            Tell us what skill or topic you want to master. We'll directly post it to our public leads board for qualified trainers.
           </DialogDescription>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-slate-300">Your Name</label>
-            <Input 
-              name="name" 
-              value={formData.name} 
-              onChange={handleChange} 
-              required 
-              placeholder="e.g. Rahul Sharma"
-              className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-slate-300">Contact Info (Phone/Email)</label>
-            <Input 
-              name="contact" 
-              value={formData.contact} 
-              onChange={handleChange} 
-              required 
-              placeholder="How can we reach you?"
-              className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-slate-300">Topic / Course</label>
-            <Input 
-              name="course" 
-              value={formData.course} 
-              onChange={handleChange} 
-              required 
-              placeholder="e.g. Advanced Excel, React JS, Yoga"
-              className="bg-white/5 border-white/10 text-white placeholder:text-slate-500"
-            />
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-slate-300">Preferred Mode</label>
-            <select 
-              name="mode" 
-              value={formData.mode} 
-              onChange={handleChange}
-              className="w-full bg-[#162032] border border-white/10 text-white rounded-md h-10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        {submitted ? (
+          <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 border border-emerald-500/30 animate-in zoom-in">
+              <CheckCircle2 size={36} />
+            </div>
+            <h3 className="text-xl font-bold uppercase tracking-tight text-white">Requirement Live!</h3>
+            <p className="text-sm text-slate-300 max-w-xs">
+              Your requirement has been posted to the public leads table connected to the Teach section. Trainers will contact you shortly.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">Your Full Name *</label>
+              <Input 
+                name="name" 
+                value={formData.name} 
+                onChange={handleChange} 
+                required 
+                placeholder="e.g. Rahul Sharma"
+                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11 rounded-xl"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">WhatsApp / Phone *</label>
+                <Input 
+                  name="phone" 
+                  value={formData.phone} 
+                  onChange={handleChange} 
+                  required 
+                  type="tel"
+                  placeholder="+91 98765 43210"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">Email Address (Optional)</label>
+                <Input 
+                  name="email" 
+                  value={formData.email} 
+                  onChange={handleChange} 
+                  type="email"
+                  placeholder="name@email.com"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11 rounded-xl"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">Skill / Course Wanted *</label>
+              <Input 
+                name="course" 
+                value={formData.course} 
+                onChange={handleChange} 
+                required 
+                placeholder="e.g. Video Editing, Advanced Excel, React JS, Spoken English"
+                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11 rounded-xl"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">Preferred Mode *</label>
+                <select 
+                  name="mode" 
+                  value={formData.mode} 
+                  onChange={handleChange}
+                  className="w-full bg-[#162032] border border-white/10 text-white rounded-xl h-11 px-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                >
+                  <option value="Online">Online Classes (1-on-1 / Batch)</option>
+                  <option value="Offline">Offline / Home Tuition</option>
+                  <option value="Hybrid">Hybrid (Online + Offline)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">City / Location</label>
+                <Input 
+                  name="location" 
+                  value={formData.location} 
+                  onChange={handleChange} 
+                  placeholder="e.g. Delhi, Noida, Gurgaon, or Remote"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-11 rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-300">Details / Specific Goals *</label>
+              <Textarea 
+                name="requirement" 
+                value={formData.requirement} 
+                onChange={handleChange} 
+                required 
+                placeholder="Mention your current skill level, availability (weekdays/weekends), and what specific topics you want to learn..."
+                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 min-h-[90px] rounded-xl text-xs sm:text-sm"
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white h-12 font-bold uppercase tracking-widest mt-2 rounded-xl transition-all shadow-lg shadow-emerald-600/20"
             >
-              <option value="Online">Online Classes</option>
-              <option value="Offline">Offline / Home Tuition</option>
-              <option value="Hybrid">Hybrid</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-slate-300">Details / Requirements</label>
-            <Textarea 
-              name="requirement" 
-              value={formData.requirement} 
-              onChange={handleChange} 
-              required 
-              placeholder="Describe your current level and what you want to achieve..."
-              className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 min-h-[100px]"
-            />
-          </div>
-
-          <Button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white h-12 font-bold uppercase tracking-widest mt-4"
-          >
-            {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Post Request"}
-          </Button>
-        </form>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting Request...
+                </>
+              ) : (
+                "Post Request to Trainers"
+              )}
+            </Button>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

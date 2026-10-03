@@ -55,8 +55,8 @@ export function TrainerOverview() {
         const recent = (allLeads || []).slice(0, 3);
 
         // --- Unique students from leads ---
-        const uniqueEmails = new Set((allLeads || []).map((l: any) => l.email).filter(Boolean));
-        const totalStudents = uniqueEmails.size || (allLeads?.length ?? 0);
+        const uniqueStudents = new Set((allLeads || []).map((l: any) => l.email || l.phone || l.name).filter(Boolean));
+        const totalStudents = uniqueStudents.size || (allLeads?.length ?? 0);
 
         // --- Calendar events for today ---
         let todayEvents: any[] = [];
@@ -99,6 +99,22 @@ export function TrainerOverview() {
     }
 
     fetchData();
+
+    // Subscribe to realtime lead updates
+    const channel = supabase
+      .channel('public:leads:overview')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'leads' },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [profile]);
 
   const formatINR = (amount: number) =>

@@ -281,5 +281,12 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true })
     }
 
+    if (action === 'submit_lead') {
+        const leadData = payload || body
+        const { data, error } = await supabase.from('leads').insert([leadData]).select()
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+        return NextResponse.json({ success: true, lead: data?.[0] })
+    }
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
 }

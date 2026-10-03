@@ -29,6 +29,22 @@ export function TrainerStudents() {
       }
     }
     fetchStudents();
+
+    // Subscribe to realtime lead updates
+    const channel = supabase
+      .channel('public:leads:students')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'leads' },
+        () => {
+          fetchStudents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const filteredStudents = students.filter((s) => {
@@ -153,11 +169,18 @@ export function TrainerStudents() {
                             {(student.name || 'U').charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">
-                              {student.name || 'Anonymous'}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">
+                                {student.name || 'Anonymous'}
+                              </p>
+                              {student.source === 'website_learn_page' && (
+                                <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                                  Learn Page
+                                </span>
+                              )}
+                            </div>
                             <p className="text-xs text-gray-500 font-medium">
-                              {student.email || 'No email provided'}
+                              {student.email || student.phone || student.contact_info || 'No contact provided'}
                             </p>
                           </div>
                         </div>
@@ -196,17 +219,21 @@ export function TrainerStudents() {
                               <Mail className="h-4 w-4" />
                             </a>
                           )}
-                          {student.phone && (
-                            <a
-                              href={`https://wa.me/${student.phone?.replace(/\D/g, '')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-100 rounded-xl transition-all"
-                              title="WhatsApp"
-                            >
-                              <MessageSquare className="h-4 w-4" />
-                            </a>
-                          )}
+                          {(() => {
+                            const phoneDigits = (student.phone || student.contact_info || '').replace(/\D/g, '');
+                            if (phoneDigits.length < 10) return null;
+                            return (
+                              <a
+                                href={`https://wa.me/${phoneDigits}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-100 rounded-xl transition-all"
+                                title="WhatsApp"
+                              >
+                                <MessageSquare className="h-4 w-4" />
+                              </a>
+                            );
+                          })()}
                           <button className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all">
                             <MoreVertical className="h-4 w-4" />
                           </button>
