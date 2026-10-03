@@ -6,7 +6,8 @@ import {
     Laptop, Play, Info, HelpCircle,
     ArrowRight, Star, Shield, Zap, IndianRupee, BookOpen, GraduationCap, Users, TrendingUp, Briefcase,
     ExternalLink, Sparkles, CheckCircle2, AlertTriangle, FileText, BarChart3, Target,
-    Smartphone, MessageSquare, ShoppingBag, Award, Layers, Cpu, Compass, RefreshCw, Video, Film, Wand2
+    Smartphone, MessageSquare, ShoppingBag, Award, Layers, Cpu, Compass, RefreshCw, Video, Film, Wand2,
+    AlertCircle, CreditCard, Percent, ChevronRight, ShieldAlert, PieChart
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ShareButtons from '@/components/ShareButtons';
@@ -14,14 +15,16 @@ import BlogEngagement from '@/components/blog/BlogEngagement';
 
 export const metadata: Metadata = {
     title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint) | Celoris",
-    description: "The complete 2026 commercial roadmap for Indian video editors: Master generative AI tools (Runway, Pika, Midjourney), pricing per reel (₹700–₹1,500), monthly agency retainers, and client acquisition.",
+    description: "The complete 2026 commercial blueprint: Master generative AI video tools, YouTube AdSense RPM niche math, UPI storefront economics, agency retainers, and the 180-day execution roadmap.",
     keywords: [
         'AI video creator salary India 2026',
         'how to earn money with AI video editing',
         'video editing freelance rates India per reel',
+        'YouTube AdSense RPM India 2026 niches',
         'Runway Gen-3 Alpha commercial workflow',
         'Pika Labs Midjourney reel animation',
         'YouTube Shorts AI automation retainer',
+        'UPI digital product storefront India',
         'Celoris Job Center video editor jobs',
         'creative video editing course India'
     ],
@@ -30,7 +33,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint) | Celoris",
-        description: "Step-by-step breakdown: Tools, rates per video, workflow from prompt to render, and how to land monthly agency retainers without an expensive GPU.",
+        description: "Step-by-step breakdown: Tools, rates per video, YouTube RPM niche comparison, UPI digital stores, and monthly agency retainers without an expensive GPU.",
         url: 'https://www.celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
@@ -49,7 +52,7 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint)",
-        description: "From prompt engineering to monthly retainer contracts: The modern playbook for Indian video editors and AI artists.",
+        description: "From prompt engineering to YouTube RPMs and monthly retainer contracts: The modern playbook for Indian video editors.",
         images: ['https://www.celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg'],
     }
 };
@@ -171,6 +174,38 @@ const jsonLdData = {
                         "@type": "Answer",
                         "text": "Yes. A skilled AI video creator can produce a high-quality 45–60 second vertical video in 2 to 3.5 hours. Delivering 2 to 3 videos per week easily fits into 6–8 evening or weekend hours while generating ₹8,000 to ₹15,000 in monthly side-income."
                     }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What YouTube AdSense RPM can I expect for AI videos in India?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "In India, YouTube long-form AdSense RPM ranges from ₹40 to ₹170 ($0.50 to $2.00 USD) per 1,000 views. Hindi Personal Finance commands the highest RPM (₹100–₹170), requiring 300k–500k monthly views to hit ₹50,000. Devotional and mythology channels average ₹60–₹90 RPM, while general entertainment averages ₹40–₹80 RPM. In contrast, YouTube Shorts only yields ₹5 to ₹30 RPM, requiring 2.5M to 10M views."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Why shouldn't Indian creators sell digital products through Gumroad or Stripe?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Over 80% of digital transactions in India happen via UPI. International storefronts like Gumroad and Payhip rely on credit cards or PayPal, which lack native UPI, leading to a 30% to 50% checkout abandonment rate. Furthermore, international platforms deduct 18% to 25% in fees, currency conversion spreads, and payout deductions. Indian UPI-native storefronts like Playto or Peerseek provide seamless UPI checkout and net ₹9,500+ out of ₹10,000 in sales."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How can I avoid YouTube demonetization for 'Reused Content' when using generative AI?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "YouTube demonetizes channels that upload raw, mass-automated text-to-video outputs without human creative value. To protect your channel, implement a Human-in-the-Loop workflow: write original narrative scripts, custom color grade all clips, manually pace cuts to audio markers in Premiere Pro or CapCut, and layer unique sound design, commentary, and motion graphics."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What hidden costs occur when paying for AI video tools in India?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "AI subscriptions billed in USD (such as Midjourney, Runway, or ElevenLabs) incur an 18% Indian Digital Services GST (OIDAR) plus a 3% to 4% bank foreign exchange markup. For example, a $20/month plan actually debits approximately ₹2,100 to ₹2,240 on your Indian card. Budget ₹2,500 to ₹3,500/month for your complete cloud stack, or utilize tools offering direct INR billing."
+                    }
                 }
             ]
         }
@@ -244,7 +279,7 @@ export default function AIVideoCreatorGuidePage() {
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <Clock className="w-3.5 h-3.5 text-slate-500" />
-                                <span>11 Min Read</span>
+                                <span>16 Min Read</span>
                             </div>
                         </div>
 
@@ -390,6 +425,50 @@ export default function AIVideoCreatorGuidePage() {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Hidden Subscription Overhead: 18% GST + Forex Card */}
+                    <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-950/20 via-[#101524] to-[#0d121f] border border-amber-500/25 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                                <Percent className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    Budget Accounting: The 18% GST & Foreign Exchange Markup Tax
+                                </h4>
+                                <p className="text-[11px] text-slate-400 font-mono">
+                                    Why a $20/month SaaS subscription actually debits ~₹2,240 from your Indian card
+                                </p>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                            A major financial blind spot for new Indian creators is forgetting cross-border payment surcharges. Generative AI tools billed in USD trigger <strong>18% Indian Digital Services GST (OIDAR tax)</strong> plus a <strong>3.5% foreign currency markup</strong> from your bank:
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                <div className="text-[10px] text-slate-400 uppercase">1. Base USD Conversion</div>
+                                <div className="text-sm font-bold text-white">$20 × ₹86.50 = ₹1,730</div>
+                                <div className="text-[10px] text-slate-500">Standard card forex conversion</div>
+                            </div>
+                            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                <div className="text-[10px] text-amber-400 uppercase">2. 18% Digital GST + Bank FX</div>
+                                <div className="text-sm font-bold text-amber-300">+₹311 GST + ₹65 FX fee</div>
+                                <div className="text-[10px] text-slate-500">Auto-debited by bank & gateway</div>
+                            </div>
+                            <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/20 space-y-1">
+                                <div className="text-[10px] text-emerald-400 uppercase">3. Real Out-of-Pocket Cost</div>
+                                <div className="text-sm font-bold text-emerald-400">≈ ₹2,106 – ₹2,242</div>
+                                <div className="text-[10px] text-slate-400">Actual monthly statement debit</div>
+                            </div>
+                        </div>
+
+                        <div className="text-[11.5px] text-slate-300 flex items-start gap-2 bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                            <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span><strong>Pro-Tip:</strong> Budget a realistic ₹2,500 to ₹3,500/month for your combined Midjourney + Runway starter stack. Where possible, utilize tools supporting domestic INR billing or annual pass purchases to bypass recurring forex fees.</span>
+                        </div>
                     </div>
                 </section>
 
@@ -542,27 +621,444 @@ export default function AIVideoCreatorGuidePage() {
                     </div>
                 </section>
 
-                {/* Section 6: How to Land 3 Monthly Retainers */}
+                {/* Section 5: Direct Channel Monetization & Niche Economics */}
                 <section className="space-y-6 my-12">
                     <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
                         <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400 font-mono">05</span>
-                        How to Land Your First 3 Monthly Clients in 14 Days
+                        Direct Channel Monetization & Indian YouTube AdSense RPMs
                     </h2>
 
                     <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
-                        Do not send generic cold DMs saying: <i>"Hi sir, I am a video editor, hire me."</i> That has a 0% response rate. Instead, use the <strong>"Free 3-Second Hook" Protocol</strong>:
+                        If your ambition is building faceless AI channels on YouTube, you must understand the financial reality of Indian ad revenue. Indian AdSense <strong>Revenue Per Mille (RPM)</strong> ranges from <strong>₹40 to ₹170 ($0.50 to $2.00 USD) per 1,000 views</strong> for long-form content—far below the $4–$9 RPM typical of Western markets.
                     </p>
 
-                    <div className="p-5 rounded-2xl bg-[#0e1424] border border-white/10 space-y-4">
-                        <h4 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
-                            The "Free Sample Hook" Outreach Script:
+                    <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                        Because advertiser demand varies dramatically across industries, selecting the right niche determines whether you need <strong>300,000 views or 1.25 million views</strong> to generate ₹50,000/month:
+                    </p>
+
+                    {/* Niche RPM Comparison Table */}
+                    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#0d121f]">
+                        <table className="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr className="border-b border-white/10 bg-white/[0.03] text-slate-300 font-mono uppercase tracking-wider">
+                                    <th className="p-3.5">Niche Category</th>
+                                    <th className="p-3.5">Expected Long-Form RPM</th>
+                                    <th className="p-3.5">AI Production Fit</th>
+                                    <th className="p-3.5">Monthly Views for ₹50,000 Target</th>
+                                    <th className="p-3.5">Key Revenue Beyond AdSense</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/[0.06] text-slate-300 font-sans">
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Hindi Personal Finance</td>
+                                    <td className="p-3.5 font-bold text-emerald-400 font-mono">₹100 – ₹170</td>
+                                    <td className="p-3.5 text-slate-300"><span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono text-[10px]">High</span> Data graphics, visual explainers, charts</td>
+                                    <td className="p-3.5 font-mono text-cyan-300 font-bold">300k – 500k</td>
+                                    <td className="p-3.5 text-slate-400">Fintech affiliate signups, credit cards, courses</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Indian Mythology & Devotional</td>
+                                    <td className="p-3.5 font-bold text-emerald-400 font-mono">₹60 – ₹90</td>
+                                    <td className="p-3.5 text-slate-300"><span className="px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 font-mono text-[10px]">Very High</span> Generative temple visuals, Vedic lore, TTS</td>
+                                    <td className="p-3.5 font-mono text-cyan-300 font-bold">555k – 833k</td>
+                                    <td className="p-3.5 text-slate-400">Spiritual merchandise, channel memberships, e-books</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Indian History & General Knowledge</td>
+                                    <td className="p-3.5 font-bold text-emerald-400 font-mono">₹50 – ₹80</td>
+                                    <td className="p-3.5 text-slate-300"><span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 font-mono text-[10px]">High</span> Historical maps, ancient battles, cinematic voiceover</td>
+                                    <td className="p-3.5 font-mono text-cyan-300 font-bold">625k – 1,000,000</td>
+                                    <td className="p-3.5 text-slate-400">Educational apps, audiobooks, study guides</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Current Affairs & Daily News</td>
+                                    <td className="p-3.5 font-bold text-amber-300 font-mono">₹40 – ₹70</td>
+                                    <td className="p-3.5 text-slate-300"><span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px]">Medium</span> Rapid turnaround needed; requires strict fact check</td>
+                                    <td className="p-3.5 font-mono text-cyan-300 font-bold">714k – 1,250,000</td>
+                                    <td className="p-3.5 text-slate-400">Volume impressions, aggregator affiliates</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Entertainment, Comedy & Pop Lore</td>
+                                    <td className="p-3.5 font-bold text-amber-300 font-mono">₹40 – ₹80</td>
+                                    <td className="p-3.5 text-slate-300"><span className="px-2 py-0.5 rounded bg-slate-500/10 text-slate-300 font-mono text-[10px]">Moderate</span> High competition, fast visual pacing required</td>
+                                    <td className="p-3.5 font-mono text-cyan-300 font-bold">625k – 1,250,000</td>
+                                    <td className="p-3.5 text-slate-400">Brand sponsors, fan tips, mass digital packs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Long-Form vs. Shorts Economics Trap Callout */}
+                    <div className="p-5 sm:p-6 rounded-2xl bg-[#0c1220] border border-cyan-500/30 space-y-3">
+                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 text-cyan-400" />
+                            The Shorts Economics Trap: Why Shorts Alone Won't Pay Your Bills
                         </h4>
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            Many beginners believe that racking up millions of views on YouTube Shorts will make them rich. Here is the mathematical reality: <strong>YouTube Shorts RPM in India sits between ₹5 and ₹30 per 1,000 views</strong>.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5 font-mono">
+                                <div className="text-[11px] text-rose-400 font-bold">Shorts Exclusively (Low RPM)</div>
+                                <div className="text-xl font-extrabold text-white">2.5M – 10M Views</div>
+                                <p className="text-[11px] text-slate-400 font-sans leading-normal">
+                                    Required every single month just to hit ₹50,000 ad payout. Highly volatile and prone to sudden algorithm drop-offs.
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5 font-mono">
+                                <div className="text-[11px] text-emerald-400 font-bold">Long-Form + Backend Funnel (High RPM)</div>
+                                <div className="text-xl font-extrabold text-white">300k – 500k Views</div>
+                                <p className="text-[11px] text-slate-400 font-sans leading-normal">
+                                    Generates ₹50,000 AdSense easily in finance/mythology, while Shorts act as a top-of-funnel discovery magnet.
+                                </p>
+                            </div>
+                        </div>
+                        <p className="text-xs text-slate-400 pt-1">
+                            <strong>The Strategic Rule:</strong> Treat YouTube Shorts as free organic advertising. Use them to hook attention and drive viewers either to 8–12 minute long-form YouTube videos or directly to your digital product storefront.
+                        </p>
+                    </div>
+                </section>
+
+                {/* Section 6: High-Yield B2B Services & Agency Retainers */}
+                <section className="space-y-6 my-12">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400 font-mono">06</span>
+                        High-Yield B2B Client Acquisition & Monthly Agency Retainers
+                    </h2>
+
+                    <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                        While automated AdSense channels take 3 to 6 months to mature, offering B2B AI video production delivers immediate cash flow within your first 14 days. Direct-to-Consumer (D2C) brands, performance marketing agencies, and EdTech platforms face relentless pressure to publish high volumes of video.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="p-4 sm:p-5 rounded-2xl bg-[#0c1220] border border-white/10 space-y-2">
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[10px] font-mono font-bold uppercase">Deliverable 1</span>
+                            <h4 className="text-sm font-bold text-white">Meta Advantage+ Performance Ad Creatives</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Meta’s automated ad distribution systems require 20 to 50 video variants per campaign to test hooks, angles, and CTAs. A freelance AI specialist delivering 15 to 30 hook variants commands monthly retainers between <strong>₹15,000 and ₹25,000 per brand</strong>. Securing just two clients satisfies your target income goal.
+                            </p>
+                        </div>
+                        <div className="p-4 sm:p-5 rounded-2xl bg-[#0c1220] border border-white/10 space-y-2">
+                            <span className="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 text-[10px] font-mono font-bold uppercase">Deliverable 2</span>
+                            <h4 className="text-sm font-bold text-white">EdTech & Online Course Localization</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                EdTech startups and course creators need chapter explainers, animated visual diagrams, and localized voiceovers. AI-assisted production delivers course assets <strong>4x faster at 60% lower cost</strong> than studio crews, supporting retainers from <strong>₹15,000 to ₹30,000/month</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Outreach protocol */}
+                    <div className="p-5 sm:p-6 rounded-2xl bg-[#0e1424] border border-white/10 space-y-4">
+                        <h4 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                            <Target className="w-4 h-4 text-emerald-400" />
+                            The "Free 3-Second Hook" Outreach Protocol:
+                        </h4>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                            Do not send generic cold DMs saying: <i>"Hi sir, I am a video editor, hire me."</i> That has a near-zero response rate. Instead, take a creator's existing talking-head video, re-animate the first 3 seconds into a mind-blowing cinematic scene, and send this message:
+                        </p>
                         <div className="p-4 rounded-xl bg-black/40 border border-white/5 font-mono text-xs text-slate-300 leading-relaxed">
                             "Hey [Creator/Brand Name]! Loved your recent video on [Topic]. Noticed your intro retained 40% in the first 3 seconds. I took your voiceover and re-imagined the first 4 seconds with a custom AI animation hook [link to 4-second clip]. No charge at all—just thought it looked super cool with your style! If you ever want 10 of these a month for your YouTube Shorts, let me know. Keep crushing it!"
                         </div>
                         <p className="text-xs text-slate-400">
-                            When an influencer or agency owner sees their own voice paired with a mind-blowing visual you already created, <strong>their reply rate jumps from 2% to over 35%.</strong>
+                            When an influencer or agency owner sees their own voice paired with a stunning custom visual you already built, <strong>their reply rate jumps from 2% to over 35%.</strong>
                         </p>
+                    </div>
+                </section>
+
+                {/* Section 7: Backend Digital Products & UPI Storefront Economics */}
+                <section className="space-y-6 my-12">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400 font-mono">07</span>
+                        Backend Digital Products & UPI Storefront Economics
+                    </h2>
+
+                    <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                        Creators who rely 100% on ad impressions or client retainers remain vulnerable to algorithm changes and client churn. The highest-margin asset an AI creator can own is a <strong>proprietary digital backend</strong>: ready-made prompt libraries, vertical video templates, sound effect packs, and Midjourney style cheatsheets.
+                    </p>
+
+                    <div className="p-5 rounded-2xl bg-[#0e1424] border border-amber-500/30 space-y-3">
+                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-amber-400" />
+                            The International Storefront Trap: Why Gumroad & Stripe Fail in India
+                        </h4>
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            Over <strong>80% of digital transactions in India occur via UPI</strong>. Western creator storefronts like Gumroad, Payhip, or Stan Store do not support native UPI checkout. Sending Indian buyers to a credit card/PayPal checkout results in a <strong>30% to 50% cart abandonment rate</strong>, plus an 18% to 25% loss in platform fees and currency conversion deductions.
+                        </p>
+                    </div>
+
+                    {/* Storefront Comparison Table */}
+                    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#0d121f]">
+                        <table className="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr className="border-b border-white/10 bg-white/[0.03] text-slate-300 font-mono uppercase tracking-wider">
+                                    <th className="p-3.5">Storefront Platform</th>
+                                    <th className="p-3.5">Fee Structure</th>
+                                    <th className="p-3.5">Monthly Cost</th>
+                                    <th className="p-3.5">Native UPI Checkout</th>
+                                    <th className="p-3.5">Direct Bank Settlement</th>
+                                    <th className="p-3.5">Net Payout on ₹10,000 Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/[0.06] text-slate-300 font-sans">
+                                <tr className="bg-emerald-500/[0.03]">
+                                    <td className="p-3.5 font-bold text-emerald-400 font-mono">Playto</td>
+                                    <td className="p-3.5 text-slate-300">0% platform fee, 0% UPI MDR</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹0/mo</td>
+                                    <td className="p-3.5 text-emerald-400 font-semibold">Yes (UPI Autopay)</td>
+                                    <td className="p-3.5 text-slate-300">Daily INR</td>
+                                    <td className="p-3.5 font-mono font-bold text-emerald-400">₹9,750 – ₹10,000</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Peerseek</td>
+                                    <td className="p-3.5 text-slate-300">5% flat transaction fee</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹0/mo</td>
+                                    <td className="p-3.5 text-emerald-400 font-semibold">Yes</td>
+                                    <td className="p-3.5 text-slate-300">Direct INR</td>
+                                    <td className="p-3.5 font-mono font-bold text-white">₹9,500</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">SuperProfile (Cosmofeed)</td>
+                                    <td className="p-3.5 text-slate-300">5% + 18% GST</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹499/mo (Creator)</td>
+                                    <td className="p-3.5 text-emerald-400 font-semibold">Yes</td>
+                                    <td className="p-3.5 text-slate-300">Direct INR</td>
+                                    <td className="p-3.5 font-mono text-slate-300">₹9,410 <span className="text-[10px] text-slate-500">(-₹499 sub)</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Graphy</td>
+                                    <td className="p-3.5 text-slate-300">10% + 18% GST revenue share</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹1,999/mo</td>
+                                    <td className="p-3.5 text-emerald-400 font-semibold">Yes</td>
+                                    <td className="p-3.5 text-slate-300">Direct INR</td>
+                                    <td className="p-3.5 font-mono text-slate-300">~₹9,000 <span className="text-[10px] text-slate-500">(-sub)</span></td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Instamojo</td>
+                                    <td className="p-3.5 text-slate-300">10% + ₹3/sale (Lite)</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹0/mo</td>
+                                    <td className="p-3.5 text-emerald-400 font-semibold">Yes</td>
+                                    <td className="p-3.5 text-slate-300">Direct INR</td>
+                                    <td className="p-3.5 font-mono text-slate-300">₹8,970</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-white font-mono">Topmate</td>
+                                    <td className="p-3.5 text-slate-300">~10% commission + gateway</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹0/mo</td>
+                                    <td className="p-3.5 text-emerald-400 font-semibold">Yes</td>
+                                    <td className="p-3.5 text-slate-300">Direct INR</td>
+                                    <td className="p-3.5 font-mono text-slate-300">~₹8,750</td>
+                                </tr>
+                                <tr className="bg-rose-500/[0.03]">
+                                    <td className="p-3.5 font-bold text-rose-300 font-mono">Gumroad / Payhip</td>
+                                    <td className="p-3.5 text-slate-300">10% + $0.50/sale + FX conversion</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹0/mo</td>
+                                    <td className="p-3.5 text-rose-400 font-semibold">No (Cards only)</td>
+                                    <td className="p-3.5 text-slate-400">PayPal / Wire</td>
+                                    <td className="p-3.5 font-mono text-rose-400 font-bold">~₹7,900 – ₹8,200 <span className="text-[10px] text-rose-300">(18–21% fee loss)</span></td>
+                                </tr>
+                                <tr className="bg-rose-500/[0.03]">
+                                    <td className="p-3.5 font-bold text-rose-300 font-mono">Stan Store</td>
+                                    <td className="p-3.5 text-slate-300">0% fee + Stripe processing</td>
+                                    <td className="p-3.5 font-mono text-slate-400">$29/mo (~₹2,400)</td>
+                                    <td className="p-3.5 text-rose-400 font-semibold">No (Stripe INR restricted)</td>
+                                    <td className="p-3.5 text-slate-400">Restricted</td>
+                                    <td className="p-3.5 font-mono text-rose-400 font-bold">~₹7,100 <span className="text-[10px] text-rose-300">(High sub drag)</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Small-Ticket Bundle Math */}
+                    <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-950/30 via-[#0e1627] to-[#070b14] border border-emerald-500/25 space-y-3">
+                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-emerald-400" />
+                            The ₹149 Template Bundle Math: How 300 Buyers = ₹42,000 Clean Profit
+                        </h4>
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            Instead of trying to sell a high-friction ₹4,999 course to cold social media followers, top Indian AI creators package an impulse-purchase <strong>"AI Video Creator Prompt & Motion Preset Kit" priced at ₹149</strong>:
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs pt-1">
+                            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                <div className="text-[10px] text-slate-400 uppercase">Volume Needed</div>
+                                <div className="text-base font-bold text-white">300 Sales / Mo</div>
+                                <div className="text-[10.5px] text-emerald-400">~10 sales / day from bio links</div>
+                            </div>
+                            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                <div className="text-[10px] text-slate-400 uppercase">Gross Revenue</div>
+                                <div className="text-base font-bold text-cyan-300">₹44,700</div>
+                                <div className="text-[10.5px] text-slate-400">300 × ₹149 bundle price</div>
+                            </div>
+                            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                <div className="text-[10px] text-emerald-400 uppercase">Net UPI Bank Payout</div>
+                                <div className="text-base font-bold text-emerald-400">≈ ₹42,000</div>
+                                <div className="text-[10.5px] text-slate-400">Via Playto or Peerseek 0–5% fee</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Section 8: The Consolidated Revenue Matrix & 180-Day Roadmap */}
+                <section className="space-y-6 my-12">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400 font-mono">08</span>
+                        The Consolidated Revenue Matrix: 3 Blended Pathways to ₹50,000/Month
+                    </h2>
+
+                    <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                        The creators who thrive long-term do not rely exclusively on a single source of income. By blending agency retainers, automated AdSense channels, and digital asset sales, they protect their income against algorithm swings and dry client pipelines.
+                    </p>
+
+                    {/* Operational Models Table */}
+                    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#0d121f]">
+                        <table className="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr className="border-b border-white/10 bg-white/[0.03] text-slate-300 font-mono uppercase tracking-wider">
+                                    <th className="p-3.5">Operational Model</th>
+                                    <th className="p-3.5">Revenue Breakdown</th>
+                                    <th className="p-3.5">Monthly Volume Output</th>
+                                    <th className="p-3.5">Est. Software Overhead</th>
+                                    <th className="p-3.5">Net Monthly Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/[0.06] text-slate-300 font-sans">
+                                <tr>
+                                    <td className="p-3.5 font-bold text-emerald-400 font-mono">Model A: Pure Freelancer / B2B Specialist</td>
+                                    <td className="p-3.5 text-slate-300">
+                                        • 2 Brand Retainers @ ₹20,000/mo<br />
+                                        • Marketplace projects: ₹10,000
+                                    </td>
+                                    <td className="p-3.5 text-slate-300 font-mono">30–40 Short-form Reels / Ads, 1–2 course modules</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹2,000 – ₹4,000</td>
+                                    <td className="p-3.5 font-mono font-bold text-emerald-400 text-sm">₹46,000 – ₹48,000</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-cyan-300 font-mono">Model B: Channel Automation + Store</td>
+                                    <td className="p-3.5 text-slate-300">
+                                        • YouTube AdSense: ₹25,000 (250K views @ ₹100 RPM)<br />
+                                        • Digital Products: ₹20,000 (135 sales @ ₹149)<br />
+                                        • Affiliates: ₹5,000
+                                    </td>
+                                    <td className="p-3.5 text-slate-300 font-mono">12–16 Long-form videos, 30 Shorts</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹830 – ₹2,500</td>
+                                    <td className="p-3.5 font-mono font-bold text-cyan-300 text-sm">₹47,500 – ₹49,170</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3.5 font-bold text-purple-300 font-mono">Model C: Hybrid Creator-Agency Model</td>
+                                    <td className="p-3.5 text-slate-300">
+                                        • 1 B2B Brand Retainer: ₹25,000<br />
+                                        • AdSense Revenue: ₹15,000 (200K views @ ₹75 RPM)<br />
+                                        • Digital Bundles: ₹10,000
+                                    </td>
+                                    <td className="p-3.5 text-slate-300 font-mono">15 B2B Client Reels, 8 Long-form videos, daily Shorts</td>
+                                    <td className="p-3.5 font-mono text-slate-400">₹1,500 – ₹3,000</td>
+                                    <td className="p-3.5 font-mono font-bold text-purple-300 text-sm">₹47,000 – ₹48,500</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Phased Roadmap Timeline */}
+                    <div className="p-6 sm:p-7 rounded-2xl bg-[#0b0e17] border border-white/10 space-y-5">
+                        <div className="flex items-center gap-2">
+                            <Compass className="w-4 h-4 text-emerald-400" />
+                            <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                                The 180-Day Step-by-Step Phased Execution Roadmap
+                            </h4>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">Phase 1 (Days 1–30)</span>
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                </div>
+                                <h5 className="text-xs font-bold text-white">Foundation & Lean Portfolio</h5>
+                                <ul className="text-[11px] text-slate-400 space-y-1.5 list-disc list-inside leading-relaxed">
+                                    <li>Set up lean cloud stack (Midjourney + Runway starter)</li>
+                                    <li>Build 5 commercial samples (Finance, Mythology, D2C Ads, EdTech)</li>
+                                    <li>Master CapCut/Premiere audio markers and kinetic text</li>
+                                </ul>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase">Phase 2 (Days 31–60)</span>
+                                    <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+                                </div>
+                                <h5 className="text-xs font-bold text-white">Client Acquisition & Retainers</h5>
+                                <ul className="text-[11px] text-slate-400 space-y-1.5 list-disc list-inside leading-relaxed">
+                                    <li>Execute "Free 3-Second Hook" protocol to 30 targeted brands</li>
+                                    <li>Apply to verified openings on Celoris Job Center</li>
+                                    <li>Lock in your first 2 recurring retainers @ ₹15,000–₹20,000/mo</li>
+                                </ul>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-mono font-bold text-purple-400 uppercase">Phase 3 (Days 61–180)</span>
+                                    <span className="w-2 h-2 rounded-full bg-purple-400"></span>
+                                </div>
+                                <h5 className="text-xs font-bold text-white">Automated Scaling & Digital Store</h5>
+                                <ul className="text-[11px] text-slate-400 space-y-1.5 list-disc list-inside leading-relaxed">
+                                    <li>Launch faceless YouTube channel (3 long-form/wk + daily Shorts)</li>
+                                    <li>Deploy ₹149 prompt & motion preset bundle on UPI store</li>
+                                    <li>Scale consolidated net income sustainably beyond ₹50,000/mo</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Section 9: Platform Risk Analysis & Demonetization Safeguards */}
+                <section className="space-y-6 my-12">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400 font-mono">09</span>
+                        Platform Risk Analysis: Preventing YouTube "Reused Content" Demonetization
+                    </h2>
+
+                    <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                        Generating videos with AI carries real platform risks if you treat it like an unsupervised copy-paste machine. YouTube’s algorithm actively penalizes channels uploading raw, programmatic, low-effort AI slop.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="p-5 rounded-2xl bg-[#0c101a] border border-white/10 space-y-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
+                                <ShieldAlert className="w-4 h-4" />
+                            </div>
+                            <h4 className="text-sm font-bold text-white">1. YouTube Reused Content Demonetization</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                <strong>Risk:</strong> Channels spitting out automated ChatGPT scripts into generic AI text-to-video generators get rejected from the YouTube Partner Program under "Reused Content".
+                            </p>
+                            <p className="text-xs text-emerald-400 font-mono">
+                                <strong>Mitigation:</strong> Implement a strict <i>Human-in-the-Loop</i> protocol. Personally edit scripts, introduce custom pacing cuts in CapCut/Premiere, apply original color LUTs, and layer unique human-curated sound design.
+                            </p>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-[#0c101a] border border-white/10 space-y-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-bold">
+                                <TrendingUp className="w-4 h-4" />
+                            </div>
+                            <h4 className="text-sm font-bold text-white">2. Currency & Software Overhead Volatility</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                <strong>Risk:</strong> USD-billed SaaS models increase unexpected overhead during rupee depreciation or when credit card international limits fail.
+                            </p>
+                            <p className="text-xs text-emerald-400 font-mono">
+                                <strong>Mitigation:</strong> Where available, switch to native INR billing options (e.g., InVideo AI or TrueFan) or lock in discounted annual billing once your initial client retainers establish reliable positive cash flow.
+                            </p>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-[#0c101a] border border-white/10 space-y-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold">
+                                <Smartphone className="w-4 h-4" />
+                            </div>
+                            <h4 className="text-sm font-bold text-white">3. Domestic Checkout Drop-Off Friction</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                <strong>Risk:</strong> Using Stripe/PayPal links for selling digital prompt bundles in India loses 30–50% of customers who only pay via PhonePe, GPay, or Paytm.
+                            </p>
+                            <p className="text-xs text-emerald-400 font-mono">
+                                <strong>Mitigation:</strong> Exclusively host domestic products on zero-friction UPI platforms like Playto or Peerseek to guarantee instant 1-click settlements into your Indian bank account.
+                            </p>
+                        </div>
                     </div>
                 </section>
 
@@ -600,7 +1096,7 @@ export default function AIVideoCreatorGuidePage() {
                                 Explore Classroom Batch
                             </Link>
                             <a
-                                href="https://wa.me/919876543210?text=Hi%20Celoris!%20I%20want%20details%20about%20the%20October%2011%20AI%20Video%20Cohort"
+                                href="https://wa.me/919084718101?text=Hi%20Celoris!%20I%20want%20details%20about%20the%20October%2011%20AI%20Video%20Cohort"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="px-6 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2"
@@ -619,7 +1115,7 @@ export default function AIVideoCreatorGuidePage() {
                             Frequently Asked Questions
                         </span>
                         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                            Common Questions on AI Video Freelancing
+                            Common Questions on AI Video Freelancing & Channel Monetization
                         </h2>
                     </div>
 
@@ -644,6 +1140,42 @@ export default function AIVideoCreatorGuidePage() {
 
                         <AccordionItem value="faq-3" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
                             <AccordionTrigger className="text-sm font-bold text-white hover:text-emerald-400 text-left py-4">
+                                What YouTube AdSense RPM can I realistically expect in India for AI videos?
+                            </AccordionTrigger>
+                            <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
+                                In India, YouTube long-form RPM ranges from ₹40 to ₹170 per 1,000 views. Hindi Personal Finance commands the highest RPM (₹100–₹170), requiring 300,000–500,000 monthly views to hit ₹50,000. Devotional and mythology channels average ₹60–₹90 RPM, while general entertainment averages ₹40–₹80 RPM.
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        <AccordionItem value="faq-4" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
+                            <AccordionTrigger className="text-sm font-bold text-white hover:text-emerald-400 text-left py-4">
+                                Can I reach ₹50,000/month by only uploading YouTube Shorts?
+                            </AccordionTrigger>
+                            <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
+                                It is extremely difficult. YouTube Shorts RPM in India is only ₹5 to ₹30 per 1,000 views. Generating ₹50,000 strictly through Shorts requires 2.5 million to 10 million views every month. Sustainable creators use Shorts primarily as top-of-funnel traffic drivers to push viewers to long-form videos, affiliate links, or UPI digital storefronts.
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        <AccordionItem value="faq-5" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
+                            <AccordionTrigger className="text-sm font-bold text-white hover:text-emerald-400 text-left py-4">
+                                Why should I avoid Gumroad or Stripe when selling digital templates to Indians?
+                            </AccordionTrigger>
+                            <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
+                                Over 80% of Indian online payments happen over UPI. Gumroad and Stripe lack native UPI checkout, creating a 30% to 50% cart abandonment rate. Furthermore, international processors deduct 18% to 25% in transaction fees, forex conversion, and bank wire costs. Domestic UPI storefronts like Playto or Peerseek allow 1-click UPI payments and deliver ₹9,500+ net into your account per ₹10,000 in sales.
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        <AccordionItem value="faq-6" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
+                            <AccordionTrigger className="text-sm font-bold text-white hover:text-emerald-400 text-left py-4">
+                                How do I prevent my channel from being demonetized for "Reused Content"?
+                            </AccordionTrigger>
+                            <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
+                                YouTube demonetizes automated channels that upload unedited, generic text-to-video outputs without human intervention. Protect your channel by using a Human-in-the-Loop workflow: write original scripts, apply custom color grading in Premiere/CapCut, cut pacing manually to voiceover beats, and add unique sound effects and motion graphics.
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        <AccordionItem value="faq-7" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
+                            <AccordionTrigger className="text-sm font-bold text-white hover:text-emerald-400 text-left py-4">
                                 How much time does it take to make one 45-second vertical video?
                             </AccordionTrigger>
                             <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
@@ -651,7 +1183,7 @@ export default function AIVideoCreatorGuidePage() {
                             </AccordionContent>
                         </AccordionItem>
 
-                        <AccordionItem value="faq-4" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
+                        <AccordionItem value="faq-8" className="border border-white/10 rounded-2xl px-5 bg-[#0b0e17] data-[state=open]:border-emerald-500/40">
                             <AccordionTrigger className="text-sm font-bold text-white hover:text-emerald-400 text-left py-4">
                                 What is the difference between Public Jobs and Certified Roles in Celoris Job Center?
                             </AccordionTrigger>
