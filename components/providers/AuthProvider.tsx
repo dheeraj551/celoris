@@ -9,7 +9,7 @@ interface AuthContextType {
     session: Session | null
     loading: boolean
     profile: any | null
-    refreshProfile: () => Promise<void>
+    refreshProfile: (optimisticData?: Record<string, any>) => Promise<void>
     signOut: () => Promise<void>
 }
 
@@ -110,8 +110,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
-    const fetchProfile = async (userId: string) => {
+    const fetchProfile = async (userId: string, currentUser?: User | null) => {
         try {
+            const activeUser = currentUser || user
+
             // Fetch from 'users' table (basic sync)
             const { data: userData } = await supabase
                 .from("users")
@@ -131,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const mergedProfile = { ...userData, ...profileData }
 
                 // Synchronize phone and contact consistently across the app
-                const resolvedPhone = userData?.phone || profileData?.contact || profileData?.phone || userData?.contact || user?.user_metadata?.phone || null
+                const resolvedPhone = userData?.phone || profileData?.contact || profileData?.phone || userData?.contact || activeUser?.user_metadata?.phone || null
                 mergedProfile.phone = resolvedPhone
                 mergedProfile.contact = resolvedPhone
 
@@ -156,13 +158,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     mergedProfile.avatar_url = mergedProfile.profile_pic_url
                 }
                 setProfile(mergedProfile)
-            } else if (user) {
+            } else if (activeUser) {
+                const resolvedPhone = activeUser.user_metadata?.phone || null
                 setProfile({
-                    id: user.id,
-                    email: user.email,
-                    phone: user.user_metadata?.phone || null,
-                    contact: user.user_metadata?.phone || null,
-                    full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                    id: activeUser.id,
+                    email: activeUser.email,
+                    phone: resolvedPhone,
+                    contact: resolvedPhone,
+                    full_name: activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0] || 'User',
                 })
             }
         } catch (e) {
@@ -172,8 +175,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
-    const refreshProfile = async () => {
-        if (user) await fetchProfile(user.id)
+    const refreshProfile = async (optimisticData?: Record<string, any>) => {
+        if (optimisticData) {
+            setProfile((prev: any) => (prev ? { ...prev, ...optimisticData } : optimisticData))
+        }
+
+        try {
+            const { data: { user: freshUser } } = await supabase.auth.getUser()
+            if (freshUser) {
+                setUser(freshUser)
+                await fetchProfile(freshUser.id, freshUser)
+                return
+            }
+        } catch (e) {
+            console.warn("Could not refresh auth user:", e)
+        }
+
+        if (user) {
+            await fetchProfile(user.id, user)
+        }
     }
 
     const signOut = async () => {

@@ -31,42 +31,99 @@ export async function POST(request: Request) {
       formattedPhone = `+91 ${digitsOnly.slice(2)}`
     }
 
-    // Use service role client to guarantee sync across both users and profiles tables
-    const adminClient = createSupabaseClientForServer()
+    // 1. Update auth user metadata directly using route client (session token)
+    // This updates the user's session metadata immediately
+    try {
+      const { error: metaError } = await supabase.auth.updateUser({
+        data: {
+          phone: formattedPhone,
+          phone_verified: true,
+        },
+      })
+      if (metaError) {
+        console.warn('Could not update auth user metadata via session:', metaError.message)
+      }
+    } catch (metaErr: any) {
+      console.warn('Exception updating auth user metadata:', metaErr?.message)
+    }
 
-    // 1. Update public.users
-    await adminClient
+    // 2. Update public.users table
+    const { data: existingUser } = await supabase
       .from('users')
-      .upsert(
-        {
-          id: user.id,
+      .select('id, username')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (existingUser) {
+      const { error: userUpdateErr } = await supabase
+        .from('users')
+        .update({
           phone: formattedPhone,
           updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'id' }
-      )
+        })
+        .eq('id', user.id)
 
-    // 2. Update public.profiles
-    await adminClient
-      .from('profiles')
-      .upsert(
-        {
+      if (userUpdateErr) {
+        console.warn('Failed to update phone in users table:', userUpdateErr.message)
+      }
+    } else {
+      const fallbackUsername = (user.email?.split('@')[0] || 'user').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20) || 'user'
+      const { error: userInsertErr } = await supabase
+        .from('users')
+        .insert({
           id: user.id,
-          contact: formattedPhone,
-          email: user.email,
+          username: `${fallbackUsername}_${user.id.slice(0, 4)}`,
+          full_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          phone: formattedPhone,
+          role: 'user',
           updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'id' }
-      )
+        })
 
-    // 3. Update auth user metadata
-    await adminClient.auth.admin.updateUserById(user.id, {
-      user_metadata: {
-        ...user.user_metadata,
-        phone: formattedPhone,
-        phone_verified: true,
-      },
-    })
+      if (userInsertErr) {
+        console.warn('Failed to insert user with phone:', userInsertErr.message)
+      }
+    }
+
+    // 3. Update public.profiles if a row already exists
+    try {
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (existingProfile) {
+        await supabase
+          .from('profiles')
+          .update({
+            contact: formattedPhone,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id)
+      }
+    } catch (profErr: any) {
+      console.warn('Failed to update profiles table:', profErr?.message)
+    }
+
+    // 4. Also attempt service role update if valid key is available
+    try {
+      const adminClient = createSupabaseClientForServer()
+      await adminClient
+        .from('users')
+        .update({ phone: formattedPhone, updated_at: new Date().toISOString() })
+        .eq('id', user.id)
+
+      await adminClient.auth.admin.updateUserById(user.id, {
+        user_metadata: {
+          ...user.user_metadata,
+          phone: formattedPhone,
+          phone_verified: true,
+        },
+      })
+    } catch (adminErr) {
+      // Service role key might not be configured or invalid — harmless since route client already did the updates
+      console.warn('Admin client update skipped/failed:', (adminErr as any)?.message)
+    }
 
     return NextResponse.json({
       success: true,

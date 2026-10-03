@@ -11,12 +11,32 @@ export function MandatoryPhoneModal() {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [submittedSuccessfully, setSubmittedSuccessfully] = useState(false)
+
+  const storageKey = user ? `celoris_phone_saved_${user.id}` : null
 
   useEffect(() => {
     // Only check if auth is finished loading and a valid user is present
     if (loading || !user) {
       setIsOpen(false)
       return
+    }
+
+    // Never re-open if already submitted in this session or browser
+    if (submittedSuccessfully) {
+      setIsOpen(false)
+      return
+    }
+
+    if (storageKey && typeof window !== 'undefined') {
+      try {
+        if (sessionStorage.getItem(storageKey) === 'true' || localStorage.getItem(storageKey) === 'true') {
+          setIsOpen(false)
+          return
+        }
+      } catch (e) {
+        // Ignore storage errors in private browsing
+      }
     }
 
     // Check if phone or contact exists in profile
@@ -35,7 +55,7 @@ export function MandatoryPhoneModal() {
     } else {
       setIsOpen(false)
     }
-  }, [user, profile, loading])
+  }, [user, profile, loading, submittedSuccessfully, storageKey])
 
   if (!isOpen) return null
 
@@ -62,17 +82,35 @@ export function MandatoryPhoneModal() {
         throw new Error(data.error || 'Failed to update phone number')
       }
 
+      // 1. Immediately flag as saved so modal NEVER re-opens
+      setSubmittedSuccessfully(true)
+      if (storageKey && typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem(storageKey, 'true')
+          localStorage.setItem(storageKey, 'true')
+        } catch (e) {
+          // Ignore
+        }
+      }
+
+      // 2. Confetti celebratory effect
       confetti({
         particleCount: 60,
         spread: 70,
         origin: { y: 0.6 },
       })
 
-      if (refreshProfile) {
-        await refreshProfile()
-      }
-
+      // 3. Immediately close modal
       setIsOpen(false)
+
+      // 4. Optimistically update profile and sync with fresh user metadata
+      const savedPhone = data.phone || phoneNumber.trim()
+      if (refreshProfile) {
+        await refreshProfile({
+          phone: savedPhone,
+          contact: savedPhone,
+        })
+      }
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {
