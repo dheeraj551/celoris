@@ -252,7 +252,7 @@ export function CelorisPhoneOS() {
             <Zap className="w-4.5 h-4.5" />
           </div>
           <span className="text-[11px] font-bold text-white block">Studio Suite</span>
-          <span className="text-[8.5px] text-cyan-300/90 mt-0.5">4 Cloud Tools</span>
+          <span className="text-[8.5px] text-cyan-300/90 mt-0.5">5 Cloud Tools</span>
         </button>
       </div>
 
