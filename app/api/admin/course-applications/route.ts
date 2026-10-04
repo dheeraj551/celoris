@@ -30,24 +30,40 @@ export async function GET() {
     }
 }
 
-// Approve/reject a single application — { id, status: 'approved' | 'rejected' }.
+// Approve/reject or update pass/waitlist state — { id, status?, offer_pass?, intent? }.
 export async function PATCH(request: NextRequest) {
     try {
         const body = await request.json()
-        const { id, status } = body
+        const { id, status, offer_pass, intent } = body
 
-        if (!id || !['pending', 'approved', 'rejected'].includes(status)) {
-            return NextResponse.json({ error: 'id and a valid status are required' }, { status: 400 })
+        if (!id) {
+            return NextResponse.json({ error: 'id is required' }, { status: 400 })
+        }
+
+        const updates: Record<string, any> = {
+            reviewed_at: new Date().toISOString(),
+        }
+
+        if (status) {
+            if (!['pending', 'approved', 'rejected'].includes(status)) {
+                return NextResponse.json({ error: 'invalid status' }, { status: 400 })
+            }
+            updates.status = status
+        }
+
+        if (typeof offer_pass === 'boolean') {
+            updates.offer_pass = offer_pass
+        }
+
+        if (typeof intent === 'string') {
+            updates.intent = intent
         }
 
         const admin = createSupabaseClientForServer()
 
         const { data, error } = await admin
             .from('course_applications')
-            .update({
-                status,
-                reviewed_at: new Date().toISOString(),
-            })
+            .update(updates)
             .eq('id', id)
             .select()
             .single()

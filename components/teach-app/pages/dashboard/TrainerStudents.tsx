@@ -1,7 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Mail, MessageSquare, Calendar, MoreVertical, CheckCircle, Clock, User, Phone, Download, LayoutGrid, List, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Search,
+  Filter,
+  MessageSquare,
+  Clock,
+  User,
+  LayoutGrid,
+  List,
+  Loader2,
+  Lock,
+  Sparkles,
+  Send,
+  Shield,
+  X,
+  PartyPopper,
+  PhoneCall,
+  Video,
+  Radio,
+  ExternalLink,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { createClient } from '@/lib/supabase-client';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 export function TrainerStudents() {
   const [students, setStudents] = useState<any[]>([]);
@@ -9,7 +31,191 @@ export function TrainerStudents() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+
+  // Modals state for PRO gating, Internal Chat, and In-App Calls
+  const [proModal, setProModal] = useState<{ show: boolean; feature: string } | null>(null);
+  const [chatModal, setChatModal] = useState<{ show: boolean; student: any } | null>(null);
+  const [callModal, setCallModal] = useState<{ show: boolean; mode: 'audio' | 'video'; student: any } | null>(null);
+  const [chatSubject, setChatSubject] = useState('');
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatSending, setChatSending] = useState(false);
+  const [successPopup, setSuccessPopup] = useState<{ show: boolean; message: string } | null>(null);
+
   const supabase = createClient();
+  const { profile } = useAuth();
+  const navigate = useNavigate();
+
+  // PRO Status check: checks subscription_status, is_pro, plan, admin roles
+  const isProTrainer = Boolean(
+    profile?.subscription_status === 'premium' ||
+    profile?.subscription_status === 'enterprise' ||
+    profile?.is_pro === true ||
+    profile?.is_premium === true ||
+    profile?.plan === 'pro' ||
+    profile?.role === 'admin' ||
+    profile?.role === 'superadmin' ||
+    profile?.is_trainer_pro === true
+  );
+
+  // Masking helpers - always applied to maintain student privacy
+  const maskPhone = (phone?: string | null) => {
+    if (!phone) return '';
+    const clean = phone.trim();
+    if (clean.length <= 4) return '••••••';
+    if (clean.startsWith('+')) {
+      const parts = clean.split(' ');
+      if (parts.length >= 2) {
+        return `${parts[0]} ${parts[1].slice(0, 4)} •••••`;
+      }
+    }
+    const visibleLength = Math.max(3, Math.min(clean.length - 4, 6));
+    return `${clean.slice(0, visibleLength)} •••••`;
+  };
+
+  const maskEmail = (email?: string | null) => {
+    if (!email) return '';
+    const clean = email.trim();
+    const parts = clean.split('@');
+    if (parts.length !== 2) return '••••••@••••.com';
+    const [userPart, domainPart] = parts;
+    const maskedUser = userPart.length > 2 ? `${userPart.slice(0, 2)}••••` : `${userPart[0]}••••`;
+    const dotIndex = domainPart.lastIndexOf('.');
+    const ext = dotIndex !== -1 ? domainPart.slice(dotIndex) : '.com';
+    return `${maskedUser}@••••${ext}`;
+  };
+
+  const openInternalChat = (student: any) => {
+    setChatSubject(`Discussion regarding ${student.course || 'Training Requirements'}`);
+    setChatMessage('');
+    setChatModal({ show: true, student });
+  };
+
+  const handleSendInternalChat = async () => {
+    if (!chatModal?.student || !chatMessage.trim()) return;
+    const student = chatModal.student;
+    setChatSending(true);
+
+    try {
+      const defaultSubject = chatSubject.trim() || `Course Discussion: ${student.course || 'Training Inquiry'}`;
+
+      // 1. Insert message into inbox_messages (never store unmasked PII)
+      await supabase.from('inbox_messages').insert({
+        trainer_id: profile?.id,
+        sender_name: student.name || 'Student Lead',
+        sender_email: null,
+        sender_phone: null,
+        subject: defaultSubject,
+        body: chatMessage.trim(),
+        message_type: 'student_lead',
+        status: 'sent',
+      });
+
+      // 2. Dispatch internal notification to student email safely from server
+      await fetch('/api/leads/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'Internal Message Sent',
+          trainerName: profile?.full_name || profile?.username || 'Celoris Trainer',
+          trainerEmail: profile?.email || '',
+          studentName: student.name || 'Student',
+          studentEmail: student.email || (student.contact_info?.includes('@') ? student.contact_info : '') || '',
+          studentPhone: student.phone || student.contact_info || '',
+          course: student.course || 'General Training',
+          leadId: student.id,
+          messageText: chatMessage.trim(),
+        }),
+      });
+
+      // 3. Mark status as contacted in leads table
+      await supabase
+        .from('leads')
+        .update({ status: 'contacted' })
+        .eq('id', student.id);
+
+      // 4. Update local state
+      setStudents((prev) => prev.map((s) => (s.id === student.id ? { ...s, status: 'contacted' } : s)));
+
+      setChatModal(null);
+      setChatMessage('');
+      setSuccessPopup({
+        show: true,
+        message: `Your message to ${student.name || 'Student'} was sent securely via Celoris.`,
+      });
+      setTimeout(() => setSuccessPopup(null), 4000);
+    } catch (err) {
+      console.error('Error sending internal chat:', err);
+      alert('Failed to send message. Please try again.');
+    } finally {
+      setChatSending(false);
+    }
+  };
+
+  const handleStartCall = (mode: 'audio' | 'video', student: any) => {
+    if (!isProTrainer) {
+      setProModal({
+        show: true,
+        feature: mode === 'audio' ? '1-on-1 Audio Calling via Celoris' : '1-on-1 Video Calling via Celoris',
+      });
+      return;
+    }
+    setCallModal({ show: true, mode, student });
+  };
+
+  const handleLaunchCallRoom = (roomUrl: string) => {
+    window.open(roomUrl, '_blank');
+  };
+
+  const handleSendCallInvite = async (student: any, mode: 'audio' | 'video', roomUrl: string) => {
+    setChatSending(true);
+    try {
+      const inviteText = `Hi ${student.name || 'there'}, your trainer has initiated a 1-on-1 live ${mode === 'audio' ? 'Audio' : 'Video'} Call session on Celoris! Please join the session here: ${window.location.origin}${roomUrl}`;
+
+      // 1. Insert message
+      await supabase.from('inbox_messages').insert({
+        trainer_id: profile?.id,
+        sender_name: student.name || 'Student Lead',
+        sender_email: null,
+        sender_phone: null,
+        subject: `Live ${mode === 'audio' ? 'Audio' : 'Video'} Call Invitation`,
+        body: inviteText,
+        message_type: 'student_lead',
+        status: 'sent',
+      });
+
+      // 2. Notify student
+      await fetch('/api/leads/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'Internal Message Sent',
+          trainerName: profile?.full_name || profile?.username || 'Celoris Trainer',
+          trainerEmail: profile?.email || '',
+          studentName: student.name || 'Student',
+          studentEmail: student.email || (student.contact_info?.includes('@') ? student.contact_info : '') || '',
+          studentPhone: student.phone || student.contact_info || '',
+          course: student.course || 'Live Session',
+          leadId: student.id,
+          messageText: inviteText,
+        }),
+      });
+
+      await supabase.from('leads').update({ status: 'contacted' }).eq('id', student.id);
+      setStudents((prev) => prev.map((s) => (s.id === student.id ? { ...s, status: 'contacted' } : s)));
+
+      setCallModal(null);
+      setSuccessPopup({
+        show: true,
+        message: `Call invite sent to ${student.name || 'Student'} via Celoris Chat!`,
+      });
+      setTimeout(() => setSuccessPopup(null), 4000);
+    } catch (err) {
+      console.error('Error sending call invite:', err);
+      alert('Failed to send call invite.');
+    } finally {
+      setChatSending(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchStudents() {
@@ -30,7 +236,6 @@ export function TrainerStudents() {
     }
     fetchStudents();
 
-    // Subscribe to realtime lead updates
     const channel = supabase
       .channel('public:leads:students')
       .on(
@@ -51,7 +256,6 @@ export function TrainerStudents() {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       (s.name || '').toLowerCase().includes(term) ||
-      (s.email || '').toLowerCase().includes(term) ||
       (s.course || '').toLowerCase().includes(term) ||
       (s.requirement || '').toLowerCase().includes(term);
     const matchesStatus =
@@ -75,12 +279,282 @@ export function TrainerStudents() {
 
   return (
     <div className="p-8">
+      {/* Celoris In-App Call Modal */}
+      <AnimatePresence>
+        {callModal?.show && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-indigo-200 relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${
+                    callModal.mode === 'audio'
+                      ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/20'
+                      : 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20'
+                  }`}>
+                    {callModal.mode === 'audio' ? <PhoneCall className="w-6 h-6" /> : <Video className="w-6 h-6" />}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-gray-900">
+                      Celoris 1-on-1 {callModal.mode === 'audio' ? 'Audio' : 'Video'} Call
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      With <strong className="text-gray-900">{callModal.student?.name || 'Student'}</strong>
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setCallModal(null)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 mb-5 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-indigo-950">
+                  <Shield className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>100% In-App Calling (No Phone Numbers Shared)</span>
+                </div>
+                <p className="text-xs text-indigo-900/80 leading-relaxed">
+                  Calls take place inside Celoris live rooms. Both parties stay strictly protected without revealing personal phone numbers or private email addresses.
+                </p>
+              </div>
+
+              {(() => {
+                const roomUrl = `/classrooms?room=call-${callModal.student?.id || 'session'}&type=${callModal.mode}`;
+                return (
+                  <div className="space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => handleLaunchCallRoom(roomUrl)}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2"
+                    >
+                      <Radio className="w-4 h-4 animate-pulse text-indigo-200" />
+                      <span>Launch Call Room Now</span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={chatSending}
+                      onClick={() => handleSendCallInvite(callModal.student, callModal.mode, roomUrl)}
+                      className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-3 px-4 rounded-xl text-sm transition-colors border border-emerald-200 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {chatSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      <span>Send Call Link via Celoris Chat</span>
+                    </button>
+                  </div>
+                );
+              })()}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PRO Upgrade Modal */}
+      <AnimatePresence>
+        {proModal?.show && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-bl-full pointer-events-none" />
+
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <button
+                  onClick={() => setProModal(null)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-black uppercase tracking-wider mb-2">
+                <Lock className="w-3 h-3" /> PRO Feature
+              </div>
+
+              <h3 className="text-xl font-black text-gray-900 mb-2">
+                Unlock {proModal.feature}
+              </h3>
+
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                Direct phone and email exchange is disabled across Celoris to maintain student safety. Upgrade to <strong>Celoris PRO Trainer</strong> to host live 1-on-1 Audio and Video Calls directly with your students on Celoris!
+              </p>
+
+              <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 mb-6 space-y-2.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                  <PhoneCall className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Unlimited 1-on-1 Audio Calls via Celoris Chat</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                  <Video className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>High-Definition 1-on-1 Video Calling & Screen Share</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                  <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Verified PRO Badge on Celoris Course Pages</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProModal(null);
+                    navigate('/teach/pricing');
+                  }}
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" /> Upgrade to PRO Trainer
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Internal Chat Modal */}
+      <AnimatePresence>
+        {chatModal?.show && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-emerald-200 relative"
+            >
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-base">Celoris In-App Chat</h3>
+                    <p className="text-xs text-gray-500">
+                      Message to <strong className="text-emerald-700">{chatModal.student?.name || 'Student'}</strong> (stays within Celoris)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setChatModal(null)}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Subject</label>
+                  <input
+                    type="text"
+                    value={chatSubject}
+                    onChange={(e) => setChatSubject(e.target.value)}
+                    placeholder="Enter subject..."
+                    className="w-full text-sm border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Message</label>
+                  <textarea
+                    rows={4}
+                    value={chatMessage}
+                    onChange={(e) => setChatMessage(e.target.value)}
+                    placeholder="Hi! I saw your inquiry for our course. I'd be happy to guide you on syllabus, batch timings, and answers to any questions you have..."
+                    className="w-full text-sm border border-gray-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                  />
+                </div>
+
+                <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-start gap-2.5 text-xs text-emerald-900">
+                  <Shield className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>Your message is delivered directly through Celoris Chat. Personal phone numbers and emails remain strictly protected.</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setChatModal(null)}
+                  disabled={chatSending}
+                  className="px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendInternalChat}
+                  disabled={chatSending || !chatMessage.trim()}
+                  className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                >
+                  {chatSending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" /> Send on Celoris Chat
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Notification Popup */}
+      <AnimatePresence>
+        {successPopup?.show && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-50 bg-white border-2 border-emerald-500 rounded-2xl p-4 shadow-2xl flex items-center gap-3 max-w-md"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <PartyPopper className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-900">Delivered on Celoris!</p>
+              <p className="text-xs text-gray-500">{successPopup.message}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Students</h1>
           <p className="text-gray-500 mt-1">
-            All student enquiries and leads ({filteredStudents.length} total)
+            Student enquiries and leads ({filteredStudents.length} total)
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -88,17 +562,47 @@ export function TrainerStudents() {
             <button
               onClick={() => setViewMode('table')}
               className={`p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Table View"
             >
               <List size={18} />
             </button>
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Grid View"
             >
               <LayoutGrid size={18} />
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Student Contact Protection Banner */}
+      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50 border border-emerald-200/80 rounded-2xl p-4 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <span>Platform Safety: In-App Communication Only</span>
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold uppercase px-2 py-0.5 rounded-full border border-emerald-200">
+                100% Protected
+              </span>
+            </p>
+            <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+              Student contact details are strictly shielded. You can connect with students via <strong className="text-emerald-700">Celoris Chat</strong> or host live 1-on-1 <strong className="text-indigo-700">Audio & Video Calls</strong> directly inside Celoris.
+            </p>
+          </div>
+        </div>
+        {!isProTrainer && (
+          <button
+            onClick={() => setProModal({ show: true, feature: '1-on-1 Audio & Video Calling' })}
+            className="shrink-0 inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-sm"
+          >
+            <Sparkles className="w-3.5 h-3.5" /> Unlock PRO Audio/Video Calls
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -107,7 +611,7 @@ export function TrainerStudents() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by name, email, or course..."
+            placeholder="Search by student name or course..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white transition-all shadow-sm"
@@ -146,7 +650,7 @@ export function TrainerStudents() {
                   <th className="p-6 font-bold text-gray-600 text-[10px] uppercase tracking-widest">Course Interest</th>
                   <th className="p-6 font-bold text-gray-600 text-[10px] uppercase tracking-widest">Status</th>
                   <th className="p-6 font-bold text-gray-600 text-[10px] uppercase tracking-widest">Enquired</th>
-                  <th className="p-6 font-bold text-gray-600 text-[10px] uppercase tracking-widest text-right">Actions</th>
+                  <th className="p-6 font-bold text-gray-600 text-[10px] uppercase tracking-widest text-right">In-App Outreach</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -179,9 +683,21 @@ export function TrainerStudents() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 font-medium">
-                              {student.email || student.phone || student.contact_info || 'No contact provided'}
-                            </p>
+                            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-gray-400 font-medium">
+                              {student.phone && (
+                                <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                                  📞 {maskPhone(student.phone)}
+                                </span>
+                              )}
+                              {student.email && (
+                                <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                                  ✉️ {maskEmail(student.email)}
+                                </span>
+                              )}
+                              <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                <Shield className="w-2.5 h-2.5" /> Celoris Protected
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -209,33 +725,53 @@ export function TrainerStudents() {
                         </div>
                       </td>
                       <td className="p-6 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {student.email && (
-                            <a
-                              href={`mailto:${student.email}`}
-                              className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-100 rounded-xl transition-all"
-                              title="Send Email"
-                            >
-                              <Mail className="h-4 w-4" />
-                            </a>
-                          )}
-                          {(() => {
-                            const phoneDigits = (student.phone || student.contact_info || '').replace(/\D/g, '');
-                            if (phoneDigits.length < 10) return null;
-                            return (
-                              <a
-                                href={`https://wa.me/${phoneDigits}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-100 rounded-xl transition-all"
-                                title="WhatsApp"
-                              >
-                                <MessageSquare className="h-4 w-4" />
-                              </a>
-                            );
-                          })()}
-                          <button className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all">
-                            <MoreVertical className="h-4 w-4" />
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* 1. Safe Internal Celoris Messaging */}
+                          <button
+                            onClick={() => openInternalChat(student)}
+                            className="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-sm"
+                            title="Send Message via Celoris Chat"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            <span>Celoris Chat</span>
+                          </button>
+
+                          {/* 2. Audio Call via Celoris */}
+                          <button
+                            onClick={() => handleStartCall('audio', student)}
+                            className={`inline-flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                              isProTrainer
+                                ? 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'
+                                : 'bg-gray-50 hover:bg-amber-50 text-gray-500 hover:text-amber-700 border border-gray-200'
+                            }`}
+                            title={isProTrainer ? "Start Celoris Audio Call" : "Audio Call (PRO Feature)"}
+                          >
+                            <PhoneCall className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Audio</span>
+                            {!isProTrainer && (
+                              <span className="text-[8px] bg-amber-200 text-amber-900 font-extrabold px-1 rounded">
+                                PRO
+                              </span>
+                            )}
+                          </button>
+
+                          {/* 3. Video Call via Celoris */}
+                          <button
+                            onClick={() => handleStartCall('video', student)}
+                            className={`inline-flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                              isProTrainer
+                                ? 'bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200'
+                                : 'bg-gray-50 hover:bg-amber-50 text-gray-500 hover:text-amber-700 border border-gray-200'
+                            }`}
+                            title={isProTrainer ? "Start Celoris Video Call" : "Video Call (PRO Feature)"}
+                          >
+                            <Video className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Video</span>
+                            {!isProTrainer && (
+                              <span className="text-[8px] bg-amber-200 text-amber-900 font-extrabold px-1 rounded">
+                                PRO
+                              </span>
+                            )}
                           </button>
                         </div>
                       </td>
@@ -279,28 +815,60 @@ export function TrainerStudents() {
                     {student.course || 'General Inquiry'}
                   </p>
                 </div>
-                <div className="space-y-3 mb-6">
-                  {student.email && (
-                    <div className="flex items-center gap-3 text-gray-500">
-                      <Mail size={14} className="text-emerald-500 shrink-0" />
-                      <span className="text-xs font-medium line-clamp-1">{student.email}</span>
-                    </div>
-                  )}
-                  {student.phone && (
-                    <div className="flex items-center gap-3 text-gray-500">
-                      <Phone size={14} className="text-emerald-500 shrink-0" />
-                      <span className="text-xs font-medium">{student.phone}</span>
-                    </div>
-                  )}
+                <div className="space-y-2 mb-6">
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-400 font-medium">
+                    {student.phone && (
+                      <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                        📞 {maskPhone(student.phone)}
+                      </span>
+                    )}
+                    {student.email && (
+                      <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                        ✉️ {maskEmail(student.email)}
+                      </span>
+                    )}
+                    <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                      <Shield className="w-2.5 h-2.5" /> Protected
+                    </span>
+                  </div>
                   {student.requirement && (
                     <p className="text-xs text-gray-400 italic line-clamp-2 pt-1">{student.requirement}</p>
                   )}
                 </div>
-                <div className="flex gap-2 relative text-xs text-gray-400 pt-4 border-t border-gray-100">
-                  <Clock size={12} className="shrink-0 mt-0.5" />
-                  {student.created_at
-                    ? formatDistanceToNow(new Date(student.created_at), { addSuffix: true })
-                    : 'Unknown'}
+
+                <div className="flex flex-wrap items-center justify-between gap-2 relative text-xs text-gray-400 pt-4 border-t border-gray-100">
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={12} className="shrink-0" />
+                    <span className="text-[11px] font-medium">
+                      {student.created_at
+                        ? formatDistanceToNow(new Date(student.created_at), { addSuffix: true })
+                        : 'Unknown'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => openInternalChat(student)}
+                      className="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all"
+                      title="Celoris Chat"
+                    >
+                      <MessageSquare className="h-3 w-3" />
+                      <span>Chat</span>
+                    </button>
+                    <button
+                      onClick={() => handleStartCall('audio', student)}
+                      className="p-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                      title="Audio Call via Celoris"
+                    >
+                      <PhoneCall className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleStartCall('video', student)}
+                      className="p-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors"
+                      title="Video Call via Celoris"
+                    >
+                      <Video className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Calendar, MessageSquare, Mail, LogOut, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX, Award } from 'lucide-react';
+import { Link, NavLink, Outlet, useLocation, Navigate } from 'react-router-dom';
+import { BookOpen, Calendar, MessageSquare, Mail, LogOut, LayoutDashboard, User as UserIcon, Radio, Send, Volume2, VolumeX, Award, ShieldAlert, Lock, ArrowRight, GraduationCap, Briefcase, Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
@@ -134,7 +134,7 @@ function LiveBoothManager({ trainerId, trainerName }: { trainerId: string, train
 
 export function TrainerDashboard() {
   const location = useLocation();
-  const { profile, signOut } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const [isLive, setIsLive] = useState(false);
   const [boothTitle, setBoothTitle] = useState('');
 
@@ -186,6 +186,79 @@ export function TrainerDashboard() {
     if (location.pathname.includes('/profile')) return 'Trainer Profile';
     return 'Dashboard Overview';
   };
+
+  const isTrainer = Boolean(
+    profile &&
+    (profile.role === 'tutor' ||
+     profile.role === 'trainer' ||
+     profile.role === 'instructor' ||
+     profile.role === 'admin' ||
+     profile.role === 'superadmin' ||
+     profile.is_trainer === true) &&
+    profile.role !== 'student'
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-emerald-600 mx-auto mb-4" />
+          <h2 className="text-lg font-bold text-gray-800">Verifying Trainer Credentials</h2>
+          <p className="text-sm text-gray-500 mt-1">Securing your session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/teach/login" state={{ from: location }} replace />;
+  }
+
+  if (!isTrainer) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-emerald-50/30 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 text-center relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-100/50 rounded-full blur-2xl" />
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-6 text-amber-600 shadow-sm">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 mb-3">
+            <Lock className="w-3.5 h-3.5" /> Trainer Access Restricted
+          </span>
+
+          <h2 className="text-2xl font-black text-gray-900 mb-2">Student Account Detected</h2>
+          <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+            You are currently signed in as <span className="font-semibold text-gray-900">{profile?.full_name || user.email}</span>. 
+            To protect student privacy and platform security, trainer dashboards, student leads, and communication tools are accessible only to verified Celoris Trainers.
+          </p>
+
+          <div className="space-y-3">
+            <a
+              href="/learn"
+              className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/20"
+            >
+              <GraduationCap className="h-4 w-4" /> Go to Student Learning Hub
+            </a>
+
+            <Link
+              to="/teach/trainers"
+              className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-xl text-sm border border-gray-200 transition-colors"
+            >
+              <Briefcase className="h-4 w-4" /> Explore Courses & Find Trainers
+            </Link>
+
+            <button
+              onClick={() => signOut()}
+              className="w-full text-xs text-gray-400 hover:text-red-600 font-medium py-2 transition-colors"
+            >
+              Sign out or switch to a trainer account
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

@@ -8,7 +8,7 @@
 
 import { cache } from 'react'
 import { createServerClient } from '@/lib/supabase-server'
-import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
 import { nextSession } from '@/lib/class-schedule'
 import { COURSE_ID_TO_SLUG, resolveCourseId, COURSE_BATCH_DEFAULTS } from '@/lib/course-slugs'
 import type { CourseBatchInfo, CourseTrainer } from '@/lib/course-batch-types'
@@ -17,7 +17,12 @@ export const loadCoursePageData = cache(async (idOrSlug: string) => {
   const id = resolveCourseId(idOrSlug)
   if (!id) return null
   try {
-    const supabase: any = await createServerClient()
+    let supabase: any
+    try {
+      supabase = await createServerClient()
+    } catch {
+      supabase = createSupabaseClientForServer()
+    }
     const { data } = await supabase
       .from('courses')
       .select(
@@ -156,35 +161,67 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
   // Active classrooms are publicly readable, so the room lookup uses the
   // normal client — schedule and trainer still show even if the service key
   // is missing (e.g. a local .env). Only the counts need the service role.
-  const publicDb: any = await createServerClient()
+  let publicDb: any
+  try {
+    publicDb = await createServerClient()
+  } catch {
+    publicDb = db
+  }
   const now = new Date()
   const price = Number(course.price) > 0 ? Number(course.price) : 0
 
-  const [room, apps, passes] = await Promise.all([
+  const [room, statsResult] = await Promise.all([
     findLinkedRoom(publicDb, course).catch(() => null),
-    db
-      .from('course_applications')
-      .select('user_id, intent')
-      .eq('course_title', course.title)
-      .neq('status', 'rejected')
-      .limit(2000),
-    db
-      .from('course_applications')
-      .select('user_id, created_at')
-      .eq('course_title', course.title)
-      .eq('offer_pass', true)
-      .neq('status', 'rejected')
-      .limit(2000),
+    (async () => {
+      try {
+        const client = createClientForBrowser()
+        const { data: stats, error } = await client.rpc('get_course_batch_stats', {
+          p_course_title: course.title,
+        })
+        if (!error && stats) {
+          return {
+            registered: Number(stats.registered) || 0,
+            passRows: (stats.passes || []) as { user_id: string; created_at: string }[],
+          }
+        }
+      } catch {
+        // Fall back below
+      }
+      try {
+        const [apps, passes] = await Promise.all([
+          db
+            .from('course_applications')
+            .select('user_id, intent')
+            .eq('course_title', course.title)
+            .neq('status', 'rejected')
+            .limit(2000),
+          db
+            .from('course_applications')
+            .select('user_id, created_at')
+            .eq('course_title', course.title)
+            .eq('offer_pass', true)
+            .neq('status', 'rejected')
+            .limit(2000),
+        ])
+        const reg = new Set(
+          ((apps?.data || []) as any[]).filter((a) => a.intent !== 'waitlist').map((a) => a.user_id)
+        ).size
+        return {
+          registered: reg,
+          passRows: (passes?.data || []) as { user_id: string; created_at: string }[],
+        }
+      } catch {
+        return { registered: 0, passRows: [] }
+      }
+    })(),
   ])
+
+  const registered = statsResult.registered
+  const passRows = statsResult.passRows
 
   const trainers = await loadCourseTrainers(publicDb, course.id, room?.trainer_name || null).catch(() =>
     room?.trainer_name ? [{ name: String(room.trainer_name), avatarUrl: null }] : []
   )
-
-  // Seats are held by everyone who applied, except waitlist sign-ups.
-  const registered = new Set(
-    ((apps?.data || []) as any[]).filter((a) => a.intent !== 'waitlist').map((a) => a.user_id)
-  ).size
 
   const defaults = COURSE_BATCH_DEFAULTS[course.id]
   const session = room ? nextSession(room, now) : null
@@ -198,7 +235,7 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
     room,
     batchStart,
     seatsLeft,
-    passRows: (passes?.data || []) as any[],
+    passRows,
     now,
     passCap: defaults?.passesTotal || null,
   })

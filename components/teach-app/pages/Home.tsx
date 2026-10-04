@@ -3,7 +3,18 @@ import { BookOpen, TrendingUp, Users, Video, CheckCircle2, ArrowRight, ShieldChe
 import { useAuth } from '@/components/providers/AuthProvider';
 
 export function Home() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  const isTrainer = Boolean(
+    profile &&
+    (profile.role === 'tutor' ||
+     profile.role === 'trainer' ||
+     profile.role === 'instructor' ||
+     profile.role === 'admin' ||
+     profile.role === 'superadmin' ||
+     profile.is_trainer === true) &&
+    profile.role !== 'student'
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -20,17 +31,26 @@ export function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              {user ? (
+              {user && isTrainer ? (
                 <Link to="/teach/dashboard/trainer/overview" className="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
-                  Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+                  Trainer Dashboard <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
+              ) : user ? (
+                <>
+                  <a href="/learn" className="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
+                    Go to Student Hub <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
+                  <Link to="/teach/trainers" className="bg-emerald-800/50 text-white border border-emerald-400/30 px-8 py-4 rounded-xl font-medium hover:bg-emerald-800 transition-colors flex items-center justify-center whitespace-nowrap text-lg backdrop-blur-sm">
+                    Find Trainers
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link to="/teach/register" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors flex items-center justify-center whitespace-nowrap text-lg shadow-lg">
                     Start Teaching for Free
                   </Link>
                   <Link to="/teach/login" className="bg-emerald-800/50 text-white border border-emerald-400/30 px-8 py-4 rounded-xl font-medium hover:bg-emerald-800 transition-colors flex items-center justify-center whitespace-nowrap text-lg backdrop-blur-sm">
-                    login
+                    Trainer Login
                   </Link>
                 </>
               )}
@@ -146,10 +166,14 @@ export function Home() {
           <p className="text-emerald-100 text-lg mb-10">
             Join hundreds of expert trainers in Delhi/NCR who are already building their brand and managing their students on Celoris.
           </p>
-          {user ? (
+          {user && isTrainer ? (
             <Link to="/teach/dashboard/trainer/overview" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
               Access Your Dashboard <ArrowRight className="h-5 w-5" />
             </Link>
+          ) : user ? (
+            <a href="/learn" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
+              Explore Student Courses <ArrowRight className="h-5 w-5" />
+            </a>
           ) : (
             <Link to="/teach/register" className="bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 text-lg">
               Create Your Trainer Profile <ArrowRight className="h-5 w-5" />

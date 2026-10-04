@@ -1,11 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Lock, ShieldAlert, GraduationCap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
 export function Login() {
-  const { user, loading } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,11 +13,22 @@ export function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const supabase = createClient();
 
+  const isTrainer = Boolean(
+    profile &&
+    (profile.role === 'tutor' ||
+     profile.role === 'trainer' ||
+     profile.role === 'instructor' ||
+     profile.role === 'admin' ||
+     profile.role === 'superadmin' ||
+     profile.is_trainer === true) &&
+    profile.role !== 'student'
+  );
+
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && isTrainer) {
       navigate('/teach/dashboard/trainer/overview');
     }
-  }, [user, loading, navigate]);
+  }, [user, profile, loading, isTrainer, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +36,38 @@ export function Login() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error: signInErr } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (signInErr) throw signInErr;
+
+      // Verify trainer role
+      if (data.user) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('role, is_trainer')
+          .eq('id', data.user.id)
+          .single();
+
+        const userIsTrainer = Boolean(
+          prof &&
+          (prof.role === 'tutor' ||
+           prof.role === 'trainer' ||
+           prof.role === 'instructor' ||
+           prof.role === 'admin' ||
+           prof.role === 'superadmin' ||
+           prof.is_trainer === true) &&
+          prof.role !== 'student'
+        );
+
+        if (!userIsTrainer) {
+          setError('This account is registered as a student. The trainer portal is reserved strictly for verified instructors.');
+          return;
+        }
+      }
+
       navigate('/teach/dashboard/trainer/overview');
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign in');
@@ -40,6 +77,49 @@ export function Login() {
   };
 
   if (loading) return null;
+
+  if (user && !isTrainer) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="flex justify-center">
+            <Link to="/teach" className="flex items-center">
+              <img
+                src="/celoris-logo-dark.png"
+                alt="Celoris Logo"
+                className="h-10 w-auto object-contain transition-all hover:opacity-80"
+              />
+            </Link>
+          </div>
+          <div className="mt-8 bg-white py-8 px-6 shadow sm:rounded-2xl border border-gray-100 text-center">
+            <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-amber-200">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Student Account Detected</h2>
+            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+              You are currently logged in as <strong className="text-gray-900">{profile?.full_name || user.email}</strong>. 
+              The Trainer Portal is for verified instructors only. To access your student courses and learning materials, please visit the Learning Hub.
+            </p>
+            <div className="space-y-3">
+              <a
+                href="/learn"
+                className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-md shadow-emerald-600/20"
+              >
+                <GraduationCap className="h-4 w-4" /> Go to Student Learning Hub
+              </a>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors"
+              >
+                Sign Out & Switch Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

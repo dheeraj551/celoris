@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, trainerName, trainerEmail, studentName, studentEmail, course, leadId } = body;
+    const { action, trainerName, trainerEmail, studentName, studentEmail, course, leadId, messageText } = body;
 
     if (!action || !trainerName || !studentName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
       'Apply to Lead': '#10b981',
       'Mark Contacted': '#f59e0b',
       'Schedule Demo': '#6366f1',
+      'Internal Message Sent': '#059669',
     };
     const color = actionColors[action] || '#10b981';
 
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
                 <div class="label">📚 Course Interest</div>
                 <div class="value">${course || 'General Inquiry'}</div>
               </div>
+              ${messageText ? `<div class="card" style="margin-bottom: 20px;"><div class="label">💬 Internal Message</div><div class="value" style="font-size:14px;font-weight:normal;line-height:1.5;">${messageText}</div></div>` : ''}
               ${leadId ? `<div class="card" style="margin-bottom: 20px;"><div class="label">🔖 Lead ID</div><div class="value" style="font-size:13px;font-family:monospace;">${leadId}</div></div>` : ''}
             </div>
             <div class="footer">
@@ -89,10 +91,54 @@ export async function POST(request: NextRequest) {
         </body>
         </html>
       `,
-      text: `Lead Action: ${action}\nTrainer: ${trainerName} (${trainerEmail})\nStudent: ${studentName} (${studentEmail})\nCourse: ${course}\nTime: ${actionTime}`,
+      text: `Lead Action: ${action}\nTrainer: ${trainerName} (${trainerEmail})\nStudent: ${studentName} (${studentEmail})\nCourse: ${course}\n${messageText ? `Message: ${messageText}\n` : ''}Time: ${actionTime}`,
     };
 
     await transporter.sendMail(adminMail);
+
+    // If this was an internal message and the student provided an email, notify the student directly
+    if (studentEmail && (action === 'Internal Message Sent' || messageText)) {
+      try {
+        const studentMail = {
+          from: `"Celoris Teach" <${process.env.MAIL_FROM_ADDRESS}>`,
+          to: studentEmail,
+          subject: `💬 New Message regarding ${course || 'your learning goals'} from Trainer ${trainerName}`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; color: #333; background: #f9fafb; margin: 0; padding: 24px;">
+              <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 28px 32px;">
+                  <h2 style="margin: 0; font-size: 22px;">Message from Trainer ${trainerName}</h2>
+                  <p style="margin: 6px 0 0; opacity: 0.9; font-size: 14px;">Regarding your course inquiry for <strong>${course || 'General Training'}</strong></p>
+                </div>
+                <div style="padding: 32px;">
+                  <p style="font-size: 15px; color: #374151; margin-top: 0;">Hi <strong>${studentName}</strong>,</p>
+                  <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
+                    Verified Celoris Trainer <strong>${trainerName}</strong> reviewed your inquiry and sent you the following message through Celoris Teach:
+                  </p>
+                  <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 18px; margin: 24px 0; font-size: 14px; color: #166534; line-height: 1.6;">
+                    "${messageText || 'Hello! I would like to assist you with your learning requirements.'}"
+                  </div>
+                  <div style="text-align: center; margin: 32px 0 16px;">
+                    <a href="https://celorisdesigns.com/teach" style="display: inline-block; background: #059669; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 28px; border-radius: 10px;">
+                      Connect on Celoris Teach
+                    </a>
+                  </div>
+                  <p style="font-size: 12px; color: #9ca3af; text-align: center; margin-top: 24px;">
+                    🔒 This message was sent securely via Celoris Teach Internal Messaging to protect your contact privacy.
+                  </p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `,
+        };
+        await transporter.sendMail(studentMail);
+      } catch (studentErr) {
+        console.warn('Could not deliver email copy to student, admin notification was sent:', studentErr);
+      }
+    }
 
     return NextResponse.json({ success: true, message: 'Notification sent successfully' }, { status: 200 });
   } catch (error: any) {

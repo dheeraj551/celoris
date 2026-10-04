@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
   Mail, MessageSquare, Search, Loader2, RefreshCw, ChevronRight,
-  X, Send, Trash2, Archive, Plus, CheckCircle
+  X, Send, Trash2, Archive, Plus, CheckCircle, Lock, Sparkles, Shield,
+  PhoneCall, Video, Radio, ExternalLink
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
@@ -14,12 +15,51 @@ export function TrainerInbox() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState<any | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [replySending, setReplySending] = useState(false);
   const [showCompose, setShowCompose] = useState(false);
+  const [proModal, setProModal] = useState<{ show: boolean; feature: string } | null>(null);
+  const [callModal, setCallModal] = useState<{ show: boolean; mode: 'audio' | 'video'; message: any } | null>(null);
   const [compose, setCompose] = useState({ sender_name: '', sender_email: '', sender_phone: '', subject: '', body: '', message_type: 'student' });
   const [composeSaving, setComposeSaving] = useState(false);
 
   const supabase = createClient();
   const { profile } = useAuth();
+
+  // PRO Status check: checks subscription_status, is_pro, plan, admin roles
+  const isProTrainer = Boolean(
+    profile?.subscription_status === 'premium' ||
+    profile?.subscription_status === 'enterprise' ||
+    profile?.is_pro === true ||
+    profile?.is_premium === true ||
+    profile?.plan === 'pro' ||
+    profile?.role === 'admin' ||
+    profile?.role === 'superadmin' ||
+    profile?.is_trainer_pro === true
+  );
+
+  const maskPhone = (phone?: string | null) => {
+    if (!phone) return '';
+    const clean = phone.trim();
+    if (clean.length <= 4) return '••••••';
+    if (clean.startsWith('+')) {
+      const parts = clean.split(' ');
+      if (parts.length >= 2) return `${parts[0]} ${parts[1].slice(0, 4)} •••••`;
+    }
+    const visibleLength = Math.max(3, Math.min(clean.length - 4, 6));
+    return `${clean.slice(0, visibleLength)} •••••`;
+  };
+
+  const maskEmail = (email?: string | null) => {
+    if (!email) return '';
+    const clean = email.trim();
+    const parts = clean.split('@');
+    if (parts.length !== 2) return '••••••@••••.com';
+    const [userPart, domainPart] = parts;
+    const maskedUser = userPart.length > 2 ? `${userPart.slice(0, 2)}••••` : `${userPart[0]}••••`;
+    const dotIndex = domainPart.lastIndexOf('.');
+    const ext = dotIndex !== -1 ? domainPart.slice(dotIndex) : '.com';
+    return `${maskedUser}@••••${ext}`;
+  };
 
   const fetchMessages = async () => {
     if (!profile?.id) return;
@@ -100,19 +140,100 @@ export function TrainerInbox() {
     }
   };
 
-  const handleReplyWhatsApp = async () => {
-    if (!selected?.sender_phone) return;
-    const text = replyText || `Hi ${selected.sender_name}, thank you for your message!`;
-    window.open(`https://wa.me/${selected.sender_phone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
-    await markReplied(selected.id);
+  const handleStartCall = (mode: 'audio' | 'video', msg: any) => {
+    if (!isProTrainer) {
+      setProModal({
+        show: true,
+        feature: mode === 'audio' ? '1-on-1 Audio Calling via Celoris' : '1-on-1 Video Calling via Celoris',
+      });
+      return;
+    }
+    setCallModal({ show: true, mode, message: msg });
   };
 
-  const handleReplyEmail = async () => {
-    if (!selected?.sender_email) return;
-    const subject = encodeURIComponent(`Re: ${selected.subject}`);
-    const body = encodeURIComponent(replyText || `Hi ${selected.sender_name},\n\n`);
-    window.open(`mailto:${selected.sender_email}?subject=${subject}&body=${body}`);
-    await markReplied(selected.id);
+  const handleLaunchCallRoom = (roomUrl: string) => {
+    window.open(roomUrl, '_blank');
+  };
+
+  const handleSendCallInvite = async (msg: any, mode: 'audio' | 'video', roomUrl: string) => {
+    setReplySending(true);
+    try {
+      const inviteText = `Hi ${msg.sender_name || 'there'}, your trainer has initiated a 1-on-1 live ${mode === 'audio' ? 'Audio' : 'Video'} Call session on Celoris! Please join the session here: ${window.location.origin}${roomUrl}`;
+
+      await supabase.from('inbox_messages').insert({
+        trainer_id: profile?.id,
+        sender_name: msg.sender_name || 'Student',
+        sender_email: null,
+        sender_phone: null,
+        subject: `Live ${mode === 'audio' ? 'Audio' : 'Video'} Call Invitation`,
+        body: inviteText,
+        message_type: 'trainer_reply',
+        status: 'replied',
+      });
+
+      await fetch('/api/leads/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'Internal Message Sent',
+          trainerName: profile?.full_name || profile?.username || 'Celoris Trainer',
+          trainerEmail: profile?.email || '',
+          studentName: msg.sender_name || 'Student',
+          studentEmail: msg.sender_email || '',
+          studentPhone: msg.sender_phone || '',
+          course: msg.subject || 'Live Session',
+          messageText: inviteText,
+        }),
+      });
+
+      await markReplied(msg.id);
+      setCallModal(null);
+    } catch (err: any) {
+      console.error('Error sending call invite:', err);
+    } finally {
+      setReplySending(false);
+    }
+  };
+
+  const handleInternalReply = async () => {
+    if (!replyText.trim() || !selected || !profile?.id) return;
+    setReplySending(true);
+    try {
+      // 1. Insert reply record into inbox_messages with shielded contacts
+      await supabase.from('inbox_messages').insert({
+        trainer_id: profile.id,
+        sender_name: selected.sender_name,
+        sender_email: null,
+        sender_phone: null,
+        subject: `Re: ${selected.subject}`,
+        body: replyText.trim(),
+        message_type: 'trainer_reply',
+        status: 'replied',
+      });
+
+      // 2. Dispatch internal notification to student email
+      await fetch('/api/leads/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'Internal Message Sent',
+          trainerName: profile?.full_name || profile?.username || 'Celoris Trainer',
+          trainerEmail: profile?.email || '',
+          studentName: selected.sender_name || 'Student',
+          studentEmail: selected.sender_email || '',
+          studentPhone: selected.sender_phone || '',
+          course: selected.subject || 'Course Training',
+          messageText: replyText.trim(),
+        }),
+      });
+
+      await markReplied(selected.id);
+      setReplyText('');
+    } catch (err) {
+      console.error('Error sending internal reply:', err);
+    } finally {
+      setReplySending(false);
+    }
   };
 
   // Compose new message (manual entry / test)
@@ -216,6 +337,34 @@ export function TrainerInbox() {
           </button>
 
         </div>
+      </div>
+
+      {/* Student Contact Protection Banner */}
+      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50 border border-emerald-200/80 rounded-2xl p-4 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <span>Platform Safety: In-App Communication Only</span>
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold uppercase px-2 py-0.5 rounded-full border border-emerald-200">
+                100% Protected
+              </span>
+            </p>
+            <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+              Student contact details are strictly shielded. You can connect with students via <strong className="text-emerald-700">Internal Celoris Reply</strong> or host live 1-on-1 <strong className="text-indigo-700">Audio & Video Calls</strong> directly inside Celoris.
+            </p>
+          </div>
+        </div>
+        {!isProTrainer && (
+          <button
+            onClick={() => setProModal({ show: true, feature: '1-on-1 Audio & Video Calling' })}
+            className="shrink-0 inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-sm"
+          >
+            <Sparkles className="w-3.5 h-3.5" /> Unlock PRO Audio/Video Calls
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -366,13 +515,23 @@ export function TrainerInbox() {
                 {selected.sender_email && (
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Email</p>
-                    <p className="text-sm text-emerald-600 font-medium">{selected.sender_email}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700 font-mono font-medium">{maskEmail(selected.sender_email)}</span>
+                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 border border-emerald-200">
+                        <Shield className="w-2.5 h-2.5" /> Shield Protected
+                      </span>
+                    </div>
                   </div>
                 )}
                 {selected.sender_phone && (
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Phone</p>
-                    <p className="text-sm text-gray-700">{selected.sender_phone}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700 font-mono font-medium">{maskPhone(selected.sender_phone)}</span>
+                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 border border-emerald-200">
+                        <Shield className="w-2.5 h-2.5" /> Shield Protected
+                      </span>
+                    </div>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
@@ -400,35 +559,52 @@ export function TrainerInbox() {
 
             {/* Drawer Footer */}
             <div className="p-5 border-t border-gray-100 space-y-2">
+              {/* Celoris Internal Reply Button (Available to all trainers) */}
+              <button
+                onClick={handleInternalReply}
+                disabled={replySending || !replyText.trim()}
+                className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-sm font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+              >
+                {replySending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Send Internal Celoris Reply
+              </button>
+
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => handleStartCall('audio', selected)}
+                  className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors ${
+                    isProTrainer
+                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <PhoneCall className="w-3.5 h-3.5" />
+                  <span>Audio Call</span>
+                  {!isProTrainer && <Lock className="w-3 h-3 text-amber-500" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleStartCall('video', selected)}
+                  className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors ${
+                    isProTrainer
+                      ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Video className="w-3.5 h-3.5" />
+                  <span>Video Call</span>
+                  {!isProTrainer && <Lock className="w-3 h-3 text-amber-500" />}
+                </button>
+              </div>
+
               {selected.status !== 'replied' && (
                 <button
                   onClick={() => markReplied(selected.id)}
-                  className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-600 py-2 rounded-xl text-xs font-semibold transition-colors border border-gray-200"
                 >
-                  <CheckCircle className="h-4 w-4" /> Mark as Replied
+                  <CheckCircle className="h-3.5 w-3.5" /> Mark as Replied
                 </button>
-              )}
-              {selected.sender_phone && (
-                <button
-                  onClick={handleReplyWhatsApp}
-                  className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white py-3 rounded-xl text-sm font-bold transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-                  </svg>
-                  Reply on WhatsApp
-                </button>
-              )}
-              {selected.sender_email && (
-                <button
-                  onClick={handleReplyEmail}
-                  className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl text-sm font-bold transition-colors"
-                >
-                  <Send className="h-4 w-4" /> Reply via Email
-                </button>
-              )}
-              {!selected.sender_email && !selected.sender_phone && (
-                <p className="text-center text-sm text-gray-400 py-2">No contact details available</p>
               )}
             </div>
           </div>
@@ -531,6 +707,140 @@ export function TrainerInbox() {
               >
                 {composeSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Save Message
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1-on-1 Call Room Modal for PRO Trainers */}
+      {callModal?.show && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(5px)' }}
+          onClick={() => !replySending && setCallModal(null)}
+        >
+          <div
+            className="relative bg-white rounded-3xl shadow-2xl p-6 sm:p-7 max-w-md w-full border border-indigo-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                  {callModal.mode === 'audio' ? <PhoneCall className="w-6 h-6" /> : <Video className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900">
+                    Live 1-on-1 {callModal.mode === 'audio' ? 'Audio' : 'Video'} Call
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    With <strong className="text-gray-900">{callModal.message?.sender_name || 'Student'}</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCallModal(null)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 mb-5 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-indigo-950">
+                <Shield className="w-4 h-4 text-indigo-600 shrink-0" />
+                <span>100% In-App Calling (No Phone Numbers Shared)</span>
+              </div>
+              <p className="text-xs text-indigo-900/80 leading-relaxed">
+                Calls take place inside Celoris live rooms. Both parties stay strictly protected without revealing personal phone numbers or private email addresses.
+              </p>
+            </div>
+
+            {(() => {
+              const roomUrl = `/classrooms?room=call-${callModal.message?.id || 'session'}&type=${callModal.mode}`;
+              return (
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => handleLaunchCallRoom(roomUrl)}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2"
+                  >
+                    <Radio className="w-4 h-4 animate-pulse text-indigo-200" />
+                    <span>Launch Call Room Now</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={replySending}
+                    onClick={() => handleSendCallInvite(callModal.message, callModal.mode, roomUrl)}
+                    className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-3 px-4 rounded-xl text-sm transition-colors border border-emerald-200 flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {replySending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    <span>Send Call Link via Celoris Chat</span>
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* PRO Modal */}
+      {proModal?.show && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(5px)' }}
+          onClick={() => setProModal(null)}
+        >
+          <div
+            className="relative bg-white rounded-3xl shadow-2xl p-7 max-w-md w-full border border-amber-100 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="absolute -top-12 -right-12 w-36 h-36 bg-amber-100/70 rounded-full blur-2xl" />
+
+            <button
+              onClick={() => setProModal(null)}
+              className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-white mb-5 shadow-lg shadow-amber-500/25">
+              <Sparkles className="h-7 w-7" />
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200 mb-3">
+              <Lock className="w-3.5 h-3.5" /> PRO Feature
+            </div>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Unlock 1-on-1 Audio & Video Calls
+            </h2>
+            <p className="text-gray-600 text-sm mb-5 leading-relaxed">
+              Conduct instant 1-on-1 live <strong className="text-gray-900">Audio and Video Calls</strong> with students directly within Celoris rooms.
+            </p>
+
+            <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-emerald-900">100% In-App Safety</h4>
+                  <p className="text-xs text-emerald-700 mt-0.5">
+                    Student contacts remain private. You can chat freely or initiate live calling sessions without exposing phone numbers or email addresses!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              <button
+                onClick={() => setProModal(null)}
+                className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/20"
+              >
+                Continue with Celoris Chat
               </button>
             </div>
           </div>
