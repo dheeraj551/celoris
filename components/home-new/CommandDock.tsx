@@ -173,7 +173,7 @@ const PALETTE_COMMANDS: PaletteCommand[] = [
     },
     {
         category: "Creative Studios",
-        title: "Photo Lite AI",
+        title: "PhotoLite",
         description: "Browser-based graphic editing, retouching & filters",
         href: "/photolite",
         icon: ImageIcon,

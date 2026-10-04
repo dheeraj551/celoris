@@ -161,9 +161,11 @@ export default async function HomePage() {
     })),
     { category: 'cafe' as const, label: 'Live Classrooms', meta: 'join a class with your trainer', href: '/classrooms?tab=cafe' },
     { category: 'chat' as const, label: 'Celoris Chat', meta: 'private chats with your batchmates', href: '/chat' },
-    { category: 'apps' as const, label: 'Video Studio', meta: 'free, no card needed', href: '/video-studio' },
-    { category: 'apps' as const, label: 'Image Studio', meta: 'free photo editor', href: '/image-studio' },
-    { category: 'apps' as const, label: 'AI Explorer', meta: '20+ AI models', href: '/ai-explorer' },
+    { category: 'apps' as const, label: 'PolyVault', meta: '3D model & asset vault', href: '/polyvault' },
+    { category: 'apps' as const, label: 'PhotoLite', meta: 'photoshop-grade photo editor', href: '/photolite' },
+    { category: 'apps' as const, label: 'Video Studio', meta: 'free 4K video editor', href: '/video-studio' },
+    { category: 'apps' as const, label: 'ViO Studio', meta: 'AI commercial ad studio', href: '/vio-studio' },
+    { category: 'apps' as const, label: 'Motion Swap Studio', meta: 'AI motion transfer & object swap', href: '/motion-swap' },
   ]
 
   return (

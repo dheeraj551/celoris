@@ -39,7 +39,7 @@ const MENU_GROUPS = [
         items: [
             { name: "Motion Swap Studio", icon: ArrowLeftRight, href: "/motion-swap" },
             { name: "ViO Studio", icon: Megaphone, href: "/vio-studio" },
-            { name: "Video studio", icon: Video, href: "/video-studio" },
+            { name: "Video Studio", icon: Video, href: "/video-studio" },
             { name: "PolyVault", icon: Box, href: "/polyvault" },
             { name: "PhotoLite", icon: ImageIcon, href: "/photolite" },
         ]

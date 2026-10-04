@@ -235,7 +235,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             transition={{ duration: 0.6, delay: 0.2 }}
                             className="text-neutral-300 text-base sm:text-lg leading-relaxed max-w-xl mb-7 font-normal"
                         >
-                            India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes and daily freelance gigs. No credit card needed.
+                            India's free creative studio since 2019. Free video editor, PhotoLite, 3D asset vault, online classes and daily freelance gigs. No credit card needed.
                         </motion.p>
 
                         {/* Primary CTAs */}

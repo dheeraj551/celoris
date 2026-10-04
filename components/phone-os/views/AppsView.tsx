@@ -11,7 +11,9 @@ import {
   Box, 
   ArrowUpRight,
   Flame,
-  Zap
+  Zap,
+  Megaphone,
+  ArrowLeftRight
 } from 'lucide-react';
 import { CREATIVE_APPS } from '../data';
 import Link from 'next/link';
@@ -24,10 +26,11 @@ interface AppsViewProps {
 export function AppsView({ onBack, onClose }: AppsViewProps) {
   const getAppIcon = (id: string) => {
     switch (id) {
-      case 'app-video': return <Video className="w-4 h-4 text-rose-400" />;
-      case 'app-image': return <ImageIcon className="w-4 h-4 text-blue-400" />;
-      case 'app-ai': return <Sparkles className="w-4 h-4 text-purple-400" />;
       case 'app-vault': return <Box className="w-4 h-4 text-emerald-400" />;
+      case 'app-photolite': return <ImageIcon className="w-4 h-4 text-cyan-400" />;
+      case 'app-video': return <Video className="w-4 h-4 text-blue-400" />;
+      case 'app-vio': return <Megaphone className="w-4 h-4 text-[#D4FF00]" />;
+      case 'app-motion': return <ArrowLeftRight className="w-4 h-4 text-[#d4f634]" />;
       default: return <Layers className="w-4 h-4 text-white" />;
     }
   };
@@ -54,7 +57,7 @@ export function AppsView({ onBack, onClose }: AppsViewProps) {
         </div>
 
         <span className="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono">
-          4 Cloud Tools
+          {CREATIVE_APPS.length} Cloud Tools
         </span>
       </div>
 

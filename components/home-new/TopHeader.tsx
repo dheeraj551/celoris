@@ -166,7 +166,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-white">PhotoLite AI</span>
+                                            <span className="text-xs font-bold text-white">PhotoLite</span>
                                             <span className="text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded-full">Retouch</span>
                                         </div>
                                         <p className="text-[10px] text-neutral-400 truncate">Filters, cutouts & enhancements</p>
@@ -576,7 +576,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                                 <ImageIcon className="w-4 h-4" />
                                             </div>
                                             <div className="flex-1">
-                                                <span className="text-sm font-bold text-white block">PhotoLite AI</span>
+                                                <span className="text-sm font-bold text-white block">PhotoLite</span>
                                                 <span className="text-[10px] text-neutral-400">Photo Retouch</span>
                                             </div>
                                         </Link>

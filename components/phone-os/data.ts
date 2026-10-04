@@ -78,22 +78,23 @@ Jump in now — no webcam required, just listen or share your screen.`,
     senderName: 'Celoris Cloud Support',
     senderRole: 'System Dispatch',
     senderType: 'support',
-    subject: 'Welcome to Celoris! Daily AI Credits Refilled',
-    preview: 'Your free tier creator account has been credited with daily tokens to explore our 20+ generative AI video & image models...',
+    subject: 'Welcome to Celoris! Daily Creative Credits Refilled',
+    preview: 'Your free tier creator account has been credited with daily tokens to explore our creative studios & AI tools...',
     body: `Welcome to India's Creative Studio & Academy!
 
 Your account is loaded with complimentary daily creative credits. You can immediately access:
-1. 4K Browser Video Editor (No watermark)
-2. Photoshop-style Layered Photo Studio
-3. 20+ Generative AI models
-4. Free job applications with zero middleman deductions.
+1. Video Studio: 4K Browser Video Editor (No watermark)
+2. PhotoLite: Photoshop-grade Layered Photo Editor
+3. Motion Swap Studio: AI Motion & Actor Transfer
+4. ViO Studio: Product Ad Creation Suite
+5. PolyVault: 3D Asset Vault
 
 No credit card is ever required. Start building your portfolio today!`,
     time: 'Yesterday',
     read: true,
     tag: 'System',
-    actionText: 'Launch AI Explorer',
-    actionHref: '/ai-explorer',
+    actionText: 'Launch Creative Studios',
+    actionHref: '/video-studio',
     actionType: 'link',
   }
 ];
@@ -229,39 +230,48 @@ export const CLASSROOM_ROOMS: ClassroomRoom[] = [
 
 export const CREATIVE_APPS: CreativeAppItem[] = [
   {
-    id: 'app-video',
-    name: 'Video Studio',
-    shortDesc: '4K AI timeline video editor in your browser',
-    badge: 'Free to Start',
-    iconColor: 'text-rose-400',
-    bgColor: 'from-rose-500/20 to-red-600/10 border-rose-500/30',
-    href: '/video-studio',
-  },
-  {
-    id: 'app-image',
-    name: 'Image Studio',
-    shortDesc: 'Photoshop-grade layers, filters & photo editing',
-    badge: 'PhotoLite',
-    iconColor: 'text-blue-400',
-    bgColor: 'from-blue-500/20 to-cyan-600/10 border-blue-500/30',
-    href: '/image-studio',
-  },
-  {
-    id: 'app-ai',
-    name: 'AI Explorer',
-    shortDesc: '20+ top generative vision & video models',
-    badge: '20+ AI Models',
-    iconColor: 'text-purple-400',
-    bgColor: 'from-purple-500/20 to-indigo-600/10 border-purple-500/30',
-    href: '/ai-explorer',
-  },
-  {
     id: 'app-vault',
-    name: 'PolyVault 3D',
+    name: 'PolyVault',
     shortDesc: 'Interactive 3D models and creative asset vault',
-    badge: 'Real-time 3D',
+    badge: '3D Vault',
     iconColor: 'text-emerald-400',
     bgColor: 'from-emerald-500/20 to-teal-600/10 border-emerald-500/30',
     href: '/polyvault',
+  },
+  {
+    id: 'app-photolite',
+    name: 'PhotoLite',
+    shortDesc: 'Photoshop-grade layers, filters & photo editing in browser',
+    badge: 'Photo Editor',
+    iconColor: 'text-cyan-400',
+    bgColor: 'from-cyan-500/20 to-teal-600/10 border-cyan-500/30',
+    href: '/photolite',
+  },
+  {
+    id: 'app-video',
+    name: 'Video Studio',
+    shortDesc: '4K AI timeline video editor in your browser',
+    badge: '4K Timeline',
+    iconColor: 'text-blue-400',
+    bgColor: 'from-blue-500/20 to-indigo-600/10 border-blue-500/30',
+    href: '/video-studio',
+  },
+  {
+    id: 'app-vio',
+    name: 'ViO Studio',
+    shortDesc: 'Commercial product ad studio & ready-to-post AI marketing creatives',
+    badge: 'AI Marketing',
+    iconColor: 'text-[#D4FF00]',
+    bgColor: 'from-lime-500/20 to-emerald-600/10 border-lime-500/30',
+    href: '/vio-studio',
+  },
+  {
+    id: 'app-motion',
+    name: 'Motion Swap Studio',
+    shortDesc: 'AI motion transfer & surgical object swap using Genjutsu models',
+    badge: 'Motion AI',
+    iconColor: 'text-[#d4f634]',
+    bgColor: 'from-[#d4f634]/20 to-emerald-600/10 border-[#d4f634]/30',
+    href: '/motion-swap',
   },
 ];
