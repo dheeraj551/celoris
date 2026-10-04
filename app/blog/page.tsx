@@ -26,6 +26,28 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'gemini-4-argon-pro-fairwind-guide-2026',
+      title: "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
+      slug: 'gemini-4-argon-pro-fairwind-guide-2026',
+      excerpt: "Why millions of paying Google AI Pro subscribers can't find Gemini 4 Argon in their model dropdown—and the 1-million-token compute economics, dual-use cyber risks, and the exclusive Fairwind Program keeping it locked.",
+      featured_image_url: "/gemini-4-argon-pro-fairwind-guide-2026.png",
+      author_name: 'Celoris Frontier AI & Engineering Lab',
+      category: 'Frontier AI • Systems',
+      reading_time: 10,
+      published_at: '2026-10-04T07:30:00Z',
+    },
+    {
+      id: 'virtual-production-game-engines-ai-2026',
+      title: "Virtual Production on a Budget: How Indian Creators Use Game Engines & AI for Cinematic Web Series (2026 Guide)",
+      slug: 'virtual-production-game-engines-ai-2026',
+      excerpt: "The ₹10 Lakh indie film barrier is dead. Learn how Indian directors combine real-time game engines (GTA V / FiveM & Unreal Engine 5), neural voice synthesis, and virtual cameras to produce episodic drama under ₹20,000 per episode.",
+      featured_image_url: "/virtual-production-game-engines-ai-2026.jpg",
+      author_name: 'Celoris Creative & Digital Cinema Lab',
+      category: 'Virtual Production • Machinima',
+      reading_time: 14,
+      published_at: '2026-10-04T07:00:00Z',
+    },
+    {
       id: 'how-to-earn-50k-month-ai-video-creator-india-2026',
       title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint: Tools, Rates, and Retainers)",
       slug: 'how-to-earn-50k-month-ai-video-creator-india-2026',

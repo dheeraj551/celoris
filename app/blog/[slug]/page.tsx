@@ -20,6 +20,20 @@ function cleanTitle(t: string) {
 }
 
 async function postMetadata(slug: string): Promise<{ title: string; description?: string; image?: string } | null> {
+  if (slug === 'gemini-4-argon-pro-fairwind-guide-2026') {
+    return {
+      title: "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
+      description: "Why millions of paying Google AI Pro subscribers can't find Gemini 4 Argon in their model dropdown—and the 1-million-token compute economics, dual-use cyber risks, and the exclusive Fairwind Program keeping it locked.",
+      image: "/gemini-4-argon-pro-fairwind-guide-2026.png",
+    };
+  }
+  if (slug === 'virtual-production-game-engines-ai-2026') {
+    return {
+      title: "Virtual Production on a Budget: How Indian Creators Use Game Engines & AI for Cinematic Web Series (2026 Guide)",
+      description: "The complete 2026 indie film blueprint: How Indian creators are using GTA V / FiveM, Unreal Engine 5, and neural Voice AI to produce dramatic web series under ₹20,000 per episode.",
+      image: "/virtual-production-game-engines-ai-2026.jpg",
+    };
+  }
   if (slug === 'fish-audio-s2-1-pro-voice-ai') {
     return {
       title: "Fish Audio S2.1 Pro: The Free TTS Model That's Changing the Voice AI Game",
