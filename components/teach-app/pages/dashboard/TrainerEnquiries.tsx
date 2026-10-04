@@ -55,33 +55,6 @@ export function TrainerEnquiries() {
     profile?.is_trainer_pro === true
   );
 
-  // Masking helpers for free trainers to protect student privacy
-  const maskPhone = (phone?: string | null) => {
-    if (!phone) return '';
-    const clean = phone.trim();
-    if (clean.length <= 4) return '••••••';
-    if (clean.startsWith('+')) {
-      const parts = clean.split(' ');
-      if (parts.length >= 2) {
-        return `${parts[0]} ${parts[1].slice(0, 4)} •••••`;
-      }
-    }
-    const visibleLength = Math.max(3, Math.min(clean.length - 4, 6));
-    return `${clean.slice(0, visibleLength)} •••••`;
-  };
-
-  const maskEmail = (email?: string | null) => {
-    if (!email) return '';
-    const clean = email.trim();
-    const parts = clean.split('@');
-    if (parts.length !== 2) return '••••••@••••.com';
-    const [userPart, domainPart] = parts;
-    const maskedUser = userPart.length > 2 ? `${userPart.slice(0, 2)}••••` : `${userPart[0]}••••`;
-    const dotIndex = domainPart.lastIndexOf('.');
-    const ext = dotIndex !== -1 ? domainPart.slice(dotIndex) : '.com';
-    return `${maskedUser}@••••${ext}`;
-  };
-
   const openInternalChat = (enquiry: any) => {
     setChatSubject(`Discussion regarding ${enquiry.course || 'Training Requirements'}`);
     setChatMessage('');
@@ -843,25 +816,8 @@ export function TrainerEnquiries() {
                               </span>
                             )}
                           </div>
-                          {(enquiry.phone || enquiry.email || enquiry.contact_info) && (
-                            <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500 font-medium mt-1">
-                              {enquiry.phone && (
-                                <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-700 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                                  📞 {maskPhone(enquiry.phone)}
-                                </span>
-                              )}
-                              {enquiry.email && (
-                                <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-700 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                                  ✉️ {maskEmail(enquiry.email)}
-                                </span>
-                              )}
-                              <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                                <Shield className="w-2.5 h-2.5" /> Protected
-                              </span>
-                            </div>
-                          )}
                           {(enquiry.requirement || enquiry.message) && (
-                            <p className="text-xs text-gray-500 truncate max-w-[220px] mt-0.5" title={enquiry.requirement || enquiry.message}>
+                            <p className="text-xs text-gray-500 truncate max-w-[280px] mt-1" title={enquiry.requirement || enquiry.message}>
                               {enquiry.requirement || enquiry.message}
                             </p>
                           )}

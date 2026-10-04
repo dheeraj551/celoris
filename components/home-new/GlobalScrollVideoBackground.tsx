@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 import { motion, useScroll, useReducedMotion } from "framer-motion";
 
 const TOTAL_FRAMES = 240;
-const KEYFRAME_INTERVAL = 6; // Preload every 6th frame first (~2.3 MB) for instant scrubbing readiness
+const KEYFRAME_INTERVAL = 12; // Preload every 12th frame first (~1.1 MB) for lightweight scrubbing readiness
 
 // 720p optimized frame path generator
 const getFramePath = (index: number) => {
@@ -84,7 +84,12 @@ export function GlobalScrollVideoBackground() {
     useEffect(() => {
         let isCancelled = false;
 
-        // Step 1: Immediately fetch Frame 0 to eliminate initial layout flash
+        const isMobileOrSaveData = typeof window !== "undefined" && (
+            window.innerWidth < 768 ||
+            Boolean((navigator as any)?.connection?.saveData)
+        );
+
+        // Step 1: Immediately fetch Frame 0 (~60 KB) to eliminate initial layout flash
         const firstImg = new Image();
         firstImg.src = getFramePath(0);
         firstImg.onload = () => {
@@ -95,61 +100,89 @@ export function GlobalScrollVideoBackground() {
             renderFrame(0);
         };
 
-        // Step 2: Fetch Keyframes in parallel (Tier 1 = ~2.3 MB)
-        const keyframeIndices: number[] = [];
-        for (let i = KEYFRAME_INTERVAL; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
-            keyframeIndices.push(i);
+        // If on mobile screen, data-saver, or reduced-motion, stick to high-res Frame 0 only (saves ~14 MB!)
+        if (isMobileOrSaveData || reduceMotion) {
+            return () => {
+                isCancelled = true;
+            };
         }
 
-        keyframeIndices.forEach((idx) => {
-            const img = new Image();
-            img.src = getFramePath(idx);
-            img.onload = () => {
-                if (isCancelled) return;
-                imagesRef.current[idx] = img;
-                loadedRef.current[idx] = true;
-            };
-        });
+        // On desktop: defer heavier frame preloading until after the initial page has settled (2s delay)
+        // or user starts scrolling, to prevent competing with critical page resources and API calls
+        let startStreamingTimer: NodeJS.Timeout | null = null;
+        let streamingStarted = false;
 
-        // Step 3: Stream the remaining intermediate frames via idle slices
-        const loadRemainingFrames = () => {
-            let nextIndex = 1;
-            const loadBatch = () => {
-                if (isCancelled) return;
-                let count = 0;
-                while (nextIndex < TOTAL_FRAMES && count < 12) {
-                    if (!loadedRef.current[nextIndex]) {
-                        const target = nextIndex;
-                        const img = new Image();
-                        img.src = getFramePath(target);
-                        img.onload = () => {
-                            if (isCancelled) return;
-                            imagesRef.current[target] = img;
-                            loadedRef.current[target] = true;
-                        };
-                        count++;
+        const startStreamingFrames = () => {
+            if (streamingStarted || isCancelled) return;
+            streamingStarted = true;
+
+            // Step 2: Fetch Keyframes (Tier 1 = ~1.1 MB)
+            const keyframeIndices: number[] = [];
+            for (let i = KEYFRAME_INTERVAL; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
+                keyframeIndices.push(i);
+            }
+
+            keyframeIndices.forEach((idx) => {
+                const img = new Image();
+                img.src = getFramePath(idx);
+                img.onload = () => {
+                    if (isCancelled) return;
+                    imagesRef.current[idx] = img;
+                    loadedRef.current[idx] = true;
+                };
+            });
+
+            // Step 3: Stream the remaining intermediate frames via idle slices
+            const loadRemainingFrames = () => {
+                let nextIndex = 1;
+                const loadBatch = () => {
+                    if (isCancelled) return;
+                    let count = 0;
+                    while (nextIndex < TOTAL_FRAMES && count < 8) {
+                        if (!loadedRef.current[nextIndex]) {
+                            const target = nextIndex;
+                            const img = new Image();
+                            img.src = getFramePath(target);
+                            img.onload = () => {
+                                if (isCancelled) return;
+                                imagesRef.current[target] = img;
+                                loadedRef.current[target] = true;
+                            };
+                            count++;
+                        }
+                        nextIndex++;
                     }
-                    nextIndex++;
-                }
 
-                if (nextIndex < TOTAL_FRAMES) {
-                    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-                        (window as any).requestIdleCallback(loadBatch, { timeout: 150 });
-                    } else {
-                        setTimeout(loadBatch, 35);
+                    if (nextIndex < TOTAL_FRAMES) {
+                        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+                            (window as any).requestIdleCallback(loadBatch, { timeout: 250 });
+                        } else {
+                            setTimeout(loadBatch, 60);
+                        }
                     }
-                }
+                };
+
+                setTimeout(loadBatch, 600);
             };
 
-            setTimeout(loadBatch, 350);
+            loadRemainingFrames();
         };
 
-        loadRemainingFrames();
+        // Trigger streaming on scroll OR after 2 seconds idle
+        const scrollSub = scrollYProgress.on("change", (latest) => {
+            if (latest > 0.01) {
+                startStreamingFrames();
+            }
+        });
+
+        startStreamingTimer = setTimeout(startStreamingFrames, 2000);
 
         return () => {
             isCancelled = true;
+            if (startStreamingTimer) clearTimeout(startStreamingTimer);
+            scrollSub();
         };
-    }, [renderFrame]);
+    }, [renderFrame, reduceMotion, scrollYProgress]);
 
     // Hook whole-page scroll to frame index
     useEffect(() => {

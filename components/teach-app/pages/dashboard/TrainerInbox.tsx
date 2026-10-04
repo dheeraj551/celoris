@@ -37,30 +37,6 @@ export function TrainerInbox() {
     profile?.is_trainer_pro === true
   );
 
-  const maskPhone = (phone?: string | null) => {
-    if (!phone) return '';
-    const clean = phone.trim();
-    if (clean.length <= 4) return '••••••';
-    if (clean.startsWith('+')) {
-      const parts = clean.split(' ');
-      if (parts.length >= 2) return `${parts[0]} ${parts[1].slice(0, 4)} •••••`;
-    }
-    const visibleLength = Math.max(3, Math.min(clean.length - 4, 6));
-    return `${clean.slice(0, visibleLength)} •••••`;
-  };
-
-  const maskEmail = (email?: string | null) => {
-    if (!email) return '';
-    const clean = email.trim();
-    const parts = clean.split('@');
-    if (parts.length !== 2) return '••••••@••••.com';
-    const [userPart, domainPart] = parts;
-    const maskedUser = userPart.length > 2 ? `${userPart.slice(0, 2)}••••` : `${userPart[0]}••••`;
-    const dotIndex = domainPart.lastIndexOf('.');
-    const ext = dotIndex !== -1 ? domainPart.slice(dotIndex) : '.com';
-    return `${maskedUser}@••••${ext}`;
-  };
-
   const fetchMessages = async () => {
     if (!profile?.id) return;
     setLoading(true);
@@ -512,28 +488,6 @@ export function TrainerInbox() {
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selected.body}</p>
                   </div>
                 )}
-                {selected.sender_email && (
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Email</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-700 font-mono font-medium">{maskEmail(selected.sender_email)}</span>
-                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 border border-emerald-200">
-                        <Shield className="w-2.5 h-2.5" /> Shield Protected
-                      </span>
-                    </div>
-                  </div>
-                )}
-                {selected.sender_phone && (
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Phone</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-700 font-mono font-medium">{maskPhone(selected.sender_phone)}</span>
-                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 border border-emerald-200">
-                        <Shield className="w-2.5 h-2.5" /> Shield Protected
-                      </span>
-                    </div>
-                  </div>
-                )}
                 <div className="flex items-center gap-2">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Status</p>
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
@@ -654,26 +608,6 @@ export function TrainerInbox() {
                     <option value="system">System</option>
                   </select>
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Email</label>
-                <input
-                  type="email"
-                  placeholder="student@email.com"
-                  value={compose.sender_email}
-                  onChange={(e) => setCompose((p) => ({ ...p, sender_email: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Phone</label>
-                <input
-                  type="tel"
-                  placeholder="+91 98765 43210"
-                  value={compose.sender_phone}
-                  onChange={(e) => setCompose((p) => ({ ...p, sender_phone: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                />
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Subject *</label>

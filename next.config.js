@@ -1,6 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'framer-motion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-slot',
+    ],
+  },
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 86400,
     remotePatterns: [
       { protocol: 'https', hostname: '**.supabase.co' },
       { protocol: 'https', hostname: 'images.unsplash.com' },

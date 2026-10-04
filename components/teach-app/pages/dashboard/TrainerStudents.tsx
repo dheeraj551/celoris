@@ -57,33 +57,6 @@ export function TrainerStudents() {
     profile?.is_trainer_pro === true
   );
 
-  // Masking helpers - always applied to maintain student privacy
-  const maskPhone = (phone?: string | null) => {
-    if (!phone) return '';
-    const clean = phone.trim();
-    if (clean.length <= 4) return '••••••';
-    if (clean.startsWith('+')) {
-      const parts = clean.split(' ');
-      if (parts.length >= 2) {
-        return `${parts[0]} ${parts[1].slice(0, 4)} •••••`;
-      }
-    }
-    const visibleLength = Math.max(3, Math.min(clean.length - 4, 6));
-    return `${clean.slice(0, visibleLength)} •••••`;
-  };
-
-  const maskEmail = (email?: string | null) => {
-    if (!email) return '';
-    const clean = email.trim();
-    const parts = clean.split('@');
-    if (parts.length !== 2) return '••••••@••••.com';
-    const [userPart, domainPart] = parts;
-    const maskedUser = userPart.length > 2 ? `${userPart.slice(0, 2)}••••` : `${userPart[0]}••••`;
-    const dotIndex = domainPart.lastIndexOf('.');
-    const ext = dotIndex !== -1 ? domainPart.slice(dotIndex) : '.com';
-    return `${maskedUser}@••••${ext}`;
-  };
-
   const openInternalChat = (student: any) => {
     setChatSubject(`Discussion regarding ${student.course || 'Training Requirements'}`);
     setChatMessage('');
@@ -683,21 +656,6 @@ export function TrainerStudents() {
                                 </span>
                               )}
                             </div>
-                            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-gray-400 font-medium">
-                              {student.phone && (
-                                <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                                  📞 {maskPhone(student.phone)}
-                                </span>
-                              )}
-                              {student.email && (
-                                <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                                  ✉️ {maskEmail(student.email)}
-                                </span>
-                              )}
-                              <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                                <Shield className="w-2.5 h-2.5" /> Celoris Protected
-                              </span>
-                            </div>
                           </div>
                         </div>
                       </td>
@@ -816,21 +774,6 @@ export function TrainerStudents() {
                   </p>
                 </div>
                 <div className="space-y-2 mb-6">
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-400 font-medium">
-                    {student.phone && (
-                      <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                        📞 {maskPhone(student.phone)}
-                      </span>
-                    )}
-                    {student.email && (
-                      <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                        ✉️ {maskEmail(student.email)}
-                      </span>
-                    )}
-                    <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                      <Shield className="w-2.5 h-2.5" /> Protected
-                    </span>
-                  </div>
                   {student.requirement && (
                     <p className="text-xs text-gray-400 italic line-clamp-2 pt-1">{student.requirement}</p>
                   )}

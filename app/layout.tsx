@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import { Inter, Outfit } from "next/font/google"
+import { Outfit } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
 import Header from "@/components/header"
@@ -14,8 +14,7 @@ import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider"
 import { SupportBotGate } from "@/components/SupportBotGate"
 import { XpGate } from "@/components/xp/XpGate"
 
-const inter = Inter({ subsets: ["latin"] })
-const outfit = Outfit({ subsets: ["latin"] })
+const outfit = Outfit({ subsets: ["latin"], display: "swap" })
 
 export const metadata: Metadata = {
   title: {
@@ -181,13 +180,13 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense via next/script afterInteractive */}
+        {/* Google AdSense via next/script lazyOnload (non-blocking) */}
         <Script
           id="google-adsense"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2157452506602914"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </head>
       <body className={outfit.className}>
