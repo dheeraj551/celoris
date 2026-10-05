@@ -9,8 +9,13 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { TrainerEarningsCalculator } from "@/components/trainer/TrainerEarningsCalculator"
+
+// High-Impact Interactive Client Components
+import { TrainerHeroInteractive } from "@/components/trainer/TrainerHeroInteractive"
 import { TrainerLiveInquiryTicker } from "@/components/trainer/TrainerLiveInquiryTicker"
+import { TrainerCreativeShowcase } from "@/components/trainer/TrainerCreativeShowcase"
+import { TrainerBattleCard } from "@/components/trainer/TrainerBattleCard"
+import { TrainerEarningsCalculator } from "@/components/trainer/TrainerEarningsCalculator"
 
 export const metadata: Metadata = {
     title: "Online Teaching Jobs India & Home Tutors Delhi NCR (0% Commission) | Celoris",
@@ -180,173 +185,60 @@ export default function BecomeTrainerPage() {
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
                 />
 
-                {/* Hero Section */}
-                <section className="relative pt-14 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden border-b border-white/5 bg-gradient-to-b from-emerald-950/20 via-[#070d1a] to-[#050810]">
-                    {/* Background Ambient Glows */}
-                    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-emerald-500/10 blur-[140px] rounded-full pointer-events-none" />
-                    <div className="absolute top-10 right-10 w-80 h-80 bg-purple-500/10 blur-[120px] rounded-full pointer-events-none" />
+                {/* 1. Cinematic Hero Section with Looping Classroom Video & Floating Badges */}
+                <TrainerHeroInteractive />
 
-                    <div className="max-w-5xl mx-auto text-center relative z-10">
-                        {/* Live Announcement Pill */}
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6 shadow-lg shadow-emerald-950/40">
-                            <Sparkles size={14} className="animate-pulse text-emerald-400" />
-                            Official Announcement • 100% Free for Educators & Tutors
-                        </div>
-
-                        {/* Main AIO/GEO Title */}
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tight text-white leading-[1.08]">
-                            The Free Student Platform is Now{" "}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                                100% Free for Trainers.
-                            </span>
-                        </h1>
-
-                        {/* Value-Packed Subtitle */}
-                        <p className="text-base sm:text-lg md:text-xl mb-8 max-w-3xl mx-auto text-slate-300 font-normal leading-relaxed">
-                            Stop paying ₹2,000 for "coin packages" just to view a student's contact. On Celoris, enjoy <strong className="text-white">0% commission</strong>, <strong className="text-white">zero coin paywalls</strong>, and <strong className="text-white">direct student enquiries</strong> across Delhi NCR and India. Keep 100% of your earnings.
-                        </p>
-
-                        {/* CTA Cluster */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                            <Button
-                                size="lg"
-                                className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl px-9 h-14 text-base shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95"
-                                asChild
-                            >
-                                <Link href="/register" className="flex items-center gap-2 justify-center">
-                                    Claim Your Free Trainer Profile
-                                    <ArrowRight size={18} />
-                                </Link>
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="w-full sm:w-auto border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl px-8 h-14 text-base backdrop-blur-md"
-                                asChild
-                            >
-                                <a href="#calculator">
-                                    Calculate Your Savings
-                                </a>
-                            </Button>
-                        </div>
-
-                        {/* Micro Trust Indicators */}
-                        <div className="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm text-slate-400">
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                ₹0 Registration Fee
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                0% Commission on All Student Fees
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                Direct Student WhatsApp & UPI
-                            </span>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Real-time GEO Inquiry Ticker */}
-                <section className="max-w-5xl mx-auto px-4 sm:px-6 -mt-6 relative z-20">
+                {/* 2. Real-Time Student Demand Ticker (GEO Localized) */}
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6 relative z-20">
                     <TrainerLiveInquiryTicker />
                 </section>
 
-                {/* Key Numbers / Trust Strip */}
-                <section className="py-12 bg-slate-950/70 border-b border-white/5 mt-10">
+                {/* 3. Key Proof Numbers Strip */}
+                <section className="py-12 bg-slate-950/80 border-b border-white/5 mt-10">
                     <div className="max-w-6xl mx-auto px-4 sm:px-6">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                             <div>
-                                <p className="text-3xl md:text-4xl font-black text-white font-mono">₹0</p>
+                                <p className="text-3xl md:text-5xl font-black text-white font-mono">₹0</p>
                                 <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Platform Commission</p>
                             </div>
                             <div>
-                                <p className="text-3xl md:text-4xl font-black text-emerald-400 font-mono">100%</p>
+                                <p className="text-3xl md:text-5xl font-black text-emerald-400 font-mono">100%</p>
                                 <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">You Keep All Fees</p>
                             </div>
                             <div>
-                                <p className="text-3xl md:text-4xl font-black text-white font-mono">Direct</p>
+                                <p className="text-3xl md:text-5xl font-black text-cyan-400 font-mono">Direct</p>
                                 <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Student Contact & UPI</p>
                             </div>
                             <div>
-                                <p className="text-3xl md:text-4xl font-black text-purple-400 font-mono">Free AI</p>
-                                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Creative Studios Included</p>
+                                <p className="text-3xl md:text-5xl font-black text-purple-400 font-mono">5 Studios</p>
+                                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Free Creative Tools</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Interactive Earnings & Commission Savings Calculator (Dwell Time Multiplier) */}
-                <section id="calculator" className="py-20 px-4 sm:px-6 max-w-5xl mx-auto scroll-mt-20">
+                {/* 4. Creative Studios Playground (User Request: Showcase Creativity) */}
+                <TrainerCreativeShowcase />
+
+                {/* 5. Interactive Earnings & Commission Savings Calculator (Dwell Time Multiplier) */}
+                <section id="calculator" className="py-16 px-4 sm:px-6 max-w-6xl mx-auto scroll-mt-20">
                     <TrainerEarningsCalculator />
                 </section>
 
-                {/* AIO & GEO Comparison Table (UrbanPro / TeacherOn vs Celoris) */}
-                <section id="comparison" className="py-16 px-4 sm:px-6 max-w-5xl mx-auto border-t border-white/5 scroll-mt-20">
-                    <div className="text-center mb-12">
-                        <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">
-                            Transparent Side-By-Side Comparison
-                        </span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-white mt-4 tracking-tight">
-                            Why Tutors in Delhi NCR Are Moving Away from "Coin" Platforms
-                        </h2>
-                        <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto mt-3">
-                            Here is the factual breakdown of traditional lead-selling directories vs the Celoris zero-commission model:
-                        </p>
-                    </div>
+                {/* 6. The Visual "Battle Card" (UrbanPro vs Celoris) */}
+                <TrainerBattleCard />
 
-                    <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/60 shadow-2xl mb-8">
-                        <table className="w-full text-left text-xs sm:text-sm">
-                            <thead className="bg-slate-950 text-slate-200 border-b border-slate-800 text-[11px] uppercase tracking-wider">
-                                <tr>
-                                    <th className="p-4 sm:p-5">Feature & Policy</th>
-                                    <th className="p-4 sm:p-5 text-rose-400">Traditional Lead Platforms (UrbanPro, TeacherOn)</th>
-                                    <th className="p-4 sm:p-5 text-emerald-400 font-bold">Celoris Educator Network</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-800/80">
-                                <tr>
-                                    <td className="p-4 sm:p-5 font-bold text-white">Student Contact Access</td>
-                                    <td className="p-4 sm:p-5 text-slate-300">Locked behind ₹1,500–₹5,000 coin packages</td>
-                                    <td className="p-4 sm:p-5 text-emerald-400 font-bold">100% Free & Direct (No Coins)</td>
-                                </tr>
-                                <tr>
-                                    <td className="p-4 sm:p-5 font-bold text-white">Platform Commission</td>
-                                    <td className="p-4 sm:p-5 text-rose-400">15% to 30% cut on every fee</td>
-                                    <td className="p-4 sm:p-5 text-emerald-400 font-bold">0% Commission Forever</td>
-                                </tr>
-                                <tr>
-                                    <td className="p-4 sm:p-5 font-bold text-white">Lead Exclusivity</td>
-                                    <td className="p-4 sm:p-5 text-slate-400">Same lead sold to 5–10 competing trainers</td>
-                                    <td className="p-4 sm:p-5 text-emerald-400 font-bold">Direct student enquiries sent to you</td>
-                                </tr>
-                                <tr>
-                                    <td className="p-4 sm:p-5 font-bold text-white">Payout Method</td>
-                                    <td className="p-4 sm:p-5 text-slate-400">Delayed platform payouts (15–30 days)</td>
-                                    <td className="p-4 sm:p-5 text-emerald-400 font-bold">Instant direct UPI / Bank Transfer</td>
-                                </tr>
-                                <tr>
-                                    <td className="p-4 sm:p-5 font-bold text-white">Teaching Tooling</td>
-                                    <td className="p-4 sm:p-5 text-slate-400">None provided</td>
-                                    <td className="p-4 sm:p-5 text-purple-300 font-bold">Free AI Studios (PhotoLite, Video Studio, PolyVault)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                {/* Popular Categories & Market Rate Benchmarks in Delhi NCR */}
-                <section className="py-16 px-4 sm:px-6 max-w-6xl mx-auto border-t border-white/5">
-                    <div className="text-center mb-12">
+                {/* 7. Popular Subject Demand & Rates (Delhi NCR + Online) */}
+                <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-white/5">
+                    <div className="text-center mb-14">
                         <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/40">
                             High-Demand Subjects & Earning Rates
                         </span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-white mt-4 tracking-tight">
-                            Current Student Demand & Average Rates (Delhi NCR & Online)
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">
+                            Current Student Demand & Average Rates
                         </h2>
                         <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto mt-2">
-                            Average market tuition and coaching fees charged by verified trainers on Celoris:
+                            Average market tuition and coaching fees charged by verified trainers across Delhi NCR and Online:
                         </p>
                     </div>
 
@@ -363,12 +255,12 @@ export default function BecomeTrainerPage() {
                         ].map((cat, idx) => {
                             const IconComponent = cat.icon
                             return (
-                                <div key={idx} className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 transition-all hover:-translate-y-1 group">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${cat.color}`}>
-                                            <IconComponent size={20} />
+                                <div key={idx} className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/40 transition-all hover:-translate-y-1.5 group backdrop-blur-md">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className={`w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${cat.color} border border-white/10`}>
+                                            <IconComponent size={22} />
                                         </div>
-                                        <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
+                                        <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-800/50">
                                             {cat.rate}
                                         </span>
                                     </div>
@@ -380,25 +272,25 @@ export default function BecomeTrainerPage() {
                     </div>
                 </section>
 
-                {/* Free Lead Magnet Box: 2026 Tutor Growth Blueprint (Dwell Time & Opt-in) */}
-                <section className="py-12 px-4 sm:px-6 max-w-4xl mx-auto">
-                    <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-purple-950/40 via-slate-900 to-indigo-950/40 border border-purple-500/40 shadow-2xl relative overflow-hidden">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                            <div className="space-y-2">
+                {/* 8. Free Lead Magnet Toolkit: 2026 Tutor Growth Blueprint */}
+                <section className="py-12 px-4 sm:px-6 max-w-5xl mx-auto">
+                    <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-purple-950/40 via-slate-900 to-indigo-950/40 border border-purple-500/40 shadow-2xl relative overflow-hidden">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+                            <div className="space-y-2 text-left">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-purple-500/15 text-purple-400 border border-purple-500/30">
                                     <Download className="w-3.5 h-3.5" />
                                     Free Educator Toolkit (PDF)
                                 </span>
-                                <h3 className="text-xl sm:text-2xl font-black text-white">
+                                <h3 className="text-2xl sm:text-3xl font-black text-white">
                                     The 2026 High-Ticket Tutor Blueprint
                                 </h3>
-                                <p className="text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed">
-                                    Learn how top trainers in Delhi NCR close ₹1,500/hr private students, structure batch courses, and build a ₹1,00,000/month tutoring business without spending on ads.
+                                <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+                                    Learn how top trainers in Delhi NCR close ₹1,500/hr private students, structure batch courses, and build a ₹1,00,000/month tutoring business without spending a rupee on ads.
                                 </p>
                             </div>
                             <Button
                                 size="lg"
-                                className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 h-12 rounded-xl text-sm shrink-0 shadow-lg shadow-purple-600/30"
+                                className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 h-14 rounded-2xl text-sm shrink-0 shadow-xl shadow-purple-600/30 transition-transform hover:scale-105"
                                 asChild
                             >
                                 <Link href="/register">
@@ -409,37 +301,37 @@ export default function BecomeTrainerPage() {
                     </div>
                 </section>
 
-                {/* 3-Step Setup Process (HowTo Schema Section) */}
-                <section className="py-16 px-4 sm:px-6 max-w-5xl mx-auto border-t border-white/5">
+                {/* 9. Fast 3-Step Onboarding */}
+                <section className="py-16 px-4 sm:px-6 max-w-6xl mx-auto border-t border-white/5">
                     <div className="text-center mb-14">
                         <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">
-                            Fast & Simple Activation
+                            Fast & Simple
                         </span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-white mt-4 tracking-tight">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">
                             Start Connecting With Students in 3 Steps
                         </h2>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6 relative">
-                        <div className="p-7 rounded-2xl bg-slate-900/60 border border-slate-800 relative">
-                            <span className="text-3xl font-black text-emerald-500/40 font-mono mb-4 block">01</span>
-                            <h3 className="text-lg font-bold text-white mb-2">Create Your Free Account</h3>
+                        <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 relative backdrop-blur-md">
+                            <span className="text-4xl font-black text-emerald-500/40 font-mono mb-4 block">01</span>
+                            <h3 className="text-xl font-bold text-white mb-2">Create Your Free Account</h3>
                             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                                Sign up with your name, phone number, and email. No subscription, no credit card, and zero setup fee.
+                                Sign up with your name, phone number, and email. No subscription, no credit card, and zero setup fees.
                             </p>
                         </div>
 
-                        <div className="p-7 rounded-2xl bg-slate-900/60 border border-slate-800 relative">
-                            <span className="text-3xl font-black text-cyan-500/40 font-mono mb-4 block">02</span>
-                            <h3 className="text-lg font-bold text-white mb-2">List Your Subjects & Rates</h3>
+                        <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 relative backdrop-blur-md">
+                            <span className="text-4xl font-black text-cyan-500/40 font-mono mb-4 block">02</span>
+                            <h3 className="text-xl font-bold text-white mb-2">List Your Subjects & Rates</h3>
                             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                                Choose the subjects you teach, your teaching mode (Online or Home Tuition in Delhi NCR), and your preferred fee.
+                                Choose what you teach, your teaching mode (Online or Home Tuition in NCR), and your preferred rates.
                             </p>
                         </div>
 
-                        <div className="p-7 rounded-2xl bg-slate-900/60 border border-slate-800 relative">
-                            <span className="text-3xl font-black text-purple-500/40 font-mono mb-4 block">03</span>
-                            <h3 className="text-lg font-bold text-white mb-2">Teach & Keep 100% Fees</h3>
+                        <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 relative backdrop-blur-md">
+                            <span className="text-4xl font-black text-purple-500/40 font-mono mb-4 block">03</span>
+                            <h3 className="text-xl font-bold text-white mb-2">Teach & Keep 100% Fees</h3>
                             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                                 Students discover you and send enquiries directly. You set your schedule, deliver classes, and get paid directly via UPI.
                             </p>
@@ -447,11 +339,11 @@ export default function BecomeTrainerPage() {
                     </div>
                 </section>
 
-                {/* FAQ Section (Rich Snippet Eligible) */}
+                {/* 10. Frequently Asked Questions */}
                 <section className="py-16 px-4 sm:px-6 max-w-4xl mx-auto border-t border-white/5">
                     <div className="text-center mb-12">
-                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center justify-center gap-2">
-                            <HelpCircle className="w-6 h-6 text-emerald-400" />
+                        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center justify-center gap-2">
+                            <HelpCircle className="w-7 h-7 text-emerald-400" />
                             Frequently Asked Questions
                         </h2>
                         <p className="text-slate-400 text-xs sm:text-sm mt-2">
@@ -482,22 +374,22 @@ export default function BecomeTrainerPage() {
                                 a: "As an active trainer on Celoris, you get free access to our built-in creator studios: PhotoLite (graphic & poster editing), Video Studio (video trimming & reels), and PolyVault (3D models & assets) to help prepare class materials."
                             }
                         ].map((faq, idx) => (
-                            <div key={idx} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80">
-                                <h4 className="font-bold text-white text-sm sm:text-base mb-2">{faq.q}</h4>
+                            <div key={idx} className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+                                <h4 className="font-bold text-white text-base mb-2">{faq.q}</h4>
                                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{faq.a}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                {/* Final Call to Action Banner */}
-                <section className="px-4 sm:px-6 max-w-5xl mx-auto my-12">
-                    <div className="rounded-3xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-indigo-950/70 border border-emerald-500/40 p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
-                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                {/* 11. Final High-Conversion Banner */}
+                <section className="px-4 sm:px-6 max-w-6xl mx-auto my-14">
+                    <div className="rounded-[2.5rem] bg-gradient-to-r from-emerald-950/70 via-slate-900 to-indigo-950/70 border-2 border-emerald-500/40 p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl shadow-emerald-950/40">
+                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
                         <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-4 py-1.5 rounded-full border border-emerald-800/50 inline-block mb-4">
                             Tonight's Special Offer
                         </span>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">
                             Stop Paying to Teach. Join Celoris Tonight.
                         </h2>
                         <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
@@ -505,12 +397,12 @@ export default function BecomeTrainerPage() {
                         </p>
                         <Button
                             size="lg"
-                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl px-10 h-14 text-base shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95"
+                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl px-12 h-16 text-base sm:text-lg shadow-2xl shadow-emerald-500/40 transition-all hover:scale-105 active:scale-95"
                             asChild
                         >
                             <Link href="/register" className="flex items-center gap-2 justify-center">
                                 Claim Your Free Trainer Profile Now
-                                <ArrowRight size={18} />
+                                <ArrowRight size={20} />
                             </Link>
                         </Button>
                     </div>
