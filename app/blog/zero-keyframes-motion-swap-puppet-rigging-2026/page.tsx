@@ -9,7 +9,7 @@ import {
     ExternalLink, Sparkles, CheckCircle2, AlertTriangle, FileText, BarChart3, Target,
     Smartphone, MessageSquare, ShoppingBag, Award, Layers, Cpu, Compass, RefreshCw, Video, Film, Wand2,
     AlertCircle, CreditCard, Percent, ChevronRight, ShieldAlert, PieChart, Camera, Mic, Clapperboard, MonitorPlay,
-    Palette, Smile, Scissors, Radio, Activity
+    Palette, Smile, Scissors, Radio, Activity, Binary, Sliders, Move
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ShareButtons from '@/components/ShareButtons';
@@ -210,10 +210,10 @@ export default function ZeroKeyframesBlogPost() {
                         <li><a href="#section-2" className="hover:text-purple-400 transition-colors">2. The "Puppet, Don't Draw" Architecture</a></li>
                         <li><a href="#section-3" className="hover:text-purple-400 transition-colors">3. Production Benchmarks: Hours vs Minutes</a></li>
                         <li><a href="#section-4" className="hover:text-purple-400 transition-colors">4. Stage 1: The Layer-Sliced Character Sheet</a></li>
-                        <li><a href="#section-5" className="hover:text-purple-400 transition-colors">5. Stage 2: Skeletal Bone Binding & Spring Physics</a></li>
+                        <li><a href="#section-5" className="hover:text-purple-400 transition-colors">5. Stage 2: Rigging, Spring Dynamics & 3D-to-2D Conversion</a></li>
                         <li><a href="#section-6" className="hover:text-purple-400 transition-colors">6. Stage 3: Neural Motion Transfer via Motion Swap Studio</a></li>
                         <li><a href="#section-7" className="hover:text-purple-400 transition-colors">7. Stage 4: Waveform-Driven Phonetic Viseme Sync</a></li>
-                        <li><a href="#section-8" className="hover:text-purple-400 transition-colors">8. Monetization: How Solo Creators Earn ₹1.5L+/Month</a></li>
+                        <li><a href="#section-8" className="hover:text-purple-400 transition-colors">8. Monetization & Vertical Reframing: How Creators Scale</a></li>
                         <li><a href="#section-9" className="hover:text-purple-400 transition-colors">9. Frequently Asked Questions (FAQs)</a></li>
                     </ol>
                 </div>
@@ -419,23 +419,23 @@ export default function ZeroKeyframesBlogPost() {
                 <section id="section-5" className="mb-14 scroll-mt-20">
                     <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-4 flex items-center gap-3">
                         <span className="text-purple-400 font-mono text-xl">05.</span>
-                        Stage 2: Skeletal Rigging & Spring Dynamics
+                        Stage 2: Skeletal Rigging, Spring Dynamics & 3D-to-2D Conversion
                     </h2>
                     <p className="leading-relaxed mb-4">
                         With your PSD sliced, you import the file into a dedicated 2D puppetry engine like <strong className="text-white">Cartoon Animator 4 (Pipeline Edition)</strong> or <strong className="text-white">Moho Pro</strong>.
                     </p>
                     <p className="leading-relaxed mb-4">
-                        The engine parses your layer groups and aligns an inverse kinematic (IK) skeleton. But the true game-changer is <strong>Dynamic Spring Physics</strong>:
+                        The engine parses your layer groups and aligns an inverse kinematic (IK) skeleton. But the true game-changer is combining <strong>Dynamic Spring Physics</strong> with <strong>Free-Form Deformation</strong>:
                     </p>
 
-                    <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                    <div className="grid sm:grid-cols-3 gap-4 mb-6">
                         <div className="bg-slate-900 p-5 rounded-xl border border-slate-800">
                             <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
                                 <Activity className="w-4 h-4 text-purple-400" />
                                 Automated Secondary Motion
                             </h4>
                             <p className="text-xs text-slate-400 leading-relaxed">
-                                In traditional animation, drawing loose hair swaying or hoodie strings bouncing requires hours of secondary frame timing. In Cartoon Animator 4, you simply assign a spring weight to the hair layer. When the character nods or laughs, hair inertia calculates automatically.
+                                In traditional animation, drawing loose hair swaying or hoodie strings bouncing requires hours of secondary frame timing. In Cartoon Animator, you simply assign a spring weight to the hair layer. When the character nods or laughs, hair inertia calculates automatically.
                             </p>
                         </div>
 
@@ -445,8 +445,65 @@ export default function ZeroKeyframesBlogPost() {
                                 G3 360-Degree Head Parallax
                             </h4>
                             <p className="text-xs text-slate-400 leading-relaxed">
-                                Flat 2D drawings often feel static when turning. G3 360 rigging maps your 2D facial features onto a multi-angle calibration grid. When your character turns toward the camera, eyes and nose shift with smooth 3D depth.
+                                Flat 2D drawings often feel static when turning. G3 360 rigging maps your 2D facial features onto a multi-angle calibration grid (0°, -45°, 90°). When your character turns toward the camera, eyes and nose shift with organic 3D depth perception.
                             </p>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800">
+                            <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                                <Layers className="w-4 h-4 text-emerald-400" />
+                                Free-Form Deformation (FFD)
+                            </h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                FFD lattice grids allow animators to deform 2D character meshes dynamically. FFD simulates classical squash-and-stretch principles (cartoony body compression during jumps or impact) while strictly preserving visual volume without redrawing sprites.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 3D-to-2D Motion Conversion Pipeline Box */}
+                    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-7 mb-6 relative overflow-hidden">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[11px] font-mono uppercase tracking-widest text-indigo-400 font-bold bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-800/50">
+                                Spatial Bridge Engine
+                            </span>
+                            <span className="text-xs text-slate-400 font-mono">3D Mocap → 2D Sprite Plane</span>
+                        </div>
+
+                        <h3 className="text-lg sm:text-xl font-bold text-white mb-3">
+                            The 4-Step 3D Motion Converter Pipeline
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-300 mb-6 leading-relaxed">
+                            How do you transfer full 3-dimensional human telemetry (<code className="text-purple-300 font-mono bg-purple-950/40 px-1.5 py-0.5 rounded">.fbx</code>, <code className="text-purple-300 font-mono bg-purple-950/40 px-1.5 py-0.5 rounded">.bvh</code>, or Motion Swap streams) onto a flat 2D character rig without flattening or distortion? The converter engine executes four synchronized mathematical steps:
+                        </p>
+
+                        <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                                <span className="font-mono text-purple-400 font-bold block mb-1">01. Projection Angle Matching</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    Calculates the rotational offset between the virtual 3D camera vector and character facing angle, automatically routing limb rotation to the matching sprite folder (-45° front-quarter or 90° profile).
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                                <span className="font-mono text-indigo-400 font-bold block mb-1">02. Automated Body Flipping</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    When a 3D movement crosses the longitudinal midline (e.g., turning from left to right), the engine toggles an automated mirror matrix, inverting the 2D skeleton to simulate seamless bidirectional movement.
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                                <span className="font-mono text-emerald-400 font-bold block mb-1">03. Limb Retargeting & Scaling</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    Normalizes dimensional scale ratios between the source human capture skeleton and target cartoon proportions, automatically scaling 3D spatial displacement vectors to prevent limb hyper-extension.
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                                <span className="font-mono text-cyan-400 font-bold block mb-1">04. Ground Offset Adjustment</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    Recalculates the root pelvis joint translation relative to the virtual ground plane. This eliminates character floating and floor-clipping artifacts during deep crouches and footsteps.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -495,6 +552,101 @@ export default function ZeroKeyframesBlogPost() {
                             </ol>
                         </div>
                     </div>
+
+                    {/* Biomechanical Mathematics & Noise Filtering Card */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-7 mb-8">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Binary className="w-5 h-5 text-purple-400" />
+                            <h3 className="text-base sm:text-lg font-bold text-white">
+                                The Biomechanical Math: Solving Monocular Depth & Foot-Skating
+                            </h3>
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-300 mb-5 leading-relaxed">
+                            Why do standard phone motion capture apps look jittery, with characters skating across the floor? In classical stereoscopic vision, depth (<span className="font-mono text-purple-300">d_z</span>) relies on focal length (<span className="font-mono text-purple-300">f_x</span>), stereo baseline (<span className="font-mono text-purple-300">d_base</span>), and disparity (<span className="font-mono text-purple-300">d_disp</span>):
+                        </p>
+
+                        <div className="p-4 rounded-xl bg-black/60 border border-slate-800 font-mono text-xs sm:text-sm text-center text-purple-300 mb-5">
+                            Depth Ambiguity: d_z = (f_x · d_base) / d_disp &nbsp; | &nbsp; When d_base = 0 (Monocular Phone), Depth Must Be Estimated
+                        </div>
+
+                        <p className="text-xs sm:text-sm text-slate-300 mb-4 leading-relaxed">
+                            Because a single smartphone camera has zero stereo baseline (<span className="font-mono text-slate-200">d_base = 0</span>), neural models must infer depth via statistical priors. Without correction, this causes <strong>foot sliding</strong> and <strong>high-frequency jerk</strong>. Celoris Motion Swap applies two temporal optimization loss passes:
+                        </p>
+
+                        <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+                                <h4 className="font-bold text-purple-400 mb-1.5 flex items-center gap-1.5">
+                                    <Shield className="w-3.5 h-3.5" />
+                                    Foot-Skating Loss (L_fs)
+                                </h4>
+                                <div className="font-mono text-[11px] bg-black/50 p-2 rounded text-slate-300 mb-2 border border-slate-800/80">
+                                    L_fs = Σ q_j · || f_j(Φ_t, β) - f_j(Φ_(t-1), β) + ΔT_t ||²
+                                </div>
+                                <p className="text-slate-400 leading-relaxed">
+                                    A neural contact classifier detects ground-contact frames (<span className="font-mono text-purple-300">q_j = 1</span>). When contact occurs, the foot joint position is strictly clamped to world coordinates, eliminating sliding.
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+                                <h4 className="font-bold text-indigo-400 mb-1.5 flex items-center gap-1.5">
+                                    <Activity className="w-3.5 h-3.5" />
+                                    Joint Jerk Minimization (L_jk)
+                                </h4>
+                                <div className="font-mono text-[11px] bg-black/50 p-2 rounded text-slate-300 mb-2 border border-slate-800/80">
+                                    L_jk = || J_t - 3·J_(t-1) + 3·J_(t-2) - J_(t-3) ||²
+                                </div>
+                                <p className="text-slate-400 leading-relaxed">
+                                    Minimizes the third time derivative of 3D joint positions, filtering out high-frequency camera sensor jitter while preserving sudden comedic hand snaps and expressive posture changes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Neural Engine Ecosystem Comparison */}
+                    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-7 mb-8">
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-2 flex items-center gap-2">
+                            <Cpu className="w-5 h-5 text-indigo-400" />
+                            The 2026 Neural Engine Landscape
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-300 mb-5 leading-relaxed">
+                            How different platforms approach video-to-character transformation across the creator industry:
+                        </p>
+
+                        <div className="grid sm:grid-cols-3 gap-4 text-xs">
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                                <div>
+                                    <span className="font-bold text-white text-sm block mb-1">Viggle AI (JST-1)</span>
+                                    <span className="text-[10px] font-mono text-purple-400 uppercase tracking-wider block mb-2">Physics Foundation Model</span>
+                                    <p className="text-slate-400 leading-relaxed">
+                                        Replaces entire live-action performers with static character art in video templates. Features 3D momentum awareness and Multi-Track (up to 7 actors), but capped at 1080p with credit limits.
+                                    </p>
+                                </div>
+                                <span className="text-[11px] text-slate-400 font-semibold mt-3 pt-2 border-t border-slate-800/80">Best for: Fast viral meme skits</span>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                                <div>
+                                    <span className="font-bold text-white text-sm block mb-1">DomoAI</span>
+                                    <span className="text-[10px] font-mono text-indigo-400 uppercase tracking-wider block mb-2">Diffusion Restyling Studio</span>
+                                    <p className="text-slate-400 leading-relaxed">
+                                        Restyles source video into 30+ aesthetic styles (anime, watercolor, 3D clay) with 4K upscaling and lip sync, while preserving video lighting and camera movement.
+                                    </p>
+                                </div>
+                                <span className="text-[11px] text-slate-400 font-semibold mt-3 pt-2 border-t border-slate-800/80">Best for: Cinematic anime transformations</span>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-purple-800/50 bg-purple-950/20 flex flex-col justify-between">
+                                <div>
+                                    <span className="font-bold text-purple-300 text-sm block mb-1">Celoris Motion Swap</span>
+                                    <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block mb-2">Kinematic Puppet Bridge</span>
+                                    <p className="text-slate-300 leading-relaxed">
+                                        Extracts clean 33-point skeletal landmark motion directly into 2D puppet rigs. Eliminates re-rendering wait times, Discord queues, and gives creators full vector timeline control.
+                                    </p>
+                                </div>
+                                <span className="text-[11px] text-emerald-400 font-semibold mt-3 pt-2 border-t border-purple-800/50">Best for: Reusable 2D puppet episodic IP</span>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 {/* Section 7 */}
@@ -517,13 +669,95 @@ export default function ZeroKeyframesBlogPost() {
                         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center">
                             <Cpu className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
                             <h4 className="text-sm font-bold text-white mb-1">Viseme Recognition</h4>
-                            <p className="text-xs text-slate-400">The acoustic parser breaks speech into 15 phonetic visemes (AH, EE, OH, W-OO, M-B-P, F-V).</p>
+                            <p className="text-xs text-slate-400">The acoustic parser breaks speech into 15 phonetic visemes based on dual acoustic formants (F1, F2).</p>
                         </div>
 
                         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center">
                             <Smile className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
                             <h4 className="text-sm font-bold text-white mb-1">Instant Mouth Swapping</h4>
                             <p className="text-xs text-slate-400">The character's mouth layers swap dynamically with frame-perfect precision and automated blink micro-actions.</p>
+                        </div>
+                    </div>
+
+                    {/* 15-Viseme Phonetic Matrix Table */}
+                    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-7 mb-6">
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-2 flex items-center gap-2">
+                            <Smile className="w-5 h-5 text-purple-400" />
+                            The 15-Viseme Phonetic Matrix
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-300 mb-5 leading-relaxed">
+                            Rather than simplistic 5-vowel mouth flaps that look robotic, professional puppet rigs slice mouth groups into the 15 standardized phonetic visemes mapped to dual acoustic formant frequencies (<span className="font-mono text-purple-300">F1 / F2</span>):
+                        </p>
+
+                        <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 mb-4">
+                            <table className="w-full text-left text-xs">
+                                <thead className="bg-slate-900 text-slate-300 border-b border-slate-800 font-mono uppercase text-[10px] tracking-wider">
+                                    <tr>
+                                        <th className="p-3">Viseme Code</th>
+                                        <th className="p-3">Phonetic Sounds</th>
+                                        <th className="p-3">Lip & Jaw Mechanics</th>
+                                        <th className="p-3 text-purple-300">Acoustic Formant (F1/F2)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">AH</td>
+                                        <td className="p-3">/ɑ/, /ʌ/ (Father, Cup)</td>
+                                        <td className="p-3">Open jaw, flat relaxed tongue</td>
+                                        <td className="p-3 text-purple-400 font-mono">High F1 (700-900 Hz)</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">EE</td>
+                                        <td className="p-3">/i:/, /ɪ/ (See, Green)</td>
+                                        <td className="p-3">Wide mouth stretch, teeth visible</td>
+                                        <td className="p-3 text-purple-400 font-mono">High F2 (2200-2600 Hz)</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">OH</td>
+                                        <td className="p-3">/oʊ/, /ɔ:/ (Go, Door)</td>
+                                        <td className="p-3">Rounded lips, mid-open jaw</td>
+                                        <td className="p-3 text-purple-400 font-mono">Mid F1, Low F2</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">W-OO</td>
+                                        <td className="p-3">/u:/, /w/ (Moon, Win)</td>
+                                        <td className="p-3">Tight circular puckered lips</td>
+                                        <td className="p-3 text-purple-400 font-mono">Low F1 + Low F2</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">M-B-P</td>
+                                        <td className="p-3">/m/, /b/, /p/ (Mom, Pop)</td>
+                                        <td className="p-3">Bilabial seal, lips pressed closed</td>
+                                        <td className="p-3 text-purple-400 font-mono">Zero acoustic aperture</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">F-V</td>
+                                        <td className="p-3">/f/, /v/ (Five, Voice)</td>
+                                        <td className="p-3">Upper teeth gently biting lower lip</td>
+                                        <td className="p-3 text-purple-400 font-mono">High frequency fricative</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">L-TH</td>
+                                        <td className="p-3">/l/, /θ/, /ð/ (Think, Love)</td>
+                                        <td className="p-3">Tongue tip behind/between front teeth</td>
+                                        <td className="p-3 text-purple-400 font-mono">Lingual-dental resonance</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-3 font-mono font-bold text-white">Rest</td>
+                                        <td className="p-3">Silent pause / Inhale</td>
+                                        <td className="p-3">Neutral closed or slight slit</td>
+                                        <td className="p-3 text-purple-400 font-mono">Below audio noise floor</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Retention Hack Callout */}
+                        <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-800/40 text-xs sm:text-sm text-slate-300">
+                            <span className="font-bold text-purple-300 block mb-1">
+                                💡 Short-Form Retention Hack: The 150ms Silence Strip
+                            </span>
+                            To keep completion rates above 90% on YouTube Shorts and Instagram Reels, run your master dialogue track through an automated silence stripper before feeding it into the viseme parser. Truncating pauses down to under 150ms creates a breathless, high-tempo comedic delivery that hooks viewer attention and prevents scroll-aways.
                         </div>
                     </div>
 
@@ -536,29 +770,91 @@ export default function ZeroKeyframesBlogPost() {
                 <section id="section-8" className="mb-14 scroll-mt-20">
                     <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-4 flex items-center gap-3">
                         <span className="text-purple-400 font-mono text-xl">08.</span>
-                        Monetization: How Solo Creators Earn ₹1.5L+/Month
+                        Monetization & Vertical Reframing: How Creators Scale
                     </h2>
                     <p className="leading-relaxed mb-6">
-                        Because viewers have a natural affection for animated storytelling, retention curves on animated Shorts consistently exceed 95%. Creators deploying this rapid stack are scaling multiple lucrative income streams:
+                        Because viewers have a natural affection for animated storytelling, retention curves on animated Shorts consistently exceed 95%. Creators deploying this rapid stack are scaling multiple high-margin income streams:
                     </p>
 
                     <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                            <span className="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Income Stream 1</span>
-                            <h3 className="font-bold text-white text-base mb-2">Original Storytime & Satire IP</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed mb-3">
-                                Channels focused on workplace comedy, college relatable moments, or developer skits post 5 times weekly. With 200K+ subscribers, Shorts AdSense + brand integrations generate <strong>₹1,20,000 to ₹2,50,000 monthly</strong>.
-                            </p>
-                            <span className="text-emerald-400 text-xs font-semibold">Audience loyalty builds high RPM</span>
+                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <span className="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Income Stream 1</span>
+                                <h3 className="font-bold text-white text-base mb-2">Original Storytime & Satire IP</h3>
+                                <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                                    Channels focused on workplace comedy, college relatable moments, or developer skits post 5 times weekly. With 200K+ subscribers, Shorts AdSense + brand integrations generate <strong>₹1,20,000 to ₹2,50,000 monthly</strong>.
+                                </p>
+                            </div>
+                            <span className="text-emerald-400 text-xs font-semibold pt-2 border-t border-slate-800">Audience loyalty builds high RPM</span>
                         </div>
 
-                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                            <span className="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Income Stream 2</span>
-                            <h3 className="font-bold text-white text-base mb-2">D2C Brand Animated Mascots</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed mb-3">
-                                Indian consumer brands (D2C snacks, fintech, skincare) hire creators to produce 10–15 animated mascot reels per month. Agency retainers range from <strong>₹35,000 to ₹75,000 per brand</strong> for under 15 hours of work.
-                            </p>
-                            <span className="text-emerald-400 text-xs font-semibold">High client retention & retainers</span>
+                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <span className="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Income Stream 2</span>
+                                <h3 className="font-bold text-white text-base mb-2">D2C Brand Animated Mascots</h3>
+                                <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                                    Indian consumer brands (D2C snacks, fintech, skincare) hire creators to produce 10–15 animated mascot reels per month. Agency retainers range from <strong>₹35,000 to ₹75,000 per brand</strong> for under 15 hours of work.
+                                </p>
+                            </div>
+                            <span className="text-emerald-400 text-xs font-semibold pt-2 border-t border-slate-800">High client retention & retainers</span>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block mb-1">Income Stream 3</span>
+                                <h3 className="font-bold text-white text-base mb-2">Commercial Agency Retainers</h3>
+                                <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                                    Podcasters, SaaS startups, and corporate educators hire animators to transform audio highlights into viral skits. With turnaround times under 2 hours, creators charge <strong>₹15,000 to ₹40,000 per video</strong>.
+                                </p>
+                            </div>
+                            <span className="text-indigo-400 text-xs font-semibold pt-2 border-t border-slate-800">Rapid commercial B2B turnaround</span>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-1">Income Stream 4</span>
+                                <h3 className="font-bold text-white text-base mb-2">Rig & Motion Pack Licensing</h3>
+                                <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                                    Package custom G3 character rigs, dynamic spring physics setups, and reusable motion files (<code className="text-purple-300 font-mono text-[11px]">.ctBPerform</code>) on the Celoris Asset Store and Reallusion Marketplace for passive royalties.
+                                </p>
+                            </div>
+                            <span className="text-emerald-400 text-xs font-semibold pt-2 border-t border-slate-800">100% passive digital asset royalties</span>
+                        </div>
+                    </div>
+
+                    {/* Vertical Reframing Pipeline */}
+                    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-7 mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Film className="w-5 h-5 text-purple-400" />
+                            <h3 className="text-base sm:text-lg font-bold text-white">
+                                The 9:16 Vertical Reframing Workflow
+                            </h3>
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-300 mb-5 leading-relaxed">
+                            Standard animation stages are built in 16:9 widescreen. Rather than rerendering multiple camera angles, high-output creators render once and adapt using dynamic shift keyframing:
+                        </p>
+
+                        <div className="grid sm:grid-cols-3 gap-4 text-xs">
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+                                <span className="font-mono text-purple-400 font-bold block mb-1">1. Dynamic Shift Keyframing</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    In lightweight editors (CapCut or Movie Animator 3), crop to a 9:16 vertical canvas and pan horizontally between speaking characters as dialogue alternates.
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+                                <span className="font-mono text-indigo-400 font-bold block mb-1">2. Elastic Comedic Zooms</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    Trigger rapid 15% digital punch-ins and slight camera shakes right as the punchline or emotional reaction hits, amplifying physical comedy.
+                                </p>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+                                <span className="font-mono text-emerald-400 font-bold block mb-1">3. The 3-Second Hook Rule</span>
+                                <p className="text-slate-400 leading-relaxed">
+                                    Front-load extreme facial expressions (wide eyes, dropped jaw) within frames 0–72 before any title graphics, locking in algorithm retention immediately.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -604,6 +900,24 @@ export default function ZeroKeyframesBlogPost() {
                             </AccordionTrigger>
                             <AccordionContent className="text-slate-400 text-xs sm:text-sm leading-relaxed">
                                 Motion Swap Studio is available directly inside the Celoris creator suite at <Link href="/motion-swap" className="text-purple-400 hover:underline">/motion-swap</Link>. You can upload smartphone video footage and extract calibrated motion clips with zero software downloads.
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        <AccordionItem value="faq-5" className="border border-slate-800 rounded-xl px-4 bg-slate-900/60">
+                            <AccordionTrigger className="text-left font-semibold text-white hover:text-purple-400 text-sm sm:text-base">
+                                Webcam vs. iPhone TrueDepth: Which is better for character mocap?
+                            </AccordionTrigger>
+                            <AccordionContent className="text-slate-400 text-xs sm:text-sm leading-relaxed">
+                                A standard 1080p webcam is ideal for zero-cost starters to capture basic head tilts, eye blinks, and upper-body gestures. However, an iPhone with a TrueDepth front camera uses structured infrared depth dots to transmit 52 standardized Apple ARKit blendshapes. This captures micro-expressions—such as subtle sneers, cheek puffs, and asymmetrical eyebrow twitches—that give animated comedy distinct personality.
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        <AccordionItem value="faq-6" className="border border-slate-800 rounded-xl px-4 bg-slate-900/60">
+                            <AccordionTrigger className="text-left font-semibold text-white hover:text-purple-400 text-sm sm:text-base">
+                                How do I prevent character "foot sliding" or floating when importing motion?
+                            </AccordionTrigger>
+                            <AccordionContent className="text-slate-400 text-xs sm:text-sm leading-relaxed">
+                                In Celoris Motion Swap Studio, the Foot-Skating Loss (L_fs) filter classifies ground contact frames and locks joint positions relative to world coordinates. When importing into Cartoon Animator's 3D Motion Converter, enable "Ground Offset Adjustment" to automatically align the pelvis root with your stage floor, eliminating both floor clipping and anti-gravity floating.
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
