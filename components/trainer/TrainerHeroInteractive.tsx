@@ -95,7 +95,7 @@ export function TrainerHeroInteractive() {
                             </span>
                             <span className="flex items-center gap-1.5 text-slate-300">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                Direct Student WhatsApp & UPI
+                                Direct In-App Messenger & Live Rooms
                             </span>
                             <span className="flex items-center gap-1.5 text-slate-300">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />

@@ -24,6 +24,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { scanContactShield, maskContactInfo } from '@/lib/contact-shield';
 
 export function TrainerStudents() {
   const [students, setStudents] = useState<any[]>([]);
@@ -39,6 +40,7 @@ export function TrainerStudents() {
   const [chatSubject, setChatSubject] = useState('');
   const [chatMessage, setChatMessage] = useState('');
   const [chatSending, setChatSending] = useState(false);
+  const [chatShieldError, setChatShieldError] = useState<string | null>(null);
   const [successPopup, setSuccessPopup] = useState<{ show: boolean; message: string } | null>(null);
 
   const supabase = createClient();
@@ -60,11 +62,23 @@ export function TrainerStudents() {
   const openInternalChat = (student: any) => {
     setChatSubject(`Discussion regarding ${student.course || 'Training Requirements'}`);
     setChatMessage('');
+    setChatShieldError(null);
     setChatModal({ show: true, student });
   };
 
   const handleSendInternalChat = async () => {
     if (!chatModal?.student || !chatMessage.trim()) return;
+
+    // Enforce Contact Shield & Anti-Disintermediation Policy
+    const shield = scanContactShield(chatMessage);
+    if (!shield.isClean) {
+      setChatShieldError(
+        '⚠️ Action Blocked: Sharing personal phone numbers, emails, WhatsApp links, or external links is strictly prohibited. All communication must remain on Celoris to protect your 0% commission status.'
+      );
+      return;
+    }
+    setChatShieldError(null);
+
     const student = chatModal.student;
     setChatSending(true);
 
@@ -78,7 +92,7 @@ export function TrainerStudents() {
         sender_email: null,
         sender_phone: null,
         subject: defaultSubject,
-        body: chatMessage.trim(),
+        body: shield.sanitizedText,
         message_type: 'student_lead',
         status: 'sent',
       });
@@ -469,6 +483,13 @@ export function TrainerStudents() {
                   <Shield className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <span>Your message is delivered directly through Celoris Chat. Personal phone numbers and emails remain strictly protected.</span>
                 </div>
+
+                {chatShieldError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2 animate-fade-in">
+                    <Shield className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                    <span>{chatShieldError}</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3">
@@ -664,7 +685,7 @@ export function TrainerStudents() {
                           {student.course || 'General Inquiry'}
                         </p>
                         {student.requirement && (
-                          <p className="text-xs text-gray-400 mt-1 line-clamp-1">{student.requirement}</p>
+                          <p className="text-xs text-gray-400 mt-1 line-clamp-1">{maskContactInfo(student.requirement)}</p>
                         )}
                       </td>
                       <td className="p-6">
@@ -775,7 +796,7 @@ export function TrainerStudents() {
                 </div>
                 <div className="space-y-2 mb-6">
                   {student.requirement && (
-                    <p className="text-xs text-gray-400 italic line-clamp-2 pt-1">{student.requirement}</p>
+                    <p className="text-xs text-gray-400 italic line-clamp-2 pt-1">{maskContactInfo(student.requirement)}</p>
                   )}
                 </div>
 

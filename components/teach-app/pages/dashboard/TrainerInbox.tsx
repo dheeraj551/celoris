@@ -7,6 +7,7 @@ import {
 import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { scanContactShield, maskContactInfo } from '@/lib/contact-shield';
 
 export function TrainerInbox() {
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'replied' | 'archived'>('all');
@@ -16,6 +17,7 @@ export function TrainerInbox() {
   const [selected, setSelected] = useState<any | null>(null);
   const [replyText, setReplyText] = useState('');
   const [replySending, setReplySending] = useState(false);
+  const [shieldError, setShieldError] = useState<string | null>(null);
   const [showCompose, setShowCompose] = useState(false);
   const [proModal, setProModal] = useState<{ show: boolean; feature: string } | null>(null);
   const [callModal, setCallModal] = useState<{ show: boolean; mode: 'audio' | 'video'; message: any } | null>(null);
@@ -173,6 +175,16 @@ export function TrainerInbox() {
 
   const handleInternalReply = async () => {
     if (!replyText.trim() || !selected || !profile?.id) return;
+    
+    // Enforce Contact Shield & Anti-Disintermediation Policy
+    const shield = scanContactShield(replyText);
+    if (!shield.isClean) {
+      setShieldError(
+        '⚠️ Action Blocked: Sharing personal phone numbers, WhatsApp, emails, or off-platform links violates Celoris community policy. All sessions must remain inside Celoris to maintain your 0% commission status.'
+      );
+      return;
+    }
+    setShieldError(null);
     setReplySending(true);
     try {
       // 1. Insert reply record into inbox_messages with shielded contacts
@@ -182,7 +194,7 @@ export function TrainerInbox() {
         sender_email: null,
         sender_phone: null,
         subject: `Re: ${selected.subject}`,
-        body: replyText.trim(),
+        body: shield.sanitizedText,
         message_type: 'trainer_reply',
         status: 'replied',
       });
@@ -485,7 +497,7 @@ export function TrainerInbox() {
                 {selected.body && (
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Message</p>
-                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selected.body}</p>
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{maskContactInfo(selected.body)}</p>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
@@ -513,6 +525,13 @@ export function TrainerInbox() {
 
             {/* Drawer Footer */}
             <div className="p-5 border-t border-gray-100 space-y-2">
+              {shieldError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2 animate-fade-in">
+                  <Shield className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                  <span>{shieldError}</span>
+                </div>
+              )}
+
               {/* Celoris Internal Reply Button (Available to all trainers) */}
               <button
                 onClick={handleInternalReply}

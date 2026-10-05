@@ -56,6 +56,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
+        const supabase = await createRouteClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized: Admin session required' }, { status: 401 })
+        }
+
         const adminSupabase = createSupabaseClientForServer() as any
 
         // Simple fetch all for now, similar to job-applications

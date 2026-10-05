@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
+import { maskContactInfo } from '@/lib/contact-shield'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,9 +18,14 @@ export async function GET(request: NextRequest) {
     // and aligns with the RLS policy "Public can view active notices"
     const supabase = (createClientForBrowser() as any)
 
+    // Shield: For public views, explicitly omit raw contact_number to prevent disintermediation
+    const selectCols = all
+      ? '*'
+      : 'id, title, student_name, subject, location, description, priority, category, requirements, duration, created_at, is_active'
+
     let query = supabase
       .from('notice_board')
-      .select('*', { count: 'exact' })
+      .select(selectCols, { count: 'exact' })
 
     if (id) {
       query = query.eq('id', id)
@@ -31,6 +37,14 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
+    // Mask any potential phone numbers or emails hidden in requirements or description
+    const safeData = (data || []).map((item: any) => ({
+      ...item,
+      description: item.description ? maskContactInfo(item.description) : item.description,
+      requirements: item.requirements ? maskContactInfo(item.requirements) : item.requirements,
+      contact_number: all ? item.contact_number : undefined,
+    }))
+
     if (error) {
       console.error('Supabase Error fetching notice board data:', JSON.stringify(error, null, 2))
       return NextResponse.json(
@@ -40,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      data,
+      data: safeData,
       pagination: {
         total: count || 0,
         limit,
@@ -96,17 +110,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Clean up data
+    // Clean up and shield data against contact leaks
     const cleanBody = {
-      title,
-      student_name,
+      title: maskContactInfo(title),
+      student_name: maskContactInfo(student_name),
       subject,
       location,
       contact_number: contact_number || null, // Convert empty string to null
-      description: description || null,
+      description: description ? maskContactInfo(description) : null,
       priority,
       category,
-      requirements: requirements || null,
+      requirements: requirements ? maskContactInfo(requirements) : null,
       duration: duration || null,
       is_active
     }

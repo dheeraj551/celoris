@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClientForBrowser, createSupabaseClientForServer } from '@/lib/supabase-client'
 import { createRouteClient } from '@/lib/supabase-server'
+import { maskContactInfo } from '@/lib/contact-shield'
 
 export async function POST(request: NextRequest) {
     try {
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
 
         const adminSupabase = createSupabaseClientForServer() as any
 
-        // 1. Create interest entry
+        // 1. Create interest entry with masked message against off-platform leakage
         const { data, error } = await adminSupabase
             .from('notice_interests')
             .insert({
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
                 user_name: name,
                 user_email: email,
                 user_phone: phone,
-                message,
+                message: message ? maskContactInfo(message) : null,
                 user_id: user?.id || null
             } as any)
             .select()
@@ -53,6 +54,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
+        const sessionSupabase = await createRouteClient()
+        const { data: { user } } = await sessionSupabase.auth.getUser()
+
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized: Admin session required' }, { status: 401 })
+        }
+
         const { searchParams } = new URL(request.url)
         const noticeId = searchParams.get('noticeId')
 

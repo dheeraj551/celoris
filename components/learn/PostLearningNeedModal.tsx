@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { createClient } from "@/lib/supabase-client"
 import { Loader2, PlusCircle, Sparkles, CheckCircle2 } from "lucide-react"
+import { maskContactInfo } from "@/lib/contact-shield"
 
 export function PostLearningNeedModal() {
   const [open, setOpen] = useState(false)
@@ -42,7 +43,7 @@ export function PostLearningNeedModal() {
         course: formData.course.trim(),
         mode: formData.mode,
         location: formData.location.trim() || null,
-        requirement: formData.requirement.trim(),
+        requirement: maskContactInfo(formData.requirement.trim()),
         source: 'website_learn_page'
       }
 

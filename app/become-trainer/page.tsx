@@ -359,7 +359,7 @@ export default function BecomeTrainerPage() {
                             },
                             {
                                 q: "How do students reach out to me?",
-                                a: "When students view your verified trainer profile or course offerings, they can submit an enquiry directly to your Celoris Trainer Inbox or connect via WhatsApp/phone as agreed."
+                                a: "When students view your verified trainer profile or course offerings, they send direct inquiries to your protected Celoris Trainer Inbox. You can discuss requirements, schedule trial sessions, and conduct live 1-on-1 audio/video classes directly inside Celoris live rooms."
                             },
                             {
                                 q: "How and when do I get paid?",
@@ -382,7 +382,32 @@ export default function BecomeTrainerPage() {
                     </div>
                 </section>
 
-                {/* 11. Final High-Conversion Banner */}
+                {/* 11. Celoris Loyalty & Community Trust Policy */}
+                <section className="py-12 px-4 sm:px-6 max-w-5xl mx-auto">
+                    <div className="p-8 sm:p-10 rounded-3xl bg-slate-900/80 border-2 border-emerald-500/30 backdrop-blur-xl relative overflow-hidden">
+                        <div className="flex flex-col sm:flex-row items-start gap-5">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                                <ShieldCheck size={24} />
+                            </div>
+                            <div className="space-y-2 text-left">
+                                <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/40">
+                                    Community Trust & Loyalty Policy
+                                </span>
+                                <h3 className="text-xl sm:text-2xl font-black text-white">
+                                    Why Celoris is 0% Commission: Our Mutual Loyalty Pledge
+                                </h3>
+                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                    Celoris is built to empower educators without parasite commissions. We survive and profit when you choose our in-house training rooms, creator studios, and premium Pro AI quotas. In return, we maintain a strictly trusted ecosystem: <strong>all student inquiries, discussions, scheduling, and live sessions must remain directly inside Celoris</strong>.
+                                </p>
+                                <p className="text-xs text-slate-400 leading-relaxed pt-1">
+                                    Sharing off-platform phone numbers, personal emails, or external links in chat or profiles triggers automated shielding and revokes free trainer verification. By staying loyal to Celoris, you keep 100% of your earnings forever.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 12. Final High-Conversion Banner */}
                 <section className="px-4 sm:px-6 max-w-6xl mx-auto my-14">
                     <div className="rounded-[2.5rem] bg-gradient-to-r from-emerald-950/70 via-slate-900 to-indigo-950/70 border-2 border-emerald-500/40 p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl shadow-emerald-950/40">
                         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />

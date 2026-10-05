@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase-client';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useToast } from '@/components/ui/use-toast';
+import { scanContactShield, maskContactInfo } from '@/lib/contact-shield';
 
 const rowVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -37,6 +38,7 @@ export function TrainerEnquiries() {
   const [chatSubject, setChatSubject] = useState('');
   const [chatMessage, setChatMessage] = useState('');
   const [chatSending, setChatSending] = useState(false);
+  const [chatShieldError, setChatShieldError] = useState<string | null>(null);
 
   const supabase = createClient();
   const { profile } = useAuth();
@@ -58,11 +60,23 @@ export function TrainerEnquiries() {
   const openInternalChat = (enquiry: any) => {
     setChatSubject(`Discussion regarding ${enquiry.course || 'Training Requirements'}`);
     setChatMessage('');
+    setChatShieldError(null);
     setChatModal({ show: true, enquiry });
   };
 
   const handleSendInternalChat = async () => {
     if (!chatModal?.enquiry || !chatMessage.trim()) return;
+
+    // Enforce Contact Shield & Anti-Disintermediation Policy
+    const shield = scanContactShield(chatMessage);
+    if (!shield.isClean) {
+      setChatShieldError(
+        '⚠️ Action Blocked: Sharing personal phone numbers, emails, WhatsApp links, or external links is strictly prohibited. All communication must remain on Celoris to protect your 0% commission status.'
+      );
+      return;
+    }
+    setChatShieldError(null);
+
     const enquiry = chatModal.enquiry;
     setChatSending(true);
 
@@ -76,7 +90,7 @@ export function TrainerEnquiries() {
         sender_email: null,
         sender_phone: null,
         subject: defaultSubject,
-        body: chatMessage.trim(),
+        body: shield.sanitizedText,
         message_type: 'student_lead',
         status: 'sent',
       });
@@ -615,6 +629,13 @@ export function TrainerEnquiries() {
                 </div>
               </div>
 
+              {chatShieldError && (
+                <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2 animate-fade-in">
+                  <Shield className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                  <span>{chatShieldError}</span>
+                </div>
+              )}
+
               <div className="flex items-center justify-end gap-3">
                 <button
                   type="button"
@@ -817,8 +838,8 @@ export function TrainerEnquiries() {
                             )}
                           </div>
                           {(enquiry.requirement || enquiry.message) && (
-                            <p className="text-xs text-gray-500 truncate max-w-[280px] mt-1" title={enquiry.requirement || enquiry.message}>
-                              {enquiry.requirement || enquiry.message}
+                            <p className="text-xs text-gray-500 truncate max-w-[280px] mt-1" title={maskContactInfo(enquiry.requirement || enquiry.message)}>
+                              {maskContactInfo(enquiry.requirement || enquiry.message)}
                             </p>
                           )}
                         </div>

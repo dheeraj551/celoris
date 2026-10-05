@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseClientForServer } from '@/lib/supabase-client';
 import { getCallerUser, getOrCreateProfile, isMuted, isModerator } from '@/lib/chat-cafe-server';
+import { scanContactShield } from '@/lib/contact-shield';
 
 // Moderators/admins can "puppet" an AI character — write its next line
 // themselves instead of waiting for autopilot. Kept in this same route
@@ -26,6 +27,21 @@ export async function POST(request: Request) {
     }
     if (!content || typeof content !== 'string' || !content.trim()) {
       return NextResponse.json({ error: 'content is required' }, { status: 400 });
+    }
+
+    // Enforce Celoris Contact Shield & Platform Safety
+    if (!asCharacterId) {
+      const shield = scanContactShield(content);
+      if (!shield.isClean) {
+        return NextResponse.json(
+          {
+            error: 'Sharing phone numbers, personal contacts, WhatsApp, or off-platform links is prohibited on Celoris.',
+            shieldViolation: true,
+            violations: shield.violations,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // A whisper snapshot {id, name} of the recipient, same shape whether

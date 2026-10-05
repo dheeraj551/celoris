@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
+import { maskContactInfo } from '@/lib/contact-shield';
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
       course: (course || 'General Inquiry').toString().trim(),
       mode: (mode || 'Online').toString().trim(),
       location: location ? location.toString().trim() : null,
-      requirement: (requirement || '').toString().trim(),
+      requirement: maskContactInfo((requirement || '').toString().trim()),
       budget: budget ? budget.toString().trim() : null,
       source: source || 'website_learn_page',
       status: 'open',

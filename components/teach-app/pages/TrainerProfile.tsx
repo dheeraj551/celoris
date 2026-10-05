@@ -1,13 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, CheckCircle2, Award, Briefcase,
   GraduationCap, Globe, Linkedin, Twitter, Youtube, Loader2, UserRound,
-  Copy, Printer, ShieldCheck, Star, MessageSquarePlus, X,
+  Copy, Printer, ShieldCheck, Star, MessageSquarePlus, X, Shield, Send, Video, MessageSquare, Calendar
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { maskContactInfo, scanContactShield } from '@/lib/contact-shield';
 import { TrainerTierLevel } from '../types';
 import { TRAINER_LEVEL_TIERS, INITIAL_TRAINER_PROGRESS } from '../data/trainerProgressionData';
 
@@ -197,6 +198,64 @@ export function TrainerProfile() {
     }
   };
 
+  // Interactive In-App Inquiry & Session Booking (Contact Shield Protected)
+  const [inquiryModal, setInquiryModal] = useState<{ open: boolean; mode: 'enquiry' | 'session' }>({ open: false, mode: 'enquiry' });
+  const [inquiryName, setInquiryName] = useState(profile?.full_name || '');
+  const [inquirySubject, setInquirySubject] = useState('');
+  const [inquiryLearningMode, setInquiryLearningMode] = useState('Online Live Classroom');
+  const [inquiryMessage, setInquiryMessage] = useState('');
+  const [inquirySubmitting, setInquirySubmitting] = useState(false);
+  const [inquiryShieldError, setInquiryShieldError] = useState<string | null>(null);
+  const [inquirySuccess, setInquirySuccess] = useState(false);
+
+  const handleSendInquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resolvedId || !inquiryName.trim() || !inquiryMessage.trim()) return;
+
+    // Contact Shield validation
+    const shield = scanContactShield(`${inquirySubject} ${inquiryMessage}`);
+    if (!shield.isClean) {
+      setInquiryShieldError(
+        '⚠️ Action Blocked by Celoris Shield: Personal phone numbers, WhatsApp links, emails, or off-platform contact details are strictly prohibited. The trainer will respond directly through your Celoris Messenger.'
+      );
+      return;
+    }
+    setInquiryShieldError(null);
+    setInquirySubmitting(true);
+
+    try {
+      const modePrefix = inquiryModal.mode === 'session' ? `[Session Booking Request - ${inquiryLearningMode}]\n\n` : '';
+      const response = await fetch('/api/inbox/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trainerId: resolvedId,
+          senderName: inquiryName.trim(),
+          senderEmail: user?.email || null,
+          subject: inquirySubject.trim() || (inquiryModal.mode === 'session' ? 'Session Booking Request' : 'New Student Inquiry'),
+          body: `${modePrefix}${inquiryMessage.trim()}`,
+        }),
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || 'Failed to dispatch inquiry');
+      }
+
+      setInquirySuccess(true);
+      setInquiryMessage('');
+      setTimeout(() => {
+        setInquiryModal({ open: false, mode: 'enquiry' });
+        setInquirySuccess(false);
+      }, 2500);
+    } catch (err: any) {
+      console.error('Inquiry dispatch error:', err);
+      setInquiryShieldError(err.message || 'Unable to send message. Please try again.');
+    } finally {
+      setInquirySubmitting(false);
+    }
+  };
+
   // Support ?print=1 to trigger the browser's print (Save as PDF) dialog automatically
   useEffect(() => {
     if (loading || notFound || !trainer) return;
@@ -328,7 +387,7 @@ export function TrainerProfile() {
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{trainer.full_name}</h1>
-                  {trainer.headline && <p className="text-xl text-emerald-600 font-medium">{trainer.headline}</p>}
+                  {trainer.headline && <p className="text-xl text-emerald-600 font-medium">{maskContactInfo(trainer.headline)}</p>}
                 </div>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -372,7 +431,7 @@ export function TrainerProfile() {
                 <div className="flex flex-wrap gap-2">
                   {trainer.specialty.split(',').map((tag) => tag.trim()).filter(Boolean).map((tag) => (
                     <span key={tag} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
-                      {tag}
+                      {maskContactInfo(tag)}
                     </span>
                   ))}
                 </div>
@@ -558,7 +617,7 @@ export function TrainerProfile() {
           {trainer.bio && (
             <motion.div variants={fadeInUp} className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About {trainer.full_name.split(' ')[0]}</h2>
-              <div className="prose max-w-none text-gray-600 whitespace-pre-line">{trainer.bio}</div>
+              <div className="prose max-w-none text-gray-600 whitespace-pre-line">{maskContactInfo(trainer.bio)}</div>
             </motion.div>
           )}
 
@@ -646,12 +705,21 @@ export function TrainerProfile() {
         >
           <div className="lg:sticky lg:top-6 bg-white rounded-2xl border border-gray-200 shadow-lg divide-y divide-gray-100 overflow-hidden">
             <div className="no-print p-6 space-y-3">
-              <button className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors">
-                Book a Session
+              <button
+                onClick={() => setInquiryModal({ open: true, mode: 'session' })}
+                className="w-full bg-emerald-600 text-white py-3.5 px-4 rounded-xl font-bold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+              >
+                <Calendar className="w-4 h-4" /> Book a Session
               </button>
-              <button className="w-full bg-white border border-emerald-600 text-emerald-600 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors">
-                Send Enquiry
+              <button
+                onClick={() => setInquiryModal({ open: true, mode: 'enquiry' })}
+                className="w-full bg-white border border-emerald-600 text-emerald-600 py-3.5 px-4 rounded-xl font-bold hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
+              >
+                <MessageSquare className="w-4 h-4" /> Send In-App Enquiry
               </button>
+              <p className="text-[10px] text-center text-gray-400 font-medium">
+                🔒 Protected on Celoris: No phone or WhatsApp exchange needed
+              </p>
             </div>
 
             {trainer.languages.length > 0 && (
@@ -667,42 +735,171 @@ export function TrainerProfile() {
               </div>
             )}
 
-            {hasSocials && (
-              <div className="no-print p-6 space-y-3">
-                <h3 className="font-bold text-gray-900 text-sm mb-1">Connect</h3>
-                {trainer.website && (
-                  <a href={trainer.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
-                    <Globe className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">Website</span>
-                  </a>
-                )}
-                {trainer.linkedin && (
-                  <a href={trainer.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
-                    <Linkedin className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">LinkedIn</span>
-                  </a>
-                )}
-                {trainer.twitter && (
-                  <a href={trainer.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
-                    <Twitter className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">Twitter</span>
-                  </a>
-                )}
-                {trainer.youtube && (
-                  <a href={trainer.youtube} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-600 hover:text-emerald-600">
-                    <Youtube className="h-4 w-4 text-emerald-500 flex-shrink-0" /> <span className="truncate">YouTube</span>
-                  </a>
-                )}
+            <div className="no-print p-6 space-y-3">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-emerald-600" />
+                <h3 className="font-bold text-gray-900 text-sm">Celoris Platform Guarantee</h3>
               </div>
-            )}
-
-            {!hasSocials && trainer.languages.length === 0 && (
-              <div className="p-6">
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  This trainer hasn't added languages or social links yet.
-                </p>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-emerald-800 bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-100 font-semibold">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>0% Commission • 100% Free for Students</span>
+                </div>
+                <div className="flex items-center gap-2 text-indigo-800 bg-indigo-50/80 p-2.5 rounded-xl border border-indigo-100 font-semibold">
+                  <Video className="h-4 w-4 shrink-0 text-indigo-600" />
+                  <span>Live 1-on-1 Audio/Video Rooms Included</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-700 bg-gray-50 p-2.5 rounded-xl border border-gray-200 font-medium">
+                  <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>In-App Messages Shielded from Leakage</span>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </motion.div>
       </div>
+
+      {/* Interactive In-App Inquiry & Session Booking Modal */}
+      <AnimatePresence>
+        {inquiryModal.open && (
+          <div
+            className="no-print fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
+            onClick={() => setInquiryModal({ open: false, mode: 'enquiry' })}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 border border-emerald-100 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    {inquiryModal.mode === 'session' ? <Calendar className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-gray-900">
+                      {inquiryModal.mode === 'session' ? 'Book a Session' : 'Send In-App Enquiry'}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      To <strong className="text-gray-900">{trainer.full_name}</strong> • 100% Protected on Celoris
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setInquiryModal({ open: false, mode: 'enquiry' })}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {inquirySuccess ? (
+                <div className="py-8 text-center space-y-3">
+                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900">Enquiry Sent Successfully!</h4>
+                  <p className="text-sm text-gray-600 max-w-xs mx-auto">
+                    Your request was delivered directly to {trainer.full_name}&apos;s Celoris Inbox. They will reply directly to your Celoris account.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSendInquiry} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Your Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={inquiryName}
+                      onChange={(e) => setInquiryName(e.target.value)}
+                      placeholder="e.g. Rahul Sharma"
+                      className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Subject / Goal *</label>
+                    <input
+                      type="text"
+                      required
+                      value={inquirySubject}
+                      onChange={(e) => setInquirySubject(e.target.value)}
+                      placeholder={inquiryModal.mode === 'session' ? 'e.g. 1-on-1 Trial Class in Python' : 'e.g. Batch schedule & curriculum question'}
+                      className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {inquiryModal.mode === 'session' && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Preferred Learning Mode</label>
+                      <select
+                        value={inquiryLearningMode}
+                        onChange={(e) => setInquiryLearningMode(e.target.value)}
+                        className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                      >
+                        <option value="Online Live Classroom">Celoris Live Online Classroom (HD Audio/Video)</option>
+                        <option value="Celoris Training Room Pod">Celoris Training Room / Creator Pod (Physical Studio)</option>
+                      </select>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Your Message *</label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={inquiryMessage}
+                      onChange={(e) => setInquiryMessage(e.target.value)}
+                      placeholder="Describe what you want to learn, current level, or availability..."
+                      className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                    />
+                  </div>
+
+                  {inquiryShieldError && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2">
+                      <Shield className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                      <span>{inquiryShieldError}</span>
+                    </div>
+                  )}
+
+                  <div className="bg-emerald-50/70 border border-emerald-100 rounded-xl p-3 flex items-center gap-2 text-[11px] text-emerald-800">
+                    <Shield className="w-4 h-4 shrink-0 text-emerald-600" />
+                    <span>Contact Shield Enabled: Messages are delivered in-app. Phone numbers and external links are prohibited to protect your safety.</span>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setInquiryModal({ open: false, mode: 'enquiry' })}
+                      disabled={inquirySubmitting}
+                      className="px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={inquirySubmitting || !inquiryName.trim() || !inquiryMessage.trim()}
+                      className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                    >
+                      {inquirySubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" /> Send to Trainer
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Write a Review Modal */}
       {showReviewModal && (

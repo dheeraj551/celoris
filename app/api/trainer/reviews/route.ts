@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseClientForServer } from '@/lib/supabase-client';
+import { scanContactShield } from '@/lib/contact-shield';
 
 // Submitting (or editing) a review on a trainer's public profile.
 // Reviewer identity is supplied by the client the same way the rest of this
@@ -34,6 +35,19 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Validate comment through Celoris Contact Shield
+        let cleanComment = comment || null;
+        if (comment) {
+            const shield = scanContactShield(comment);
+            if (!shield.isClean) {
+                return NextResponse.json(
+                    { error: 'Sharing phone numbers, personal contacts, or external links in reviews is prohibited.' },
+                    { status: 400 }
+                );
+            }
+            cleanComment = shield.sanitizedText;
+        }
+
         const supabase = createSupabaseClientForServer();
 
         // Upsert so a trainer/reviewer pair only ever has one review row —
@@ -47,7 +61,7 @@ export async function POST(request: NextRequest) {
                     reviewer_id: reviewerId,
                     reviewer_name: reviewerName,
                     rating: numericRating,
-                    comment: comment || null,
+                    comment: cleanComment,
                     is_approved: false,
                     approved_at: null,
                 },

@@ -4,10 +4,11 @@ import {
   User, Mail, MapPin, Camera, Save, Pencil, Trash2, Plus, X,
   ExternalLink, CheckCircle,
   Share2, Copy, Link as LinkIcon, Download,
-  Eye, EyeOff, ShieldCheck, Award,
+  Eye, EyeOff, ShieldCheck, Award, Shield,
 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
+import { scanContactShield } from '@/lib/contact-shield';
 import { INITIAL_TRAINER_PROGRESS } from '../../data/trainerProgressionData';
 
 const fadeUpItem = {
@@ -57,6 +58,7 @@ export function TrainerProfile() {
   const [resumeLoaded, setResumeLoaded] = useState(false);
   const [deletionLoading, setDeletionLoading] = useState(false);
   const [deletionRequested, setDeletionRequested] = useState(false);
+  const [shieldError, setShieldError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
@@ -150,6 +152,20 @@ export function TrainerProfile() {
     : '';
 
   const handleSave = async () => {
+    // Contact Shield: Prevent trainers from leaking personal contacts or off-platform links
+    const headlineShield = scanContactShield(formData.headline || '');
+    const bioShield = scanContactShield(formData.bio || '');
+    const websiteShield = formData.website ? scanContactShield(formData.website) : { isClean: true, violations: [] };
+
+    if (!headlineShield.isClean || !bioShield.isClean || !websiteShield.isClean) {
+      setShieldError(
+        '⚠️ Action Blocked: Sharing personal phone numbers, WhatsApp, private emails, or off-platform direct links is strictly prohibited on your trainer profile. Celoris provides 100% free leads and 0% commission on the condition that all training communication and sessions stay within Celoris.'
+      );
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setShieldError(null);
+
     setLoading(true);
     setSuccess(false);
     try {
@@ -303,6 +319,43 @@ export function TrainerProfile() {
           </AnimatePresence>
         </motion.button>
       </motion.div>
+
+      {/* Contact Shield Warning Banner */}
+      <AnimatePresence>
+        {shieldError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-8 p-4 bg-rose-50 border-2 border-rose-200 text-rose-800 rounded-2xl flex items-start gap-3 shadow-md"
+          >
+            <Shield className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-extrabold">{shieldError}</p>
+              <p className="text-xs text-rose-600 mt-1">
+                Please remove any phone numbers, email addresses, WhatsApp links, or external websites from your headline and bio before saving.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Platform Loyalty & Shield Notice */}
+      <div className="mb-8 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+            <Shield className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-gray-900">
+              Celoris 0% Commission Policy & In-App Security
+            </p>
+            <p className="text-[11px] text-gray-600 mt-0.5">
+              Your profile is verified and promoted to students across India with <strong>0% platform fees</strong>. To protect all members, direct contact sharing is restricted. All student enquiries, live audio/video sessions, and bookings occur securely in Celoris.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Photo & Basics */}
