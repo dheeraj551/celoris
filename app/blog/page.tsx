@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'zero-keyframes-motion-swap-puppet-rigging-2026',
+      title: "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",
+      slug: 'zero-keyframes-motion-swap-puppet-rigging-2026',
+      excerpt: "Traditional 2D frame-by-frame animation is too slow for daily YouTube Shorts and Reels. Discover how modern creators combine puppet rigging (Cartoon Animator 4) and neural video-to-motion transfer (Motion Swap Studio) to generate viral animated skits with zero manual keyframing.",
+      featured_image_url: "/zero-keyframes-motion-swap-puppet-rigging-2026.jpg",
+      author_name: 'Celoris Creative & Motion Lab',
+      category: 'AI Video • 2D Animation',
+      reading_time: 12,
+      published_at: '2026-10-05T09:30:00Z',
+    },
+    {
       id: 'gemini-4-argon-pro-fairwind-guide-2026',
       title: "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
       slug: 'gemini-4-argon-pro-fairwind-guide-2026',

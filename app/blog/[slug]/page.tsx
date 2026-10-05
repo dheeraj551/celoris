@@ -20,6 +20,13 @@ function cleanTitle(t: string) {
 }
 
 async function postMetadata(slug: string): Promise<{ title: string; description?: string; image?: string } | null> {
+  if (slug === 'zero-keyframes-motion-swap-puppet-rigging-2026') {
+    return {
+      title: "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",
+      description: "Traditional 2D frame-by-frame animation is too slow for daily YouTube Shorts and Reels. Discover how modern creators combine puppet rigging (Cartoon Animator 4) and neural video-to-motion transfer (Motion Swap Studio) to generate viral animated skits with zero manual keyframing.",
+      image: "/zero-keyframes-motion-swap-puppet-rigging-2026.jpg",
+    };
+  }
   if (slug === 'gemini-4-argon-pro-fairwind-guide-2026') {
     return {
       title: "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
