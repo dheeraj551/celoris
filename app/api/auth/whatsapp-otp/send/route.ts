@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to initiate OTP. Please try again.' }, { status: 500 })
     }
 
-    // 5. Send via WhatsApp Cloud API
+    // 5. Send via WhatsApp Cloud API using approved 'celoris_otp' template
     const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID
     const token = process.env.WHATSAPP_ACCESS_TOKEN
 
@@ -98,39 +98,100 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const messageText = `🔐 *Celoris Verification Code*\n\nYour OTP is: *${otpCode}*\n\nThis code is valid for 5 minutes. Please do not share this code with anyone.\n\n— Celoris Team`
-
-    const waResponse = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+    // Try sending template with resilient fallback combinations (url, copy_code, body-only, en, en_US)
+    const attempts = [
+      // Attempt 1: Standard Authentication template with copy_code button (sub_type: url)
+      {
+        lang: 'en',
+        components: [
+          { type: 'body', parameters: [{ type: 'text', text: otpCode }] },
+          { type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: otpCode }] },
+        ],
       },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: formattedPhone,
-        type: 'text',
-        text: {
-          preview_url: false,
-          body: messageText,
-        },
-      }),
-    })
+      // Attempt 2: Standard Authentication template with copy_code button (sub_type: copy_code)
+      {
+        lang: 'en',
+        components: [
+          { type: 'body', parameters: [{ type: 'text', text: otpCode }] },
+          { type: 'button', sub_type: 'copy_code', index: '0', parameters: [{ type: 'text', text: otpCode }] },
+        ],
+      },
+      // Attempt 3: Just body component (no button component)
+      {
+        lang: 'en',
+        components: [
+          { type: 'body', parameters: [{ type: 'text', text: otpCode }] },
+        ],
+      },
+      // Attempt 4: en_US with button
+      {
+        lang: 'en_US',
+        components: [
+          { type: 'body', parameters: [{ type: 'text', text: otpCode }] },
+          { type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: otpCode }] },
+        ],
+      },
+      // Attempt 5: en_US body only
+      {
+        lang: 'en_US',
+        components: [
+          { type: 'body', parameters: [{ type: 'text', text: otpCode }] },
+        ],
+      },
+    ]
 
-    const waData = await waResponse.json().catch(() => ({}))
+    let waResponse: Response | null = null
+    let waData: any = null
+    let lastError: string = ''
 
-    if (!waResponse.ok) {
-      console.error('WhatsApp Graph API error sending OTP:', waData)
+    for (const attempt of attempts) {
+      try {
+        const payload = {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: formattedPhone,
+          type: 'template',
+          template: {
+            name: 'celoris_otp',
+            language: { code: attempt.lang },
+            components: attempt.components,
+          },
+        }
+
+        waResponse = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+
+        waData = await waResponse.json().catch(() => ({}))
+
+        if (waResponse.ok && waData?.messages?.[0]?.id) {
+          // Success! Break out of the loop
+          break
+        } else {
+          lastError = waData?.error?.message || 'Meta API rejected template'
+          console.warn(`WhatsApp attempt with lang=${attempt.lang} failed:`, lastError)
+        }
+      } catch (err: any) {
+        lastError = err.message
+      }
+    }
+
+    if (!waResponse?.ok || !waData?.messages?.[0]?.id) {
+      console.error('WhatsApp Graph API all attempts failed:', waData)
       return NextResponse.json(
         {
-          error: waData.error?.message || 'Failed to send WhatsApp OTP. Please ensure your number is on WhatsApp.',
+          error: lastError || 'Failed to send WhatsApp OTP. Please ensure your number is on WhatsApp.',
         },
         { status: 502 }
       )
     }
 
-    const waMessageId = waData.messages?.[0]?.id || null
+    const waMessageId = waData.messages[0].id
 
     // Log to whatsapp_messages table
     try {
