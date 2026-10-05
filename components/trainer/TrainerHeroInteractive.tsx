@@ -4,103 +4,105 @@ import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
-    Sparkles, ArrowRight, ShieldCheck, CheckCircle2,
-    IndianRupee, Star, Users, Zap, Award, Flame
+    Sparkles, ArrowRight, CheckCircle2,
+    IndianRupee, Star, Users, Zap
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { TrainerVideoModal } from './TrainerVideoModal'
 
 export function TrainerHeroInteractive() {
     return (
-        <section className="relative pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden border-b border-white/5 bg-gradient-to-b from-emerald-950/25 via-[#080e1c] to-[#050810]">
-            {/* Ambient Background Aura Lights */}
-            <div className="absolute top-1/4 left-1/4 w-[650px] h-[350px] bg-emerald-500/10 blur-[140px] rounded-full pointer-events-none" />
-            <div className="absolute top-1/3 right-10 w-[500px] h-[400px] bg-purple-500/15 blur-[150px] rounded-full pointer-events-none" />
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[800px] h-[250px] bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none" />
+        <section className="relative pt-6 sm:pt-10 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#050608]">
+            {/* Subtle Ambient Backlight - exactly matching homepage Hero */}
+            <div className="absolute -top-10 left-0 w-[550px] max-w-[90vw] h-[360px] bg-gradient-to-br from-purple-600/15 via-emerald-500/10 to-transparent rounded-full blur-[130px] pointer-events-none" />
+            <div className="absolute top-1/3 right-10 w-[500px] h-[400px] bg-purple-500/10 blur-[150px] rounded-full pointer-events-none" />
+
+            {/* Oversized Brand Watermark in Background - exactly matching homepage */}
+            <div className="absolute -top-4 sm:-top-8 left-4 sm:left-8 text-[16vw] sm:text-[12vw] md:text-[110px] font-black uppercase tracking-tighter text-white/[0.02] select-none pointer-events-none whitespace-nowrap z-0 font-mono">
+                CELORIS
+            </div>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
 
                     {/* Left Column: Headlines & Call to Actions (7 Cols) */}
-                    <div className="lg:col-span-7 text-left space-y-6">
+                    <div className="lg:col-span-7 flex flex-col items-start text-left">
                         
-                        {/* Animated Live Pill */}
+                        {/* Status Badge - matching homepage pill badge */}
                         <motion.div
-                            initial={{ opacity: 0, y: -15 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
-                            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold uppercase tracking-wider shadow-lg shadow-emerald-950/50 backdrop-blur-md"
+                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.12] backdrop-blur-xl mb-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
                         >
-                            <span className="flex h-2 w-2 relative">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                            <span className="text-xs font-mono font-medium tracking-wider text-neutral-300 uppercase">
+                                Special Announcement • 100% Free For All Educators
                             </span>
-                            <span>Special Announcement • 100% Free For All Educators</span>
                         </motion.div>
 
-                        {/* Creative Main Headline */}
+                        {/* Staggered Heading */}
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.1 }}
-                            className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.05]"
+                            className="text-3xl sm:text-5xl xl:text-6xl font-semibold tracking-tight text-white leading-[1.12] mb-5"
                         >
                             The Free Platform for Students is Now{" "}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 drop-shadow-[0_0_35px_rgba(52,211,153,0.3)]">
+                            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400 drop-shadow-[0_0_25px_rgba(168,85,247,0.35)]">
                                 100% Free for Trainers.
                             </span>
                         </motion.h1>
 
-                        {/* Persuasive Subtitle */}
+                        {/* Refined Subtitle */}
                         <motion.p
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl"
+                            className="text-neutral-300 text-base sm:text-lg leading-relaxed max-w-xl mb-7 font-normal"
                         >
-                            Stop paying ₹2,000 for "coin packages" just to view a student's contact number. On Celoris, enjoy <strong className="text-white">0% commission</strong>, <strong className="text-white">zero coin paywalls</strong>, and <strong className="text-white">direct student enquiries</strong> across Delhi NCR & Pan-India. You keep 100% of your earnings.
+                            Stop paying ₹2,000 for "coin packages" just to view a student's contact number. On Celoris, enjoy <strong className="text-white font-semibold">0% commission</strong>, <strong className="text-white font-semibold">zero coin paywalls</strong>, and <strong className="text-white font-semibold">direct student enquiries</strong> across Delhi NCR &amp; Pan-India. You keep 100% of your earnings.
                         </motion.p>
 
-                        {/* Action Buttons */}
+                        {/* Primary CTAs - matching homepage pill buttons */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.3 }}
-                            className="flex flex-col sm:flex-row gap-4 pt-2"
+                            className="flex flex-wrap items-center gap-3.5 mb-7"
                         >
-                            <Button
-                                size="lg"
-                                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black rounded-2xl px-8 h-14 text-base shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 group"
-                                asChild
+                            <Link
+                                href="/register"
+                                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] hover:border-white/[0.25] text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.5)] group"
                             >
-                                <Link href="/register" className="flex items-center gap-2 justify-center">
-                                    Claim Free Trainer Profile
-                                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                            </Button>
+                                <Sparkles className="w-4 h-4 text-emerald-400" />
+                                <span>Claim Free Trainer Profile</span>
+                                <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                            </Link>
 
                             <TrainerVideoModal />
                         </motion.div>
 
-                        {/* Trust Badges Bar */}
+                        {/* Trust Badges Bar - matching homepage proof line */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.6, delay: 0.4 }}
-                            className="flex flex-wrap items-center gap-5 pt-3 text-xs sm:text-sm text-slate-400"
+                            className="flex flex-wrap items-center gap-4 sm:gap-6 pt-4 border-t border-white/[0.08] text-xs font-medium text-neutral-400"
                         >
-                            <span className="flex items-center gap-1.5 text-slate-300">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                0% Platform Commission
-                            </span>
-                            <span className="flex items-center gap-1.5 text-slate-300">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                Direct In-App Messenger & Live Rooms
-                            </span>
-                            <span className="flex items-center gap-1.5 text-slate-300">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                Free AI Creative Studios Included
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-emerald-400 font-bold">0%</span>
+                                <span>Platform Commission</span>
+                            </div>
+                            <div className="w-1 h-1 rounded-full bg-white/20" />
+                            <div className="flex items-center gap-2">
+                                <span className="text-white font-bold">Direct UPI</span>
+                                <span>Zero Paywalls</span>
+                            </div>
+                            <div className="w-1 h-1 rounded-full bg-white/20" />
+                            <div className="flex items-center gap-2">
+                                <span className="text-purple-400 font-bold">5 Studios</span>
+                                <span>Free AI Tools</span>
+                            </div>
                         </motion.div>
                     </div>
 
@@ -111,11 +113,11 @@ export function TrainerHeroInteractive() {
                         transition={{ duration: 0.7, delay: 0.2 }}
                         className="lg:col-span-5 relative"
                     >
-                        {/* Glowing Frame Container */}
-                        <div className="relative mx-auto max-w-md lg:max-w-none rounded-3xl p-2.5 bg-gradient-to-b from-emerald-500/30 via-slate-800/40 to-purple-500/30 shadow-2xl shadow-emerald-950/60 backdrop-blur-2xl border border-white/10 group">
+                        {/* Nano-Glass Outer Frame Container */}
+                        <div className="relative mx-auto max-w-md lg:max-w-none rounded-3xl p-2 bg-[#08090d]/80 border border-white/[0.12] backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] group">
                             
                             {/* Device Inner Shell */}
-                            <div className="relative rounded-[1.3rem] overflow-hidden bg-slate-950 aspect-[4/3] sm:aspect-[16/10] border border-white/10">
+                            <div className="relative rounded-[1.3rem] overflow-hidden bg-black aspect-[4/3] sm:aspect-[16/10] border border-white/10">
                                 {/* Autoplay Looping Video */}
                                 <video
                                     autoPlay
@@ -132,7 +134,7 @@ export function TrainerHeroInteractive() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
 
                                 {/* On-Video Glass Header */}
-                                <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-[11px] font-mono bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-slate-300">
+                                <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-[11px] font-mono bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-slate-300">
                                     <div className="flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                                         <span>LIVE SESSION • DELHI NCR</span>
@@ -146,49 +148,49 @@ export function TrainerHeroInteractive() {
                                         Empowering India's Next-Gen Educators
                                     </p>
                                     <p className="text-xs text-slate-300 font-medium">
-                                        Teach Video, AI, Coding, Design & Academics
+                                        Teach Video, AI, Coding, Design &amp; Academics
                                     </p>
                                 </div>
                             </div>
 
                             {/* Floating Holographic Badge 1 (Top-Right) */}
                             <motion.div
-                                animate={{ y: [0, -8, 0] }}
+                                animate={{ y: [0, -6, 0] }}
                                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                                className="absolute -top-6 -right-4 sm:-right-6 bg-slate-900/90 border border-emerald-500/50 backdrop-blur-xl p-3 px-4 rounded-2xl shadow-xl flex items-center gap-3 text-left"
+                                className="absolute -top-4 -right-2 sm:-right-4 bg-[#08090d]/90 border border-white/[0.12] backdrop-blur-2xl p-2.5 px-3.5 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-2.5 text-left"
                             >
-                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black">
+                                <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 font-black text-xs">
                                     0%
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black text-white leading-tight">Zero Commission</p>
-                                    <p className="text-[10px] text-emerald-400 font-mono">You keep 100% fees</p>
+                                    <p className="text-xs font-bold text-white leading-tight">Zero Commission</p>
+                                    <p className="text-[10px] text-emerald-400 font-mono">Keep 100% fees</p>
                                 </div>
                             </motion.div>
 
                             {/* Floating Holographic Badge 2 (Bottom-Left) */}
                             <motion.div
-                                animate={{ y: [0, 8, 0] }}
+                                animate={{ y: [0, 6, 0] }}
                                 transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }}
-                                className="absolute -bottom-6 -left-4 sm:-left-6 bg-slate-900/90 border border-purple-500/50 backdrop-blur-xl p-3 px-4 rounded-2xl shadow-xl flex items-center gap-3 text-left"
+                                className="absolute -bottom-4 -left-2 sm:-left-4 bg-[#08090d]/90 border border-white/[0.12] backdrop-blur-2xl p-2.5 px-3.5 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-2.5 text-left"
                             >
-                                <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 font-black">
-                                    <Zap size={18} />
+                                <div className="w-7 h-7 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-400 font-black">
+                                    <Zap size={14} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black text-white leading-tight">Direct Student UPI</p>
-                                    <p className="text-[10px] text-purple-300 font-mono">No 30-day payout hold</p>
+                                    <p className="text-xs font-bold text-white leading-tight">Direct Student UPI</p>
+                                    <p className="text-[10px] text-purple-300 font-mono">No payout holds</p>
                                 </div>
                             </motion.div>
 
                             {/* Floating Badge 3 (Middle-Right) */}
                             <motion.div
-                                animate={{ x: [0, 6, 0] }}
+                                animate={{ x: [0, 4, 0] }}
                                 transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                                className="hidden sm:flex absolute top-1/2 -right-8 -translate-y-1/2 bg-slate-900/90 border border-cyan-500/50 backdrop-blur-xl p-2.5 px-3.5 rounded-xl shadow-lg items-center gap-2"
+                                className="hidden sm:flex absolute top-1/2 -right-6 -translate-y-1/2 bg-[#08090d]/90 border border-white/[0.12] backdrop-blur-2xl p-2 px-3 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] items-center gap-2"
                             >
-                                <Star size={14} className="text-amber-400 fill-amber-400" />
-                                <span className="text-xs font-bold text-white">500+ Verified Tutors</span>
+                                <Star size={13} className="text-amber-400 fill-amber-400" />
+                                <span className="text-xs font-medium text-white">500+ Verified Tutors</span>
                             </motion.div>
 
                         </div>

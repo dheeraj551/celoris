@@ -179,7 +179,7 @@ const jsonLdData = {
 export default function BecomeTrainerPage() {
     return (
         <DashboardShell>
-            <div className="min-h-screen bg-[#050810] text-slate-200 selection:bg-emerald-500/30 pb-20">
+            <div className="min-h-screen bg-[#050608] text-slate-200 selection:bg-emerald-500/30 pb-20">
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
@@ -189,29 +189,29 @@ export default function BecomeTrainerPage() {
                 <TrainerHeroInteractive />
 
                 {/* 2. Real-Time Student Demand Ticker (GEO Localized) */}
-                <section className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6 relative z-20">
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 relative z-20">
                     <TrainerLiveInquiryTicker />
                 </section>
 
                 {/* 3. Key Proof Numbers Strip */}
-                <section className="py-12 bg-slate-950/80 border-b border-white/5 mt-10">
+                <section className="py-12 bg-[#050608] border-y border-white/[0.08] mt-6">
                     <div className="max-w-6xl mx-auto px-4 sm:px-6">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                             <div>
                                 <p className="text-3xl md:text-5xl font-black text-white font-mono">₹0</p>
-                                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Platform Commission</p>
+                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Platform Commission</p>
                             </div>
                             <div>
                                 <p className="text-3xl md:text-5xl font-black text-emerald-400 font-mono">100%</p>
-                                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">You Keep All Fees</p>
+                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">You Keep All Fees</p>
                             </div>
                             <div>
                                 <p className="text-3xl md:text-5xl font-black text-cyan-400 font-mono">Direct</p>
-                                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Student Contact & UPI</p>
+                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Student Contact &amp; UPI</p>
                             </div>
                             <div>
                                 <p className="text-3xl md:text-5xl font-black text-purple-400 font-mono">5 Studios</p>
-                                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">Free Creative Tools</p>
+                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Free Creative Tools</p>
                             </div>
                         </div>
                     </div>
@@ -231,13 +231,13 @@ export default function BecomeTrainerPage() {
                 {/* 7. Popular Subject Demand & Rates (Delhi NCR + Online) */}
                 <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-white/5">
                     <div className="text-center mb-14">
-                        <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/40">
-                            High-Demand Subjects & Earning Rates
+                        <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold bg-white/[0.05] px-3.5 py-1.5 rounded-full border border-white/[0.1]">
+                            High-Demand Subjects &amp; Earning Rates
                         </span>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">
-                            Current Student Demand & Average Rates
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mt-4 tracking-tight">
+                            Current Student Demand &amp; Average Rates
                         </h2>
-                        <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto mt-2">
+                        <p className="text-neutral-400 text-sm sm:text-base max-w-2xl mx-auto mt-2">
                             Average market tuition and coaching fees charged by verified trainers across Delhi NCR and Online:
                         </p>
                     </div>
@@ -255,17 +255,17 @@ export default function BecomeTrainerPage() {
                         ].map((cat, idx) => {
                             const IconComponent = cat.icon
                             return (
-                                <div key={idx} className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/40 transition-all hover:-translate-y-1.5 group backdrop-blur-md">
+                                <div key={idx} className="p-6 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] hover:border-white/[0.2] transition-all hover:-translate-y-1.5 group backdrop-blur-2xl">
                                     <div className="flex items-center justify-between mb-4">
-                                        <div className={`w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform ${cat.color} border border-white/10`}>
+                                        <div className={`w-12 h-12 rounded-2xl bg-white/[0.05] flex items-center justify-center group-hover:scale-110 transition-transform ${cat.color} border border-white/10`}>
                                             <IconComponent size={22} />
                                         </div>
-                                        <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-800/50">
+                                        <span className="text-[11px] font-mono font-bold text-emerald-400 bg-white/[0.05] px-2.5 py-1 rounded-full border border-white/[0.1]">
                                             {cat.rate}
                                         </span>
                                     </div>
                                     <h4 className="font-bold text-white text-base mb-1">{cat.title}</h4>
-                                    <p className="text-xs text-slate-400">{cat.subtitle}</p>
+                                    <p className="text-xs text-neutral-400">{cat.subtitle}</p>
                                 </div>
                             )
                         })}
@@ -274,29 +274,27 @@ export default function BecomeTrainerPage() {
 
                 {/* 8. Free Lead Magnet Toolkit: 2026 Tutor Growth Blueprint */}
                 <section className="py-12 px-4 sm:px-6 max-w-5xl mx-auto">
-                    <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-purple-950/40 via-slate-900 to-indigo-950/40 border border-purple-500/40 shadow-2xl relative overflow-hidden">
+                    <div className="p-8 sm:p-12 rounded-3xl bg-[#08090d]/90 border border-purple-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden backdrop-blur-3xl">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
                             <div className="space-y-2 text-left">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-purple-500/15 text-purple-400 border border-purple-500/30">
                                     <Download className="w-3.5 h-3.5" />
                                     Free Educator Toolkit (PDF)
                                 </span>
-                                <h3 className="text-2xl sm:text-3xl font-black text-white">
+                                <h3 className="text-2xl sm:text-3xl font-semibold text-white">
                                     The 2026 High-Ticket Tutor Blueprint
                                 </h3>
-                                <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+                                <p className="text-xs sm:text-sm text-neutral-300 max-w-xl leading-relaxed">
                                     Learn how top trainers in Delhi NCR close ₹1,500/hr private students, structure batch courses, and build a ₹1,00,000/month tutoring business without spending a rupee on ads.
                                 </p>
                             </div>
-                            <Button
-                                size="lg"
-                                className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 h-14 rounded-2xl text-sm shrink-0 shadow-xl shadow-purple-600/30 transition-transform hover:scale-105"
-                                asChild
+                            <Link
+                                href="/register"
+                                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-purple-400/30 hover:border-purple-300/50 text-purple-200 hover:text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(0,0,0,0.5)] shrink-0"
                             >
-                                <Link href="/register">
-                                    Get Free Blueprint & Profile
-                                </Link>
-                            </Button>
+                                <Sparkles className="w-4 h-4 text-purple-400" />
+                                <span>Get Free Blueprint &amp; Profile</span>
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -304,35 +302,35 @@ export default function BecomeTrainerPage() {
                 {/* 9. Fast 3-Step Onboarding */}
                 <section className="py-16 px-4 sm:px-6 max-w-6xl mx-auto border-t border-white/5">
                     <div className="text-center mb-14">
-                        <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">
-                            Fast & Simple
+                        <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-white/[0.05] px-3.5 py-1.5 rounded-full border border-white/[0.1]">
+                            Fast &amp; Simple
                         </span>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mt-4 tracking-tight">
                             Start Connecting With Students in 3 Steps
                         </h2>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6 relative">
-                        <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 relative backdrop-blur-md">
+                        <div className="p-8 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] relative backdrop-blur-2xl">
                             <span className="text-4xl font-black text-emerald-500/40 font-mono mb-4 block">01</span>
                             <h3 className="text-xl font-bold text-white mb-2">Create Your Free Account</h3>
-                            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
                                 Sign up with your name, phone number, and email. No subscription, no credit card, and zero setup fees.
                             </p>
                         </div>
 
-                        <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 relative backdrop-blur-md">
+                        <div className="p-8 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] relative backdrop-blur-2xl">
                             <span className="text-4xl font-black text-cyan-500/40 font-mono mb-4 block">02</span>
-                            <h3 className="text-xl font-bold text-white mb-2">List Your Subjects & Rates</h3>
-                            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            <h3 className="text-xl font-bold text-white mb-2">List Your Subjects &amp; Rates</h3>
+                            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
                                 Choose what you teach, your teaching mode (Online or Home Tuition in NCR), and your preferred rates.
                             </p>
                         </div>
 
-                        <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 relative backdrop-blur-md">
+                        <div className="p-8 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] relative backdrop-blur-2xl">
                             <span className="text-4xl font-black text-purple-500/40 font-mono mb-4 block">03</span>
-                            <h3 className="text-xl font-bold text-white mb-2">Teach & Keep 100% Fees</h3>
-                            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            <h3 className="text-xl font-bold text-white mb-2">Teach &amp; Keep 100% Fees</h3>
+                            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
                                 Students discover you and send enquiries directly. You set your schedule, deliver classes, and get paid directly via UPI.
                             </p>
                         </div>
@@ -342,11 +340,11 @@ export default function BecomeTrainerPage() {
                 {/* 10. Frequently Asked Questions */}
                 <section className="py-16 px-4 sm:px-6 max-w-4xl mx-auto border-t border-white/5">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center justify-center gap-2">
+                        <h2 className="text-3xl sm:text-4xl font-semibold text-white tracking-tight flex items-center justify-center gap-2">
                             <HelpCircle className="w-7 h-7 text-emerald-400" />
                             Frequently Asked Questions
                         </h2>
-                        <p className="text-slate-400 text-xs sm:text-sm mt-2">
+                        <p className="text-neutral-400 text-xs sm:text-sm mt-2">
                             Everything you need to know about joining Celoris as an independent educator.
                         </p>
                     </div>
@@ -374,9 +372,9 @@ export default function BecomeTrainerPage() {
                                 a: "As an active trainer on Celoris, you get free access to our built-in creator studios: PhotoLite (graphic & poster editing), Video Studio (video trimming & reels), and PolyVault (3D models & assets) to help prepare class materials."
                             }
                         ].map((faq, idx) => (
-                            <div key={idx} className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+                            <div key={idx} className="p-6 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] backdrop-blur-2xl">
                                 <h4 className="font-bold text-white text-base mb-2">{faq.q}</h4>
-                                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{faq.a}</p>
+                                <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">{faq.a}</p>
                             </div>
                         ))}
                     </div>
@@ -384,22 +382,22 @@ export default function BecomeTrainerPage() {
 
                 {/* 11. Celoris Loyalty & Community Trust Policy */}
                 <section className="py-12 px-4 sm:px-6 max-w-5xl mx-auto">
-                    <div className="p-8 sm:p-10 rounded-3xl bg-slate-900/80 border-2 border-emerald-500/30 backdrop-blur-xl relative overflow-hidden">
+                    <div className="p-8 sm:p-10 rounded-3xl bg-[#08090d]/90 border border-emerald-500/30 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden">
                         <div className="flex flex-col sm:flex-row items-start gap-5">
                             <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
                                 <ShieldCheck size={24} />
                             </div>
                             <div className="space-y-2 text-left">
-                                <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/40">
-                                    Community Trust & Loyalty Policy
+                                <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-white/[0.05] px-3 py-1 rounded-full border border-white/[0.1]">
+                                    Community Trust &amp; Loyalty Policy
                                 </span>
-                                <h3 className="text-xl sm:text-2xl font-black text-white">
+                                <h3 className="text-xl sm:text-2xl font-semibold text-white">
                                     Why Celoris is 0% Commission: Our Mutual Loyalty Pledge
                                 </h3>
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                    Celoris is built to empower educators without parasite commissions. We survive and profit when you choose our in-house training rooms, creator studios, and premium Pro AI quotas. In return, we maintain a strictly trusted ecosystem: <strong>all student inquiries, discussions, scheduling, and live sessions must remain directly inside Celoris</strong>.
+                                <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
+                                    Celoris is built to empower educators without parasite commissions. We survive and profit when you choose our in-house training rooms, creator studios, and premium Pro AI quotas. In return, we maintain a strictly trusted ecosystem: <strong className="text-white font-semibold">all student inquiries, discussions, scheduling, and live sessions must remain directly inside Celoris</strong>.
                                 </p>
-                                <p className="text-xs text-slate-400 leading-relaxed pt-1">
+                                <p className="text-xs text-neutral-400 leading-relaxed pt-1">
                                     Sharing off-platform phone numbers, personal emails, or external links in chat or profiles triggers automated shielding and revokes free trainer verification. By staying loyal to Celoris, you keep 100% of your earnings forever.
                                 </p>
                             </div>
@@ -409,27 +407,24 @@ export default function BecomeTrainerPage() {
 
                 {/* 12. Final High-Conversion Banner */}
                 <section className="px-4 sm:px-6 max-w-6xl mx-auto my-14">
-                    <div className="rounded-[2.5rem] bg-gradient-to-r from-emerald-950/70 via-slate-900 to-indigo-950/70 border-2 border-emerald-500/40 p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl shadow-emerald-950/40">
+                    <div className="rounded-[2.5rem] bg-[#08090d]/95 border border-emerald-500/30 p-8 sm:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_60px_rgba(16,185,129,0.12)] backdrop-blur-3xl">
                         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-                        <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-4 py-1.5 rounded-full border border-emerald-800/50 inline-block mb-4">
+                        <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-white/[0.05] px-4 py-1.5 rounded-full border border-white/[0.1] inline-block mb-4">
                             Tonight's Special Offer
                         </span>
-                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">
+                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-semibold text-white mb-4 tracking-tight leading-tight">
                             Stop Paying to Teach. Join Celoris Tonight.
                         </h2>
-                        <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
+                        <p className="text-neutral-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
                             Join hundreds of verified educators across India who have switched to a 0% commission, zero-coin platform. Create your free trainer profile in under 2 minutes.
                         </p>
-                        <Button
-                            size="lg"
-                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl px-12 h-16 text-base sm:text-lg shadow-2xl shadow-emerald-500/40 transition-all hover:scale-105 active:scale-95"
-                            asChild
+                        <Link
+                            href="/register"
+                            className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.18] hover:border-white/[0.3] text-white font-medium text-base sm:text-lg backdrop-blur-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
                         >
-                            <Link href="/register" className="flex items-center gap-2 justify-center">
-                                Claim Your Free Trainer Profile Now
-                                <ArrowRight size={20} />
-                            </Link>
-                        </Button>
+                            <span>Claim Your Free Trainer Profile Now</span>
+                            <ArrowRight size={20} className="text-emerald-400" />
+                        </Link>
                     </div>
                 </section>
 

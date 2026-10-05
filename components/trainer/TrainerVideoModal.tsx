@@ -3,24 +3,22 @@
 import React, { useState } from 'react'
 import { Play, X, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
 
 export function TrainerVideoModal() {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
         <>
-            <Button
+            <button
+                type="button"
                 onClick={() => setIsOpen(true)}
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-7 h-14 text-sm sm:text-base backdrop-blur-xl group transition-all"
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-purple-400/30 hover:border-purple-300/50 text-purple-200 hover:text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.5)] group"
             >
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform border border-emerald-500/40">
-                    <Play size={14} className="text-emerald-400 fill-emerald-400 ml-0.5" />
+                <div className="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center group-hover:scale-110 transition-transform border border-purple-400/40">
+                    <Play size={10} className="text-purple-300 fill-purple-300 ml-0.5" />
                 </div>
                 <span>Watch 30s Explainer</span>
-            </Button>
+            </button>
 
             <AnimatePresence>
                 {isOpen && (
@@ -30,10 +28,10 @@ export function TrainerVideoModal() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.2 }}
-                            className="relative w-full max-w-4xl bg-slate-950 border border-emerald-500/40 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/50"
+                            className="relative w-full max-w-4xl bg-[#08090d] border border-white/[0.12] rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
                         >
                             {/* Header */}
-                            <div className="flex items-center justify-between p-4 px-6 border-b border-white/10 bg-slate-900/80">
+                            <div className="flex items-center justify-between p-4 px-6 border-b border-white/10 bg-black/60">
                                 <div className="flex items-center gap-2">
                                     <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
                                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
@@ -57,19 +55,6 @@ export function TrainerVideoModal() {
                                     autoPlay
                                     className="w-full h-full object-contain"
                                 />
-                            </div>
-
-                            {/* Footer */}
-                            <div className="p-4 px-6 bg-slate-900/60 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-                                <span>0% Platform Commission • Direct Student Contact</span>
-                                <Button
-                                    size="sm"
-                                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold"
-                                    onClick={() => setIsOpen(false)}
-                                    asChild
-                                >
-                                    <a href="/register">Join as a Trainer</a>
-                                </Button>
                             </div>
                         </motion.div>
                     </div>

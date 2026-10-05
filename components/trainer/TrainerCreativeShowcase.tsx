@@ -785,13 +785,13 @@ export function TrainerCreativeShowcase() {
                         <button
                             key={item.id}
                             onClick={() => setActiveTab(idx)}
-                            className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+                            className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all ${
                                 isActive
-                                    ? 'bg-white/10 text-white border border-white/20 shadow-xl backdrop-blur-xl scale-105'
-                                    : 'bg-slate-900/60 text-slate-400 hover:text-white border border-transparent hover:border-white/10'
+                                    ? 'bg-white/[0.12] text-white border border-white/[0.25] shadow-xl backdrop-blur-xl scale-105'
+                                    : 'bg-white/[0.04] text-neutral-400 hover:text-white border border-white/[0.08] hover:border-white/[0.15]'
                             }`}
                         >
-                            <ItemIcon className={`w-4 h-4 ${isActive ? item.color : 'text-slate-500'}`} />
+                            <ItemIcon className={`w-4 h-4 ${isActive ? item.color : 'text-neutral-400'}`} />
                             <span>{item.name}</span>
                         </button>
                     )
@@ -806,7 +806,7 @@ export function TrainerCreativeShowcase() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -15 }}
                     transition={{ duration: 0.3 }}
-                    className={`rounded-3xl p-6 sm:p-10 border ${studio.borderColor} ${studio.bgColor} backdrop-blur-2xl shadow-2xl relative overflow-hidden`}
+                    className={`rounded-3xl p-6 sm:p-10 border border-white/[0.12] bg-[#08090d]/85 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden`}
                 >
                     <div className="grid lg:grid-cols-12 gap-8 items-center">
                         {/* Info Column (6 Cols) */}
@@ -816,18 +816,18 @@ export function TrainerCreativeShowcase() {
                                 {studio.category}
                             </div>
 
-                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight">
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white leading-tight">
                                 {studio.tagline}
                             </h3>
 
-                            <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
+                            <p className="text-neutral-300 text-sm sm:text-base leading-relaxed font-normal">
                                 {studio.description}
                             </p>
 
                             {/* Features List */}
                             <ul className="space-y-2.5 pt-2">
                                 {studio.features.map((feat, fIdx) => (
-                                    <li key={fIdx} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-200">
+                                    <li key={fIdx} className="flex items-center gap-2.5 text-xs sm:text-sm text-neutral-200">
                                         <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                                             <Check className={`w-3 h-3 ${studio.color}`} />
                                         </div>
@@ -837,17 +837,15 @@ export function TrainerCreativeShowcase() {
                             </ul>
 
                             <div className="pt-4 flex flex-wrap items-center gap-4">
-                                <Button
-                                    size="lg"
-                                    className="bg-white text-slate-950 hover:bg-slate-200 font-bold rounded-xl"
-                                    asChild
+                                <Link
+                                    href={studio.link}
+                                    target="_blank"
+                                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.18] hover:border-white/[0.3] text-white font-medium text-xs sm:text-sm backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer"
                                 >
-                                    <Link href={studio.link} target="_blank" className="flex items-center gap-2">
-                                        Test {studio.name} Live
-                                        <ExternalLink size={16} />
-                                    </Link>
-                                </Button>
-                                <span className="text-xs text-slate-400 font-mono">
+                                    <span>Test {studio.name} Live</span>
+                                    <ExternalLink size={14} className="text-neutral-400" />
+                                </Link>
+                                <span className="text-xs text-neutral-400 font-mono">
                                     Included free for all registered trainers
                                 </span>
                             </div>
