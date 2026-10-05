@@ -6,8 +6,8 @@ import { AdUnit } from "./AdUnit";
 export function GlobalAd() {
     const pathname = usePathname();
 
-    // Hide ad on the home page
-    if (pathname === "/") {
+    // Hide ad on home and campaign pages
+    if (pathname === "/" || pathname?.startsWith("/become-trainer")) {
         return null;
     }
 

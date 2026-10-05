@@ -67,12 +67,14 @@ export default function Footer() {
   }, [])
 
   const isDashboardPage = pathname === "/" ||
+    pathname?.startsWith("/become-trainer") ||
     pathname?.startsWith("/learn") ||
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||
     pathname?.startsWith("/classrooms") ||
     pathname === "/chat" ||
     pathname?.startsWith("/ai-explorer") ||
+    pathname?.startsWith("/ai-tools") ||
     pathname?.startsWith("/video-studio") ||
     pathname?.startsWith("/image-studio") ||
     pathname?.startsWith("/courses") ||
@@ -87,6 +89,8 @@ export default function Footer() {
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
     pathname?.startsWith("/pricing") ||
+    pathname?.startsWith("/free-video-editor") ||
+    pathname?.startsWith("/celoris-3d") ||
     pathname === "/login" ||
     pathname === "/register";
 
