@@ -38,8 +38,8 @@ export default function AgenticAICybersecurityCourse() {
         price: 29999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/agentic-ai-for-cybersecurity",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/agentic-ai-for-cybersecurity",
         learning_outcomes: [
             "Transition from standard automation (SOAR) to Agentic SOC architectures.",
             "Master frameworks like LangGraph, CrewAI, and AutoGen for security workflows.",
@@ -506,7 +506,7 @@ export default function AgenticAICybersecurityCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Advanced",
         "teaches": [

@@ -216,9 +216,9 @@ export default function DigitalMarketingCourseNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Digital Marketing Training Noida",
-        "image": "https://www.celorisdesigns.com/digimarck.png",
-        "@id": "https://www.celorisdesigns.com/digital-marketing-course-noida",
-        "url": "https://www.celorisdesigns.com/digital-marketing-course-noida",
+        "image": "https://celorisdesigns.com/digimarck.png",
+        "@id": "https://celorisdesigns.com/digital-marketing-course-noida",
+        "url": "https://celorisdesigns.com/digital-marketing-course-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

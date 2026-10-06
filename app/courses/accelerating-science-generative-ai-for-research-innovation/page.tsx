@@ -38,8 +38,8 @@ export default function AcceleratingScienceCourse() {
         price: 24999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/accelerating-science-generative-ai-for-research-innovation",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/accelerating-science-generative-ai-for-research-innovation",
         learning_outcomes: [
             "Integrate advanced AI agents (GPT-4o, Claude 3.5) into the scientific method.",
             "Accelerate literature reviews using semantic search and knowledge graphs.",
@@ -538,7 +538,7 @@ export default function AcceleratingScienceCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Advanced",
         "teaches": [

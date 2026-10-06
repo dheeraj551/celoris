@@ -212,9 +212,9 @@ export default function WebDevelopmentCourseNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Web Development Training Noida",
-        "image": "https://www.celorisdesigns.com/webdev_noida.png",
-        "@id": "https://www.celorisdesigns.com/web-development-course-noida",
-        "url": "https://www.celorisdesigns.com/web-development-course-noida",
+        "image": "https://celorisdesigns.com/webdev_noida.png",
+        "@id": "https://celorisdesigns.com/web-development-course-noida",
+        "url": "https://celorisdesigns.com/web-development-course-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

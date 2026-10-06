@@ -40,8 +40,8 @@ export default function RAGUnlockedCourse() {
         // Looking at the template, Agentic AI was 15000 INR.
         currency: "INR",
         provider: "Celoris Designs llp",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/rag-unlocked-production-grade-search-answer-systems",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/rag-unlocked-production-grade-search-answer-systems",
         learning_outcomes: [
             "Vector Database Implementation (Pinecone/Milvus)",
             "Embedding Model Selection & Optimization",
@@ -169,7 +169,7 @@ export default function RAGUnlockedCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "courseCode": "RAG-PRO-01",
         "educationalLevel": "Intermediate to Advanced",

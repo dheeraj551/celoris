@@ -59,13 +59,13 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://www.celorisdesigns.com"
+        "item": "https://celorisdesigns.com"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "About",
-        "item": "https://www.celorisdesigns.com/about"
+        "item": "https://celorisdesigns.com/about"
       }
     ]
   };

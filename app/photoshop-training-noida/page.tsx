@@ -190,9 +190,9 @@ export default function PhotoshopTrainingNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Adobe Photoshop Training Noida",
-        "image": "https://www.celorisdesigns.com/photoshop_noida.png",
-        "@id": "https://www.celorisdesigns.com/photoshop-training-noida",
-        "url": "https://www.celorisdesigns.com/photoshop-training-noida",
+        "image": "https://celorisdesigns.com/photoshop_noida.png",
+        "@id": "https://celorisdesigns.com/photoshop-training-noida",
+        "url": "https://celorisdesigns.com/photoshop-training-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

@@ -217,9 +217,9 @@ export default function PythonTrainingNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Python Training Noida",
-        "image": "https://www.celorisdesigns.com/python_noida.png",
-        "@id": "https://www.celorisdesigns.com/python-training-noida",
-        "url": "https://www.celorisdesigns.com/python-training-noida",
+        "image": "https://celorisdesigns.com/python_noida.png",
+        "@id": "https://celorisdesigns.com/python-training-noida",
+        "url": "https://celorisdesigns.com/python-training-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

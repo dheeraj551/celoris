@@ -28,17 +28,17 @@ export const metadata: Metadata = {
         'Google AI Ultra subscription tier news'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026',
+        canonical: 'https://celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026',
     },
     openGraph: {
         title: "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout | Celoris",
         description: "Paid your $20/month subscription but still missing Gemini 4 Argon? Unpack the dual-use cybersecurity risks, 1M token compute costs, and the Fairwind rollout.",
-        url: 'https://www.celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026',
+        url: 'https://celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://www.celorisdesigns.com/gemini-4-argon-pro-fairwind-guide-2026.png',
+                url: 'https://celorisdesigns.com/gemini-4-argon-pro-fairwind-guide-2026.png',
                 width: 1200,
                 height: 675,
                 alt: 'Gemini 4 Argon and the Gated Fairwind Program Explained',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
         description: "Why your $20/month Google AI Pro subscription can't cover Gemini 4 Argon's 1-million-token output compute.",
-        images: ['https://www.celorisdesigns.com/gemini-4-argon-pro-fairwind-guide-2026.png'],
+        images: ['https://celorisdesigns.com/gemini-4-argon-pro-fairwind-guide-2026.png'],
     }
 };
 
@@ -66,19 +66,19 @@ const jsonLdData = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://www.celorisdesigns.com"
+                    "item": "https://celorisdesigns.com"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Blog",
-                    "item": "https://www.celorisdesigns.com/blog"
+                    "item": "https://celorisdesigns.com/blog"
                 },
                 {
                     "@type": "ListItem",
                     "position": 3,
                     "name": "Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
-                    "item": "https://www.celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026"
+                    "item": "https://celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026"
                 }
             ]
         },
@@ -86,26 +86,26 @@ const jsonLdData = {
             "@type": "Article",
             "headline": "I Pay for Gemini Pro, So Where Is Gemini 4 Argon? Inside Google's Gated Fairwind Rollout",
             "description": "Comprehensive analysis of why Google DeepMind's Gemini 4 Argon is absent from consumer Pro accounts, the economics of 1M output tokens, and the Fairwind security gate.",
-            "image": "https://www.celorisdesigns.com/gemini-4-argon-pro-fairwind-guide-2026.png",
+            "image": "https://celorisdesigns.com/gemini-4-argon-pro-fairwind-guide-2026.png",
             "datePublished": "2026-10-04T07:00:00Z",
             "dateModified": "2026-10-04T07:00:00Z",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Frontier AI & Engineering Lab",
-                "url": "https://www.celorisdesigns.com"
+                "url": "https://celorisdesigns.com"
             },
             "publisher": {
                 "@type": "Organization",
                 "name": "Celoris",
-                "url": "https://www.celorisdesigns.com",
+                "url": "https://celorisdesigns.com",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://www.celorisdesigns.com/celoris-logo.png"
+                    "url": "https://celorisdesigns.com/celoris-logo.png"
                 }
             },
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://www.celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026"
+                "@id": "https://celorisdesigns.com/blog/gemini-4-argon-pro-fairwind-guide-2026"
             }
         },
         {

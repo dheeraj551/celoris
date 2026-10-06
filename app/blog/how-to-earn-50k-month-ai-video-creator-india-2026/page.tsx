@@ -29,17 +29,17 @@ export const metadata: Metadata = {
         'creative video editing course India'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026',
+        canonical: 'https://celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026',
     },
     openGraph: {
         title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint) | Celoris",
         description: "Step-by-step breakdown: Tools, rates per video, YouTube RPM niche comparison, UPI digital stores, and monthly agency retainers without an expensive GPU.",
-        url: 'https://www.celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026',
+        url: 'https://celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://www.celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg',
+                url: 'https://celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg',
                 width: 1200,
                 height: 675,
                 alt: 'How to Earn 50000 per month as an AI Video Creator in India 2026 Guide',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint)",
         description: "From prompt engineering to YouTube RPMs and monthly retainer contracts: The modern playbook for Indian video editors.",
-        images: ['https://www.celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg'],
+        images: ['https://celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg'],
     }
 };
 
@@ -67,19 +67,19 @@ const jsonLdData = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://www.celorisdesigns.com"
+                    "item": "https://celorisdesigns.com"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Blog",
-                    "item": "https://www.celorisdesigns.com/blog"
+                    "item": "https://celorisdesigns.com/blog"
                 },
                 {
                     "@type": "ListItem",
                     "position": 3,
                     "name": "How to Earn ₹50,000/Month as an AI Video Creator in India (2026 Blueprint)",
-                    "item": "https://www.celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026"
+                    "item": "https://celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026"
                 }
             ]
         },
@@ -87,26 +87,26 @@ const jsonLdData = {
             "@type": "Article",
             "headline": "How to Earn ₹30,000–₹50,000/Month as an AI Video Creator in India (2026 Blueprint: Tools, Rates, and Retainers)",
             "description": "Comprehensive practical blueprint for Indian creators to master AI-animated video production, land consistent client retainers, and build a high-income creative freelance career.",
-            "image": "https://www.celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg",
+            "image": "https://celorisdesigns.com/how-to-earn-50k-month-ai-video-creator-india-2026.jpg",
             "datePublished": "2026-10-03T07:00:00Z",
             "dateModified": "2026-10-03T07:00:00Z",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Creative Career Lab",
-                "url": "https://www.celorisdesigns.com"
+                "url": "https://celorisdesigns.com"
             },
             "publisher": {
                 "@type": "Organization",
                 "name": "Celoris",
-                "url": "https://www.celorisdesigns.com",
+                "url": "https://celorisdesigns.com",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://www.celorisdesigns.com/logo.png"
+                    "url": "https://celorisdesigns.com/logo.png"
                 }
             },
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://www.celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026"
+                "@id": "https://celorisdesigns.com/blog/how-to-earn-50k-month-ai-video-creator-india-2026"
             }
         },
         {

@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         description: c.description,
         price: c.price ? `₹${c.price}` : 'Free',
         duration: c.course_duration || 'Self-paced',
-        url: `https://www.celorisdesigns.com/courses/${slug}`,
+        url: `https://celorisdesigns.com/courses/${slug}`,
         isFeatured: c.is_featured
       }
     })
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       tags: b.tags || [],
       description: b.excerpt,
       publishedAt: b.published_at,
-      url: `https://www.celorisdesigns.com/blog/${b.slug}`
+      url: `https://celorisdesigns.com/blog/${b.slug}`
     }))
 
     // 3. Celoris Studio Suites & AI Tools
@@ -54,19 +54,19 @@ export async function GET(request: NextRequest) {
         title: 'Video Studio',
         type: 'CreativeTool',
         description: 'Free high-performance browser-based video editor with multi-track timeline.',
-        url: 'https://www.celorisdesigns.com/video-studio'
+        url: 'https://celorisdesigns.com/video-studio'
       },
       {
         title: 'Image Studio',
         type: 'CreativeTool',
         description: 'Online graphic design suite, background remover, and layout editor.',
-        url: 'https://www.celorisdesigns.com/image-studio'
+        url: 'https://celorisdesigns.com/image-studio'
       },
       {
         title: 'AI Explorer',
         type: 'CreativeTool',
         description: 'Playground to access 20+ AI models for text, image, and video generation.',
-        url: 'https://www.celorisdesigns.com/ai-explorer'
+        url: 'https://celorisdesigns.com/ai-explorer'
       }
     ]
 

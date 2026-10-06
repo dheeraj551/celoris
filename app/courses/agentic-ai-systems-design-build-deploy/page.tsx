@@ -35,8 +35,8 @@ export default function AgenticAISystemsCourse() {
         price: 15000,
         currency: "INR",
         provider: "Celoris Designs llp",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/agentic-ai-systems-design-build-deploy",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/agentic-ai-systems-design-build-deploy",
         learning_outcomes: [
             "Transition from linear LLM calls to recursive agentic reasoning loops.",
             "Design sophisticated 'Plan-and-Execute' and 'Autonomous Loop' architectures.",
@@ -213,7 +213,7 @@ export default function AgenticAISystemsCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris designs llp",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "courseCode": "AAI-001",
         "educationalLevel": "Intermediate to Advanced",

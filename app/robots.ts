@@ -26,6 +26,6 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/admin/', '/api/'],
             }
         ],
-        sitemap: 'https://www.celorisdesigns.com/sitemap.xml',
+        sitemap: 'https://celorisdesigns.com/sitemap.xml',
     }
 }

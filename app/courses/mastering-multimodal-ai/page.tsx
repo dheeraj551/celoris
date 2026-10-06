@@ -37,8 +37,8 @@ export default function MasteringMultimodalAICourse() {
         price: 24999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/mastering-multimodal-ai",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/mastering-multimodal-ai",
         learning_outcomes: [
             "Understand the Alignment Problem: Why concatenation fails image/text vectors.",
             "Master Contrastive Learning and deep dive into CLIP architecture.",
@@ -445,7 +445,7 @@ export default function MasteringMultimodalAICourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Advanced",
         "teaches": [

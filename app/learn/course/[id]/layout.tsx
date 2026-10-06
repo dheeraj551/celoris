@@ -13,7 +13,7 @@ import { getFaqsForCourse } from '@/lib/course-faqs'
 // The course and batch loaders are cached per request, so the page itself
 // reuses the same queries.
 
-const SITE = 'https://www.celorisdesigns.com'
+const SITE = 'https://celorisdesigns.com'
 
 // Old UUID links → their clean/premium URL.
 const ID_REDIRECTS: Record<string, string> = {

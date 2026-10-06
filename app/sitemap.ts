@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase-client'
 import { COURSE_ID_TO_SLUG } from '@/lib/course-slugs'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.celorisdesigns.com'
+  const baseUrl = 'https://celorisdesigns.com'
 
   const staticPages: MetadataRoute.Sitemap = [
     {

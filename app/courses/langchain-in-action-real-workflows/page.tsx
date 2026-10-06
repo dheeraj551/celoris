@@ -40,8 +40,8 @@ export default function LangChainCourse() {
         price: 13500,
         currency: "INR",
         provider: "Celoris Designs llp",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/langchain-in-action-real-workflows",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/langchain-in-action-real-workflows",
         learning_outcomes: [
             "Mastering LCEL (LangChain Expression Language)",
             "Unified model management (OpenAI, Anthropic, Llama 3)",
@@ -857,7 +857,7 @@ export default function LangChainCourse() {
         "provider": {
             "@type": "Organization",
             "name": "celoris designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "courseCode": "LC-ACT-02",
         "educationalLevel": "Intermediate",

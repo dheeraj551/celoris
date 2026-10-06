@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: "Refund and Cancellation Policy — Celoris Designs LLP",
     description:
       "Official Refund and Cancellation Policy for Celoris AI Studio subscriptions, credits, and Academy courses.",
-    url: "https://www.celorisdesigns.com/refund-policy",
+    url: "https://celorisdesigns.com/refund-policy",
     siteName: "Celoris",
   },
 }

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     }
 }
 
-const SITE = "https://www.celorisdesigns.com"
+const SITE = "https://celorisdesigns.com"
 const UPCOMING_WINDOW_MS = 21 * 24 * 60 * 60 * 1000
 
 // Real scheduled classes from Classrooms (Admin → Social → Café Rooms).

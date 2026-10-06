@@ -20,7 +20,7 @@ import { emailLayout, fieldRows, sendSupportEmail } from '@/lib/support-mail'
 // instant; a mail failure never blocks the application).
 
 const APPLY_XP = 25
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.celorisdesigns.com').replace(/\/$/, '')
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://celorisdesigns.com').replace(/\/$/, '')
 
 async function emailSupportAboutApplication(
   supabase: any,

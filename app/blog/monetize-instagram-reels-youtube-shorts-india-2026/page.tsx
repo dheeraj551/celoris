@@ -27,17 +27,17 @@ export const metadata: Metadata = {
         'short form video masterclass celoris'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026',
+        canonical: 'https://celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026',
     },
     openGraph: {
         title: "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027) | Celoris",
         description: "Comprehensive blueprint to reach ₹50,000+/mo from short-form video in India: RPMs, comment-to-DM automation, platform fee comparison, and tax/ASCI compliance.",
-        url: 'https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026',
+        url: 'https://celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://www.celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg',
+                url: 'https://celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg',
                 width: 1200,
                 height: 675,
                 alt: 'How to Monetize Instagram Reels and YouTube Shorts in India 2026',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027)",
         description: "Master short-form video monetization, comment-to-DM automation, creator platform fees, and ASCI/GST compliance in India to reach ₹50,000+ monthly revenue.",
-        images: ['https://www.celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg'],
+        images: ['https://celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg'],
     }
 };
 
@@ -65,19 +65,19 @@ const jsonLdData = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://www.celorisdesigns.com"
+                    "item": "https://celorisdesigns.com"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Blog",
-                    "item": "https://www.celorisdesigns.com/blog"
+                    "item": "https://celorisdesigns.com/blog"
                 },
                 {
                     "@type": "ListItem",
                     "position": 3,
                     "name": "How to Monetize Instagram Reels & YouTube Shorts in India",
-                    "item": "https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026"
+                    "item": "https://celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026"
                 }
             ]
         },
@@ -85,26 +85,26 @@ const jsonLdData = {
             "@type": "Article",
             "headline": "How to Monetize Instagram Reels & YouTube Shorts in India (2026–2027)",
             "description": "Master short-form video monetization, comment-to-DM automation, creator platform fees, and ASCI/GST compliance in India to reach ₹50,000+ monthly revenue.",
-            "image": "https://www.celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg",
+            "image": "https://celorisdesigns.com/how-to-monetize-instagram-reels-youtube-shorts-india.jpg",
             "datePublished": "2026-10-01T10:00:00Z",
             "dateModified": "2026-10-01T10:00:00Z",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Creator Lab",
-                "url": "https://www.celorisdesigns.com"
+                "url": "https://celorisdesigns.com"
             },
             "publisher": {
                 "@type": "Organization",
                 "name": "Celoris",
-                "url": "https://www.celorisdesigns.com",
+                "url": "https://celorisdesigns.com",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://www.celorisdesigns.com/logo.png"
+                    "url": "https://celorisdesigns.com/logo.png"
                 }
             },
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://www.celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026"
+                "@id": "https://celorisdesigns.com/blog/monetize-instagram-reels-youtube-shorts-india-2026"
             }
         },
         {

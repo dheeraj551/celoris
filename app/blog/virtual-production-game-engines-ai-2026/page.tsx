@@ -29,17 +29,17 @@ export const metadata: Metadata = {
         'virtual filmmaking cost breakdown 2026'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/blog/virtual-production-game-engines-ai-2026',
+        canonical: 'https://celorisdesigns.com/blog/virtual-production-game-engines-ai-2026',
     },
     openGraph: {
         title: "Virtual Production on a Budget: How Indian Creators Use Game Engines & AI for Cinematic Web Series (2026 Guide) | Celoris",
         description: "Bypass ₹10 Lakh physical shoot barriers. Learn how Indian indie directors combine game engines, virtual cameras, and neural voice synthesis to deliver 4K dramatic web series.",
-        url: 'https://www.celorisdesigns.com/blog/virtual-production-game-engines-ai-2026',
+        url: 'https://celorisdesigns.com/blog/virtual-production-game-engines-ai-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://www.celorisdesigns.com/virtual-production-game-engines-ai-2026.jpg',
+                url: 'https://celorisdesigns.com/virtual-production-game-engines-ai-2026.jpg',
                 width: 1200,
                 height: 675,
                 alt: 'Virtual Production on a Budget with Game Engines and AI 2026 Guide',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "Virtual Production on a Budget: How Indian Creators Use Game Engines & AI for Cinematic Web Series",
         description: "From virtual camera blocking to Fish Audio voice cloning and OTT monetization: The modern playbook for independent filmmakers.",
-        images: ['https://www.celorisdesigns.com/virtual-production-game-engines-ai-2026.jpg'],
+        images: ['https://celorisdesigns.com/virtual-production-game-engines-ai-2026.jpg'],
     }
 };
 
@@ -67,19 +67,19 @@ const jsonLdData = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://www.celorisdesigns.com"
+                    "item": "https://celorisdesigns.com"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Blog",
-                    "item": "https://www.celorisdesigns.com/blog"
+                    "item": "https://celorisdesigns.com/blog"
                 },
                 {
                     "@type": "ListItem",
                     "position": 3,
                     "name": "Virtual Production on a Budget (2026 Guide)",
-                    "item": "https://www.celorisdesigns.com/blog/virtual-production-game-engines-ai-2026"
+                    "item": "https://celorisdesigns.com/blog/virtual-production-game-engines-ai-2026"
                 }
             ]
         },
@@ -87,26 +87,26 @@ const jsonLdData = {
             "@type": "Article",
             "headline": "Virtual Production on a Budget: How Indian Creators Are Using Game Engines & AI to Produce Cinematic Web Series (2026 Guide)",
             "description": "Comprehensive practical blueprint for Indian creators to master virtual cinema, real-time game engines, neural voice acting, and monetize episodic web series.",
-            "image": "https://www.celorisdesigns.com/virtual-production-game-engines-ai-2026.jpg",
+            "image": "https://celorisdesigns.com/virtual-production-game-engines-ai-2026.jpg",
             "datePublished": "2026-10-04T07:00:00Z",
             "dateModified": "2026-10-04T07:00:00Z",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Creative & Digital Cinema Lab",
-                "url": "https://www.celorisdesigns.com"
+                "url": "https://celorisdesigns.com"
             },
             "publisher": {
                 "@type": "Organization",
                 "name": "Celoris",
-                "url": "https://www.celorisdesigns.com",
+                "url": "https://celorisdesigns.com",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://www.celorisdesigns.com/celoris-logo.png"
+                    "url": "https://celorisdesigns.com/celoris-logo.png"
                 }
             },
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://www.celorisdesigns.com/blog/virtual-production-game-engines-ai-2026"
+                "@id": "https://celorisdesigns.com/blog/virtual-production-game-engines-ai-2026"
             }
         },
         {

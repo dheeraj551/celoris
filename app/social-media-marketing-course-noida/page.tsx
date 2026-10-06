@@ -236,9 +236,9 @@ export default function SocialMediaMarketingCourseNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Social Media Marketing Training Noida",
-        "image": "https://www.celorisdesigns.com/digimarck.png",
-        "@id": "https://www.celorisdesigns.com/social-media-marketing-course-noida",
-        "url": "https://www.celorisdesigns.com/social-media-marketing-course-noida",
+        "image": "https://celorisdesigns.com/digimarck.png",
+        "@id": "https://celorisdesigns.com/social-media-marketing-course-noida",
+        "url": "https://celorisdesigns.com/social-media-marketing-course-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

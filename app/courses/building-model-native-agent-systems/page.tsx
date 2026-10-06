@@ -38,8 +38,8 @@ export default function BuildingModelNativeAgentSystemsCourse() {
         price: 29999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/building-model-native-agent-systems",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/building-model-native-agent-systems",
         learning_outcomes: [
             "Shift from Orchestration to Agency: Why external if/else loops fail at scale.",
             "Master Internal Planning: Moving from hard-coded graphs to dynamic latent-space navigation.",
@@ -609,7 +609,7 @@ export default function BuildingModelNativeAgentSystemsCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Advanced",
         "teaches": [

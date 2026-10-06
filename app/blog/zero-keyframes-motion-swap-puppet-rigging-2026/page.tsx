@@ -30,17 +30,17 @@ export const metadata: Metadata = {
         'digital puppetry vs traditional animation'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026',
+        canonical: 'https://celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026',
     },
     openGraph: {
         title: "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",
         description: "Bypass the 40-hour drawing grind. Learn how solo animators use 2D puppet rigging, webcam performance capture, and AI Motion Swap to publish daily animated shorts.",
-        url: 'https://www.celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026',
+        url: 'https://celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://www.celorisdesigns.com/zero-keyframes-motion-swap-puppet-rigging-2026.jpg',
+                url: 'https://celorisdesigns.com/zero-keyframes-motion-swap-puppet-rigging-2026.jpg',
                 width: 1200,
                 height: 675,
                 alt: 'Zero Keyframes AI Motion-Swap and 2D Puppet Rigging Guide 2026',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "Zero Keyframes: Produce Viral 2D Animated Shorts in Under 90 Minutes",
         description: "The complete 2026 pipeline: 2D puppet skeletons, spring physics, phone mocap, and Celoris Motion Swap Studio.",
-        images: ['https://www.celorisdesigns.com/zero-keyframes-motion-swap-puppet-rigging-2026.jpg'],
+        images: ['https://celorisdesigns.com/zero-keyframes-motion-swap-puppet-rigging-2026.jpg'],
     }
 };
 
@@ -68,19 +68,19 @@ const jsonLdData = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://www.celorisdesigns.com"
+                    "item": "https://celorisdesigns.com"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Blog",
-                    "item": "https://www.celorisdesigns.com/blog"
+                    "item": "https://celorisdesigns.com/blog"
                 },
                 {
                     "@type": "ListItem",
                     "position": 3,
                     "name": "Zero Keyframes Animation Guide",
-                    "item": "https://www.celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026"
+                    "item": "https://celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026"
                 }
             ]
         },
@@ -88,25 +88,25 @@ const jsonLdData = {
             "@type": "BlogPosting",
             "headline": "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",
             "description": "Discover how solo animators combine puppet rigging (Cartoon Animator 4) and neural video-to-motion transfer (Motion Swap Studio) to generate viral animated skits with zero manual keyframing.",
-            "image": "https://www.celorisdesigns.com/zero-keyframes-motion-swap-puppet-rigging-2026.jpg",
+            "image": "https://celorisdesigns.com/zero-keyframes-motion-swap-puppet-rigging-2026.jpg",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Creative & Motion Lab",
-                "url": "https://www.celorisdesigns.com"
+                "url": "https://celorisdesigns.com"
             },
             "publisher": {
                 "@type": "Organization",
                 "name": "Celoris",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://www.celorisdesigns.com/favicon.svg"
+                    "url": "https://celorisdesigns.com/favicon.svg"
                 }
             },
             "datePublished": "2026-10-05T09:30:00Z",
             "dateModified": "2026-10-05T09:30:00Z",
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://www.celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026"
+                "@id": "https://celorisdesigns.com/blog/zero-keyframes-motion-swap-puppet-rigging-2026"
             }
         }
     ]

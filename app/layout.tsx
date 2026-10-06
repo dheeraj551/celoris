@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     "free tier for students",
     "Celoris Academy"
   ],
-  authors: [{ name: "Dheeraj Kushwaha", url: "https://www.celorisdesigns.com/about" }],
+  authors: [{ name: "Dheeraj Kushwaha", url: "https://celorisdesigns.com/about" }],
   creator: "Celoris Designs LLP",
   publisher: "Celoris Designs LLP",
   formatDetection: {
@@ -45,14 +45,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://www.celorisdesigns.com"),
+  metadataBase: new URL("https://celorisdesigns.com"),
   // No site-wide canonical here: in Next.js a canonical in the root layout is
   // inherited by EVERY page that doesn't set its own, which told Google each
   // blog post / tool page was a duplicate of the homepage. Pages set their own.
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://www.celorisdesigns.com",
+    url: "https://celorisdesigns.com",
     siteName: "Celoris",
     title: "Celoris — India's Creative Studio & Academy",
     description: "India's creative studio and academy since 2019. AI video editor, Photoshop-style photo studio, certified professional courses, and a free tier for students.",
@@ -110,14 +110,14 @@ export const metadata: Metadata = {
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://www.celorisdesigns.com/#organization",
+  "@id": "https://celorisdesigns.com/#organization",
   "name": "Celoris Designs",
   "legalName": "Celoris Designs LLP",
   "alternateName": "Celoris",
-  "url": "https://www.celorisdesigns.com",
+  "url": "https://celorisdesigns.com",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://www.celorisdesigns.com/celoris-logo.png",
+    "url": "https://celorisdesigns.com/celoris-logo.png",
     "width": "512",
     "height": "512"
   },
@@ -144,14 +144,14 @@ const organizationSchema = {
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "https://www.celorisdesigns.com/#website",
+  "@id": "https://celorisdesigns.com/#website",
   "name": "Celoris",
-  "url": "https://www.celorisdesigns.com",
+  "url": "https://celorisdesigns.com",
   "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
-  "publisher": { "@id": "https://www.celorisdesigns.com/#organization" },
+  "publisher": { "@id": "https://celorisdesigns.com/#organization" },
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://www.celorisdesigns.com/learn/courses?q={search_term_string}",
+    "target": "https://celorisdesigns.com/learn/courses?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }

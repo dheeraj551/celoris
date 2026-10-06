@@ -36,8 +36,8 @@ export default function BuildAIProductsCourse() {
         price: 15000,
         currency: "INR",
         provider: "Celoris designs llp",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/build-ai-products-that-make-money-practical-guide",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/build-ai-products-that-make-money-practical-guide",
         learning_outcomes: [
             "Avoid the 'AI Hammer' Trap: Why starting with 'I want to use GPT-4' fails.",
             "Techniques for mining Reddit, G2, and forums for expensive, boring problems.",
@@ -501,7 +501,7 @@ export default function BuildAIProductsCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris  designs llp",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "courseCode": "AI-BIZ-2026",
         "hasCourseInstance": {

@@ -387,13 +387,13 @@ export default function LearnClient({ initialCourses, initialNotices, upcomingCl
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://www.celorisdesigns.com"
+        "item": "https://celorisdesigns.com"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Learn",
-        "item": "https://www.celorisdesigns.com/learn"
+        "item": "https://celorisdesigns.com/learn"
       }
     ]
   };

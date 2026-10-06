@@ -37,8 +37,8 @@ export default function ArchitectingTrustCourse() {
         price: 21999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/architecting-trust-ai-safety-ethics-compliance",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/architecting-trust-ai-safety-ethics-compliance",
         learning_outcomes: [
             "Identify and mitigate algorithmic bias using state-of-the-art technical remediation.",
             "Implement Explainable AI (XAI) libraries (SHAP, LIME) into production pipelines.",
@@ -520,7 +520,7 @@ export default function ArchitectingTrustCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Intermediate to Advanced",
         "teaches": [

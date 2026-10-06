@@ -39,8 +39,8 @@ export default function PersonalizedAICourse() {
         price: 19999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/personalized-ai-experiences-with-rag-and-agents",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/personalized-ai-experiences-with-rag-and-agents",
         learning_outcomes: [
             "Design sophisticated user profiles for explicit and implicit traits.",
             "Implement user-centric RAG with metadata filtering and re-ranking.",
@@ -522,7 +522,7 @@ export default function PersonalizedAICourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Intermediate to Advanced",
         "teaches": [

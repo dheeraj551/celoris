@@ -199,9 +199,9 @@ export default function GraphicDesigningCourseNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Graphic Designing Training Noida",
-        "image": "https://www.celorisdesigns.com/photoshop_noida.png",
-        "@id": "https://www.celorisdesigns.com/graphic-designing-course-noida",
-        "url": "https://www.celorisdesigns.com/graphic-designing-course-noida",
+        "image": "https://celorisdesigns.com/photoshop_noida.png",
+        "@id": "https://celorisdesigns.com/graphic-designing-course-noida",
+        "url": "https://celorisdesigns.com/graphic-designing-course-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

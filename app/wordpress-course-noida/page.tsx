@@ -231,9 +231,9 @@ export default function WordPressCourseNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris WordPress Course Noida",
-        "image": "https://www.celorisdesigns.com/wordpress_noida.png",
-        "@id": "https://www.celorisdesigns.com/wordpress-course-noida",
-        "url": "https://www.celorisdesigns.com/wordpress-course-noida",
+        "image": "https://celorisdesigns.com/wordpress_noida.png",
+        "@id": "https://celorisdesigns.com/wordpress-course-noida",
+        "url": "https://celorisdesigns.com/wordpress-course-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

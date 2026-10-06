@@ -214,9 +214,9 @@ export default function DigitalMarketingCourseDelhi() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Digital Marketing Training Delhi",
-        "image": "https://www.celorisdesigns.com/Digitalmarketing_course_in%20delhi.png",
-        "@id": "https://www.celorisdesigns.com/digital-marketing-course-delhi",
-        "url": "https://www.celorisdesigns.com/digital-marketing-course-delhi",
+        "image": "https://celorisdesigns.com/Digitalmarketing_course_in%20delhi.png",
+        "@id": "https://celorisdesigns.com/digital-marketing-course-delhi",
+        "url": "https://celorisdesigns.com/digital-marketing-course-delhi",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

@@ -380,20 +380,20 @@ function renderPost(post: any, contentHtml: string) {
     "author": {
       "@type": "Organization",
       "name": "Celoris Designs",
-      "url": "https://www.celorisdesigns.com"
+      "url": "https://celorisdesigns.com"
     },
     "publisher": {
       "@type": "Organization",
       "name": "Celoris",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.celorisdesigns.com/favicon.svg"
+        "url": "https://celorisdesigns.com/favicon.svg"
       }
     },
     "datePublished": post.published_at,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.celorisdesigns.com/blog/${post.slug}`
+      "@id": `https://celorisdesigns.com/blog/${post.slug}`
     }
   };
 

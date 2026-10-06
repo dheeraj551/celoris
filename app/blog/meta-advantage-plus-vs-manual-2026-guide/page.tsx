@@ -27,17 +27,17 @@ export const metadata: Metadata = {
         'digital marketing course celoris'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide',
+        canonical: 'https://celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide',
     },
     openGraph: {
         title: "Meta Advantage+ vs Manual Campaigns (2026 Strategy Guide) | Celoris",
         description: "Why AI-driven Advantage+ delivers 22% higher ROAS, where manual control still wins, and how top media buyers scale using the 2026 Hybrid Playbook.",
-        url: 'https://www.celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide',
+        url: 'https://celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://www.celorisdesigns.com/meta-advantage-plus-vs-manual-campaigns-2026.jpg',
+                url: 'https://celorisdesigns.com/meta-advantage-plus-vs-manual-campaigns-2026.jpg',
                 width: 1200,
                 height: 675,
                 alt: 'Meta Advantage+ vs Manual Campaigns 2026 Strategy Guide',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "Meta Advantage+ vs Manual Campaigns (2026 Strategy Guide): Benchmarks, Budgets & Hybrid Playbook",
         description: "2026 Meta Ads performance breakdown: Advantage+ vs Manual setups, India ad costs, CBO vs ABO budget allocation, and the hybrid scaling framework.",
-        images: ['https://www.celorisdesigns.com/meta-advantage-plus-vs-manual-campaigns-2026.jpg'],
+        images: ['https://celorisdesigns.com/meta-advantage-plus-vs-manual-campaigns-2026.jpg'],
     }
 };
 
@@ -65,19 +65,19 @@ const jsonLdData = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://www.celorisdesigns.com"
+                    "item": "https://celorisdesigns.com"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Blog",
-                    "item": "https://www.celorisdesigns.com/blog"
+                    "item": "https://celorisdesigns.com/blog"
                 },
                 {
                     "@type": "ListItem",
                     "position": 3,
                     "name": "Meta Advantage+ vs Manual Campaigns (2026 Strategy Guide)",
-                    "item": "https://www.celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide"
+                    "item": "https://celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide"
                 }
             ]
         },
@@ -85,26 +85,26 @@ const jsonLdData = {
             "@type": "Article",
             "headline": "Meta Advantage+ vs Manual Campaigns (2026 Strategy Guide): Benchmarks, Budgets, and the Hybrid Playbook",
             "description": "Comprehensive 2026 analysis comparing Meta Advantage+ automation with manual media buying. Includes India ad cost benchmarks, Total Value auction math, and a 3-stage scaling framework.",
-            "image": "https://www.celorisdesigns.com/meta-advantage-plus-vs-manual-campaigns-2026.jpg",
+            "image": "https://celorisdesigns.com/meta-advantage-plus-vs-manual-campaigns-2026.jpg",
             "datePublished": "2026-10-02T10:00:00Z",
             "dateModified": "2026-10-02T10:00:00Z",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Performance Marketing Lab",
-                "url": "https://www.celorisdesigns.com"
+                "url": "https://celorisdesigns.com"
             },
             "publisher": {
                 "@type": "Organization",
                 "name": "Celoris",
-                "url": "https://www.celorisdesigns.com",
+                "url": "https://celorisdesigns.com",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://www.celorisdesigns.com/logo.png"
+                    "url": "https://celorisdesigns.com/logo.png"
                 }
             },
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://www.celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide"
+                "@id": "https://celorisdesigns.com/blog/meta-advantage-plus-vs-manual-2026-guide"
             }
         },
         {

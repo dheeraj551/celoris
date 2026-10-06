@@ -37,8 +37,8 @@ export default function DeployScaleAICourse() {
         price: 15000,
         currency: "INR",
         provider: "Celoris Designs llp",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/deploy-scale-ai-apps-serverless-edge",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/deploy-scale-ai-apps-serverless-edge",
         learning_outcomes: [
             "Serverless & Edge Architecture Selection",
             "Global Deployment with Vercel & Next.js AI SDK",
@@ -510,7 +510,7 @@ export default function DeployScaleAICourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs llp",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "courseCode": "AI-DEP-01",
         "hasCourseInstance": {

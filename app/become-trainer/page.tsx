@@ -33,18 +33,18 @@ export const metadata: Metadata = {
         'best tutor platform Noida Sector 62'
     ],
     alternates: {
-        canonical: 'https://www.celorisdesigns.com/become-trainer',
+        canonical: 'https://celorisdesigns.com/become-trainer',
     },
     openGraph: {
         title: "Join Celoris as a Verified Trainer — 100% Free, 0% Commission Forever",
         description: "Stop paying ₹2,000 for coins just to view a student's number. Celoris connects you directly with learners across Delhi NCR & India. Keep 100% of your fees.",
-        url: "https://www.celorisdesigns.com/become-trainer",
+        url: "https://celorisdesigns.com/become-trainer",
         siteName: "Celoris",
         locale: "en_IN",
         type: "website",
         images: [
             {
-                url: "https://www.celorisdesigns.com/trainer-ad-campaign-creative.jpg",
+                url: "https://celorisdesigns.com/trainer-ad-campaign-creative.jpg",
                 width: 1024,
                 height: 1024,
                 alt: "Celoris Free Trainer Network 0 Percent Commission",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Online Teaching Jobs India — 100% Free for Trainers (0% Commission)",
         description: "Zero coin packages. Direct student contact. Keep 100% of your earnings. Join Celoris as a verified tutor today.",
-        images: ["https://www.celorisdesigns.com/trainer-ad-campaign-creative.jpg"],
+        images: ["https://celorisdesigns.com/trainer-ad-campaign-creative.jpg"],
     },
     other: {
         "geo.region": "IN-UP",
@@ -70,24 +70,24 @@ const jsonLdData = {
     "@graph": [
         {
             "@type": "WebPage",
-            "@id": "https://www.celorisdesigns.com/become-trainer#webpage",
-            "url": "https://www.celorisdesigns.com/become-trainer",
+            "@id": "https://celorisdesigns.com/become-trainer#webpage",
+            "url": "https://celorisdesigns.com/become-trainer",
             "name": "Online Teaching Jobs India & Home Tutors Delhi NCR (0% Commission) | Celoris",
             "description": "Join Celoris as a verified instructor or home tutor. Enjoy 0% commission, direct student UPI payments, and zero coin paywalls across Delhi NCR and India.",
             "inLanguage": "en-IN",
             "isPartOf": {
                 "@type": "WebSite",
-                "@id": "https://www.celorisdesigns.com/#website",
-                "url": "https://www.celorisdesigns.com",
+                "@id": "https://celorisdesigns.com/#website",
+                "url": "https://celorisdesigns.com",
                 "name": "Celoris Designs"
             }
         },
         {
             "@type": "EducationalOrganization",
-            "@id": "https://www.celorisdesigns.com/#organization",
+            "@id": "https://celorisdesigns.com/#organization",
             "name": "Celoris",
-            "url": "https://www.celorisdesigns.com",
-            "logo": "https://www.celorisdesigns.com/favicon.svg",
+            "url": "https://celorisdesigns.com",
+            "logo": "https://celorisdesigns.com/favicon.svg",
             "description": "Next-generation creative learning ecosystem, AI creative studios, and zero-commission educator network in Delhi NCR and India.",
             "address": {
                 "@type": "PostalAddress",

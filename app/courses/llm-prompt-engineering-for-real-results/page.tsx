@@ -35,8 +35,8 @@ export default function LLMPromptEngineeringCourse() {
         price: 15000,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/llm-prompt-engineering-for-real-results",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/llm-prompt-engineering-for-real-results",
         learning_outcomes: [
             "Move beyond \"Act as a...\" to multi-variable framing.",
             "Use few-shot & many-shot learning to force model alignment.",
@@ -212,7 +212,7 @@ export default function LLMPromptEngineeringCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "courseCode": "PROMPT-ENG-2024",
         "educationalLevel": "Intermediate to Advanced",

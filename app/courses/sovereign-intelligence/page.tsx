@@ -38,8 +38,8 @@ export default function SovereignIntelligenceCourse() {
         price: 24999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/sovereign-intelligence",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/sovereign-intelligence",
         learning_outcomes: [
             "Local Inference: Running LLMs on your own GPU without internet dependency.",
             "Privacy Architecture: Why cloud AI is a liability and how to build a 'zero-trust' local vault.",
@@ -592,7 +592,7 @@ export default function SovereignIntelligenceCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Intermediate to Advanced",
         "teaches": [

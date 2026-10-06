@@ -218,9 +218,9 @@ export default function VideoEditingCourseNoida() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Celoris Video Editing Course Noida",
-        "image": "https://www.celorisdesigns.com/vid_edit_noida.png",
-        "@id": "https://www.celorisdesigns.com/video-editing-course-noida",
-        "url": "https://www.celorisdesigns.com/video-editing-course-noida",
+        "image": "https://celorisdesigns.com/vid_edit_noida.png",
+        "@id": "https://celorisdesigns.com/video-editing-course-noida",
+        "url": "https://celorisdesigns.com/video-editing-course-noida",
         "telephone": "+91 90847 18101",
         "address": {
             "@type": "PostalAddress",

@@ -38,8 +38,8 @@ export default function VibeCodingMasteryCourse() {
         price: 19999,
         currency: "INR",
         provider: "Celoris Designs",
-        website: "https://www.celorisdesigns.com",
-        url: "https://www.celorisdesigns.com/courses/vibe-coding-mastery",
+        website: "https://celorisdesigns.com",
+        url: "https://celorisdesigns.com/courses/vibe-coding-mastery",
         learning_outcomes: [
             "Master the Karpathy Paradigm: Moving from Deductive to Abductive programming.",
             "Choose and master your 2026 Command Center (Cursor, Windsurf, or Replit).",
@@ -445,7 +445,7 @@ export default function VibeCodingMasteryCourse() {
         "provider": {
             "@type": "Organization",
             "name": "Celoris Designs",
-            "sameAs": "https://www.celorisdesigns.com"
+            "sameAs": "https://celorisdesigns.com"
         },
         "educationalLevel": "Intermediate",
         "teaches": [

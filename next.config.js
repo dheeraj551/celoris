@@ -27,6 +27,12 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.celorisdesigns.com' }],
+        destination: 'https://celorisdesigns.com/:path*',
+        permanent: true,
+      },
       { source: '/index.html', destination: '/', permanent: true },
       { source: '/index2.html', destination: '/', permanent: true },
       { source: '/_next/static/media/7b0b24f36b1a6d0b-s.p.woff2', destination: '/', permanent: true },

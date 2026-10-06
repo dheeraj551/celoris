@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
             } else if (name === 'get_contact_info') {
                 functionResponse = {
                     email: 'support@celorisdesigns.com',
-                    website: 'https://www.celorisdesigns.com',
+                    website: 'https://celorisdesigns.com',
                     location: 'Remote / Virtual Offices',
                     description: 'Celoris is an AI-powered ecosystem for digital transformation, education, and social connectivity.',
                 };
