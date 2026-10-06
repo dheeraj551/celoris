@@ -23,6 +23,13 @@ async function postMetadata(slug: string): Promise<{ title: string; description?
   if (slug === 'online-teaching-jobs-in-delhi-2025') {
     return postMetadata('online-teaching-jobs-in-delhi-ncr-2026-complete-guide-mentor-directory');
   }
+  if (slug === 'indian-creator-freelancer-monetization-guide' || slug === 'indian-creator-freelancer-monetization-guide-2026') {
+    return {
+      title: "The Indian Creator & Freelancer Monetization Masterclass: 2026 Salary Landscape, Platform Economics, and Tax Optimization Blueprint",
+      description: "Master creator monetization in India for 2026: salary benchmarks across AVGC & tech, ₹1.5L/mo revenue ladders, DM automation, platform fee math, and Section 44ADA presumptive tax optimization.",
+      image: "/indian-creator-freelancer-monetization-guide-2026.jpg",
+    };
+  }
   if (slug === 'zero-keyframes-motion-swap-puppet-rigging-2026') {
     return {
       title: "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",
@@ -101,6 +108,10 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (slug === 'online-teaching-jobs-in-delhi-2025') {
     redirect('/blog/online-teaching-jobs-in-delhi-ncr-2026-complete-guide-mentor-directory');
+  }
+
+  if (slug === 'indian-creator-freelancer-monetization-guide-2026') {
+    redirect('/blog/indian-creator-freelancer-monetization-guide');
   }
 
   // Hardcoded data for the new blog post to bypass database requirements

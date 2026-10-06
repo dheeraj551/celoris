@@ -38,6 +38,7 @@ const nextConfig = {
       { source: '/_next/static/media/7b0b24f36b1a6d0b-s.p.woff2', destination: '/', permanent: true },
       { source: '/blog/top-10-tips-for-maximizing-your-productivity', destination: '/blog', permanent: true },
       { source: '/blog/online-teaching-jobs-in-delhi-2025', destination: '/blog/online-teaching-jobs-in-delhi-ncr-2026-complete-guide-mentor-directory', permanent: true },
+      { source: '/blog/indian-creator-freelancer-monetization-guide-2026', destination: '/blog/indian-creator-freelancer-monetization-guide', permanent: true },
       { source: '/apps/1', destination: '/apps', permanent: true },
       { source: '/events/category/get-together/:path*', destination: '/events', permanent: true },
       { source: '/learn/pathways/:path*', destination: '/learn', permanent: true },
