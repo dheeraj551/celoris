@@ -15,18 +15,9 @@ import {
   CheckCircle,
   Smartphone,
   Loader2,
-  MessageSquare,
   Send,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react"
-
-declare global {
-  interface Window {
-    phoneEmailListener?: (userObj: any) => void
-    phoneEmailReceiver?: (userObj: any) => void
-  }
-}
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -41,48 +32,16 @@ export default function RegisterPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
 
-  // Phone verification states
-  const [phoneVerificationEnabled, setPhoneVerificationEnabled] = useState(false)
-  const [phoneClientId, setPhoneClientId] = useState("")
-  const [whatsappOtpEnabled, setWhatsappOtpEnabled] = useState(false)
-  const [isPhoneVerified, setIsPhoneVerified] = useState(false)
-  const [verifiedPhone, setVerifiedPhone] = useState("")
-  const [verifyingPhone, setVerifyingPhone] = useState(false)
-  const [phoneError, setPhoneError] = useState("")
-
-  // WhatsApp OTP specific states
-  const [whatsappPhone, setWhatsappPhone] = useState("")
-  const [directPhone, setDirectPhone] = useState("")
-  const [whatsappOtpCode, setWhatsappOtpCode] = useState("")
+  // Twilio Phone & SMS OTP verification states
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [otpCode, setOtpCode] = useState("")
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [isSendingOtp, setIsSendingOtp] = useState(false)
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false)
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false)
+  const [verifiedPhone, setVerifiedPhone] = useState("")
+  const [phoneError, setPhoneError] = useState("")
   const [otpCountdown, setOtpCountdown] = useState(0)
-  const [verificationMethod, setVerificationMethod] = useState<"whatsapp" | "sms">("whatsapp")
-
-  // Fetch phone verification settings on mount
-  useEffect(() => {
-    async function checkPhoneSettings() {
-      try {
-        const res = await fetch("/api/auth/phone-settings", { cache: "no-store" })
-        if (res.ok) {
-          const data = await res.json()
-          if (data.enabled && data.clientId) {
-            setPhoneVerificationEnabled(true)
-            setPhoneClientId(data.clientId)
-          } else {
-            setPhoneVerificationEnabled(false)
-          }
-          if (typeof data.whatsappOtpEnabled === "boolean") {
-            setWhatsappOtpEnabled(data.whatsappOtpEnabled)
-          }
-        }
-      } catch (err) {
-        console.error("Could not fetch phone settings:", err)
-      }
-    }
-    checkPhoneSettings()
-  }, [])
 
   // Resend OTP countdown timer
   useEffect(() => {
@@ -91,154 +50,60 @@ export default function RegisterPage() {
     return () => clearInterval(timer)
   }, [otpCountdown])
 
-  const handleSendWhatsAppOtp = async () => {
-    if (!whatsappPhone || whatsappPhone.trim().length < 10) {
+  const handleSendOtp = async () => {
+    const digitsOnly = phoneNumber.replace(/\D/g, "")
+    if (digitsOnly.length < 10) {
       setPhoneError("Please enter a valid 10-digit mobile number")
       return
     }
     setIsSendingOtp(true)
     setPhoneError("")
     try {
-      const res = await fetch("/api/auth/whatsapp-otp/send", {
+      const res = await fetch("/api/auth/phone-otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: whatsappPhone.trim() }),
+        body: JSON.stringify({ phone: digitsOnly }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to send WhatsApp OTP")
+      if (!res.ok) throw new Error(data.error || "Failed to send SMS OTP")
       setIsOtpSent(true)
       setOtpCountdown(30)
     } catch (err: any) {
-      setPhoneError(err.message || "Failed to send OTP via WhatsApp")
+      setPhoneError(err.message || "Failed to send OTP via SMS")
     } finally {
       setIsSendingOtp(false)
     }
   }
 
-  const handleVerifyWhatsAppOtp = async () => {
-    if (!whatsappOtpCode || whatsappOtpCode.trim().length !== 6) {
-      setPhoneError("Please enter the 6-digit code received on WhatsApp")
+  const handleVerifyOtp = async () => {
+    const trimmedCode = otpCode.trim()
+    if (trimmedCode.length !== 6) {
+      setPhoneError("Please enter the 6-digit OTP code received via SMS")
       return
     }
     setIsVerifyingOtp(true)
     setPhoneError("")
     try {
-      const res = await fetch("/api/auth/whatsapp-otp/verify", {
+      const digitsOnly = phoneNumber.replace(/\D/g, "")
+      const res = await fetch("/api/auth/phone-otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone: whatsappPhone.trim(),
-          otp: whatsappOtpCode.trim(),
+          phone: digitsOnly,
+          code: trimmedCode,
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Invalid OTP code")
-      setVerifiedPhone(data.phone || whatsappPhone.trim())
+      if (!res.ok) throw new Error(data.error || "Invalid or expired OTP code")
+      setVerifiedPhone(data.phone || `+91 ${digitsOnly}`)
       setIsPhoneVerified(true)
       setPhoneError("")
     } catch (err: any) {
-      setPhoneError(err.message || "Verification failed")
+      setPhoneError(err.message || "Verification failed. Please check the code and try again.")
     } finally {
       setIsVerifyingOtp(false)
     }
   }
-
-  // Dynamically load Phone.email script and setup listener when verification is required
-  useEffect(() => {
-    if (!phoneVerificationEnabled || !phoneClientId || isPhoneVerified) return
-
-    const handlePhoneVerified = async (userObj: any) => {
-      try {
-        setVerifyingPhone(true)
-        setPhoneError("")
-        const { user_json_url, user_phone_number } = userObj || {}
-        let finalPhone = user_phone_number || ""
-
-        let verifiedName = ""
-        // Secure server-side validation of user_json_url
-        if (user_json_url) {
-          try {
-            const res = await fetch("/api/auth/verify-phone-email", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ user_json_url }),
-            })
-            if (res.ok) {
-              const data = await res.json()
-              if (data.phone) {
-                finalPhone = data.phone
-              }
-              if (data.firstName || data.lastName) {
-                verifiedName = `${data.firstName || ""}` + ` ` + `${data.lastName || ""}`.trim()
-              }
-            }
-          } catch (fetchErr) {
-            console.error("Error verifying phone URL:", fetchErr)
-          }
-        }
-
-        if (finalPhone) {
-          setVerifiedPhone(finalPhone)
-          setIsPhoneVerified(true)
-          setError("")
-          if (verifiedName) {
-            setFormData((prev) => ({
-              ...prev,
-              fullName: prev.fullName || verifiedName,
-            }))
-          }
-        } else {
-          setPhoneError("Could not retrieve phone number. Please try again.")
-        }
-      } catch (err: any) {
-        setPhoneError("Phone verification failed. Please try again.")
-      } finally {
-        setVerifyingPhone(false)
-      }
-    }
-
-    window.phoneEmailListener = handlePhoneVerified
-    window.phoneEmailReceiver = handlePhoneVerified
-
-    const scriptId = "phone-email-script"
-    const existing = document.getElementById(scriptId)
-    if (existing) {
-      existing.remove()
-    }
-
-    const script = document.createElement("script")
-    script.id = scriptId
-    script.src = "https://www.phone.email/sign_in_button_v1.js"
-    script.async = true
-    document.body.appendChild(script)
-
-    const updateButtonText = () => {
-      const textElem = document.getElementById("btn_ph_login_text")
-      if (textElem && textElem.textContent !== "Verify Phone Number") {
-        textElem.textContent = "Verify Phone Number"
-      }
-    }
-
-    const observer = new MutationObserver(() => {
-      updateButtonText()
-    })
-
-    const checkInterval = setInterval(updateButtonText, 100)
-    const timeout = setTimeout(() => clearInterval(checkInterval), 5000)
-
-    const container = document.querySelector(".pe_signin_button")
-    if (container) {
-      observer.observe(container, { childList: true, subtree: true, characterData: true })
-    }
-
-    return () => {
-      const s = document.getElementById(scriptId)
-      if (s) s.remove()
-      observer.disconnect()
-      clearInterval(checkInterval)
-      clearTimeout(timeout)
-    }
-  }, [phoneVerificationEnabled, phoneClientId, isPhoneVerified])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -257,18 +122,8 @@ export default function RegisterPage() {
       return false
     }
 
-    // Only enforce phone OTP if specifically activated by admin
-    const isVerificationRequired = whatsappOtpEnabled || (phoneVerificationEnabled && Boolean(phoneClientId))
-    const phoneToUse = verifiedPhone || whatsappPhone.trim() || directPhone.trim()
-    const digitsOnly = phoneToUse.replace(/\D/g, "")
-
-    if (isVerificationRequired && (!isPhoneVerified || !verifiedPhone)) {
-      setError("Please verify your mobile number with OTP before continuing")
-      return false
-    }
-
-    if (!phoneToUse || digitsOnly.length < 10) {
-      setError("A valid 10-digit WhatsApp mobile number is required to register.")
+    if (!isPhoneVerified || !verifiedPhone) {
+      setError("Please verify your 10-digit mobile number with SMS OTP before creating your account")
       return false
     }
 
@@ -293,9 +148,8 @@ export default function RegisterPage() {
       return
     }
 
-    const phoneToUse = verifiedPhone || whatsappPhone.trim() || directPhone.trim()
-    const digitsOnly = phoneToUse.replace(/\D/g, "")
-    let formattedPhone = phoneToUse
+    const digitsOnly = verifiedPhone.replace(/\D/g, "")
+    let formattedPhone = verifiedPhone
     if (digitsOnly.length === 10) {
       formattedPhone = `+91 ${digitsOnly}`
     } else if (digitsOnly.length === 12 && digitsOnly.startsWith("91")) {
@@ -311,7 +165,7 @@ export default function RegisterPage() {
           data: {
             full_name: formData.fullName,
             phone: formattedPhone,
-            phone_verified: isPhoneVerified,
+            phone_verified: true,
           },
         },
       })
@@ -445,10 +299,10 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#050810] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
+      <div className="min-h-screen bg-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
         <div className="max-w-md w-full relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
-          <Card className="bg-[#0d1321]/80 backdrop-blur-2xl border-white/5 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
+          <Card className="bg-[#090a0f]/95 backdrop-blur-2xl border border-white/10 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
             <CardContent className="p-8 text-center space-y-6">
               <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-2 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
                 <CheckCircle className="w-10 h-10 text-emerald-500" />
@@ -475,10 +329,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050810] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
       <div className="max-w-md w-full space-y-8 relative py-6">
         {/* Background Decorative Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
 
         {/* Header */}
         <div className="text-center relative z-10">
@@ -496,10 +350,10 @@ export default function RegisterPage() {
         </div>
 
         {/* Registration Card */}
-        <Card className="bg-[#0d1321]/80 backdrop-blur-2xl border-white/10 shadow-2xl relative z-10 rounded-[2.5rem] p-4 sm:p-6">
+        <Card className="bg-[#090a0f]/95 backdrop-blur-2xl border border-white/10 shadow-2xl relative z-10 rounded-[2.5rem] p-4 sm:p-6">
           <CardHeader className="text-center pb-3 pt-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider mx-auto mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Fast &amp; Verified Access</span>
             </div>
             <CardTitle className="text-xl font-bold text-white italic uppercase">Sign Up</CardTitle>
@@ -595,7 +449,7 @@ export default function RegisterPage() {
                 <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.25em]">
-                <span className="bg-[#0d1321] px-4 text-slate-400">Or register with email</span>
+                <span className="bg-[#090a0f] px-4 text-slate-400">Or register with email</span>
               </div>
             </div>
 
@@ -614,7 +468,7 @@ export default function RegisterPage() {
                     placeholder="John Doe"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
+                    className="pl-12 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                 </div>
@@ -633,262 +487,163 @@ export default function RegisterPage() {
                     placeholder="name@example.com"
                     value={formData.email}
                     onChange={handleChange}
-                    className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
+                    className="pl-12 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                 </div>
               </div>
 
-              {/* Phone Verification Section (Active ONLY if toggled on in admin settings) */}
-              {(whatsappOtpEnabled || (phoneVerificationEnabled && phoneClientId)) && (
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4">
-                    Mobile Number Verification <span className="text-emerald-400">*</span>
-                  </label>
+              {/* Mobile Number & Twilio SMS OTP Verification */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
+                  <span>Mobile Number</span>
+                  <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">SMS OTP Verification *</span>
+                </label>
 
-                  {isPhoneVerified ? (
-                    <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                          <CheckCircle className="h-4 w-4 text-emerald-400" />
+                {isPhoneVerified ? (
+                  <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                        <CheckCircle className="h-4 w-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <Smartphone className="h-3 w-3" /> Phone Verified
+                        </p>
+                        <p className="text-xs font-mono font-bold text-white tracking-wide">
+                          {verifiedPhone}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPhoneVerified(false)
+                        setVerifiedPhone("")
+                        setIsOtpSent(false)
+                        setOtpCode("")
+                      }}
+                      className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider underline transition-colors cursor-pointer"
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 flex flex-col space-y-3">
+                    {/* Phone number input row */}
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-emerald-400">
+                          +91
+                        </span>
+                        <Input
+                          type="tel"
+                          placeholder="9876543210"
+                          disabled={isOtpSent}
+                          value={phoneNumber}
+                          onChange={(e) => {
+                            setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
+                            setPhoneError("")
+                          }}
+                          className="bg-black/60 border-white/10 text-white placeholder:text-slate-600 rounded-xl h-12 pl-12 text-sm font-mono tracking-wider focus:border-emerald-500 disabled:opacity-60"
+                        />
+                      </div>
+
+                      {!isOtpSent ? (
+                        <Button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={isSendingOtp || phoneNumber.length < 10}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-12 px-5 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                        >
+                          {isSendingOtp ? (
+                            <span className="flex items-center gap-1.5">
+                              <Loader2 className="h-4 w-4 animate-spin" /> Sending
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1.5">
+                              <Send className="h-3.5 w-3.5" /> Send OTP
+                            </span>
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setIsOtpSent(false)
+                            setOtpCode("")
+                          }}
+                          className="border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs rounded-xl h-12 px-3 shrink-0"
+                        >
+                          Edit No.
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* OTP verification input section (appears after sending OTP) */}
+                    {isOtpSent && (
+                      <div className="space-y-3 pt-2 border-t border-white/10">
+                        <div className="flex items-center justify-between text-[11px] text-slate-400 bg-black/40 p-2.5 rounded-xl border border-white/5">
+                          <span>OTP sent via SMS to <strong className="text-white font-mono">+91 {phoneNumber}</strong></span>
+                          <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">SMS 56161</span>
                         </div>
-                        <div>
-                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <MessageSquare className="h-3 w-3" /> Phone Verified
-                          </p>
-                          <p className="text-xs font-mono font-bold text-white tracking-wide">
-                            {verifiedPhone}
-                          </p>
+
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            placeholder="••••••"
+                            maxLength={6}
+                            value={otpCode}
+                            onChange={(e) => {
+                              setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                              setPhoneError("")
+                            }}
+                            className="bg-black/60 border-white/10 text-white text-center tracking-[0.4em] font-mono font-bold placeholder:text-slate-600 rounded-xl h-12 text-base focus:border-emerald-500"
+                            autoFocus
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleVerifyOtp}
+                            disabled={isVerifyingOtp || otpCode.length !== 6}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-12 px-6 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                          >
+                            {isVerifyingOtp ? (
+                              <span className="flex items-center gap-1.5">
+                                <Loader2 className="h-4 w-4 animate-spin" /> Verifying
+                              </span>
+                            ) : (
+                              "Verify OTP"
+                            )}
+                          </Button>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
+                          <span>Valid for 10 minutes</span>
+                          {otpCountdown > 0 ? (
+                            <span className="text-slate-400 font-mono">Resend in {otpCountdown}s</span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleSendOtp}
+                              disabled={isSendingOtp}
+                              className="text-emerald-400 hover:text-emerald-300 underline font-bold cursor-pointer"
+                            >
+                              Resend OTP SMS
+                            </button>
+                          )}
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsPhoneVerified(false)
-                          setVerifiedPhone("")
-                          setIsOtpSent(false)
-                          setWhatsappOtpCode("")
-                        }}
-                        className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider underline transition-colors"
-                      >
-                        Change
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col space-y-3.5">
-                      {/* Optional Tabs if BOTH WhatsApp and Phone.email are active */}
-                      {whatsappOtpEnabled && phoneVerificationEnabled && phoneClientId && (
-                        <div className="flex items-center p-1 bg-slate-900/60 rounded-xl border border-slate-700/60">
-                          <button
-                            type="button"
-                            onClick={() => setVerificationMethod("whatsapp")}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-                              verificationMethod === "whatsapp"
-                                ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/20"
-                                : "text-slate-400 hover:text-slate-200"
-                            }`}
-                          >
-                            <MessageSquare className="h-3.5 w-3.5" /> WhatsApp OTP
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setVerificationMethod("sms")}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-                              verificationMethod === "sms"
-                                ? "bg-teal-600 text-white shadow-md shadow-teal-500/20"
-                                : "text-slate-400 hover:text-slate-200"
-                            }`}
-                          >
-                            <Smartphone className="h-3.5 w-3.5" /> SMS OTP
-                          </button>
-                        </div>
-                      )}
+                    )}
 
-                      {/* WHATSAPP OTP VIEW */}
-                      {whatsappOtpEnabled && (!phoneVerificationEnabled || !phoneClientId || verificationMethod === "whatsapp") && (
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-2 text-slate-300 text-xs">
-                            <MessageSquare className="h-4 w-4 text-emerald-400 shrink-0" />
-                            <span>Verify your mobile number via WhatsApp OTP</span>
-                          </div>
-
-                          {!isOtpSent ? (
-                            <div className="flex gap-2">
-                              <div className="relative flex-1">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-slate-400">
-                                  +91
-                                </span>
-                                <Input
-                                  type="tel"
-                                  placeholder="9876543210"
-                                  value={whatsappPhone}
-                                  onChange={(e) => {
-                                    setWhatsappPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                                    setPhoneError("")
-                                  }}
-                                  className="bg-slate-900/90 border-slate-700 text-white placeholder:text-slate-600 rounded-xl h-11 pl-12 text-xs font-mono tracking-wider focus:border-emerald-500"
-                                />
-                              </div>
-                              <Button
-                                type="button"
-                                onClick={handleSendWhatsAppOtp}
-                                disabled={isSendingOtp || whatsappPhone.length < 10}
-                                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-11 px-4 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40"
-                              >
-                                {isSendingOtp ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <>
-                                    <Send className="h-3.5 w-3.5 mr-1.5" /> Send Code
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between text-[11px] text-slate-400 bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
-                                <span>Code sent to <strong className="text-white font-mono">+91 {whatsappPhone}</strong></span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setIsOtpSent(false)
-                                    setWhatsappOtpCode("")
-                                  }}
-                                  className="text-[10px] text-emerald-400 hover:underline font-bold"
-                                >
-                                  Change
-                                </button>
-                              </div>
-
-                              <div className="flex gap-2">
-                                <Input
-                                  type="text"
-                                  placeholder="6-digit OTP"
-                                  maxLength={6}
-                                  value={whatsappOtpCode}
-                                  onChange={(e) => {
-                                    setWhatsappOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
-                                    setPhoneError("")
-                                  }}
-                                  className="bg-slate-900/90 border-slate-700 text-white text-center tracking-[0.4em] font-mono font-bold placeholder:text-slate-600 rounded-xl h-11 text-sm focus:border-emerald-500"
-                                />
-                                <Button
-                                  type="button"
-                                  onClick={handleVerifyWhatsAppOtp}
-                                  disabled={isVerifyingOtp || whatsappOtpCode.length !== 6}
-                                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-11 px-5 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40"
-                                >
-                                  {isVerifyingOtp ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                  ) : (
-                                    "Verify"
-                                  )}
-                                </Button>
-                              </div>
-
-                              <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
-                                <span>Expires in 5 minutes</span>
-                                {otpCountdown > 0 ? (
-                                  <span>Resend in {otpCountdown}s</span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={handleSendWhatsAppOtp}
-                                    disabled={isSendingOtp}
-                                    className="text-emerald-400 hover:underline font-bold"
-                                  >
-                                    Resend code
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* SMS (PHONE.EMAIL) VIEW */}
-                      {phoneVerificationEnabled && phoneClientId && (!whatsappOtpEnabled || verificationMethod === "sms") && (
-                        <div className="flex flex-col items-center justify-center text-center space-y-3">
-                          <div className="flex items-center space-x-2 text-slate-400 text-xs">
-                            <Smartphone className="h-4 w-4 text-teal-400" />
-                            <span>Verify your mobile number via free SMS OTP</span>
-                          </div>
-
-                          <div
-                            className="pe_signin_button"
-                            data-client-id={phoneClientId}
-                          />
-
-                          <style>{`
-                            #btn_ph_login {
-                              display: inline-flex !important;
-                              align-items: center !important;
-                              justify-content: center !important;
-                              background: #0d9488 !important;
-                              border-radius: 1rem !important;
-                              font-weight: 800 !important;
-                              font-size: 11px !important;
-                              letter-spacing: 0.08em !important;
-                              text-transform: uppercase !important;
-                              padding: 12px 24px !important;
-                              box-shadow: 0 10px 25px -5px rgba(20, 184, 166, 0.25) !important;
-                              border: none !important;
-                              cursor: pointer !important;
-                              transition: all 0.2s ease !important;
-                            }
-                            #btn_ph_login:hover {
-                              background: #14b8a6 !important;
-                              transform: scale(1.02) !important;
-                            }
-                          `}</style>
-
-                          {verifyingPhone && (
-                            <div className="flex items-center space-x-2 text-xs text-teal-400">
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              <span>Verifying OTP code...</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {phoneError && (
-                        <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider text-center pt-1">
-                          {phoneError}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Direct WhatsApp Mobile Number Input (When OTP switches are OFF - clean and frictionless) */}
-              {!whatsappOtpEnabled && !(phoneVerificationEnabled && phoneClientId) && (
-                <div className="space-y-1.5">
-                  <label htmlFor="directPhone" className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
-                    <span>WhatsApp Mobile Number</span>
-                    <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Required for batch updates</span>
-                  </label>
-                  <div className="relative">
-                    <Smartphone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-emerald-400" />
-                    <Input
-                      id="directPhone"
-                      name="directPhone"
-                      type="tel"
-                      placeholder="+91 98765 43210"
-                      value={directPhone}
-                      onChange={(e) => {
-                        setDirectPhone(e.target.value)
-                        setError("")
-                      }}
-                      className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium font-mono"
-                      required
-                    />
+                    {phoneError && (
+                      <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider text-center pt-1 bg-rose-500/10 border border-rose-500/20 p-2 rounded-xl">
+                        {phoneError}
+                      </p>
+                    )}
                   </div>
-                  <p className="text-[10px] text-slate-500 ml-4">
-                    Live batch invites, mentor links &amp; certification will be sent here.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
 
               <div className="space-y-1.5">
                 <label htmlFor="password" className="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4">
@@ -903,13 +658,13 @@ export default function RegisterPage() {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                    className="pl-12 pr-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
+                    className="pl-12 pr-12 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -929,13 +684,13 @@ export default function RegisterPage() {
                     placeholder="••••••••"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="pl-12 pr-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
+                    className="pl-12 pr-12 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -957,7 +712,7 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-emerald-500/20 border-none transition-all hover:scale-[1.01]"
+                className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-emerald-500/20 border-none transition-all hover:scale-[1.01] cursor-pointer"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -981,7 +736,7 @@ export default function RegisterPage() {
         </Card>
 
         {/* Benefits Card */}
-        <div className="bg-[#0d1321]/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 relative z-10">
+        <div className="bg-[#090a0f]/60 backdrop-blur-xl rounded-[2rem] p-6 border border-white/10 relative z-10">
           <h3 className="text-[10px] font-black text-white uppercase tracking-widest mb-4 italic">Why join Celoris 3.0?</h3>
           <ul className="space-y-3 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
             <li className="flex items-center space-x-3 group">

@@ -21,10 +21,13 @@ export async function GET() {
       })
     }
 
+    const twilioConfigured = Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_VERIFY_SERVICE_SID)
+
     return NextResponse.json({
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
       whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? false),
+      twilioOtpEnabled: twilioConfigured,
     })
   } catch (err: any) {
     console.error('Phone settings exception:', err)
@@ -32,6 +35,7 @@ export async function GET() {
       enabled: false,
       clientId: '',
       whatsappOtpEnabled: false,
+      twilioOtpEnabled: Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_VERIFY_SERVICE_SID),
     })
   }
 }

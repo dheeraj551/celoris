@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, Lock, Eye, EyeOff, Sparkles, ShieldCheck, Loader2 } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, ShieldCheck, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -150,10 +150,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050810] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30">
       <div className="max-w-md w-full space-y-8 relative">
         {/* Background Decorative Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
 
         {/* Header */}
         <div className="text-center relative z-10">
@@ -171,10 +171,10 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <Card className="bg-[#0d1321]/60 backdrop-blur-2xl border-white/5 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
+        <Card className="bg-[#090a0f]/95 backdrop-blur-2xl border border-white/10 shadow-2xl relative z-10 rounded-[2.5rem] p-4">
           <CardHeader className="text-center pb-3 pt-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider mx-auto mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Fast &amp; Verified Access</span>
             </div>
             <CardTitle className="text-xl font-bold text-white italic uppercase">Sign In</CardTitle>
@@ -269,7 +269,7 @@ export default function LoginPage() {
                 <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-[9px] font-bold uppercase tracking-[0.25em]">
-                <span className="bg-[#0d1321] px-4 text-slate-400">Or sign in with email</span>
+                <span className="bg-[#090a0f] px-4 text-slate-400">Or sign in with email</span>
               </div>
             </div>
 
@@ -286,7 +286,7 @@ export default function LoginPage() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
+                    className="pl-12 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                 </div>
@@ -304,7 +304,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 pr-12 bg-white/5 border-white/5 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
+                    className="pl-12 pr-12 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-medium"
                     required
                   />
                   <button
