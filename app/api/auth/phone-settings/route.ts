@@ -24,7 +24,7 @@ export async function GET() {
     return NextResponse.json({
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
-      whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? true),
+      whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? false),
     })
   } catch (err: any) {
     console.error('Phone settings exception:', err)
