@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseClientForServer()
     const { data, error } = await supabase
       .from('auth_settings')
-      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, updated_at')
+      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, twilio_otp_enabled, updated_at')
       .eq('id', 1)
       .maybeSingle()
 
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
       whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? false),
+      twilioOtpEnabled: Boolean(data?.twilio_otp_enabled ?? false),
       updatedAt: data?.updated_at || null,
     })
   } catch (err: any) {
@@ -59,13 +60,17 @@ export async function POST(request: NextRequest) {
       updatePayload.phone_email_client_id = body.clientId.trim()
     }
 
+    if (typeof body.twilioOtpEnabled === 'boolean') {
+      updatePayload.twilio_otp_enabled = body.twilioOtpEnabled
+    }
+
     const { data, error } = await supabase
       .from('auth_settings')
       .upsert({
         id: 1,
         ...updatePayload,
       })
-      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, updated_at')
+      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, twilio_otp_enabled, updated_at')
       .single()
 
     if (error) {
@@ -77,6 +82,7 @@ export async function POST(request: NextRequest) {
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
       whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? false),
+      twilioOtpEnabled: Boolean(data?.twilio_otp_enabled ?? false),
       updatedAt: data?.updated_at || null,
     })
   } catch (err: any) {

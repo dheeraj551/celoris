@@ -33,6 +33,7 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false)
 
   // Twilio Phone & SMS OTP verification states
+  const [requirePhoneOtp, setRequirePhoneOtp] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState("")
   const [otpCode, setOtpCode] = useState("")
   const [isOtpSent, setIsOtpSent] = useState(false)
@@ -42,6 +43,22 @@ export default function RegisterPage() {
   const [verifiedPhone, setVerifiedPhone] = useState("")
   const [phoneError, setPhoneError] = useState("")
   const [otpCountdown, setOtpCountdown] = useState(0)
+
+  // Fetch phone verification settings on mount
+  useEffect(() => {
+    async function checkPhoneSettings() {
+      try {
+        const res = await fetch("/api/auth/phone-settings", { cache: "no-store" })
+        if (res.ok) {
+          const data = await res.json()
+          setRequirePhoneOtp(Boolean(data.twilioOtpEnabled || data.whatsappOtpEnabled))
+        }
+      } catch (err) {
+        console.error("Could not fetch phone settings:", err)
+      }
+    }
+    checkPhoneSettings()
+  }, [])
 
   // Resend OTP countdown timer
   useEffect(() => {
@@ -122,7 +139,15 @@ export default function RegisterPage() {
       return false
     }
 
-    if (!isPhoneVerified || !verifiedPhone) {
+    const phoneToUse = verifiedPhone || phoneNumber.trim()
+    const digitsOnly = phoneToUse.replace(/\D/g, "")
+    if (!phoneToUse || digitsOnly.length < 10) {
+      setError("A valid 10-digit mobile number is required")
+      return false
+    }
+
+    // Only enforce OTP if requirePhoneOtp is toggled ON
+    if (requirePhoneOtp && (!isPhoneVerified || !verifiedPhone)) {
       setError("Please verify your 10-digit mobile number with SMS OTP before creating your account")
       return false
     }
@@ -148,8 +173,9 @@ export default function RegisterPage() {
       return
     }
 
-    const digitsOnly = verifiedPhone.replace(/\D/g, "")
-    let formattedPhone = verifiedPhone
+    const phoneToUse = verifiedPhone || phoneNumber.trim()
+    const digitsOnly = phoneToUse.replace(/\D/g, "")
+    let formattedPhone = phoneToUse
     if (digitsOnly.length === 10) {
       formattedPhone = `+91 ${digitsOnly}`
     } else if (digitsOnly.length === 12 && digitsOnly.startsWith("91")) {
@@ -165,7 +191,7 @@ export default function RegisterPage() {
           data: {
             full_name: formData.fullName,
             phone: formattedPhone,
-            phone_verified: true,
+            phone_verified: isPhoneVerified || !requirePhoneOtp,
           },
         },
       })
@@ -493,157 +519,187 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Mobile Number & Twilio SMS OTP Verification */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
-                  <span>Mobile Number</span>
-                  <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">SMS OTP Verification *</span>
-                </label>
+              {/* Mobile Number Section */}
+              {requirePhoneOtp ? (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
+                    <span>Mobile Number</span>
+                    <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">SMS OTP Verification *</span>
+                  </label>
 
-                {isPhoneVerified ? (
-                  <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                        <CheckCircle className="h-4 w-4 text-emerald-400" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <Smartphone className="h-3 w-3" /> Phone Verified
-                        </p>
-                        <p className="text-xs font-mono font-bold text-white tracking-wide">
-                          {verifiedPhone}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsPhoneVerified(false)
-                        setVerifiedPhone("")
-                        setIsOtpSent(false)
-                        setOtpCode("")
-                      }}
-                      className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider underline transition-colors cursor-pointer"
-                    >
-                      Change
-                    </button>
-                  </div>
-                ) : (
-                  <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 flex flex-col space-y-3">
-                    {/* Phone number input row */}
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-emerald-400">
-                          +91
-                        </span>
-                        <Input
-                          type="tel"
-                          placeholder="9876543210"
-                          disabled={isOtpSent}
-                          value={phoneNumber}
-                          onChange={(e) => {
-                            setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
-                            setPhoneError("")
-                          }}
-                          className="bg-black/60 border-white/10 text-white placeholder:text-slate-600 rounded-xl h-12 pl-12 text-sm font-mono tracking-wider focus:border-emerald-500 disabled:opacity-60"
-                        />
-                      </div>
-
-                      {!isOtpSent ? (
-                        <Button
-                          type="button"
-                          onClick={handleSendOtp}
-                          disabled={isSendingOtp || phoneNumber.length < 10}
-                          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-12 px-5 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-                        >
-                          {isSendingOtp ? (
-                            <span className="flex items-center gap-1.5">
-                              <Loader2 className="h-4 w-4 animate-spin" /> Sending
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-1.5">
-                              <Send className="h-3.5 w-3.5" /> Send OTP
-                            </span>
-                          )}
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            setIsOtpSent(false)
-                            setOtpCode("")
-                          }}
-                          className="border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs rounded-xl h-12 px-3 shrink-0"
-                        >
-                          Edit No.
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* OTP verification input section (appears after sending OTP) */}
-                    {isOtpSent && (
-                      <div className="space-y-3 pt-2 border-t border-white/10">
-                        <div className="flex items-center justify-between text-[11px] text-slate-400 bg-black/40 p-2.5 rounded-xl border border-white/5">
-                          <span>OTP sent via SMS to <strong className="text-white font-mono">+91 {phoneNumber}</strong></span>
-                          <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">SMS 56161</span>
+                  {isPhoneVerified ? (
+                    <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                          <CheckCircle className="h-4 w-4 text-emerald-400" />
                         </div>
-
-                        <div className="flex gap-2">
+                        <div>
+                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <Smartphone className="h-3 w-3" /> Phone Verified
+                          </p>
+                          <p className="text-xs font-mono font-bold text-white tracking-wide">
+                            {verifiedPhone}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsPhoneVerified(false)
+                          setVerifiedPhone("")
+                          setIsOtpSent(false)
+                          setOtpCode("")
+                        }}
+                        className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider underline transition-colors cursor-pointer"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 flex flex-col space-y-3">
+                      {/* Phone number input row */}
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-emerald-400">
+                            +91
+                          </span>
                           <Input
-                            type="text"
-                            placeholder="••••••"
-                            maxLength={6}
-                            value={otpCode}
+                            type="tel"
+                            placeholder="9876543210"
+                            disabled={isOtpSent}
+                            value={phoneNumber}
                             onChange={(e) => {
-                              setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                              setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
                               setPhoneError("")
                             }}
-                            className="bg-black/60 border-white/10 text-white text-center tracking-[0.4em] font-mono font-bold placeholder:text-slate-600 rounded-xl h-12 text-base focus:border-emerald-500"
-                            autoFocus
+                            className="bg-black/60 border-white/10 text-white placeholder:text-slate-600 rounded-xl h-12 pl-12 text-sm font-mono tracking-wider focus:border-emerald-500 disabled:opacity-60"
                           />
+                        </div>
+
+                        {!isOtpSent ? (
                           <Button
                             type="button"
-                            onClick={handleVerifyOtp}
-                            disabled={isVerifyingOtp || otpCode.length !== 6}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-12 px-6 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            onClick={handleSendOtp}
+                            disabled={isSendingOtp || phoneNumber.length < 10}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-12 px-5 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                           >
-                            {isVerifyingOtp ? (
+                            {isSendingOtp ? (
                               <span className="flex items-center gap-1.5">
-                                <Loader2 className="h-4 w-4 animate-spin" /> Verifying
+                                <Loader2 className="h-4 w-4 animate-spin" /> Sending
                               </span>
                             ) : (
-                              "Verify OTP"
+                              <span className="flex items-center gap-1.5">
+                                <Send className="h-3.5 w-3.5" /> Send OTP
+                              </span>
                             )}
                           </Button>
-                        </div>
-
-                        <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
-                          <span>Valid for 10 minutes</span>
-                          {otpCountdown > 0 ? (
-                            <span className="text-slate-400 font-mono">Resend in {otpCountdown}s</span>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={handleSendOtp}
-                              disabled={isSendingOtp}
-                              className="text-emerald-400 hover:text-emerald-300 underline font-bold cursor-pointer"
-                            >
-                              Resend OTP SMS
-                            </button>
-                          )}
-                        </div>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              setIsOtpSent(false)
+                              setOtpCode("")
+                            }}
+                            className="border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs rounded-xl h-12 px-3 shrink-0"
+                          >
+                            Edit No.
+                          </Button>
+                        )}
                       </div>
-                    )}
 
-                    {phoneError && (
-                      <p className="text-xs font-semibold text-rose-400 normal-case text-center pt-1 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl leading-relaxed">
-                        {phoneError}
-                      </p>
-                    )}
+                      {/* OTP verification input section (appears after sending OTP) */}
+                      {isOtpSent && (
+                        <div className="space-y-3 pt-2 border-t border-white/10">
+                          <div className="flex items-center justify-between text-[11px] text-slate-400 bg-black/40 p-2.5 rounded-xl border border-white/5">
+                            <span>OTP sent via SMS to <strong className="text-white font-mono">+91 {phoneNumber}</strong></span>
+                            <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">SMS 56161</span>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Input
+                              type="text"
+                              placeholder="••••••"
+                              maxLength={6}
+                              value={otpCode}
+                              onChange={(e) => {
+                                setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                                setPhoneError("")
+                              }}
+                              className="bg-black/60 border-white/10 text-white text-center tracking-[0.4em] font-mono font-bold placeholder:text-slate-600 rounded-xl h-12 text-base focus:border-emerald-500"
+                              autoFocus
+                            />
+                            <Button
+                              type="button"
+                              onClick={handleVerifyOtp}
+                              disabled={isVerifyingOtp || otpCode.length !== 6}
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-12 px-6 shrink-0 shadow-lg shadow-emerald-500/20 disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            >
+                              {isVerifyingOtp ? (
+                                <span className="flex items-center gap-1.5">
+                                  <Loader2 className="h-4 w-4 animate-spin" /> Verifying
+                                </span>
+                              ) : (
+                                "Verify OTP"
+                              )}
+                            </Button>
+                          </div>
+
+                          <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
+                            <span>Valid for 10 minutes</span>
+                            {otpCountdown > 0 ? (
+                              <span className="text-slate-400 font-mono">Resend in {otpCountdown}s</span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={handleSendOtp}
+                                disabled={isSendingOtp}
+                                className="text-emerald-400 hover:text-emerald-300 underline font-bold cursor-pointer"
+                              >
+                                Resend OTP SMS
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {phoneError && (
+                        <p className="text-xs font-semibold text-rose-400 normal-case text-center pt-1 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl leading-relaxed">
+                          {phoneError}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <label htmlFor="phoneNumber" className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
+                    <span>Mobile Number</span>
+                    <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Required for batch updates</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-emerald-400">
+                      +91
+                    </span>
+                    <Input
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      type="tel"
+                      placeholder="9876543210"
+                      value={phoneNumber}
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
+                        setError("")
+                      }}
+                      className="pl-14 bg-white/[0.04] border-white/10 rounded-2xl h-12 text-white placeholder:text-slate-600 focus:border-emerald-500/50 transition-all font-mono tracking-wider font-medium"
+                      required
+                    />
                   </div>
-                )}
-              </div>
+                  <p className="text-[10px] text-slate-500 ml-4">
+                    Live batch invites, mentor links &amp; certification will be sent here.
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <label htmlFor="password" className="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4">

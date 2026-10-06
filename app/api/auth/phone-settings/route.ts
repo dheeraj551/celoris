@@ -8,7 +8,7 @@ export async function GET() {
     const supabase = createSupabaseClientForServer()
     const { data, error } = await supabase
       .from('auth_settings')
-      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled')
+      .select('phone_verification_enabled, phone_email_client_id, whatsapp_otp_enabled, twilio_otp_enabled')
       .eq('id', 1)
       .maybeSingle()
 
@@ -18,16 +18,18 @@ export async function GET() {
         enabled: false,
         clientId: '',
         whatsappOtpEnabled: false,
+        twilioOtpEnabled: false,
       })
     }
 
-    const twilioConfigured = Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_VERIFY_SERVICE_SID)
+    const envForced = process.env.REQUIRE_PHONE_OTP === 'true'
+    const twilioOtpEnabled = envForced || Boolean(data?.twilio_otp_enabled)
 
     return NextResponse.json({
       enabled: Boolean(data?.phone_verification_enabled),
       clientId: data?.phone_email_client_id || '',
       whatsappOtpEnabled: Boolean(data?.whatsapp_otp_enabled ?? false),
-      twilioOtpEnabled: twilioConfigured,
+      twilioOtpEnabled,
     })
   } catch (err: any) {
     console.error('Phone settings exception:', err)
@@ -35,7 +37,7 @@ export async function GET() {
       enabled: false,
       clientId: '',
       whatsappOtpEnabled: false,
-      twilioOtpEnabled: Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_VERIFY_SERVICE_SID),
+      twilioOtpEnabled: false,
     })
   }
 }
