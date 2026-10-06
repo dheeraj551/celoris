@@ -3,7 +3,7 @@ import { Calendar, User, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react'
 import ShareButtons from '@/components/ShareButtons';
 import BlogEngagement from '@/components/blog/BlogEngagement';
 import { createServerClient } from '@/lib/supabase-server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Metadata } from 'next';
 import { marked } from 'marked';
@@ -20,6 +20,9 @@ function cleanTitle(t: string) {
 }
 
 async function postMetadata(slug: string): Promise<{ title: string; description?: string; image?: string } | null> {
+  if (slug === 'online-teaching-jobs-in-delhi-2025') {
+    return postMetadata('online-teaching-jobs-in-delhi-ncr-2026-complete-guide-mentor-directory');
+  }
   if (slug === 'zero-keyframes-motion-swap-puppet-rigging-2026') {
     return {
       title: "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",
@@ -95,6 +98,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
+
+  if (slug === 'online-teaching-jobs-in-delhi-2025') {
+    redirect('/blog/online-teaching-jobs-in-delhi-ncr-2026-complete-guide-mentor-directory');
+  }
 
   // Hardcoded data for the new blog post to bypass database requirements
   if (slug === 'excel-copilot-modes-2026') {
