@@ -39,8 +39,16 @@ export async function POST(req: Request) {
     const result = await sendTwilioOtp(formattedPhone, 'sms')
 
     if (!result.success) {
+      let friendlyError = result.error || 'Failed to send OTP'
+      if (
+        friendlyError.toLowerCase().includes('trial') ||
+        friendlyError.toLowerCase().includes('verified tester')
+      ) {
+        friendlyError =
+          'Twilio Trial Notice: In trial mode, SMS can only be sent to numbers added as a "Verified Caller ID / Tester" in your Twilio Console (Verify > Try it out). To send OTPs to all users without restrictions, please click "Upgrade Account" in Twilio.'
+      }
       return NextResponse.json(
-        { error: result.error || 'Failed to send OTP' },
+        { error: friendlyError },
         { status: 400 }
       )
     }

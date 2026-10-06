@@ -637,7 +637,7 @@ export default function RegisterPage() {
                     )}
 
                     {phoneError && (
-                      <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider text-center pt-1 bg-rose-500/10 border border-rose-500/20 p-2 rounded-xl">
+                      <p className="text-xs font-semibold text-rose-400 normal-case text-center pt-1 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl leading-relaxed">
                         {phoneError}
                       </p>
                     )}
