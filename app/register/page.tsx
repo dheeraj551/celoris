@@ -32,8 +32,8 @@ export default function RegisterPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
 
-  // Twilio Phone & SMS OTP verification states
-  const [requirePhoneOtp, setRequirePhoneOtp] = useState(false)
+  // Twilio Phone & SMS OTP verification toggle (set to false while upgrading Twilio account)
+  const requirePhoneOtp = false
   const [phoneNumber, setPhoneNumber] = useState("")
   const [otpCode, setOtpCode] = useState("")
   const [isOtpSent, setIsOtpSent] = useState(false)
@@ -43,22 +43,6 @@ export default function RegisterPage() {
   const [verifiedPhone, setVerifiedPhone] = useState("")
   const [phoneError, setPhoneError] = useState("")
   const [otpCountdown, setOtpCountdown] = useState(0)
-
-  // Fetch phone verification settings on mount
-  useEffect(() => {
-    async function checkPhoneSettings() {
-      try {
-        const res = await fetch("/api/auth/phone-settings", { cache: "no-store" })
-        if (res.ok) {
-          const data = await res.json()
-          setRequirePhoneOtp(Boolean(data.twilioOtpEnabled || data.whatsappOtpEnabled))
-        }
-      } catch (err) {
-        console.error("Could not fetch phone settings:", err)
-      }
-    }
-    checkPhoneSettings()
-  }, [])
 
   // Resend OTP countdown timer
   useEffect(() => {
