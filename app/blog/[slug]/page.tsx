@@ -30,6 +30,13 @@ async function postMetadata(slug: string): Promise<{ title: string; description?
       image: "/indian-creator-freelancer-monetization-guide-2026.jpg",
     };
   }
+  if (slug === 'premiere-pro-ai-efficiency-guide-2026') {
+    return {
+      title: "The AI Post-Production Blueprint: Quantifying Efficiency, Workflows, and Enterprise ROI in Adobe Premiere Pro",
+      description: "Enterprise benchmark data reveals how native AI in Adobe Premiere Pro reduces project assembly times by up to 70%.",
+      image: "/premiere-pro-ai-efficiency-guide-2026.jpg",
+    };
+  }
   if (slug === 'zero-keyframes-motion-swap-puppet-rigging-2026') {
     return {
       title: "Zero Keyframes: How Creators Are Using Motion-Swap & Puppet Rigging to Produce Viral Animated Shorts",

@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'premiere-pro-ai-efficiency-guide-2026',
+      title: "The AI Post-Production Blueprint: Quantifying Efficiency, Workflows, and Enterprise ROI in Adobe Premiere Pro",
+      slug: 'premiere-pro-ai-efficiency-guide-2026',
+      excerpt: "Enterprise benchmark data reveals how native AI in Adobe Premiere Pro—Text-Based Editing, Generative Extend via Firefly, Essential Sound, Lumetri Color Match, and Auto Reframe—slashes assembly time by up to 70%, shifting editors to scalable value-based retainers.",
+      featured_image_url: "/premiere-pro-ai-efficiency-guide-2026.jpg",
+      author_name: 'Celoris Video & AI Editorial Lab',
+      category: 'AI Video • Post-Production',
+      reading_time: 15,
+      published_at: '2026-10-08T09:00:00Z',
+    },
+    {
       id: 'the-real-economics-of-online-education-2026',
       title: "The Real Economics of Online Education in 2026: Why Creators Are Fleeing Legacy Platforms for Zero-Commission Ecosystems",
       slug: 'the-real-economics-of-online-education-2026',
