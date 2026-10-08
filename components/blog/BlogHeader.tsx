@@ -15,18 +15,18 @@ export function BlogHeader() {
       <div className="space-y-4">
         <Link
           href="/"
-          className="group flex items-center gap-2 text-sm font-bold text-emerald-500 hover:text-emerald-400 transition-colors uppercase tracking-widest"
+          className="group flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors tracking-wide"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           Back to Home
         </Link>
-        <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter">
-          Celoris <span className="text-emerald-500 italic">Blog</span>
+        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight">
+          Celoris <span className="text-amber-400 font-serif italic">Journal</span>
         </h1>
       </div>
       <div className="max-w-md text-left md:text-right">
-        <p className="text-lg text-slate-400 font-medium leading-relaxed">
-          Stay updated with the latest trends in <span className="text-white">AI</span>, <span className="text-white">creative tools</span>, and the future of <span className="text-white">digital transformation</span> in India.
+        <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
+          Production blueprints, post-production workflows, and creative strategies direct from our studio floor.
         </p>
       </div>
     </motion.div>

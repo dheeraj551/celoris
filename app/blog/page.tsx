@@ -593,10 +593,10 @@ export default async function BlogPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#050810] text-slate-300 relative overflow-hidden">
-      {/* Decorative Glows */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none opacity-50" />
+    <div className="min-h-screen bg-[#090a0d] text-slate-200 relative overflow-hidden">
+      {/* Warm Ambient Studio Lighting */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-amber-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-rose-500/[0.03] rounded-full blur-[140px] pointer-events-none" />
 
       <script
         type="application/ld+json"

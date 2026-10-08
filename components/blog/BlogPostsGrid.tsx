@@ -26,13 +26,13 @@ interface BlogPostsGridProps {
 }
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' as const } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
 }
 
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.09 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 }
 
 function formatDate(dateString: string) {
@@ -49,13 +49,13 @@ function formatDate(dateString: string) {
 
 function PostMeta({ post }: { post: BlogPost }) {
   return (
-    <div className="flex flex-wrap items-center gap-4 text-slate-500 text-[11px] font-bold uppercase tracking-widest">
+    <div className="flex flex-wrap items-center gap-4 text-slate-400 text-[11px] font-bold uppercase tracking-wider">
       <div className="flex items-center gap-1.5">
-        <Calendar className="h-3.5 w-3.5 text-emerald-500" />
+        <Calendar className="h-3.5 w-3.5 text-amber-400" />
         {formatDate(post.published_at)}
       </div>
       <div className="flex items-center gap-1.5">
-        <Clock className="h-3.5 w-3.5 text-emerald-500" />
+        <Clock className="h-3.5 w-3.5 text-amber-400" />
         {post.reading_time} min read
       </div>
     </div>
@@ -65,12 +65,12 @@ function PostMeta({ post }: { post: BlogPost }) {
 function AuthorBadge({ post }: { post: BlogPost }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-600 flex items-center justify-center text-white font-black text-sm border border-white/10 shadow-lg shrink-0">
+      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500 to-rose-600 flex items-center justify-center text-white font-black text-sm border border-white/10 shadow-lg shrink-0">
         {post.author_name ? post.author_name.charAt(0) : 'C'}
       </div>
       <div>
         <p className="text-xs font-bold text-white leading-tight">{post.author_name || 'Celoris'}</p>
-        <p className="text-[9px] text-emerald-500/80 font-bold uppercase tracking-tighter">Verified Creator</p>
+        <p className="text-[10px] text-amber-400/90 font-medium tracking-wide">Studio Contributor</p>
       </div>
     </div>
   )
@@ -79,8 +79,8 @@ function AuthorBadge({ post }: { post: BlogPost }) {
 export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridProps) {
   if (posts.length === 0) {
     return (
-      <div className="text-center py-24 bg-white/5 rounded-[2.5rem] border border-white/5 backdrop-blur-sm">
-        <p className="text-slate-500 text-xl font-medium">No insights found yet. Check back soon!</p>
+      <div className="text-center py-24 bg-white/5 rounded-3xl border border-white/5 backdrop-blur-sm">
+        <p className="text-slate-400 text-lg font-medium">No articles found yet. Check back soon!</p>
       </div>
     )
   }
@@ -93,13 +93,13 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
     <div>
       {/* Featured hero post */}
       {featured && (
-        <div className="mb-10">
+        <div className="mb-12">
           <SpotlightCard
-            radius="2.5rem"
-            beamColor="rgba(16, 185, 129, 0.85)"
-            glowColor="rgba(16, 185, 129, 0.12)"
-            className="shadow-[0_0_80px_rgba(16,185,129,0.12)]"
-            innerClassName="bg-[#0a0f1d] overflow-hidden"
+            radius="2rem"
+            beamColor="rgba(245, 158, 11, 0.75)"
+            glowColor="rgba(245, 158, 11, 0.08)"
+            className="shadow-[0_0_60px_rgba(245,158,11,0.06)]"
+            innerClassName="bg-[#111217] border border-white/5 overflow-hidden"
           >
             <motion.article
               initial="hidden"
@@ -107,51 +107,75 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
               variants={fadeUp}
               className="group relative"
             >
-          <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/2 aspect-video lg:aspect-auto overflow-hidden relative">
-              <Link href={`/blog/${featured.slug}`}>
-                <motion.img
-                  src={featured.featured_image_url || "/images/homepage/hero.png"}
-                  alt={featured.title}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.06 }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
-                />
-              </Link>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute top-6 left-6 flex items-center gap-2">
-                <span className="bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg shadow-emerald-500/30">
-                  Latest
-                </span>
-                <span className="bg-black/60 backdrop-blur-md text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border border-emerald-500/30">
-                  {featured.category}
-                </span>
+              <div className="flex flex-col lg:flex-row">
+                {/* Visual / Motion Banner */}
+                <div className="lg:w-1/2 aspect-video lg:aspect-auto overflow-hidden relative">
+                  <Link href={`/blog/${featured.slug}`}>
+                    {featured.slug === 'premiere-pro-ai-efficiency-guide-2026' ? (
+                      <video
+                        src="/premiere-pro-ai-banner.mp4"
+                        poster={featured.featured_image_url || "/premiere-pro-ai-efficiency-guide-2026.jpg"}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    ) : (
+                      <motion.img
+                        src={featured.featured_image_url || "/images/homepage/hero.png"}
+                        alt={featured.title}
+                        className="w-full h-full object-cover"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                      />
+                    )}
+                  </Link>
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Badges */}
+                  <div className="absolute top-5 left-5 flex items-center gap-2">
+                    <span className="bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-lg shadow-amber-500/20">
+                      Featured
+                    </span>
+                    <span className="bg-black/75 backdrop-blur-md text-amber-300 text-[10px] font-bold tracking-wider px-3.5 py-1.5 rounded-full border border-amber-500/30">
+                      {featured.category}
+                    </span>
+                  </div>
+
+                  {featured.slug === 'premiere-pro-ai-efficiency-guide-2026' && (
+                    <div className="absolute top-5 right-5 flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 text-[10px] font-bold text-amber-300">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      Live Motion
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
+                  <div className="mb-4"><PostMeta post={featured} /></div>
+
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-4 group-hover:text-amber-400 transition-colors leading-tight tracking-tight">
+                    <Link href={`/blog/${featured.slug}`}>{featured.title}</Link>
+                  </h2>
+
+                  <p className="text-slate-300 text-base leading-relaxed mb-6 line-clamp-3">
+                    {featured.excerpt || 'Discover the full breakdown inside...'}
+                  </p>
+
+                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                    <AuthorBadge post={featured} />
+                    <Link
+                      href={`/blog/${featured.slug}`}
+                      className="inline-flex items-center gap-2 text-amber-400 hover:text-slate-950 hover:bg-amber-400 transition-all rounded-full px-5 py-2.5 font-bold tracking-wider text-xs border border-amber-500/30 shadow-md"
+                    >
+                      Read Article
+                      <ArrowUpRight className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
-              <div className="mb-5"><PostMeta post={featured} /></div>
-
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 group-hover:text-emerald-400 transition-colors leading-[1.05] tracking-tight">
-                <Link href={`/blog/${featured.slug}`}>{featured.title}</Link>
-              </h2>
-
-              <p className="text-slate-400 text-lg leading-relaxed mb-8 line-clamp-3 italic">
-                "{featured.excerpt || 'Discover more insights inside...'}"
-              </p>
-
-              <div className="mt-auto flex items-center justify-between">
-                <AuthorBadge post={featured} />
-                <Link
-                  href={`/blog/${featured.slug}`}
-                  className="inline-flex items-center gap-2 text-emerald-500 hover:text-white hover:bg-emerald-500 transition-all rounded-full px-6 py-3 font-bold uppercase tracking-widest text-[10px] border border-emerald-500/20"
-                >
-                  Read Insights
-                  <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          </div>
             </motion.article>
           </SpotlightCard>
         </div>
@@ -170,21 +194,21 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
             <motion.article
               key={post.id}
               variants={fadeUp}
-              whileHover={{ y: -6 }}
+              whileHover={{ y: -5 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="group flex flex-col bg-[#0a0f1d] rounded-[2rem] border border-white/5 hover:border-emerald-500/30 transition-colors duration-500 overflow-hidden shadow-xl hover:shadow-emerald-500/10"
+              className="group flex flex-col bg-[#131419] rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-amber-500/5"
             >
               <div className="aspect-video overflow-hidden relative">
                 <Link href={`/blog/${post.slug}`}>
                   <img
                     src={post.featured_image_url || "/images/homepage/hero.png"}
                     alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors pointer-events-none" />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-black/60 backdrop-blur-md text-emerald-400 text-[9px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-full border border-emerald-500/30">
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors pointer-events-none" />
+                <div className="absolute top-3.5 left-3.5">
+                  <span className="bg-black/75 backdrop-blur-md text-amber-300 text-[9px] font-bold tracking-wider px-3 py-1 rounded-full border border-amber-500/30">
                     {post.category}
                   </span>
                 </div>
@@ -193,11 +217,11 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
               <div className="flex-1 p-6 flex flex-col">
                 <div className="mb-3"><PostMeta post={post} /></div>
 
-                <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors leading-snug tracking-tight line-clamp-2">
+                <h3 className="text-lg font-bold text-white mb-3 group-hover:text-amber-400 transition-colors leading-snug tracking-tight line-clamp-2">
                   <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                 </h3>
 
-                <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-1">
+                <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 flex-1">
                   {post.excerpt || 'Discover more insights inside...'}
                 </p>
 
@@ -206,9 +230,9 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
                   <Link
                     href={`/blog/${post.slug}`}
                     aria-label={`Read ${post.title}`}
-                    className="flex items-center justify-center w-8 h-8 rounded-full border border-emerald-500/20 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-black transition-all shrink-0"
+                    className="flex items-center justify-center w-8 h-8 rounded-full border border-amber-500/30 text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-950 transition-all shrink-0"
                   >
-                    <ArrowUpRight className="h-3.5 w-3.5" />
+                    <ArrowUpRight className="h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -229,7 +253,7 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
           <Link
             href={`/blog?page=${currentPage - 1}`}
             className={cn(
-              "inline-flex items-center gap-2 bg-white/5 border border-white/10 text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all rounded-2xl px-6 h-12 font-bold uppercase tracking-widest text-[10px]",
+              "inline-flex items-center gap-2 bg-white/5 border border-white/10 text-white hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 transition-all rounded-xl px-5 h-11 font-bold tracking-wider text-xs",
               currentPage <= 1 && "opacity-50 pointer-events-none"
             )}
           >
@@ -239,14 +263,14 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
 
           <div className="flex items-center gap-2">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <motion.div key={pageNum} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+              <motion.div key={pageNum} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   href={`/blog?page=${pageNum}`}
                   className={cn(
-                    "flex items-center justify-center w-12 h-12 rounded-2xl font-bold transition-all border",
+                    "flex items-center justify-center w-11 h-11 rounded-xl font-bold transition-all border text-xs",
                     currentPage === pageNum
-                      ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
-                      : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-emerald-500/50"
+                      ? "bg-amber-500 text-slate-950 border-amber-500 shadow-lg shadow-amber-500/20"
+                      : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-amber-500/50"
                   )}
                 >
                   {pageNum}
@@ -258,7 +282,7 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
           <Link
             href={`/blog?page=${currentPage + 1}`}
             className={cn(
-              "inline-flex items-center gap-2 bg-white/5 border border-white/10 text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all rounded-2xl px-6 h-12 font-bold uppercase tracking-widest text-[10px]",
+              "inline-flex items-center gap-2 bg-white/5 border border-white/10 text-white hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 transition-all rounded-xl px-5 h-11 font-bold tracking-wider text-xs",
               currentPage >= totalPages && "opacity-50 pointer-events-none"
             )}
           >

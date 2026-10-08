@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+  <title>Celoris Blog Motion Banner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #06070a;
+      font-family: 'Montserrat', sans-serif;
+    }
+    #stage {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #08090d;
+    }
+    #hero-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+    }
+    #hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* Film vignette */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(6,7,10,0.55) 100%);
+    }
+    /* Ambient warm studio glow */
+    .warm-glow {
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+    /* Anamorphic light sweep */
+    #light-sweep {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 340px;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.06) 40%, 
+        rgba(245, 158, 11, 0.18) 50%, 
+        rgba(255,255,255,0.08) 60%, 
+        rgba(255,255,255,0) 100%
+      );
+      transform: skewX(-24deg);
+      pointer-events: none;
+      opacity: 0;
+    }
+    /* Timeline playhead line scanning along bottom */
+    #playhead {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 3px;
+      height: 380px;
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0) 0%, rgba(245, 158, 11, 0.9) 70%, #ffffff 100%);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.9);
+      pointer-events: none;
+      opacity: 0.85;
+    }
+    /* Live Recording Studio HUD Tag */
+    .hud-tag {
+      position: absolute;
+      top: 40px;
+      right: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 22px;
+      background: rgba(10, 11, 16, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .rec-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 10px #ef4444;
+    }
+    .hud-text {
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .hud-sub {
+      color: #f59e0b;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    /* Audio Equalizer Bars in lower corner */
+    .audio-hud {
+      position: absolute;
+      bottom: 40px;
+      right: 48px;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 40px;
+      padding: 8px 14px;
+      background: rgba(10, 11, 16, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+    .eq-bar {
+      width: 4px;
+      height: 24px;
+      background: #f59e0b;
+      border-radius: 2px;
+      transform-origin: bottom center;
+    }
+    .timecode {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: 10px;
+      letter-spacing: 1.5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="blog-motion-banner" data-width="1920" data-height="1080">
+    <!-- Hero Image Layer -->
+    <div id="hero-layer">
+      <img id="hero-img" src="./hero.jpg" alt="Premiere Pro AI Workflow" />
+    </div>
+
+    <!-- Vignette & Warm Glow -->
+    <div class="vignette"></div>
+    <div class="warm-glow" data-layout-allow-overflow></div>
+
+    <!-- Anamorphic Light Sweep -->
+    <div id="light-sweep" data-layout-allow-overflow></div>
+
+    <!-- Timeline Playhead -->
+    <div id="playhead"></div>
+
+    <!-- Studio HUD Badge -->
+    <div class="hud-tag">
+      <div class="rec-dot" id="rec-dot"></div>
+      <span class="hud-text">Live Production Edit</span>
+      <span class="hud-sub">· 4K 60FPS</span>
+    </div>
+
+    <!-- Audio Equalizer Bars HUD -->
+    <div class="audio-hud">
+      <div class="eq-bar" id="eq1"></div>
+      <div class="eq-bar" id="eq2"></div>
+      <div class="eq-bar" id="eq3"></div>
+      <div class="eq-bar" id="eq4"></div>
+      <div class="eq-bar" id="eq5"></div>
+      <span class="timecode">01:14:28:12</span>
+    </div>
+  </div>
+
+  <script>
+    const tl = gsap.timeline();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["blog-motion-banner"] = tl;
+
+    // 1. Subtle camera breathe zoom
+    tl.to("#hero-layer", {
+      scale: 1.03,
+      duration: 3.0,
+      ease: "sine.inOut"
+    }, 0);
+
+    // 2. Anamorphic light sweep across the editing suite
+    tl.fromTo("#light-sweep", 
+      { x: -500, opacity: 0 },
+      { x: 2300, opacity: 0.95, duration: 2.2, ease: "power1.inOut" },
+      0.3
+    );
+    tl.to("#light-sweep", { opacity: 0, duration: 0.4, overwrite: "auto" }, 2.5);
+
+    // 3. Playhead moving across timeline
+    tl.fromTo("#playhead",
+      { x: 300, opacity: 0.8 },
+      { x: 1650, opacity: 0.8, duration: 3.0, ease: "none" },
+      0
+    );
+
+    // 4. Rec dot pulse
+    tl.to("#rec-dot", {
+      opacity: 0.3,
+      duration: 0.75,
+      repeat: 3,
+      yoyo: true,
+      ease: "power2.inOut"
+    }, 0);
+
+    // 5. Audio equalizer bars bouncing
+    tl.to("#eq1", { scaleY: 0.3, duration: 0.35, repeat: 7, yoyo: true, ease: "sine.inOut" }, 0);
+    tl.to("#eq2", { scaleY: 0.85, duration: 0.28, repeat: 9, yoyo: true, ease: "sine.inOut" }, 0.05);
+    tl.to("#eq3", { scaleY: 0.4, duration: 0.42, repeat: 6, yoyo: true, ease: "sine.inOut" }, 0.1);
+    tl.to("#eq4", { scaleY: 1.0, duration: 0.32, repeat: 8, yoyo: true, ease: "sine.inOut" }, 0.15);
+    tl.to("#eq5", { scaleY: 0.5, duration: 0.38, repeat: 7, yoyo: true, ease: "sine.inOut" }, 0.08);
+  </script>
+</body>
+</html>
