@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Room } from './types';
+import { formatClassTime, nextSession } from '@/lib/class-schedule';
 import { 
   Users, 
   Lock, 
@@ -53,8 +54,21 @@ const CATEGORY_META: Record<string, { label: string; icon: any; color: string; b
 export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser, onDeleteRoom }: RoomsGridProps) {
   const [filterType, setFilterType] = useState<'all' | 'classroom' | 'whiteboard' | 'live'>('all');
   const [search, setSearch] = useState('');
+  const [now, setNow] = useState<Date>(() => new Date());
+
+  // Keep schedule timers, countdowns and live badges updated in real-time
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 20000);
+    return () => clearInterval(timer);
+  }, []);
 
   const isLive = (room: Room) => {
+    const session = nextSession({
+      next_class_at: room.nextClassAt,
+      class_duration_minutes: room.classDurationMinutes,
+      repeats_weekly: room.repeatsWeekly,
+    }, now);
+    if (session?.isLive) return true;
     const s = (room.status || '').toLowerCase();
     return s.includes('live') || s.includes('progress');
   };
@@ -140,10 +154,35 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
           {filteredRooms.map((room) => {
             const meta = CATEGORY_META[room.category] || CATEGORY_META.classroom;
             const CategoryIcon = meta.icon;
-            const roomIsLive = isLive(room);
             const seats = room.maxStudents ?? 15;
             const taken = Math.max(0, room.onlineCount ?? 0);
             const percentFilled = Math.min(100, Math.round((taken / seats) * 100));
+
+            // Dynamic session and real-time schedule calculation
+            const session = nextSession({
+              next_class_at: room.nextClassAt,
+              class_duration_minutes: room.classDurationMinutes,
+              repeats_weekly: room.repeatsWeekly,
+            }, now);
+
+            const roomIsLive = session?.isLive || isLive(room);
+            const msUntilStart = session && !session.isLive ? session.start.getTime() - now.getTime() : null;
+            const startsSoon = msUntilStart !== null && msUntilStart > 0 && msUntilStart <= 45 * 60 * 1000;
+            const isToday = session && !session.isLive && (
+              now.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) ===
+              session.start.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })
+            );
+
+            // Clean batch info if it contains duplicate / stale "Next Class" text
+            let cleanedBatch = (room.nextBatchInfo || '').trim();
+            if (session && cleanedBatch) {
+              const parts = cleanedBatch.split(/\s*\|\s*next class/i);
+              if (parts.length > 1) {
+                cleanedBatch = parts[0].trim();
+              } else if (/^next class/i.test(cleanedBatch)) {
+                cleanedBatch = '';
+              }
+            }
 
             return (
               <div
@@ -175,9 +214,28 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
 
                       {/* Live or Status Pill */}
                       {roomIsLive ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-[10px] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-[10px] font-mono font-bold tracking-wide">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                           LIVE
+                        </span>
+                      ) : startsSoon ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-mono font-bold tracking-wide">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                          STARTS IN {Math.max(1, Math.round(msUntilStart! / 60000))}M
+                        </span>
+                      ) : isToday && session ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-[10px] font-mono font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                          TODAY · {session.start.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true })}
+                        </span>
+                      ) : session ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/25 text-purple-300 text-[10px] font-mono font-semibold">
+                          <Clock className="w-3 h-3 text-purple-400" />
+                          {session.start.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' })}
+                        </span>
+                      ) : room.status === 'Full' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 text-[10px] font-mono font-semibold">
+                          FULL
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] font-mono font-semibold">
@@ -216,12 +274,44 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                   )}
 
                   {/* Schedule time notice */}
-                  {room.nextBatchInfo && (
-                    <div className="mb-3 text-[11px] text-purple-200 bg-purple-500/10 border border-purple-500/25 rounded-xl px-2.5 py-1.5 flex items-start gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-white">Next Batch: </span>
-                        <span>{room.nextBatchInfo}</span>
+                  {(session || cleanedBatch) && (
+                    <div className={`mb-3 text-[11px] rounded-xl px-2.5 py-2 flex items-start gap-2 border ${
+                      roomIsLive 
+                        ? 'bg-red-500/10 border-red-500/30 text-red-200' 
+                        : 'bg-purple-500/10 border-purple-500/25 text-purple-200'
+                    }`}>
+                      {roomIsLive ? (
+                        <Radio className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5 animate-pulse" />
+                      ) : (
+                        <Clock className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
+                      )}
+                      <div className="min-w-0 flex-1 leading-tight">
+                        {roomIsLive ? (
+                          <div>
+                            <span className="font-bold text-red-300">Live Class in Progress</span>
+                            <span className="block text-[10px] text-red-200/80 mt-0.5">
+                              Session active now • Enter to join podium
+                            </span>
+                          </div>
+                        ) : session ? (
+                          <div>
+                            <div className="flex items-center gap-1 flex-wrap">
+                              <span className="font-bold text-white">Next Class:</span>
+                              <span className="font-semibold text-purple-300">{formatClassTime(session.start)} IST</span>
+                            </div>
+                            {cleanedBatch && (
+                              <div className="text-[10px] text-purple-300/80 mt-1 flex items-center gap-1">
+                                <span className="text-slate-400 font-medium">Batch:</span>
+                                <span>{cleanedBatch}</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="font-bold text-white">Next Batch: </span>
+                            <span>{cleanedBatch}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

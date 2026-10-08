@@ -168,13 +168,30 @@ export default function App() {
 
     fetchRooms();
 
-    const channel = supabase.channel('public:cafe_classrooms')
+    // Unique channel name to avoid collisions across renders/tabs
+    const channelName = `cafe-classrooms-realtime-${Math.random().toString(36).slice(2, 8)}`;
+    const channel = supabase.channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'cafe_classrooms' }, () => {
         fetchRooms();
       })
       .subscribe();
 
+    // Periodic sync every 20s so live schedules, countdowns, and rollovers stay 100% accurate
+    const syncTimer = setInterval(() => {
+      fetchRooms();
+    }, 20000);
+
+    // Refresh immediately when returning to tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchRooms();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      clearInterval(syncTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       supabase.removeChannel(channel);
     };
   }, []);
