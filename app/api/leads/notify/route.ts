@@ -94,34 +94,56 @@ export async function POST(request: NextRequest) {
       text: `Lead Action: ${action}\nTrainer: ${trainerName} (${trainerEmail})\nStudent: ${studentName} (${studentEmail})\nCourse: ${course}\n${messageText ? `Message: ${messageText}\n` : ''}Time: ${actionTime}`,
     };
 
-    await transporter.sendMail(adminMail);
+    try {
+      await transporter.sendMail(adminMail);
+      console.log('Admin notification email sent successfully for action:', action);
+    } catch (adminErr) {
+      console.warn('Could not deliver email copy to admin:', adminErr);
+    }
 
-    // If this was an internal message and the student provided an email, notify the student directly
-    if (studentEmail && (action === 'Internal Message Sent' || messageText)) {
+    // If the student provided an email, notify them directly
+    if (studentEmail) {
       try {
+        const studentInboxUrl = `https://celorisdesigns.com/inbox?email=${encodeURIComponent(studentEmail)}`;
+        let studentSubject = `💬 Update regarding ${course || 'your learning goals'} from Trainer ${trainerName}`;
+        let studentLeadIntro = `Verified Celoris Trainer <strong>${trainerName}</strong> reviewed your inquiry and sent you an update through Celoris Teach:`;
+        let studentMessageContent = messageText || 'Hello! I have reviewed your learning goals and will be happy to guide you through your training.';
+
+        if (action === 'Mark Contacted') {
+          studentSubject = `🎓 Trainer ${trainerName} has accepted your inquiry for ${course || 'Celoris Training'}`;
+          studentLeadIntro = `Great news! Trainer <strong>${trainerName}</strong> has reviewed and accepted your training inquiry on Celoris Teach.`;
+          studentMessageContent = `Your inquiry for <strong>${course || 'Training'}</strong> has been assigned to Trainer ${trainerName}. You can chat with your instructor and coordinate your schedule directly through your Student Mailbox.`;
+        } else if (action === 'Schedule Demo') {
+          studentSubject = `📅 Demo Session Update for ${course || 'Celoris Training'} with ${trainerName}`;
+          studentLeadIntro = `Trainer <strong>${trainerName}</strong> has scheduled a demo session for your course inquiry:`;
+        } else if (action === 'Internal Message Sent' || messageText) {
+          studentSubject = `💬 New Message regarding ${course || 'your learning goals'} from Trainer ${trainerName}`;
+          studentLeadIntro = `Verified Celoris Trainer <strong>${trainerName}</strong> sent you a direct message regarding your course inquiry:`;
+        }
+
         const studentMail = {
           from: `"Celoris Teach" <${process.env.MAIL_FROM_ADDRESS}>`,
           to: studentEmail,
-          subject: `💬 New Message regarding ${course || 'your learning goals'} from Trainer ${trainerName}`,
+          subject: studentSubject,
           html: `
             <!DOCTYPE html>
             <html>
             <body style="font-family: Arial, sans-serif; color: #333; background: #f9fafb; margin: 0; padding: 24px;">
               <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
                 <div style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 28px 32px;">
-                  <h2 style="margin: 0; font-size: 22px;">Message from Trainer ${trainerName}</h2>
+                  <h2 style="margin: 0; font-size: 22px;">Update from Trainer ${trainerName}</h2>
                   <p style="margin: 6px 0 0; opacity: 0.9; font-size: 14px;">Regarding your course inquiry for <strong>${course || 'General Training'}</strong></p>
                 </div>
                 <div style="padding: 32px;">
                   <p style="font-size: 15px; color: #374151; margin-top: 0;">Hi <strong>${studentName}</strong>,</p>
                   <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
-                    Verified Celoris Trainer <strong>${trainerName}</strong> reviewed your inquiry and sent you the following message through Celoris Teach:
+                    ${studentLeadIntro}
                   </p>
                   <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px; padding: 18px; margin: 24px 0; font-size: 14px; color: #166534; line-height: 1.6;">
-                    "${messageText || 'Hello! I would like to assist you with your learning requirements.'}"
+                    "${studentMessageContent}"
                   </div>
                   <div style="text-align: center; margin: 32px 0 16px;">
-                    <a href="https://celorisdesigns.com/inbox" style="display: inline-block; background: #059669; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(5,150,105,0.25);">
+                    <a href="${studentInboxUrl}" style="display: inline-block; background: #059669; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(5,150,105,0.25);">
                       Open Student Mailbox &amp; Reply
                     </a>
                   </div>
@@ -133,10 +155,12 @@ export async function POST(request: NextRequest) {
             </body>
             </html>
           `,
+          text: `Update from Trainer ${trainerName} regarding ${course || 'Training'}:\n\n${studentMessageContent}\n\nView and reply in your Student Mailbox: ${studentInboxUrl}`,
         };
-        await transporter.sendMail(studentMail);
+        const studentInfo = await transporter.sendMail(studentMail);
+        console.log('Student email dispatched successfully to:', studentEmail, studentInfo.messageId);
       } catch (studentErr) {
-        console.warn('Could not deliver email copy to student, admin notification was sent:', studentErr);
+        console.warn('Could not deliver email copy to student:', studentErr);
       }
     }
 

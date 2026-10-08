@@ -141,7 +141,7 @@ export function TrainerInbox() {
       await supabase.from('inbox_messages').insert({
         trainer_id: profile?.id,
         sender_name: msg.sender_name || 'Student',
-        sender_email: null,
+        sender_email: msg.sender_email || null,
         sender_phone: null,
         subject: `Live ${mode === 'audio' ? 'Audio' : 'Video'} Call Invitation`,
         body: inviteText,
@@ -191,7 +191,7 @@ export function TrainerInbox() {
       await supabase.from('inbox_messages').insert({
         trainer_id: profile.id,
         sender_name: selected.sender_name,
-        sender_email: null,
+        sender_email: selected.sender_email || null,
         sender_phone: null,
         subject: `Re: ${selected.subject}`,
         body: shield.sanitizedText,

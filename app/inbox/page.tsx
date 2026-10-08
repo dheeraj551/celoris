@@ -1,7 +1,8 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail,
@@ -29,7 +30,10 @@ import {
 import { useAuth } from '@/components/providers/AuthProvider'
 import { formatDistanceToNow } from 'date-fns'
 
-export default function StudentInboxPage() {
+function StudentInboxContent() {
+  const searchParams = useSearchParams()
+  const emailParam = searchParams.get('email')?.trim() || ''
+
   const { user, profile, loading: authLoading } = useAuth()
   const [activeTab, setActiveTab] = useState<'messages' | 'inquiries'>('messages')
   const [loading, setLoading] = useState(true)
@@ -40,12 +44,12 @@ export default function StudentInboxPage() {
   const [replySending, setReplySending] = useState(false)
   const [replyError, setReplyError] = useState<string | null>(null)
   const [replySuccess, setReplySuccess] = useState(false)
-  const [lookupEmail, setLookupEmail] = useState('')
-  const [activeEmail, setActiveEmail] = useState('')
+  const [lookupEmail, setLookupEmail] = useState(emailParam)
+  const [activeEmail, setActiveEmail] = useState(emailParam)
   const chatScrollRef = useRef<HTMLDivElement>(null)
 
   const fetchMessagesAndInquiries = async (emailToUse?: string) => {
-    const targetEmail = emailToUse || user?.email || activeEmail
+    const targetEmail = (emailToUse || activeEmail || user?.email || lookupEmail || '').trim().toLowerCase()
     if (!targetEmail) {
       setLoading(false)
       return
@@ -57,13 +61,21 @@ export default function StudentInboxPage() {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
 
-      setMessages(data.messages || [])
-      setInquiries(data.inquiries || [])
+      const fetchedMessages = data.messages || []
+      const fetchedInquiries = data.inquiries || []
+      setMessages(fetchedMessages)
+      setInquiries(fetchedInquiries)
       setActiveEmail(targetEmail)
+      setLookupEmail(targetEmail)
+
+      // Auto-switch to inquiries if user has active course requests but no trainer messages yet
+      if (fetchedMessages.length === 0 && fetchedInquiries.length > 0) {
+        setActiveTab('inquiries')
+      }
 
       // Auto-select first trainer conversation if none selected
-      if (data.messages && data.messages.length > 0 && !selectedTrainerId) {
-        const firstTrainerId = data.messages[0].trainer_id
+      if (fetchedMessages.length > 0 && !selectedTrainerId) {
+        const firstTrainerId = fetchedMessages[0].trainer_id
         setSelectedTrainerId(firstTrainerId)
       }
     } catch (err) {
@@ -74,14 +86,20 @@ export default function StudentInboxPage() {
   }
 
   useEffect(() => {
-    if (!authLoading) {
+    if (emailParam) {
+      setLookupEmail(emailParam)
+      setActiveEmail(emailParam)
+      fetchMessagesAndInquiries(emailParam)
+    } else if (!authLoading) {
       if (user?.email) {
+        setLookupEmail(user.email)
+        setActiveEmail(user.email)
         fetchMessagesAndInquiries(user.email)
       } else {
         setLoading(false)
       }
     }
-  }, [user?.email, authLoading])
+  }, [emailParam, user?.email, authLoading])
 
   useEffect(() => {
     if (chatScrollRef.current) {
@@ -303,22 +321,42 @@ export default function StudentInboxPage() {
                   <span className="text-xs">Loading conversations...</span>
                 </div>
               ) : threadsByTrainer.length === 0 ? (
-                <div className="py-16 px-4 text-center text-neutral-400 space-y-3 my-auto">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-neutral-500">
-                    <MessageSquare className="w-6 h-6" />
+                inquiries.length > 0 ? (
+                  <div className="py-14 px-4 text-center text-neutral-400 space-y-3 my-auto">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
+                      <BookOpen className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white">Inquiries Under Review</h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      We found {inquiries.length} course inquiry submitted under <span className="text-emerald-400 font-mono">{activeEmail}</span>. Trainers are reviewing your requirements.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('inquiries')}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors shadow-md shadow-emerald-600/20"
+                    >
+                      <span>View My Inquiries ({inquiries.length})</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <h3 className="text-sm font-bold text-white">No Messages Yet</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    When trainers reach out regarding your learning requirements, their responses and call invitations will appear right here.
-                  </p>
-                  <Link
-                    href="/learn"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors shadow-md shadow-emerald-600/20"
-                  >
-                    <span>Browse Courses</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+                ) : (
+                  <div className="py-16 px-4 text-center text-neutral-400 space-y-3 my-auto">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-neutral-500">
+                      <MessageSquare className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white">No Messages Yet</h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      When trainers reach out regarding your learning requirements, their responses and call invitations will appear right here.
+                    </p>
+                    <Link
+                      href="/learn"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors shadow-md shadow-emerald-600/20"
+                    >
+                      <span>Browse Courses</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                )
               ) : (
                 <div className="space-y-2 overflow-y-auto flex-1 pr-1 max-h-[600px]">
                   {threadsByTrainer.map((thread) => {
@@ -639,5 +677,20 @@ export default function StudentInboxPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function StudentInboxPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#07090e] flex flex-col items-center justify-center text-neutral-400 gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+          <span className="text-xs">Loading Student Mailbox...</span>
+        </div>
+      }
+    >
+      <StudentInboxContent />
+    </Suspense>
   )
 }
