@@ -20,6 +20,7 @@ import {
   Video,
   Radio,
   ExternalLink,
+  Mail,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { createClient } from '@/lib/supabase-client';
@@ -60,7 +61,7 @@ export function TrainerStudents() {
   );
 
   const openInternalChat = (student: any) => {
-    setChatSubject(`Discussion regarding ${student.course || 'Training Requirements'}`);
+    setChatSubject('');
     setChatMessage('');
     setChatShieldError(null);
     setChatModal({ show: true, student });
@@ -83,7 +84,7 @@ export function TrainerStudents() {
     setChatSending(true);
 
     try {
-      const defaultSubject = chatSubject.trim() || `Course Discussion: ${student.course || 'Training Inquiry'}`;
+      const defaultSubject = chatSubject.trim() || `Discussion regarding ${student.course || 'Training Requirements'}`;
 
       // 1. Insert message into inbox_messages (never store unmasked PII)
       await supabase.from('inbox_messages').insert({
@@ -127,7 +128,7 @@ export function TrainerStudents() {
       setChatMessage('');
       setSuccessPopup({
         show: true,
-        message: `Your message to ${student.name || 'Student'} was sent securely via Celoris.`,
+        message: `Delivered to ${student.name || 'Student'}'s email inbox! Replies will appear directly in your Celoris Inbox.`,
       });
       setTimeout(() => setSuccessPopup(null), 4000);
     } catch (err) {
@@ -456,32 +457,70 @@ export function TrainerStudents() {
                 </button>
               </div>
 
+              {/* Delivery destination explainer */}
+              <div className="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-emerald-50/20 border border-emerald-200/90 rounded-2xl p-3.5 mb-4 text-xs shadow-sm">
+                <div className="flex items-center gap-2 font-bold text-emerald-950 mb-2">
+                  <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Where does the student receive this message?</span>
+                </div>
+                <div className="space-y-1.5 text-emerald-900/90 leading-relaxed pl-1 text-[11px] sm:text-xs">
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-bold text-emerald-700 shrink-0">1.</span>
+                    <span><strong>Direct Email Inbox:</strong> Delivered immediately to the student's email inbox ({chatModal.student?.email ? maskContactInfo(chatModal.student.email) : 'their registered inquiry email'}) with your trainer profile, course subject, and message.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-bold text-emerald-700 shrink-0">2.</span>
+                    <span><strong>1-Click Reply:</strong> The email has a secure <em>"Connect on Celoris Teach"</em> button. When the student replies, their message lands directly in your <strong>Celoris Trainer Inbox</strong>.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-bold text-emerald-700 shrink-0">3.</span>
+                    <span><strong>Contact Privacy Shield:</strong> Personal phone numbers and private email addresses are never exposed to leads, keeping your account 100% compliant.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Template Chips */}
+              <div className="mb-4">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Quick Templates</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    `Hi! I saw your requirement for ${chatModal.student?.course || 'the course'}. I'd love to schedule a free demo session.`,
+                    `Hello! I offer weekend & evening batches with 1-on-1 practical mentorship. Let me know what timing suits you best.`,
+                    `Hi! I can customize a complete learning curriculum based on your career goals. Let's discuss your timeline!`
+                  ].map((tmpl, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setChatMessage(tmpl)}
+                      className="text-left text-xs bg-gray-50 hover:bg-emerald-50 text-gray-700 hover:text-emerald-800 border border-gray-200 hover:border-emerald-300 rounded-lg px-2.5 py-1.5 transition-colors line-clamp-1 max-w-full font-medium"
+                    >
+                      💡 {tmpl}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Subject</label>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Subject</label>
                   <input
                     type="text"
                     value={chatSubject}
                     onChange={(e) => setChatSubject(e.target.value)}
-                    placeholder="Enter subject..."
-                    className="w-full text-sm border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    placeholder={`e.g. Discussion regarding ${chatModal.student?.course || 'Training Requirements'}`}
+                    className="w-full text-sm bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-normal shadow-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Message</label>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Message</label>
                   <textarea
                     rows={4}
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
                     placeholder="Hi! I saw your inquiry for our course. I'd be happy to guide you on syllabus, batch timings, and answers to any questions you have..."
-                    className="w-full text-sm border border-gray-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                    className="w-full text-sm bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none font-normal shadow-sm"
                   />
-                </div>
-
-                <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-start gap-2.5 text-xs text-emerald-900">
-                  <Shield className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>Your message is delivered directly through Celoris Chat. Personal phone numbers and emails remain strictly protected.</span>
                 </div>
 
                 {chatShieldError && (
@@ -608,14 +647,14 @@ export function TrainerStudents() {
             placeholder="Search by student name or course..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white transition-all shadow-sm"
+            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900 placeholder:text-gray-400 transition-all shadow-sm"
           />
         </div>
         <div className="flex gap-3 w-full md:w-auto">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="flex-1 md:flex-none border border-gray-200 rounded-2xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-sm font-medium shadow-sm"
+            className="flex-1 md:flex-none border border-gray-200 rounded-2xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900 text-sm font-medium shadow-sm"
           >
             <option value="all">All Status</option>
             <option value="open">Open</option>

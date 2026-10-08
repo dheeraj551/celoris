@@ -28,7 +28,7 @@ export function TrainerEnquiries() {
   const PAGE_SIZE = 10;
 
   // Success popup state
-  const [successPopup, setSuccessPopup] = useState<{ show: boolean; action: string; studentName: string } | null>(null);
+  const [successPopup, setSuccessPopup] = useState<{ show: boolean; action: string; studentName: string; detail?: string } | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null); // leadId of loading action
 
   // Modals state for PRO gating, Internal Chat, and In-App Calls
@@ -58,7 +58,7 @@ export function TrainerEnquiries() {
   );
 
   const openInternalChat = (enquiry: any) => {
-    setChatSubject(`Discussion regarding ${enquiry.course || 'Training Requirements'}`);
+    setChatSubject('');
     setChatMessage('');
     setChatShieldError(null);
     setChatModal({ show: true, enquiry });
@@ -81,7 +81,7 @@ export function TrainerEnquiries() {
     setChatSending(true);
 
     try {
-      const defaultSubject = chatSubject.trim() || `Course Discussion: ${enquiry.course || 'Training Inquiry'}`;
+      const defaultSubject = chatSubject.trim() || `Discussion regarding ${enquiry.course || 'Training Requirements'}`;
       
       // 1. Insert message into inbox_messages (never store raw PII)
       await supabase.from('inbox_messages').insert({
@@ -128,6 +128,7 @@ export function TrainerEnquiries() {
         show: true,
         action: 'Internal Message Sent',
         studentName: enquiry.name || 'Student',
+        detail: "✉️ Message delivered to student's email inbox! When they reply, it lands directly in your Celoris Inbox.",
       });
       setTimeout(() => setSuccessPopup(null), 4000);
     } catch (err: any) {
@@ -353,8 +354,10 @@ export function TrainerEnquiries() {
                 <span className="font-semibold text-emerald-600">{successPopup.action}</span> was successfully applied
               </p>
               <p className="text-gray-700 font-medium mb-5">for <span className="text-gray-900">{successPopup.studentName}</span></p>
-              <div className="bg-emerald-50 rounded-xl px-4 py-3 text-sm text-emerald-700 font-medium">
-                ✉️ Our support team has been notified
+              <div className="bg-emerald-50 rounded-xl px-4 py-3 text-sm text-emerald-700 font-medium leading-relaxed">
+                {successPopup.detail || (successPopup.action === 'Internal Message Sent'
+                  ? '✉️ Message delivered to student’s email! Replies route directly back to your Celoris Inbox.'
+                  : '✉️ Our support team and systems have been notified')}
               </div>
             </motion.div>
           </motion.div>
@@ -579,15 +582,31 @@ export function TrainerEnquiries() {
                 </div>
               </div>
 
-              {/* Privacy protection notice */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2.5 mb-4 flex items-center gap-2.5 text-xs text-emerald-800">
-                <Shield className="w-4 h-4 shrink-0 text-emerald-600" />
-                <span><strong>Protected Communication:</strong> Message is delivered inside Celoris without exposing your private phone or email.</span>
+              {/* Delivery destination explainer */}
+              <div className="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-emerald-50/20 border border-emerald-200/90 rounded-2xl p-3.5 mb-4 text-xs shadow-sm">
+                <div className="flex items-center gap-2 font-bold text-emerald-950 mb-2">
+                  <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Where does the student receive this message?</span>
+                </div>
+                <div className="space-y-1.5 text-emerald-900/90 leading-relaxed pl-1 text-[11px] sm:text-xs">
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-bold text-emerald-700 shrink-0">1.</span>
+                    <span><strong>Direct Email Inbox:</strong> Delivered immediately to the student's email inbox ({chatModal.enquiry?.email ? maskContactInfo(chatModal.enquiry.email) : 'their registered inquiry email'}) with your trainer profile, course subject, and message.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-bold text-emerald-700 shrink-0">2.</span>
+                    <span><strong>1-Click Reply:</strong> The email has a secure <em>"Connect on Celoris Teach"</em> button. When the student replies, their message lands directly in your <strong>Celoris Trainer Inbox</strong>.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-bold text-emerald-700 shrink-0">3.</span>
+                    <span><strong>Contact Privacy Shield:</strong> Personal phone numbers and private email addresses are never exposed to leads, keeping your account 100% compliant.</span>
+                  </div>
+                </div>
               </div>
 
               {/* Quick Template Chips */}
               <div className="mb-4">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Quick Templates</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Quick Templates</p>
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     `Hi! I saw your requirement for ${chatModal.enquiry?.course || 'the course'}. I'd love to schedule a free demo session.`,
@@ -598,7 +617,7 @@ export function TrainerEnquiries() {
                       key={idx}
                       type="button"
                       onClick={() => setChatMessage(tmpl)}
-                      className="text-left text-xs bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 border border-gray-200 rounded-lg px-2.5 py-1.5 transition-colors line-clamp-1 max-w-full"
+                      className="text-left text-xs bg-gray-50 hover:bg-emerald-50 text-gray-700 hover:text-emerald-800 border border-gray-200 hover:border-emerald-300 rounded-lg px-2.5 py-1.5 transition-colors line-clamp-1 max-w-full font-medium"
                     >
                       💡 {tmpl}
                     </button>
@@ -613,8 +632,8 @@ export function TrainerEnquiries() {
                     type="text"
                     value={chatSubject}
                     onChange={(e) => setChatSubject(e.target.value)}
-                    placeholder="Subject of your message..."
-                    className="w-full px-3.5 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder={`e.g. Discussion regarding ${chatModal.enquiry?.course || 'Training Requirements'}`}
+                    className="w-full px-3.5 py-2 text-sm bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-normal shadow-sm"
                   />
                 </div>
                 <div>
@@ -624,7 +643,7 @@ export function TrainerEnquiries() {
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
                     placeholder="Write a message to the student (e.g. details about your experience, course outline, demo availability)..."
-                    className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                    className="w-full px-3.5 py-2.5 text-sm bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none font-normal shadow-sm"
                   />
                 </div>
               </div>
@@ -702,7 +721,7 @@ export function TrainerEnquiries() {
           <input
             type="text"
             placeholder="Search by name, email, or course..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow bg-white text-gray-900 placeholder:text-gray-400"
           />
         </div>
         <div className="flex gap-2 w-full sm:w-auto">

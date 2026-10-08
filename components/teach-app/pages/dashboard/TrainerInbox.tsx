@@ -312,7 +312,7 @@ export function TrainerInbox() {
               placeholder="Search messages..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 w-full md:w-60"
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 w-full md:w-60 bg-white text-gray-900 placeholder:text-gray-400 shadow-sm"
             />
           </div>
           <button
@@ -512,14 +512,23 @@ export function TrainerInbox() {
 
               {/* Reply composer */}
               <div>
-                <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Quick Reply</p>
+                <p className="text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Quick Reply</p>
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   rows={4}
                   placeholder={`Hi ${selected.sender_name?.split(' ')[0] || 'there'}, thank you for your message...`}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                  className="w-full bg-white text-gray-900 placeholder:text-gray-400 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none font-normal shadow-sm"
                 />
+                <div className="mt-2.5 p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl text-xs text-emerald-800 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-emerald-950">
+                    <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>How the student receives this reply:</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-emerald-900/90 pl-5">
+                    Dispatched directly to the student's email inbox with your response and a 1-click button to reply back into your Celoris Trainer Inbox.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -606,21 +615,21 @@ export function TrainerInbox() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Name *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wide">Name *</label>
                   <input
                     type="text"
                     placeholder="Student name"
                     value={compose.sender_name}
                     onChange={(e) => setCompose((p) => ({ ...p, sender_name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Type</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wide">Type</label>
                   <select
                     value={compose.message_type}
                     onChange={(e) => setCompose((p) => ({ ...p, message_type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   >
                     <option value="student">Student</option>
                     <option value="enquiry">Enquiry</option>
@@ -629,23 +638,23 @@ export function TrainerInbox() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Subject *</label>
+                <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wide">Subject *</label>
                 <input
                   type="text"
                   placeholder="e.g. Query about Excel Course"
                   value={compose.subject}
                   onChange={(e) => setCompose((p) => ({ ...p, subject: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Message</label>
+                <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wide">Message</label>
                 <textarea
                   rows={3}
                   placeholder="Message body..."
                   value={compose.body}
                   onChange={(e) => setCompose((p) => ({ ...p, body: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
                 />
               </div>
             </div>
