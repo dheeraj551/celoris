@@ -100,3 +100,60 @@ Scenes.vikram_morning = {
 
 -- Copy the block above, rename it, and change the marks / steps to make your next scene.
 -- Example ids you will probably want: rooftop_arrival, rooftop_dialogue, kitchen_hub, imax_room ...
+
+----------------------------------------------------------------------------------------------------
+-- SCENE: Kabir at the gate, hands raised, arguing in the pouring rain with two men in black suits.
+--
+-- MARKS YOU NEED (stand there and type /mark <name>):
+--   kabir_gate    where Kabir stands at the gate facing outward
+--   suit_leader   where the lead suit stands facing Kabir
+--   suit_guard    where the second suit stands slightly behind/beside the leader
+--   suv_spot      park the black SUV behind the suits with headlights beaming at the gate
+----------------------------------------------------------------------------------------------------
+Scenes.gate_standoff = {
+    label = 'Kabir at the gate - rain standoff with two suits',
+    time = { h = 23, m = 15 },
+    weather = 'THUNDER',
+
+    actors = {
+        kabir = {
+            start = 'kabir_gate',
+            model = 'mp_m_freemode_01',
+            cast = 'kabir',
+        },
+        suit_leader = {
+            start = 'suit_leader',
+            model = 's_m_m_security_01',
+        },
+        suit_guard = {
+            start = 'suit_guard',
+            model = 's_m_m_highsec_01',
+        },
+    },
+
+    vehicles = {
+        suv = { model = 'granger2', start = 'suv_spot', plate = 'SYNDICATE' },
+    },
+
+    tracks = {
+        kabir = {
+            { 'cue',      text = 'KABIR: "Listen to me! We don\'t answer to Marcus anymore!"', ms = 5000 },
+            { 'anim',     dict = 'random@arrests', clip = 'generic_day_loop_idle', ms = 6000 },
+            { 'anim',     dict = 'misscarsteal4@actor', clip = 'actor_berating_loop', ms = 7000 },
+            { 'anim',     dict = 'random@arrests', clip = 'generic_day_loop_idle', ms = 5000 },
+            { 'cue',      text = 'KABIR: "You step one foot through those gates, and the entire cluster purges."', ms = 5000 },
+            { 'wait',     ms = 4000 },
+        },
+
+        suit_leader = {
+            { 'cue',      text = 'AGENT: "You have until sunrise, Mehta. Hand over the drive, or we take the house."', ms = 5000 },
+            { 'anim',     dict = 'misscarsteal4@actor', clip = 'actor_talking_loop', ms = 6000 },
+            { 'anim',     dict = 'gestures@m@standing@casual', clip = 'gesture_point', ms = 4000 },
+            { 'anim',     dict = 'amb@world_human_hang_out_street@female_arms_crossed@idle_a', clip = 'idle_a', ms = 8000 },
+        },
+
+        suit_guard = {
+            { 'anim',     dict = 'amb@world_human_cop_idles@male@idle_b', clip = 'idle_e', ms = 23000 },
+        },
+    },
+}
