@@ -78,6 +78,7 @@ export default function Header() {
     pathname?.startsWith("/pricing") ||
     pathname?.startsWith("/free-video-editor") ||
     pathname?.startsWith("/celoris-3d") ||
+    pathname?.startsWith("/inbox") ||
     pathname === "/login" ||
     pathname === "/register";
 

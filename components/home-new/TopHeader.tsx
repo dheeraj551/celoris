@@ -301,6 +301,16 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                 {/* Right: Actions, Pricing, Auth & Mobile Menu */}
                 <div className="flex items-center gap-2 sm:gap-3">
 
+                    {/* Student Mailbox Pill Button */}
+                    <Link
+                        href="/inbox"
+                        className="group relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-emerald-500/[0.12] border border-white/[0.08] hover:border-emerald-400/40 text-neutral-300 hover:text-emerald-200 text-xs font-medium backdrop-blur-2xl transition-all duration-200 shadow-sm cursor-pointer"
+                        title="Student Mailbox (Trainer Replies & Inquiries)"
+                    >
+                        <Mail className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                        <span className="hidden sm:inline tracking-tight">Mailbox</span>
+                    </Link>
+
                     {/* Pricing Pill Button (Apple Dynamic Nano-Glass Capsule) */}
                     <Link
                         href="/pricing"
@@ -400,6 +410,18 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <div className="flex-1 min-w-0">
                                                 <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">My Courses</span>
                                                 <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Classes &amp; curriculum</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/inbox" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                                <Mail className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Student Mailbox</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Trainer replies &amp; inquiries</span>
                                             </div>
                                         </Link>
                                     </DropdownMenuItem>
@@ -609,6 +631,14 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         >
                                             <BookOpen className="w-4 h-4 text-emerald-400" />
                                             <span className="text-sm font-medium">Learn</span>
+                                        </Link>
+                                        <Link
+                                            href="/inbox"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
+                                        >
+                                            <Mail className="w-4 h-4 text-emerald-400" />
+                                            <span className="text-sm font-medium">Student Mailbox</span>
                                         </Link>
                                         <Link
                                             href="/celoris-tv"

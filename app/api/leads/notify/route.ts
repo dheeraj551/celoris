@@ -121,12 +121,12 @@ export async function POST(request: NextRequest) {
                     "${messageText || 'Hello! I would like to assist you with your learning requirements.'}"
                   </div>
                   <div style="text-align: center; margin: 32px 0 16px;">
-                    <a href="https://celorisdesigns.com/teach" style="display: inline-block; background: #059669; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 28px; border-radius: 10px;">
-                      Connect on Celoris Teach
+                    <a href="https://celorisdesigns.com/inbox" style="display: inline-block; background: #059669; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(5,150,105,0.25);">
+                      Open Student Mailbox &amp; Reply
                     </a>
                   </div>
                   <p style="font-size: 12px; color: #9ca3af; text-align: center; margin-top: 24px;">
-                    🔒 This message was sent securely via Celoris Teach Internal Messaging to protect your contact privacy.
+                    🔒 This message was sent securely to protect your contact privacy. You can view all your trainer conversations anytime in your Celoris Student Mailbox at celorisdesigns.com/inbox.
                   </p>
                 </div>
               </div>

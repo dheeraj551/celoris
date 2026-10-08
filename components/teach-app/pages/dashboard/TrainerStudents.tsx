@@ -90,7 +90,7 @@ export function TrainerStudents() {
       await supabase.from('inbox_messages').insert({
         trainer_id: profile?.id,
         sender_name: student.name || 'Student Lead',
-        sender_email: null,
+        sender_email: student.email || (student.contact_info?.includes('@') ? student.contact_info : null),
         sender_phone: null,
         subject: defaultSubject,
         body: shield.sanitizedText,
@@ -163,7 +163,7 @@ export function TrainerStudents() {
       await supabase.from('inbox_messages').insert({
         trainer_id: profile?.id,
         sender_name: student.name || 'Student Lead',
-        sender_email: null,
+        sender_email: student.email || (student.contact_info?.includes('@') ? student.contact_info : null),
         sender_phone: null,
         subject: `Live ${mode === 'audio' ? 'Audio' : 'Video'} Call Invitation`,
         body: inviteText,

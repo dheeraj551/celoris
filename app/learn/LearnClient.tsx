@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { BookOpen, Users, TrendingUp, Calculator, Bot, Sparkles, ArrowRight, Zap, X, Send, MessageSquare } from "lucide-react"
+import { BookOpen, Users, TrendingUp, Calculator, Bot, Sparkles, ArrowRight, Zap, X, Send, MessageSquare, Mail } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -438,8 +438,15 @@ export default function LearnClient({ initialCourses, initialNotices, upcomingCl
           >
             Free classes with real trainers. Learn video editing, AI tools, Excel, spoken English and more. First session free — no credit card needed.
           </motion.p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3.5 justify-center items-center">
             <PostLearningNeedModal />
+            <Link
+              href="/inbox"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white/[0.05] hover:bg-emerald-500/[0.15] border border-white/[0.12] hover:border-emerald-500/40 text-neutral-200 hover:text-white font-bold text-sm transition-all shadow-lg backdrop-blur-xl group cursor-pointer"
+            >
+              <Mail className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+              <span>Student Mailbox</span>
+            </Link>
           </div>
         </div>
       </section>
