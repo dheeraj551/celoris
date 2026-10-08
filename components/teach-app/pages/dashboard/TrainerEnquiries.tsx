@@ -288,6 +288,22 @@ export function TrainerEnquiries() {
         
         // Update local state to reflect the change immediately
         setEnquiries(prev => prev.map(e => e.id === enquiry.id ? { ...e, status: 'contacted' } : e));
+
+        // Create message in inbox_messages so student sees it immediately in Student Mailbox
+        const targetStudentEmail = enquiry.email || (enquiry.contact_info?.includes('@') ? enquiry.contact_info : null);
+        if (targetStudentEmail) {
+          const trainerDisplayName = profile?.full_name || profile?.username || 'Celoris Verified Trainer';
+          await supabase.from('inbox_messages').insert({
+            trainer_id: profile?.id || null,
+            sender_name: trainerDisplayName,
+            sender_email: targetStudentEmail,
+            sender_phone: null,
+            subject: `Inquiry: ${course}`,
+            body: `Hi ${studentName}! I have reviewed your learning goals for ${course} and accepted your inquiry. Please reply here with your preferred class timings or any questions about the syllabus!`,
+            message_type: 'student_lead',
+            status: 'sent',
+          });
+        }
       }
 
       await fetch('/api/leads/notify', {
@@ -295,6 +311,7 @@ export function TrainerEnquiries() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: actionName,
+          trainerId: profile?.id || '',
           trainerName: profile?.full_name || profile?.username || 'Trainer',
           trainerEmail: profile?.email || '',
           studentName,

@@ -661,7 +661,14 @@ function StudentInboxContent() {
                       {status === 'contacted' && (
                         <button
                           type="button"
-                          onClick={() => setActiveTab('messages')}
+                          onClick={() => {
+                            setActiveTab('messages')
+                            const match = threadsByTrainer.find((t) =>
+                              t.lastMessage?.subject?.toLowerCase().includes((inq.course || '').toLowerCase()) ||
+                              t.messages?.some((m) => m.subject?.toLowerCase().includes((inq.course || '').toLowerCase()))
+                            )
+                            if (match) setSelectedTrainerId(match.trainerId)
+                          }}
                           className="w-full mt-2 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
