@@ -32,8 +32,13 @@ export default function RegisterPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
 
-  // Twilio Phone & SMS OTP verification toggle (set to false while upgrading Twilio account)
-  const requirePhoneOtp = false
+  // Phone OTP follows the admin setting (auth_settings via /api/auth/phone-settings):
+  // WhatsApp OTP when "WhatsApp OTP" is on, SMS (Twilio) when that is on, otherwise
+  // just a plain mobile number field. Previously this was hard-coded off, so turning
+  // WhatsApp OTP on in admin never showed on this page.
+  const [otpChannel, setOtpChannel] = useState<"whatsapp" | "sms" | null>(null)
+  const requirePhoneOtp = otpChannel !== null
+  const channelLabel = otpChannel === "whatsapp" ? "WhatsApp" : "SMS"
   const [phoneNumber, setPhoneNumber] = useState("")
   const [otpCode, setOtpCode] = useState("")
   const [isOtpSent, setIsOtpSent] = useState(false)
@@ -43,6 +48,22 @@ export default function RegisterPage() {
   const [verifiedPhone, setVerifiedPhone] = useState("")
   const [phoneError, setPhoneError] = useState("")
   const [otpCountdown, setOtpCountdown] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/auth/phone-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return
+        if (d?.whatsappOtpEnabled) setOtpChannel("whatsapp")
+        else if (d?.twilioOtpEnabled) setOtpChannel("sms")
+        else setOtpChannel(null)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Resend OTP countdown timer
   useEffect(() => {
@@ -60,17 +81,17 @@ export default function RegisterPage() {
     setIsSendingOtp(true)
     setPhoneError("")
     try {
-      const res = await fetch("/api/auth/phone-otp/send", {
+      const res = await fetch(otpChannel === "whatsapp" ? "/api/auth/whatsapp-otp/send" : "/api/auth/phone-otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: digitsOnly }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to send SMS OTP")
+      if (!res.ok) throw new Error(data.error || `Failed to send ${channelLabel} OTP`)
       setIsOtpSent(true)
       setOtpCountdown(30)
     } catch (err: any) {
-      setPhoneError(err.message || "Failed to send OTP via SMS")
+      setPhoneError(err.message || `Failed to send OTP via ${channelLabel}`)
     } finally {
       setIsSendingOtp(false)
     }
@@ -79,24 +100,24 @@ export default function RegisterPage() {
   const handleVerifyOtp = async () => {
     const trimmedCode = otpCode.trim()
     if (trimmedCode.length !== 6) {
-      setPhoneError("Please enter the 6-digit OTP code received via SMS")
+      setPhoneError(`Please enter the 6-digit OTP code received via ${channelLabel}`)
       return
     }
     setIsVerifyingOtp(true)
     setPhoneError("")
     try {
       const digitsOnly = phoneNumber.replace(/\D/g, "")
-      const res = await fetch("/api/auth/phone-otp/verify", {
+      const res = await fetch(otpChannel === "whatsapp" ? "/api/auth/whatsapp-otp/verify" : "/api/auth/phone-otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: digitsOnly,
-          code: trimmedCode,
-        }),
+        // The WhatsApp route expects "otp", the SMS route "code".
+        body: JSON.stringify(
+          otpChannel === "whatsapp" ? { phone: digitsOnly, otp: trimmedCode } : { phone: digitsOnly, code: trimmedCode }
+        ),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Invalid or expired OTP code")
-      setVerifiedPhone(data.phone || `+91 ${digitsOnly}`)
+      setVerifiedPhone(`+91 ${digitsOnly}`)
       setIsPhoneVerified(true)
       setPhoneError("")
     } catch (err: any) {
@@ -132,7 +153,7 @@ export default function RegisterPage() {
 
     // Only enforce OTP if requirePhoneOtp is toggled ON
     if (requirePhoneOtp && (!isPhoneVerified || !verifiedPhone)) {
-      setError("Please verify your 10-digit mobile number with SMS OTP before creating your account")
+      setError(`Please verify your 10-digit mobile number with ${channelLabel} OTP before creating your account`)
       return false
     }
 
@@ -508,7 +529,7 @@ export default function RegisterPage() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-4 flex items-center justify-between pr-4">
                     <span>Mobile Number</span>
-                    <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">SMS OTP Verification *</span>
+                    <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">{channelLabel} OTP Verification *</span>
                   </label>
 
                   {isPhoneVerified ? (
@@ -596,8 +617,8 @@ export default function RegisterPage() {
                       {isOtpSent && (
                         <div className="space-y-3 pt-2 border-t border-white/10">
                           <div className="flex items-center justify-between text-[11px] text-slate-400 bg-black/40 p-2.5 rounded-xl border border-white/5">
-                            <span>OTP sent via SMS to <strong className="text-white font-mono">+91 {phoneNumber}</strong></span>
-                            <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">SMS 56161</span>
+                            <span>OTP sent via {channelLabel} to <strong className="text-white font-mono">+91 {phoneNumber}</strong></span>
+                            <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">{otpChannel === "whatsapp" ? "From Celoris" : "SMS"}</span>
                           </div>
 
                           <div className="flex gap-2">
@@ -630,7 +651,7 @@ export default function RegisterPage() {
                           </div>
 
                           <div className="flex items-center justify-between text-[10px] text-slate-500 px-1">
-                            <span>Valid for 10 minutes</span>
+                            <span>Valid for {otpChannel === "whatsapp" ? "5" : "10"} minutes</span>
                             {otpCountdown > 0 ? (
                               <span className="text-slate-400 font-mono">Resend in {otpCountdown}s</span>
                             ) : (
@@ -640,7 +661,7 @@ export default function RegisterPage() {
                                 disabled={isSendingOtp}
                                 className="text-emerald-400 hover:text-emerald-300 underline font-bold cursor-pointer"
                               >
-                                Resend OTP SMS
+                                Resend OTP
                               </button>
                             )}
                           </div>
