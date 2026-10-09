@@ -181,6 +181,41 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Fallback: If template attempts failed (e.g. template not created or pending approval),
+    // try a direct text message which succeeds for customer service window / active users
+    if (!waResponse?.ok || !waData?.messages?.[0]?.id) {
+      try {
+        const textPayload = {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: formattedPhone,
+          type: 'text',
+          text: {
+            body: `Your Celoris verification code is ${otpCode}. Valid for 5 minutes. Do not share this code with anyone.`,
+          },
+        }
+
+        const textResponse = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(textPayload),
+        })
+
+        const textData = await textResponse.json().catch(() => ({}))
+        if (textResponse.ok && textData?.messages?.[0]?.id) {
+          waResponse = textResponse
+          waData = textData
+        } else {
+          lastError = textData?.error?.message || lastError
+        }
+      } catch (textErr: any) {
+        lastError = textErr.message || lastError
+      }
+    }
+
     if (!waResponse?.ok || !waData?.messages?.[0]?.id) {
       console.error('WhatsApp Graph API all attempts failed:', waData)
       return NextResponse.json(
