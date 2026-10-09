@@ -6,8 +6,8 @@ import { AdUnit } from "./AdUnit";
 export function GlobalAd() {
     const pathname = usePathname();
 
-    // Hide ad on home and campaign pages
-    if (pathname === "/" || pathname?.startsWith("/become-trainer")) {
+    // Hide ad on home, campaign pages and the Celoris Drape store
+    if (pathname === "/" || pathname?.startsWith("/become-trainer") || pathname?.startsWith("/shop")) {
         return null;
     }
 

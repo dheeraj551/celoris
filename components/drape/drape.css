@@ -1,0 +1,15 @@
+/* Celoris Drape storefront (/shop). Ported from the Atelier Nova prototype.
+   Fonts come from next/font in app/shop/page.tsx as CSS variables. */
+.drape-root {
+  font-family: var(--font-drape-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.drape-root .font-serif {
+  font-family: var(--font-drape-serif), Georgia, Cambria, "Times New Roman", serif;
+}
+.drape-root .no-scrollbar::-webkit-scrollbar { display: none; }
+.drape-root .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Story / highlight ring in the Celoris leaf greens. */
+.drape-root .drape-ring {
+  background: linear-gradient(45deg, #1F6B45, #3FA36B, #9AD5A6, #2C7A4F);
+}

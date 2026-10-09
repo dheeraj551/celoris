@@ -88,6 +88,7 @@ export default function Footer() {
     pathname?.startsWith("/celoris-tv") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
+    pathname?.startsWith("/shop") ||
     pathname?.startsWith("/pricing") ||
     pathname?.startsWith("/free-video-editor") ||
     pathname?.startsWith("/celoris-3d") ||

@@ -28,7 +28,8 @@ import {
   GraduationCap,
   Video,
   Star,
-  Box
+  Box,
+  ShoppingBag
 } from "lucide-react"
 import LeadSync from "@/components/admin/LeadSync"
 import PhoneVerificationCard from "@/components/admin/PhoneVerificationCard"
@@ -281,6 +282,13 @@ export default function AdminDashboard() {
       icon: Box,
       href: "/admin/polyvault",
       color: "bg-cyan-600 hover:bg-cyan-700"
+    },
+    {
+      title: "Celoris Drape Store",
+      description: "Products, shoppable reels and orders for the /shop clothing store",
+      icon: ShoppingBag,
+      href: "/admin/drape",
+      color: "bg-green-700 hover:bg-green-800"
     },
     {
       title: "Wallet Transactions",
