@@ -5,6 +5,10 @@ import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase-client"
 import { trackClarityEvent } from "@/lib/clarity"
 
+// The project's Supabase client is loosely typed, so describe the bits we use.
+type AuthUser = { id: string; created_at?: string; app_metadata?: { provider?: string } }
+type AuthSession = { user?: AuthUser | null } | null
+
 // Google Ads account tag (also configured in AnalyticsProvider).
 export const GOOGLE_ADS_ID = "AW-16840012440"
 // Conversion label for the "Trainer sign-up" conversion action. Set it in Vercel
@@ -83,12 +87,12 @@ export function SignupConversionTracker() {
     const supabase = createClient()
     let cancelled = false
 
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }: { data: { session: AuthSession } }) => {
       const u = data?.session?.user
       if (!cancelled && u) fireSignup(u.id, u.created_at, u.app_metadata?.provider)
     })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event: string, session: AuthSession) => {
       const u = session?.user
       if (event === "SIGNED_IN" && u) fireSignup(u.id, u.created_at, u.app_metadata?.provider)
     })
