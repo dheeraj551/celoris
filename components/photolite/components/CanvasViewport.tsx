@@ -35,6 +35,7 @@ import {
   tracePenPath,
   drawShape,
   ShapeDrawParams,
+  drawLayerWithStyles,
 } from '../utils/canvasUtils';
 import {
   drawMarchingAnts,
@@ -541,7 +542,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         ctx.translate(-cx, -cy);
       }
 
-      ctx.drawImage(layer.canvas, layer.x, layer.y);
+      drawLayerWithStyles(ctx, layer);
       ctx.restore();
     });
   }, [layers, canvasWidth, canvasHeight]);

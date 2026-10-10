@@ -40,6 +40,34 @@ export interface LayerFilter {
 
 export type ShapeType = 'rect' | 'rounded-rect' | 'circle' | 'triangle' | 'star' | 'line' | 'arrow';
 
+export interface LayerStyles {
+  dropShadow?: {
+    enabled: boolean;
+    color: string;
+    blur: number;
+    offsetX: number;
+    offsetY: number;
+    opacity: number;
+  };
+  stroke?: {
+    enabled: boolean;
+    color: string;
+    size: number;
+    opacity: number;
+  };
+  outerGlow?: {
+    enabled: boolean;
+    color: string;
+    blur: number;
+    opacity: number;
+  };
+  colorOverlay?: {
+    enabled: boolean;
+    color: string;
+    opacity: number;
+  };
+}
+
 export interface Layer {
   id: string;
   name: string;
@@ -76,6 +104,7 @@ export interface Layer {
     strokeWidth: number;
   };
   filters?: LayerFilter;
+  layerStyles?: LayerStyles;
   angle?: number; // rotation in degrees around center (x + width/2, y + height/2)
 }
 
@@ -113,6 +142,7 @@ export interface SerializedLayer {
     strokeWidth: number;
   };
   filters?: LayerFilter;
+  layerStyles?: LayerStyles;
 }
 
 export interface SelectionState {

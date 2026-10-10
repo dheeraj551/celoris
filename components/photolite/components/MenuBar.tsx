@@ -34,6 +34,7 @@ import {
   Wallet,
   LogOut,
   LogIn,
+  Search,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -97,6 +98,8 @@ interface MenuBarProps {
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
   onOpenTemplatesModal?: () => void;
+  onOpenCommandPalette?: () => void;
+  onOpenLayerStyles?: () => void;
 }
 
 export const MenuBar: React.FC<MenuBarProps> = ({
@@ -144,6 +147,8 @@ export const MenuBar: React.FC<MenuBarProps> = ({
   isSidebarOpen,
   onToggleSidebar,
   onOpenTemplatesModal,
+  onOpenCommandPalette,
+  onOpenLayerStyles,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
@@ -349,6 +354,15 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               </button>
               <div className="my-1 border-t border-black" />
               <button
+                onClick={() => handleAction(onOpenCommandPalette || (() => {}))}
+                className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
+              >
+                <span className="flex items-center gap-2">
+                  <Search className="h-3.5 w-3.5 text-cyan-400" /> Command Palette...
+                </span>
+                <span className="text-[10px] text-cyan-400 font-mono">Ctrl+K</span>
+              </button>
+              <button
                 onClick={() => handleAction(onDeselect)}
                 className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
               >
@@ -532,6 +546,15 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                   <Copy className="h-3.5 w-3.5" /> Duplicate Layer
                 </span>
                 <span className="text-[10px] text-gray-400">Ctrl+J</span>
+              </button>
+              <button
+                onClick={() => handleAction(onOpenLayerStyles || (() => {}))}
+                className="flex w-full items-center justify-between px-3 py-1 hover:bg-white/10 hover:text-white cursor-pointer transition-colors rounded-md mx-1"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="font-serif font-bold italic text-cyan-400 text-xs">fx</span> Layer Styles...
+                </span>
+                <span className="text-[10px] text-gray-400">Effects</span>
               </button>
               <div className="my-1 border-t border-black" />
               <button
@@ -742,6 +765,22 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 ? 'Pro Active'
                 : `${Number(profile?.wallet_balance || 0).toLocaleString()} / 2k Cr`}
             </span>
+          </button>
+        )}
+
+        {/* Command Palette Quick Button */}
+        {onOpenCommandPalette && (
+          <button
+            id="quick-commands-btn"
+            onClick={onOpenCommandPalette}
+            className="flex items-center gap-1.5 rounded-lg bg-[#252525] hover:bg-[#333333] active:scale-95 px-2 py-1 text-[11px] font-medium text-gray-300 hover:text-white border border-white/10 shadow-xs transition-all cursor-pointer"
+            title="Open Command Palette (Ctrl+K or ⌘K)"
+          >
+            <Search className="h-3 w-3 text-cyan-400" />
+            <span className="hidden md:inline">Commands</span>
+            <kbd className="hidden lg:inline text-[8.5px] font-mono bg-black/50 text-cyan-400 px-1 py-0.2 rounded border border-white/10">
+              Ctrl+K
+            </kbd>
           </button>
         )}
 

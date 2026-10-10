@@ -31,6 +31,7 @@ interface RightSidebarProps {
   onUpdateLayerCanvas?: (id: string, canvas: HTMLCanvasElement, commit: boolean, label?: string) => void;
   activeTab?: 'layers' | 'history' | 'adjustments';
   onTabChange?: (tab: 'layers' | 'history' | 'adjustments') => void;
+  onOpenLayerStyles?: () => void;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -54,6 +55,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   onUpdateLayerCanvas,
   activeTab: propActiveTab,
   onTabChange,
+  onOpenLayerStyles,
 }) => {
   const [internalTab, setInternalTab] = useState<'layers' | 'history' | 'adjustments'>('layers');
   const activeTab = propActiveTab ?? internalTab;
@@ -125,6 +127,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             onMoveLayerUp={onMoveLayerUp}
             onMoveLayerDown={onMoveLayerDown}
             onMergeDown={onMergeDown}
+            onOpenLayerStyles={onOpenLayerStyles}
           />
         )}
 

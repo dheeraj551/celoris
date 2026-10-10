@@ -49,6 +49,7 @@ export function serializeLayer(layer: Layer): SerializedLayer {
     textData: layer.textData ? { ...layer.textData } : undefined,
     shapeData: layer.shapeData ? { ...layer.shapeData } : undefined,
     filters: layer.filters ? { ...layer.filters } : undefined,
+    layerStyles: layer.layerStyles ? JSON.parse(JSON.stringify(layer.layerStyles)) : undefined,
   };
 }
 
@@ -78,6 +79,7 @@ export function deserializeLayer(sLayer: SerializedLayer): Promise<Layer> {
         textData: sLayer.textData,
         shapeData: sLayer.shapeData,
         filters: sLayer.filters,
+        layerStyles: sLayer.layerStyles,
       });
     };
     img.onerror = () => {
@@ -98,6 +100,7 @@ export function deserializeLayer(sLayer: SerializedLayer): Promise<Layer> {
         textData: sLayer.textData,
         shapeData: sLayer.shapeData,
         filters: sLayer.filters,
+        layerStyles: sLayer.layerStyles,
       });
     };
     img.src = sLayer.dataUrl;
@@ -137,6 +140,107 @@ export function hexToRgba(colorStr: string): [number, number, number, number] {
     (num >>> 8) & 255,
     num & 255,
   ];
+}
+
+// Convert hex, rgb, or color string to rgba string with custom opacity
+export function colorToRgbaString(colorStr: string, opacity: number = 1): string {
+  if (!colorStr) return `rgba(0, 0, 0, ${opacity})`;
+  const [r, g, b, a] = hexToRgba(colorStr);
+  const finalAlpha = Math.max(0, Math.min(1, (a / 255) * opacity));
+  return `rgba(${r}, ${g}, ${b}, ${finalAlpha})`;
+}
+
+// Render layer pixels with live non-destructive Layer Styles (Drop Shadow, Outer Glow, Stroke, Color Overlay)
+export function drawLayerWithStyles(ctx: CanvasRenderingContext2D, layer: Layer): void {
+  const styles = layer.layerStyles;
+  const hasShadow = !!(styles?.dropShadow?.enabled && (styles.dropShadow.opacity ?? 1) > 0);
+  const hasOuterGlow = !!(styles?.outerGlow?.enabled && (styles.outerGlow.opacity ?? 1) > 0);
+  const hasStroke = !!(styles?.stroke?.enabled && (styles.stroke.size ?? 0) > 0 && (styles.stroke.opacity ?? 1) > 0);
+  const hasColorOverlay = !!(styles?.colorOverlay?.enabled && (styles.colorOverlay.opacity ?? 1) > 0);
+
+  // Quick path if no styles active
+  if (!hasShadow && !hasOuterGlow && !hasStroke && !hasColorOverlay) {
+    ctx.drawImage(layer.canvas, layer.x, layer.y);
+    return;
+  }
+
+  // 1. Drop Shadow pass (rendered furthest back)
+  if (hasShadow && styles?.dropShadow) {
+    const ds = styles.dropShadow;
+    ctx.save();
+    const shift = 10000;
+    ctx.shadowColor = colorToRgbaString(ds.color, ds.opacity);
+    ctx.shadowBlur = Math.max(0, ds.blur);
+    ctx.shadowOffsetX = shift + (ds.offsetX || 0);
+    ctx.shadowOffsetY = ds.offsetY || 0;
+    ctx.drawImage(layer.canvas, layer.x - shift, layer.y);
+    ctx.restore();
+  }
+
+  // 2. Outer Glow pass
+  if (hasOuterGlow && styles?.outerGlow) {
+    const og = styles.outerGlow;
+    ctx.save();
+    const shift = 10000;
+    ctx.shadowColor = colorToRgbaString(og.color, og.opacity);
+    ctx.shadowBlur = Math.max(0, og.blur);
+    ctx.shadowOffsetX = shift;
+    ctx.shadowOffsetY = 0;
+    ctx.drawImage(layer.canvas, layer.x - shift, layer.y);
+    ctx.restore();
+  }
+
+  // 3. Stroke pass (outer outline)
+  if (hasStroke && styles?.stroke) {
+    const st = styles.stroke;
+    const strokeSize = Math.max(1, Math.min(64, Math.round(st.size)));
+    const strokeCanvas = createCanvas(layer.width + strokeSize * 2, layer.height + strokeSize * 2);
+    const sCtx = strokeCanvas.getContext('2d');
+    if (sCtx) {
+      const numAngles = Math.min(32, Math.max(8, strokeSize * 2));
+      const radSteps = Math.max(1, Math.ceil(strokeSize / 3));
+      for (let r = 1; r <= strokeSize; r += radSteps) {
+        for (let i = 0; i < numAngles; i++) {
+          const angle = (i * 2 * Math.PI) / numAngles;
+          const ox = strokeSize + Math.round(Math.cos(angle) * r);
+          const oy = strokeSize + Math.round(Math.sin(angle) * r);
+          sCtx.drawImage(layer.canvas, ox, oy);
+        }
+      }
+      for (let i = 0; i < numAngles; i++) {
+        const angle = (i * 2 * Math.PI) / numAngles;
+        const ox = strokeSize + Math.round(Math.cos(angle) * strokeSize);
+        const oy = strokeSize + Math.round(Math.sin(angle) * strokeSize);
+        sCtx.drawImage(layer.canvas, ox, oy);
+      }
+      sCtx.globalCompositeOperation = 'source-in';
+      sCtx.fillStyle = colorToRgbaString(st.color, st.opacity);
+      sCtx.fillRect(0, 0, strokeCanvas.width, strokeCanvas.height);
+
+      sCtx.globalCompositeOperation = 'destination-out';
+      sCtx.drawImage(layer.canvas, strokeSize, strokeSize);
+
+      ctx.drawImage(strokeCanvas, layer.x - strokeSize, layer.y - strokeSize);
+    }
+  }
+
+  // 4. Main Layer Canvas
+  ctx.drawImage(layer.canvas, layer.x, layer.y);
+
+  // 5. Color Overlay pass
+  if (hasColorOverlay && styles?.colorOverlay) {
+    const co = styles.colorOverlay;
+    const overlayCanvas = createCanvas(layer.width, layer.height);
+    const oCtx = overlayCanvas.getContext('2d');
+    if (oCtx) {
+      oCtx.drawImage(layer.canvas, 0, 0);
+      oCtx.globalCompositeOperation = 'source-in';
+      oCtx.fillStyle = colorToRgbaString(co.color, co.opacity);
+      oCtx.fillRect(0, 0, layer.width, layer.height);
+
+      ctx.drawImage(overlayCanvas, layer.x, layer.y);
+    }
+  }
 }
 
 // Magic Wand selection algorithm (fast BFS flood matching with proper alpha handling)
@@ -488,7 +592,7 @@ export function renderCompositeCanvas(
       ctx.translate(-cx, -cy);
     }
 
-    ctx.drawImage(layer.canvas, layer.x, layer.y);
+    drawLayerWithStyles(ctx, layer);
     ctx.restore();
   });
 

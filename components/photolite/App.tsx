@@ -8,6 +8,7 @@ import {
   HistoryStep,
   LayerFilter,
   ShapeType,
+  LayerStyles,
 } from './types';
 import {
   createCanvas,
@@ -23,6 +24,7 @@ import {
   samplePenPath,
   drawShape,
   ShapeDrawParams,
+  drawLayerWithStyles,
 } from './utils/canvasUtils';
 import { createInitialProject } from './utils/sampleData';
 import {
@@ -43,6 +45,8 @@ import { ExportModal } from './components/Modals/ExportModal';
 import { AIImageModal } from './components/Modals/AIImageModal';
 import { ProPlanModal } from './components/Modals/ProPlanModal';
 import { TemplatesModal } from './components/Modals/TemplatesModal';
+import { LayerStylesModal } from './components/Modals/LayerStylesModal';
+import { CommandPaletteModal } from './components/Modals/CommandPaletteModal';
 import { loadNoSignalLayers } from './data/noSignalTemplate';
 import { DESIGN_TEMPLATES } from './data/templates';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -156,6 +160,8 @@ export default function App() {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [isTemplatesModalOpen, setIsTemplatesModalOpen] = useState(false);
+  const [isLayerStylesOpen, setIsLayerStylesOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isProUser, setIsProUser] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('photolite_pro_user');
@@ -263,6 +269,11 @@ export default function App() {
         if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
           e.preventDefault();
           handleRedo();
+          return;
+        }
+        if (e.key === 'k' || e.key === 'K') {
+          e.preventDefault();
+          setIsCommandPaletteOpen((prev) => !prev);
           return;
         }
         if (e.key === 'd') {
@@ -500,6 +511,15 @@ export default function App() {
     }
   };
 
+  const handleUpdateLayerStyles = (
+    styles: LayerStyles,
+    commitToHistory: boolean = true,
+    historyLabel: string = 'Layer Styles'
+  ) => {
+    if (!activeLayerId) return;
+    handleUpdateLayer(activeLayerId, { layerStyles: styles }, commitToHistory, historyLabel);
+  };
+
   const handleNewLayer = () => {
     const newCanvas = createCanvas(canvasWidth, canvasHeight);
     const newLayer: Layer = {
@@ -591,18 +611,19 @@ export default function App() {
       // Draw bottom
       ctx.globalAlpha = bottom.opacity;
       ctx.globalCompositeOperation = bottom.blendMode;
-      ctx.drawImage(bottom.canvas, bottom.x, bottom.y);
+      drawLayerWithStyles(ctx, bottom);
 
       // Draw top
       ctx.globalAlpha = top.opacity;
       ctx.globalCompositeOperation = top.blendMode;
-      ctx.drawImage(top.canvas, top.x, top.y);
+      drawLayerWithStyles(ctx, top);
     }
 
     const mergedLayer: Layer = {
       ...bottom,
       canvas: mergedCanvas,
       name: `${bottom.name} + ${top.name}`,
+      layerStyles: undefined,
     };
 
     const updated = layers.filter((_, i) => i !== idx);
@@ -1528,6 +1549,8 @@ export default function App() {
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
         onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenLayerStyles={() => setIsLayerStylesOpen(true)}
       />
 
       {/* Contextual Tool Options Bar */}
@@ -1707,6 +1730,7 @@ export default function App() {
             }}
             onUpdateFilters={handleUpdateFilters}
             onUpdateLayerCanvas={handleUpdateLayerCanvas}
+            onOpenLayerStyles={() => setIsLayerStylesOpen(true)}
           />
         )}
       </div>
@@ -1767,6 +1791,70 @@ export default function App() {
         onClose={() => setIsTemplatesModalOpen(false)}
         onLoadNoSignalTemplate={handleLoadNoSignalTemplate}
         onLoadPresetTemplate={handleLoadPresetTemplate}
+      />
+
+      <LayerStylesModal
+        isOpen={isLayerStylesOpen}
+        onClose={() => setIsLayerStylesOpen(false)}
+        activeLayer={layers.find((l) => l.id === activeLayerId) || null}
+        onUpdateLayerStyles={handleUpdateLayerStyles}
+      />
+
+      <CommandPaletteModal
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onSelectTool={setActiveTool}
+        onOpenLayerStyles={() => setIsLayerStylesOpen(true)}
+        onNewLayer={handleNewLayer}
+        onDuplicateLayer={handleDuplicateLayer}
+        onDeleteLayer={handleDeleteLayer}
+        onMergeDown={handleMergeDown}
+        onRotateCW={() => {
+          if (activeLayerId) {
+            const active = layers.find((l) => l.id === activeLayerId);
+            if (active) handleLayerAngleChange(activeLayerId, (active.angle || 0) + 90, true);
+          }
+        }}
+        onRotateCCW={() => {
+          if (activeLayerId) {
+            const active = layers.find((l) => l.id === activeLayerId);
+            if (active) handleLayerAngleChange(activeLayerId, (active.angle || 0) - 90, true);
+          }
+        }}
+        onResetRotation={() => {
+          if (activeLayerId) {
+            handleLayerAngleChange(activeLayerId, 0, true);
+          }
+        }}
+        onOpenNewCanvas={() => setIsNewCanvasOpen(true)}
+        onOpenResizeCanvas={() => {
+          setResizeModalMode('canvas');
+          setIsResizeModalOpen(true);
+        }}
+        onOpenResizeImage={() => {
+          setResizeModalMode('image');
+          setIsResizeModalOpen(true);
+        }}
+        onOpenExport={() => setIsExportModalOpen(true)}
+        onOpenAIModal={() => setIsAIModalOpen(true)}
+        onOpenTemplates={() => setIsTemplatesModalOpen(true)}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        onInvertColors={handleInvertColors}
+        onAutoEnhance={handleAutoEnhance}
+        onSelectAll={handleSelectAll}
+        onDeselect={() => setSelection({ active: false, type: null })}
+        onZoomIn={() => setZoom((z) => Math.min(8, z * 1.25))}
+        onZoomOut={() => setZoom((z) => Math.max(0.1, z * 0.8))}
+        onFitScreen={() => {
+          setZoom(1);
+          setPan({ x: 0, y: 0 });
+        }}
+        onZoom100={() => setZoom(1)}
+        onSwitchToAdjustmentsTab={() => {
+          setIsSidebarOpen(true);
+          setSidebarTab('adjustments');
+        }}
       />
     </div>
   );

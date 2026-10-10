@@ -34,6 +34,7 @@ interface LayersPanelProps {
   onMoveLayerUp: () => void;
   onMoveLayerDown: () => void;
   onMergeDown: () => void;
+  onOpenLayerStyles?: () => void;
 }
 
 // Mini preview canvas thumbnail for each layer
@@ -92,6 +93,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   onMoveLayerUp,
   onMoveLayerDown,
   onMergeDown,
+  onOpenLayerStyles,
 }) => {
   const activeLayer = layers.find((l) => l.id === activeLayerId) || layers[0];
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -270,6 +272,26 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
                   )}
                 </div>
 
+                {/* fx Layer Styles Active Badge */}
+                {!!(
+                  layer.layerStyles?.dropShadow?.enabled ||
+                  layer.layerStyles?.stroke?.enabled ||
+                  layer.layerStyles?.outerGlow?.enabled ||
+                  layer.layerStyles?.colorOverlay?.enabled
+                ) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveLayerId(layer.id);
+                      onOpenLayerStyles?.();
+                    }}
+                    title="Layer Styles Applied — Click to edit"
+                    className="rounded bg-cyan-950/80 border border-cyan-500/40 px-1 py-0 text-[8px] font-serif font-bold italic text-cyan-300 hover:bg-cyan-900 cursor-pointer shrink-0 transition-colors"
+                  >
+                    fx
+                  </button>
+                )}
+
                 {/* Right: Lock Toggle */}
                 <button
                   id={`btn-layer-lock-${layer.id}`}
@@ -447,6 +469,13 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
           <Minimize2 className="h-3 w-3" />
         </button>
         <div className="h-3 w-[1px] bg-black" />
+        <button
+          onClick={onOpenLayerStyles}
+          title="Layer Styles (fx) — Drop Shadow, Stroke, Glow, Overlay"
+          className="rounded px-1.5 py-0.5 hover:bg-[#333333] hover:text-cyan-300 font-serif italic text-xs font-bold text-gray-300 cursor-pointer"
+        >
+          fx
+        </button>
         <button
           onClick={onNewLayer}
           title="Create New Layer"
