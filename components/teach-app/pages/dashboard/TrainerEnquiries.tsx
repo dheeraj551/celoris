@@ -227,7 +227,32 @@ export function TrainerEnquiries() {
         .range(from, to);
 
       if (error) throw error;
-      setEnquiries(data || []);
+
+      // Dynamically attach original user profile pictures from Celoris users table
+      const { data: usersData } = await supabase
+        .from('users')
+        .select('full_name, username, profile_pic_url')
+        .not('profile_pic_url', 'is', null);
+
+      const userPicMap: Record<string, string> = {};
+      if (usersData) {
+        usersData.forEach((u: any) => {
+          if (u.profile_pic_url) {
+            if (u.full_name) userPicMap[u.full_name.trim().toLowerCase()] = u.profile_pic_url;
+            if (u.username) userPicMap[u.username.trim().toLowerCase()] = u.profile_pic_url;
+          }
+        });
+      }
+
+      const enriched = (data || []).map((lead: any) => {
+        const key = lead.name?.trim()?.toLowerCase();
+        return {
+          ...lead,
+          profile_pic_url: (key && userPicMap[key]) || lead.profile_pic_url || null,
+        };
+      });
+
+      setEnquiries(enriched);
       setTotalCount(count || 0);
     } catch (err: any) {
       console.error('Error fetching leads:', err);

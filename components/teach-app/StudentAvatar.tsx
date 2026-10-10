@@ -6,6 +6,7 @@ export interface StudentAvatarProps {
     name?: string | null;
     email?: string | null;
     avatar_url?: string | null;
+    profile_pic_url?: string | null;
   } | null;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;

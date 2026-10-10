@@ -216,7 +216,32 @@ export function TrainerStudents() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setStudents(data || []);
+
+        // Dynamically attach original user profile pictures from Celoris users table
+        const { data: usersData } = await supabase
+          .from('users')
+          .select('full_name, username, profile_pic_url')
+          .not('profile_pic_url', 'is', null);
+
+        const userPicMap: Record<string, string> = {};
+        if (usersData) {
+          usersData.forEach((u: any) => {
+            if (u.profile_pic_url) {
+              if (u.full_name) userPicMap[u.full_name.trim().toLowerCase()] = u.profile_pic_url;
+              if (u.username) userPicMap[u.username.trim().toLowerCase()] = u.profile_pic_url;
+            }
+          });
+        }
+
+        const enriched = (data || []).map((student: any) => {
+          const key = student.name?.trim()?.toLowerCase();
+          return {
+            ...student,
+            profile_pic_url: (key && userPicMap[key]) || student.profile_pic_url || null,
+          };
+        });
+
+        setStudents(enriched);
       } catch (err) {
         console.error('Error fetching students:', err);
       } finally {
