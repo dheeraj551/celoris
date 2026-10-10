@@ -7,6 +7,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useToast } from '@/components/ui/use-toast';
 import { scanContactShield, maskContactInfo } from '@/lib/contact-shield';
+import { StudentAvatar } from '@/components/teach-app/StudentAvatar';
 
 const rowVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -583,9 +584,12 @@ export function TrainerEnquiries() {
               </button>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg shadow-sm">
-                  {chatModal.enquiry?.name?.charAt(0)?.toUpperCase() || 'S'}
-                </div>
+                <StudentAvatar
+                  student={chatModal.enquiry}
+                  size="lg"
+                  shape="rounded-2xl"
+                  showStatusIndicator
+                />
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-bold text-gray-900">{chatModal.enquiry?.name || 'Student Lead'}</h3>
@@ -861,9 +865,12 @@ export function TrainerEnquiries() {
                   <motion.tr key={enquiry.id} variants={rowVariants} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">
-                          {enquiry.name?.charAt(0)?.toUpperCase() || 'U'}
-                        </div>
+                        <StudentAvatar
+                          student={enquiry}
+                          size="md"
+                          shape="circle"
+                          showStatusIndicator
+                        />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <p className="font-bold text-gray-900 text-sm truncate">{enquiry.name || 'Anonymous'}</p>

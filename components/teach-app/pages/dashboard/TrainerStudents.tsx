@@ -26,6 +26,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { scanContactShield, maskContactInfo } from '@/lib/contact-shield';
+import { StudentAvatar } from '@/components/teach-app/StudentAvatar';
 
 export function TrainerStudents() {
   const [students, setStudents] = useState<any[]>([]);
@@ -439,9 +440,12 @@ export function TrainerStudents() {
             >
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
+                  <StudentAvatar
+                    student={chatModal.student}
+                    size="md"
+                    shape="circle"
+                    showStatusIndicator
+                  />
                   <div>
                     <h3 className="font-bold text-gray-900 text-base">Celoris In-App Chat</h3>
                     <p className="text-xs text-gray-500">
@@ -702,9 +706,12 @@ export function TrainerStudents() {
                     <tr key={student.id} className="hover:bg-emerald-50/30 transition-colors group">
                       <td className="p-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center font-bold text-emerald-700 shadow-sm border border-emerald-200">
-                            {(student.name || 'U').charAt(0).toUpperCase()}
-                          </div>
+                          <StudentAvatar
+                            student={student}
+                            size="lg"
+                            shape="circle"
+                            showStatusIndicator
+                          />
                           <div>
                             <div className="flex items-center gap-2">
                               <p className="font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">
@@ -818,9 +825,12 @@ export function TrainerStudents() {
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-110 transition-transform" />
                 <div className="flex items-center justify-between mb-6 relative">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-emerald-500/20">
-                    {(student.name || 'U').charAt(0).toUpperCase()}
-                  </div>
+                  <StudentAvatar
+                    student={student}
+                    size="xl"
+                    shape="circle"
+                    showStatusIndicator
+                  />
                   <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(student.status)}`}>
                     {student.status || 'open'}
                   </div>

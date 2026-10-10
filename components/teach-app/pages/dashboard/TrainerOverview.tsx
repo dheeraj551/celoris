@@ -5,6 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { StudentAvatar } from '@/components/teach-app/StudentAvatar';
 
 const MotionLink = motion.create(Link);
 
@@ -311,9 +312,12 @@ export function TrainerOverview() {
                   className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center font-bold text-emerald-700">
-                      {lead.name?.charAt(0)?.toUpperCase() || 'U'}
-                    </div>
+                    <StudentAvatar
+                      student={lead}
+                      size="md"
+                      shape="circle"
+                      showStatusIndicator
+                    />
                     <div>
                       <h4 className="text-sm font-bold text-gray-900">
                         {lead.name || 'Anonymous Student'}

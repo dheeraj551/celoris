@@ -3,6 +3,7 @@ import { DollarSign, TrendingUp, Download, ArrowUpRight, CreditCard, Wallet, Cal
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { formatDistanceToNow } from 'date-fns';
+import { StudentAvatar } from '@/components/teach-app/StudentAvatar';
 
 export function TrainerEarnings() {
   const [loading, setLoading] = useState(true);
@@ -159,9 +160,12 @@ export function TrainerEarnings() {
                         <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0">
-                                {(lead.name || 'U').charAt(0).toUpperCase()}
-                              </div>
+                              <StudentAvatar
+                                student={lead}
+                                size="sm"
+                                shape="circle"
+                                showStatusIndicator
+                              />
                               <div>
                                 <p className="text-sm font-bold text-gray-900">{lead.name || 'Anonymous'}</p>
                                 <p className="text-xs text-gray-400">{lead.email || ''}</p>
