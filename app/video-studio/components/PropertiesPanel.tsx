@@ -16,7 +16,8 @@ import {
   Sparkles, 
   Minimize2, 
   Maximize2,
-  Palette
+  Palette,
+  Activity
 } from 'lucide-react';
 import { TextElement, Clip } from '../page';
 
@@ -27,6 +28,8 @@ interface PropertiesPanelProps {
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   selectedClipId: string | null;
   duration: number;
+  showScopes?: boolean;
+  onToggleScopes?: () => void;
 }
 
 const PRESET_COLORS = ['#ffffff', '#ccff00', '#00e5ff', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981', '#000000'];
@@ -37,7 +40,9 @@ export default function PropertiesPanel({
   clips, 
   setClips, 
   selectedClipId, 
-  duration 
+  duration,
+  showScopes,
+  onToggleScopes
 }: PropertiesPanelProps) {
   const [activeTab, setActiveTab] = useState<'basic' | 'text' | 'anim' | 'video-effects' | 'video-trim'>('basic');
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -52,7 +57,7 @@ export default function PropertiesPanel({
     setActiveTab('basic');
   }
 
-  const handleVideoEffectChange = (effect: string, value: number) => {
+  const handleVideoEffectChange = (effect: string, value: any) => {
     if (selectedClipId) {
       setClips(prev => prev.map(c =>
         c.id === selectedClipId ? { ...c, [effect]: value } : c
@@ -78,7 +83,16 @@ export default function PropertiesPanel({
           rotation: 0,
           effectPreset: undefined,
           effectIntensity: 100,
-          overlayFx: 'none'
+          overlayFx: 'none',
+          temperature: 0,
+          tint: 0,
+          exposure: 0,
+          highlights: 0,
+          shadows: 0,
+          whites: 0,
+          blacks: 0,
+          vignetteAmount: 0,
+          lookPreset: 'none'
         } : c
       ));
     }
@@ -166,68 +180,258 @@ export default function PropertiesPanel({
         {/* ------------------------------------------------------------- */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar text-xs">
           
-          {/* VIDEO EFFECTS TAB */}
+          {/* VIDEO EFFECTS TAB - FILMCRAFT LUMETRI COLOR ENGINE */}
           {activeTab === 'video-effects' && isVideoSelected && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Color & Grading</span>
-                <button
-                  type="button"
-                  onClick={handleResetVideoEffects}
-                  className="flex items-center gap-1 text-[10.5px] text-slate-400 hover:text-emerald-400 transition-colors"
-                  title="Reset to defaults"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span>Reset</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-black text-white uppercase tracking-wider">Lumetri Color</span>
+                  <span className="text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded">PRO</span>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  {onToggleScopes && (
+                    <button
+                      type="button"
+                      onClick={onToggleScopes}
+                      className={`px-2 py-0.5 rounded-lg border text-[10px] font-bold flex items-center gap-1 transition-all ${
+                        showScopes
+                          ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.3)]'
+                          : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+                      }`}
+                      title="Toggle FilmCraft 32-bit Scopes"
+                    >
+                      <Activity className="w-3 h-3 text-emerald-400" />
+                      <span>Scopes</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleResetVideoEffects}
+                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-emerald-400 transition-colors"
+                    title="Reset to defaults"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Active Preset Badge if preset applied */}
-              {selectedClip?.effectPreset && (
-                <div className="flex items-center justify-between px-3 py-2 bg-emerald-500/10 border border-emerald-500/25 rounded-xl text-emerald-400 text-[11px] font-medium">
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Preset: <strong className="text-white capitalize">{selectedClip.effectPreset}</strong>
-                  </span>
-                  <span className="text-[10px] font-mono text-emerald-300">{selectedClip.effectIntensity ?? 100}%</span>
+              {/* FilmCraft Creative Looks (Cinematic Presets) */}
+              <div className="space-y-2 bg-black/30 border border-white/5 p-3 rounded-xl">
+                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Creative Look (LUT)
+                </span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[
+                    { id: 'none', label: 'Natural Rec.709' },
+                    { id: 'teal-orange', label: 'Teal & Orange' },
+                    { id: 'kodak-vintage', label: 'Kodak 2383' },
+                    { id: 'cyberpunk', label: 'Cyberpunk' },
+                    { id: 'golden-hour', label: 'Golden Hour' },
+                    { id: 'noir', label: 'Film Noir' },
+                    { id: 'bleach-bypass', label: 'Bleach Bypass' },
+                  ].map(look => {
+                    const isSelected = (selectedClip?.lookPreset || 'none') === look.id;
+                    return (
+                      <button
+                        key={look.id}
+                        type="button"
+                        onClick={() => handleVideoEffectChange('lookPreset', look.id)}
+                        className={`py-1.5 px-2 rounded-lg text-left transition-all text-[10.5px] font-medium border ${
+                          isSelected
+                            ? 'bg-emerald-500/20 border-emerald-500/50 text-white font-bold shadow-xs'
+                            : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {look.label}
+                      </button>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
 
-              {/* Sliders Grid */}
-              <div className="space-y-3.5 bg-black/30 border border-white/5 p-3 rounded-xl">
-                {[
-                  { label: 'Brightness', key: 'brightness', min: 0, max: 200, unit: '%', def: 100 },
-                  { label: 'Contrast', key: 'contrast', min: 0, max: 200, unit: '%', def: 100 },
-                  { label: 'Saturation', key: 'saturation', min: 0, max: 200, unit: '%', def: 100 },
-                  { label: 'Blur', key: 'blur', min: 0, max: 20, unit: 'px', def: 0 },
-                  { label: 'Hue Rotate', key: 'hueRotate', min: 0, max: 360, unit: '°', def: 0 },
-                  { label: 'Sepia', key: 'sepia', min: 0, max: 100, unit: '%', def: 0 },
-                  { label: 'Grayscale', key: 'grayscale', min: 0, max: 100, unit: '%', def: 0 },
-                  { label: 'Invert', key: 'invert', min: 0, max: 100, unit: '%', def: 0 },
-                ].map(item => {
-                  const val = (selectedClip as any)?.[item.key] ?? item.def;
-                  return (
-                    <div key={item.key} className="space-y-1">
-                      <div className="flex justify-between text-[11px] text-slate-400">
-                        <span>{item.label}</span>
-                        <span className="font-mono text-slate-200">{val}{item.unit}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={item.min}
-                        max={item.max}
-                        value={val}
-                        onChange={(e) => handleVideoEffectChange(item.key, parseInt(e.target.value))}
-                        className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
-                      />
-                    </div>
-                  );
-                })}
+              {/* Basic Correction Sliders */}
+              <div className="space-y-3 bg-black/30 border border-white/5 p-3 rounded-xl">
+                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Basic Tone & Temp
+                </span>
+
+                {/* Exposure */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Exposure</span>
+                    <span className="font-mono text-slate-200">
+                      {((selectedClip?.exposure ?? 0) > 0 ? '+' : '') + (selectedClip?.exposure ?? 0)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={-100}
+                    max={100}
+                    value={selectedClip?.exposure ?? 0}
+                    onChange={(e) => handleVideoEffectChange('exposure', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+
+                {/* Temperature (Cool Cyan <-> Warm Amber) */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1">
+                      Temperature
+                      <span className="text-[9px] text-slate-500 font-normal">
+                        ({(selectedClip?.temperature ?? 0) < 0 ? 'Cool' : (selectedClip?.temperature ?? 0) > 0 ? 'Warm' : '0'})
+                      </span>
+                    </span>
+                    <span className="font-mono text-slate-200">
+                      {((selectedClip?.temperature ?? 0) > 0 ? '+' : '') + (selectedClip?.temperature ?? 0)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={-100}
+                    max={100}
+                    value={selectedClip?.temperature ?? 0}
+                    onChange={(e) => handleVideoEffectChange('temperature', parseInt(e.target.value))}
+                    className="w-full h-1 bg-gradient-to-r from-cyan-600 via-slate-600 to-amber-500 rounded-full appearance-none accent-amber-400 cursor-pointer"
+                  />
+                </div>
+
+                {/* Tint (Green <-> Magenta) */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1">
+                      Tint
+                      <span className="text-[9px] text-slate-500 font-normal">
+                        ({(selectedClip?.tint ?? 0) < 0 ? 'Green' : (selectedClip?.tint ?? 0) > 0 ? 'Magenta' : '0'})
+                      </span>
+                    </span>
+                    <span className="font-mono text-slate-200">
+                      {((selectedClip?.tint ?? 0) > 0 ? '+' : '') + (selectedClip?.tint ?? 0)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={-100}
+                    max={100}
+                    value={selectedClip?.tint ?? 0}
+                    onChange={(e) => handleVideoEffectChange('tint', parseInt(e.target.value))}
+                    className="w-full h-1 bg-gradient-to-r from-emerald-600 via-slate-600 to-fuchsia-600 rounded-full appearance-none accent-fuchsia-400 cursor-pointer"
+                  />
+                </div>
+
+                {/* Contrast */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Contrast</span>
+                    <span className="font-mono text-slate-200">{selectedClip?.contrast ?? 100}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={200}
+                    value={selectedClip?.contrast ?? 100}
+                    onChange={(e) => handleVideoEffectChange('contrast', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+
+                {/* Highlights */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Highlights</span>
+                    <span className="font-mono text-slate-200">
+                      {((selectedClip?.highlights ?? 0) > 0 ? '+' : '') + (selectedClip?.highlights ?? 0)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={-100}
+                    max={100}
+                    value={selectedClip?.highlights ?? 0}
+                    onChange={(e) => handleVideoEffectChange('highlights', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+
+                {/* Shadows */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Shadows</span>
+                    <span className="font-mono text-slate-200">
+                      {((selectedClip?.shadows ?? 0) > 0 ? '+' : '') + (selectedClip?.shadows ?? 0)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={-100}
+                    max={100}
+                    value={selectedClip?.shadows ?? 0}
+                    onChange={(e) => handleVideoEffectChange('shadows', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+
+                {/* Saturation */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Saturation</span>
+                    <span className="font-mono text-slate-200">{selectedClip?.saturation ?? 100}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={200}
+                    value={selectedClip?.saturation ?? 100}
+                    onChange={(e) => handleVideoEffectChange('saturation', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Vignette & Stylization */}
+              <div className="space-y-3 bg-black/30 border border-white/5 p-3 rounded-xl">
+                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Vignette & Lens FX
+                </span>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Vignette Edge Falloff</span>
+                    <span className="font-mono text-slate-200">{selectedClip?.vignetteAmount ?? 0}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={selectedClip?.vignetteAmount ?? 0}
+                    onChange={(e) => handleVideoEffectChange('vignetteAmount', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Lens Blur</span>
+                    <span className="font-mono text-slate-200">{selectedClip?.blur ?? 0}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={20}
+                    value={selectedClip?.blur ?? 0}
+                    onChange={(e) => handleVideoEffectChange('blur', parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-400 cursor-pointer"
+                  />
+                </div>
               </div>
 
               {/* Scale & Transform */}
               <div className="space-y-3 bg-black/30 border border-white/5 p-3 rounded-xl">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Transform & Rotation</span>
+                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Motion & Framing
+                </span>
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] text-slate-400">
                     <span>Scale</span>

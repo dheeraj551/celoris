@@ -19,7 +19,11 @@ import {
   Unlock, 
   Magnet, 
   SkipBack, 
-  SkipForward 
+  SkipForward,
+  Scissors,
+  Keyboard,
+  CornerDownLeft,
+  CornerDownRight
 } from 'lucide-react';
 import { Clip } from '../page';
 
@@ -35,6 +39,11 @@ interface TimelineProps {
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   selectedClipId: string | null;
   setSelectedClipId: React.Dispatch<React.SetStateAction<string | null>>;
+  markIn?: number | null;
+  setMarkIn?: (time: number | null) => void;
+  markOut?: number | null;
+  setMarkOut?: (time: number | null) => void;
+  onOpenShortcuts?: () => void;
 }
 
 export default function Timeline({
@@ -48,7 +57,12 @@ export default function Timeline({
   clips,
   setClips,
   selectedClipId,
-  setSelectedClipId
+  setSelectedClipId,
+  markIn,
+  setMarkIn,
+  markOut,
+  setMarkOut,
+  onOpenShortcuts
 }: TimelineProps) {
   const [zoom, setZoom] = useState(12); // pixels per second
   const [isSnapping, setIsSnapping] = useState(true);
@@ -237,22 +251,125 @@ export default function Timeline({
     }
   };
 
-  const splitSelected = () => {
-    if (selectedClipId) {
-      const clipToSplit = clips.find(c => c.id === selectedClipId);
-      if (clipToSplit && currentTime > clipToSplit.start && currentTime < clipToSplit.end) {
-        const newClip1 = { ...clipToSplit, end: currentTime };
-        const newClip2 = {
-          ...clipToSplit,
-          id: `clip-${Date.now()}`,
-          start: currentTime,
-          transition: undefined,
-          mediaOffset: (clipToSplit.mediaOffset || 0) + (currentTime - clipToSplit.start)
-        };
+  const rippleDelete = () => {
+    if (!selectedClipId) return;
+    const clip = clips.find(c => c.id === selectedClipId);
+    if (!clip) return;
 
-        setClips(clips.map(c => c.id === selectedClipId ? newClip1 : c).concat(newClip2));
-      }
+    const delta = clip.end - clip.start;
+    const oldEnd = clip.end;
+
+    setClips(prev => prev
+      .filter(c => c.id !== selectedClipId)
+      .map(c => {
+        if (c.start >= oldEnd) {
+          return {
+            ...c,
+            start: Math.max(0, c.start - delta),
+            end: Math.max(0.1, c.end - delta)
+          };
+        }
+        return c;
+      })
+    );
+    setSelectedClipId(null);
+  };
+
+  const splitSelected = () => {
+    // If clip selected and playhead is inside it
+    let clipToSplit = selectedClipId ? clips.find(c => c.id === selectedClipId) : null;
+
+    // Fallback: find clip under playhead
+    if (!clipToSplit || currentTime <= clipToSplit.start || currentTime >= clipToSplit.end) {
+      clipToSplit = clips.find(c => c.type === 'video' && currentTime > c.start && currentTime < c.end)
+        || clips.find(c => currentTime > c.start && currentTime < c.end) || null;
     }
+
+    if (clipToSplit && currentTime > clipToSplit.start && currentTime < clipToSplit.end) {
+      const newClip1 = { ...clipToSplit, end: currentTime };
+      const newClip2 = {
+        ...clipToSplit,
+        id: `clip-${Date.now()}`,
+        start: currentTime,
+        transition: undefined,
+        mediaOffset: (clipToSplit.mediaOffset || 0) + (currentTime - clipToSplit.start)
+      };
+
+      setClips(clips.map(c => c.id === clipToSplit!.id ? newClip1 : c).concat(newClip2));
+      setSelectedClipId(newClip2.id);
+    }
+  };
+
+  // FilmCraft Ripple Trim Head to Playhead (Q)
+  const rippleTrimHead = () => {
+    let clip = selectedClipId ? clips.find(c => c.id === selectedClipId) : null;
+    if (!clip || currentTime <= clip.start || currentTime >= clip.end) {
+      clip = clips.find(c => c.type === 'video' && currentTime > c.start && currentTime < c.end)
+        || clips.find(c => currentTime > c.start && currentTime < c.end) || null;
+    }
+
+    if (!clip || currentTime <= clip.start || currentTime >= clip.end) return;
+
+    const delta = currentTime - clip.start;
+    if (delta <= 0.05 || (clip.end - currentTime) < 0.3) return;
+
+    const targetClipId = clip.id;
+    const oldEnd = clip.end;
+
+    setClips(prev => prev.map(c => {
+      if (c.id === targetClipId) {
+        return {
+          ...c,
+          start: c.start,
+          end: c.end - delta,
+          mediaOffset: (c.mediaOffset || 0) + delta
+        };
+      }
+      if (c.start >= oldEnd) {
+        return {
+          ...c,
+          start: Math.max(0, c.start - delta),
+          end: Math.max(0.1, c.end - delta)
+        };
+      }
+      return c;
+    }));
+
+    setCurrentTime(clip.start);
+  };
+
+  // FilmCraft Ripple Trim Tail to Playhead (W)
+  const rippleTrimTail = () => {
+    let clip = selectedClipId ? clips.find(c => c.id === selectedClipId) : null;
+    if (!clip || currentTime <= clip.start || currentTime >= clip.end) {
+      clip = clips.find(c => c.type === 'video' && currentTime > c.start && currentTime < c.end)
+        || clips.find(c => currentTime > c.start && currentTime < c.end) || null;
+    }
+
+    if (!clip || currentTime <= clip.start || currentTime >= clip.end) return;
+
+    const delta = clip.end - currentTime;
+    if (delta <= 0.05 || (currentTime - clip.start) < 0.3) return;
+
+    const targetClipId = clip.id;
+    const oldEnd = clip.end;
+
+    setClips(prev => prev.map(c => {
+      if (c.id === targetClipId) {
+        return {
+          ...c,
+          end: currentTime
+        };
+      }
+      if (c.start >= oldEnd) {
+        return {
+          ...c,
+          start: Math.max(0, c.start - delta),
+          end: Math.max(0.1, c.end - delta)
+        };
+      }
+      return c;
+    }));
   };
 
   const duplicateSelected = () => {
@@ -273,7 +390,14 @@ export default function Timeline({
     }
   };
 
-  // Keyboard shortcut listeners (Space, Del, S)
+  const handleSetMarkIn = () => setMarkIn?.(currentTime);
+  const handleSetMarkOut = () => setMarkOut?.(currentTime);
+  const handleClearInOut = () => {
+    setMarkIn?.(null);
+    setMarkOut?.(null);
+  };
+
+  // FilmCraft Keyboard shortcut listeners (Space, Q, W, C, S, D, I, O, J, K, L, Shift+Del)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -281,12 +405,34 @@ export default function Timeline({
       if (e.code === 'Space') {
         e.preventDefault();
         setIsPlaying(prev => !prev);
-      } else if (e.code === 'Delete' || e.code === 'Backspace') {
-        deleteSelected();
+      } else if (e.key === 'q' || e.key === 'Q') {
+        rippleTrimHead();
+      } else if (e.key === 'w' || e.key === 'W') {
+        rippleTrimTail();
+      } else if (e.key === 'c' || e.key === 'C') {
+        splitSelected();
       } else if (e.key === 's' || e.key === 'S') {
         splitSelected();
       } else if (e.key === 'd' || e.key === 'D') {
         duplicateSelected();
+      } else if (e.key === 'i' || e.key === 'I') {
+        handleSetMarkIn();
+      } else if (e.key === 'o' || e.key === 'O') {
+        handleSetMarkOut();
+      } else if (e.altKey && (e.key === 'x' || e.key === 'X')) {
+        handleClearInOut();
+      } else if (e.key === 'j' || e.key === 'J') {
+        setCurrentTime(prev => Math.max(0, prev - 1.5));
+      } else if (e.key === 'k' || e.key === 'K') {
+        setIsPlaying(false);
+      } else if (e.key === 'l' || e.key === 'L') {
+        setCurrentTime(prev => Math.min(duration, prev + 1.5));
+      } else if (e.key === 'm' || e.key === 'M') {
+        setIsSnapping(prev => !prev);
+      } else if (e.shiftKey && (e.code === 'Delete' || e.code === 'Backspace')) {
+        rippleDelete();
+      } else if (e.code === 'Delete' || e.code === 'Backspace') {
+        deleteSelected();
       }
     };
 
@@ -310,18 +456,41 @@ export default function Timeline({
       <div className="h-11 border-b border-white/[0.08] bg-[#0c0e15] flex items-center justify-between px-4 shrink-0">
         
         {/* Left Editing Tools */}
-        <div className="flex items-center gap-1.5">
-          {/* Split Tool */}
+        <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar py-0.5">
+          {/* FilmCraft Q: Ripple Trim Head */}
+          <button
+            type="button"
+            onClick={rippleTrimHead}
+            title="Ripple Trim Head to Playhead (Q) - Trims start of clip and pulls trailing media left"
+            className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 transition-all flex items-center gap-1 shadow-xs"
+          >
+            <CornerDownLeft className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold hidden xl:inline">Top Trim</span>
+            <kbd className="text-[9px] font-mono bg-black/40 px-1 rounded text-emerald-300">Q</kbd>
+          </button>
+
+          {/* FilmCraft W: Ripple Trim Tail */}
+          <button
+            type="button"
+            onClick={rippleTrimTail}
+            title="Ripple Trim Tail to Playhead (W) - Trims end of clip and pulls trailing media left"
+            className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 transition-all flex items-center gap-1 shadow-xs"
+          >
+            <CornerDownRight className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold hidden xl:inline">Tail Trim</span>
+            <kbd className="text-[9px] font-mono bg-black/40 px-1 rounded text-emerald-300">W</kbd>
+          </button>
+
+          {/* FilmCraft Razor Tool (C / S) */}
           <button
             type="button"
             onClick={splitSelected}
-            disabled={!selectedClipId || !clips.find(c => c.id === selectedClipId && currentTime > c.start && currentTime < c.end)}
-            title="Split Clip at Playhead (S)"
-            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 hover:border-white/15 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 shadow-xs"
+            title="Razor Tool / Split Clip at Playhead (C or S)"
+            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 hover:border-white/15 text-cyan-400 hover:text-cyan-300 transition-all flex items-center gap-1 shadow-xs"
           >
-            <SplitSquareVertical className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-[11px] font-semibold hidden md:inline">Split</span>
-            <kbd className="hidden lg:inline text-[9px] font-mono text-slate-500 bg-white/5 px-1 rounded">S</kbd>
+            <Scissors className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-semibold hidden md:inline">Razor</span>
+            <kbd className="hidden lg:inline text-[9px] font-mono text-slate-500 bg-white/5 px-1 rounded">C</kbd>
           </button>
 
           {/* Duplicate Tool */}
@@ -333,30 +502,64 @@ export default function Timeline({
             className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 hover:border-white/15 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 shadow-xs"
           >
             <Copy className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-[11px] font-semibold hidden md:inline">Duplicate</span>
+            <span className="text-[11px] font-semibold hidden lg:inline">Duplicate</span>
             <kbd className="hidden lg:inline text-[9px] font-mono text-slate-500 bg-white/5 px-1 rounded">D</kbd>
           </button>
 
-          {/* Delete Tool */}
+          {/* Ripple Delete Tool */}
           <button
             type="button"
-            onClick={deleteSelected}
+            onClick={rippleDelete}
             disabled={!selectedClipId}
-            title="Delete Selected Clip (Del)"
-            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-rose-500/20 border border-white/5 hover:border-rose-500/30 text-slate-300 hover:text-rose-400 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 shadow-xs"
+            title="Ripple Delete Selected Clip (Shift+Delete) - Closes gap automatically"
+            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-rose-500/20 border border-white/5 hover:border-rose-500/30 text-rose-400 hover:text-rose-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 shadow-xs"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-semibold hidden md:inline">Delete</span>
-            <kbd className="hidden lg:inline text-[9px] font-mono text-slate-500 bg-white/5 px-1 rounded">Del</kbd>
+            <span className="text-[11px] font-semibold hidden lg:inline">Ripple Del</span>
+            <kbd className="hidden lg:inline text-[8.5px] font-mono text-rose-400/80 bg-rose-500/10 px-1 rounded">⇧Del</kbd>
           </button>
 
-          <div className="h-4 w-px bg-white/10 mx-1 hidden sm:block" />
+          <div className="h-4 w-px bg-white/10 mx-0.5 hidden sm:block" />
+
+          {/* Mark In & Out Buttons */}
+          <button
+            type="button"
+            onClick={handleSetMarkIn}
+            title="Set Mark In Point (I)"
+            className="px-2 py-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 text-amber-300 hover:text-white transition-all text-xs font-mono font-bold flex items-center gap-1"
+          >
+            <span>[ In</span>
+            <kbd className="hidden sm:inline text-[8.5px] text-slate-500">I</kbd>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSetMarkOut}
+            title="Set Mark Out Point (O)"
+            className="px-2 py-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 text-amber-300 hover:text-white transition-all text-xs font-mono font-bold flex items-center gap-1"
+          >
+            <span>Out ]</span>
+            <kbd className="hidden sm:inline text-[8.5px] text-slate-500">O</kbd>
+          </button>
+
+          {(markIn !== null || markOut !== null) && (
+            <button
+              type="button"
+              onClick={handleClearInOut}
+              title="Clear In/Out Marks (Alt+X)"
+              className="text-[10px] text-slate-500 hover:text-rose-400 px-1 transition-colors"
+            >
+              Clear
+            </button>
+          )}
+
+          <div className="h-4 w-px bg-white/10 mx-0.5 hidden sm:block" />
 
           {/* Magnet / Snap toggle */}
           <button
             type="button"
             onClick={() => setIsSnapping(!isSnapping)}
-            title={`Magnetic Snapping: ${isSnapping ? 'ON' : 'OFF'}`}
+            title={`Magnetic Snapping (M): ${isSnapping ? 'ON' : 'OFF'}`}
             className={`p-1.5 rounded-lg transition-all flex items-center gap-1 ${
               isSnapping 
                 ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-xs' 
@@ -364,8 +567,20 @@ export default function Timeline({
             }`}
           >
             <Magnet className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-mono font-bold hidden sm:inline">{isSnapping ? 'Snap ON' : 'Snap OFF'}</span>
+            <span className="text-[10px] font-mono font-bold hidden sm:inline">{isSnapping ? 'Snap' : 'No Snap'}</span>
           </button>
+
+          {/* Shortcuts Modal Trigger */}
+          {onOpenShortcuts && (
+            <button
+              type="button"
+              onClick={onOpenShortcuts}
+              title="View FilmCraft Keyboard Shortcuts (?)"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors hidden md:flex items-center"
+            >
+              <Keyboard className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Center Transport & Timecode Readout */}
@@ -552,6 +767,24 @@ export default function Timeline({
               onClick={handleTimelineClick}
               className="h-7 border-b border-white/[0.08] relative sticky top-0 bg-[#0c0e15] z-10 cursor-pointer"
             >
+              {/* FilmCraft In/Out Range Highlight */}
+              {markIn !== null && markIn !== undefined && markOut !== null && markOut !== undefined && markOut > markIn && (
+                <div
+                  className="absolute top-0 bottom-0 bg-amber-400/25 border-x-2 border-amber-400 z-10 pointer-events-none flex items-center justify-between px-1 shadow-[inset_0_0_8px_rgba(251,191,36,0.2)]"
+                  style={{
+                    left: `${markIn * zoom}px`,
+                    width: `${(markOut - markIn) * zoom}px`
+                  }}
+                >
+                  <span className="text-[8.5px] font-mono font-bold text-amber-300 bg-black/70 px-1 rounded leading-none shadow-xs">
+                    [ In
+                  </span>
+                  <span className="text-[8.5px] font-mono font-bold text-amber-300 bg-black/70 px-1 rounded leading-none shadow-xs">
+                    {(markOut - markIn).toFixed(1)}s Out ]
+                  </span>
+                </div>
+              )}
+
               {markers.map(m => (
                 <div
                   key={m}

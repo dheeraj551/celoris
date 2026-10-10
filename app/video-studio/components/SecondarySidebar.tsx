@@ -30,9 +30,13 @@ import {
   ChevronDown,
   ChevronUp,
   Zap,
-  Film
+  Film,
+  Download,
+  UploadCloud,
+  FileCode
 } from 'lucide-react';
 import { Clip, TextElement } from '../page';
+import { generateSrtContent, generateVttContent, parseSubtitleFile, triggerSubtitleDownload } from '@/lib/subtitle-utils';
 
 export interface VideoTemplate {
   id: string;
@@ -510,6 +514,88 @@ export default function SecondarySidebar({
   const [templateCategory, setTemplateCategory] = useState<'all' | 'vio' | 'ugc' | 'product' | 'ads' | 'motion'>('all');
   const [appliedTemplateId, setAppliedTemplateId] = useState<string | null>(null);
 
+  // FilmCraft Subtitles Ref & Handlers
+  const subtitleFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportSubtitles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !setClips) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (!content) return;
+
+      const parsed = parseSubtitleFile(content);
+      if (parsed.length === 0) {
+        alert("No valid subtitles found in the uploaded file. Please select a valid .srt or .vtt file.");
+        return;
+      }
+
+      const newClips: Clip[] = parsed.map((item, idx) => ({
+        id: `sub-${Date.now()}-${idx}`,
+        type: 'text',
+        start: item.start,
+        end: item.end,
+        content: item.text,
+        color: '#e67e22',
+        trackIndex: 0
+      }));
+
+      setClips(prev => [
+        ...newClips,
+        ...prev.filter(c => c.trackIndex !== 0)
+      ]);
+
+      if (parsed[0] && setTextElement) {
+        setTextElement(prev => ({ ...prev, text: parsed[0].text }));
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleExportSrt = () => {
+    if (!clips) return;
+    const srt = generateSrtContent(clips);
+    triggerSubtitleDownload(srt, 'celoris_captions.srt', 'application/x-subrip');
+  };
+
+  const handleExportVtt = () => {
+    if (!clips) return;
+    const vtt = generateVttContent(clips);
+    triggerSubtitleDownload(vtt, 'celoris_captions.vtt', 'text/vtt');
+  };
+
+  const handlePopulateViralCaptions = () => {
+    if (!setClips) return;
+    const viralLines = [
+      { start: 0, end: 3, text: 'Create Stunning Content 🚀' },
+      { start: 3.2, end: 6.5, text: 'Powered by Celoris AI & FilmCraft' },
+      { start: 6.7, end: 10, text: 'Professional Multi-Track Studio' },
+      { start: 10.2, end: 14, text: 'Export in 4K with Pro Audio' }
+    ];
+
+    const newClips: Clip[] = viralLines.map((item, idx) => ({
+      id: `viral-sub-${Date.now()}-${idx}`,
+      type: 'text',
+      start: item.start,
+      end: item.end,
+      content: item.text,
+      color: '#e67e22',
+      trackIndex: 0
+    }));
+
+    setClips(prev => [
+      ...newClips,
+      ...prev.filter(c => c.trackIndex !== 0)
+    ]);
+
+    if (setTextElement) {
+      setTextElement(prev => ({ ...prev, text: viralLines[0].text }));
+    }
+  };
+
   // Effects & Filters State
   const [effectSearch, setEffectSearch] = useState('');
   const [effectCategory, setEffectCategory] = useState<'all' | 'cinematic' | 'cyber' | 'retro' | 'mood' | 'vibrant' | 'overlay'>('all');
@@ -939,6 +1025,76 @@ export default function SecondarySidebar({
                     <span>Generate Captions</span>
                   </>
                 )}
+              </button>
+            </div>
+
+            {/* FilmCraft Subtitles Engine (.SRT & .WebVTT) */}
+            <div className="p-4 rounded-2xl bg-[#11141e] border border-white/10 space-y-3 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <FileCode className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      Subtitles Engine
+                      <span className="text-[8px] font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-1 rounded">SRT/VTT</span>
+                    </h3>
+                    <p className="text-[10px] text-slate-400">Industry-standard caption tracks</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hidden File Input for SRT/VTT */}
+              <input
+                ref={subtitleFileInputRef}
+                type="file"
+                accept=".srt,.vtt,text/plain"
+                onChange={handleImportSubtitles}
+                className="hidden"
+              />
+
+              {/* Import Subtitle Button */}
+              <button
+                type="button"
+                onClick={() => subtitleFileInputRef.current?.click()}
+                className="w-full py-2 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-200 hover:text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-xs"
+              >
+                <UploadCloud className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Import .SRT / .VTT File</span>
+              </button>
+
+              {/* Export Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportSrt}
+                  className="py-1.5 px-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                  title="Export Track 0 to SubRip (.SRT) format"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Export .SRT</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportVtt}
+                  className="py-1.5 px-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                  title="Export Track 0 to WebVTT (.VTT) format"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Export .VTT</span>
+                </button>
+              </div>
+
+              {/* Quick Template Populator */}
+              <button
+                type="button"
+                onClick={handlePopulateViralCaptions}
+                className="w-full py-1.5 px-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-emerald-400 hover:text-emerald-300 font-medium text-[11px] flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>Sync Demo Captions</span>
               </button>
             </div>
 

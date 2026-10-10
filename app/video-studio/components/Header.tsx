@@ -26,7 +26,9 @@ import {
   Sparkles,
   ChevronLeft,
   Check,
-  Edit2
+  Edit2,
+  Keyboard,
+  Activity
 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import {
@@ -53,6 +55,9 @@ interface HeaderProps {
   isExporting?: boolean;
   viewMode?: 'editor' | 'cdance';
   onViewModeChange?: (mode: 'editor' | 'cdance') => void;
+  onOpenShortcuts?: () => void;
+  showScopes?: boolean;
+  onToggleScopes?: () => void;
 }
 
 export default function Header({
@@ -67,7 +72,10 @@ export default function Header({
   onDownload,
   isExporting,
   viewMode = 'editor',
-  onViewModeChange
+  onViewModeChange,
+  onOpenShortcuts,
+  showScopes,
+  onToggleScopes
 }: HeaderProps) {
   const { user, profile, loading, signOut } = useAuth();
   const router = useRouter();
@@ -270,8 +278,38 @@ export default function Header({
       {/* ------------------------------------------------------------- */}
       {/* RIGHT: WALLET CREDITS + SHARE + EXPORT + AVATAR */}
       {/* ------------------------------------------------------------- */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         
+        {/* FilmCraft Scopes Button */}
+        {onToggleScopes && (
+          <button
+            type="button"
+            onClick={onToggleScopes}
+            className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+              showScopes
+                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.3)]'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-slate-300 hover:text-white'
+            }`}
+            title="FilmCraft 32-Bit Video Scopes (Waveform / Vectorscope)"
+          >
+            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-[11px]">Scopes</span>
+          </button>
+        )}
+
+        {/* FilmCraft Pro Shortcuts Cheat Sheet */}
+        {onOpenShortcuts && (
+          <button
+            type="button"
+            onClick={onOpenShortcuts}
+            className="p-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-300 hover:text-white transition-all flex items-center gap-1"
+            title="Premiere Pro & FilmCraft Shortcuts (?)"
+          >
+            <Keyboard className="w-3.5 h-3.5 text-slate-400" />
+            <kbd className="hidden lg:inline text-[9px] font-mono text-slate-500 bg-white/5 px-1 rounded">?</kbd>
+          </button>
+        )}
+
         {/* Wallet Balance Badge */}
         {user && (
           <Link

@@ -14,6 +14,7 @@ import Canvas, { AspectRatioType } from './components/Canvas';
 import Timeline from './components/Timeline';
 import PropertiesPanel from './components/PropertiesPanel';
 import { CDanceStudio } from './components/CDanceStudio';
+import ShortcutsModal from './components/ShortcutsModal';
 
 export interface Clip {
     id: string;
@@ -39,10 +40,89 @@ export interface Clip {
     scaleY?: number;
     rotation?: number;
 
+    // FilmCraft Lumetri Color Engine
+    temperature?: number; // -100 (cool/cyan) to +100 (warm/amber)
+    tint?: number; // -100 (green) to +100 (magenta)
+    exposure?: number; // -100 to +100
+    highlights?: number; // -100 to +100
+    shadows?: number; // -100 to +100
+    whites?: number; // -100 to +100
+    blacks?: number; // -100 to +100
+    vignetteAmount?: number; // 0 to 100
+    lookPreset?: 'none' | 'teal-orange' | 'kodak-vintage' | 'cyberpunk' | 'golden-hour' | 'noir' | 'bleach-bypass';
+
     // Effect Preset & Overlays
     effectPreset?: string;
     effectIntensity?: number;
     overlayFx?: 'none' | 'vignette' | 'grain' | 'scanlines' | 'rgb-split' | 'light-leak';
+}
+
+/**
+ * Compute unified CSS filter string from standard and Lumetri color parameters
+ */
+export function computeLumetriFilter(clip: Clip): string {
+    let filterString = '';
+
+    // Blur
+    if (clip.blur) filterString += `blur(${clip.blur}px) `;
+
+    // Exposure & Brightness
+    const exposureFactor = (clip.exposure ?? 0) * 0.5;
+    const baseBrightness = clip.brightness ?? 100;
+    const finalBrightness = Math.max(0, Math.min(250, baseBrightness + exposureFactor));
+    if (finalBrightness !== 100) filterString += `brightness(${finalBrightness}%) `;
+
+    // Contrast & Highlights/Shadows
+    const contrastFactor = ((clip.highlights ?? 0) - (clip.shadows ?? 0)) * 0.25;
+    const baseContrast = clip.contrast ?? 100;
+    const finalContrast = Math.max(0, Math.min(250, baseContrast + contrastFactor));
+    if (finalContrast !== 100) filterString += `contrast(${finalContrast}%) `;
+
+    // Saturation
+    if (clip.saturation !== undefined && clip.saturation !== 100) {
+        filterString += `saturate(${clip.saturation}%) `;
+    }
+
+    // Temperature (warm sepia vs cool cyan)
+    const temp = clip.temperature ?? 0;
+    if (temp > 0) {
+        filterString += `sepia(${Math.round(temp * 0.35)}%) `;
+    } else if (temp < 0) {
+        filterString += `hue-rotate(${Math.round(temp * 0.15)}deg) `;
+    }
+
+    // Tint (green vs magenta)
+    const tint = clip.tint ?? 0;
+    if (tint !== 0) {
+        filterString += `hue-rotate(${Math.round(tint * 0.25)}deg) `;
+    }
+
+    // Custom Hue Rotate
+    if (clip.hueRotate !== undefined && clip.hueRotate !== 0) {
+        filterString += `hue-rotate(${clip.hueRotate}deg) `;
+    }
+
+    // Sepia, Grayscale, Invert
+    if (clip.sepia) filterString += `sepia(${clip.sepia}%) `;
+    if (clip.grayscale) filterString += `grayscale(${clip.grayscale}%) `;
+    if (clip.invert) filterString += `invert(${clip.invert}%) `;
+
+    // FilmCraft Looks Presets
+    if (clip.lookPreset === 'teal-orange') {
+        filterString += 'contrast(120%) saturate(125%) ';
+    } else if (clip.lookPreset === 'kodak-vintage') {
+        filterString += 'sepia(25%) contrast(110%) saturate(110%) ';
+    } else if (clip.lookPreset === 'cyberpunk') {
+        filterString += 'contrast(135%) saturate(145%) hue-rotate(20deg) ';
+    } else if (clip.lookPreset === 'golden-hour') {
+        filterString += 'sepia(35%) saturate(130%) brightness(105%) ';
+    } else if (clip.lookPreset === 'noir') {
+        filterString += 'grayscale(100%) contrast(140%) ';
+    } else if (clip.lookPreset === 'bleach-bypass') {
+        filterString += 'contrast(140%) saturate(60%) brightness(110%) ';
+    }
+
+    return filterString.trim();
 }
 
 export interface TextElement {
@@ -133,6 +213,14 @@ export default function VideoStudio() {
     const [clips, setClips] = useState<Clip[]>(initialClips);
     const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
 
+    // FilmCraft Pro NLE State
+    const [markIn, setMarkIn] = useState<number | null>(null);
+    const [markOut, setMarkOut] = useState<number | null>(null);
+    const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+    const [showScopes, setShowScopes] = useState(false);
+    const [masterVolume, setMasterVolume] = useState(1);
+    const [masterMuted, setMasterMuted] = useState(false);
+
     // Exporting state
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState(0);
@@ -218,19 +306,10 @@ export default function VideoStudio() {
 
                 ctx.save();
                 if (activeVideo) {
-                    // Apply filters if any
-                    let filterString = '';
-                    if (activeVideo.blur) filterString += `blur(${activeVideo.blur}px) `;
-                    if (activeVideo.brightness !== undefined && activeVideo.brightness !== 100) filterString += `brightness(${activeVideo.brightness}%) `;
-                    if (activeVideo.contrast !== undefined && activeVideo.contrast !== 100) filterString += `contrast(${activeVideo.contrast}%) `;
-                    if (activeVideo.saturation !== undefined && activeVideo.saturation !== 100) filterString += `saturate(${activeVideo.saturation}%) `;
-                    if (activeVideo.hueRotate !== undefined && activeVideo.hueRotate !== 0) filterString += `hue-rotate(${activeVideo.hueRotate}deg) `;
-                    if (activeVideo.sepia) filterString += `sepia(${activeVideo.sepia}%) `;
-                    if (activeVideo.grayscale) filterString += `grayscale(${activeVideo.grayscale}%) `;
-                    if (activeVideo.invert) filterString += `invert(${activeVideo.invert}%) `;
-                    
+                    // Apply filters including Lumetri Color Engine
+                    const filterString = computeLumetriFilter(activeVideo);
                     if (filterString) {
-                        ctx.filter = filterString.trim();
+                        ctx.filter = filterString;
                     }
 
                     // Apply transformation
@@ -254,12 +333,14 @@ export default function VideoStudio() {
                     }
                     ctx.drawImage(sourceVideo, -drawW / 2, -drawH / 2, drawW, drawH);
 
-                    // Overlay FX
-                    if (activeVideo.overlayFx === 'vignette') {
+                    // Overlay FX & FilmCraft Vignette
+                    const hasVignette = activeVideo.overlayFx === 'vignette' || (activeVideo.vignetteAmount && activeVideo.vignetteAmount > 0);
+                    if (hasVignette) {
                         const radius = Math.max(drawW, drawH) / 2;
+                        const vigAmount = (activeVideo.vignetteAmount ?? 85) / 100;
                         const vigGrad = ctx.createRadialGradient(0, 0, radius * 0.4, 0, 0, radius);
                         vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
-                        vigGrad.addColorStop(1, 'rgba(0,0,0,0.85)');
+                        vigGrad.addColorStop(1, `rgba(0,0,0,${Math.min(0.95, vigAmount)})`);
                         ctx.save();
                         ctx.filter = 'none';
                         ctx.fillStyle = vigGrad;
@@ -444,9 +525,11 @@ export default function VideoStudio() {
         }
     }, [historyIndex, history]);
 
-    // Keyboard shortcuts for undo/redo
+    // Keyboard shortcuts for undo/redo and FilmCraft hotkeys
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
             if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
                 if (e.shiftKey) {
                     redo();
@@ -455,6 +538,8 @@ export default function VideoStudio() {
                 }
             } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
                 redo();
+            } else if (e.key === '?') {
+                setShowShortcutsModal(prev => !prev);
             }
         };
 
@@ -496,6 +581,9 @@ export default function VideoStudio() {
                         if (mode === 'cdance') setActiveTab('cdance');
                         else if (activeTab === 'cdance') setActiveTab('captions');
                     }}
+                    onOpenShortcuts={() => setShowShortcutsModal(true)}
+                    showScopes={showScopes}
+                    onToggleScopes={() => setShowScopes(prev => !prev)}
                 />
 
                 <div className="flex flex-1 overflow-hidden">
@@ -570,6 +658,12 @@ export default function VideoStudio() {
                                     clips={clips}
                                     aspectRatio={aspectRatio}
                                     setAspectRatio={setAspectRatio}
+                                    showScopes={showScopes}
+                                    setShowScopes={setShowScopes}
+                                    masterVolume={masterVolume}
+                                    setMasterVolume={setMasterVolume}
+                                    masterMuted={masterMuted}
+                                    setMasterMuted={setMasterMuted}
                                 />
                                 <Timeline
                                     isPlaying={isPlaying}
@@ -583,6 +677,11 @@ export default function VideoStudio() {
                                     setClips={setClips}
                                     selectedClipId={selectedClipId}
                                     setSelectedClipId={setSelectedClipId}
+                                    markIn={markIn}
+                                    setMarkIn={setMarkIn}
+                                    markOut={markOut}
+                                    setMarkOut={setMarkOut}
+                                    onOpenShortcuts={() => setShowShortcutsModal(true)}
                                 />
                                 <PropertiesPanel
                                     textElement={textElement}
@@ -591,6 +690,8 @@ export default function VideoStudio() {
                                     setClips={setClips}
                                     selectedClipId={selectedClipId}
                                     duration={duration}
+                                    showScopes={showScopes}
+                                    onToggleScopes={() => setShowScopes(prev => !prev)}
                                 />
                             </div>
                         </>
@@ -631,6 +732,12 @@ export default function VideoStudio() {
                     </div>
                 </div>
             )}
+
+            {/* FilmCraft Shortcuts Cheat Sheet Modal */}
+            <ShortcutsModal
+                isOpen={showShortcutsModal}
+                onClose={() => setShowShortcutsModal(false)}
+            />
         </DashboardShell>
     );
 }

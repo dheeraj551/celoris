@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Smartphone, Monitor, Square, RotateCw, Maximize2, Move, Sparkles } from 'lucide-react';
-import { TextElement, Clip } from '../page';
+import { Smartphone, Monitor, Square, RotateCw, Maximize2, Move, Sparkles, Activity } from 'lucide-react';
+import { TextElement, Clip, computeLumetriFilter } from '../page';
+import VideoScopes from './VideoScopes';
+import AudioMeter from './AudioMeter';
 
 export type AspectRatioType = '9:16' | '16:9' | '1:1';
 
@@ -18,6 +20,12 @@ interface CanvasProps {
   clips?: Clip[];
   aspectRatio?: AspectRatioType;
   setAspectRatio?: React.Dispatch<React.SetStateAction<AspectRatioType>>;
+  showScopes?: boolean;
+  setShowScopes?: React.Dispatch<React.SetStateAction<boolean>>;
+  masterVolume?: number;
+  setMasterVolume?: React.Dispatch<React.SetStateAction<number>>;
+  masterMuted?: boolean;
+  setMasterMuted?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Canvas({
@@ -33,7 +41,13 @@ export default function Canvas({
   setDuration,
   clips = [],
   aspectRatio: externalAspectRatio,
-  setAspectRatio: externalSetAspectRatio
+  setAspectRatio: externalSetAspectRatio,
+  showScopes,
+  setShowScopes,
+  masterVolume = 1,
+  setMasterVolume,
+  masterMuted = false,
+  setMasterMuted
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -53,16 +67,18 @@ export default function Canvas({
   // Find active video clip
   const activeVideoClip = clips.find(c => c.type === 'video' && currentTime >= c.start && currentTime < c.end);
 
-  // Sync video playback with timeline state
+  // Sync video playback and volume with timeline state
   useEffect(() => {
     if (videoRef.current) {
+      videoRef.current.volume = masterMuted ? 0 : Math.max(0, Math.min(1, masterVolume));
+      videoRef.current.muted = masterMuted;
       if (isPlaying && activeVideoClip) {
         videoRef.current.play().catch(e => console.error("Video play failed:", e));
       } else {
         videoRef.current.pause();
       }
     }
-  }, [isPlaying, activeVideoClip]);
+  }, [isPlaying, activeVideoClip, masterVolume, masterMuted]);
 
   // Sync video time with timeline state
   useEffect(() => {
@@ -295,7 +311,40 @@ export default function Canvas({
         >
           <Maximize2 className="w-3.5 h-3.5" />
         </button>
+
+        {/* FilmCraft Video Scopes Action */}
+        {setShowScopes && (
+          <button
+            type="button"
+            onClick={() => setShowScopes(!showScopes)}
+            className={`px-2.5 py-1.5 rounded-2xl backdrop-blur-xl border text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xl ${
+              showScopes
+                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.35)]'
+                : 'bg-[#0f121a]/80 hover:bg-white/10 border-white/10 text-slate-400 hover:text-white'
+            }`}
+            title="FilmCraft 32-Bit Video Scopes (Luma Waveform & Vectorscope)"
+          >
+            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline text-[11px] font-bold">Scopes</span>
+          </button>
+        )}
       </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* TOP RIGHT FLOATING CONTROLS: BROADCAST AUDIO METER (EBU R128) */}
+      {/* ------------------------------------------------------------- */}
+      {setMasterVolume && setMasterMuted && (
+        <div className="absolute top-4 right-4 z-20">
+          <AudioMeter
+            isPlaying={isPlaying}
+            masterVolume={masterVolume}
+            setMasterVolume={setMasterVolume}
+            masterMuted={masterMuted}
+            setMasterMuted={setMasterMuted}
+            videoRef={videoRef}
+          />
+        </div>
+      )}
 
       {/* ------------------------------------------------------------- */}
       {/* VIDEO PREVIEW VIEWPORT AREA */}
@@ -319,26 +368,22 @@ export default function Canvas({
               activeVideoClip ? 'opacity-100' : 'opacity-10'
             }`}
             style={activeVideoClip ? {
-              filter: `
-                blur(${activeVideoClip.blur ?? 0}px)
-                brightness(${activeVideoClip.brightness ?? 100}%)
-                contrast(${activeVideoClip.contrast ?? 100}%)
-                saturate(${activeVideoClip.saturation ?? 100}%)
-                hue-rotate(${activeVideoClip.hueRotate ?? 0}deg)
-                sepia(${activeVideoClip.sepia ?? 0}%)
-                grayscale(${activeVideoClip.grayscale ?? 0}%)
-                invert(${activeVideoClip.invert ?? 0}%)
-              `,
+              filter: computeLumetriFilter(activeVideoClip),
               transform: `scale(${(activeVideoClip.scaleX ?? 100) / 100}, ${(activeVideoClip.scaleY ?? 100) / 100}) rotate(${activeVideoClip.rotation ?? 0}deg)`
             } : {}}
             onLoadedMetadata={handleLoadedMetadata}
-            muted
+            muted={masterMuted}
             playsInline
           />
 
-          {/* Overlay FX Layers */}
-          {activeVideoClip?.overlayFx === 'vignette' && (
-            <div className="absolute inset-0 pointer-events-none z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.85)_100%)] mix-blend-multiply transition-opacity duration-300" />
+          {/* Overlay FX & FilmCraft Lumetri Vignette */}
+          {(activeVideoClip?.overlayFx === 'vignette' || (activeVideoClip?.vignetteAmount && activeVideoClip.vignetteAmount > 0)) && (
+            <div 
+              className="absolute inset-0 pointer-events-none z-10 mix-blend-multiply transition-opacity duration-300"
+              style={{
+                background: `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,${Math.min(0.95, (activeVideoClip?.vignetteAmount ?? 85) / 100)}) 100%)`
+              }}
+            />
           )}
 
           {activeVideoClip?.overlayFx === 'grain' && (
@@ -440,6 +485,14 @@ export default function Canvas({
           </div>
         </div>
       </div>
+
+      {/* FilmCraft Scopes Floating Window */}
+      <VideoScopes
+        isOpen={!!showScopes}
+        onClose={() => setShowScopes?.(false)}
+        videoRef={videoRef}
+        isPlaying={isPlaying}
+      />
     </div>
   );
 }
