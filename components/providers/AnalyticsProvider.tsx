@@ -5,6 +5,7 @@ import { useEffect, Suspense } from "react"
 import Script from "next/script"
 import { Analytics } from "@vercel/analytics/next"
 import { initClarity } from "@/lib/clarity"
+import { SignupConversionTracker, GOOGLE_ADS_ID } from "./SignupConversionTracker"
 
 declare global {
   interface Window {
@@ -45,7 +46,7 @@ export function AnalyticsProvider() {
       {/* Vercel Web Analytics */}
       <Analytics />
 
-      {/* Google Analytics 4 (gtag.js) */}
+      {/* Google Analytics 4 + Google Ads (one gtag.js, two config lines) */}
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
@@ -62,6 +63,7 @@ export function AnalyticsProvider() {
               page_path: window.location.pathname,
               send_page_view: true
             });
+            gtag('config', '${GOOGLE_ADS_ID}');
           `,
         }}
       />
@@ -70,6 +72,9 @@ export function AnalyticsProvider() {
       <Suspense fallback={null}>
         <GoogleAnalyticsRouteTracker />
       </Suspense>
+
+      {/* One "sign_up" event + Google Ads conversion per new account */}
+      <SignupConversionTracker />
     </>
   )
 }
