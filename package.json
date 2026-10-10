@@ -24,6 +24,7 @@
     "@hookform/resolvers": "^3.3.2",
     "@livekit/components-react": "^2.9.17",
     "@livekit/components-styles": "^1.2.0",
+    "@microsoft/clarity": "^1.0.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",

@@ -4,6 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
 import Script from "next/script"
 import { Analytics } from "@vercel/analytics/next"
+import { initClarity } from "@/lib/clarity"
 
 declare global {
   interface Window {
@@ -34,6 +35,11 @@ function GoogleAnalyticsRouteTracker() {
 }
 
 export function AnalyticsProvider() {
+  useEffect(() => {
+    // Initialize Microsoft Clarity if NEXT_PUBLIC_CLARITY_PROJECT_ID is set
+    initClarity()
+  }, [])
+
   return (
     <>
       {/* Vercel Web Analytics */}
