@@ -226,9 +226,11 @@ export function TrainerStudents() {
         const userPicMap: Record<string, string> = {};
         if (usersData) {
           usersData.forEach((u: any) => {
-            if (u.profile_pic_url) {
-              if (u.full_name) userPicMap[u.full_name.trim().toLowerCase()] = u.profile_pic_url;
-              if (u.username) userPicMap[u.username.trim().toLowerCase()] = u.profile_pic_url;
+            if (u.profile_pic_url && !u.profile_pic_url.includes('78b7a852')) {
+              const fn = u.full_name?.trim()?.toLowerCase();
+              const un = u.username?.trim()?.toLowerCase();
+              if (fn && fn.length > 2) userPicMap[fn] = u.profile_pic_url;
+              if (un && un.length > 2) userPicMap[un] = u.profile_pic_url;
             }
           });
         }
@@ -237,7 +239,8 @@ export function TrainerStudents() {
           const key = student.name?.trim()?.toLowerCase();
           return {
             ...student,
-            profile_pic_url: (key && userPicMap[key]) || student.profile_pic_url || null,
+            avatar_url: (key && userPicMap[key]) || (student.avatar_url && !student.avatar_url.includes('78b7a852') ? student.avatar_url : null),
+            profile_pic_url: (key && userPicMap[key]) || null,
           };
         });
 

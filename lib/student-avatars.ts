@@ -186,33 +186,38 @@ export function getStudentDisplayPicture(student?: {
     return null;
   }
 
-  // 1. If student record already includes their original profile_pic_url or avatar_url
-  if (student.profile_pic_url && typeof student.profile_pic_url === 'string' && student.profile_pic_url.trim().length > 10) {
-    return student.profile_pic_url.trim();
-  }
-  if (student.avatar_url && typeof student.avatar_url === 'string' && student.avatar_url.trim().length > 10) {
-    return student.avatar_url.trim();
-  }
-
   const rawName = (student.name || '').trim().toLowerCase();
-  if (!rawName) return null;
+  if (rawName) {
+    // 1. Direct exact match in verified original user avatars
+    if (ORIGINAL_USER_AVATARS[rawName]) {
+      return ORIGINAL_USER_AVATARS[rawName];
+    }
 
-  // Direct exact match
-  if (ORIGINAL_USER_AVATARS[rawName]) {
-    return ORIGINAL_USER_AVATARS[rawName];
+    // 2. Normalized (single space) match
+    const normalizedName = rawName.replace(/\s+/g, ' ');
+    if (ORIGINAL_USER_AVATARS[normalizedName]) {
+      return ORIGINAL_USER_AVATARS[normalizedName];
+    }
+
+    // 3. First name match (if multi-word or unique)
+    const firstName = normalizedName.split(' ')[0];
+    if (firstName && firstName.length > 2 && ORIGINAL_USER_AVATARS[firstName]) {
+      return ORIGINAL_USER_AVATARS[firstName];
+    }
   }
 
-  // Normalized (single space) match
-  const normalizedName = rawName.replace(/\s+/g, ' ');
-  if (ORIGINAL_USER_AVATARS[normalizedName]) {
-    return ORIGINAL_USER_AVATARS[normalizedName];
-  }
+  // 4. Fallback to valid attached profile_pic_url or avatar_url (ignoring bad placeholder 78b7a852)
+  const sanitize = (url?: string | null): string | null => {
+    if (!url || typeof url !== 'string' || url.trim().length < 15) return null;
+    if (url.includes('78b7a852')) return null;
+    return url.trim();
+  };
 
-  // First name match
-  const firstName = normalizedName.split(' ')[0];
-  if (firstName && ORIGINAL_USER_AVATARS[firstName]) {
-    return ORIGINAL_USER_AVATARS[firstName];
-  }
+  const validProfilePic = sanitize(student.profile_pic_url);
+  if (validProfilePic) return validProfilePic;
+
+  const validAvatar = sanitize(student.avatar_url);
+  if (validAvatar) return validAvatar;
 
   return null;
 }
