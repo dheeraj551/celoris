@@ -9,11 +9,11 @@ import { trackClarityEvent } from "@/lib/clarity"
 type AuthUser = { id: string; created_at?: string; app_metadata?: { provider?: string } }
 type AuthSession = { user?: AuthUser | null } | null
 
-// Google Ads account tag (also configured in AnalyticsProvider).
-export const GOOGLE_ADS_ID = "AW-16840012440"
-// Conversion label for the "Trainer sign-up" conversion action. Set it in Vercel
-// as NEXT_PUBLIC_GADS_SIGNUP_LABEL (the part after the "/" in send_to).
-const SIGNUP_LABEL = process.env.NEXT_PUBLIC_GADS_SIGNUP_LABEL || ""
+// Google Ads account 323-349-3390 (also configured in AnalyticsProvider).
+export const GOOGLE_ADS_ID = "AW-736915069"
+// Label of the "Sign-up" conversion action in that account (the part after the
+// "/" in send_to). NEXT_PUBLIC_GADS_SIGNUP_LABEL in Vercel overrides it.
+const SIGNUP_LABEL = process.env.NEXT_PUBLIC_GADS_SIGNUP_LABEL || "SSfoCJbTgZgdEP3csd8C"
 
 const INTENT_KEY = "celoris_signup_intent"
 const TRACKED_PREFIX = "celoris_signup_tracked_"
