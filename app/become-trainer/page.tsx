@@ -1,7 +1,7 @@
 import { type Metadata } from "next"
 import { DashboardShell } from "@/components/home-new/DashboardShell"
 import {
-    Sparkles, ArrowRight, BookOpen, Users, TrendingUp,
+    ArrowRight, BookOpen, Users, TrendingUp,
     CheckCircle2, XCircle, ShieldCheck, IndianRupee, Zap,
     HelpCircle, Laptop, PhoneCall, Award, Star, Video,
     Code, Palette, MessageSquare, Clock, MapPin, Download,
@@ -18,7 +18,8 @@ import { TrainerBattleCard } from "@/components/trainer/TrainerBattleCard"
 import { TrainerEarningsCalculator } from "@/components/trainer/TrainerEarningsCalculator"
 
 export const metadata: Metadata = {
-    title: "Online Teaching Jobs India & Home Tutors Delhi NCR (0% Commission) | Celoris",
+    // The root layout adds " | Celoris" automatically.
+    title: "Online Teaching Jobs India — 0% Commission, Keep 100%",
     description: "Celoris is 100% FREE for trainers and educators. Stop paying for coin packages. Keep 100% of your student fees with 0% commission. Direct student enquiries across Noida, Delhi NCR, and Pan-India.",
     keywords: [
         'online teaching jobs India 2026',
@@ -26,8 +27,8 @@ export const metadata: Metadata = {
         'become video editing trainer Noida',
         'python instructor jobs Delhi',
         'zero commission tutoring platform India',
-        'free UrbanPro alternative for tutors',
-        'TeacherOn free alternative 0 commission',
+        'tutor platform without coins',
+        'keep 100% tuition fees',
         'teach graphic design online India',
         'freelance instructor registration Celoris',
         'best tutor platform Noida Sector 62'
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Online Teaching Jobs India — 100% Free for Trainers (0% Commission)",
-        description: "Zero coin packages. Direct student contact. Keep 100% of your earnings. Join Celoris as a verified tutor today.",
+        description: "Zero coin packages. Direct student enquiries. Keep 100% of your earnings. Join Celoris as a verified tutor today.",
         images: ["https://celorisdesigns.com/trainer-ad-campaign-creative.jpg"],
     },
     other: {
@@ -72,8 +73,8 @@ const jsonLdData = {
             "@type": "WebPage",
             "@id": "https://celorisdesigns.com/become-trainer#webpage",
             "url": "https://celorisdesigns.com/become-trainer",
-            "name": "Online Teaching Jobs India & Home Tutors Delhi NCR (0% Commission) | Celoris",
-            "description": "Join Celoris as a verified instructor or home tutor. Enjoy 0% commission, direct student UPI payments, and zero coin paywalls across Delhi NCR and India.",
+            "name": "Online Teaching Jobs India — 0% Commission, Keep 100% | Celoris",
+            "description": "Join Celoris as a verified instructor or home tutor. 0% commission and zero coin paywalls: students pay into your Celoris wallet and you withdraw to your own UPI. Delhi NCR and Pan-India.",
             "inLanguage": "en-IN",
             "isPartOf": {
                 "@type": "WebSite",
@@ -124,7 +125,7 @@ const jsonLdData = {
                     "@type": "HowToStep",
                     "position": 3,
                     "name": "Receive Direct Inquiries & Get Paid",
-                    "text": "Students discover your profile and contact you directly. Receive 100% of student payments directly to your UPI."
+                    "text": "Students discover your profile and send enquiries inside Celoris. They pay into your Celoris wallet, and you withdraw 100% of it to your own UPI."
                 }
             ]
         },
@@ -136,7 +137,7 @@ const jsonLdData = {
                     "name": "Is Celoris really 100% free for trainers? Are there any hidden fees or coin packages?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Yes, Celoris is 100% free for trainers. Unlike platforms like UrbanPro or TeacherOn that charge ₹1,500–₹5,000 for coin packages, Celoris charges ₹0 registration fees, zero coin packages, and takes 0% commission from student fees."
+                        "text": "Yes. Celoris charges no registration fee, no coin packages, no membership and 0% commission on student fees. Celoris earns only when trainers choose to use its classrooms and AI tools."
                     }
                 },
                 {
@@ -144,7 +145,7 @@ const jsonLdData = {
                     "name": "How do trainers receive payments from students?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Students pay trainers directly via UPI, Google Pay, PhonePe, or direct bank transfer. Celoris does not hold your payments or deduct platform fees, meaning trainers keep 100% of their earnings instantly."
+                        "text": "Students pay for classes inside Celoris, and the money goes into the trainer's Celoris wallet with 0% deducted. Trainers then withdraw their balance to their own UPI ID."
                     }
                 },
                 {
@@ -168,7 +169,7 @@ const jsonLdData = {
                     "name": "What free AI Creative Studios do Celoris trainers receive?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "All active Celoris trainers get free access to Celoris AI Creative Studios including PhotoLite (graphic design & poster creation), Video Studio (course clip editing), and PolyVault (3D models and digital assets)."
+                        "text": "Trainers can use Celoris creative studios: PhotoLite (graphics and posters), Video Studio (course clips and reels), Motion Swap (character animation) and PolyVault (3D models and assets). Editing tools are free; AI generations are pay-per-use with Celoris credits."
                     }
                 }
             ]
@@ -206,12 +207,12 @@ export default function BecomeTrainerPage() {
                                 <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">You Keep All Fees</p>
                             </div>
                             <div>
-                                <p className="text-3xl md:text-5xl font-black text-cyan-400 font-mono">Direct</p>
-                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Student Contact &amp; UPI</p>
+                                <p className="text-3xl md:text-5xl font-black text-cyan-400 font-mono">UPI</p>
+                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Wallet Withdrawals</p>
                             </div>
                             <div>
-                                <p className="text-3xl md:text-5xl font-black text-purple-400 font-mono">5 Studios</p>
-                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Free Creative Tools</p>
+                                <p className="text-3xl md:text-5xl font-black text-purple-400 font-mono">4 Studios</p>
+                                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">Creative Tools Built In</p>
                             </div>
                         </div>
                     </div>
@@ -225,7 +226,7 @@ export default function BecomeTrainerPage() {
                     <TrainerEarningsCalculator />
                 </section>
 
-                {/* 6. The Visual "Battle Card" (UrbanPro vs Celoris) */}
+                {/* 6. The Visual "Battle Card" (lead-selling platforms vs Celoris) */}
                 <TrainerBattleCard />
 
                 {/* 7. Popular Subject Demand & Rates (Delhi NCR + Online) */}
@@ -235,10 +236,10 @@ export default function BecomeTrainerPage() {
                             High-Demand Subjects &amp; Earning Rates
                         </span>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white mt-4 tracking-tight">
-                            Current Student Demand &amp; Average Rates
+                            Popular Subjects &amp; Typical Rates
                         </h2>
                         <p className="text-neutral-400 text-sm sm:text-base max-w-2xl mx-auto mt-2">
-                            Average market tuition and coaching fees charged by verified trainers across Delhi NCR and Online:
+                            Indicative hourly fees for these subjects in Delhi NCR and online. You always set your own rate.
                         </p>
                     </div>
 
@@ -269,33 +270,6 @@ export default function BecomeTrainerPage() {
                                 </div>
                             )
                         })}
-                    </div>
-                </section>
-
-                {/* 8. Free Lead Magnet Toolkit: 2026 Tutor Growth Blueprint */}
-                <section className="py-12 px-4 sm:px-6 max-w-5xl mx-auto">
-                    <div className="p-8 sm:p-12 rounded-3xl bg-[#08090d]/90 border border-purple-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden backdrop-blur-3xl">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
-                            <div className="space-y-2 text-left">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-purple-500/15 text-purple-400 border border-purple-500/30">
-                                    <Download className="w-3.5 h-3.5" />
-                                    Free Educator Toolkit (PDF)
-                                </span>
-                                <h3 className="text-2xl sm:text-3xl font-semibold text-white">
-                                    The 2026 High-Ticket Tutor Blueprint
-                                </h3>
-                                <p className="text-xs sm:text-sm text-neutral-300 max-w-xl leading-relaxed">
-                                    Learn how top trainers in Delhi NCR close ₹1,500/hr private students, structure batch courses, and build a ₹1,00,000/month tutoring business without spending a rupee on ads.
-                                </p>
-                            </div>
-                            <Link
-                                href="/register"
-                                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-purple-400/30 hover:border-purple-300/50 text-purple-200 hover:text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(0,0,0,0.5)] shrink-0"
-                            >
-                                <Sparkles className="w-4 h-4 text-purple-400" />
-                                <span>Get Free Blueprint &amp; Profile</span>
-                            </Link>
-                        </div>
                     </div>
                 </section>
 
@@ -331,9 +305,23 @@ export default function BecomeTrainerPage() {
                             <span className="text-4xl font-black text-purple-500/40 font-mono mb-4 block">03</span>
                             <h3 className="text-xl font-bold text-white mb-2">Teach &amp; Keep 100% Fees</h3>
                             <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
-                                Students discover you and send enquiries directly. You set your schedule, deliver classes, and get paid directly via UPI.
+                                Students discover you and send enquiries inside Celoris. You set your schedule and teach; fees land in your Celoris wallet and you withdraw them to your UPI.
                             </p>
                         </div>
+                    </div>
+                </section>
+
+                {/* 9b. Built by a trainer */}
+                <section className="py-12 px-4 sm:px-6 max-w-4xl mx-auto border-t border-white/5">
+                    <div className="p-8 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] backdrop-blur-2xl text-left space-y-3">
+                        <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                            Built by a trainer, for trainers
+                        </span>
+                        <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
+                            Celoris was founded by Dheeraj, who has trained students in design and technology for 12 years.
+                            He spent years on lead-based tutor platforms: paying for leads, losing 20–30% of every fee and waiting a week or a month to get paid.
+                            Celoris is built so you never have to do any of that.
+                        </p>
                     </div>
                 </section>
 
@@ -353,15 +341,15 @@ export default function BecomeTrainerPage() {
                         {[
                             {
                                 q: "Is Celoris really 100% free? Are there any hidden fees or coin packages later?",
-                                a: "Yes, Celoris is 100% free for trainers. We do not charge registration fees, listing fees, coin packages, or any commission cuts from your student payments. You keep 100% of the money students pay you."
+                                a: "Yes. No registration fee, no listing fee, no coin packages, no membership and no commission on your student fees. You keep 100% of what students pay you. Celoris only earns when you choose to use our classrooms and AI tools."
                             },
                             {
                                 q: "How do students reach out to me?",
-                                a: "When students view your verified trainer profile or course offerings, they send direct inquiries to your protected Celoris Trainer Inbox. You can discuss requirements, schedule trial sessions, and conduct live 1-on-1 audio/video classes directly inside Celoris live rooms."
+                                a: "When students view your verified trainer profile or course offerings, they send direct inquiries to your protected Celoris Trainer Inbox. You can discuss requirements, schedule trial sessions, and conduct live 1-on-1 audio/video classes directly inside Celoris live rooms. Students on Celoris are verified by our team, so enquiries come from real learners."
                             },
                             {
                                 q: "How and when do I get paid?",
-                                a: "Because Celoris does not hold your funds or take cuts, students pay you directly via UPI, Google Pay, PhonePe, or direct bank transfer. There are no 30-day payout delays."
+                                a: "Students pay for your classes inside Celoris, and the full amount goes into your Celoris wallet with 0% deducted. You then withdraw your balance to your own UPI ID. Your UPI details never need to be shared with students."
                             },
                             {
                                 q: "Can I offer both online classes and offline home tuitions in Delhi NCR?",
@@ -369,7 +357,7 @@ export default function BecomeTrainerPage() {
                             },
                             {
                                 q: "What free AI Creative Studios are included for trainers?",
-                                a: "As an active trainer on Celoris, you get free access to our built-in creator studios: PhotoLite (graphic & poster editing), Video Studio (video trimming & reels), and PolyVault (3D models & assets) to help prepare class materials."
+                                a: "You can use our built-in studios to prepare class material: PhotoLite (graphics & posters), Video Studio (lesson clips & reels), Motion Swap (character animation) and PolyVault (3D models & assets). Editing tools are free; AI generations are pay-per-use with Celoris credits."
                             }
                         ].map((faq, idx) => (
                             <div key={idx} className="p-6 rounded-3xl bg-[#08090d]/80 border border-white/[0.08] backdrop-blur-2xl">
@@ -395,7 +383,7 @@ export default function BecomeTrainerPage() {
                                     Why Celoris is 0% Commission: Our Mutual Loyalty Pledge
                                 </h3>
                                 <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
-                                    Celoris is built to empower educators without parasite commissions. We survive and profit when you choose our in-house training rooms, creator studios, and premium Pro AI quotas. In return, we maintain a strictly trusted ecosystem: <strong className="text-white font-semibold">all student inquiries, discussions, scheduling, and live sessions must remain directly inside Celoris</strong>.
+                                    Celoris takes no commission from your fees. We earn when you choose our training rooms, creator studios and AI tools. In return, we keep a trusted space: <strong className="text-white font-semibold">student enquiries, chats, scheduling, live sessions and payments all stay inside Celoris</strong>. Students pay into your Celoris wallet and you withdraw to your own UPI, so there&apos;s never a reason to swap numbers.
                                 </p>
                                 <p className="text-xs text-neutral-400 leading-relaxed pt-1">
                                     Sharing off-platform phone numbers, personal emails, or external links in chat or profiles triggers automated shielding and revokes free trainer verification. By staying loyal to Celoris, you keep 100% of your earnings forever.
@@ -410,13 +398,13 @@ export default function BecomeTrainerPage() {
                     <div className="rounded-[2.5rem] bg-[#08090d]/95 border border-emerald-500/30 p-8 sm:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_60px_rgba(16,185,129,0.12)] backdrop-blur-3xl">
                         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
                         <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-white/[0.05] px-4 py-1.5 rounded-full border border-white/[0.1] inline-block mb-4">
-                            Tonight's Special Offer
+                            Free to join
                         </span>
                         <h2 className="text-3xl sm:text-5xl md:text-6xl font-semibold text-white mb-4 tracking-tight leading-tight">
-                            Stop Paying to Teach. Join Celoris Tonight.
+                            Stop Paying to Teach. Join Celoris Today.
                         </h2>
                         <p className="text-neutral-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
-                            Join hundreds of verified educators across India who have switched to a 0% commission, zero-coin platform. Create your free trainer profile in under 2 minutes.
+                            Join the verified educators across India who switched to a 0% commission, zero-coin platform. Create your free trainer profile in under 2 minutes.
                         </p>
                         <Link
                             href="/register"

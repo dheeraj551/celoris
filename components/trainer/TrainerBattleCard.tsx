@@ -42,7 +42,7 @@ export function TrainerBattleCard() {
                             </div>
                             <div>
                                 <h3 className="text-base font-bold text-white leading-tight">The Old Directory Trap</h3>
-                                <p className="text-[11px] text-neutral-400">UrbanPro, TeacherOn, Superprof</p>
+                                <p className="text-[11px] text-neutral-400">Typical lead-selling tutor platforms</p>
                             </div>
                         </div>
                         <span className="text-[10px] uppercase font-mono px-3 py-1 rounded-full bg-rose-950/60 text-rose-400 border border-rose-800/40 font-bold">
@@ -70,7 +70,7 @@ export function TrainerBattleCard() {
                         <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3">
                             <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                             <div>
-                                <strong className="text-white block mb-0.5 text-xs font-semibold">10 Tutors Competing on 1 Lead</strong>
+                                <strong className="text-white block mb-0.5 text-xs font-semibold">Many Tutors Chasing 1 Lead</strong>
                                 <span className="text-neutral-400 text-xs">They sell the same student phone number to multiple trainers, triggering a bidding race to the bottom.</span>
                             </div>
                         </div>
@@ -78,8 +78,8 @@ export function TrainerBattleCard() {
                         <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3">
                             <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                             <div>
-                                <strong className="text-white block mb-0.5 text-xs font-semibold">Delayed Payouts &amp; Message Filters</strong>
-                                <span className="text-neutral-400 text-xs">Strict filters blocking you from sharing phone numbers or getting paid directly.</span>
+                                <strong className="text-white block mb-0.5 text-xs font-semibold">Payouts That Take Weeks</strong>
+                                <span className="text-neutral-400 text-xs">Your fees sit with the platform for a week or even a month before they reach you.</span>
                             </div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@ export function TrainerBattleCard() {
                             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                             <div>
                                 <strong className="text-white block mb-0.5 text-xs font-semibold">0% Platform Cut (Keep 100%)</strong>
-                                <span className="text-neutral-300 text-xs">If you charge ₹1,500/hour or ₹10,000/month, every single rupee goes into your bank account.</span>
+                                <span className="text-neutral-300 text-xs">If you charge ₹1,500/hour or ₹10,000/month, every rupee lands in your Celoris wallet and you withdraw it to your own UPI.</span>
                             </div>
                         </div>
 
@@ -145,8 +145,8 @@ export function TrainerBattleCard() {
                         <div className="p-3.5 rounded-2xl bg-emerald-500/[0.06] border border-emerald-400/20 flex items-start gap-3">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                             <div>
-                                <strong className="text-white block mb-0.5 text-xs font-semibold">Free AI Creative Studio Suite</strong>
-                                <span className="text-neutral-300 text-xs">Access PhotoLite, Video Studio, Motion Swap, and PolyVault 3D completely free of charge.</span>
+                                <strong className="text-white block mb-0.5 text-xs font-semibold">Creative Studios Built In</strong>
+                                <span className="text-neutral-300 text-xs">PhotoLite, Video Studio, Motion Swap and PolyVault 3D in one place. Editing tools are free; AI generations are pay-per-use with credits.</span>
                             </div>
                         </div>
                     </div>

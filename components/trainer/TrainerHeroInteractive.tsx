@@ -4,8 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
-    Sparkles, ArrowRight, CheckCircle2,
-    IndianRupee, Star, Users, Zap
+    ArrowRight, ShieldCheck, Wallet
 } from 'lucide-react'
 import { TrainerVideoModal } from './TrainerVideoModal'
 
@@ -36,7 +35,7 @@ export function TrainerHeroInteractive() {
                         >
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
                             <span className="text-xs font-mono font-medium tracking-wider text-neutral-300 uppercase">
-                                Special Announcement • 100% Free For All Educators
+                                Free to join • 0% commission
                             </span>
                         </motion.div>
 
@@ -47,10 +46,11 @@ export function TrainerHeroInteractive() {
                             transition={{ duration: 0.6, delay: 0.1 }}
                             className="text-3xl sm:text-5xl xl:text-6xl font-semibold tracking-tight text-white leading-[1.12] mb-5"
                         >
-                            The Free Platform for Students is Now{" "}
+                            Keep{" "}
                             <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400 drop-shadow-[0_0_25px_rgba(168,85,247,0.35)]">
-                                100% Free for Trainers.
-                            </span>
+                                100%
+                            </span>{" "}
+                            of what you earn teaching.
                         </motion.h1>
 
                         {/* Refined Subtitle */}
@@ -60,7 +60,16 @@ export function TrainerHeroInteractive() {
                             transition={{ duration: 0.6, delay: 0.2 }}
                             className="text-neutral-300 text-base sm:text-lg leading-relaxed max-w-xl mb-7 font-normal"
                         >
-                            Stop paying ₹2,000 for "coin packages" just to view a student's contact number. On Celoris, enjoy <strong className="text-white font-semibold">0% commission</strong>, <strong className="text-white font-semibold">zero coin paywalls</strong>, and <strong className="text-white font-semibold">direct student enquiries</strong> across Delhi NCR &amp; Pan-India. You keep 100% of your earnings.
+                            For designers, editors, developers and tutors. Stop paying ₹2,000 for &ldquo;coin packages&rdquo; just to see a student&apos;s number. On Celoris there&apos;s <strong className="text-white font-semibold">0% commission</strong>, <strong className="text-white font-semibold">no coins</strong> and <strong className="text-white font-semibold">no membership needed</strong>. Students pay into your Celoris wallet and you withdraw it to your own UPI.
+                        </motion.p>
+
+                        <motion.p
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.25 }}
+                            className="text-sm text-neutral-400 max-w-xl -mt-4 mb-7"
+                        >
+                            <span className="text-emerald-400 font-semibold">So how does Celoris make money?</span> Only when you choose to use our classrooms and AI tools. Never from your fees.
                         </motion.p>
 
                         {/* Primary CTAs - matching homepage pill buttons */}
@@ -74,7 +83,6 @@ export function TrainerHeroInteractive() {
                                 href="/register"
                                 className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] hover:border-white/[0.25] text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.5)] group"
                             >
-                                <Sparkles className="w-4 h-4 text-emerald-400" />
                                 <span>Claim Free Trainer Profile</span>
                                 <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
                             </Link>
@@ -95,13 +103,13 @@ export function TrainerHeroInteractive() {
                             </div>
                             <div className="w-1 h-1 rounded-full bg-white/20" />
                             <div className="flex items-center gap-2">
-                                <span className="text-white font-bold">Direct UPI</span>
+                                <span className="text-white font-bold">Wallet → UPI</span>
                                 <span>Zero Paywalls</span>
                             </div>
                             <div className="w-1 h-1 rounded-full bg-white/20" />
                             <div className="flex items-center gap-2">
-                                <span className="text-purple-400 font-bold">5 Studios</span>
-                                <span>Free AI Tools</span>
+                                <span className="text-purple-400 font-bold">Verified</span>
+                                <span>Every trainer checked by our team</span>
                             </div>
                         </motion.div>
                     </div>
@@ -175,11 +183,11 @@ export function TrainerHeroInteractive() {
                                 className="absolute -bottom-4 -left-2 sm:-left-4 bg-[#08090d]/90 border border-white/[0.12] backdrop-blur-2xl p-2.5 px-3.5 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-2.5 text-left"
                             >
                                 <div className="w-7 h-7 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-400 font-black">
-                                    <Zap size={14} />
+                                    <Wallet size={14} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-white leading-tight">Direct Student UPI</p>
-                                    <p className="text-[10px] text-purple-300 font-mono">No payout holds</p>
+                                    <p className="text-xs font-bold text-white leading-tight">Paid to your wallet</p>
+                                    <p className="text-[10px] text-purple-300 font-mono">Withdraw to your UPI</p>
                                 </div>
                             </motion.div>
 
@@ -189,8 +197,8 @@ export function TrainerHeroInteractive() {
                                 transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
                                 className="hidden sm:flex absolute top-1/2 -right-6 -translate-y-1/2 bg-[#08090d]/90 border border-white/[0.12] backdrop-blur-2xl p-2 px-3 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] items-center gap-2"
                             >
-                                <Star size={13} className="text-amber-400 fill-amber-400" />
-                                <span className="text-xs font-medium text-white">500+ Verified Tutors</span>
+                                <ShieldCheck size={13} className="text-emerald-400" />
+                                <span className="text-xs font-medium text-white">Manually verified trainers</span>
                             </motion.div>
 
                         </div>

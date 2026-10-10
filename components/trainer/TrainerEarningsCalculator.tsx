@@ -1,13 +1,12 @@
 "use client"
 
 import React, { useState } from 'react'
-import { IndianRupee, TrendingUp, Sparkles, ArrowRight, ShieldCheck, Check } from 'lucide-react'
+import { TrendingUp, ArrowRight, Check } from 'lucide-react'
 import Link from 'next/link'
 
 export function TrainerEarningsCalculator() {
     const [hourlyRate, setHourlyRate] = useState<number>(800)
     const [hoursPerWeek, setHoursPerWeek] = useState<number>(12)
-    const [studentsCount, setStudentsCount] = useState<number>(4)
 
     // Monthly hours = hoursPerWeek * 4
     const totalMonthlyHours = hoursPerWeek * 4
@@ -98,32 +97,10 @@ export function TrainerEarningsCalculator() {
                             </div>
                         </div>
 
-                        {/* Control 3: Active Students */}
-                        <div>
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="text-xs sm:text-sm font-medium text-neutral-200">
-                                    Active Students / Batches
-                                </label>
-                                <span className="font-mono text-sm font-bold text-purple-400 bg-white/[0.05] px-3 py-1 rounded-full border border-white/[0.1]">
-                                    {studentsCount} Students
-                                </span>
-                            </div>
-                            <input
-                                type="range"
-                                min={1}
-                                max={20}
-                                step={1}
-                                value={studentsCount}
-                                onChange={(e) => setStudentsCount(Number(e.target.value))}
-                                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-400"
-                                aria-label="Students Count Slider"
-                            />
-                            <div className="flex justify-between text-[11px] text-neutral-500 font-mono mt-1">
-                                <span>1 Student (1-on-1)</span>
-                                <span>8 Students</span>
-                                <span>20 Students (Cohort)</span>
-                            </div>
-                        </div>
+                        <p className="text-[11px] text-neutral-400 font-mono">
+                            How we calculate: ₹{hourlyRate.toLocaleString('en-IN')}/hr × {hoursPerWeek} hrs/week × 4 weeks = ₹{monthlyGross.toLocaleString('en-IN')}/month.
+                            The comparison assumes a 20% cut plus about ₹2,500/month in coins on a typical lead-selling platform (many take 20–30%).
+                        </p>
                     </div>
 
                     {/* Results Card (5 Cols) */}
@@ -137,7 +114,7 @@ export function TrainerEarningsCalculator() {
                                 <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 font-mono tracking-tight">
                                     ₹{celorisNetEarnings.toLocaleString('en-IN')}
                                 </div>
-                                <span className="text-xs text-neutral-400">/ month straight into your UPI</span>
+                                <span className="text-xs text-neutral-400">/ month into your Celoris wallet, withdraw to your UPI</span>
                             </div>
                         </div>
 
@@ -148,7 +125,7 @@ export function TrainerEarningsCalculator() {
                                 <span className="font-mono font-bold text-emerald-400">₹0 (0% Cut)</span>
                             </div>
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-neutral-300">Other Platforms Fee (~20% + Coins):</span>
+                                <span className="text-neutral-300">Typical platform fee (20% + coins):</span>
                                 <span className="font-mono font-bold text-rose-400 line-through">₹{traditionalPlatformLoss.toLocaleString('en-IN')}/mo</span>
                             </div>
                             <div className="pt-2 border-t border-white/[0.08] flex justify-between items-center text-xs font-bold">
@@ -160,7 +137,7 @@ export function TrainerEarningsCalculator() {
                         <ul className="text-xs text-neutral-300 space-y-2 mb-6">
                             <li className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                                <span>Direct UPI/Bank transfer from students</span>
+                                <span>Students pay your wallet; you withdraw to your UPI</span>
                             </li>
                             <li className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -168,7 +145,7 @@ export function TrainerEarningsCalculator() {
                             </li>
                             <li className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                                <span>Free access to Celoris AI Creative Studios</span>
+                                <span>Creative studios built in (AI tools are pay-per-use)</span>
                             </li>
                         </ul>
 

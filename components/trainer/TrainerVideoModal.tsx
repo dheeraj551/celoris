@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { Play, X, Sparkles } from 'lucide-react'
+import { Play, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function TrainerVideoModal() {
@@ -17,7 +17,7 @@ export function TrainerVideoModal() {
                 <div className="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center group-hover:scale-110 transition-transform border border-purple-400/40">
                     <Play size={10} className="text-purple-300 fill-purple-300 ml-0.5" />
                 </div>
-                <span>Watch 30s Explainer</span>
+                <span>Watch Explainer</span>
             </button>
 
             <AnimatePresence>
@@ -33,7 +33,6 @@ export function TrainerVideoModal() {
                             {/* Header */}
                             <div className="flex items-center justify-between p-4 px-6 border-b border-white/10 bg-black/60">
                                 <div className="flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
                                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
                                         Celoris Freedom For Educators
                                     </span>

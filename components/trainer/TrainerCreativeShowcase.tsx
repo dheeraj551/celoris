@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-    Sparkles, Wand2, Video, Box, Palette, Music,
+    Wand2, Video, Box, Palette, Music,
     Check, ExternalLink, Play, Move, Crop,
     Paintbrush, Type, Layers, Eye, EyeOff, ChevronsLeftRight,
     Star, Download, UploadCloud, Activity, Scan, Target
@@ -36,9 +36,9 @@ const STUDIOS: StudioItem[] = [
         borderColor: 'border-purple-500/40',
         bgColor: 'bg-purple-950/20',
         tagline: 'Record on phone, animate 2D/3D characters instantly',
-        description: 'Empower your students to create viral animated shorts and dynamic lecture explainers without drawing keyframes. Extract 33 spatial body landmarks from standard video feeds.',
+        description: 'Record a move on your phone and transfer it onto a character for animated shorts and lecture explainers, without drawing a single keyframe.',
         link: '/motion-swap',
-        features: ['Real-time 3D spatial pose extraction', 'Zero manual keyframing required', 'Automated acoustic viseme lip-sync']
+        features: ['Motion transfer from a normal phone video', 'No manual keyframing', 'Pay-per-use with Celoris credits']
     },
     {
         id: 'photolite',
@@ -179,7 +179,7 @@ function MotionSwapInteractivePreview() {
 
                             {/* Bounding Box HUD */}
                             <rect x="110" y="50" width="180" height="235" rx="8" stroke="rgba(192, 132, 252, 0.4)" strokeWidth="1" strokeDasharray="4 4" />
-                            <text x="115" y="44" fill="#c084fc" fontSize="9" fontFamily="monospace">POSE_TRACK // 33 PTS LOCKED</text>
+                            <text x="115" y="44" fill="#c084fc" fontSize="9" fontFamily="monospace">POSE_TRACK</text>
                         </svg>
                     )}
 
@@ -214,14 +214,6 @@ function MotionSwapInteractivePreview() {
                     <span className="text-emerald-400 font-mono text-[9px]">ONLINE</span>
                 </div>
                 <div className="space-y-1.5 font-mono text-[10px]">
-                    <div className="flex justify-between text-slate-300">
-                        <span className="text-slate-500">Latency:</span>
-                        <span className="text-purple-300 font-bold">11ms</span>
-                    </div>
-                    <div className="flex justify-between text-slate-300">
-                        <span className="text-slate-500">Spatial Pts:</span>
-                        <span className="text-emerald-300 font-bold">33 / 33</span>
-                    </div>
                     <div className="flex justify-between text-slate-300">
                         <span className="text-slate-500">Engine:</span>
                         <span className="text-slate-200 truncate">Higgsfield Genjutsu</span>
@@ -703,7 +695,6 @@ function PolyVaultInteractivePreview() {
             <div className="absolute top-6 left-2 sm:left-4 w-12 sm:w-14 py-3 bg-[#111218]/95 backdrop-blur-xl rounded-2xl border border-amber-500/30 shadow-xl flex flex-col items-center gap-3.5 z-20">
                 <Box className="w-4 h-4 text-amber-400" />
                 <Layers className="w-4 h-4 text-slate-400 hover:text-amber-300 transition-colors" />
-                <Sparkles className="w-4 h-4 text-slate-400 hover:text-amber-300 transition-colors" />
                 <UploadCloud className="w-4 h-4 text-slate-400 hover:text-amber-300 transition-colors" />
             </div>
 
@@ -715,8 +706,8 @@ function PolyVaultInteractivePreview() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                     {[
-                        { name: 'GT3 Hypercar', rating: '4.98', img: '/3d/sports-car.jpeg' },
-                        { name: 'Cyber Modular', rating: '4.92', img: '/3d/modular-building.jpeg' },
+                        { name: 'GT3 Hypercar', rating: 'FBX', img: '/3d/sports-car.jpeg' },
+                        { name: 'Cyber Modular', rating: 'GLB', img: '/3d/modular-building.jpeg' },
                     ].map((item) => (
                         <div key={item.name} className="flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
                             <img src={item.img} alt={item.name} className="w-4 h-4 rounded object-cover border border-amber-500/30 shrink-0" />
@@ -762,7 +753,6 @@ export function TrainerCreativeShowcase() {
             {/* Header */}
             <div className="text-center max-w-3xl mx-auto mb-14">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-purple-500/15 text-purple-400 border border-purple-500/30 mb-3">
-                    <Sparkles className="w-3.5 h-3.5" />
                     Built For Modern Creative Educators
                 </span>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
@@ -772,7 +762,7 @@ export function TrainerCreativeShowcase() {
                     </span>
                 </h2>
                 <p className="text-slate-400 text-sm sm:text-base mt-3">
-                    While traditional platforms only give you a text profile, Celoris equips you with a full suite of cutting-edge creative tools—100% free of cost.
+                    Other platforms give you a text profile. Celoris gives you creative studios to make your class material. Editing tools are free; AI generations are pay-per-use with credits.
                 </p>
             </div>
 
@@ -846,7 +836,7 @@ export function TrainerCreativeShowcase() {
                                     <ExternalLink size={14} className="text-neutral-400" />
                                 </Link>
                                 <span className="text-xs text-neutral-400 font-mono">
-                                    Included free for all registered trainers
+                                    {studio.id === 'motion-swap' ? 'Pay-per-use with credits' : 'Free editing tools · AI features use credits'}
                                 </span>
                             </div>
                         </div>
