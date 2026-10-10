@@ -1,6 +1,5 @@
 import { type Metadata } from "next"
 import { Outfit } from "next/font/google"
-import Script from "next/script"
 import "./globals.css"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
@@ -8,7 +7,6 @@ import { AuthProvider } from "@/components/providers/AuthProvider"
 import { PresenceProvider } from "@/components/providers/PresenceProvider"
 import { Toaster } from "@/components/ui/toaster"
 import { ReCaptchaProvider } from "@/components/ReCaptchaProvider"
-import { GlobalAd } from "@/components/GlobalAd"
 import { MotionProvider } from "@/components/providers/MotionProvider"
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider"
 import { SupportBotGate } from "@/components/SupportBotGate"
@@ -93,7 +91,6 @@ export const metadata: Metadata = {
       }
     : {}),
   other: {
-    "google-adsense-account": "ca-pub-2157452506602914",
     "facebook-domain-verification": "9fgxoj6bch5pht54cp0mddc4tsbab7",
   },
   category: "Education",
@@ -163,16 +160,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Google AdSense via next/script lazyOnload (non-blocking) */}
-        <Script
-          id="google-adsense"
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2157452506602914"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
-      </head>
       <body className={outfit.className}>
         {/* Global Structured Data (JSON-LD) */}
         <script
@@ -197,7 +184,6 @@ export default function RootLayout({
                   <main className="flex-1">
                     {children}
                   </main>
-                  <GlobalAd />
 
                   <Footer />
                 </div>
