@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-web-development-course-noida' },
     title: 'Best Web Development Course in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best web development course in Noida? This guide covers top options, fees, curriculum, jobs, and how to choose the right trainer. Free demo available.',
     keywords: 'web development course noida, web development training noida, web development classes noida, full stack course noida, react course noida',

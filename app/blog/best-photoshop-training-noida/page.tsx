@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-photoshop-training-noida' },
     title: 'Best Adobe Photoshop Training in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best Photoshop training in Noida? This guide covers top courses, fees, curriculum, and career scope. Free demo available. Book today!',
     keywords: 'photoshop training noida, photoshop course noida, photoshop classes noida, adobe photoshop trainer noida, photoshop fees noida',

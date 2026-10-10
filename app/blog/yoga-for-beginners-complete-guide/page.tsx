@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/yoga-for-beginners-complete-guide' },
     title: "Yoga for beginners: your complete guide to starting a practice that actually sticks | Celoris",
     description: "Learn how to start your yoga journey today. From essential poses to building a home routine, this guide covers everything beginners need to know.",
     keywords: ['Yoga for beginners', 'start yoga at home', 'yoga benefits', 'hatha yoga', 'vinyasa flow', 'yoga poses for beginners'],

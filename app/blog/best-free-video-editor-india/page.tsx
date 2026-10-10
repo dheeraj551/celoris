@@ -104,7 +104,7 @@ export default function BlogPost() {
                                     </p>
                                     <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-2xl flex items-center justify-between mb-8 group hover:bg-emerald-500/20 transition-colors">
                                         <p className="font-bold text-emerald-400">👉 Professional creative tools at zero cost for students.</p>
-                                        <a href="https://celoris.in" className="bg-emerald-500 text-black px-6 py-2 rounded-xl font-bold text-sm hover:scale-105 transition-transform">Try Free</a>
+                                        <a href="/" className="bg-emerald-500 text-black px-6 py-2 rounded-xl font-bold text-sm hover:scale-105 transition-transform">Try Free</a>
                                     </div>
                                 </section>
 
@@ -204,7 +204,7 @@ export default function BlogPost() {
                                     For Indian creators who want a free video editor with AI capabilities, templates, and tools built for social media content — <span className="text-emerald-400">Celoris is the strongest option in 2025.</span>
                                 </p>
                                 <p className="text-lg leading-relaxed mb-12">
-                                    It's the only platform that combines video editing, image design, AI models and freelance opportunities in one free platform made specifically for India. Whether you're a college student, a freelancer, or a small business owner — start at <a href="https://celoris.in" className="text-emerald-400 hover:underline font-bold">celoris.in</a>. It costs nothing to try.
+                                    It's the only platform that combines video editing, image design, AI models and freelance opportunities in one free platform made specifically for India. Whether you're a college student, a freelancer, or a small business owner — start at <a href="/" className="text-emerald-400 hover:underline font-bold">celorisdesigns.com</a>. It costs nothing to try.
                                 </p>
                             </div>
                         </div>

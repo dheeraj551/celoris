@@ -9,8 +9,9 @@ import {
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/free-excel-course-online-india-2026' },
     title: 'Free Excel Course Online India 2026 — Zero to Job Ready',
-    description: 'Looking for a free Excel course online in India 2026? Learn Excel from beginner to advanced with a verified trainer — 229 reviews, 682 students trained. Free demo at celoris.in',
+    description: 'Looking for a free Excel course online in India 2026? Learn Excel from beginner to advanced with a verified trainer — 229 reviews, 682 students trained. Free demo at celorisdesigns.com',
     keywords: ['free excel course online', 'free excel course online India', 'Excel course India 2026', 'Microsoft Excel training India'],
     openGraph: {
         title: 'Free Excel Course Online India 2026 — Zero to Job Ready',
@@ -187,7 +188,7 @@ export default function BlogPost() {
                                         Dheeraj Kushwaha has been training professionals on Microsoft Excel for over 8 years. He has trained <strong>682 students</strong>, earned <strong>229 verified reviews</strong> and been recognised as a <strong>Top 10 Microsoft Excel Trainer in India</strong> by UrbanPro in 2024.
                                     </p>
                                     <p className="text-slate-300">
-                                        The course is available on Celoris (celoris.in) with a <strong>free demo session</strong> — no credit card required, no hidden fees, no watermark on your certificate.
+                                        The course is available on Celoris (celorisdesigns.com) with a <strong>free demo session</strong> — no credit card required, no hidden fees, no watermark on your certificate.
                                     </p>
                                     <Button size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest px-10 rounded-2xl shadow-xl shadow-emerald-500/20 group" asChild>
                                         <Link href="/learn/be-an-excel-expert">
@@ -318,7 +319,7 @@ export default function BlogPost() {
                             </h2>
                             <div className="space-y-6 mb-32">
                                 {[
-                                    { step: "Visit celoris.in/learn/be-an-excel-expert", icon: <Laptop className="h-5 w-5" /> },
+                                    { step: "Visit celorisdesigns.com/learn/course/master-copilot-excel", icon: <Laptop className="h-5 w-5" /> },
                                     { step: "Click 'Book Free Demo' — no credit card required", icon: <Star className="h-5 w-5" /> },
                                     { step: "Choose your session time (weekdays or weekends)", icon: <Calendar className="h-5 w-5" /> },
                                     { step: "Attend your free demo with Dheeraj Kushwaha", icon: <Users className="h-5 w-5" /> },
@@ -370,7 +371,7 @@ export default function BlogPost() {
                                         },
                                         {
                                             q: "How do I book the free demo?",
-                                            a: "Go to celoris.in/learn/be-an-excel-expert and click Book Free Demo. You will receive a WhatsApp confirmation within 2 hours with your session details."
+                                            a: "Go to celorisdesigns.com/learn/course/master-copilot-excel and click Book Free Demo. You will receive a WhatsApp confirmation within 2 hours with your session details."
                                         }
                                     ].map((faq, i) => (
                                         <AccordionItem key={i} value={`item-${i}`} className="border-white/10 bg-white/5 px-8 rounded-[2rem] overflow-hidden">

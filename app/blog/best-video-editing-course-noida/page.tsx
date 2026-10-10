@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-video-editing-course-noida' },
     title: 'Best Video Editing Course in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best video editing course in Noida? This guide covers software, fees, career paths, and how to choose the right trainer. Free demo available.',
     keywords: 'video editing course noida, video editing classes noida, premiere pro course noida, after effects course noida, video editor course noida fees',

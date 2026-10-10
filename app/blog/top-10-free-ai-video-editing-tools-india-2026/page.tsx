@@ -384,7 +384,7 @@ export default function BlogPost() {
                                 <h3 className="text-2xl md:text-4xl font-black text-white mb-6">Master Video Editing with AI</h3>
                                 <p className="text-slate-400 mb-10 text-lg">Join Celoris' Industry-Standard Video Editing Course. Learn from experts and build a high-paying career.</p>
                                 <Button size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-[0.2em] rounded-full px-16 py-8 text-xl shadow-[0_20px_40px_rgba(16,185,129,0.3)] hover:scale-105 transition-all" asChild>
-                                    <Link href="https://celoris.in">Explore Courses</Link>
+                                    <Link href="/">Explore Courses</Link>
                                 </Button>
                             </div>
 
@@ -415,7 +415,7 @@ export default function BlogPost() {
             {/* Sticky CTA */}
             <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-bounce">
                 <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-2xl shadow-emerald-500/40 border-4 border-black/20" asChild>
-                    <Link href="https://celoris.in">Start Learning Now</Link>
+                    <Link href="/">Start Learning Now</Link>
                 </Button>
             </div>
 

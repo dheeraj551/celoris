@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-graphic-designing-course-noida' },
     title: 'Best Graphic Designing Course in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best graphic designing course in Noida? This guide covers top options, software, fees, portfolio tips, and career scope. Free demo available.',
     keywords: 'graphic designing course noida, graphic design classes noida, graphic design training noida, graphic designer course noida fees, adobe course noida',

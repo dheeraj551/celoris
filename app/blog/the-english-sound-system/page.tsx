@@ -947,13 +947,13 @@ export default function EnglishSoundSystemBlog() {
             <p>
               Lesson 1.1 is just the beginning. Our full Spoken English course on Celoris covers consonants, word stress, sentence rhythm, and real conversation practice — taught by verified trainers across India.
             </p>
-            <a className="promo-btn" href="https://celoris.in">Explore the Course on Celoris →</a>
+            <a className="promo-btn" href="/">Explore the Course on Celoris →</a>
           </div>
 
         </div>
 
         <div className="blog-footer">
-          <p>Written for <strong>Celoris</strong> — India's Skill Learning Marketplace &nbsp;·&nbsp; celoris.in</p>
+          <p>Written for <strong>Celoris</strong> — India's Skill Learning Marketplace &nbsp;·&nbsp; celorisdesigns.com</p>
           <p style={{ marginTop: "8px" }}>Part of the <strong>Spoken English Series</strong> · Module 1: Foundations of Pronunciation</p>
         </div>
       </div>

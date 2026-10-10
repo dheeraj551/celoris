@@ -145,7 +145,7 @@ export default function OnlineTeachingIndiaBlog() {
                                 What Subjects Are in <span className="text-emerald-500">High Demand?</span>
                             </h2>
                             <p>
-                                Not sure if your skill qualifies? The beauty of the modern internet is that almost <em>anything</em> can be taught online if there is a problem it solves or a joy it provides. Here are the hottest categories on <strong>celoris.in</strong> right now:
+                                Not sure if your skill qualifies? The beauty of the modern internet is that almost <em>anything</em> can be taught online if there is a problem it solves or a joy it provides. Here are the hottest categories on <strong>celorisdesigns.com</strong> right now:
                             </p>
 
                             <div className="space-y-8 my-12">
@@ -434,7 +434,7 @@ export default function OnlineTeachingIndiaBlog() {
                                 How to Get Started on <span className="text-emerald-500">Celoris</span>
                             </h2>
                             <p>
-                                Celoris (celoris.in) is India’s growing platform for skill-based online learning—built specifically to connect passionate trainers with eager students. Unlike generic freelance sites, we focus on the teacher's brand.
+                                Celoris (celorisdesigns.com) is India’s growing platform for skill-based online learning—built specifically to connect passionate trainers with eager students. Unlike generic freelance sites, we focus on the teacher's brand.
                             </p>
 
                             <div className="relative border-l-2 border-emerald-500/30 ml-4 pl-12 space-y-12 my-16">
@@ -637,7 +637,7 @@ export default function OnlineTeachingIndiaBlog() {
                                     The "Online Teaching" buzz isn't just a trend—it's the <strong>New Normal</strong>. Whether you are an experienced trainer looking to expand digitally, or a skilled professional ready to monetise your expertise, Celoris gives you the tools, the audience, and the platform to make it happen.
                                 </p>
                                 <p className="text-xl leading-relaxed text-emerald-400 font-black italic">
-                                    Ready to start earning from your skills? Join Celoris today at celoris.in and connect with thousands of students actively looking for someone just like you.
+                                    Ready to start earning from your skills? Join Celoris today at celorisdesigns.com and connect with thousands of students actively looking for someone just like you.
                                 </p>
                             </div>
                         </div>
@@ -657,7 +657,7 @@ export default function OnlineTeachingIndiaBlog() {
 
             <footer className="container py-12 px-4 mx-auto border-t border-white/5 text-center mt-20">
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase mb-4">
-                    Published by Celoris | celoris.in | India's Online Skill Learning Platform
+                    Published by Celoris | celorisdesigns.com | India's Online Skill Learning Platform
                 </p>
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase">
                     © {new Date().getFullYear()} Celoris.in • All Rights Reserved

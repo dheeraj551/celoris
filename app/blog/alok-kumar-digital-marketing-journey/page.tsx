@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/alok-kumar-digital-marketing-journey' },
     title: "From Zero to Campaign Hero: How Alok Kumar's 12-Year Digital Marketing Journey Can Transform Your Career | Celoris Trainer Spotlight",
     description: "Meet Alok Kumar, a digital marketing veteran with 12 years of experience and 500+ students trained. Learn how his expertise can help you master Google Ads, SEO, and Meta Ads.",
     keywords: ['Digital Marketing Course India', 'Alok Kumar Trainer', 'Google Ads Mastery', 'SEO Training India', 'Meta Ads Course', 'Learn Digital Marketing'],

@@ -12,6 +12,7 @@ import { Metadata } from 'next';
 import ShareButtons from '@/components/ShareButtons';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/build-local-ai-with-ollama-supabase-python' },
     title: 'Build a Local AI That Remembers You — Project Series | Celoris',
     description: 'Learn how to build a private, local AI assistant using Ollama, Supabase, and Python. Class 01: Architecture, memory layers, and roadmap.',
     keywords: 'local ai, ollama, supabase, python ai agent, vector database, build your own ai, private ai, llama3 tutorial',

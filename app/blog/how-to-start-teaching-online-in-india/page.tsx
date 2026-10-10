@@ -221,7 +221,7 @@ export default function TeachingOnlineBlog() {
                             </h2>
                             <div className="space-y-4 my-12">
                                 {[
-                                    { step: "01", title: "Create Your Profile", desc: "Visit celoris.in — include your subject, experience, and intro." },
+                                    { step: "01", title: "Create Your Profile", desc: "Visit celorisdesigns.com — include your subject, experience, and intro." },
                                     { step: "02", title: "List Your Courses", desc: "Offer one-on-one sessions, group classes, or recorded content." },
                                     { step: "03", title: "Set Your Pricing", desc: "You have full control over your rates. No platform restrictions." },
                                     { step: "04", title: "Respond to Enquiries", desc: "Receive student messages at zero cost per lead." },
@@ -287,7 +287,7 @@ export default function TeachingOnlineBlog() {
 
             <footer className="container py-12 px-4 mx-auto border-t border-white/5 text-center mt-20">
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase mb-4 italic">
-                    Published by Celoris | celoris.in | Built for Indian Trainers
+                    Published by Celoris | celorisdesigns.com | Built for Indian Trainers
                 </p>
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase italic">
                     © 2026 Celoris.in • All Rights Reserved

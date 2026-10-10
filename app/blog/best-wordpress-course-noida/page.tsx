@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-wordpress-course-noida' },
     title: 'Best WordPress Course in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best WordPress course in Noida? Complete guide covering fees, curriculum, WooCommerce, freelance scope, and how to choose the right trainer.',
     keywords: 'wordpress course noida, wordpress training noida, wordpress classes noida, woocommerce course noida, wordpress developer course noida',

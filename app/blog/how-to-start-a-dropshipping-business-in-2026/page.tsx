@@ -338,7 +338,7 @@ export default function DropshippingBlog() {
                                 </p>
                                 <div className="flex flex-col md:flex-row items-center justify-center gap-6 relative z-10">
                                     <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.3em] rounded-2xl px-12 h-16 shadow-2xl shadow-emerald-500/20 group/btn transition-all italic text-sm" asChild>
-                                        <Link href="https://www.celoris.in" className="flex items-center gap-3">
+                                        <Link href="/" className="flex items-center gap-3">
                                             Explore Courses <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                                         </Link>
                                     </Button>
@@ -364,7 +364,7 @@ export default function DropshippingBlog() {
 
             <footer className="container py-12 px-4 mx-auto border-t border-white/5 text-center mt-20">
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase mb-4 italic">
-                    Published by Celoris | celoris.in | Skill-Based Learning
+                    Published by Celoris | celorisdesigns.com | Skill-Based Learning
                 </p>
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase italic">
                     © 2026 Celoris.in • All Rights Reserved

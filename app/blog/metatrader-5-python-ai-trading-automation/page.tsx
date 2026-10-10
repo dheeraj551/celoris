@@ -252,7 +252,7 @@ export default function MT5PythonTradingBlog() {
 
             <footer className="container py-12 px-4 mx-auto border-t border-white/5 text-center mt-20">
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase mb-4 italic">
-                    Published by Celoris | celoris.in | India's Premium Tech Learning Platform
+                    Published by Celoris | celorisdesigns.com | India's Premium Tech Learning Platform
                 </p>
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase italic">
                     © {new Date().getFullYear()} Celoris.in • All Rights Reserved

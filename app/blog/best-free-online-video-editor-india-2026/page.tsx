@@ -139,7 +139,7 @@ export default function BlogPost() {
                                             Celoris Free Video Editor — Best for Indian Creators
                                         </h3>
                                         <p className="text-lg leading-relaxed mb-8">
-                                            Celoris (celoris.in) is India's own free creative studio built specifically for Indian students, creators and small businesses. The Celoris video editor runs entirely in the browser — no download, no installation, no subscription required.
+                                            Celoris (celorisdesigns.com) is India's own free creative studio built specifically for Indian students, creators and small businesses. The Celoris video editor runs entirely in the browser — no download, no installation, no subscription required.
                                         </p>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                                             <div className="space-y-4">
@@ -186,7 +186,7 @@ export default function BlogPost() {
                                         <div className="flex flex-wrap items-center justify-between gap-6">
                                             <p className="text-emerald-400 font-black text-sm uppercase tracking-widest">Price: Free to start</p>
                                             <Button size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest px-10 rounded-2xl shadow-xl shadow-emerald-500/20 group" asChild>
-                                                <Link href="https://celoris.in">
+                                                <Link href="/">
                                                     Start Editing
                                                     <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                                 </Link>
@@ -352,7 +352,7 @@ export default function BlogPost() {
                             </h2>
                             <div className="space-y-6 mb-32">
                                 {[
-                                    "Go to celoris.in",
+                                    "Go to celorisdesigns.com",
                                     "Click CREATE — editor loads instantly in browser",
                                     "Upload your video, image and audio files",
                                     "Edit with timeline — cut, trim, add text, transitions and AI effects",
@@ -369,7 +369,7 @@ export default function BlogPost() {
                                 <h2 className="text-3xl md:text-4xl font-black text-white mb-8">Ready to start editing?</h2>
                                 <p className="text-slate-400 mb-12 text-lg">Join India's largest creative community today. No credit card, no download, no watermark.</p>
                                 <Button size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-[0.2em] rounded-full px-16 py-8 text-xl shadow-[0_20px_40px_rgba(16,185,129,0.3)] hover:scale-105 transition-all" asChild>
-                                    <Link href="https://celoris.in">Create Now</Link>
+                                    <Link href="/">Create Now</Link>
                                 </Button>
                             </div>
 
@@ -417,7 +417,7 @@ export default function BlogPost() {
                                     The best free online video editor in India in 2026 is one that is genuinely free without conditions, works entirely in the browser, exports without watermarks, runs on basic Indian laptops and understands the needs of Indian creators.
                                 </p>
                                 <p className="text-lg leading-relaxed mb-12">
-                                    Celoris was built in India in 2019 specifically for this reason — to give Indian students, creators, freelancers and businesses access to professional creative tools without the pricing designed for Western markets. <span className="text-emerald-400 font-black">Start editing your first video for free today at celoris.in.</span>
+                                    Celoris was built in India in 2019 specifically for this reason — to give Indian students, creators, freelancers and businesses access to professional creative tools without the pricing designed for Western markets. <span className="text-emerald-400 font-black">Start editing your first video for free today at celorisdesigns.com.</span>
                                 </p>
                             </div>
                         </div>
@@ -438,7 +438,7 @@ export default function BlogPost() {
             {/* Sticky CTA for Mobile/Desktop */}
             <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-bounce">
                 <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-2xl shadow-emerald-500/40 border-4 border-black/20" asChild>
-                    <Link href="https://celoris.in">Try Celoris Free</Link>
+                    <Link href="/">Try Celoris Free</Link>
                 </Button>
             </div>
 

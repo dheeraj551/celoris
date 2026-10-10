@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-digital-marketing-course-noida' },
     title: 'Best Digital Marketing Course in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best digital marketing course in Noida? This guide covers top institutes, fees, modules, and career scope. Free demo available. Book now!',
     keywords: 'digital marketing course noida, digital marketing training noida, digital marketing classes noida, digital marketing institute noida, digital marketing fees noida',

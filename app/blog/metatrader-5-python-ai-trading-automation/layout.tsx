@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'MetaTrader 5 + Python: The Ultimate Guide to AI Trading Automation',
         description: 'How to automate Forex, Stocks, and Crypto trading using MT5 and Python AI models. Build ML-powered bots step by step.',
-        url: 'https://www.celoris.in/blog/metatrader-5-python-ai-trading-automation',
+        url: 'https://celorisdesigns.com/blog/metatrader-5-python-ai-trading-automation',
         siteName: 'Celoris',
         images: [
             {
@@ -59,25 +59,25 @@ export default function MT5BlogLayout({ children }: { children: React.ReactNode 
                         "@type": "BlogPosting",
                         "headline": "MetaTrader 5 + Python: The Ultimate Guide to AI Trading Automation",
                         "description": "How to automate Forex, Stocks, and Crypto trading using MT5 and Python AI models.",
-                        "image": "https://www.celoris.in/blog-mt5-python.png",
+                        "image": "https://celorisdesigns.com/blog-mt5-python.png",
                         "author": {
                             "@type": "Organization",
                             "name": "Celoris",
-                            "url": "https://www.celoris.in"
+                            "url": "https://celorisdesigns.com"
                         },
                         "publisher": {
                             "@type": "Organization",
                             "name": "Celoris",
                             "logo": {
                                 "@type": "ImageObject",
-                                "url": "https://www.celoris.in/celoris-logo.png"
+                                "url": "https://celorisdesigns.com/celoris-logo.png"
                             }
                         },
                         "datePublished": "2026-03-23T12:00:00Z",
                         "dateModified": "2026-03-23T12:00:00Z",
                         "mainEntityOfPage": {
                             "@type": "WebPage",
-                            "@id": "https://www.celoris.in/blog/metatrader-5-python-ai-trading-automation"
+                            "@id": "https://celorisdesigns.com/blog/metatrader-5-python-ai-trading-automation"
                         },
                         "keywords": "MetaTrader5, Python, AI Trading, Algorithmic Trading, Forex Automation, Machine Learning",
                         "articleSection": "Trading & Technology",

@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-python-training-noida' },
     title: 'Best Python Training in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best Python training in Noida? This guide covers top courses, fees, curriculum, AI/ML scope, and career paths. Free demo available.',
     keywords: 'python training noida, python course noida, python classes noida, python trainer noida, data science course noida, python ai noida',

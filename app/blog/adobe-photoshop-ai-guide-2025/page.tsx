@@ -12,6 +12,7 @@ import { Metadata } from 'next';
 import ShareButtons from '@/components/ShareButtons';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/adobe-photoshop-ai-guide-2025' },
     title: 'Adobe Photoshop with AI: The Complete Guide for Designers in 2025 | Celoris',
     description: 'Master Generative Fill, Neural Filters, and Firefly integration in Photoshop CC 2024/2025. A complete guide for intermediate designers.',
     keywords: 'photoshop ai guide, adobe firefly photoshop, generative fill tutorial, neural filters photoshop, ai design tools 2025, photoshop training noida',

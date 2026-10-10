@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-social-media-marketing-course-noida' },
     title: 'Best Social Media Marketing Course in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best social media marketing course in Noida? This guide covers platforms, fees, scope, and how to choose the right training. Free demo available.',
     keywords: 'social media marketing course noida, smm course noida, social media training noida, instagram marketing course noida, facebook ads course noida',

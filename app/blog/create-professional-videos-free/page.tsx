@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, User, Clock, Tag, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/create-professional-videos-free' },
     title: 'How to Create Videos Without Expensive Software in India 2025',
     description: 'Free workflow for Indian creators — no Adobe, no budget needed. Create professional videos using free tools including Celoris.',
 };
@@ -206,7 +207,7 @@ export default function BlogPost() {
                                 </p>
                                 <div className="text-center">
                                     <Button size="lg" className="bg-emerald-500 text-black hover:bg-emerald-400 font-bold px-12 py-8 rounded-[2rem] text-xl shadow-[0_0_40px_rgba(16,185,129,0.2)] hover:scale-105 transition-all" asChild>
-                                        <a href="https://celoris.in">Start Free at Celoris.in 🇮🇳</a>
+                                        <a href="/">Start Free at Celoris 🇮🇳</a>
                                     </Button>
                                     <p className="mt-4 text-xs text-slate-500 uppercase tracking-widest font-bold">No credit card • No watermark • No excuses</p>
                                 </div>

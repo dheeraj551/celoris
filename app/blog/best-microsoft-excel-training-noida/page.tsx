@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/best-microsoft-excel-training-noida' },
     title: 'Best Microsoft Excel Training in Noida (2026) — Complete Guide | Celoris',
     description: 'Looking for the best Microsoft Excel training in Noida in 2026? This guide covers top courses, fees, curriculum, and how to choose the right trainer. Includes free demo offer.',
     keywords: 'excel training in noida, microsoft excel course noida, excel classes noida, excel trainer noida, excel training fees noida',

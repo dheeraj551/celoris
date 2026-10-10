@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/blog/how-to-start-teaching-online-in-india" },
     title: "Best Platform for Online Trainers in India 2025 | Celoris",
     description: "Thinking of teaching online in India? Learn how Celoris helps new trainers grow without per-lead charges, coin systems, or platform restrictions. Free to join.",
     keywords: ["online teaching platform India", "best platform for trainers India", "how to start online teaching India", "teach online without paying per lead", "celoris trainer platform"],

@@ -641,7 +641,7 @@ services:
 
             <footer className="container py-12 px-4 mx-auto border-t border-white/5 text-center mt-20">
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase mb-4">
-                    Published by Celoris | celoris.in | Your Creative Learning Platform
+                    Published by Celoris | celorisdesigns.com | Your Creative Learning Platform
                 </p>
                 <p className="text-[10px] font-black tracking-[0.4em] text-slate-600 uppercase">
                     © {new Date().getFullYear()} Celoris.in • All Rights Reserved

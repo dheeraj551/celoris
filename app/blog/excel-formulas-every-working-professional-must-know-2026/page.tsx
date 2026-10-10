@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
+    alternates: { canonical: '/blog/excel-formulas-every-working-professional-must-know-2026' },
     title: "Excel Formulas Every Working Professional Must Know in 2026 | Celoris",
     description: "From Basic Lookups to Dynamic Arrays — Practical Excel for India's Workforce. Master VLOOKUP, XLOOKUP, Pivot Tables and more with Celoris.",
     keywords: ['Excel formulas 2026', 'VLOOKUP vs XLOOKUP', 'Excel training India', 'Pivot Tables guide', 'Excel for MIS reports'],
@@ -102,7 +103,7 @@ export default function ExcelBlogPage() {
                             </p>
 
                             <blockquote>
-                                **💡 Pro Tip:** Every formula in this blog works in Excel 2016, Excel 2019, Microsoft 365, and Google Sheets (unless noted). Screenshots available in our live Excel course on <Link href="/">celoris.in</Link>.
+                                **💡 Pro Tip:** Every formula in this blog works in Excel 2016, Excel 2019, Microsoft 365, and Google Sheets (unless noted). Screenshots available in our live Excel course on <Link href="/">celorisdesigns.com</Link>.
                             </blockquote>
 
                             <h2 className="text-3xl md:text-5xl font-black mt-24 mb-10 text-white flex items-center gap-4">

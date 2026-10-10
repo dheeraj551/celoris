@@ -459,6 +459,80 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
+  // Blog posts that live as their own folders under app/blog (not in the blog_posts table),
+  // plus public pages that were missing. Keep this list in sync when adding a folder-based post.
+  const STATIC_BLOG_SLUGS = [
+    'adobe-photoshop-ai-guide-2025',
+    'ai-engineer-vs-generative-ai-engineer',
+    'alok-kumar-digital-marketing-journey',
+    'best-digital-marketing-course-noida',
+    'best-free-online-video-editor-india-2026',
+    'best-free-video-editor-india',
+    'best-graphic-designing-course-noida',
+    'best-microsoft-excel-training-noida',
+    'best-photoshop-training-noida',
+    'best-python-training-noida',
+    'best-social-media-marketing-course-noida',
+    'best-video-editing-course-noida',
+    'best-web-development-course-noida',
+    'best-wordpress-course-noida',
+    'bollywood-zumba-dance-course-for-beginners-dheeraj-kushwaha',
+    'build-local-ai-with-ollama-supabase-python',
+    'building-real-time-voice-ai-livekit',
+    'create-professional-videos-free',
+    'excel-formulas-every-working-professional-must-know-2026',
+    'free-excel-course-online-india-2026',
+    'gemini-4-argon-pro-fairwind-guide-2026',
+    'how-to-earn-50k-month-ai-video-creator-india-2026',
+    'how-to-go-viral-youtube-shorts-2026',
+    'how-to-start-a-dropshipping-business-in-2026',
+    'how-to-start-teaching-online-in-india',
+    'how-to-use-canva-for-the-first-time-beginner-guide',
+    'kya-ai-replace-kar-dega-digital-marketers-ko',
+    'learn-guitar-online-india-2026-beginners-guide',
+    'meta-advantage-plus-vs-manual-2026-guide',
+    'metatrader-5-python-ai-trading-automation',
+    'monetize-instagram-reels-youtube-shorts-india-2026',
+    'multimodal-agentic-ai',
+    'online-dance-classes-india-2026-find-the-best-dance-classes-near-you',
+    'online-teaching-jobs-delhi-2026',
+    'online-teaching-jobs-india-2025-26',
+    'premiere-pro-ai-efficiency-guide-2026',
+    'the-english-sound-system',
+    'the-real-economics-of-online-education-2026',
+    'top-10-free-ai-video-editing-tools-india-2026',
+    'video-editing-trends-2026-premiere-pro-tips',
+    'virtual-production-game-engines-ai-2026',
+    'yoga-for-beginners-complete-guide',
+    'zero-keyframes-motion-swap-puppet-rigging-2026',
+  ]
+  const EXTRA_PAGES: { path: string; priority: number; changeFrequency: 'daily' | 'weekly' | 'monthly' }[] = [
+    { path: '/blog', priority: 0.8, changeFrequency: 'daily' },
+    { path: '/become-trainer', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/video-editing-course-noida', priority: 0.8, changeFrequency: 'weekly' },
+    { path: '/wordpress-course-noida', priority: 0.8, changeFrequency: 'weekly' },
+    { path: '/job-center', priority: 0.7, changeFrequency: 'weekly' },
+    { path: '/free-video-editor', priority: 0.7, changeFrequency: 'monthly' },
+    { path: '/celoris-tv', priority: 0.7, changeFrequency: 'weekly' },
+    { path: '/contact', priority: 0.5, changeFrequency: 'monthly' },
+  ]
+  for (const page of EXTRA_PAGES) {
+    staticPages.push({ url: `${baseUrl}${page.path}`, lastModified: new Date(), changeFrequency: page.changeFrequency, priority: page.priority })
+  }
+  for (const slug of STATIC_BLOG_SLUGS) {
+    staticPages.push({ url: `${baseUrl}/blog/${slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 })
+  }
+
+  // Drop duplicates (some posts appear both above and in the database), keeping the first entry.
+  const dedupe = (entries: MetadataRoute.Sitemap) => {
+    const seen = new Set<string>()
+    return entries.filter((e) => {
+      if (seen.has(e.url)) return false
+      seen.add(e.url)
+      return true
+    })
+  }
+
   try {
     const supabase = createClient()
 
@@ -498,9 +572,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
       .filter((dyn: any) => dyn && !staticPages.some((stat: any) => stat.url === dyn.url))
 
-    return [...staticPages, ...dynamicBlogs, ...dynamicCourses]
+    return dedupe([...staticPages, ...dynamicBlogs, ...dynamicCourses])
   } catch (error) {
     console.error('Error generating dynamic sitemap:', error)
-    return staticPages
+    return dedupe(staticPages)
   }
 }
