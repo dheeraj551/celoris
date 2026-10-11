@@ -248,10 +248,10 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#25D366] hover:text-black transition-all duration-200 py-1.5 px-3 rounded-full bg-[#25D366]/10 hover:bg-[#25D366] border border-[#25D366]/30 hover:border-[#25D366] shadow-[0_0_12px_rgba(37,211,102,0.12)] hover:shadow-[0_0_20px_rgba(37,211,102,0.4)] group hover:scale-105 active:scale-95"
-                                            title="Share job on WhatsApp"
+                                            title="Share job with friends on WhatsApp"
                                         >
                                             <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366] group-hover:text-black transition-colors" />
-                                            <span>WhatsApp</span>
+                                            <span>Share</span>
                                         </a>
                                     </div>
                                 </li>

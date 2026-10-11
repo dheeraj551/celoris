@@ -315,7 +315,7 @@ export function TeachLanding({ slots = [] }: { slots: TeachingSlot[] }) {
                 ) : (
                     <div className="mt-6 grid gap-4 md:grid-cols-2">
                         {filteredSlots.map((slot) => {
-                            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+                            const waUrl = `https://wa.me/919084718101?text=${encodeURIComponent(
                                 `Hi Celoris! I'm an educator interested in taking the student teaching slot: ${slot.subject} (${slot.budget}, ${slot.location}). How can I be assigned?`
                             )}`
 
