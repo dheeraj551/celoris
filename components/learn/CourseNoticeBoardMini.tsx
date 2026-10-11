@@ -221,12 +221,13 @@ export function liveBatchStatus(batch: CourseBatchInfo) {
   if (batch.isLive) return { label: 'Class Live Now', dot: 'live', badge: 'live', badgeText: 'LIVE NOW' };
   if (!batch.nextStart) return { label: 'Being Scheduled', dot: 'soon', badge: 'soon', badgeText: 'DATE SOON' };
   if (!batch.batchStarted) {
-    const isToday = batch.batchStart && new Date(batch.batchStart).toDateString() === new Date().toDateString();
+    const ist = (iso: string) => new Date(iso).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
+    const isToday = !!batch.batchStart && ist(batch.batchStart) === ist(new Date().toISOString());
     return {
-      label: isToday ? 'Starting Tonight' : 'Starting Soon',
+      label: isToday ? 'Starting Today' : 'Starting Soon',
       dot: 'live',
       badge: isToday ? 'urgent' : 'soon',
-      badgeText: isToday ? 'TONIGHT 8 PM' : 'STARTING SOON'
+      badgeText: isToday && batch.batchStart ? `TODAY ${istTime(batch.batchStart)}` : 'STARTING SOON'
     };
   }
   return { label: 'Running Now', dot: 'live', badge: 'live', badgeText: 'RUNNING' };
@@ -380,11 +381,12 @@ export function CourseNoticeBoardMini({ course, durationDisplay, batch, onBatchC
         <ul className="mnb-list">
           {live?.batchStart && !live.batchStarted ? (
             <>
-              <li><span>Batch starts</span><span className="val">Tonight · 8:00 PM IST</span></li>
-              <li><span>Next batch</span><span className="val">{nextBatchDisplay}</span></li>
+              <li><span>Batch starts</span><span className="val">{istFullDate(live.batchStart)} · {istTime(live.batchStart)} IST</span></li>
+              {live.nextBatchDate && <li><span>Next batch</span><span className="val">{live.nextBatchDate}</span></li>}
             </>
           ) : (
-            <li><span>{nextLabel}</span><span className="val">{nextBatchDisplay || nextValue}</span></li>
+            // Live batch already running: show its real next class (never a guessed date).
+            <li><span>{nextLabel}</span><span className="val">{live ? nextValue : nextBatchDisplay}</span></li>
           )}
           {live?.scheduleLabel && <li><span>Schedule</span><span className="val">{live.scheduleLabel}</span></li>}
           {live?.classMinutes ? <li><span>Each class</span><span className="val">{live.classMinutes} min</span></li> : null}

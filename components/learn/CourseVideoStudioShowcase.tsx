@@ -18,10 +18,10 @@ import { LazyLoopVideo, SHOWCASE_MEDIA } from "@/components/home-new/ShowcaseMed
 
 const REEL_SECONDS = 12;
 const SEGMENTS = [
-  { label: "Racetrack selfie", start: 0, dur: 3.5, thumb: "video-studio-clip1.jpg" },
-  { label: "Neon street drift", start: 3.5, dur: 2.5, thumb: "video-studio-clip2.jpg" },
-  { label: "Stadium concert", start: 6, dur: 3.5, thumb: "video-studio-clip3.jpg" },
-  { label: "Tiny me (AI Action Figure)", start: 9.5, dur: 2.5, thumb: "video-studio-clip4.jpg" },
+  { label: "Hook · Racetrack shot", start: 0, dur: 3.5, thumb: "video-studio-clip1.jpg" },
+  { label: "B-roll · Neon street", start: 3.5, dur: 2.5, thumb: "video-studio-clip2.jpg" },
+  { label: "Build-up · Concert crowd", start: 6, dur: 3.5, thumb: "video-studio-clip3.jpg" },
+  { label: "Payoff · AI action figure", start: 9.5, dur: 2.5, thumb: "video-studio-clip4.jpg" },
 ];
 
 function segmentAt(t: number) {

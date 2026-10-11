@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { createRouteClient } from '@/lib/supabase-server';
 import { createSupabaseClientForServer } from '@/lib/supabase-client';
 import { computeCourseBatch, loadCoursePageData } from '@/lib/course-batch';
+import { COURSE_BATCH_DEFAULTS } from '@/lib/course-slugs';
 
 // Course enrollment now requires a signed-in applicant and an uploaded
 // student ID (courses are free for students, so the ID is what gates that —
@@ -124,7 +125,8 @@ export async function POST(request: NextRequest) {
                     p_course_id: courseId,
                     p_application_id: application.id,
                     p_seat_limit: batch.seatsTotal,
-                    p_round_start: null,
+                    // Count this batch's sign-ups only (see COURSE_BATCH_DEFAULTS.countFrom).
+                    p_round_start: COURSE_BATCH_DEFAULTS[courseId]?.countFrom || null,
                     p_round_cap: offer.passes || Number(course.launch_offer_passes) || 15,
                     p_deadline: offer.endsAt,
                 });

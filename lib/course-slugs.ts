@@ -65,17 +65,27 @@ export interface CourseBatchDefault {
   registered: number
   passesTotal: number
   nextBatchDate?: string
+  /**
+   * When sign-ups for THIS batch began (usually the previous batch's start).
+   * Seats and free passes are counted from here, so a new batch doesn't
+   * inherit the previous batch's students.
+   */
+  countFrom?: string
 }
 
 export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
   'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead': {
-    batchNumber: '04',
-    soldOutBatch: 'Batch 03 (Sold Out)',
-    batchStart: '2026-10-11T15:00:00.000+05:30',
-    scheduleLabel: 'Sundays · 3:00 PM IST',
+    // Batch 04 started Sun 11 Oct 2026; Batch 05 starts Wed 21 Oct 2026.
+    // TODO(Dheeraj): confirm the 21 Oct class time — 3:00 PM IST assumed
+    // (same slot as Batch 04).
+    batchNumber: '05',
+    soldOutBatch: 'Batch 04 (Full · Started 11 Oct)',
+    batchStart: '2026-10-21T15:00:00.000+05:30',
+    scheduleLabel: 'Wednesdays · 3:00 PM IST',
     seatsTotal: 15,
     registered: 0,
     passesTotal: 15,
+    countFrom: '2026-10-11T15:00:00.000+05:30',
   },
   'e7698318-7f57-421f-866e-0101ee239c01': {
     batchNumber: '43',

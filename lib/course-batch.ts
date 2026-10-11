@@ -59,6 +59,13 @@ async function findLinkedRoom(db: any, course: { id: string; title: string }) {
   return byUrl || rooms.find((r) => r.course_title && r.course_title === course.title) || null
 }
 
+/** "NITISH KUMAR" → "Nitish Kumar" (names typed in all caps); other names are left as typed. */
+function displayName(raw: string): string {
+  const name = raw.trim().replace(/\s+/g, ' ')
+  if (name !== name.toUpperCase() || !/[A-Z]/.test(name)) return name
+  return name.toLowerCase().replace(/(^|[\s'-])([a-z])/g, (_m, p, c) => p + c.toUpperCase())
+}
+
 // Trainers with an active booth on this course (the "Trainer Booth" section).
 async function loadCourseTrainers(publicDb: any, courseId: string, lead: string | null): Promise<CourseTrainer[]> {
   const { data: booths } = await publicDb
@@ -76,7 +83,7 @@ async function loadCourseTrainers(publicDb: any, courseId: string, lead: string 
     list = ids
       .map((id) => byId.get(id))
       .filter((u: any) => u && String(u.full_name || '').trim())
-      .map((u: any) => ({ name: String(u.full_name).trim(), avatarUrl: u.profile_pic_url || null }))
+      .map((u: any) => ({ name: displayName(String(u.full_name)), avatarUrl: u.profile_pic_url || null }))
   }
   // Lead trainer (from the classroom) first; add them if they have no booth.
   if (lead) {
@@ -171,12 +178,16 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
   const now = new Date()
   const price = Number(course.price) > 0 ? Number(course.price) : 0
 
+  // Seats and passes count only this batch's sign-ups (from countFrom on).
+  const countFrom = COURSE_BATCH_DEFAULTS[course.id]?.countFrom || null
+
   const [room, statsResult] = await Promise.all([
     findLinkedRoom(publicDb, course).catch(() => null),
     (async () => {
       try {
         const { data: stats, error } = await db.rpc('get_course_batch_stats', {
           p_course_title: course.title,
+          ...(countFrom ? { p_since: countFrom } : {}),
         })
         if (!error && stats) {
           return {
@@ -188,20 +199,23 @@ export async function computeCourseBatch(course: any): Promise<CourseBatchInfo> 
         // Fall back below
       }
       try {
+        const since = (q: any) => (countFrom ? q.gte('created_at', countFrom) : q)
         const [apps, passes] = await Promise.all([
-          db
-            .from('course_applications')
-            .select('user_id, intent')
-            .eq('course_title', course.title)
-            .neq('status', 'rejected')
-            .limit(2000),
-          db
-            .from('course_applications')
-            .select('user_id, created_at')
-            .eq('course_title', course.title)
-            .eq('offer_pass', true)
-            .neq('status', 'rejected')
-            .limit(2000),
+          since(
+            db
+              .from('course_applications')
+              .select('user_id, intent')
+              .eq('course_title', course.title)
+              .neq('status', 'rejected')
+          ).limit(2000),
+          since(
+            db
+              .from('course_applications')
+              .select('user_id, created_at')
+              .eq('course_title', course.title)
+              .eq('offer_pass', true)
+              .neq('status', 'rejected')
+          ).limit(2000),
         ])
         const reg = new Set(
           ((apps?.data || []) as any[]).filter((a) => a.intent !== 'waitlist').map((a) => a.user_id)

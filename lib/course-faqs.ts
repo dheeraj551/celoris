@@ -59,7 +59,8 @@ function shortFormFaqs({ batch, price }: FaqContext): CourseFaq[] {
         `Free passes are released in rounds: up to ${offer.perRound} per round` +
         (seats ? `, until all ${seats} seats in the batch are taken` : "") +
         ". The first round closes when the first class starts; if seats are still left, a new round opens until the next class. Once the batch is full, you can join the waitlist for the next batch." +
-        (fee > 0 ? ` The course is worth ${inr(fee)}.` : ""),
+        (fee > 0 ? ` The regular course fee is ${inr(fee)}; a free pass covers the full course at ₹0.` : "") +
+        " Free passes are for students — you sign in and upload a valid student ID to claim one.",
     })
   } else if (fee > 0) {
     faqs.push({
@@ -67,6 +68,16 @@ function shortFormFaqs({ batch, price }: FaqContext): CourseFaq[] {
       answer: `The course fee is ${inr(fee)}.`,
     })
   }
+  faqs.push({
+    question: "What is in the ₹12,500 Creator Bonus Pack?",
+    answer:
+      "Five bonuses, unlocked instantly when you enroll and included free for students of this live batch: " +
+      "50+ Viral Hook Templates Cheat Sheet (PDF guide, worth ₹2,500), " +
+      "2026 Indian Creator Viral Calendar (calendar sheet, ₹3,000), " +
+      "Brand Pitch Kit & Rate Card Formula (templates & calculator, ₹4,000), " +
+      "Royalty-Free B-Roll & SFX Audio Vault (asset pack, ₹2,000) and " +
+      "the Private Batch WhatsApp Mastermind (VIP community, ₹1,000).",
+  })
   faqs.push({
     question: "Do I get a certificate?",
     answer: "Yes, an official Celoris certificate of completion is provided upon finishing the masterclass.",

@@ -240,8 +240,8 @@ export function LaunchOfferCard({
       <div className="lo-sub">
         {firstRound
           ? offer.claimed > 0
-            ? `Full course free for the first ${offer.passes} students · ${offer.claimed} claimed`
-            : `Full course free for the first ${offer.passes} students`
+            ? `Full course free for the first ${offer.passes} students${price > 0 ? ` (regular fee ${inr(price)})` : ""} · ${offer.claimed} claimed`
+            : `Full course free for the first ${offer.passes} students${price > 0 ? ` (regular fee ${inr(price)})` : ""}`
           : `Join from the next class — ${offer.claimed > 0 ? `${offer.claimed} claimed · ` : ""}${seatsLeft} seat${seatsLeft === 1 ? "" : "s"} left in ${batchLabel}`}
       </div>
 
@@ -282,7 +282,10 @@ export function LaunchOfferCard({
         onSubmitted={onChanged}
       />
       <div className="lo-note">
-        Sign in and upload your student ID to claim. If seats are still left when this round closes, a new round opens until the next class.
+        Free passes are for students: sign in and upload a valid student ID to claim one. If seats are still left when this round closes, a new round opens until the next class.{" "}
+        <Link href="/terms" style={{ textDecoration: "underline" }}>Terms</Link> ·{" "}
+        <Link href="/refund-policy" style={{ textDecoration: "underline" }}>Refunds</Link> ·{" "}
+        <Link href="/privacy" style={{ textDecoration: "underline" }}>Privacy</Link>
       </div>
     </div>
   )

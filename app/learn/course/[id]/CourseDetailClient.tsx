@@ -82,6 +82,20 @@ interface CourseModule {
 
 const sectionTitle = "text-2xl font-semibold leading-none tracking-tight"
 
+// Vertical promo reel on the Shorts & Reels course page (file in SHOWCASE_MEDIA).
+// The old reel (stickerposter.mp4) announced "Batch 04 · 11 Oct", so it's off
+// until a reel for the current batch is uploaded — set the file name here and
+// it comes back. While null, the course banner image shows instead.
+const SHORTS_PROMO_REEL: string | null = null
+
+const BONUS_PACK = [
+  { name: "50+ Viral Hook Templates Cheat Sheet", kind: "PDF guide", value: 2500 },
+  { name: "2026 Indian Creator Viral Calendar", kind: "Calendar sheet", value: 3000 },
+  { name: "Brand Pitch Kit & Rate Card Formula", kind: "Templates & calculator", value: 4000 },
+  { name: "Royalty-Free B-Roll & SFX Audio Vault", kind: "Asset pack", value: 2000 },
+  { name: "Private Batch WhatsApp Mastermind", kind: "VIP community", value: 1000 },
+]
+
 export default function CourseDetailClient({
   initialCourse,
   initialBatch,
@@ -289,7 +303,7 @@ export default function CourseDetailClient({
     {
       label: "Fee",
       value: offer
-        ? `Free pass — ${offer.claimed > 0 ? `${offer.claimed} claimed, ` : ""}${offer.left} of ${offer.passes} left${fee ? ` (worth ${inr(fee)})` : ""}`
+        ? `Free pass — ${offer.claimed > 0 ? `${offer.claimed} claimed, ` : ""}${offer.left} of ${offer.passes} left${fee ? ` (regular fee ${inr(fee)})` : ""}`
         : batch?.offer?.state === "full"
           ? "Batch full — waitlist open for the next batch"
           : batch?.offer?.state === "round_full"
@@ -336,15 +350,23 @@ export default function CourseDetailClient({
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
                   </span>
                   <div className="text-sm font-medium flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                    <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">Batch 03 (Sold Out)</span>
-                    <span className="text-slate-400 hidden sm:inline">•</span>
-                    <span className="font-bold text-amber-300 text-xs sm:text-sm">Batch 04: Starts Sunday, 11th Oct 2026</span>
+                    {batch?.soldOutNotice && (
+                      <>
+                        <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">{batch.soldOutNotice}</span>
+                        <span className="text-slate-400 hidden sm:inline">•</span>
+                      </>
+                    )}
+                    <span className="font-bold text-amber-300 text-xs sm:text-sm">
+                      {batch?.batchStart
+                        ? `${batch.batchNumber ? `Batch ${batch.batchNumber}: ` : ""}${batch.batchStarted ? "Started" : "Starts"} ${istFullDate(batch.batchStart)} · ${istTime(batch.batchStart)} IST`
+                        : "Next batch: dates announced soon"}
+                    </span>
                   </div>
                 </div>
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
                   {batch?.offer ? (
                     batch.offer.claimed > 0
-                      ? `${batch.offer.claimed} Sold · ${batch.offer.left} Passes Left`
+                      ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Passes Left`
                       : `${batch.offer.left} Passes Left`
                   ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
                     "All Passes Claimed"
@@ -371,7 +393,7 @@ export default function CourseDetailClient({
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
                   {batch?.offer ? (
                     batch.offer.claimed > 0
-                      ? `${batch.offer.claimed} Sold · ${batch.offer.left} Left`
+                      ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Left`
                       : `${batch.offer.left} Passes Left`
                   ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
                     "All Passes Claimed"
@@ -400,7 +422,7 @@ export default function CourseDetailClient({
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
                   {batch?.offer ? (
                     batch.offer.claimed > 0
-                      ? `${batch.offer.claimed} Sold · ${batch.offer.left} Passes Left`
+                      ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Passes Left`
                       : `${batch.offer.left} Passes Left`
                   ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
                     "All Passes Claimed"
@@ -431,7 +453,7 @@ export default function CourseDetailClient({
             </div>
 
             {/* Course Media: Interactive Video Player for Shorts/Reels, or Static Image for others */}
-            {isShortForm ? (
+            {isShortForm && SHORTS_PROMO_REEL ? (
               <Card className="overflow-hidden border-slate-800 bg-[#070b14] shadow-2xl relative group">
                 <div className="relative min-h-[420px] sm:min-h-[480px] md:min-h-[520px] flex items-center justify-center overflow-hidden p-3 sm:p-5">
                   {/* Ambient background glow and light effect */}
@@ -440,7 +462,7 @@ export default function CourseDetailClient({
                   {/* Subtle video backdrop blur for desktop */}
                   <div className="absolute inset-0 opacity-25 filter blur-3xl scale-125 pointer-events-none overflow-hidden">
                     <video
-                      src={`${SHOWCASE_MEDIA}stickerposter.mp4`}
+                      src={`${SHOWCASE_MEDIA}${SHORTS_PROMO_REEL}`}
                       autoPlay
                       loop
                       muted
@@ -453,7 +475,7 @@ export default function CourseDetailClient({
                   <div className="relative z-10 max-w-[280px] sm:max-w-[310px] md:max-w-[330px] w-full rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.85)] border border-white/20 bg-black">
                     <video
                       ref={heroVideoRef}
-                      src={`${SHOWCASE_MEDIA}stickerposter.mp4`}
+                      src={`${SHOWCASE_MEDIA}${SHORTS_PROMO_REEL}`}
                       autoPlay
                       loop
                       muted={heroMuted}
@@ -489,7 +511,7 @@ export default function CourseDetailClient({
                         {heroMuted ? (
                           <>
                             <VolumeX className="w-3.5 h-3.5 text-amber-400" />
-                            <span>🔊 Unmute ASMR</span>
+                            <span>Tap for sound</span>
                           </>
                         ) : (
                           <>
@@ -706,6 +728,20 @@ export default function CourseDetailClient({
                   className="w-full h-auto object-contain rounded-2xl group-hover:scale-[1.008] transition-transform duration-300"
                   loading="lazy"
                 />
+                <div className="px-4 sm:px-5 pb-4 pt-3 bg-white/70">
+                  <h2 className="text-base font-bold text-slate-900">What&apos;s in the Creator Bonus Pack (total value ₹12,500)</h2>
+                  <ul className="mt-2 divide-y divide-amber-100 text-sm">
+                    {BONUS_PACK.map((b) => (
+                      <li key={b.name} className="flex items-start justify-between gap-3 py-1.5">
+                        <span className="text-slate-800 font-medium">
+                          {b.name} <span className="text-slate-500 font-normal">· {b.kind}</span>
+                        </span>
+                        <span className="text-slate-700 font-semibold whitespace-nowrap">{inr(b.value)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs text-slate-600">Unlocked instantly when you enroll · included free for students of this live batch. Tap to preview samples.</p>
+                </div>
               </div>
             )}
 
@@ -742,7 +778,7 @@ export default function CourseDetailClient({
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <h3 className="font-bold text-slate-800 text-base">
-                                Module {mod.module_number}: {mod.title}
+                                Module {mod.module_number}: {mod.title.replace(/\s*\(Module\s*\d+\)\s*$/i, "")}
                               </h3>
                               {mod.description && (
                                 <p className="text-sm text-slate-500 mt-1">{mod.description}</p>
@@ -1014,7 +1050,7 @@ export default function CourseDetailClient({
                       ? "Hi Celoris! I have a question about the Master Copilot in Excel Batch 08 launching 13 Oct 2026 at 7:00 PM IST."
                       : isDigitalMarketing
                         ? "Hi Celoris! I have a question about Digital Marketing Mastery Batch #43 launching tonight at 8:00 PM."
-                        : "Hi Celoris! I have a question about the 10-Hour YouTube Shorts & Instagram Reels Masterclass."
+                        : `Hi Celoris! I have a question about the 10-Hour YouTube Shorts & Instagram Reels Masterclass${batch?.batchNumber && batch?.batchStart ? ` (Batch ${batch.batchNumber}, starting ${istFullDate(batch.batchStart)})` : ""}.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -1084,7 +1120,7 @@ export default function CourseDetailClient({
               <h2 className="text-2xl font-bold text-foreground mb-1 flex items-center gap-2">
                 <span>⭐</span> Student Reviews
               </h2>
-              <p className="text-xs text-slate-400 mb-5">From students of our earlier Celoris website</p>
+              <p className="text-xs text-slate-500 mb-5">Written by our students on the earlier Celoris website and carried over here. New reviews from this site appear below.</p>
               <div className="relative overflow-hidden">
                 {/* Left fade */}
                 <div className="pointer-events-none absolute top-0 left-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10" />
@@ -1110,7 +1146,7 @@ export default function CourseDetailClient({
                           <p className="text-sm font-bold text-slate-800">{t.name}</p>
                           <p className="text-xs text-slate-400 font-medium flex items-center gap-1 mt-0.5">
                             <BadgeCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                            <span>Verified · Attended a live class · {t.time}</span>
+                            <span>Celoris student · from our earlier website</span>
                           </p>
                         </div>
                         <div className="flex gap-0.5 flex-shrink-0">
@@ -1167,8 +1203,8 @@ export default function CourseDetailClient({
                     </>
                   ) : (
                     <>
-                      <span className="line-through text-rose-400 mr-1.5">Batch 03 Sold Out</span>
-                      <span className="text-emerald-400">Batch 04 Open</span>
+                      {batch?.soldOutNotice && <span className="line-through text-rose-400 mr-1.5">{batch.soldOutNotice.replace(/\s*\(.*\)\s*$/, "")} Full</span>}
+                      <span className="text-emerald-400">{batch?.batchNumber ? `Batch ${batch.batchNumber} Open` : "Enrolling Now"}</span>
                     </>
                   )}
                 </p>
@@ -1177,7 +1213,7 @@ export default function CourseDetailClient({
                     ? "Starts 13 Oct · 7:00 PM IST • 15 Passes Open"
                     : isDigitalMarketing
                       ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
-                      : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts 11 Oct"} • ${offer ? `${offer.left} Passes Left` : "15 Passes Open"}`}
+                      : `${batch?.batchStart ? `${batch.batchStarted ? "Started" : "Starts"} ${istFullDate(batch.batchStart)}` : "Dates soon"} • ${offer ? `${offer.left} Passes Left` : batch?.offer?.state === "full" ? "Batch Full" : "Passes Open"}`}
                 </p>
               </div>
             </div>
@@ -1209,7 +1245,7 @@ export default function CourseDetailClient({
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 text-base">Creator Bonus Pack — Sneak Peek</h3>
-                  <p className="text-xs text-slate-600">Included 100% Free with tomorrow&apos;s live batch (Worth ₹12,500)</p>
+                  <p className="text-xs text-slate-600">Included 100% free for students of this live batch (worth ₹12,500)</p>
                 </div>
               </div>
               <button
@@ -1356,7 +1392,7 @@ export default function CourseDetailClient({
             {/* Modal Footer */}
             <div className="p-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
               <span className="text-xs text-slate-600 font-medium text-center sm:text-left">
-                Included automatically with your batch enrollment
+                Unlocked instantly upon enrollment
               </span>
               <button
                 type="button"

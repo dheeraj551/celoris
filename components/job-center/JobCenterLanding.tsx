@@ -1,10 +1,11 @@
 import Link from "next/link"
 import {
     ArrowRight, BadgeCheck, Briefcase, ClipboardCheck,
-    MapPin, QrCode, Share2, ShieldCheck, Users,
+    MapPin, QrCode, ShieldCheck, Users,
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { JobAlertsForm } from "@/components/job-center/JobAlertsForm"
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
 
 // Public face of /job-center (server component). Every number on this page is
 // read from the database at render time; nothing is hard-coded.
@@ -115,6 +116,17 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                             See open roles{jobs.length > 0 ? ` (${jobs.length})` : ""}
                             <ArrowRight className="h-4 w-4 text-emerald-400" />
                         </a>
+                        <a
+                            href="#whatsapp-alerts"
+                            className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-5 py-3 text-sm font-semibold text-[#25D366] transition hover:bg-[#25D366]/20 shadow-[0_0_15px_rgba(37,211,102,0.15)] hover:scale-105 active:scale-95"
+                        >
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#25D366]" />
+                            </span>
+                            <WhatsAppIcon className="h-4 w-4" />
+                            WhatsApp Alerts
+                        </a>
                     </div>
                     <p className="mt-3 text-xs text-neutral-500">
                         Free to join and free to take a test. Prefer email?{" "}
@@ -168,7 +180,7 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
             </section>
 
             {/* 3. Instant WhatsApp Job Alerts */}
-            <section className="mx-auto mt-14 max-w-5xl px-4 sm:px-6">
+            <section id="whatsapp-alerts" className="mx-auto mt-14 max-w-5xl scroll-mt-20 px-4 sm:px-6">
                 <JobAlertsForm />
             </section>
 
@@ -198,7 +210,7 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                                     <div className="flex items-start justify-between gap-3">
                                         <h3 className="text-base font-semibold text-white">{j.title}</h3>
                                         {j.createdAt && (
-                                            <span className="shrink-0 font-mono text-[11px] text-neutral-500">{postedOn(j.createdAt)}</span>
+                                             <span className="shrink-0 font-mono text-[11px] text-neutral-500">{postedOn(j.createdAt)}</span>
                                         )}
                                     </div>
                                     <p className="mt-1 text-xs text-neutral-400">
@@ -235,11 +247,11 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                                             href={waUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-emerald-300 transition-colors py-1 px-2.5 rounded-full bg-white/[0.03] border border-white/10 hover:border-emerald-500/40"
+                                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#25D366] hover:text-black transition-all duration-200 py-1.5 px-3 rounded-full bg-[#25D366]/10 hover:bg-[#25D366] border border-[#25D366]/30 hover:border-[#25D366] shadow-[0_0_12px_rgba(37,211,102,0.12)] hover:shadow-[0_0_20px_rgba(37,211,102,0.4)] group hover:scale-105 active:scale-95"
                                             title="Share job on WhatsApp"
                                         >
-                                            <Share2 className="h-3 w-3 text-emerald-400" />
-                                            Share
+                                            <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366] group-hover:text-black transition-colors" />
+                                            <span>WhatsApp</span>
                                         </a>
                                     </div>
                                 </li>
