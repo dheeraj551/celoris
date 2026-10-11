@@ -1,56 +1,92 @@
-"use client"
-import '@/components/skillverify/index.css'
-import dynamic from 'next/dynamic'
-import React from 'react'
+import { type Metadata } from "next"
+import { createSupabaseClientForServer } from "@/lib/supabase-client"
+import { JobCenterGate } from "@/components/job-center/JobCenterGate"
+import { JobCenterLanding, type PublicJob } from "@/components/job-center/JobCenterLanding"
 
-import { DashboardShell } from "@/components/home-new/DashboardShell"
-import { useAuth } from '@/components/providers/AuthProvider'
+// /job-center
+// Signed-out visitors (and Google) get a public landing page: the tagline, how
+// the free skill tests work and the open roles. Signed-in users get the
+// SkillVerify app exactly as before. The open roles are read on the server and
+// refreshed every 30 minutes, so the page stays fast and indexable.
 
-import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+export const revalidate = 1800
 
-// SkillVerify Pro — Job Alerts & Anti-Cheat Exam Hub, ported in the same
-// pattern as /celo-ai: standalone Vite/React app kept as-is under
-// components/skillverify, mounted here with next/dynamic (ssr: false)
-// since it depends on browser-only APIs (localStorage, Web Audio, webcam).
-const SkillVerifyApp = dynamic(() => import('@/components/skillverify/App'), {
-    ssr: false,
-    loading: () => <LoadingSpinner />
-})
+const TITLE = "Job Center: Free Skill Tests, Certificates & Jobs"
+const DESCRIPTION =
+    "Skilled. Certified. Job-ready. Take a free Celoris skill test, earn a verified certificate and badge, and apply to remote jobs and paid gigs that ask for it."
 
-function LoadingSpinner() {
-    return (
-        <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 border-4 border-amber-500/10 border-t-amber-600 rounded-full animate-spin mx-auto mb-6" />
-        </div>
-    )
+export const metadata: Metadata = {
+    // The root layout adds " | Celoris" automatically.
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: "https://celorisdesigns.com/job-center" },
+    openGraph: {
+        title: "Skilled. Certified. Job-ready. | Celoris Job Center",
+        description: DESCRIPTION,
+        url: "https://celorisdesigns.com/job-center",
+        siteName: "Celoris",
+        locale: "en_IN",
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Skilled. Certified. Job-ready. | Celoris Job Center",
+        description: DESCRIPTION,
+    },
 }
 
-export default function JobCenterPage() {
-    const pathname = usePathname()
-    const router = useRouter()
-    const { user, loading: authLoading } = useAuth()
-    const [mounted, setMounted] = useState(false)
+async function loadOpenJobs(): Promise<PublicJob[]> {
+    try {
+        const supabase = createSupabaseClientForServer()
+        // Only safe, public columns. Imported listings from other marketplaces
+        // are left off the public page.
+        const { data, error } = await supabase
+            .from("certified_jobs")
+            .select("id, title, company, location, salary_range, industry, work_mode, required_badges, created_at, source")
+            .eq("status", "active")
+            .order("featured", { ascending: false })
+            .order("created_at", { ascending: false })
+            .limit(24)
+        if (error) throw error
+        return ((data || []) as any[])
+            .filter((r) => r.source !== "freelancer_import" && r.source !== "linkedin_import")
+            .map((r) => ({
+                id: String(r.id),
+                title: String(r.title || "").trim(),
+                company: String(r.company || "").trim(),
+                location: String(r.location || "").trim(),
+                pay: String(r.salary_range || "").trim(),
+                industry: String(r.industry || "").trim(),
+                workMode: String(r.work_mode || "").trim(),
+                badges: Array.isArray(r.required_badges) ? r.required_badges.map(String).slice(0, 3) : [],
+                createdAt: String(r.created_at || ""),
+            }))
+            .filter((j) => j.title)
+    } catch (e) {
+        console.error("[job-center] open jobs", e)
+        return []
+    }
+}
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+export default async function JobCenterPage() {
+    const jobs = await loadOpenJobs()
 
-    useEffect(() => {
-        if (mounted && !authLoading && !user) {
-            router.push('/login')
-        }
-    }, [mounted, authLoading, user, router])
-
-    if (!mounted || authLoading || !user) {
-        return <LoadingSpinner />
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://celorisdesigns.com/job-center#webpage",
+        url: "https://celorisdesigns.com/job-center",
+        name: `${TITLE} | Celoris`,
+        description: DESCRIPTION,
+        inLanguage: "en-IN",
+        isPartOf: { "@type": "WebSite", name: "Celoris", url: "https://celorisdesigns.com" },
+        publisher: { "@type": "Organization", name: "Celoris Designs LLP", url: "https://celorisdesigns.com" },
     }
 
     return (
-        <DashboardShell hideTopBar>
-            <div key={pathname} className="w-full">
-                <SkillVerifyApp />
-            </div>
-        </DashboardShell>
+        <>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <JobCenterGate landing={<JobCenterLanding jobs={jobs} />} />
+        </>
     )
 }

@@ -46,7 +46,7 @@ function fireSignup(userId: string, createdAt: string | undefined, provider: str
   }
 
   const intent = readIntent()
-  trackClarityEvent(intent === "trainer" ? "trainer_sign_up" : "sign_up")
+  trackClarityEvent(intent === "student" ? "sign_up" : `${intent}_sign_up`)
 
   // gtag loads "afterInteractive", so right after an OAuth redirect it may not
   // exist yet. Wait for it (up to ~15s) instead of losing the conversion.
@@ -69,16 +69,21 @@ function fireSignup(userId: string, createdAt: string | undefined, provider: str
 
 /**
  * Fires one sign-up event per new account (Google, LinkedIn, Facebook or email),
- * tagged "trainer" when the visitor came through /become-trainer.
+ * tagged "trainer" (via /become-trainer) or "job_seeker" (via /job-center).
  */
 export function SignupConversionTracker() {
   const pathname = usePathname()
 
-  // Remember that this visitor showed trainer intent.
+  // Remember that this visitor showed trainer or job-seeker intent.
   useEffect(() => {
-    if (pathname?.startsWith("/become-trainer")) {
+    const value = pathname?.startsWith("/become-trainer")
+      ? "trainer"
+      : pathname?.startsWith("/job-center")
+        ? "job_seeker"
+        : ""
+    if (value) {
       try {
-        localStorage.setItem(INTENT_KEY, JSON.stringify({ value: "trainer", at: Date.now() }))
+        localStorage.setItem(INTENT_KEY, JSON.stringify({ value, at: Date.now() }))
       } catch {}
     }
   }, [pathname])
