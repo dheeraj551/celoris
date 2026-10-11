@@ -7,6 +7,7 @@ import {
     ArrowRight, ShieldCheck, Wallet
 } from 'lucide-react'
 import { TrainerVideoModal } from './TrainerVideoModal'
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
 
 export function TrainerHeroInteractive() {
     return (
@@ -79,6 +80,19 @@ export function TrainerHeroInteractive() {
                             transition={{ duration: 0.6, delay: 0.3 }}
                             className="flex flex-wrap items-center gap-3.5 mb-7"
                         >
+                            {/* One-tap Google join: shows "Continue as <name>" for visitors already
+                                signed in to Google, plus the One Tap card after a short delay.
+                                Hidden for visitors already signed in to Celoris. */}
+                            <div className="w-full sm:w-[300px]">
+                                <GoogleSignInButton
+                                    text="continue_with"
+                                    oneTap
+                                    oneTapDelayMs={4000}
+                                    hideWhenSignedIn
+                                >
+                                    {null}
+                                </GoogleSignInButton>
+                            </div>
                             <Link
                                 href="/register"
                                 className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] hover:border-white/[0.25] text-white font-medium text-sm sm:text-base backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.5)] group"

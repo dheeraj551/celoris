@@ -63,7 +63,8 @@ async function makeNonce(): Promise<{ raw: string; hashed: string }> {
   return { raw, hashed }
 }
 
-function safeNextPath(): string {
+function safeNextPath(redirectTo?: string): string {
+  if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) return redirectTo
   try {
     const params = new URLSearchParams(window.location.search)
     const next = params.get("next") || params.get("redirect") || "/"
@@ -82,6 +83,12 @@ interface GoogleSignInButtonProps {
   children: ReactNode
   onError?: (message: string) => void
   onBusyChange?: (busy: boolean) => void
+  /** Wait this long before showing One Tap, so visitors see the page first. */
+  oneTapDelayMs?: number
+  /** Render nothing from Google (just `children`) when the visitor is already signed in. */
+  hideWhenSignedIn?: boolean
+  /** Where to go after sign-in. Defaults to ?next= / ?redirect= or "/". */
+  redirectTo?: string
 }
 
 export function GoogleSignInButton({
@@ -90,6 +97,9 @@ export function GoogleSignInButton({
   children,
   onError,
   onBusyChange,
+  oneTapDelayMs = 0,
+  hideWhenSignedIn = false,
+  redirectTo,
 }: GoogleSignInButtonProps) {
   const holderRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<"loading" | "gis" | "fallback">("loading")
@@ -102,9 +112,21 @@ export function GoogleSignInButton({
 
   useEffect(() => {
     let cancelled = false
+    let promptTimer: ReturnType<typeof setTimeout> | undefined
 
     ;(async () => {
       if (!GOOGLE_CLIENT_ID) {
+        setMode("fallback")
+        return
+      }
+      // Already signed in to Celoris? Don't nag with One Tap (and optionally hide the button).
+      let signedIn = false
+      try {
+        const { data } = await createClient().auth.getSession()
+        signedIn = !!data?.session
+      } catch {}
+      if (cancelled) return
+      if (signedIn && hideWhenSignedIn) {
         setMode("fallback")
         return
       }
@@ -136,7 +158,7 @@ export function GoogleSignInButton({
               if (error) throw error
               // Give the sign-up conversion (SignupConversionTracker) a moment to send.
               await new Promise((r) => setTimeout(r, 900))
-              window.location.href = safeNextPath()
+              window.location.href = safeNextPath(redirectTo)
             } catch (e: any) {
               setBusy(false)
               busyRef.current?.(false)
@@ -161,7 +183,13 @@ export function GoogleSignInButton({
           })
         }
         setMode("gis")
-        if (oneTap) window.google.accounts.id.prompt()
+        if (oneTap && !signedIn) {
+          promptTimer = setTimeout(() => {
+            try {
+              window.google?.accounts?.id?.prompt()
+            } catch {}
+          }, Math.max(0, oneTapDelayMs))
+        }
       } catch {
         if (!cancelled) setMode("fallback")
       }
@@ -169,11 +197,12 @@ export function GoogleSignInButton({
 
     return () => {
       cancelled = true
+      if (promptTimer) clearTimeout(promptTimer)
       try {
         window.google?.accounts?.id?.cancel()
       } catch {}
     }
-  }, [text, oneTap])
+  }, [text, oneTap, oneTapDelayMs, hideWhenSignedIn, redirectTo])
 
   if (mode === "fallback") return <>{children}</>
 
