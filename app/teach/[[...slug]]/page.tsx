@@ -20,11 +20,20 @@ export const metadata: Metadata = {
         siteName: "Celoris",
         locale: "en_IN",
         type: "website",
+        images: [
+            {
+                url: "https://celorisdesigns.com/trainer-ad-campaign-creative.jpg",
+                width: 1024,
+                height: 1024,
+                alt: "Teach on Celoris — 0% Commission",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         title: "Teach on Celoris — 0% Commission, Keep 100% of Your Fees",
         description: DESCRIPTION,
+        images: ["https://celorisdesigns.com/trainer-ad-campaign-creative.jpg"],
     },
 }
 

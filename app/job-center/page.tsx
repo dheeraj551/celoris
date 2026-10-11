@@ -27,11 +27,20 @@ export const metadata: Metadata = {
         siteName: "Celoris",
         locale: "en_IN",
         type: "website",
+        images: [
+            {
+                url: "https://celorisdesigns.com/hero-banner.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Celoris Job Center — Free Skill Tests & Jobs",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         title: "Skilled. Certified. Job-ready. | Celoris Job Center",
         description: DESCRIPTION,
+        images: ["https://celorisdesigns.com/hero-banner.jpg"],
     },
 }
 

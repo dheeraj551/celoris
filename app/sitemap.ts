@@ -34,8 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${baseUrl}/teach`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/shop`,
@@ -511,7 +511,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/become-trainer', priority: 0.9, changeFrequency: 'weekly' },
     { path: '/video-editing-course-noida', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/wordpress-course-noida', priority: 0.8, changeFrequency: 'weekly' },
-    { path: '/job-center', priority: 0.7, changeFrequency: 'weekly' },
+    { path: '/job-center', priority: 0.9, changeFrequency: 'daily' },
     { path: '/free-video-editor', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/celoris-tv', priority: 0.7, changeFrequency: 'weekly' },
     { path: '/contact', priority: 0.5, changeFrequency: 'monthly' },
