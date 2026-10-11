@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { ArrowRight, MapPin, Clock } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { loadTrainerDemand, timeAgo } from '@/lib/trainer-demand'
 
 interface InquiryItem {
     id: string
@@ -72,17 +73,45 @@ const SAMPLE_INQUIRIES: InquiryItem[] = [
     }
 ]
 
+// Real enquiries replace the samples once at least 3 have arrived in the last 30 days.
+const MIN_REAL = 3
+
 export function TrainerLiveInquiryTicker() {
+    const [items, setItems] = useState<InquiryItem[]>(SAMPLE_INQUIRIES)
+    const [isReal, setIsReal] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(0)
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % SAMPLE_INQUIRIES.length)
-        }, 4200)
-        return () => clearInterval(interval)
+        let cancelled = false
+        loadTrainerDemand().then((d) => {
+            if (cancelled || d.recent.length < MIN_REAL) return
+            setItems(
+                d.recent.map((r) => ({
+                    id: r.id,
+                    subject: r.subject,
+                    location: r.area || 'India',
+                    mode: r.mode,
+                    budget: r.mode,
+                    timeAgo: timeAgo(r.createdAt),
+                    category: r.subject,
+                }))
+            )
+            setIsReal(true)
+            setCurrentIndex(0)
+        })
+        return () => {
+            cancelled = true
+        }
     }, [])
 
-    const item = SAMPLE_INQUIRIES[currentIndex]
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % items.length)
+        }, 4200)
+        return () => clearInterval(interval)
+    }, [items.length])
+
+    const item = items[currentIndex % items.length]
 
     return (
         <div className="relative z-20 my-4 sm:my-6 flex justify-center items-center px-2 sm:px-4">
@@ -94,8 +123,11 @@ export function TrainerLiveInquiryTicker() {
                 
                 {/* Live Pulse Indicator Tag */}
                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] shrink-0">
+                    {isReal && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+                    )}
                     <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
-                        Example enquiries
+                        {isReal ? 'Real student enquiries' : 'Example enquiries'}
                     </span>
                 </div>
 
@@ -114,7 +146,7 @@ export function TrainerLiveInquiryTicker() {
                                 {item.subject}
                             </span>
                             <span className="text-[10px] text-neutral-400 font-mono hidden md:inline shrink-0">
-                                • {item.location}
+                                • {item.location}{isReal ? ` • ${item.timeAgo}` : ''}
                             </span>
                         </motion.div>
                     </AnimatePresence>
