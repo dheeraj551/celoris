@@ -1,9 +1,10 @@
 import Link from "next/link"
 import {
     ArrowRight, BadgeCheck, Briefcase, ClipboardCheck,
-    MapPin, QrCode, ShieldCheck, Users,
+    MapPin, QrCode, Share2, ShieldCheck, Users,
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
+import { JobAlertsForm } from "@/components/job-center/JobAlertsForm"
 
 // Public face of /job-center (server component). Every number on this page is
 // read from the database at render time; nothing is hard-coded.
@@ -166,7 +167,12 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                 </div>
             </section>
 
-            {/* 3. Open roles (live from the database) */}
+            {/* 3. Instant WhatsApp Job Alerts */}
+            <section className="mx-auto mt-14 max-w-5xl px-4 sm:px-6">
+                <JobAlertsForm />
+            </section>
+
+            {/* 4. Open roles (live from the database) */}
             <section id="open-roles" className="mx-auto mt-16 max-w-5xl scroll-mt-20 px-4 sm:px-6">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                     <h2 className="text-2xl font-semibold text-white sm:text-3xl">Open roles right now</h2>
@@ -183,45 +189,62 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                     </p>
                 ) : (
                     <ul className="mt-6 grid gap-4 md:grid-cols-2">
-                        {jobs.map((j) => (
-                            <li key={j.id} className="flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
-                                <div className="flex items-start justify-between gap-3">
-                                    <h3 className="text-base font-semibold text-white">{j.title}</h3>
-                                    {j.createdAt && (
-                                        <span className="shrink-0 font-mono text-[11px] text-neutral-500">{postedOn(j.createdAt)}</span>
-                                    )}
-                                </div>
-                                <p className="mt-1 text-xs text-neutral-400">
-                                    {companyLabel(j.company)}
-                                    {j.industry ? ` · ${j.industry}` : ""}
-                                </p>
-                                <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                                    {j.pay && (
-                                        <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-1 text-emerald-300">
-                                            {j.pay}
-                                        </span>
-                                    )}
-                                    {(j.location || j.workMode) && (
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-neutral-300">
-                                            <MapPin className="h-3 w-3" />
-                                            {j.location || j.workMode}
-                                        </span>
-                                    )}
-                                </div>
-                                {j.badges.length > 0 && (
-                                    <p className="mt-3 text-xs text-neutral-400">
-                                        Needs badge: <span className="text-neutral-200">{j.badges.join(", ")}</span>
+                        {jobs.map((j) => {
+                            const shareText = `Check out this opening on Celoris Job Center: ${j.title}${j.pay ? ` (${j.pay})` : ''}. Take the free skill test to earn your badge and apply: https://celorisdesigns.com/job-center`
+                            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`
+
+                            return (
+                                <li key={j.id} className="flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <h3 className="text-base font-semibold text-white">{j.title}</h3>
+                                        {j.createdAt && (
+                                            <span className="shrink-0 font-mono text-[11px] text-neutral-500">{postedOn(j.createdAt)}</span>
+                                        )}
+                                    </div>
+                                    <p className="mt-1 text-xs text-neutral-400">
+                                        {companyLabel(j.company)}
+                                        {j.industry ? ` · ${j.industry}` : ""}
                                     </p>
-                                )}
-                                <Link
-                                    href={LOGIN_NEXT}
-                                    className="mt-4 inline-flex items-center gap-1.5 self-start text-sm font-medium text-emerald-400 hover:text-emerald-300"
-                                >
-                                    Get certified &amp; apply
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
-                            </li>
-                        ))}
+                                    <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                                        {j.pay && (
+                                            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-1 text-emerald-300">
+                                                {j.pay}
+                                            </span>
+                                        )}
+                                        {(j.location || j.workMode) && (
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-neutral-300">
+                                                <MapPin className="h-3 w-3" />
+                                                {j.location || j.workMode}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {j.badges.length > 0 && (
+                                        <p className="mt-3 text-xs text-neutral-400">
+                                            Needs badge: <span className="text-neutral-200">{j.badges.join(", ")}</span>
+                                        </p>
+                                    )}
+                                    <div className="mt-5 flex items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+                                        <Link
+                                            href={LOGIN_NEXT}
+                                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
+                                        >
+                                            Get certified &amp; apply
+                                            <ArrowRight className="h-4 w-4" />
+                                        </Link>
+                                        <a
+                                            href={waUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-emerald-300 transition-colors py-1 px-2.5 rounded-full bg-white/[0.03] border border-white/10 hover:border-emerald-500/40"
+                                            title="Share job on WhatsApp"
+                                        >
+                                            <Share2 className="h-3 w-3 text-emerald-400" />
+                                            Share
+                                        </a>
+                                    </div>
+                                </li>
+                            )
+                        })}
                     </ul>
                 )}
             </section>

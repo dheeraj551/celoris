@@ -71,7 +71,7 @@ async function loadOpenJobs(): Promise<PublicJob[]> {
 export default async function JobCenterPage() {
     const jobs = await loadOpenJobs()
 
-    const jsonLd = {
+    const webpageJsonLd = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "@id": "https://celorisdesigns.com/job-center#webpage",
@@ -83,9 +83,55 @@ export default async function JobCenterPage() {
         publisher: { "@type": "Organization", name: "Celoris Designs LLP", url: "https://celorisdesigns.com" },
     }
 
+    const jobPostingsJsonLd = jobs.map((job) => {
+        const isRemote = /remote|online|work from home|anywhere/i.test(`${job.workMode} ${job.location}`)
+        const postedDate = job.createdAt ? new Date(job.createdAt).toISOString() : new Date().toISOString()
+        const validThroughDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString()
+
+        return {
+            "@context": "https://schema.org",
+            "@type": "JobPosting",
+            title: job.title,
+            description: `We are looking for a certified candidate for the role of ${job.title}. Requirements: Celoris Skill Verification (${job.badges.join(', ') || 'Certified'}). Compensation: ${job.pay || 'Competitive'}. Take the free skill test on Celoris Job Center to earn your badge and apply.`,
+            identifier: {
+                "@type": "PropertyValue",
+                name: "Celoris Job Center",
+                value: job.id,
+            },
+            datePosted: postedDate,
+            validThrough: validThroughDate,
+            employmentType: /intern/i.test(job.title) ? "INTERN" : /part/i.test(job.workMode) ? "PART_TIME" : "CONTRACTOR",
+            hiringOrganization: {
+                "@type": "Organization",
+                name: job.company && !/confidential/i.test(job.company) ? job.company : "Celoris Partner",
+                sameAs: "https://celorisdesigns.com",
+            },
+            ...(isRemote
+                ? {
+                      jobLocationType: "TELECOMMUTE",
+                      applicantLocationRequirements: {
+                          "@type": "Country",
+                          name: "India",
+                      },
+                  }
+                : {}),
+            jobLocation: {
+                "@type": "Place",
+                address: {
+                    "@type": "PostalAddress",
+                    addressCountry: "IN",
+                    addressLocality: job.location && !/remote/i.test(job.location) ? job.location : "New Delhi",
+                    addressRegion: "Delhi NCR",
+                },
+            },
+        }
+    })
+
+    const schemas = [webpageJsonLd, ...jobPostingsJsonLd]
+
     return (
         <>
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas).replace(/</g, '\\u003c') }} />
             <JobCenterGate landing={<JobCenterLanding jobs={jobs} />} />
         </>
     )
