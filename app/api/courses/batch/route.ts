@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   try {
     const batch = await computeCourseBatch(data)
     return NextResponse.json(batch, {
-      headers: { 'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=30' },
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
     })
   } catch (err) {
     console.error('[courses/batch] error:', err)

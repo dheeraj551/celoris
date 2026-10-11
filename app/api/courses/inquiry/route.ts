@@ -124,8 +124,8 @@ export async function POST(request: NextRequest) {
                     p_course_id: courseId,
                     p_application_id: application.id,
                     p_seat_limit: batch.seatsTotal,
-                    p_round_start: offer.roundStart,
-                    p_round_cap: offer.perRound || Number(course.launch_offer_passes) || 5,
+                    p_round_start: null,
+                    p_round_cap: offer.passes || Number(course.launch_offer_passes) || 15,
                     p_deadline: offer.endsAt,
                 });
                 if (claimError) console.error('course_offer_claim error:', claimError);

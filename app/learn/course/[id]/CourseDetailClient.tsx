@@ -289,7 +289,7 @@ export default function CourseDetailClient({
     {
       label: "Fee",
       value: offer
-        ? `Free pass — ${offer.left} of ${offer.passes} left this round${fee ? ` (worth ${inr(fee)})` : ""}`
+        ? `Free pass — ${offer.claimed > 0 ? `${offer.claimed} claimed, ` : ""}${offer.left} of ${offer.passes} left${fee ? ` (worth ${inr(fee)})` : ""}`
         : batch?.offer?.state === "full"
           ? "Batch full — waitlist open for the next batch"
           : batch?.offer?.state === "round_full"
@@ -342,7 +342,15 @@ export default function CourseDetailClient({
                   </div>
                 </div>
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  {offer ? `${offer.left} Passes Left` : "15 Passes Open"}
+                  {batch?.offer ? (
+                    batch.offer.claimed > 0
+                      ? `${batch.offer.claimed} Sold · ${batch.offer.left} Passes Left`
+                      : `${batch.offer.left} Passes Left`
+                  ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
+                    "All Passes Claimed"
+                  ) : (
+                    "15 Passes Open"
+                  )}
                 </span>
               </div>
             ) : isDigitalMarketing ? (
@@ -361,7 +369,17 @@ export default function CourseDetailClient({
                   </div>
                 </div>
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  Only 5 Seats Left
+                  {batch?.offer ? (
+                    batch.offer.claimed > 0
+                      ? `${batch.offer.claimed} Sold · ${batch.offer.left} Left`
+                      : `${batch.offer.left} Passes Left`
+                  ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
+                    "All Passes Claimed"
+                  ) : typeof batch?.seatsLeft === "number" ? (
+                    `Only ${batch.seatsLeft} Seats Left`
+                  ) : (
+                    "Only 5 Seats Left"
+                  )}
                 </span>
               </div>
             ) : isCopilot ? (
@@ -380,7 +398,15 @@ export default function CourseDetailClient({
                   </div>
                 </div>
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  {offer ? `${offer.left} Passes Left` : "15 Passes Open"}
+                  {batch?.offer ? (
+                    batch.offer.claimed > 0
+                      ? `${batch.offer.claimed} Sold · ${batch.offer.left} Passes Left`
+                      : `${batch.offer.left} Passes Left`
+                  ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
+                    "All Passes Claimed"
+                  ) : (
+                    "15 Passes Open"
+                  )}
                 </span>
               </div>
             ) : null}

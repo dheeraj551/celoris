@@ -239,23 +239,33 @@ export function LaunchOfferCard({
       </div>
       <div className="lo-sub">
         {firstRound
-          ? `Full course free for the first ${offer.passes} students`
-          : `Join from the next class — ${seatsLeft} seat${seatsLeft === 1 ? "" : "s"} left in ${batchLabel}`}
+          ? offer.claimed > 0
+            ? `Full course free for the first ${offer.passes} students · ${offer.claimed} claimed`
+            : `Full course free for the first ${offer.passes} students`
+          : `Join from the next class — ${offer.claimed > 0 ? `${offer.claimed} claimed · ` : ""}${seatsLeft} seat${seatsLeft === 1 ? "" : "s"} left in ${batchLabel}`}
       </div>
 
       <div className="lo-tickets" aria-hidden>
         {Array.from({ length: offer.passes }).map((_, i) =>
           i < offer.claimed ? (
-            <div key={i} className="lo-ticket gone">
+            <div key={i} className="lo-ticket gone" title="Pass Claimed">
               <span>✓</span>
             </div>
           ) : (
-            <div key={i} className="lo-ticket" style={{ animationDelay: `${(i % 5) * 0.18}s` }} />
+            <div key={i} className="lo-ticket" title="Available Pass" style={{ animationDelay: `${(i % 5) * 0.18}s` }} />
           )
         )}
       </div>
       <div className="lo-left" aria-live="polite">
-        <b>{offer.left}</b> of {offer.passes} free passes left{firstRound ? "" : " this round"}
+        {offer.claimed > 0 ? (
+          <>
+            <span style={{ color: "#d64541", fontWeight: 800 }}>{offer.claimed} CLAIMED</span> · <b>{offer.left}</b> of {offer.passes} free passes left
+          </>
+        ) : (
+          <>
+            <b>{offer.left}</b> of {offer.passes} free passes left
+          </>
+        )}
       </div>
 
       <Countdown endsAt={clockEnds!} now={now} />
