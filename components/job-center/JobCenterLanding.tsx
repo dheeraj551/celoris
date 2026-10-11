@@ -1,7 +1,7 @@
 import Link from "next/link"
 import {
     ArrowRight, BadgeCheck, Briefcase, ClipboardCheck,
-    MapPin, QrCode, ShieldCheck, Sparkles,
+    MapPin, QrCode, ShieldCheck, Users,
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 
@@ -21,6 +21,8 @@ export interface PublicJob {
 }
 
 const LOGIN_NEXT = "/login?next=%2Fjob-center"
+// Signs the employer in, then opens the Post a Project form on /job-center.
+const POST_PROJECT_NEXT = "/login?next=%2Fjob-center%3Fpost%3D1"
 
 const TEST_AREAS = [
     "Video editing & Reels",
@@ -37,7 +39,7 @@ const STEPS = [
     {
         icon: ClipboardCheck,
         title: "Take a free skill test",
-        body: "Practical, proctored tests that check real work, not memorised answers. Taking a test is free.",
+        body: "A short, proctored test of about 5 questions for the role you want. It's free, and it keeps the job board for serious candidates.",
     },
     {
         icon: BadgeCheck,
@@ -91,8 +93,7 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
             <section className="relative overflow-hidden">
                 <div className="pointer-events-none absolute -top-24 left-1/2 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[110px]" />
                 <div className="relative mx-auto max-w-5xl px-4 pt-14 pb-12 text-center sm:px-6 sm:pt-20">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
-                        <Sparkles className="h-3.5 w-3.5" />
+                    <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
                         Celoris Job Center
                     </span>
                     <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white sm:text-6xl">
@@ -100,7 +101,7 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                         <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Job-ready.</span>
                     </h1>
                     <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-300 sm:text-lg">
-                        A free Celoris certificate for skilled, job-ready candidates. Pass a practical skill test,
+                        A free Celoris certificate for skilled, job-ready candidates. Pass a short skill test,
                         earn your badge, and apply to jobs and paid gigs that ask for it.
                     </p>
 
@@ -153,7 +154,7 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                     <div className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
                         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
                         <p className="text-sm text-neutral-300">
-                            Tests are proctored: leaving the tab or pasting answers is recorded, so a Celoris badge means the skill is real.
+                            Tests are proctored: leaving the tab or pasting answers is recorded, so employers know your badge was earned fairly.
                         </p>
                     </div>
                     <div className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
@@ -225,7 +226,31 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                 )}
             </section>
 
-            {/* 4. Closing CTA */}
+            {/* 4. For employers */}
+            <section className="mx-auto mt-16 max-w-5xl px-4 sm:px-6">
+                <div className="flex flex-col items-start gap-5 rounded-3xl border border-emerald-500/25 bg-emerald-500/[0.06] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                    <div className="flex items-start gap-4">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+                            <Users className="h-5 w-5" />
+                        </span>
+                        <div>
+                            <h2 className="text-xl font-semibold text-white sm:text-2xl">Hiring? Post a project free.</h2>
+                            <p className="mt-1 max-w-xl text-sm text-neutral-300">
+                                Tell us what you need and our team lists it for certified candidates. No fee to post, and candidates&apos; contact details stay private on Celoris.
+                            </p>
+                        </div>
+                    </div>
+                    <Link
+                        href={POST_PROJECT_NEXT}
+                        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
+                    >
+                        Post a project
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
+                </div>
+            </section>
+
+            {/* 5. Closing CTA */}
             <section className="mx-auto mt-16 max-w-3xl px-4 text-center sm:px-6">
                 <div className="rounded-3xl border border-white/[0.1] bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-8 sm:p-10">
                     <h2 className="text-2xl font-semibold text-white sm:text-3xl">Prove you&apos;re job-ready. Get certified free.</h2>

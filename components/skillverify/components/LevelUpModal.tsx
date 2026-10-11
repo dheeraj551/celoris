@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Award, Zap, CheckCircle2, ChevronRight, X, Sparkles } from 'lucide-react';
+import { Award, Zap, CheckCircle2, ChevronRight, X } from 'lucide-react';
 import { UserTierLevel } from '../types';
 import { LEVEL_TIERS } from '../data/mockData';
 import { soundFx } from '../utils/audio';
@@ -50,7 +50,6 @@ export const LevelUpModal: React.FC<LevelUpModalProps> = ({
           >
             L{newLevel}
           </div>
-          <Sparkles className="w-6 h-6 text-emerald-400 absolute -top-2 -right-2 animate-spin" style={{ animationDuration: '4s' }} />
         </div>
 
         <div className="space-y-1.5">

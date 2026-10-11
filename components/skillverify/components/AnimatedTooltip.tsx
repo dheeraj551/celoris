@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HelpCircle, Info, Sparkles, ShieldCheck } from 'lucide-react';
+import { HelpCircle, Info, ShieldCheck } from 'lucide-react';
 import { soundFx } from '../utils/audio';
 
 interface AnimatedTooltipProps {
@@ -61,7 +61,7 @@ export const AnimatedTooltip: React.FC<AnimatedTooltipProps> = ({
       case 'help':
         return <HelpCircle className="w-3.5 h-3.5 text-[#7C9070]" />;
       case 'sparkle':
-        return <Sparkles className="w-3.5 h-3.5 text-[#D4A373]" />;
+        return <Info className="w-3.5 h-3.5 text-[#D4A373]" />;
       case 'shield':
         return <ShieldCheck className="w-3.5 h-3.5 text-[#7C9070]" />;
       case 'info':

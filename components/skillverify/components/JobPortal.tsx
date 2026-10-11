@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ShieldCheck,
   Lock,
@@ -6,7 +6,6 @@ import {
   IndianRupee,
   MapPin,
   Briefcase, 
-  Sparkles, 
   Layers, 
   Award,
   ChevronRight,
@@ -43,6 +42,14 @@ export const JobPortal: React.FC<JobPortalProps> = ({
   const [minSalary, setMinSalary] = useState<number>(0);
   const [unlockedOnly, setUnlockedOnly] = useState<boolean>(false);
   const [postProjectOpen, setPostProjectOpen] = useState<boolean>(false);
+
+  // /job-center?post=1 (linked from the public Job Center page) opens the
+  // Post a Project form straight away.
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get('post') === '1') setPostProjectOpen(true);
+    } catch {}
+  }, []);
 
   const industries = ['All', 'AI / Machine Learning', 'Cloud & Infrastructure', 'FinTech', 'Cybersecurity', 'HealthTech', 'SaaS / Web Platforms', 'Creative & Marketing'];
   const workModes = ['All', 'Remote', 'Hybrid', 'On-site'];
@@ -354,7 +361,6 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                     {/* Match Score Badge */}
                     <div className="flex flex-col items-end shrink-0">
                       <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 text-[11px] font-bold">
-                        <Sparkles className="w-3 h-3 text-emerald-400" />
                         <span>{matchScore}% Match</span>
                       </div>
                       <span className="text-[10px] text-slate-500 mt-0.5 font-mono">{job.postedAgo}</span>

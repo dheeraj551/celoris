@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Send, CheckCircle2, Briefcase, Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
@@ -69,7 +70,7 @@ export const PostProjectModal: React.FC<Props> = ({ open, onClose }) => {
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === 'undefined') return null;
 
   const set = (key: keyof typeof EMPTY) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -104,8 +105,11 @@ export const PostProjectModal: React.FC<Props> = ({ open, onClose }) => {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6" onClick={close}>
+  // Rendered into <body> through a portal: the Job Center banner that hosts this
+  // modal uses backdrop-blur, which traps fixed children, so the job cards were
+  // drawing on top of the form.
+  return createPortal(
+    <div className="fixed inset-0 z-[200] bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6" onClick={close}>
       <div
         role="dialog"
         aria-modal="true"
@@ -289,6 +293,7 @@ export const PostProjectModal: React.FC<Props> = ({ open, onClose }) => {
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

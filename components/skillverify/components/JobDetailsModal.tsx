@@ -7,7 +7,6 @@ import {
   ShieldCheck, 
   Lock, 
   CheckCircle2, 
-  Sparkles, 
   Send,
   Clock,
   Award,
@@ -257,7 +256,6 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
           <div className="p-4 rounded-xl bg-[#131622] border border-white/[0.08] space-y-3">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-xs font-bold text-slate-200">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
                 AI Profile Match & Verified Pitch
               </span>
               {!aiMatchAnalysis && (
