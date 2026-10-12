@@ -17,6 +17,10 @@ export interface Bootcamp {
     trainer: string
     /** Job Center badge this bootcamp prepares for (must match certified_jobs.required_badges). */
     badge: string
+    /** Specific schedule for this course */
+    scheduleLabel?: string
+    /** Trainer credibility title/role */
+    trainerRole?: string
     /** Matching paid course page, offered after the bootcamp. */
     fullCourseUrl: string
     whoFor: string
@@ -25,8 +29,9 @@ export interface Bootcamp {
     keywords: string[]
 }
 
-/** First batch: Monday 19 Oct 2026. A new 7-day batch starts every Monday. */
-export const FIRST_BATCH_START = "2026-10-19"
+/** First batch: Monday 26 Oct 2026. A new batch starts every 14 days (alternate Mondays). */
+export const FIRST_BATCH_START = "2026-10-26"
+export const BATCH_CYCLE_DAYS = 14
 export const SESSION_TIME_LABEL = "8:00 PM IST"
 export const SESSION_HOUR_IST = 20
 export const SESSION_MINUTES = 60
@@ -51,12 +56,13 @@ function addDaysIso(isoDate: string, days: number): string {
 /**
  * The batch someone joining now should be put in. A batch stays open until its
  * Day 2 session starts, since attending 5 of 7 is still possible after missing Day 1.
+ * Subsequent batches start every 14 days.
  */
 export function currentBatchStart(now: Date = new Date()): string {
     let start = FIRST_BATCH_START
     // Joining closes when Day 2 begins (Day 1 start + 24h).
     while (now.getTime() >= sessionStartUtc(start).getTime() + 24 * 60 * 60 * 1000) {
-        start = addDaysIso(start, 7)
+        start = addDaysIso(start, BATCH_CYCLE_DAYS)
     }
     return start
 }
@@ -88,7 +94,9 @@ export const BOOTCAMPS: Bootcamp[] = [
         shortTitle: "Social Media Reels",
         tagline: "Plan, shoot and edit Reels that people actually watch, in 7 live evenings.",
         trainer: "Ananya Jairath",
+        trainerRole: "Commercial Video Creator & Content Mentor",
         badge: "Instagram Reels Video Editor",
+        scheduleLabel: "Mon, Wed, Fri at 8:00 PM IST · Sun at 8:00 PM IST",
         fullCourseUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         whoFor: "Students, job seekers, freelancers and small business owners who want to make Reels for themselves or for clients.",
         outcomes: [
@@ -116,7 +124,9 @@ export const BOOTCAMPS: Bootcamp[] = [
         shortTitle: "Digital Marketing",
         tagline: "From funnel basics to running your first campaign, in 7 live evenings.",
         trainer: "Dheeraj Kushwaha",
+        trainerRole: "Performance Marketing & Growth Strategist",
         badge: "Digital Marketing Executive",
+        scheduleLabel: "Tue, Thu, Sat at 8:00 PM IST · Sun at 9:00 PM IST",
         fullCourseUrl: "/learn/course/digital-marketing-mastery",
         whoFor: "Students, job seekers and business owners who want practical digital marketing skills for a job, freelancing or their own business.",
         outcomes: [

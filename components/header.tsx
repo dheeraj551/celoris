@@ -55,6 +55,7 @@ export default function Header() {
 
   const isDashboardPage = pathname === "/" ||
     pathname?.startsWith("/become-trainer") ||
+    pathname?.startsWith("/free-courses-with-certificate") ||
     pathname?.startsWith("/learn") ||
     pathname?.startsWith("/earn") ||
     pathname?.startsWith("/social") ||

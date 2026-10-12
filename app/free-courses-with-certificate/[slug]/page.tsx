@@ -1,7 +1,7 @@
 import { type Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowRight, Award, Briefcase, CalendarDays, CheckCircle2, Clock, User } from "lucide-react"
+import { ArrowRight, Award, Briefcase, CalendarDays, CheckCircle2, Clock, Languages, User, Video } from "lucide-react"
 import { DashboardShell } from "@/components/home-new/DashboardShell"
 import { JoinBootcamp } from "@/components/bootcamp/JoinBootcamp"
 import {
@@ -87,16 +87,22 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                                 <CalendarDays className="h-4 w-4 text-emerald-400" /> {batchLabel} to {endLabel}
                             </span>
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
-                                <Clock className="h-4 w-4 text-emerald-400" /> Daily, {SESSION_TIME_LABEL}, 1 hour
+                                <Clock className="h-4 w-4 text-emerald-400" /> {b.scheduleLabel || `Daily, ${SESSION_TIME_LABEL}, 1 hour`}
                             </span>
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
-                                <User className="h-4 w-4 text-emerald-400" /> Trainer: {b.trainer}
+                                <User className="h-4 w-4 text-emerald-400" /> Trainer: {b.trainer} {b.trainerRole ? `(${b.trainerRole})` : ""}
+                            </span>
+                            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
+                                <Languages className="h-4 w-4 text-emerald-400" /> Medium: Hindi + English (Hinglish)
+                            </span>
+                            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
+                                <Video className="h-4 w-4 text-emerald-400" /> Platform: Live Google Meet
                             </span>
                         </div>
 
-                        <div className="mt-8 rounded-3xl border border-white/[0.1] bg-white/[0.03] p-5 sm:p-6">
+                        <div id="enroll" className="mt-8 rounded-3xl border border-white/[0.1] bg-white/[0.03] p-5 sm:p-6 scroll-mt-20">
                             <p className="mb-4 text-sm font-medium text-white">Free seat in the batch starting {batchLabel}</p>
-                            <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={batchLabel} />
+                            <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={batchLabel} scheduleLabel={b.scheduleLabel} />
                         </div>
                     </div>
                 </section>
@@ -168,6 +174,23 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                         A Celoris certificate verifies your skills. It is not a promise of employment: hiring decisions are always made by the employer.
                     </p>
                 </section>
+
+                {/* Mobile Sticky Enrollment Bottom Bar */}
+                <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#050608]/95 p-3.5 backdrop-blur-xl sm:hidden pb-[max(0.875rem,env(safe-area-inset-bottom))] shadow-2xl">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex flex-col">
+                            <span className="text-xs font-semibold text-white">Starts {batchLabel}</span>
+                            <span className="text-[11px] font-mono text-emerald-400">100% Free · Certificate</span>
+                        </div>
+                        <a
+                            href="#enroll"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition hover:bg-emerald-400 active:scale-95 shadow-md whitespace-nowrap"
+                        >
+                            <span>Reserve Seat</span>
+                            <ArrowRight className="h-3.5 w-3.5" />
+                        </a>
+                    </div>
+                </div>
             </div>
         </DashboardShell>
     )
