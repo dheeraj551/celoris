@@ -5,7 +5,6 @@ export type PhoneView =
   | 'jobs'
   | 'classrooms'
   | 'apps'
-  | 'tv'
   | 'mail';
 
 export interface EmailItem {

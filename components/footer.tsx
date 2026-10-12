@@ -85,7 +85,6 @@ export default function Footer() {
     pathname?.startsWith("/marketing-studio") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
-    pathname?.startsWith("/celoris-tv") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
     pathname?.startsWith("/shop") ||

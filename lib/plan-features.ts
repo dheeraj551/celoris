@@ -30,8 +30,6 @@ export interface PlanFeatures {
   exam_retake_days: number
   /** PolyVault: seconds in the download queue before a file starts (0 = instant) */
   polyvault_download_wait_seconds: number
-  /** Celoris TV: use Teacher Studio (publish lectures) */
-  celoris_tv_studio: boolean
   /** Live classes: can be called on to speak (raise hand → trainer lets you talk) */
   classroom_speak: boolean
   /** Live classes: typed questions per class (100 = unlimited) */
@@ -46,7 +44,7 @@ export interface FeatureDef {
   key: FeatureKey
   label: string
   help: string
-  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault' | 'Celoris TV' | 'Live classes'
+  group: 'AI video' | 'Motion Swap Studio' | 'Generations' | 'Celoris Chat' | 'Job Center' | 'PolyVault' | 'Live classes'
   type: 'bool' | 'int'
   min?: number
   max?: number
@@ -100,13 +98,6 @@ export const FEATURE_DEFS: FeatureDef[] = [
     unit: 's',
   },
   {
-    key: 'celoris_tv_studio',
-    label: 'Teacher Studio',
-    help: 'Can open Teacher Studio in Celoris TV and publish lectures',
-    group: 'Celoris TV',
-    type: 'bool',
-  },
-  {
     key: 'classroom_speak',
     label: 'Speak in class',
     help: 'Can raise a hand and be let to talk in live classes (trainers always can)',
@@ -154,7 +145,6 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: false,
       exam_retake_days: 7,
       polyvault_download_wait_seconds: 30,
-      celoris_tv_studio: false,
       classroom_speak: false,
       classroom_questions_per_class: 2,
       classroom_super_questions: false,
@@ -175,7 +165,6 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: true,
       exam_retake_days: 5,
       polyvault_download_wait_seconds: 15,
-      celoris_tv_studio: false,
       classroom_speak: false,
       classroom_questions_per_class: 5,
       classroom_super_questions: false,
@@ -196,7 +185,6 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: true,
       exam_retake_days: 3,
       polyvault_download_wait_seconds: 5,
-      celoris_tv_studio: true,
       classroom_speak: true,
       classroom_questions_per_class: 100,
       classroom_super_questions: true,
@@ -217,7 +205,6 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       chat_calls: true,
       exam_retake_days: 1,
       polyvault_download_wait_seconds: 0,
-      celoris_tv_studio: true,
       classroom_speak: true,
       classroom_questions_per_class: 100,
       classroom_super_questions: true,

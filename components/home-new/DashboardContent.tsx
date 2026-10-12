@@ -12,7 +12,6 @@ import {
     ShieldCheck,
     Briefcase,
     Flame,
-    Tv,
     GraduationCap,
     ArrowUpRight,
     IndianRupee,
@@ -522,9 +521,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         </div>
                     </BentoCard>
 
-                    {/* BENTO CARD 3: Job Center & Verified Gigs (5 cols) */}
+                    {/* BENTO CARD 3: Job Center & Verified Gigs (6 cols) */}
                     <BentoCard
-                        className="lg:col-span-5 min-h-[420px]"
+                        className="lg:col-span-6 min-h-[420px]"
                         glowColor="rgba(245, 158, 11, 0.12)"
                         borderGlow="rgba(245, 158, 11, 0.35)"
                     >
@@ -579,87 +578,66 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         </div>
                     </BentoCard>
 
-                    {/* BENTO CARD 4: Celoris TV (7 cols) */}
+                    {/* BENTO CARD 4: Teach on Celoris (6 cols) */}
                     <BentoCard
-                        className="lg:col-span-7 min-h-[420px]"
-                        glowColor="rgba(239, 68, 68, 0.12)"
-                        borderGlow="rgba(239, 68, 68, 0.35)"
+                        className="lg:col-span-6 min-h-[420px]"
+                        glowColor="rgba(16, 185, 129, 0.12)"
+                        borderGlow="rgba(16, 185, 129, 0.35)"
                     >
                         <div>
                             {/* Card Top Meta */}
                             <div className="flex items-center justify-between mb-4">
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-medium">
-                                    <Tv className="w-3.5 h-3.5 text-red-400" />
-                                    Celoris TV • Always Free
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+                                    <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
+                                    Teach on Celoris • 0% Commission
                                 </div>
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-300 text-[10px] font-medium">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                    24/7 Channel
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[10px] font-medium">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    Instructor Network
                                 </div>
                             </div>
 
                             {/* Headline */}
                             <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
-                                Watch. Learn. <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">Stay Ahead.</span>
+                                Teach &amp; Earn. <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">Keep 100%.</span>
                             </h3>
                             <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed max-w-lg mb-5">
-                                Your free streaming channel for video editing tutorials, live classes, and creator masterclasses — no subscriptions, no downloads.
+                                Launch your creative courses, mentor high-intent students, and receive instant payouts directly to your UPI/Bank with zero platform cuts.
                             </p>
 
-                            {/* Simulated Video Player Preview */}
-                            <div className="relative rounded-2xl overflow-hidden border border-white/[0.12] bg-black/60 aspect-[21/9] sm:aspect-[24/9] mb-5 group/tv shadow-lg">
-                                <img
-                                    src="/Celoristv.png"
-                                    alt="Celoris TV"
-                                    className="w-full h-full object-cover object-center opacity-70 group-hover/tv:opacity-90 group-hover/tv:scale-105 transition-all duration-700"
-                                    // Keep the photo's headline on the left; the live clip takes the right side.
-                                    style={{
-                                        WebkitMaskImage: 'linear-gradient(to right, black 42%, transparent 60%)',
-                                        maskImage: 'linear-gradient(to right, black 42%, transparent 60%)',
-                                    }}
-                                />
-                                {/* Live host loop (muted, from Cloudflare R2) over the photo's right side */}
-                                <LazyLoopVideo
-                                    src={`${SHOWCASE_MEDIA}celoris-tv-host-loop.mp4`}
-                                    poster={`${SHOWCASE_MEDIA}celoris-tv-host-loop.jpg`}
-                                    className="absolute inset-y-0 right-0 h-full w-[52%] sm:w-[46%] object-cover opacity-90 group-hover/tv:opacity-100 transition-opacity duration-700"
-                                    style={{
-                                        objectPosition: '50% 32%',
-                                        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 28%)',
-                                        maskImage: 'linear-gradient(to right, transparent 0%, black 28%)',
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-10 h-10 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center shadow-[0_0_25px_rgba(239,68,68,0.6)] group-hover/tv:scale-110 transition-transform">
-                                        <PlayCircle className="w-5 h-5 fill-white text-black" />
+                            {/* Highlights preview */}
+                            <div className="space-y-2 mb-5">
+                                {[
+                                    { title: 'Zero Platform Commission', desc: 'Keep 100% of all ticket sales and course revenue', stat: '0% Cut', color: 'text-emerald-400' },
+                                    { title: 'Instant Direct Payouts', desc: 'Direct UPI & NEFT bank settlements in 24 hours', stat: 'Daily Payout', color: 'text-teal-400' },
+                                    { title: 'Built-in Creator Tooling', desc: 'Student analytics, cohort chats & interactive lectures', stat: 'Full Suite', color: 'text-cyan-400' },
+                                ].map((item, i) => (
+                                    <div key={i} className="px-3.5 py-2.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-emerald-500/40 transition-all flex items-center justify-between backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+                                        <div>
+                                            <p className="text-xs font-bold text-white">{item.title}</p>
+                                            <p className="text-[10px] text-neutral-400">{item.desc}</p>
+                                        </div>
+                                        <span className={`text-xs font-mono font-bold ${item.color}`}>{item.stat}</span>
                                     </div>
-                                </div>
-                                <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <span className="px-1.5 py-0.5 rounded bg-red-600 text-[8px] font-black uppercase tracking-wider text-white">LIVE</span>
-                                        <span className="text-xs font-bold text-white drop-shadow">4K Editing Masterclass Stream</span>
-                                    </div>
-                                    <span className="text-[10px] text-white/70 font-mono hidden sm:inline">1080p60 • No Sign-up</span>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
                         {/* Card Footer CTAs */}
                         <div className="flex flex-wrap items-center gap-3 pt-5 border-t border-white/5">
                             <Link
-                                href="/celoris-tv"
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-200 hover:text-white border border-red-400/40 hover:border-red-300/60 font-medium text-xs sm:text-sm transition-all shadow-[0_0_25px_rgba(239,68,68,0.25)] hover:scale-[1.03] active:scale-97 cursor-pointer"
+                                href="/teach"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 hover:text-white border border-emerald-400/40 hover:border-emerald-300/60 font-medium text-xs sm:text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.25)] hover:scale-[1.03] active:scale-97 cursor-pointer"
                             >
-                                <PlayCircle className="w-4 h-4 text-red-300" />
-                                Watch Celoris TV
+                                <GraduationCap className="w-4 h-4 text-emerald-300" />
+                                Become an Instructor
                             </Link>
                             <Link
-                                href="/celoris-tv"
+                                href="/teach"
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.12] bg-white/[0.04] hover:bg-white/[0.08] text-neutral-200 hover:text-white font-medium text-xs sm:text-sm transition-all hover:scale-[1.03] active:scale-97 cursor-pointer"
                             >
-                                <Tv className="w-4 h-4 text-red-400" />
-                                Browse Channels
+                                <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+                                Educator Details
                             </Link>
                         </div>
                     </BentoCard>

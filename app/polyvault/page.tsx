@@ -12,7 +12,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
 // PolyVault — 3D models & assets marketplace, replacing the old "Celoris 3D"
-// feature. Ported in the same pattern as /celo-ai and /celoris-tv: a
+// feature. Ported in the same pattern as /celo-ai: a
 // standalone Vite/React app kept as-is under components/polyvault, mounted
 // here with next/dynamic (ssr: false) since it manages its own client-only
 // state (localStorage-backed catalog/profile/likes) and a WebGL viewport.

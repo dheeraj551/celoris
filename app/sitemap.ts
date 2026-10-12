@@ -513,7 +513,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/wordpress-course-noida', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/job-center', priority: 0.9, changeFrequency: 'daily' },
     { path: '/free-video-editor', priority: 0.7, changeFrequency: 'monthly' },
-    { path: '/celoris-tv', priority: 0.7, changeFrequency: 'weekly' },
     { path: '/contact', priority: 0.5, changeFrequency: 'monthly' },
   ]
   for (const page of EXTRA_PAGES) {

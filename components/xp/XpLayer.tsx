@@ -51,7 +51,6 @@ const QUIET_PREFIXES = [
   "/photolite",
   "/polyvault",
   "/celo-ai",
-  "/celoris-tv",
   "/marketing-studio",
   "/login",
   "/register",

@@ -57,6 +57,9 @@ const nextConfig = {
       { source: '/learn/course/f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead', destination: '/learn/course/master-youtube-shorts-instagram-reels', permanent: true },
       { source: '/learn/course/1ca8cbea-1c9d-470d-ac69-f37882c31963', destination: '/courses/build-real-time-ai-agents-with-livekit', permanent: true },
       { source: '/learn/course/67bdf362-5e1c-49dd-9794-9c430ca351cb', destination: '/courses/agentic-ai-for-beginners', permanent: true },
+      // Celoris TV retired → redirect legacy links to Learn
+      { source: '/celoris-tv', destination: '/learn', permanent: true },
+      { source: '/celoris-tv/:path*', destination: '/learn', permanent: true },
     ];
   },
 }

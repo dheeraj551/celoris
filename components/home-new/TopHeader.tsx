@@ -9,7 +9,6 @@ import {
     Box,
     BookOpen,
     GraduationCap,
-    Tv,
     Coffee,
     Briefcase,
     Info,
@@ -203,20 +202,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                     >
                         <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
                         <span>Learn</span>
-                    </Link>
-
-                    {/* Celoris TV */}
-                    <Link
-                        href="/celoris-tv"
-                        className={cn(
-                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
-                            pathname.startsWith('/celoris-tv')
-                                ? "bg-red-500/15 border border-red-400/30 text-red-200 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
-                                : "text-neutral-300 hover:text-white hover:bg-white/[0.06] border border-transparent"
-                        )}
-                    >
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_6px_rgba(239,68,68,0.8)]" />
-                        <span>Celoris TV</span>
                     </Link>
 
                     {/* Teach */}
@@ -439,18 +424,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
-                                        <Link href="/celoris-tv" className="flex items-center gap-2.5">
-                                            <div className="w-7 h-7 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
-                                                <Tv className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Celoris TV</span>
-                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">24/7 creative stream</span>
-                                            </div>
-                                        </Link>
-                                    </DropdownMenuItem>
-
-                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
                                         <Link href="/job-center" className="flex items-center gap-2.5">
                                             <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
                                                 <Briefcase className="w-3.5 h-3.5" />
@@ -639,14 +612,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         >
                                             <Mail className="w-4 h-4 text-emerald-400" />
                                             <span className="text-sm font-medium">Student Mailbox</span>
-                                        </Link>
-                                        <Link
-                                            href="/celoris-tv"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
-                                        >
-                                            <Tv className="w-4 h-4 text-red-400" />
-                                            <span className="text-sm font-medium">Celoris TV</span>
                                         </Link>
                                         <Link
                                             href="/teach"

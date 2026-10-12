@@ -14,8 +14,6 @@ export const dynamic = 'force-dynamic';
 const PREFIX = 'public/showcase/';
 
 const ALLOWED = new Set([
-  'celoris-tv-host-loop.mp4',
-  'celoris-tv-host-loop.jpg',
   'trainer-pitch-reel.mp4',
   'trainer-pitch-reel.jpg',
   'character-turntable.mp4',

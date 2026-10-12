@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { 
   ChevronUp, 
@@ -14,13 +15,12 @@ import {
   Bell, 
   Smartphone,
   ArrowRight,
-  Tv,
+  BookOpen,
   MessagesSquare
 } from 'lucide-react';
 import { PhoneView } from './types';
 import { SupportView } from './views/SupportView';
 import { WhatsChatView } from './views/WhatsChatView';
-import { CelorisTvView } from './views/CelorisTvView';
 import { JobCenterView } from './views/JobCenterView';
 import { ClassroomsView } from './views/ClassroomsView';
 import { AppsView } from './views/AppsView';
@@ -141,8 +141,6 @@ export function CelorisPhoneOS() {
         return <JobCenterView onBack={() => setView('home')} onClose={() => setOpen(false)} />;
       case 'classrooms':
         return <ClassroomsView onBack={() => setView('home')} onClose={() => setOpen(false)} />;
-      case 'tv':
-        return <CelorisTvView onBack={() => setView('home')} onClose={() => setOpen(false)} />;
       case 'apps':
         return <AppsView onBack={() => setView('home')} onClose={() => setOpen(false)} />;
       default:
@@ -229,18 +227,18 @@ export function CelorisPhoneOS() {
           <span className="text-[8.5px] text-purple-300/90 mt-0.5">Live Classes</span>
         </button>
 
-        {/* App 5: Celoris TV (lectures on demand) */}
-        <button
-          type="button"
-          onClick={() => openApp('tv')}
-          className="p-2.5 rounded-2xl bg-gradient-to-b from-red-500/15 to-rose-600/5 hover:from-red-500/25 hover:to-rose-600/10 border border-red-500/30 hover:border-red-400/60 transition-all flex flex-col items-center text-center group cursor-pointer shadow-md shadow-black/40 hover:scale-[1.02] active:scale-[0.98]"
+        {/* App 5: Teach on Celoris (0% Commission Educator Network) */}
+        <Link
+          href="/teach"
+          onClick={() => setOpen(false)}
+          className="p-2.5 rounded-2xl bg-gradient-to-b from-rose-500/15 to-orange-600/5 hover:from-rose-500/25 hover:to-orange-600/10 border border-rose-500/30 hover:border-rose-400/60 transition-all flex flex-col items-center text-center group cursor-pointer shadow-md shadow-black/40 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white mb-1.5 shadow-[0_0_12px_rgba(239,68,68,0.4)] group-hover:scale-105 transition-transform">
-            <Tv className="w-4.5 h-4.5" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-white mb-1.5 shadow-[0_0_12px_rgba(244,63,94,0.4)] group-hover:scale-105 transition-transform">
+            <BookOpen className="w-4.5 h-4.5" />
           </div>
-          <span className="text-[11px] font-bold text-white block">Celoris TV</span>
-          <span className="text-[8.5px] text-red-300/90 mt-0.5">Lectures on Demand</span>
-        </button>
+          <span className="text-[11px] font-bold text-white block">Teach</span>
+          <span className="text-[8.5px] text-rose-300/90 mt-0.5">0% Commission</span>
+        </Link>
 
         {/* App 6: Studio Suite */}
         <button

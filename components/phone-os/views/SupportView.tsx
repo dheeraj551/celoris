@@ -58,8 +58,8 @@ const FAQ_ITEMS = [
     a: "Yes! Anyone with creative or tech skills can apply under 'Teach'. We help publish your course and monetize your expertise.",
   },
   {
-    q: "What is Celoris TV?",
-    a: "Celoris TV is our lecture library: watch recorded classes and tutorials on demand, build your own study queue, and ask questions under each lecture.",
+    q: "How does Teach on Celoris work?",
+    a: "Instructors keep 100% of their earnings with zero commission. You get built-in student analytics, video course hosting, and instant payouts via UPI.",
   },
 ];
 

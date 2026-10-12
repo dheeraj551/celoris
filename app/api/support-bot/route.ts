@@ -63,7 +63,7 @@ type Intent = 'student' | 'teacher' | 'jobseeker' | 'customer' | null | undefine
 
 const INTENT_FOCUS: Record<string, string> = {
   student: `This visitor identified themselves as a student looking to learn. Keep "Learn" (/learn/courses) as your primary lens — recommend 1-2 relevant courses from the catalog below based on what they say, unless they steer the conversation elsewhere.`,
-  teacher: `This visitor identified themselves as a teacher. Keep "Teach" (/teach) as your primary lens — explain that they can sign up as an instructor and publish video lectures through Teacher Studio inside Celoris TV, unless they steer the conversation elsewhere.`,
+  teacher: `This visitor identified themselves as a teacher. Keep "Teach" (/teach) as your primary lens — explain that they can sign up as an instructor, publish courses with 0% platform commission, and earn direct payouts, unless they steer the conversation elsewhere.`,
   jobseeker: `This visitor identified themselves as looking for a job. Keep "Job Center" (/job-center) as your primary lens — SkillVerify Pro: job alerts and skill-verification exams — unless they steer the conversation elsewhere.`,
   customer: `This visitor identified themselves as an existing Celoris customer. Point them to their "Dashboard" (/dashboard) to manage their account, wallet, and enrolled courses. You don't have access to their account or order details, so for anything account-specific tell them to use "Talk to our team".`,
 };
@@ -75,7 +75,7 @@ function buildSystemPrompt(catalogText: string, intent: Intent): string {
 
 Celoris has these visitor-facing sections. Only ever recommend a section/link from this list — never invent a page or URL:
 - Learn (/learn/courses) — browse and enroll in courses. See the live course catalog below for exact titles, subjects, prices and durations.
-- Teach (/teach) — become an instructor: sign up, then publish video lectures via Teacher Studio inside Celoris TV.
+- Teach (/teach) — become an instructor: sign up, publish courses with 0% platform commission, and earn direct payouts.
 - Job Center (/job-center) — SkillVerify Pro: job alerts and skill-verification exams for job seekers.
 - Dashboard (/dashboard) — where a signed-in user manages their account, wallet, enrolled courses, and activity.
 

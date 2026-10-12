@@ -77,7 +77,6 @@ const COMPARISON_DATA: FeatureCategory[] = [
       { name: "Video Studio Timeline Editor", free: "Basic", basic: "Pro", pro: "Pro 4K", max: "Pro 4K" },
       { name: "PolyVault 3D Meshes & Textures", free: "Standard", basic: "Standard", pro: "Full Library", max: "Full 4K Vault" },
       { name: "Celoris Café Community Lounges", free: true, basic: true, pro: true, max: true },
-      { name: "Celoris TV 24/7 Creator Channel", free: true, basic: true, pro: true, max: true },
       { name: "Commercial Usage License", free: "Personal / Non-commercial", basic: "Full Commercial", pro: "Full Commercial", max: "Full Commercial" },
       { name: "Customer Assistance", free: "Community Support", basic: "Standard Email", pro: "Priority Email & Chat", max: "24/7 VIP Concierge" },
     ]

@@ -50,10 +50,10 @@ export const XP_TIPS: XpTip[] = [
     audience: 'all',
   },
   {
-    id: 'celoris-tv',
-    text: 'Missed a class? Recorded lectures are waiting on Celoris TV.',
-    href: '/celoris-tv',
-    cta: 'Watch now',
+    id: 'teach',
+    text: 'Share your creative skills with 50K+ learners on Celoris and keep 100% of your earnings.',
+    href: '/teach',
+    cta: 'Teach on Celoris',
     audience: 'all',
   },
   {

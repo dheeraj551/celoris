@@ -13,7 +13,6 @@ import {
   LogOut,
   BookOpen,
   GraduationCap,
-  Tv,
   Briefcase,
   Wallet,
   Compass,
@@ -205,9 +204,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/teach"><GraduationCap className="w-4 h-4 mr-2 text-emerald-600" /> Teach</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
-                  <Link href="/celoris-tv"><Tv className="w-4 h-4 mr-2 text-emerald-600" /> Celoris TV</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="text-zinc-700 hover:bg-zinc-50 focus:bg-zinc-50 cursor-pointer rounded-xl">
                   <Link href="/job-center"><Briefcase className="w-4 h-4 mr-2 text-emerald-600" /> Job Center</Link>
