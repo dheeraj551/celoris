@@ -12,7 +12,9 @@ const footerSections = [
     links: [
       { name: "Pricing & Plans", href: "/pricing" },
       { name: "Learn", href: "/learn" },
+      { name: "Free Courses with Certificate", href: "/free-courses-with-certificate" },
       { name: "Job Center", href: "/job-center" },
+      { name: "Become a Trainer", href: "/become-trainer" },
       { name: "Classrooms", href: "/classrooms" },
       { name: "Apps", href: "/apps" },
     ],
@@ -96,20 +98,9 @@ export default function Footer() {
 
   if (isNative || isDashboardPage) return null
 
-  const isDarkPage = pathname === "/" ||
-    pathname === "/about" ||
-    pathname === "/contact" ||
-    pathname === "/learn" ||
-    pathname === "/earn" ||
-    pathname === "/social" ||
-    pathname === "/classrooms" ||
-    pathname === "/apps" ||
-    pathname === "/refund-policy" ||
-    pathname === "/terms" ||
-    pathname === "/privacy" ||
-    pathname === "/cookies" ||
-    pathname?.startsWith("/blog") ||
-    pathname?.startsWith("/courses/")
+  // The site is dark-themed, so the footer always uses the dark style. A bright
+  // footer under dark pages looked like a separate site.
+  const isDarkPage = true
 
   return (
     <footer className={cn(
@@ -190,12 +181,12 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className={cn(
           "border-t pt-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-start",
-          isDarkPage ? "border-slate-200" : "border-border"
+          isDarkPage ? "border-white/10" : "border-border"
         )}>
           <div className="space-y-2">
             <p className={cn(
               "text-[10px] font-black uppercase tracking-widest italic",
-              isDarkPage ? "text-slate-900" : "text-text-primary"
+              isDarkPage ? "text-slate-200" : "text-text-primary"
             )}>
               Celoris Designs LLP
             </p>

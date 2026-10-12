@@ -201,7 +201,8 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                 </section>
 
                 {/* Mobile Sticky Enrollment Bottom Bar */}
-                <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#050608]/95 p-3.5 backdrop-blur-xl sm:hidden pb-[max(0.875rem,env(safe-area-inset-bottom))] shadow-2xl">
+                {/* Sits above the floating "Celoris Phone" button (bottom-right) so the Reserve button is never covered. */}
+                <div className="fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-40 rounded-2xl border border-white/10 bg-[#050608]/95 p-3 backdrop-blur-xl sm:hidden shadow-2xl">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex flex-col">
                             <span className="text-xs font-semibold text-white">Starts {firstLabel}</span>
