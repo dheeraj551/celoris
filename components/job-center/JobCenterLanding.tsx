@@ -143,6 +143,14 @@ export function JobCenterLanding({ jobs }: { jobs: PublicJob[] }) {
                             </span>
                         ))}
                     </div>
+
+                    <Link
+                        href="/free-courses-with-certificate"
+                        className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300 transition hover:bg-emerald-500/20"
+                    >
+                        Not ready for a test yet? Join a free 7-day live course with certificate
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
                 </div>
             </section>
 
