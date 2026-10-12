@@ -3,16 +3,15 @@ import { DashboardShell } from "@/components/home-new/DashboardShell"
 import { FreeCoursesView } from "./FreeCoursesView"
 import {
     BOOTCAMPS,
-    DAYS,
     MIN_ATTENDANCE,
-    SESSION_TIME_LABEL,
+    SESSIONS,
+    bootcampDates,
     currentBatchStart,
     formatBatchDate,
     istDateTime,
-    batchEndDate,
 } from "@/lib/bootcamps"
 
-// Hub for the free 7-day live bootcamps. Targets "free online courses with
+// Hub for the free live bootcamps (4 sessions per batch). Targets "free online courses with
 // certificate" searches. The next batch date is computed, so the page stays
 // current on its own (refreshed hourly).
 
@@ -21,7 +20,7 @@ export const revalidate = 3600
 const URL = "https://celorisdesigns.com/free-courses-with-certificate"
 const TITLE = "Free Online Courses with Certificate: Live Classes"
 const DESCRIPTION =
-    "Free live online courses with certificate in Social Media Reels and Digital Marketing. Alternate evenings (Mon–Sat) plus Sunday sessions at 8 PM & 9 PM IST with real trainers. Earn a verified Celoris certificate and apply to jobs on the Celoris Job Center."
+    "Free live online courses with certificate in Social Media Reels and Digital Marketing: 7 live hours over two weeks on alternate evenings, taught in Hinglish by real trainers, with a final exam on the second Sunday. Earn a verified Celoris certificate and apply to jobs on the Celoris Job Center."
 
 export const metadata: Metadata = {
     // The root layout adds " | Celoris".
@@ -51,7 +50,7 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "What is the schedule for both courses?",
-            a: "To ensure no clashes between trainers, classes run on alternate evenings till Saturday, plus Sunday: Social Media Reels runs Mon, Wed, Fri at 8:00 PM IST & Sun at 8:00 PM IST. Digital Marketing runs Tue, Thu, Sat at 8:00 PM IST & Sun at 9:00 PM IST.",
+            a: "Each course is 7 one-hour live classes over two weeks, on alternate evenings so the two courses never clash. Social Media Reels: Mon, Wed, Fri at 8:00 PM IST, plus Sunday 8:00 PM in week 1. Digital Marketing: Tue, Thu, Sat at 8:00 PM IST, plus Sunday 9:00 PM in week 1. The second Sunday is the final certification exam.",
         },
         {
             q: "What if I miss a live class on one evening?",
@@ -59,7 +58,7 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "How do I get the certificate?",
-            a: "Attend the live sessions, complete your practical assignments, and pass the final skill test. Your verified certificate is then automatically added to your Celoris profile.",
+            a: `Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} live sessions, complete your practical assignments, and pass the final skill test. Your verified certificate is then added to your Celoris profile.`,
         },
         {
             q: "What can I do with the certificate?",
@@ -68,6 +67,14 @@ function getFaqs(batchLabel: string) {
         {
             q: "Are the classes live or recorded?",
             a: "100% live. Every session is taught live by real industry trainers with real-time Q&A. Recordings are not provided, so students are expected to be punctual.",
+        },
+        {
+            q: "When is the final exam?",
+            a: `On the second Sunday of your batch, online on Celoris (8:00 PM for Social Media Reels, 9:00 PM for Digital Marketing). Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes to sit the exam.`,
+        },
+        {
+            q: "Can I get extra help outside class?",
+            a: "Yes. For a quick doubt or enquiry, you can book a free short call with the team on Google Meet. Private one-to-one sessions with a trainer are paid.",
         },
         {
             q: "Can I attend both courses at the same time?",
@@ -91,7 +98,10 @@ export default function FreeCoursesHubPage() {
             {
                 "@type": "ItemList",
                 "@id": `${URL}#courses`,
-                itemListElement: BOOTCAMPS.map((b, i) => ({
+                itemListElement: BOOTCAMPS.map((b, i) => {
+                    const { first, last } = bootcampDates(b, currentBatchStart(new Date(), b))
+                    const s0 = b.sessions[0]
+                    return {
                     "@type": "ListItem",
                     position: i + 1,
                     url: `${URL}/${b.slug}`,
@@ -105,13 +115,16 @@ export default function FreeCoursesHubPage() {
                         hasCourseInstance: {
                             "@type": "CourseInstance",
                             courseMode: "Online",
-                            startDate: istDateTime(batch),
-                            endDate: istDateTime(batchEndDate(batch)),
+                            startDate: istDateTime(first, s0.hour, s0.minute),
+                            endDate: istDateTime(last, b.exam.hour + 1, b.exam.minute),
                             instructor: { "@type": "Person", name: b.trainer },
-                            courseSchedule: { "@type": "Schedule", repeatFrequency: "Weekly", repeatCount: DAYS, duration: "PT1H" },
+                            inLanguage: ["hi", "en"],
+                            courseWorkload: `PT${SESSIONS}H`,
+                            courseSchedule: { "@type": "Schedule", repeatFrequency: "P2D", repeatCount: SESSIONS, duration: "PT1H" },
                         },
                     },
-                })),
+                    }
+                }),
             },
             {
                 "@type": "FAQPage",

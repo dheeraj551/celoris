@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createRouteClient } from "@/lib/supabase-server"
 import { createSupabaseClientForServer } from "@/lib/supabase-client"
-import { currentBatchStart, formatBatchDate, getBootcamp } from "@/lib/bootcamps"
+import { SEATS_PER_BATCH, bootcampDates, currentBatchStart, formatBatchDate, getBootcamp, nextBatchStart } from "@/lib/bootcamps"
 
 // Free bootcamp enrollment. The signed-in user comes from the session cookie (or a
 // Bearer token); the batch date is always decided here, never by the browser.
@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
         const user = await getUser(request)
         if (!user) return NextResponse.json({ enrolled: false })
         const slug = request.nextUrl.searchParams.get("slug") || ""
-        if (!getBootcamp(slug)) return NextResponse.json({ enrolled: false })
+        const bootcamp = getBootcamp(slug)
+        if (!bootcamp) return NextResponse.json({ enrolled: false })
 
         const admin: any = createSupabaseClientForServer()
         const { data } = await admin
@@ -28,12 +29,12 @@ export async function GET(request: NextRequest) {
             .select("batch_start")
             .eq("user_id", user.id)
             .eq("bootcamp", slug)
-            .gte("batch_start", currentBatchStart())
+            .gte("batch_start", currentBatchStart(new Date(), bootcamp))
             .order("batch_start", { ascending: true })
             .limit(1)
         const row = (data || [])[0]
         return NextResponse.json(
-            row ? { enrolled: true, batchLabel: formatBatchDate(row.batch_start) } : { enrolled: false },
+            row ? { enrolled: true, batchStart: row.batch_start, batchLabel: formatBatchDate(bootcampDates(bootcamp, row.batch_start).first) } : { enrolled: false },
             { headers: { "Cache-Control": "no-store" } }
         )
     } catch (e) {
@@ -57,9 +58,22 @@ export async function POST(request: NextRequest) {
         }
         const consent = body?.consent === true
 
-        const batchStart = currentBatchStart()
-        const meta: any = user.user_metadata || {}
         const admin: any = createSupabaseClientForServer()
+
+        // Seats are limited per batch: if this batch is full, the seat goes to the next one.
+        let batchStart = currentBatchStart(new Date(), bootcamp)
+        for (let i = 0; i < 6; i++) {
+            const { count } = await admin
+                .from("bootcamp_enrollments")
+                .select("id", { count: "exact", head: true })
+                .eq("bootcamp", bootcamp.slug)
+                .eq("batch_start", batchStart)
+                .neq("user_id", user.id)
+            if ((count ?? 0) < SEATS_PER_BATCH) break
+            batchStart = nextBatchStart(batchStart)
+        }
+
+        const meta: any = user.user_metadata || {}
         const { error } = await admin.from("bootcamp_enrollments").upsert(
             {
                 user_id: user.id,
@@ -74,7 +88,12 @@ export async function POST(request: NextRequest) {
         )
         if (error) throw error
 
-        return NextResponse.json({ ok: true, batchStart, batchLabel: formatBatchDate(batchStart) })
+        return NextResponse.json({
+            ok: true,
+            batchStart,
+            batchLabel: formatBatchDate(bootcampDates(bootcamp, batchStart).first),
+            movedToNextBatch: batchStart !== currentBatchStart(new Date(), bootcamp),
+        })
     } catch (e) {
         console.error("[bootcamps/enroll POST]", e)
         return NextResponse.json({ error: "Could not join right now. Please try again." }, { status: 500 })

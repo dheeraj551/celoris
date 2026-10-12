@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { ArrowRight, Calendar, CheckCircle2, Loader2, Share2 } from "lucide-react"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
+import { MIN_ATTENDANCE, SESSIONS, currentBatchStart, examInstant, getBootcamp, sessionInstants } from "@/lib/bootcamps"
 
 // One-tap join for a free bootcamp: Google sign-in, then a WhatsApp number for
 // class reminders. The batch date is decided on the server.
@@ -16,7 +17,7 @@ interface Props {
     scheduleLabel?: string
 }
 
-type Status = { enrolled: boolean; batchLabel?: string }
+type Status = { enrolled: boolean; batchLabel?: string; batchStart?: string; moved?: boolean }
 
 export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Props) {
     const { user, loading } = useAuth()
@@ -32,7 +33,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
         let cancelled = false
         fetch(`/api/bootcamps/enroll?slug=${encodeURIComponent(slug)}`)
             .then((r) => (r.ok ? r.json() : { enrolled: false }))
-            .then((d) => !cancelled && setStatus({ enrolled: !!d.enrolled, batchLabel: d.batchLabel }))
+            .then((d) => !cancelled && setStatus({ enrolled: !!d.enrolled, batchLabel: d.batchLabel, batchStart: d.batchStart }))
             .catch(() => !cancelled && setStatus({ enrolled: false }))
         return () => {
             cancelled = true
@@ -61,7 +62,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             })
             const data = await res.json().catch(() => ({}))
             if (!res.ok) throw new Error(data?.error || "Could not join right now. Please try again.")
-            setStatus({ enrolled: true, batchLabel: data.batchLabel })
+            setStatus({ enrolled: true, batchLabel: data.batchLabel, batchStart: data.batchStart, moved: !!data.movedToNextBatch })
             try {
                 (window as any).gtag?.("event", "bootcamp_join", { bootcamp: slug })
             } catch {}
@@ -100,11 +101,61 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
     }
 
     if (status?.enrolled) {
-        const calTitle = encodeURIComponent(`Celoris Live Bootcamp: ${shortTitle}`)
+        const bootcamp = getBootcamp(slug)
+        const batchStart = bootcamp ? status.batchStart || currentBatchStart(new Date(), bootcamp) : ""
+        const sessions = bootcamp ? sessionInstants(bootcamp, batchStart) : []
+        const exam = bootcamp ? examInstant(bootcamp, batchStart) : null
+        const stamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")
+        const calTitle = encodeURIComponent(`Celoris Live Bootcamp: ${shortTitle} (Class 1)`)
         const calDetails = encodeURIComponent(
-            `Live interactive classes for ${shortTitle}.\nSchedule: ${scheduleLabel || "8:00 PM IST"}.\nPlease be punctual — attendance is required to earn your verified certificate (no recordings).\nClassrooms link: https://celorisdesigns.com/classrooms`
+            `Live class for ${shortTitle}.\nSchedule: ${scheduleLabel || "8:00 PM IST"}.\nAttend live, there are no recordings. Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes and pass the final exam to earn your certificate.\nJoin from Celoris Classrooms: https://celorisdesigns.com/classrooms`
         )
-        const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&details=${calDetails}&location=Online+(https://celorisdesigns.com/classrooms)`
+        const first = sessions[0]
+        const calendarUrl = first
+            ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&details=${calDetails}&location=${encodeURIComponent("https://celorisdesigns.com/classrooms")}&dates=${stamp(first)}/${stamp(new Date(first.getTime() + 60 * 60 * 1000))}`
+            : `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&details=${calDetails}`
+        // All 4 sessions in one file (works with Google, Apple and Outlook calendars).
+        const downloadIcs = () => {
+            const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Celoris//Bootcamp//EN", "CALSCALE:GREGORIAN"]
+            sessions.forEach((d, i) => {
+                lines.push(
+                    "BEGIN:VEVENT",
+                    `UID:${slug}-${stamp(d)}@celorisdesigns.com`,
+                    `DTSTAMP:${stamp(new Date())}`,
+                    `DTSTART:${stamp(d)}`,
+                    `DTEND:${stamp(new Date(d.getTime() + 60 * 60 * 1000))}`,
+                    `SUMMARY:Celoris ${shortTitle} bootcamp, class ${i + 1} of ${sessions.length}`,
+                    "LOCATION:https://celorisdesigns.com/classrooms",
+                    "DESCRIPTION:Live class in Celoris Classrooms. No recordings, please join on time.",
+                    "BEGIN:VALARM",
+                    "TRIGGER:-PT30M",
+                    "ACTION:DISPLAY",
+                    "DESCRIPTION:Your Celoris class starts in 30 minutes",
+                    "END:VALARM",
+                    "END:VEVENT"
+                )
+            })
+            if (exam) {
+                lines.push(
+                    "BEGIN:VEVENT",
+                    `UID:${slug}-exam-${stamp(exam)}@celorisdesigns.com`,
+                    `DTSTAMP:${stamp(new Date())}`,
+                    `DTSTART:${stamp(exam)}`,
+                    `DTEND:${stamp(new Date(exam.getTime() + 60 * 60 * 1000))}`,
+                    `SUMMARY:Celoris ${shortTitle} final certification exam`,
+                    "LOCATION:https://celorisdesigns.com/classrooms",
+                    "END:VEVENT"
+                )
+            }
+            lines.push("END:VCALENDAR")
+            const blob = new Blob([lines.join("\r\n")], { type: "text/calendar" })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = `celoris-${slug}-sessions.ics`
+            a.click()
+            setTimeout(() => URL.revokeObjectURL(url), 1000)
+        }
         const shareText = encodeURIComponent(
             `Hey! I just enrolled in the free ${shortTitle} bootcamp with certificate on Celoris starting ${status.batchLabel || batchLabel}. Seats are free, reserve yours and learn with me: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
         )
@@ -116,6 +167,9 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
                     <div className="text-sm text-neutral-200">
                         <p className="font-semibold text-white">You&apos;re in the {shortTitle} batch starting {status.batchLabel || batchLabel}.</p>
+                        {status.moved && (
+                            <p className="mt-1 text-amber-300/90">The current batch was full, so we reserved your seat in the next one.</p>
+                        )}
                         <p className="mt-1 text-neutral-300">
                             {scheduleLabel ? `Schedule: ${scheduleLabel}. ` : "Classes run live online. "}
                             We&apos;ll send the class link on WhatsApp before each session, and you&apos;ll also find it in{" "}
@@ -138,6 +192,16 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                         <Calendar className="h-3.5 w-3.5 text-emerald-400" />
                         <span>Add to Google Calendar</span>
                     </a>
+                    {sessions.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={downloadIcs}
+                            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-emerald-500/40 px-4 py-2 text-xs font-semibold text-white transition-all shadow-sm"
+                        >
+                            <Calendar className="h-3.5 w-3.5 text-emerald-400" />
+                            <span>All {sessions.length} classes + exam (.ics)</span>
+                        </button>
+                    )}
                     <a
                         href={shareUrl}
                         target="_blank"
@@ -183,7 +247,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             </label>
             <p className="text-[11px] text-neutral-400/80 flex items-center gap-1.5 pt-0.5">
                 <span>🔒</span>
-                <span>You&apos;ll be added to the batch WhatsApp group 24h prior for live links, daily assignments, and direct mentor Q&amp;A.</span>
+                <span>You&apos;ll get the live class link, assignments and reminders on WhatsApp before each session.</span>
             </p>
             {error && <p className="text-xs text-rose-400">{error}</p>}
         </form>

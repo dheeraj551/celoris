@@ -17,13 +17,22 @@ import {
     QrCode,
     Share2,
     ShieldCheck,
-    Star,
     Users,
     Video,
     X,
 } from "lucide-react"
 import { SpotlightCard } from "@/components/ui/spotlight-card"
-import { DAYS, MIN_ATTENDANCE, SESSION_TIME_LABEL } from "@/lib/bootcamps"
+import { DAYS, MIN_ATTENDANCE, SESSION_TIME_LABEL, SESSIONS, getBootcamp } from "@/lib/bootcamps"
+
+// Class list for a bootcamp, built from lib/bootcamps so the hub and the course pages always agree.
+function buildSyllabus(slug: string) {
+    const b = getBootcamp(slug)
+    if (!b) return []
+    return [
+        ...b.days.map((d, i) => ({ day: `Class ${d.day}`, time: b.sessions[i]?.label || "", topic: d.title, desc: d.detail })),
+        { day: "Exam", time: b.exam.label, topic: "Final certification exam", desc: `For students who attended at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes.` },
+    ]
+}
 
 interface FreeCoursesViewProps {
     batchLabel: string
@@ -38,25 +47,19 @@ const FEATURED_COURSES = [
         masterclassUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         bootcampUrl: "/free-courses-with-certificate/social-media-reels",
         image: "/how-to-monetize-instagram-reels-youtube-shorts-india.jpg",
-        badgePill: "Newly Added",
-        categoryPill: "Content Creation & Social ...",
-        rating: "4.8 Rating",
-        title: "The Short-Form Video Masterclass — YouTube Shorts & Instagram Reels for the Indian Audience",
+        badgePill: "Free · Certificate",
+        categoryPill: "Content Creation",
+        title: "Free Social Media Reels Bootcamp with Certificate",
         description:
-            "A 10-hour, hands-on masterclass in building an audience with YouTube Shorts and Instagram Reels, built specifically around the Indian market. Covers ideation and scripting, shooting on just a smartphone, editing for retention, how the Shorts/Reels...",
-        instructor: "Celoris Team",
-        duration: "10 Hours",
+            "7 live one-hour classes over two weeks with Ananya Jairath: find your niche, write hooks, shoot on a smartphone, edit in CapCut and build a 3-Reel portfolio. Final exam on the second Sunday, then apply to Reels jobs on the Celoris Job Center.",
+        instructor: "Ananya Jairath",
+        duration: "7 live hours · 2 weeks",
         bootcampShortTitle: "Social Media Reels",
         trainer: "Ananya Jairath",
         trainerRole: "Commercial Video Creator & Content Mentor",
         toolsRequired: "Any smartphone + free CapCut app (No laptop or camera needed)",
-        schedule: "Mon, Wed, Fri at 8:00 PM IST · Sun at 8:00 PM IST",
-        syllabus: [
-            { day: "Session 1", time: "Mon 8:00 PM", topic: "Niche Selection & Algorithm Rules", desc: "Understanding the 2026 Reels recommendation engine, choosing high-growth niches, and profile setup." },
-            { day: "Session 2", time: "Wed 8:00 PM", topic: "Hooks, Scripting & Smartphone Filming", desc: "Writing 1.5-second retention hooks, story pacing, smartphone camera settings, and natural lighting hacks." },
-            { day: "Session 3", time: "Fri 8:00 PM", topic: "CapCut Pro Editing & Viral Retention", desc: "Fast-cut editing, auto-captions, audio balancing, B-roll overlays, and pacing that stops the scroll." },
-            { day: "Session 4", time: "Sun 8:00 PM", topic: "Portfolio Showcase, Freelancing & Test", desc: "Packaging your 3-Reel portfolio for clients, pricing your services, and the final certificate test." },
-        ],
+        schedule: getBootcamp("social-media-reels")?.scheduleLabel || "",
+        syllabus: buildSyllabus("social-media-reels"),
     },
     {
         id: "digital-marketing",
@@ -64,25 +67,19 @@ const FEATURED_COURSES = [
         masterclassUrl: "/learn/course/digital-marketing-mastery",
         bootcampUrl: "/free-courses-with-certificate/digital-marketing",
         image: "/courses/digital-marketing-mastery-og.png",
-        badgePill: "Featured Masterclass",
+        badgePill: "Free · Certificate",
         categoryPill: "Marketing",
-        rating: "4.8 Rating",
-        title: "Digital Marketing Mastery — From Basics to Campaign-Ready",
+        title: "Free Digital Marketing Bootcamp with Certificate",
         description:
-            "Learn the skills businesses are actually hiring for — SEO, social media, ads, and analytics — taught by trainers who run real campaigns, not just theory. This course takes you from zero to job-ready, covering everything from SEO fundamentals to...",
-        instructor: "Celoris Team",
-        duration: "6-8 weeks",
+            "7 live one-hour classes over two weeks with Dheeraj Kushwaha: the funnel, SEO and Google Business Profile, social media, Meta and Google Search ads, and GA4 tracking. Final exam on the second Sunday, then apply to marketing jobs on the Celoris Job Center.",
+        instructor: "Dheeraj Kushwaha",
+        duration: "7 live hours · 2 weeks",
         bootcampShortTitle: "Digital Marketing",
         trainer: "Dheeraj Kushwaha",
         trainerRole: "Performance Marketing & Growth Strategist",
         toolsRequired: "Smartphone or basic laptop with browser (Zero paid tools needed)",
-        schedule: "Tue, Thu, Sat at 8:00 PM IST · Sun at 9:00 PM IST",
-        syllabus: [
-            { day: "Session 1", time: "Tue 8:00 PM", topic: "Full-Funnel Growth & Target Audiences", desc: "Customer journey mapping, high-converting buyer personas, and choosing the right channel mix." },
-            { day: "Session 2", time: "Thu 8:00 PM", topic: "Search Engine Optimization & Google Business", desc: "Keyword research, on-page SEO, local ranking for Google Maps, and driving organic inbound traffic." },
-            { day: "Session 3", time: "Sat 8:00 PM", topic: "High-ROI Meta & Google Search Ads", desc: "Setting up Meta Pixel, crafting ad creatives, Google Search intent ads, and budget optimization." },
-            { day: "Session 4", time: "Sun 9:00 PM", topic: "GA4 Tracking, Campaign Plan & Test", desc: "Conversion tracking with GA4, building a 1-page client campaign plan, and the final skill test." },
-        ],
+        schedule: getBootcamp("digital-marketing")?.scheduleLabel || "",
+        syllabus: buildSyllabus("digital-marketing"),
     },
 ]
 
@@ -238,7 +235,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             transition={{ duration: 0.7, delay: 0.3 }}
                             className="mx-auto mt-5 max-w-2xl text-base text-neutral-300 sm:text-lg leading-relaxed"
                         >
-                            Live interactive classes with real Celoris trainers on alternate evenings till Saturday, plus Sunday sessions at 8:00 PM &amp; 9:00 PM IST. Finish the course, pass the test, and earn your verified certificate.
+                            Live interactive classes with real Celoris trainers: {SESSIONS} one-hour classes over two weeks on alternate evenings, then a final exam on the second Sunday. Pass it and earn your verified certificate.
                         </motion.p>
 
                         {/* Interactive Info Badges */}
@@ -260,7 +257,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 backdrop-blur-md shadow-lg transition-colors hover:border-emerald-500/40 hover:bg-white/[0.08]"
                             >
                                 <Clock className="h-4 w-4 text-emerald-400" />
-                                <span className="font-medium">Alternate days at 8 PM · Sun 8 PM &amp; 9 PM IST</span>
+                                <span className="font-medium">{SESSIONS} live hours over 2 weeks · alternate evenings</span>
                             </motion.span>
                             <motion.span
                                 whileHover={{ scale: 1.05, y: -2 }}
@@ -281,7 +278,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 backdrop-blur-md shadow-lg transition-colors hover:border-emerald-500/40 hover:bg-white/[0.08]"
                             >
                                 <Video className="h-4 w-4 text-emerald-400" />
-                                <span className="font-medium">Platform: Live Google Meet with Mentor Q&amp;A</span>
+                                <span className="font-medium">Live in Celoris Classrooms with mentor Q&amp;A</span>
                             </motion.span>
                         </motion.div>
 
@@ -293,7 +290,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-medium text-amber-300 backdrop-blur-md"
                         >
                             <Flame className="h-4 w-4 text-amber-400 animate-pulse" />
-                            <span>Batch filling up — Limited to 15 seats per live batch for 1-on-1 trainer feedback</span>
+                            <span>Limited to 15 seats per batch, so the trainer can give you personal feedback</span>
                         </motion.div>
 
                         {/* Live Countdown Timer */}
@@ -313,13 +310,8 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-neutral-400 border-t border-white/[0.06] pt-6 max-w-2xl"
                         >
                             <div className="flex items-center gap-1.5 text-neutral-300">
-                                <div className="flex text-amber-400">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={13} fill="currentColor" />
-                                    ))}
-                                </div>
-                                <span className="font-semibold text-white">4.8/5</span>
-                                <span>(1,200+ certified students)</span>
+                                <Languages className="h-4 w-4 text-emerald-400" />
+                                <span className="text-neutral-300">Taught live in Hinglish</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
@@ -342,7 +334,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             </h2>
                         </div>
                         <p className="text-xs sm:text-sm text-neutral-400 max-w-md">
-                            Both masterclasses include an intensive <span className="text-emerald-400 font-semibold">free live certificate bootcamp</span> starting every 14 days on Monday.
+                            Two <span className="text-emerald-400 font-semibold">free live bootcamps with certificate</span>, with a new batch every 14 days. Each one leads into a full paid course if you want to go deeper.
                         </p>
                     </div>
 
@@ -358,7 +350,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             <div className="rounded-2xl border border-white/[0.06] bg-black/40 p-3.5 flex flex-col justify-between">
                                 <div>
                                     <span className="font-semibold text-white block mb-1">
-                                        📱 Choose Short-Form Video Masterclass if:
+                                        📱 Choose Social Media Reels if:
                                     </span>
                                     <span className="text-neutral-400 leading-relaxed">
                                         You want to build an audience on Instagram/YouTube, become a creator, or freelance as a mobile video editor for brands.
@@ -371,7 +363,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             <div className="rounded-2xl border border-white/[0.06] bg-black/40 p-3.5 flex flex-col justify-between">
                                 <div>
                                     <span className="font-semibold text-white block mb-1">
-                                        📈 Choose Digital Marketing Mastery if:
+                                        📈 Choose Digital Marketing if:
                                     </span>
                                     <span className="text-neutral-400 leading-relaxed">
                                         You want a marketing agency job, run profitable Meta/Google ads, or offer SEO &amp; business growth services.
@@ -441,10 +433,6 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                             <span className="text-[10px] font-mono font-bold text-neutral-300 bg-white/[0.05] border border-white/[0.1] px-3 py-1 rounded-full uppercase tracking-wider truncate max-w-[210px]">
                                                 {course.categoryPill}
                                             </span>
-                                            <div className="flex items-center gap-1 text-emerald-400 text-xs font-bold ml-auto">
-                                                <Star size={13} fill="currentColor" />
-                                                <span>{course.rating}</span>
-                                            </div>
                                         </div>
 
                                         {/* Course Title */}
@@ -478,7 +466,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                                 onClick={() => toggleSyllabus(course.id)}
                                                 className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs font-mono text-neutral-300 hover:border-emerald-500/40 hover:bg-white/[0.06] transition-all"
                                             >
-                                                <span className="font-semibold text-emerald-400">View 4 Live Sessions</span>
+                                                <span className="font-semibold text-emerald-400">View {SESSIONS} live classes + exam</span>
                                                 <ChevronDown
                                                     className={`h-4 w-4 text-neutral-400 transition-transform duration-300 ${
                                                         openSyllabus === course.id ? "rotate-180 text-emerald-400" : ""

@@ -6,10 +6,9 @@ import { DashboardShell } from "@/components/home-new/DashboardShell"
 import { JoinBootcamp } from "@/components/bootcamp/JoinBootcamp"
 import {
     BOOTCAMPS,
-    DAYS,
     MIN_ATTENDANCE,
-    SESSION_TIME_LABEL,
-    batchEndDate,
+    SESSIONS,
+    bootcampDates,
     currentBatchStart,
     formatBatchDate,
     getBootcamp,
@@ -28,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const { slug } = await params
     const b = getBootcamp(slug)
     if (!b) return {}
-    const description = `${b.tagline} Free ${DAYS}-day live course with certificate, daily at ${SESSION_TIME_LABEL} with trainer ${b.trainer}. Certified students can apply for jobs on the Celoris Job Center.`
+    const description = `${b.tagline} Free live course with certificate: ${SESSIONS} live sessions (${b.scheduleLabel}) with trainer ${b.trainer}, in Hinglish. Certified students can apply for jobs on the Celoris Job Center.`
     return {
         title: b.title,
         description,
@@ -44,9 +43,11 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
     const b = getBootcamp(slug)
     if (!b) notFound()
 
-    const batch = currentBatchStart()
-    const batchLabel = formatBatchDate(batch)
-    const endLabel = formatBatchDate(batchEndDate(batch))
+    const batch = currentBatchStart(new Date(), b)
+    const { first, last } = bootcampDates(b, batch)
+    const firstLabel = formatBatchDate(first)
+    const endLabel = formatBatchDate(last)
+    const firstSession = b.sessions[0]
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -61,10 +62,12 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
         hasCourseInstance: {
             "@type": "CourseInstance",
             courseMode: "Online",
-            startDate: istDateTime(batch),
-            endDate: istDateTime(batchEndDate(batch)),
+            startDate: istDateTime(first, firstSession.hour, firstSession.minute),
+            endDate: istDateTime(last, b.exam.hour + 1, b.exam.minute),
             instructor: { "@type": "Person", name: b.trainer },
-            courseSchedule: { "@type": "Schedule", repeatFrequency: "Daily", repeatCount: DAYS, duration: "PT1H" },
+            inLanguage: ["hi", "en"],
+            courseWorkload: `PT${SESSIONS}H`,
+            courseSchedule: { "@type": "Schedule", repeatFrequency: "P2D", repeatCount: SESSIONS, duration: "PT1H" },
         },
     }
 
@@ -84,10 +87,10 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
 
                         <div className="mt-6 flex flex-wrap gap-2 text-sm">
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
-                                <CalendarDays className="h-4 w-4 text-emerald-400" /> {batchLabel} to {endLabel}
+                                <CalendarDays className="h-4 w-4 text-emerald-400" /> {firstLabel} to {endLabel}
                             </span>
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
-                                <Clock className="h-4 w-4 text-emerald-400" /> {b.scheduleLabel || `Daily, ${SESSION_TIME_LABEL}, 1 hour`}
+                                <Clock className="h-4 w-4 text-emerald-400" /> {b.scheduleLabel} · 1 hour each
                             </span>
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
                                 <User className="h-4 w-4 text-emerald-400" /> Trainer: {b.trainer} {b.trainerRole ? `(${b.trainerRole})` : ""}
@@ -96,13 +99,13 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                                 <Languages className="h-4 w-4 text-emerald-400" /> Medium: Hindi + English (Hinglish)
                             </span>
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
-                                <Video className="h-4 w-4 text-emerald-400" /> Platform: Live Google Meet
+                                <Video className="h-4 w-4 text-emerald-400" /> Live in Celoris Classrooms
                             </span>
                         </div>
 
                         <div id="enroll" className="mt-8 rounded-3xl border border-white/[0.1] bg-white/[0.03] p-5 sm:p-6 scroll-mt-20">
-                            <p className="mb-4 text-sm font-medium text-white">Free seat in the batch starting {batchLabel}</p>
-                            <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={batchLabel} scheduleLabel={b.scheduleLabel} />
+                            <p className="mb-4 text-sm font-medium text-white">Free seat in the batch starting {firstLabel}</p>
+                            <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={firstLabel} scheduleLabel={b.scheduleLabel} />
                         </div>
                     </div>
                 </section>
@@ -123,9 +126,9 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                     </p>
                 </section>
 
-                {/* 7-day plan */}
+                {/* Session plan */}
                 <section className="mx-auto mt-14 max-w-4xl px-4 sm:px-6">
-                    <h2 className="text-2xl font-semibold text-white">The {DAYS}-day plan</h2>
+                    <h2 className="text-2xl font-semibold text-white">{SESSIONS} live classes + final exam</h2>
                     <ol className="mt-5 space-y-3">
                         {b.days.map((d) => (
                             <li key={d.day} className="flex gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
@@ -133,11 +136,24 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                                     {d.day}
                                 </span>
                                 <div>
+                                    <p className="font-mono text-xs text-emerald-400">{b.sessions[d.day - 1]?.label} IST</p>
                                     <h3 className="font-semibold text-white">{d.title}</h3>
                                     <p className="mt-1 text-sm text-neutral-400">{d.detail}</p>
                                 </div>
                             </li>
                         ))}
+                        <li className="flex gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-5">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                                <Award className="h-4 w-4" />
+                            </span>
+                            <div>
+                                <p className="font-mono text-xs text-emerald-400">{b.exam.label} IST</p>
+                                <h3 className="font-semibold text-white">Final certification exam</h3>
+                                <p className="mt-1 text-sm text-neutral-400">
+                                    Open to students who attended at least {MIN_ATTENDANCE} of the {SESSIONS} classes. Pass it to earn your certificate.
+                                </p>
+                            </div>
+                        </li>
                     </ol>
                 </section>
 
@@ -148,7 +164,7 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                             <Award className="h-6 w-6 text-emerald-400" />
                             <h3 className="mt-3 text-lg font-semibold text-white">Your certificate</h3>
                             <p className="mt-2 text-sm text-neutral-400">
-                                Attend at least {MIN_ATTENDANCE} of the {DAYS} live sessions and pass the final skill test. You earn the Celoris
+                                Attend at least {MIN_ATTENDANCE} of the {SESSIONS} live classes and pass the final exam on the second Sunday. You earn the Celoris
                                 certificate and the &ldquo;{b.badge}&rdquo; badge on your Job Center profile.
                             </p>
                         </div>
@@ -179,7 +195,7 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                 <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#050608]/95 p-3.5 backdrop-blur-xl sm:hidden pb-[max(0.875rem,env(safe-area-inset-bottom))] shadow-2xl">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex flex-col">
-                            <span className="text-xs font-semibold text-white">Starts {batchLabel}</span>
+                            <span className="text-xs font-semibold text-white">Starts {firstLabel}</span>
                             <span className="text-[11px] font-mono text-emerald-400">100% Free · Certificate</span>
                         </div>
                         <a
