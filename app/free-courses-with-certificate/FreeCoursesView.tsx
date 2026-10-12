@@ -46,7 +46,7 @@ const FEATURED_COURSES = [
         slug: "social-media-reels",
         masterclassUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         bootcampUrl: "/free-courses-with-certificate/social-media-reels",
-        image: "/how-to-monetize-instagram-reels-youtube-shorts-india.jpg",
+        image: "/free-courses/social-media-reels.jpg",
         badgePill: "Free · Certificate",
         categoryPill: "Content Creation",
         title: "Free Social Media Reels Bootcamp with Certificate",
@@ -66,7 +66,7 @@ const FEATURED_COURSES = [
         slug: "digital-marketing",
         masterclassUrl: "/learn/course/digital-marketing-mastery",
         bootcampUrl: "/free-courses-with-certificate/digital-marketing",
-        image: "/courses/digital-marketing-mastery-og.png",
+        image: "/free-courses/digital-marketing.jpg",
         badgePill: "Free · Certificate",
         categoryPill: "Marketing",
         title: "Free Digital Marketing Bootcamp with Certificate",
@@ -399,10 +399,14 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 >
                                     <div className="flex flex-col">
                                         {/* Image Frame */}
-                                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-black/60 border border-white/[0.08] shadow-2xl mb-5">
+                                        <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-2xl bg-black/60 border border-white/[0.08] shadow-2xl mb-5">
                                             <img
                                                 src={course.image}
                                                 alt={course.title}
+                                                width={1200}
+                                                height={630}
+                                                loading="lazy"
+                                                decoding="async"
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                             />
                                             {/* Subtle gradient vignette overlay */}

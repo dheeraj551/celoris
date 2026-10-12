@@ -34,11 +34,20 @@ export const metadata: Metadata = {
         siteName: "Celoris",
         locale: "en_IN",
         type: "website",
+        images: [
+            {
+                url: "https://celorisdesigns.com/free-courses/hub.jpg",
+                width: 1734,
+                height: 907,
+                alt: "Free online courses with certificate: live classes, real trainers, Job Center access",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         title: "Free Live Online Courses with Certificate | Celoris",
         description: DESCRIPTION,
+        images: ["https://celorisdesigns.com/free-courses/hub.jpg"],
     },
 }
 

@@ -33,8 +33,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description,
         keywords: b.keywords,
         alternates: { canonical: `${BASE}/${b.slug}` },
-        openGraph: { title: `${b.title} | Celoris`, description, url: `${BASE}/${b.slug}`, siteName: "Celoris", locale: "en_IN", type: "website" },
-        twitter: { card: "summary_large_image", title: `${b.title} | Celoris`, description },
+        openGraph: {
+            title: `${b.title} | Celoris`,
+            description,
+            url: `${BASE}/${b.slug}`,
+            siteName: "Celoris",
+            locale: "en_IN",
+            type: "website",
+            images: [{ url: `https://celorisdesigns.com/free-courses/${b.slug}.jpg`, width: 1732, height: 908, alt: `${b.title}: free live classes with ${b.trainer}` }],
+        },
+        twitter: { card: "summary_large_image", title: `${b.title} | Celoris`, description, images: [`https://celorisdesigns.com/free-courses/${b.slug}.jpg`] },
     }
 }
 
@@ -55,6 +63,7 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
         name: b.title,
         description: b.tagline,
         url: `${BASE}/${b.slug}`,
+        image: `https://celorisdesigns.com/free-courses/${b.slug}.jpg`,
         provider: { "@type": "Organization", name: "Celoris", sameAs: "https://celorisdesigns.com" },
         teaches: b.outcomes,
         educationalCredentialAwarded: "Celoris verified skill certificate",
