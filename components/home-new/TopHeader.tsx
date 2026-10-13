@@ -671,6 +671,76 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         <span>→</span>
                                     </div>
                                 </Link>
+
+                                {/* Mobile User Profile & Log Out */}
+                                {user ? (
+                                    <div className="pt-4 mt-2 border-t border-white/10 space-y-3 pb-6">
+                                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
+                                            <Avatar className="h-10 w-10 border border-white/15 shrink-0 shadow-sm">
+                                                <AvatarImage
+                                                    src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
+                                                    alt={profile?.full_name || 'User'}
+                                                />
+                                                <AvatarFallback className="bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-bold text-xs">
+                                                    {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-bold text-white tracking-tight truncate">
+                                                    {profile?.full_name || user.email?.split('@')[0]}
+                                                </p>
+                                                <p className="text-[10px] text-neutral-400 truncate mt-0.5">
+                                                    {user.email}
+                                                </p>
+                                            </div>
+                                            <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/25 px-2 py-0.5 rounded-full shrink-0">
+                                                Active
+                                            </span>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Link
+                                                href="/social/profile"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-neutral-200 border border-white/10 transition-colors"
+                                            >
+                                                <UserIcon className="w-3.5 h-3.5 text-purple-400" />
+                                                <span>Profile</span>
+                                            </Link>
+                                            <Link
+                                                href="/account/payment-settings"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-neutral-200 border border-white/10 transition-colors"
+                                            >
+                                                <Wallet className="w-3.5 h-3.5 text-emerald-400" />
+                                                <span>Wallet</span>
+                                            </Link>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                setIsMobileMenuOpen(false);
+                                                await handleSignOut();
+                                            }}
+                                            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 font-bold text-xs transition-all cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.1)] active:scale-[0.98]"
+                                        >
+                                            <LogOut className="w-4 h-4" />
+                                            <span>Sign Out / Log Out</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="pt-4 mt-2 border-t border-white/10 pb-6">
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] active:scale-[0.98]"
+                                        >
+                                            <LogIn className="w-4 h-4" />
+                                            <span>Sign In / Log In</span>
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         </SheetContent>
                     </Sheet>
