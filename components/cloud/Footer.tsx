@@ -57,7 +57,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a href="#comparison" className="hover:text-emerald-400 transition-colors">
-                  Why Not Hostinger?
+                  Why Celoris Cloud?
                 </a>
               </li>
               <li>

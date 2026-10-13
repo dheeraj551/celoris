@@ -37,7 +37,7 @@ export const InfrastructureBar: React.FC = () => {
       title: '100% Ad-Free Guarantee',
       headline: 'Your website belongs to you; no injected banner ads',
       spec: 'Zero third-party script injection, zero spam popups, 100% clean code.',
-      detail: 'Traditional free web hosts (000webhost, InfinityFree) litter student portfolios with intrusive gambling and casino ads. Celoris Cloud guarantees 100% ad-free hosting forever.',
+      detail: 'Many free web hosts litter student portfolios with intrusive third-party banner ads and popups. Celoris Cloud guarantees 100% ad-free hosting forever.',
       badge: 'Zero Injections',
     },
     {

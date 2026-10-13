@@ -15,7 +15,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
       category: 'cost',
       feature: 'Initial Cost',
       traditional: '₹3,000 – ₹5,000 upfront',
-      oldFree: '₹0 (Ad-supported traps)',
+      oldFree: '₹0 (Ad-injected & strict limits)',
       celoris: '₹0 (Free Forever)',
       isHighlight: true,
       celorisWin: true,
@@ -23,8 +23,8 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
     {
       category: 'cost',
       feature: 'Credit Card Required?',
-      traditional: 'Yes (Auto-renews at ₹6,000+)',
-      oldFree: 'Yes or phone verification trap',
+      traditional: 'Yes (Auto-renews at higher rates)',
+      oldFree: 'Mandatory card / KYC verification',
       celoris: 'No Credit Card Needed',
       isHighlight: true,
       celorisWin: true,
@@ -33,7 +33,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
       category: 'experience',
       feature: 'Third-Party Banner Ads',
       traditional: 'None',
-      oldFree: 'Full of spam & scam banners',
+      oldFree: 'Forced third-party banners & popups',
       celoris: '100% Ad-Free Forever',
       isHighlight: false,
       celorisWin: true,
@@ -42,7 +42,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
       category: 'experience',
       feature: 'Free Live Subdomain',
       traditional: 'None (Extra ₹999 domain fee)',
-      oldFree: 'Ugly random numbers (e.g. 000w.xyz/491)',
+      oldFree: 'Unbranded random URLs (e.g. xyz-941.net)',
       celoris: 'Clean yourname.celoris.in',
       isHighlight: true,
       celorisWin: true,
@@ -50,7 +50,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
     {
       category: 'experience',
       feature: 'Setup & Deployment Time',
-      traditional: '30–60 mins (cPanel confusion)',
+      traditional: '30–60 mins (Complex manual setup)',
       oldFree: 'Slow & prone to server failure',
       celoris: '60 Seconds (1-Click WordPress)',
       isHighlight: false,
@@ -94,7 +94,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
             Celoris Cloud vs. The Old Way
           </h2>
           <p className="mt-3 text-sm sm:text-base text-neutral-300">
-            Why pay ₹4,000/year or suffer through scammy free hosts just to show your design portfolio or student assignments?
+            Why pay thousands upfront or struggle with ad-injected free hosts just to show your design portfolio or student assignments?
           </p>
 
           {/* Functional filter segmented control */}
@@ -135,15 +135,15 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
                   Feature / Capability
                 </th>
                 <th className="py-5 px-6 text-xs font-semibold uppercase tracking-wider text-neutral-400 w-1/4">
-                  Traditional Hosts
+                  Paid Shared Hosts
                   <span className="block text-[11px] font-normal text-neutral-500 normal-case mt-0.5">
-                    Hostinger, GoDaddy, Bluehost
+                    Multi-Year Lock-In & Upfront Fees
                   </span>
                 </th>
                 <th className="py-5 px-6 text-xs font-semibold uppercase tracking-wider text-neutral-400 w-1/4">
-                  Old Free Hosts
+                  Generic Free Hosts
                   <span className="block text-[11px] font-normal text-neutral-500 normal-case mt-0.5">
-                    000webhost, InfinityFree
+                    Ad-Injected & Strict Limits
                   </span>
                 </th>
                 <th className="py-5 px-6 text-xs font-semibold uppercase tracking-wider text-emerald-400 w-1/4 bg-emerald-950/30 border-l border-r border-emerald-500/30">

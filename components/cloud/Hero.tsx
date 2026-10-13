@@ -1,18 +1,31 @@
 "use client";
 
-import React, { useState, useId } from 'react';
+import React, { useState, useId, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, Zap, Shield, Cpu, Globe, ChevronRight, Server, Activity } from 'lucide-react';
 import { CelorisSpeedGauge } from './CelorisGraphics';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 interface HeroProps {
   onClaim: (subdomain: string) => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
+  const { user, profile } = useAuth();
   const [subdomain, setSubdomain] = useState('rahul-designs');
   const [activeTemplate, setActiveTemplate] = useState<'portfolio' | 'developer' | 'agency'>('portfolio');
   const inputId = useId();
+
+  useEffect(() => {
+    if (user) {
+      const userHandle = (profile?.username || user.email?.split('@')[0] || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '');
+      if (userHandle.length >= 3 && subdomain === 'rahul-designs') {
+        setSubdomain(userHandle);
+      }
+    }
+  }, [user, profile]);
 
   // Clean subdomain for display
   const sanitizedSubdomain = subdomain.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') || 'yourname';
@@ -168,7 +181,10 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                 {/* Quick Ideas for Students */}
                 <div className="flex items-center gap-1.5 text-neutral-400">
                   <span className="text-[11px]">Suggestions:</span>
-                  {['rahul-ui', 'dev-ankit', 'craft-studio'].map((demoName) => (
+                  {(user 
+                    ? [(profile?.username || user.email?.split('@')[0] || '').toLowerCase().replace(/[^a-z0-9-]/g, ''), 'dev-portfolio', 'craft-studio'].filter(Boolean)
+                    : ['rahul-ui', 'dev-ankit', 'craft-studio']
+                  ).slice(0, 3).map((demoName) => (
                     <button
                       key={demoName}
                       type="button"
@@ -585,7 +601,7 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                     </span>
                   </div>
                   <div className="text-neutral-400">
-                    Hostinger charges ₹3,499/yr · Celoris is ₹0 Forever
+                    Paid hosting costs ₹3,499+/yr · Celoris is ₹0 Forever
                   </div>
                 </div>
               </div>
