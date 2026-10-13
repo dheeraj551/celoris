@@ -45,6 +45,52 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.SUPABASE_URL ||
+      'https://suaqywhmaheoansrinzw.supabase.co';
+    const supabaseKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      '';
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Auto-resolve authentic avatar_url from body or users table
+    let resolvedAvatarUrl = (body.avatar_url || '').toString().trim() || null;
+    if (!resolvedAvatarUrl || resolvedAvatarUrl.includes('78b7a852')) {
+      try {
+        const phoneDigits = (parsedPhone || '').replace(/\D/g, '').slice(-10);
+        if (phoneDigits.length === 10) {
+          const { data: phoneUser } = await supabase
+            .from('users')
+            .select('profile_pic_url')
+            .ilike('phone', `%${phoneDigits}%`)
+            .not('profile_pic_url', 'is', null)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          if (phoneUser?.[0]?.profile_pic_url && !phoneUser[0].profile_pic_url.includes('78b7a852')) {
+            resolvedAvatarUrl = phoneUser[0].profile_pic_url;
+          }
+        }
+
+        if (!resolvedAvatarUrl && name) {
+          const { data: nameUser } = await supabase
+            .from('users')
+            .select('profile_pic_url')
+            .ilike('full_name', name.toString().trim())
+            .not('profile_pic_url', 'is', null)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          if (nameUser?.[0]?.profile_pic_url && !nameUser[0].profile_pic_url.includes('78b7a852')) {
+            resolvedAvatarUrl = nameUser[0].profile_pic_url;
+          }
+        }
+      } catch (_) {
+        // Silently continue if lookup fails
+      }
+    }
+
     const payload = {
       name: name.toString().trim(),
       phone: parsedPhone,
@@ -57,18 +103,8 @@ export async function POST(request: NextRequest) {
       budget: budget ? budget.toString().trim() : null,
       source: source || 'website_learn_page',
       status: 'open',
+      avatar_url: resolvedAvatarUrl,
     };
-
-    const supabaseUrl =
-      process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      process.env.SUPABASE_URL ||
-      'https://suaqywhmaheoansrinzw.supabase.co';
-    const supabaseKey =
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      '';
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data, error } = await supabase
       .from('leads')

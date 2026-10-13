@@ -231,27 +231,49 @@ export function TrainerEnquiries() {
       // Dynamically attach original user profile pictures from Celoris users table
       const { data: usersData } = await supabase
         .from('users')
-        .select('full_name, username, profile_pic_url')
-        .not('profile_pic_url', 'is', null);
+        .select('id, full_name, username, profile_pic_url, phone, created_at')
+        .not('profile_pic_url', 'is', null)
+        .order('created_at', { ascending: false });
 
-      const userPicMap: Record<string, string> = {};
+      const userPicByNameMap: Record<string, string> = {};
+      const userPicByPhoneMap: Record<string, string> = {};
+
       if (usersData) {
         usersData.forEach((u: any) => {
           if (u.profile_pic_url && !u.profile_pic_url.includes('78b7a852')) {
             const fn = u.full_name?.trim()?.toLowerCase();
             const un = u.username?.trim()?.toLowerCase();
-            if (fn && fn.length > 2) userPicMap[fn] = u.profile_pic_url;
-            if (un && un.length > 2) userPicMap[un] = u.profile_pic_url;
+            // Since ordered by created_at desc, first one seen is the most recent
+            if (fn && fn.length > 2 && !userPicByNameMap[fn]) userPicByNameMap[fn] = u.profile_pic_url;
+            if (un && un.length > 2 && !userPicByNameMap[un]) userPicByNameMap[un] = u.profile_pic_url;
+
+            if (u.phone) {
+              const digits = u.phone.replace(/\D/g, '').slice(-10);
+              if (digits.length === 10 && !userPicByPhoneMap[digits]) {
+                userPicByPhoneMap[digits] = u.profile_pic_url;
+              }
+            }
           }
         });
       }
 
       const enriched = (data || []).map((lead: any) => {
-        const key = lead.name?.trim()?.toLowerCase();
+        const leadDigits = (lead.phone || lead.contact_info || '').replace(/\D/g, '').slice(-10);
+        const nameKey = lead.name?.trim()?.toLowerCase();
+
+        // Priority 1: Lead's existing valid avatar
+        // Priority 2: Exact phone match from user account
+        // Priority 3: Exact name match from most recent user account
+        const resolvedPic =
+          (lead.avatar_url && !lead.avatar_url.includes('78b7a852') ? lead.avatar_url : null) ||
+          (leadDigits.length === 10 && userPicByPhoneMap[leadDigits]) ||
+          (nameKey && userPicByNameMap[nameKey]) ||
+          null;
+
         return {
           ...lead,
-          avatar_url: (key && userPicMap[key]) || (lead.avatar_url && !lead.avatar_url.includes('78b7a852') ? lead.avatar_url : null),
-          profile_pic_url: (key && userPicMap[key]) || null,
+          avatar_url: resolvedPic,
+          profile_pic_url: resolvedPic,
         };
       });
 

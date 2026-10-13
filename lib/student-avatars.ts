@@ -40,9 +40,10 @@ const ORIGINAL_USER_AVATARS: Record<string, string> = {
   'priyanka sood': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/d48ebcde-3706-4e02-b98a-eb3f1c0a7987/profile-photo.jpg?t=1791226783003',
   'priyanka': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/d48ebcde-3706-4e02-b98a-eb3f1c0a7987/profile-photo.jpg?t=1791226783003',
 
-  // 8. Aditi Sharma (username: aditi)
-  'aditi sharma': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/649ca675-59a4-407c-b6eb-6ad0ca590a13/profile-photo.jpg?t=1791225768375',
-  'aditi': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/649ca675-59a4-407c-b6eb-6ad0ca590a13/profile-photo.jpg?t=1791225768375',
+  // 8. Aditi Sharma (username: adityouknow)
+  'aditi sharma': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/a44265c7-62eb-4ea8-96e6-a95a7be92ee4/profile-photo.jpg?t=1791891346825',
+  'adityouknow': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/a44265c7-62eb-4ea8-96e6-a95a7be92ee4/profile-photo.jpg?t=1791891346825',
+  'aditi': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/a44265c7-62eb-4ea8-96e6-a95a7be92ee4/profile-photo.jpg?t=1791891346825',
 
   // 9. Kanika Jain (username: Kanika)
   'kanika jain': 'https://suaqywhmaheoansrinzw.supabase.co/storage/v1/object/public/avatars/e4d39054-1643-42fa-a3d6-e9cf1c82de28/profile-photo.jpg?t=1791224904399',
@@ -186,27 +187,7 @@ export function getStudentDisplayPicture(student?: {
     return null;
   }
 
-  const rawName = (student.name || '').trim().toLowerCase();
-  if (rawName) {
-    // 1. Direct exact match in verified original user avatars
-    if (ORIGINAL_USER_AVATARS[rawName]) {
-      return ORIGINAL_USER_AVATARS[rawName];
-    }
-
-    // 2. Normalized (single space) match
-    const normalizedName = rawName.replace(/\s+/g, ' ');
-    if (ORIGINAL_USER_AVATARS[normalizedName]) {
-      return ORIGINAL_USER_AVATARS[normalizedName];
-    }
-
-    // 3. First name match (if multi-word or unique)
-    const firstName = normalizedName.split(' ')[0];
-    if (firstName && firstName.length > 2 && ORIGINAL_USER_AVATARS[firstName]) {
-      return ORIGINAL_USER_AVATARS[firstName];
-    }
-  }
-
-  // 4. Fallback to valid attached profile_pic_url or avatar_url (ignoring bad placeholder 78b7a852)
+  // 1. PRIORITY #1: The user's actual uploaded profile picture in their account
   const sanitize = (url?: string | null): string | null => {
     if (!url || typeof url !== 'string' || url.trim().length < 15) return null;
     if (url.includes('78b7a852')) return null;
@@ -218,6 +199,19 @@ export function getStudentDisplayPicture(student?: {
 
   const validAvatar = sanitize(student.avatar_url);
   if (validAvatar) return validAvatar;
+
+  // 2. Fallback: Only if student has NO profile picture in their account, check verified avatars dictionary
+  const rawName = (student.name || '').trim().toLowerCase();
+  if (rawName) {
+    if (ORIGINAL_USER_AVATARS[rawName]) {
+      return ORIGINAL_USER_AVATARS[rawName];
+    }
+
+    const normalizedName = rawName.replace(/\s+/g, ' ');
+    if (ORIGINAL_USER_AVATARS[normalizedName]) {
+      return ORIGINAL_USER_AVATARS[normalizedName];
+    }
+  }
 
   return null;
 }
