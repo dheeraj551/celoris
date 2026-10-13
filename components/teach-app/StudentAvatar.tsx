@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { getStudentDisplayPicture } from '@/lib/student-avatars';
+import React from 'react';
 
 export interface StudentAvatarProps {
   student?: {
@@ -28,10 +27,8 @@ export function StudentAvatar({
   shape = 'circle',
   showStatusIndicator = false,
 }: StudentAvatarProps) {
-  const [imgError, setImgError] = useState(false);
   const name = student?.name || 'Student';
   const initial = name.trim().charAt(0).toUpperCase() || 'S';
-  const avatarUrl = getStudentDisplayPicture(student);
 
   const roundedClass = shape === 'circle' ? 'rounded-full' : 'rounded-2xl';
 
@@ -40,19 +37,8 @@ export function StudentAvatar({
       className={`relative shrink-0 flex items-center justify-center font-bold overflow-hidden select-none bg-emerald-50 text-emerald-800 ring-2 ring-emerald-500/80 border border-emerald-400/40 shadow-sm ${SIZE_CLASSES[size]} ${roundedClass} ${className}`}
       title={name}
     >
-      {/* Underlying fallback initial letter */}
+      {/* Clean student initial badge */}
       <span className="font-extrabold uppercase tracking-tight">{initial}</span>
-
-      {/* Photorealistic Student Display Picture */}
-      {!imgError && avatarUrl && (
-        <img
-          src={avatarUrl}
-          alt={name}
-          className={`w-full h-full object-cover absolute inset-0 ${roundedClass}`}
-          loading="lazy"
-          onError={() => setImgError(true)}
-        />
-      )}
 
       {/* Optional Active Green Dot Indicator */}
       {showStatusIndicator && (
