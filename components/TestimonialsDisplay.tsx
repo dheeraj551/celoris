@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Star, User, Building, MapPin, Globe, ChevronLeft, ChevronRight, Quote } from "lucide-react"
+import { Star, User, Building, MapPin, Globe, ChevronLeft, ChevronRight, Quote, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { SpotlightCard } from "@/components/ui/spotlight-card"
@@ -31,6 +31,58 @@ interface TestimonialsDisplayProps {
   showFeatured?: boolean
   showImages?: boolean
   className?: string
+}
+
+const CREATIVE_ROLES = [
+  'Verified Learner',
+  'Studio Creator',
+  'Active Student',
+  'Creative Node',
+  'AI Explorer',
+  'Certified Student',
+]
+
+const isGenericTitle = (title: string | null | undefined): boolean => {
+  if (!title) return true
+  const normalized = title.trim().toUpperCase()
+  return ['USER', 'ADMIN', 'MEMBER', 'TEST', 'N/A', 'NONE', 'STUDENT', 'CLIENT'].includes(normalized)
+}
+
+const getDeterministicRole = (seedStr: string): string => {
+  let hash = 0
+  for (let i = 0; i < seedStr.length; i++) {
+    hash = (hash << 5) - hash + seedStr.charCodeAt(i)
+    hash |= 0
+  }
+  const index = Math.abs(hash) % CREATIVE_ROLES.length
+  return CREATIVE_ROLES[index]
+}
+
+const ClientRoleBadge = ({ testimonial }: { testimonial: Testimonial }) => {
+  const isGeneric = isGenericTitle(testimonial.client_title)
+
+  if (!isGeneric && testimonial.client_title) {
+    return (
+      <span className="truncate text-slate-400 font-bold tracking-wide">
+        {testimonial.client_title}
+      </span>
+    )
+  }
+
+  const roleName = getDeterministicRole(testimonial.id || testimonial.client_name || 'celoris')
+
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.12)] group-hover:border-emerald-400/40 transition-colors">
+      <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+      </span>
+      <span className="home-shimmer-text font-black text-[9px] uppercase tracking-widest leading-none flex items-center gap-1">
+        <Sparkles className="h-2.5 w-2.5 text-emerald-400/90 animate-pulse flex-shrink-0" />
+        {roleName}
+      </span>
+    </div>
+  )
 }
 
 export default function TestimonialsDisplay({
@@ -185,10 +237,8 @@ export default function TestimonialsDisplay({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
-              {testimonial.client_title && (
-                <span className="truncate">{testimonial.client_title}</span>
-              )}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+              <ClientRoleBadge testimonial={testimonial} />
 
               {testimonial.client_company && (
                 <span className="flex items-center truncate">
@@ -377,7 +427,7 @@ export default function TestimonialsDisplay({
               <blockquote className="text-slate-300 mb-3 italic">"{testimonial.testimonial_text}"</blockquote>
               <div className="flex items-center space-x-4 text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
                 <span className="font-medium">{testimonial.client_name}</span>
-                {testimonial.client_title && <span>{testimonial.client_title}</span>}
+                <ClientRoleBadge testimonial={testimonial} />
                 {testimonial.client_company && (
                   <span className="flex items-center">
                     <Building className="h-3 w-3 mr-1" />
