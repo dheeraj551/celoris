@@ -16,6 +16,7 @@ const footerSections = [
       { name: "Job Center", href: "/job-center" },
       { name: "Become a Trainer", href: "/become-trainer" },
       { name: "Classrooms", href: "/classrooms" },
+      { name: "Celoris Cloud", href: "/cloud" },
       { name: "Apps", href: "/apps" },
     ],
   },
@@ -87,6 +88,7 @@ export default function Footer() {
     pathname?.startsWith("/marketing-studio") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
+    pathname?.startsWith("/cloud") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
     pathname?.startsWith("/shop") ||

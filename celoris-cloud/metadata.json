@@ -1,0 +1,8 @@
+{
+  "name": "Celoris Cloud — 100% Free Managed WordPress Hosting",
+  "description": "High-speed, ad-free managed WordPress hosting with free .celoris.in subdomains, NVMe SSD, and 60-second 1-click launch for Indian students, learners, and creators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

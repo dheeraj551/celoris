@@ -274,4 +274,13 @@ export const CREATIVE_APPS: CreativeAppItem[] = [
     bgColor: 'from-[#d4f634]/20 to-emerald-600/10 border-[#d4f634]/30',
     href: '/motion-swap',
   },
+  {
+    id: 'app-cloud',
+    name: 'Celoris Cloud',
+    shortDesc: 'Managed WordPress cloud hosting with NVMe SSDs & 99.99% uptime',
+    badge: 'Cloud Host',
+    iconColor: 'text-emerald-400',
+    bgColor: 'from-emerald-500/20 to-teal-600/10 border-emerald-500/30',
+    href: '/cloud',
+  },
 ];

@@ -60,6 +60,9 @@ const nextConfig = {
       // Celoris TV retired → redirect legacy links to Learn
       { source: '/celoris-tv', destination: '/learn', permanent: true },
       { source: '/celoris-tv/:path*', destination: '/learn', permanent: true },
+      // Celoris Cloud alias redirect
+      { source: '/celoris-cloud', destination: '/cloud', permanent: true },
+      { source: '/celoris-cloud/:path*', destination: '/cloud', permanent: true },
     ];
   },
 }

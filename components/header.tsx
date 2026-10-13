@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User, LogOut, User as UserIcon, Wallet, BookOpen, GraduationCap, Briefcase, IndianRupee } from "lucide-react"
+import { Menu, User, LogOut, User as UserIcon, Wallet, BookOpen, GraduationCap, Briefcase, IndianRupee, Cloud } from "lucide-react"
 import { cn } from "@/lib/utils"
 // removed createClient import as it is handled in useAuth
 import {
@@ -73,6 +73,7 @@ export default function Header() {
     pathname?.startsWith("/marketing-studio") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
+    pathname?.startsWith("/cloud") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
     pathname?.startsWith("/shop") ||
@@ -251,6 +252,18 @@ export default function Header() {
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                    <Link href="/cloud" className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                        <Cloud className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Celoris Cloud</span>
+                        <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Free NVMe WordPress</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
                     <Link href="/job-center" className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
                         <Briefcase className="w-3.5 h-3.5" />
@@ -385,6 +398,14 @@ export default function Header() {
                     >
                       <GraduationCap className="h-4 w-4" />
                       <span>Teach</span>
+                    </Link>
+                    <Link
+                      href="/cloud"
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-text-secondary hover:bg-gray-100 rounded-md"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Cloud className="h-4 w-4 text-emerald-400" />
+                      <span>Celoris Cloud</span>
                     </Link>
                     <Link
                       href="/job-center"

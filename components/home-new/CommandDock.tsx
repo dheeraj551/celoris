@@ -24,6 +24,7 @@ import {
     Sparkles,
     ArrowLeftRight,
     Megaphone,
+    Cloud,
     type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -206,6 +207,18 @@ const PALETTE_COMMANDS: PaletteCommand[] = [
         glowRgba: "rgba(245, 158, 11, 0.45)",
         iconColor: "text-amber-400",
         badgeStyle: "bg-amber-500/15 text-amber-300 border-amber-400/30",
+    },
+    {
+        category: "Creative Studios",
+        title: "Celoris Cloud",
+        description: "Zero-config high performance WordPress & WooCommerce cloud hosting",
+        href: "/cloud",
+        icon: Cloud,
+        badge: "Hosting",
+        color: "from-emerald-400 to-teal-500",
+        glowRgba: "rgba(16, 185, 129, 0.45)",
+        iconColor: "text-emerald-400",
+        badgeStyle: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
     },
     {
         category: "Career & Learning",

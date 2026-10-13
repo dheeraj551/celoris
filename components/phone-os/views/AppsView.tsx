@@ -13,7 +13,8 @@ import {
   Flame,
   Zap,
   Megaphone,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Cloud
 } from 'lucide-react';
 import { CREATIVE_APPS } from '../data';
 import Link from 'next/link';
@@ -31,6 +32,7 @@ export function AppsView({ onBack, onClose }: AppsViewProps) {
       case 'app-video': return <Video className="w-4 h-4 text-blue-400" />;
       case 'app-vio': return <Megaphone className="w-4 h-4 text-[#D4FF00]" />;
       case 'app-motion': return <ArrowLeftRight className="w-4 h-4 text-[#d4f634]" />;
+      case 'app-cloud': return <Cloud className="w-4 h-4 text-emerald-400" />;
       default: return <Layers className="w-4 h-4 text-white" />;
     }
   };

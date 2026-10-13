@@ -1,0 +1,77 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import { Navbar } from './components/Navbar';
+import { Hero } from './components/Hero';
+import { InfrastructureBar } from './components/InfrastructureBar';
+import { ComparisonTable } from './components/ComparisonTable';
+import { HowItWorks } from './components/HowItWorks';
+import { Pricing } from './components/Pricing';
+import { TargetAudience } from './components/TargetAudience';
+import { Faq } from './components/Faq';
+import { CtaBanner } from './components/CtaBanner';
+import { Footer } from './components/Footer';
+import { ProvisionModal } from './components/ProvisionModal';
+
+export default function App() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSubdomain, setSelectedSubdomain] = useState('rahul-designs');
+
+  const handleOpenClaimModal = (subdomain?: string) => {
+    if (subdomain && subdomain.trim().length > 0) {
+      setSelectedSubdomain(subdomain.trim());
+    }
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-neutral-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+      {/* Top Navigation */}
+      <Navbar onClaimClick={() => handleOpenClaimModal()} />
+
+      {/* Main Landing Page Flow */}
+      <main className="flex-1">
+        {/* Section 1: Hero & Interactive Subdomain Claimer */}
+        <Hero onClaim={handleOpenClaimModal} />
+
+        {/* Section 2: Trust & Infrastructure Highlights */}
+        <InfrastructureBar />
+
+        {/* Section 3: Celoris Cloud vs The Old Way */}
+        <ComparisonTable onClaimClick={() => handleOpenClaimModal()} />
+
+        {/* Section 4: How It Works 3-Step Interactive Progression */}
+        <HowItWorks onClaimClick={handleOpenClaimModal} />
+
+        {/* Section 5: Transparent Pricing Grid */}
+        <Pricing onSelectPlan={(plan) => handleOpenClaimModal(plan.toLowerCase().includes('starter') ? selectedSubdomain : undefined)} />
+
+        {/* Section 6: Who is Celoris Cloud Built For? */}
+        <TargetAudience onClaimClick={handleOpenClaimModal} />
+
+        {/* Section 7: Frequently Asked Questions */}
+        <Faq />
+
+        {/* Section 8: Final Call To Action Banner */}
+        <CtaBanner onClaimClick={handleOpenClaimModal} />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Interactive 60-Second Provisioning Modal */}
+      <ProvisionModal
+        isOpen={modalOpen}
+        subdomain={selectedSubdomain}
+        onClose={handleCloseModal}
+      />
+    </div>
+  );
+}

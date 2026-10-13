@@ -25,7 +25,8 @@ import {
     IndianRupee,
     Sparkles,
     Wand2,
-    ArrowLeftRight
+    ArrowLeftRight,
+    Cloud,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -41,6 +42,7 @@ const MENU_GROUPS = [
             { name: "Video Studio", icon: Video, href: "/video-studio" },
             { name: "PolyVault", icon: Box, href: "/polyvault" },
             { name: "PhotoLite", icon: ImageIcon, href: "/photolite" },
+            { name: "Celoris Cloud", icon: Cloud, href: "/cloud" },
         ]
     },
     {

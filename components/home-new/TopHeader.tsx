@@ -28,6 +28,7 @@ import {
     IndianRupee,
     ArrowLeftRight,
     Megaphone,
+    Cloud,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -424,6 +425,18 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
+                                        <Link href="/cloud" className="flex items-center gap-2.5">
+                                            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                                <Cloud className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Celoris Cloud</span>
+                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Free NVMe WordPress</span>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
                                         <Link href="/job-center" className="flex items-center gap-2.5">
                                             <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
                                                 <Briefcase className="w-3.5 h-3.5" />
@@ -636,6 +649,14 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         >
                                             <Briefcase className="w-4 h-4 text-amber-400" />
                                             <span className="text-sm font-medium">Job Center</span>
+                                        </Link>
+                                        <Link
+                                            href="/cloud"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
+                                        >
+                                            <Cloud className="w-4 h-4 text-emerald-400" />
+                                            <span className="text-sm font-medium">Celoris Cloud</span>
                                         </Link>
                                         <Link
                                             href="/pricing"
