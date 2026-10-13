@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Star, User, Building, MapPin, Globe, ChevronLeft, ChevronRight, Quote, Sparkles } from "lucide-react"
+import { Star, User, Building, MapPin, Globe, ChevronLeft, ChevronRight, Quote } from "lucide-react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { SpotlightCard } from "@/components/ui/spotlight-card"
@@ -30,56 +30,52 @@ interface TestimonialsDisplayProps {
   layout?: 'grid' | 'carousel' | 'list' | 'marquee'
   showFeatured?: boolean
   showImages?: boolean
+  showCategoryFilter?: boolean
   className?: string
 }
 
-const CREATIVE_ROLES = [
-  'Verified Learner',
-  'Studio Creator',
-  'Active Student',
-  'Creative Node',
-  'AI Explorer',
-  'Certified Student',
-]
+export type ReviewCategory = 'Student' | 'Teacher' | 'Creator' | 'Customer'
 
-const isGenericTitle = (title: string | null | undefined): boolean => {
-  if (!title) return true
-  const normalized = title.trim().toUpperCase()
-  return ['USER', 'ADMIN', 'MEMBER', 'TEST', 'N/A', 'NONE', 'STUDENT', 'CLIENT'].includes(normalized)
+export const REVIEW_CATEGORIES: ReviewCategory[] = ['Student', 'Teacher', 'Creator', 'Customer']
+
+export const resolveReviewCategory = (testimonial: Testimonial): ReviewCategory => {
+  const title = (testimonial.client_title || '').trim().toLowerCase()
+  if (title === 'student' || title.includes('student') || title.includes('learner')) return 'Student'
+  if (title === 'teacher' || title.includes('teacher') || title.includes('trainer') || title.includes('instructor')) return 'Teacher'
+  if (title === 'creator' || title.includes('creator') || title.includes('developer') || title.includes('designer') || title.includes('freelance') || title.includes('artist')) return 'Creator'
+  if (title === 'customer' || title.includes('customer') || title.includes('founder') || title.includes('client') || title.includes('manager') || title.includes('business')) return 'Customer'
+
+  const text = (testimonial.testimonial_text || '').toLowerCase()
+  if (text.includes('business') || text.includes('company') || text.includes('small businesses') || text.includes('hiring') || text.includes('services available')) {
+    return 'Customer'
+  }
+  if (text.includes('creator') || text.includes('freelancer') || text.includes('workflow') || text.includes('creating with it') || text.includes('editing')) {
+    return 'Creator'
+  }
+  if (text.includes('trainer') || text.includes('teaching') || text.includes('instructor') || text.includes('demonstrated to clients')) {
+    return 'Teacher'
+  }
+  return 'Student'
 }
 
-const getDeterministicRole = (seedStr: string): string => {
-  let hash = 0
-  for (let i = 0; i < seedStr.length; i++) {
-    hash = (hash << 5) - hash + seedStr.charCodeAt(i)
-    hash |= 0
-  }
-  const index = Math.abs(hash) % CREATIVE_ROLES.length
-  return CREATIVE_ROLES[index]
+const CATEGORY_ORDER: Record<ReviewCategory, number> = {
+  Student: 1,
+  Teacher: 2,
+  Creator: 3,
+  Customer: 4,
 }
 
 const ClientRoleBadge = ({ testimonial }: { testimonial: Testimonial }) => {
-  const isGeneric = isGenericTitle(testimonial.client_title)
-
-  if (!isGeneric && testimonial.client_title) {
-    return (
-      <span className="truncate text-slate-400 font-bold tracking-wide">
-        {testimonial.client_title}
-      </span>
-    )
-  }
-
-  const roleName = getDeterministicRole(testimonial.id || testimonial.client_name || 'celoris')
+  const category = resolveReviewCategory(testimonial)
 
   return (
-    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.12)] group-hover:border-emerald-400/40 transition-colors">
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.12)]">
       <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
       </span>
-      <span className="home-shimmer-text font-black text-[9px] uppercase tracking-widest leading-none flex items-center gap-1">
-        <Sparkles className="h-2.5 w-2.5 text-emerald-400/90 animate-pulse flex-shrink-0" />
-        {roleName}
+      <span className="font-mono font-bold text-[9px] uppercase tracking-widest text-emerald-300 leading-none">
+        {category}
       </span>
     </div>
   )
@@ -92,12 +88,14 @@ export default function TestimonialsDisplay({
   layout = 'grid',
   showFeatured = true,
   showImages = true,
+  showCategoryFilter = true,
   className = '',
   initialTestimonials = null
 }: TestimonialsDisplayProps & { initialTestimonials?: Testimonial[] | null }) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials || [])
   const [loading, setLoading] = useState(!initialTestimonials)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState<'all' | ReviewCategory>('all')
 
   useEffect(() => {
     if (initialTestimonials) return;
@@ -300,6 +298,48 @@ export default function TestimonialsDisplay({
     )
   }
 
+  const filteredTestimonials = testimonials
+    .filter((t) => (selectedCategory === 'all' ? true : resolveReviewCategory(t) === selectedCategory))
+    .sort((a, b) => CATEGORY_ORDER[resolveReviewCategory(a)] - CATEGORY_ORDER[resolveReviewCategory(b)])
+
+  const renderCategoryFilter = () => {
+    if (!showCategoryFilter || testimonials.length === 0) return null
+
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-8 px-2">
+        <button
+          type="button"
+          onClick={() => setSelectedCategory('all')}
+          className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+            selectedCategory === 'all'
+              ? 'bg-emerald-400 text-black shadow-[0_0_20px_rgba(52,211,153,0.5)] scale-105'
+              : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/10'
+          }`}
+        >
+          All ({testimonials.length})
+        </button>
+        {REVIEW_CATEGORIES.map((cat) => {
+          const count = testimonials.filter((t) => resolveReviewCategory(t) === cat).length
+          if (count === 0) return null
+          return (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                selectedCategory === cat
+                  ? 'bg-emerald-400 text-black shadow-[0_0_20px_rgba(52,211,153,0.5)] scale-105'
+                  : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              {cat}s ({count})
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
+
   if (testimonials.length === 0) {
     return (
       <motion.div
@@ -314,49 +354,53 @@ export default function TestimonialsDisplay({
     )
   }
 
-  if (layout === 'marquee' && testimonials.length > 0) {
-    // Continuous auto-scrolling strip so every testimonial gets shown, not
-    // just the first few that fit a grid. The track renders the list twice
-    // back-to-back and the CSS animation (home-marquee-track, in
-    // globals.css) scrolls exactly one copy's width for a seamless loop.
-    // Speed scales with how many testimonials there are so it never feels
-    // rushed with a short list or glacial with a long one.
-    const duration = Math.max(24, testimonials.length * 6)
+  if (layout === 'marquee' && filteredTestimonials.length > 0) {
+    const duration = Math.max(20, filteredTestimonials.length * 6)
+    const marqueeItems =
+      filteredTestimonials.length < 4
+        ? [...filteredTestimonials, ...filteredTestimonials, ...filteredTestimonials, ...filteredTestimonials]
+        : [...filteredTestimonials, ...filteredTestimonials]
+
     return (
-      <div
-        className={`relative overflow-hidden ${className}`}
-        style={{
-          maskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
-        }}
-      >
+      <div className={`space-y-6 ${className}`}>
+        {renderCategoryFilter()}
         <div
-          className="home-marquee-track flex items-start gap-6 w-max"
-          style={{ '--marquee-duration': `${duration}s` } as React.CSSProperties}
+          className="relative overflow-hidden"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
+          }}
         >
-          {[...testimonials, ...testimonials].map((testimonial, index) => (
-            <div key={`${testimonial.id}-${index}`} className="w-[320px] md:w-[380px] shrink-0">
-              <TestimonialCard
-                testimonial={testimonial}
-                index={index % testimonials.length}
-                featured={testimonial.is_featured}
-              />
-            </div>
-          ))}
+          <div
+            key={selectedCategory}
+            className="home-marquee-track flex items-start gap-6 w-max"
+            style={{ '--marquee-duration': `${duration}s` } as React.CSSProperties}
+          >
+            {marqueeItems.map((testimonial, index) => (
+              <div key={`${testimonial.id}-${index}`} className="w-[320px] md:w-[380px] shrink-0">
+                <TestimonialCard
+                  testimonial={testimonial}
+                  index={index % filteredTestimonials.length}
+                  featured={testimonial.is_featured}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
   }
 
-  if (layout === 'carousel' && testimonials.length > 1) {
+  if (layout === 'carousel' && filteredTestimonials.length > 1) {
     return (
       <div className={`relative ${className}`}>
+        {renderCategoryFilter()}
         <div className="overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {testimonials.map((testimonial) => (
+            {filteredTestimonials.map((testimonial) => (
               <div key={testimonial.id} className="w-full flex-shrink-0 px-2">
                 <div className="max-w-4xl mx-auto">
                   <TestimonialCard testimonial={testimonial} />
@@ -366,7 +410,7 @@ export default function TestimonialsDisplay({
           </div>
         </div>
 
-        {testimonials.length > 1 && (
+        {filteredTestimonials.length > 1 && (
           <>
             <button
               onClick={prevTestimonial}
@@ -382,7 +426,7 @@ export default function TestimonialsDisplay({
             </button>
 
             <div className="flex justify-center mt-6 space-x-2">
-              {testimonials.map((_, index) => (
+              {filteredTestimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
@@ -400,7 +444,8 @@ export default function TestimonialsDisplay({
   if (layout === 'list') {
     return (
       <div className={`space-y-6 ${className}`}>
-        {testimonials.map((testimonial) => (
+        {renderCategoryFilter()}
+        {filteredTestimonials.map((testimonial) => (
           <div key={testimonial.id} className="flex items-start space-x-4">
             {showImages && (
               <div className="flex-shrink-0">
@@ -444,15 +489,18 @@ export default function TestimonialsDisplay({
 
   // Default grid layout
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
-      {testimonials.map((testimonial, index) => (
-        <TestimonialCard
-          key={testimonial.id}
-          testimonial={testimonial}
-          index={index}
-          featured={testimonial.is_featured}
-        />
-      ))}
+    <div className={className}>
+      {renderCategoryFilter()}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredTestimonials.map((testimonial, index) => (
+          <TestimonialCard
+            key={testimonial.id}
+            testimonial={testimonial}
+            index={index}
+            featured={testimonial.is_featured}
+          />
+        ))}
+      </div>
     </div>
   )
 }

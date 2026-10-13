@@ -29,7 +29,7 @@ export default function ContactPage() {
 
   const [feedbackForm, setFeedbackForm] = useState({
     name: '',
-    role: '',
+    role: 'Student',
     rating: 5,
     message: ''
   })
@@ -107,7 +107,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           client_name: clientName,
           client_avatar_url: profile?.profile_pic_url || '',
-          client_title: profile?.specialty || profile?.role || 'Member',
+          client_title: feedbackForm.role || 'Student',
           testimonial_text: feedbackForm.message,
           rating: feedbackForm.rating,
           testimonial_type: 'general'
@@ -116,7 +116,7 @@ export default function ContactPage() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Failed to submit')
       toast({ title: "Feedback Received!", description: "Thank you for your valuable input.", variant: "default" })
-      setFeedbackForm({ name: '', role: '', rating: 5, message: '' })
+      setFeedbackForm({ name: '', role: 'Student', rating: 5, message: '' })
     } catch (error) {
       toast({ title: "Submission Error", description: "We couldn't process your feedback. Please try again.", variant: "destructive" })
     } finally {
@@ -497,6 +497,22 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">
+                    I am a (Category) *
+                  </label>
+                  <select
+                    value={feedbackForm.role || 'Student'}
+                    onChange={(e) => setFeedbackForm(prev => ({ ...prev, role: e.target.value }))}
+                    className="w-full bg-[#050810] border border-white/10 rounded-2xl px-5 py-4 text-white text-sm font-bold focus:outline-none focus:border-emerald-500/50 transition-all cursor-pointer"
+                  >
+                    <option value="Student" className="bg-[#0b111e] text-white">Student (Learning skills & courses)</option>
+                    <option value="Teacher" className="bg-[#0b111e] text-white">Teacher / Trainer (Instructing & mentoring)</option>
+                    <option value="Creator" className="bg-[#0b111e] text-white">Creator (Video editor, designer, freelancer)</option>
+                    <option value="Customer" className="bg-[#0b111e] text-white">Customer (Client, founder, business)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
                   <label className="text-[10px] font-black text-emerald-500 uppercase tracking-widest px-1 italic">Your Feedback</label>
                   <textarea
                     required
@@ -520,7 +536,7 @@ export default function ContactPage() {
                       </motion.div>
                     ) : (
                       <motion.div key="text" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 uppercase font-black italic tracking-widest group-hover:text-emerald-500 transition-colors">
-                        Submit Feedback <Sparkles size={18} />
+                        Submit Feedback <Send size={18} />
                       </motion.div>
                     )}
                   </AnimatePresence>
