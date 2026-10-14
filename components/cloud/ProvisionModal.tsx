@@ -60,11 +60,16 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
     }
   };
 
+  const prevIsOpenRef = React.useRef(false);
+
   const handleStartDeployment = async () => {
     if (cleanSubdomain.length < 3) {
       setDeployError('Subdomain must be at least 3 characters.');
       return;
     }
+
+    const finalAdminUser = (adminUser.trim() || cleanSubdomain || 'admin').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    const finalAdminPass = `celoris_${cleanSubdomain}_2026`;
 
     setIsProvisioning(true);
     setDeployError(null);
@@ -82,6 +87,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
           subdomain: cleanSubdomain,
           title: siteTitle || `${cleanSubdomain} Site`,
           email: user?.email || `${cleanSubdomain}@celoris.in`,
+          adminUser: finalAdminUser,
+          adminPass: finalAdminPass,
         }),
       });
 
@@ -95,14 +102,17 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
       setProgress(95);
 
       setTimeout(() => {
+        const returnedUser = data.adminUser || finalAdminUser;
+        const returnedPass = data.adminPass || finalAdminPass;
+
         setProgress(100);
         setIsProvisioning(false);
         setIsCompleted(true);
         setDeployedResult({
           siteUrl: data.siteUrl || `https://${fullDomain}`,
           adminUrl: data.adminUrl || `https://${fullDomain}/wp-admin`,
-          adminUser: data.adminUser || adminUser || cleanSubdomain,
-          adminPass: data.adminPass || `celoris_${cleanSubdomain}_2026`,
+          adminUser: returnedUser,
+          adminPass: returnedPass,
           fullDomain: data.fullDomain || fullDomain,
         });
 
@@ -110,8 +120,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
         const newDeployment = {
           subdomain: data.fullDomain || fullDomain,
           siteTitle: siteTitle || `${cleanSubdomain} Portfolio`,
-          adminUser: data.adminUser || adminUser,
-          adminPass: data.adminPass || `celoris_${cleanSubdomain}_2026`,
+          adminUser: returnedUser,
+          adminPass: returnedPass,
           deployedAt: new Date().toISOString(),
           userId: user?.id || null,
           userEmail: user?.email || null,
@@ -136,7 +146,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   };
 
   useEffect(() => {
-    if (isOpen) {
+    // Only reset state when modal opens from closed state (false -> true)
+    if (isOpen && !prevIsOpenRef.current) {
       setStep(0);
       setProgress(0);
       setIsProvisioning(false);
@@ -165,6 +176,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
       const defaultAdmin = profile?.username || user?.email?.split('@')[0] || initialSub || 'admin';
       setAdminUser(defaultAdmin);
     }
+    prevIsOpenRef.current = isOpen;
   }, [isOpen, subdomain, profile, user]);
 
   if (!isOpen) return null;

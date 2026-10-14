@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
     const rawSubdomain = (body.subdomain || '').toString().trim().toLowerCase();
     const title = (body.title || `${rawSubdomain} Site`).toString().trim();
     const email = (body.email || `${rawSubdomain}@celoris.in`).toString().trim();
+    const adminUser = (body.adminUser || rawSubdomain).toString().trim().toLowerCase().replace(/[^a-z0-9_-]/g, '') || rawSubdomain;
+    const adminPass = (body.adminPass || `celoris_${rawSubdomain}_2026`).toString().trim();
 
     // Clean subdomain: lowercase alphanumeric and hyphens only
     const slug = rawSubdomain.replace(/[^a-z0-9-]/g, '').replace(/^-+|-+$/g, '');
@@ -52,6 +54,8 @@ export async function POST(req: NextRequest) {
         subdomain: slug,
         title,
         email,
+        adminUser,
+        adminPass,
       }),
       // Set reasonable timeout
       signal: AbortSignal.timeout(30000),
@@ -75,8 +79,8 @@ export async function POST(req: NextRequest) {
       fullDomain: data.fullDomain || (data.subdomain?.includes('.') ? data.subdomain : `${slug}.celoris.in`),
       siteUrl: data.siteUrl || `https://${slug}.celoris.in`,
       adminUrl: data.adminUrl || `https://${slug}.celoris.in/wp-admin`,
-      adminUser: data.adminUser || slug,
-      adminPass: data.adminPassword || data.adminPass || `celoris_${slug}_2026`,
+      adminUser: data.adminUser || adminUser || slug,
+      adminPass: data.adminPassword || data.adminPass || adminPass,
       deployedAt: new Date().toISOString(),
     });
 
