@@ -18,7 +18,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self):
-        if self.path != '/provision':
+        if self.path not in ['/provision', '/wake']:
             self.send_response(404)
             self.end_headers()
             return
@@ -33,6 +33,36 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
 
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
+
+        if self.path == '/wake':
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                subdomain = data.get('subdomain', '').strip().lower()
+                slug = "".join([c for c in subdomain if c.isalnum() or c == '-'])
+                full_domain = f"{slug}.celoris.in"
+
+                subprocess.run([
+                    "docker", "exec", "celoris-wordpress",
+                    "wp", "site", "unarchive", slug,
+                    "--allow-root"
+                ], capture_output=True, text=True)
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "subdomain": slug,
+                    "siteUrl": f"https://{full_domain}",
+                    "message": "Site awakened and reactivated successfully"
+                }).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
 
         try:
             data = json.loads(post_data.decode('utf-8'))

@@ -74,6 +74,15 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
       isHighlight: false,
       celorisWin: true,
     },
+    {
+      category: 'experience',
+      feature: 'Inactivity & Server Hygiene',
+      traditional: 'Suspended if card fails renewal',
+      oldFree: 'Deleted randomly without warning',
+      celoris: '7-Day Sleep (1-Click Wake) · Pro 24/7 Always-On',
+      isHighlight: false,
+      celorisWin: true,
+    },
   ];
 
   const filteredRows = filterView === 'all' 

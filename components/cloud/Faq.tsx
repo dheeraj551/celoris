@@ -34,6 +34,11 @@ export const Faq: React.FC = () => {
       tag: 'Storage & Capacity',
     },
     {
+      q: 'What happens if I don’t use or update my website for a while?',
+      a: 'To guarantee that Celoris Cloud servers remain blazing-fast and protected against spam or bot abandonware, free sites follow an inactivity lifecycle. If a site has no admin logins or updates for 7 consecutive days, it enters power-saving sleep mode to conserve VPS resources. The site owner can wake it up anytime in 1 click! If a site is abandoned with zero logins for 30 consecutive days, it is recycled to free up storage for active creators. If you need 100% Always-On 24/7 uptime that never sleeps or expires, you can upgrade to Celoris Pro for ₹149/mo.',
+      tag: 'Inactivity & Lifecycle',
+    },
+    {
       q: 'How does Celoris Cloud keep my site fast?',
       a: 'Our cloud servers run high-performance NVMe PCIe Gen4 SSDs with LiteSpeed web servers and server-level LSCache. Our edge nodes in Asia-South (India) deliver median response times of under 45ms, ensuring your portfolio scores 95+ on Google PageSpeed Insights.',
       tag: 'Performance & Speed',

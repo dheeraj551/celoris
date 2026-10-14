@@ -338,7 +338,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 </div>
               )}
 
-              {/* Guarantees checklist */}
+              {/* Guarantees and Inactivity Rule */}
               <div className="pt-2 border-t border-white/[0.06] text-xs text-neutral-400 space-y-1.5">
                 <div className="flex items-center gap-2 text-neutral-300">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -347,6 +347,10 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 <div className="flex items-center gap-2 text-neutral-300">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>100% ad-free LiteSpeed server with free Let's Encrypt SSL.</span>
+                </div>
+                <div className="p-2.5 bg-white/[0.03] border border-white/5 rounded-lg text-[11px] text-neutral-300 leading-relaxed">
+                  <span className="text-amber-400 font-semibold uppercase tracking-wider text-[10px] block mb-0.5">Free Tier Resource Policy</span>
+                  Free sites sleep after <strong className="text-white">7 days of inactivity</strong> (1-click wake up) and are recycled after <strong className="text-white">30 days</strong>. Celoris Pro sites are <strong className="text-emerald-400 font-semibold">100% Always-On 24/7</strong>.
                 </div>
               </div>
 
@@ -512,6 +516,17 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                     </span>
                   </div>
                 </div>
+              </div>
+
+              {/* Free Tier Inactivity Notice */}
+              <div className="p-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-left space-y-1">
+                <div className="flex items-center gap-1.5 text-amber-300 text-xs font-semibold">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                  <span>Keep Your Site Active</span>
+                </div>
+                <p className="text-[11px] text-neutral-300 leading-relaxed">
+                  Log in to your WordPress Admin at least once every <strong>7 days</strong> to keep your site awake. Inactive sites sleep after 7 days (wakeable in 1 click) and are recycled after 30 days. Pro sites (₹149/mo) never sleep.
+                </p>
               </div>
 
               {/* Premium Plan Upsell Card */}
