@@ -17,6 +17,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   onClose,
 }) => {
   const { user, profile } = useAuth();
+  const [customSubdomain, setCustomSubdomain] = useState('');
+  const [hasUserEditedSubdomain, setHasUserEditedSubdomain] = useState(false);
   const [step, setStep] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const [copied, setCopied] = useState<string | null>(null);
@@ -33,7 +35,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
     fullDomain: string;
   } | null>(null);
 
-  const cleanSubdomain = (subdomain || 'mysite').toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const cleanSubdomain = (customSubdomain || 'yourname').toLowerCase().replace(/[^a-z0-9-]/g, '');
   const fullDomain = `${cleanSubdomain}.celoris.in`;
 
   const provisioningSteps = [
@@ -43,7 +45,27 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
     { title: 'Activating LiteSpeed Cache Engine', desc: 'Configuring server-level page caching & CDN routing' }
   ];
 
+  const handleSiteTitleChange = (val: string) => {
+    setSiteTitle(val);
+    if (!hasUserEditedSubdomain) {
+      const slug = val
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 24);
+      if (slug.length >= 2) {
+        setCustomSubdomain(slug);
+      }
+    }
+  };
+
   const handleStartDeployment = async () => {
+    if (cleanSubdomain.length < 3) {
+      setDeployError('Subdomain must be at least 3 characters.');
+      return;
+    }
+
     setIsProvisioning(true);
     setDeployError(null);
     setStep(0);
@@ -121,13 +143,26 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
       setIsCompleted(false);
       setDeployError(null);
       setDeployedResult(null);
+      setHasUserEditedSubdomain(false);
       
+      const userDefault = (profile?.username || user?.email?.split('@')[0] || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '');
+
+      const initialSub = (subdomain && subdomain.trim().length >= 3 && subdomain !== 'rahul-designs') 
+        ? subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '')
+        : (userDefault || 'yourname');
+
+      setCustomSubdomain(initialSub);
+
       const suggestedName = profile?.full_name 
         ? `${profile.full_name}'s Site`
-        : `${cleanSubdomain.charAt(0).toUpperCase() + cleanSubdomain.slice(1)} Portfolio`;
+        : user?.email 
+        ? `${user.email.split('@')[0]}'s Portfolio`
+        : `${initialSub.charAt(0).toUpperCase() + initialSub.slice(1)} Portfolio`;
       setSiteTitle(suggestedName);
 
-      const defaultAdmin = profile?.username || user?.email?.split('@')[0] || 'admin';
+      const defaultAdmin = profile?.username || user?.email?.split('@')[0] || initialSub || 'admin';
       setAdminUser(defaultAdmin);
     }
   }, [isOpen, subdomain, profile, user]);
@@ -212,16 +247,39 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 </div>
               )}
 
-              {/* Selected Domain Banner */}
-              <div className="p-3.5 bg-emerald-950/30 border border-emerald-500/20 rounded-xl flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] text-emerald-300 font-medium">Assigned Subdomain</div>
-                  <div className="text-sm font-mono font-semibold text-white">https://{fullDomain}</div>
-                </div>
-                <div className="text-right">
-                  <span className="inline-block px-2 py-0.5 text-[11px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 rounded">
+              {/* Interactive Assigned Subdomain Claim Box */}
+              <div className="p-3.5 bg-emerald-950/30 border border-emerald-500/20 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] text-emerald-300 font-semibold uppercase tracking-wider">
+                    Assigned Subdomain
+                  </label>
+                  <span className="inline-block px-2 py-0.5 text-[10px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 rounded">
                     Free Forever
                   </span>
+                </div>
+
+                <div className="flex items-center bg-[#121212] border border-white/10 focus-within:border-emerald-500 rounded-lg px-3 py-2 font-mono text-sm transition-colors">
+                  <span className="text-neutral-500 text-xs select-none pr-1">https://</span>
+                  <input
+                    type="text"
+                    value={customSubdomain}
+                    onChange={(e) => {
+                      setCustomSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''));
+                      setHasUserEditedSubdomain(true);
+                    }}
+                    placeholder="yourname"
+                    className="flex-1 bg-transparent text-white font-semibold focus:outline-none min-w-0 placeholder:text-neutral-600"
+                  />
+                  <span className="text-emerald-400 text-xs font-semibold select-none pl-1">.celoris.in</span>
+                </div>
+
+                <div className="text-[11px] text-neutral-400 flex items-center justify-between">
+                  <span className="truncate">
+                    Live URL: <span className="text-emerald-300 font-mono font-medium">https://{fullDomain}</span>
+                  </span>
+                  {cleanSubdomain.length < 3 && (
+                    <span className="text-amber-400 shrink-0 text-[10px]">Min 3 chars</span>
+                  )}
                 </div>
               </div>
 
@@ -234,8 +292,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                   <input
                     type="text"
                     value={siteTitle}
-                    onChange={(e) => setSiteTitle(e.target.value)}
-                    placeholder="e.g. Rahul Sharma | Design Portfolio"
+                    onChange={(e) => handleSiteTitleChange(e.target.value)}
+                    placeholder="e.g. Creative Design Studio | Portfolio"
                     className="w-full px-3.5 py-2 text-sm bg-[#141414] border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
@@ -279,7 +337,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
               {/* Launch CTA */}
               <button
                 onClick={handleStartDeployment}
-                className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                disabled={cleanSubdomain.length < 3 || isProvisioning}
+                className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Deploy WordPress Instance Now</span>
                 <ArrowRight className="w-4 h-4" />

@@ -15,7 +15,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
       number: '01',
       title: 'Choose Your Unique Name',
       subtitle: 'Instant Subdomain Reservation',
-      description: 'Pick your custom subdomain like rahul.celoris.in or studiocraft.celoris.in. No confusing DNS settings or domain purchase required.',
+      description: 'Pick your custom subdomain like yourname.celoris.in or studiocraft.celoris.in. No confusing DNS settings or domain purchase required.',
       highlight: 'Free permanent SSL included',
       previewType: 'domain',
     },

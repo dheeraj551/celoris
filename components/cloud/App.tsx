@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Navbar } from './Navbar';
 import { Hero } from './Hero';
 import { InfrastructureBar } from './InfrastructureBar';
@@ -14,12 +15,21 @@ import { Footer } from './Footer';
 import { ProvisionModal } from './ProvisionModal';
 
 export default function App() {
+  const { user, profile } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedSubdomain, setSelectedSubdomain] = useState('rahul-designs');
+  const [selectedSubdomain, setSelectedSubdomain] = useState('');
+
+  const getUserHandle = () => {
+    return (profile?.username || user?.email?.split('@')[0] || 'yourname')
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '');
+  };
 
   const handleOpenClaimModal = (subdomain?: string) => {
     if (subdomain && subdomain.trim().length > 0) {
       setSelectedSubdomain(subdomain.trim());
+    } else {
+      setSelectedSubdomain(getUserHandle());
     }
     setModalOpen(true);
   };

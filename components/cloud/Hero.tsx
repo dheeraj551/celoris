@@ -12,23 +12,23 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
   const { user, profile } = useAuth();
-  const [subdomain, setSubdomain] = useState('rahul-designs');
+  const [subdomain, setSubdomain] = useState('');
   const [activeTemplate, setActiveTemplate] = useState<'portfolio' | 'developer' | 'agency'>('portfolio');
   const inputId = useId();
 
+  const userDefault = (profile?.username || user?.email?.split('@')[0] || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '');
+
   useEffect(() => {
-    if (user) {
-      const userHandle = (profile?.username || user.email?.split('@')[0] || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9-]/g, '');
-      if (userHandle.length >= 3 && subdomain === 'rahul-designs') {
-        setSubdomain(userHandle);
-      }
+    if (userDefault && !subdomain) {
+      setSubdomain(userDefault);
     }
-  }, [user, profile]);
+  }, [userDefault, subdomain]);
 
   // Clean subdomain for display
-  const sanitizedSubdomain = subdomain.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') || 'yourname';
+  const currentSubdomain = subdomain.trim() || userDefault || 'yourname';
+  const sanitizedSubdomain = currentSubdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
   const isAvailable = sanitizedSubdomain.length >= 3 && !sanitizedSubdomain.includes(' ');
 
   const handleQuickPick = (name: string) => {
@@ -181,9 +181,9 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                 {/* Quick Ideas for Students */}
                 <div className="flex items-center gap-1.5 text-neutral-400">
                   <span className="text-[11px]">Suggestions:</span>
-                  {(user 
-                    ? [(profile?.username || user.email?.split('@')[0] || '').toLowerCase().replace(/[^a-z0-9-]/g, ''), 'dev-portfolio', 'craft-studio'].filter(Boolean)
-                    : ['rahul-ui', 'dev-ankit', 'craft-studio']
+                  {(userDefault
+                    ? [userDefault, `${userDefault}-portfolio`, 'creative-studio']
+                    : ['my-portfolio', 'creative-studio', 'dev-lab']
                   ).slice(0, 3).map((demoName) => (
                     <button
                       key={demoName}
