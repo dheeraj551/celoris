@@ -19,11 +19,19 @@ docker pull ghcr.io/wg-easy/wg-easy:latest
 
 # 3. Generate Bcrypt Password Hash using wg-easy built-in utility
 echo "[+] Generating bcrypt hash for Web UI..."
-RAW_HASH=$(docker run --rm ghcr.io/wg-easy/wg-easy wgpw "$WG_PASS" | tr -d '\r' | tr -d '\n')
+RAW_OUTPUT=$(docker run --rm ghcr.io/wg-easy/wg-easy wgpw "$WG_PASS" | tr -d '\r' | tr -d '\n')
 
-# Verify hash starts with $2
-if [[ ! "$RAW_HASH" =~ ^\$2 ]]; then
-    echo "[!] Error generating bcrypt hash. Output was: $RAW_HASH"
+# wgpw outputs: PASSWORD_HASH='$2a$12$...'
+if echo "$RAW_OUTPUT" | grep -q "'"; then
+    CLEAN_HASH=$(echo "$RAW_OUTPUT" | cut -d"'" -f2)
+elif [[ "$RAW_OUTPUT" =~ (\$[0-9a-zA-Z\$\.\/]{30,}) ]]; then
+    CLEAN_HASH="${BASH_REMATCH[1]}"
+else
+    CLEAN_HASH="$RAW_OUTPUT"
+fi
+
+if [[ ! "$CLEAN_HASH" =~ ^\$2 ]]; then
+    echo "[!] Error extracting bcrypt hash. Raw output was: $RAW_OUTPUT"
     exit 1
 fi
 echo "[+] Password hash generated successfully."
@@ -48,7 +56,7 @@ echo "[+] Launching wg-easy container..."
 docker run -d \
   --name wg-easy \
   --env WG_HOST="$HOST_IP" \
-  --env PASSWORD_HASH="$RAW_HASH" \
+  --env PASSWORD_HASH="$CLEAN_HASH" \
   --env WG_PORT=51820 \
   --env PORT=51821 \
   --env WG_DEFAULT_DNS="1.1.1.1,1.0.0.1" \
