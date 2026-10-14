@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         subdomain: slug,
         title,
-        email,
+        email: `${slug}@celoris.in`,
         adminUser,
         adminPass,
       }),
