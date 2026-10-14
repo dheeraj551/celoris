@@ -148,7 +148,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           await admin.from('celoris_chat_calls').update({ provider: backup }).eq('id', id).eq('provider', call.provider)
           call = (await getCall(admin, id)) || call
         }
-        return NextResponse.json({ credentials: joinCredentials(call, user.id), provider: call.provider })
+        return NextResponse.json({ credentials: await joinCredentials(call, user.id), provider: call.provider })
       }
 
       case 'switch': {

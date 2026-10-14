@@ -20,7 +20,7 @@ type Status = "ringing" | "connected" | "ended" | "declined" | "missed" | "cance
 export interface CallInfo {
   id: string;
   kind: Kind;
-  provider: "tencent" | "agora";
+  provider: "tencent" | "agora" | "livekit";
   status: Status;
   endReason: string | null;
   role: "caller" | "callee";

@@ -181,6 +181,7 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
   // Tencent RTC (trtc-sdk-v5) client, its TRTC module, and whether our mic started.
   const trtcRef = useRef<any>(null);
   const trtcModRef = useRef<any>(null);
+  const livekitRoomRef = useRef<any>(null);
   const micReadyRef = useRef(false);
   const selectedMicRef = useRef<string | null>(null);
   const sharingRef = useRef(false);
@@ -641,6 +642,65 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
       subscribeSignaling();
 
       try {
+        // Check configured RTC provider for this classroom
+        let activeProvider = 'tencent';
+        try {
+          const provRes = await fetch(`/api/rtc/active-provider?roomId=${roomId}`);
+          if (provRes.ok) {
+            const provData = await provRes.json();
+            if (provData?.provider) activeProvider = provData.provider;
+          }
+        } catch (_) {}
+
+        if (activeProvider === 'livekit') {
+          try {
+            const lkRes = await fetch('/api/livekit/classroom-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ roomId }),
+            });
+            const lkData = await lkRes.json();
+            if (lkData.token && lkData.serverUrl) {
+              const { Room, RoomEvent, Track } = await import('livekit-client');
+              const room = new Room({ adaptiveStream: true, dynacast: true });
+              livekitRoomRef.current = room;
+
+              room.on(RoomEvent.TrackSubscribed, (track: any) => {
+                if (track.kind === Track.Kind.Audio) {
+                  if (!speakerMutedRef.current) track.attach();
+                } else if (track.kind === Track.Kind.Video && track.mediaStreamTrack) {
+                  setScreenStream(new MediaStream([track.mediaStreamTrack]));
+                }
+              });
+
+              room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
+                if (track.kind === Track.Kind.Video) setScreenStream(null);
+              });
+
+              room.on(RoomEvent.ActiveSpeakersChanged, (speakers: any[]) => {
+                setVolumeByUid((prev) => {
+                  const next = { ...prev };
+                  speakers.forEach((s) => {
+                    next[String(s.identity)] = Math.min(s.audioLevel || 0, 1);
+                  });
+                  return next;
+                });
+              });
+
+              await room.connect(lkData.serverUrl, lkData.token);
+              if (isHost) {
+                await room.localParticipant.setMicrophoneEnabled(true);
+              } else {
+                await room.localParticipant.setMicrophoneEnabled(false);
+              }
+              micReadyRef.current = true;
+              return;
+            }
+          } catch (lkErr) {
+            console.warn('[Whiteboard] LiveKit join failed, attempting Tencent fallback:', lkErr);
+          }
+        }
+
         // Voice + screen share on Tencent RTC.
         const sigRes = await fetch("/api/tencent/classroom-sig", {
           method: "POST",
@@ -747,6 +807,10 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
       }).catch(() => {});
       const trtc = trtcRef.current;
       trtcRef.current = null;
+      if (livekitRoomRef.current) {
+        try { livekitRoomRef.current.disconnect(); } catch (_) {}
+        livekitRoomRef.current = null;
+      }
       micReadyRef.current = false;
       selectedMicRef.current = null;
       sharingRef.current = false;
@@ -850,11 +914,22 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
 
   // ---------------------------------------------------------------- media controls
   const toggleMic = useCallback(async () => {
+    if (!canSpeak || !micReadyRef.current) return;
+    const nextMic = !micOn;
+    if (livekitRoomRef.current) {
+      try {
+        await livekitRoomRef.current.localParticipant.setMicrophoneEnabled(nextMic);
+        setMicOn(nextMic);
+      } catch (err) {
+        console.error("Whiteboard room: mic toggle failed on LiveKit", err);
+      }
+      return;
+    }
     const trtc = trtcRef.current;
-    if (!canSpeak || !trtc || !micReadyRef.current) return;
+    if (!trtc) return;
     try {
       await trtc.updateLocalAudio({ mute: micOn });
-      setMicOn(!micOn);
+      setMicOn(nextMic);
     } catch (e) {
       console.error("Whiteboard room: mic toggle failed", e);
     }
@@ -864,6 +939,18 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
     const next = !speakerMutedRef.current;
     speakerMutedRef.current = next;
     setSpeakerMuted(next);
+    if (livekitRoomRef.current) {
+      try {
+        livekitRoomRef.current.remoteParticipants.forEach((p: any) => {
+          p.audioTrackPublications.forEach((pub: any) => {
+            if (pub.track) pub.track.setMuted(next);
+          });
+        });
+      } catch (err) {
+        console.error("Whiteboard room: speaker toggle failed on LiveKit", err);
+      }
+      return;
+    }
     const trtc = trtcRef.current;
     if (!trtc) return; // applied when voice connects
     try {
@@ -876,6 +963,16 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
   }, []);
 
   const stopScreenShare = useCallback(async () => {
+    if (livekitRoomRef.current) {
+      if (!sharingRef.current) return;
+      sharingRef.current = false;
+      try {
+        await livekitRoomRef.current.localParticipant.setScreenShareEnabled(false);
+      } catch {}
+      setScreenStream(null);
+      setSharingScreen(false);
+      return;
+    }
     const trtc = trtcRef.current;
     if (!sharingRef.current) return;
     sharingRef.current = false;
@@ -889,9 +986,26 @@ export function useWhiteboardRoom({ roomId, isHost, userId, displayName, speakAl
   }, []);
 
   const startScreenShare = useCallback(async () => {
+    if (!isHost || sharingRef.current) return;
+    if (livekitRoomRef.current) {
+      try {
+        await livekitRoomRef.current.localParticipant.setScreenShareEnabled(true);
+        sharingRef.current = true;
+        const pubs = Array.from(livekitRoomRef.current.localParticipant.videoTrackPublications.values()) as any[];
+        const screenPub = pubs.find((p) => p.source === 'screen_share');
+        if (screenPub?.track?.mediaStreamTrack) {
+          setScreenStream(new MediaStream([screenPub.track.mediaStreamTrack]));
+        }
+        setSharingScreen(true);
+      } catch (err: any) {
+        console.error("LiveKit screen share failed", err);
+        setBoardError("Screen sharing couldn't start. Check your browser's screen-share permission.");
+      }
+      return;
+    }
     const trtc = trtcRef.current;
     const TRTC = trtcModRef.current;
-    if (!isHost || !trtc || !TRTC || sharingRef.current) return;
+    if (!trtc || !TRTC) return;
     try {
       await trtc.startScreenShare({ option: { profile: "1080p", systemAudio: true } });
       sharingRef.current = true;

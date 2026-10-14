@@ -33,6 +33,8 @@ import {
   Lock,
   GraduationCap,
   Minus,
+  Radio,
+  Wifi,
 } from "lucide-react"
 
 // A café classroom room, as returned by /api/admin/cafe/rooms — this is
@@ -69,6 +71,7 @@ const emptyRoomForm = {
   description: '',
   category: 'classroom',
   tags: '',
+  rtcEngine: 'default' as 'default' | 'livekit' | 'agora' | 'tencent',
   trainerName: '',
   maxStudents: '15',
   classStatus: 'Ready' as 'Ready' | 'Live' | 'Full',
@@ -95,8 +98,7 @@ export default function AdminSocialPage() {
   const [filterStatus, setFilterStatus] = useState("all")
   const router = useRouter()
 
-  // --- Café Rooms management (moved here from the café's own "Host
-  // Custom Table" modal — room creation/editing is admin-only now) ---
+  // --- Café Rooms management ---
   const [cafeRooms, setCafeRooms] = useState<CafeRoom[]>([])
   const [loadingRooms, setLoadingRooms] = useState(true)
   const [roomModalOpen, setRoomModalOpen] = useState(false)
@@ -104,6 +106,46 @@ export default function AdminSocialPage() {
   const [roomForm, setRoomForm] = useState(emptyRoomForm)
   const [savingRoom, setSavingRoom] = useState(false)
   const [roomError, setRoomError] = useState<string | null>(null)
+
+  // --- WebRTC Media Engine Toggle & Health (LiveKit / Agora / Tencent) ---
+  const [rtcProvider, setRtcProvider] = useState<'livekit' | 'agora' | 'tencent'>('livekit')
+  const [livekitStatus, setLivekitStatus] = useState<'online' | 'offline' | 'checking'>('checking')
+  const [livekitUrl, setLivekitUrl] = useState('wss://livekit.celoris.in')
+  const [switchingRtc, setSwitchingRtc] = useState(false)
+
+  const loadRtcSettings = async () => {
+    try {
+      const res = await fetch('/api/admin/rtc-settings')
+      const data = await res.json()
+      if (data.activeProvider) setRtcProvider(data.activeProvider)
+      if (data.livekitUrl) setLivekitUrl(data.livekitUrl)
+      setLivekitStatus(data.livekitHealthy ? 'online' : 'offline')
+    } catch {
+      setLivekitStatus('offline')
+    }
+  }
+
+  const switchRtcProvider = async (provider: 'livekit' | 'agora' | 'tencent') => {
+    setSwitchingRtc(true)
+    try {
+      const res = await fetch('/api/admin/rtc-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setRtcProvider(provider)
+        alert(`Global WebRTC Engine switched to ${provider.toUpperCase()}`)
+      } else {
+        alert(data.error || 'Failed to switch RTC provider')
+      }
+    } catch (e: any) {
+      alert('Error switching RTC provider: ' + e.message)
+    } finally {
+      setSwitchingRtc(false)
+    }
+  }
 
   useEffect(() => {
     checkAdminAuth()
@@ -131,6 +173,7 @@ export default function AdminSocialPage() {
       setIsAuthenticated(true)
       loadData()
       loadCafeRooms()
+      loadRtcSettings()
     } catch (error) {
       console.error("Admin auth error:", error)
       router.push("/admin/login")
@@ -250,13 +293,39 @@ export default function AdminSocialPage() {
     setRoomModalOpen(true)
   }
 
+  const createQuickLiveKitRoom = () => {
+    setEditingRoomId(null)
+    setRoomForm({
+      ...emptyRoomForm,
+      name: 'LiveKit Aula (Self-Hosted)',
+      description: 'Ultra low-latency WebRTC classroom hosted on our dedicated LiveKit server (livekit.celoris.in).',
+      category: 'livekit_classroom',
+      tags: 'self-hosted, vps, webrtc',
+      rtcEngine: 'livekit',
+      trainerName: 'Admin Trainer',
+      maxStudents: '25',
+      nextBatchInfo: 'Self-hosted WebRTC cluster ready',
+    })
+    setRoomError(null)
+    setRoomModalOpen(true)
+  }
+
   const openEditRoom = (room: CafeRoom) => {
     setEditingRoomId(room.id)
+    let detectedEngine: 'default' | 'livekit' | 'agora' | 'tencent' = 'default'
+    if (room.tags?.includes('rtc:livekit') || room.category === 'livekit_classroom') detectedEngine = 'livekit'
+    else if (room.tags?.includes('rtc:agora')) detectedEngine = 'agora'
+    else if (room.tags?.includes('rtc:tencent')) detectedEngine = 'tencent'
+
+    // Clean rtc: tag from visible tags input
+    const cleanTags = (room.tags || []).filter((t) => !t.startsWith('rtc:'))
+
     setRoomForm({
       name: room.name || '',
       description: room.description || '',
       category: room.category || 'classroom',
-      tags: (room.tags || []).join(', '),
+      tags: cleanTags.join(', '),
+      rtcEngine: detectedEngine,
       trainerName: room.trainer_name || '',
       maxStudents: String(room.max_students ?? 15),
       classStatus: (room.class_status as any) || 'Ready',
@@ -283,11 +352,17 @@ export default function AdminSocialPage() {
     setSavingRoom(true)
     setRoomError(null)
 
+    // Process tags to encode rtcEngine selection
+    const rawTags = (roomForm.tags || '').split(',').map((t) => t.trim()).filter((t) => Boolean(t) && !t.startsWith('rtc:'))
+    if (roomForm.rtcEngine !== 'default') {
+      rawTags.push(`rtc:${roomForm.rtcEngine}`)
+    }
+
     const payload = {
       name: roomForm.name.trim(),
       description: roomForm.description.trim(),
       category: roomForm.category,
-      tags: roomForm.tags,
+      tags: rawTags,
       trainerName: roomForm.trainerName,
       maxStudents: roomForm.maxStudents,
       classStatus: roomForm.classStatus,
@@ -530,15 +605,91 @@ export default function AdminSocialPage() {
             count, next batch, connected course) are edited here too — the
             in-room panel a trainer sees is read-only now. */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
+          {/* WebRTC Media Engine Global Switcher Banner */}
+          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 shadow-2xl">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+                    Realtime Media Engine
+                  </span>
+                  <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                    livekitStatus === 'online'
+                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                      : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full ${livekitStatus === 'online' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+                    {livekitStatus === 'online' ? 'LiveKit Server Online (livekit.celoris.in)' : 'Checking Server...'}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white mt-1.5">2D Whiteboard & 3D Virtual Aula WebRTC Provider</h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Active default engine for interactive classrooms, screen sharing, audio, and Celoris Chat calls.
+                </p>
+              </div>
+
+              {/* Provider Buttons */}
+              <div className="flex flex-wrap items-center gap-2 bg-slate-950/80 p-2 rounded-xl border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => switchRtcProvider('livekit')}
+                  disabled={switchingRtc}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                    rtcProvider === 'livekit'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
+                  LiveKit (Self-Hosted)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => switchRtcProvider('agora')}
+                  disabled={switchingRtc}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                    rtcProvider === 'agora'
+                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/40'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-purple-300"></span>
+                  Agora RTC
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => switchRtcProvider('tencent')}
+                  disabled={switchingRtc}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                    rtcProvider === 'tencent'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-300"></span>
+                  Tencent TRTC
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6">
             <h2 className="text-2xl font-bold text-white flex items-center space-x-2">
               <Coffee className="h-6 w-6" />
               <span>Café Rooms</span>
             </h2>
-            <Button onClick={openCreateRoom} className="bg-emerald-600 hover:bg-emerald-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Room
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={createQuickLiveKitRoom} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Wifi className="h-4 w-4 mr-1.5" />
+                ⚡ Quick LiveKit Aula
+              </Button>
+              <Button onClick={openCreateRoom} className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Room
+              </Button>
+            </div>
           </div>
 
           {loadingRooms ? (
@@ -556,7 +707,18 @@ export default function AdminSocialPage() {
                   <CardHeader>
                     <div className="flex justify-between items-start gap-3">
                       <div className="min-w-0">
-                        <CardTitle className="text-white truncate">{room.name}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-white truncate">{room.name}</CardTitle>
+                          {room.tags?.includes('rtc:livekit') || room.category === 'livekit_classroom' ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">LiveKit</span>
+                          ) : room.tags?.includes('rtc:agora') ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">Agora</span>
+                          ) : room.tags?.includes('rtc:tencent') ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30">Tencent</span>
+                          ) : (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700/50 text-slate-400">Default ({rtcProvider})</span>
+                          )}
+                        </div>
                         <CardDescription className="text-slate-400">
                           Trainer: {room.trainer_name || '—'}
                         </CardDescription>
@@ -1070,7 +1232,7 @@ export default function AdminSocialPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Category</label>
                   <select
@@ -1080,10 +1242,24 @@ export default function AdminSocialPage() {
                   >
                     <option value="classroom">Live Classroom (3D)</option>
                     <option value="whiteboard">Whiteboard Class (2D)</option>
+                    <option value="livekit_classroom">LiveKit WebRTC Aula (Self-Hosted)</option>
                     <option value="study">Silent Study</option>
                     <option value="course">Skill Lounge</option>
                     <option value="mixer">Mixer Chat</option>
                     <option value="night">Night Owl</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">RTC Engine</label>
+                  <select
+                    value={roomForm.rtcEngine}
+                    onChange={(e) => setRoomForm((f) => ({ ...f, rtcEngine: e.target.value as any }))}
+                    className="w-full h-9 px-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-purple-500"
+                  >
+                    <option value="default">Default (Follows Global Switch)</option>
+                    <option value="livekit">LiveKit (VPS wss://livekit.celoris.in)</option>
+                    <option value="agora">Agora RTC</option>
+                    <option value="tencent">Tencent TRTC</option>
                   </select>
                 </div>
                 <div className="space-y-1">

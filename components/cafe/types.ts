@@ -13,7 +13,7 @@ export interface Room {
   id: string;
   name: string;
   description: string;
-  category: 'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom' | 'whiteboard';
+  category: 'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom' | 'whiteboard' | 'livekit_classroom';
   onlineCount: number;
   /** Host-set seat cap for this table (e.g. 15). Defaults to 15 when not set. */
   maxStudents?: number;

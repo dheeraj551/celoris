@@ -27,7 +27,7 @@ export const CALL_MAX_MINUTES = 60
 export const RING_TIMEOUT_SECONDS = 45
 export const MAX_CALL_ATTEMPTS_PER_HOUR = 30
 
-export type CallProvider = 'tencent' | 'agora'
+export type CallProvider = 'tencent' | 'agora' | 'livekit'
 export type CallKind = 'voice' | 'video'
 
 export interface CallRow {
@@ -61,37 +61,67 @@ const AGORA_APP_CERTIFICATE = (process.env.AGORA_APP_CERTIFICATE || '').trim()
 const TENCENT_READY = !!(process.env.TENCENT_TRTC_SDK_APP_ID || '').trim() && !!(process.env.TENCENT_TRTC_SECRET_KEY || '').trim()
 const AGORA_READY = !!AGORA_APP_ID && !!AGORA_APP_CERTIFICATE
 
+const LIVEKIT_URL = (process.env.LIVEKIT_URL || process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://livekit.celoris.in').trim()
+const LIVEKIT_API_KEY = (process.env.LIVEKIT_API_KEY || 'celoris_livekit_key').trim()
+const LIVEKIT_API_SECRET = (process.env.LIVEKIT_API_SECRET || '2ad5f6c4ef74a31a8293c83524d5cd907703c814b954717a').trim()
+const LIVEKIT_READY = !!LIVEKIT_URL && !!LIVEKIT_API_KEY && !!LIVEKIT_API_SECRET
+
 export function providerReady(p: CallProvider) {
+  if (p === 'livekit') return LIVEKIT_READY
   return p === 'tencent' ? TENCENT_READY : AGORA_READY
 }
 
-function otherProvider(p: CallProvider): CallProvider {
-  return p === 'tencent' ? 'agora' : 'tencent'
+function nextProvider(p: CallProvider): CallProvider {
+  if (p === 'tencent') return LIVEKIT_READY ? 'livekit' : 'agora'
+  if (p === 'livekit') return AGORA_READY ? 'agora' : 'tencent'
+  return LIVEKIT_READY ? 'livekit' : 'tencent'
 }
 
-/** The provider a new call starts on: the preferred one if it's configured, else the other. */
+/** The provider a new call starts on: the preferred one if it's configured, else the fallback. */
 export function startingProvider(): CallProvider | null {
-  const preferred: CallProvider = (process.env.CELORIS_CHAT_CALL_PROVIDER || '').trim().toLowerCase() === 'agora' ? 'agora' : 'tencent'
+  const preferred: CallProvider = ((process.env.CELORIS_CHAT_CALL_PROVIDER || '').trim().toLowerCase() as CallProvider) || 'livekit'
   if (providerReady(preferred)) return preferred
-  if (providerReady(otherProvider(preferred))) return otherProvider(preferred)
+  if (providerReady('livekit')) return 'livekit'
+  if (providerReady('tencent')) return 'tencent'
+  if (providerReady('agora')) return 'agora'
   return null
 }
 
 /** The backup for a call that's on `current`, or null if the backup isn't configured. */
 export function backupProvider(current: CallProvider): CallProvider | null {
-  const other = otherProvider(current)
-  return providerReady(other) ? other : null
+  const candidate = nextProvider(current)
+  if (providerReady(candidate)) return candidate
+  const fallback = current === 'livekit' ? (TENCENT_READY ? 'tencent' : 'agora') : (LIVEKIT_READY ? 'livekit' : 'agora')
+  return providerReady(fallback) && fallback !== current ? fallback : null
 }
 
 export type JoinCredentials =
   | { provider: 'tencent'; sdkAppId: number; userId: string; userSig: string; roomId: string }
   | { provider: 'agora'; appId: string; uid: string; token: string; channel: string }
+  | { provider: 'livekit'; serverUrl: string; token: string; room: string }
 
 /** Join credentials for one person in one call. Valid until a little after the call's time limit. */
-export function joinCredentials(call: CallRow, userId: string): JoinCredentials {
+export async function joinCredentials(call: CallRow, userId: string): Promise<JoinCredentials> {
   const startedMs = call.connected_at ? Date.parse(call.connected_at) : Date.now()
   const endsMs = startedMs + call.max_minutes * 60_000
   const validSeconds = Math.max(120, Math.ceil((endsMs - Date.now()) / 1000) + 120)
+
+  if (call.provider === 'livekit') {
+    const { AccessToken } = await import('livekit-server-sdk')
+    const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
+      identity: userId,
+      ttl: `${validSeconds}s`,
+    })
+    at.addGrant({
+      room: call.channel,
+      roomJoin: true,
+      canPublish: true,
+      canSubscribe: true,
+      canPublishData: true,
+    })
+    const token = await at.toJwt()
+    return { provider: 'livekit', serverUrl: LIVEKIT_URL, token, room: call.channel }
+  }
 
   if (call.provider === 'tencent') {
     const { userSig, sdkAppId } = generateTrtcUserSig(userId, validSeconds)

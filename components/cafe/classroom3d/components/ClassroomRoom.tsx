@@ -157,6 +157,8 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   // Everyone we're hearing, keyed by uid, so the speaker button can silence them.
   const remoteAudioRef = useRef<Map<string, any>>(new Map());
   const soundMutedRef = useRef(false);
+  const livekitRoomRef = useRef<any>(null);
+  const [activeRtcEngine, setActiveRtcEngine] = useState<'livekit' | 'agora' | 'tencent'>('livekit');
 
   const presenceTrack = (overrides: Partial<{ handRaised: boolean; canSpeak: boolean; micOn: boolean }> = {}) => {
     if (!channelRef.current || !user) return;
@@ -204,6 +206,72 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         }).catch(() => {});
       }, 20000);
 
+      // Check configured RTC provider for this classroom
+      let rtcProvider = 'livekit';
+      try {
+        const provRes = await fetch(`/api/rtc/active-provider?roomId=${roomId}`);
+        if (provRes.ok) {
+          const provData = await provRes.json();
+          if (provData?.provider) rtcProvider = provData.provider;
+        }
+      } catch (_) {}
+      setActiveRtcEngine(rtcProvider as any);
+
+      if (rtcProvider === 'livekit') {
+        try {
+          const lkRes = await fetch('/api/livekit/classroom-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomId }),
+          });
+          const lkData = await lkRes.json();
+          if (lkData.token && lkData.serverUrl) {
+            const { Room, RoomEvent, Track } = await import('livekit-client');
+            const room = new Room({ adaptiveStream: true, dynacast: true });
+            livekitRoomRef.current = room;
+
+            room.on(RoomEvent.TrackSubscribed, (track: any) => {
+              if (track.kind === Track.Kind.Audio) {
+                if (!soundMutedRef.current) track.attach();
+              } else if (track.kind === Track.Kind.Video) {
+                if (track.mediaStreamTrack) {
+                  setBoardMediaStream(new MediaStream([track.mediaStreamTrack]));
+                }
+              }
+            });
+
+            room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
+              if (track.kind === Track.Kind.Video) {
+                setBoardMediaStream(null);
+              }
+            });
+
+            room.on(RoomEvent.ActiveSpeakersChanged, (speakers: any[]) => {
+              setVolumeByUid((prev) => {
+                const next = { ...prev };
+                speakers.forEach((s) => {
+                  next[String(s.identity)] = Math.min(s.audioLevel || 0, 1);
+                });
+                return next;
+              });
+            });
+
+            await room.connect(lkData.serverUrl, lkData.token);
+            if (isHost) {
+              await room.localParticipant.setMicrophoneEnabled(true);
+            } else {
+              await room.localParticipant.setMicrophoneEnabled(false);
+            }
+
+            setJoined(true);
+            subscribeToSignaling();
+            return;
+          }
+        } catch (lkErr) {
+          console.warn('[Classroom] LiveKit join failed, attempting Agora fallback:', lkErr);
+        }
+      }
+
       const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
       AgoraRef.current = AgoraRTC;
       client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
@@ -233,6 +301,10 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'leave', roomId }),
       }).catch(() => {});
+      if (livekitRoomRef.current) {
+        try { livekitRoomRef.current.disconnect(); } catch (_) {}
+        livekitRoomRef.current = null;
+      }
       leaveChannelInternal();
       if (client) {
         client.off('user-published', handleUserPublished);
@@ -341,7 +413,12 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     remoteAudioRef.current.forEach((track) => {
       try { track.stop(); } catch { /* already stopped */ }
     });
-    remoteAudioRef.current.clear();
+    if (livekitRoomRef.current) {
+      try {
+        await livekitRoomRef.current.disconnect();
+      } catch (_) {}
+      livekitRoomRef.current = null;
+    }
     await client?.leave();
     setJoined(false);
   };
@@ -391,14 +468,44 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   }, [isSoundMuted]);
 
   const toggleMic = async () => {
+    if (!canSpeak) return;
+    const nextMic = !micOn;
+    if (livekitRoomRef.current) {
+      try {
+        await livekitRoomRef.current.localParticipant.setMicrophoneEnabled(nextMic);
+        setMicOn(nextMic);
+      } catch (err) {
+        console.error('Failed to toggle mic on LiveKit:', err);
+      }
+      return;
+    }
     const track = localAudioTrackRef.current;
-    if (!canSpeak || !track) return;
+    if (!track) return;
     await track.setMuted(micOn);
-    setMicOn(!micOn);
+    setMicOn(nextMic);
   };
 
   const toggleScreenShare = async () => {
     if (!isHost) return;
+    if (livekitRoomRef.current) {
+      const nextShare = !screenSharing;
+      try {
+        await livekitRoomRef.current.localParticipant.setScreenShareEnabled(nextShare);
+        setScreenSharing(nextShare);
+        if (nextShare) {
+          const pubs = Array.from(livekitRoomRef.current.localParticipant.videoTrackPublications.values()) as any[];
+          const screenPub = pubs.find((p) => p.source === 'screen_share');
+          if (screenPub?.track?.mediaStreamTrack) {
+            setBoardMediaStream(new MediaStream([screenPub.track.mediaStreamTrack]));
+          }
+        } else {
+          setBoardMediaStream(null);
+        }
+      } catch (err) {
+        console.error('Failed to toggle screen share on LiveKit:', err);
+      }
+      return;
+    }
     if (screenSharing) {
       if (Array.isArray(localScreenTrack)) {
         await client.unpublish(localScreenTrack);

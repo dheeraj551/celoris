@@ -10,7 +10,8 @@
 
 export type TencentCredentials = { provider: "tencent"; sdkAppId: number; userId: string; userSig: string; roomId: string };
 export type AgoraCredentials = { provider: "agora"; appId: string; uid: string; token: string; channel: string };
-export type JoinCredentials = TencentCredentials | AgoraCredentials;
+export type LiveKitCredentials = { provider: "livekit"; serverUrl: string; token: string; room: string };
+export type JoinCredentials = TencentCredentials | AgoraCredentials | LiveKitCredentials;
 
 export interface RemoteState {
   present: boolean;
@@ -245,6 +246,115 @@ export class AgoraEngine implements CallEngine {
   }
 }
 
-export function createEngine(provider: "tencent" | "agora", handlers: EngineHandlers): CallEngine {
+// ---------------------------------------------------------------------------
+// LiveKit WebRTC (Self-Hosted Contabo VPS)
+// ---------------------------------------------------------------------------
+
+export class LiveKitEngine implements CallEngine {
+  private room: any = null;
+  private localEl: HTMLElement | null = null;
+  private remote: RemoteState = { present: false, hasVideo: false };
+  private camOn = false;
+
+  constructor(private handlers: EngineHandlers) {}
+
+  private emit(patch: Partial<RemoteState>) {
+    this.remote = { ...this.remote, ...patch };
+    this.handlers.onRemote(this.remote);
+  }
+
+  async join(creds: JoinCredentials, opts: { video: boolean; localEl: HTMLElement | null; remoteEl: HTMLElement | null }) {
+    if (creds.provider !== "livekit") throw new Error("Wrong credentials for LiveKit");
+    const { Room, RoomEvent, Track } = await import("livekit-client");
+    const room = new Room({
+      adaptiveStream: true,
+      dynacast: true,
+    });
+    this.room = room;
+    this.localEl = opts.localEl;
+
+    room.on(RoomEvent.ParticipantConnected, () => this.emit({ present: true }));
+    room.on(RoomEvent.ParticipantDisconnected, () => {
+      const remaining = room.remoteParticipants.size;
+      this.emit({ present: remaining > 0, hasVideo: false });
+    });
+
+    room.on(RoomEvent.TrackSubscribed, (track: any) => {
+      if (track.kind === Track.Kind.Video) {
+        this.emit({ present: true, hasVideo: true });
+        if (opts.remoteEl) {
+          track.attach(opts.remoteEl);
+        }
+      } else if (track.kind === Track.Kind.Audio) {
+        this.emit({ present: true });
+        track.attach();
+      }
+    });
+
+    room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
+      track.detach();
+      if (track.kind === Track.Kind.Video) {
+        this.emit({ hasVideo: false });
+      }
+    });
+
+    room.on(RoomEvent.Disconnected, () => {
+      this.emit({ present: false, hasVideo: false });
+    });
+
+    await withTimeout(
+      room.connect(creds.serverUrl, creds.token),
+      15000,
+      "Connecting to LiveKit"
+    );
+
+    if (room.remoteParticipants.size > 0) {
+      this.emit({ present: true });
+    }
+
+    await room.localParticipant.setMicrophoneEnabled(true);
+    if (opts.video) {
+      await this.setCamera(true);
+    }
+  }
+
+  async setMic(on: boolean) {
+    if (this.room) {
+      await this.room.localParticipant.setMicrophoneEnabled(on);
+    }
+  }
+
+  async setCamera(on: boolean) {
+    if (!this.room) return;
+    if (on && !this.camOn) {
+      await this.room.localParticipant.setCameraEnabled(true);
+      this.camOn = true;
+      if (this.localEl) {
+        const publication = Array.from(this.room.localParticipant.videoTrackPublications.values())[0] as any;
+        if (publication?.track) {
+          publication.track.attach(this.localEl);
+        }
+      }
+    } else if (!on && this.camOn) {
+      await this.room.localParticipant.setCameraEnabled(false);
+      this.camOn = false;
+    }
+  }
+
+  async leave() {
+    const room = this.room;
+    this.room = null;
+    if (room) {
+      try {
+        await room.disconnect();
+      } catch {
+        // ignore
+      }
+    }
+  }
+}
+
+export function createEngine(provider: "tencent" | "agora" | "livekit", handlers: EngineHandlers): CallEngine {
+  if (provider === "livekit") return new LiveKitEngine(handlers);
   return provider === "agora" ? new AgoraEngine(handlers) : new TencentEngine(handlers);
 }

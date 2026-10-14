@@ -396,7 +396,7 @@ export default function App() {
                     isHost={joinedRoomRole === 'host' || joinedRoomRole === 'trainer'}
                     onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
                   />
-                ) : joinedRoom.category === 'classroom' ? (
+                ) : (joinedRoom.category === 'classroom' || joinedRoom.category === 'livekit_classroom') ? (
                   <ClassroomTable
                     roomId={joinedRoom.id}
                     roomName={joinedRoom.name}
