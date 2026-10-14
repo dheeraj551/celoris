@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
         const siteEmail = slug + '@celoris.in';
         try {
           execSync('docker exec celoris-wordpress wp site create --slug="' + slug + '" --title="' + rawTitle + '" --email="' + siteEmail + '" --allow-root', { stdio: 'pipe' });
-          execSync('docker exec celoris-wordpress wp site option set 1 blog_upload_space 3072 --allow-root', { stdio: 'pipe' });
+          execSync('docker exec celoris-wordpress wp site option set blog_upload_space 3072 --allow-root', { stdio: 'pipe' });
           execSync('docker exec celoris-wordpress wp option set blog_upload_space 3072 --url="http://' + fullDomain + '" --allow-root', { stdio: 'pipe' });
         } catch (_) {}
 

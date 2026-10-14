@@ -71,7 +71,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             # Enforce 3 GB (3072 MB) upload storage limit for the subsite
             subprocess.run([
                 "docker", "exec", "celoris-wordpress",
-                "wp", "site", "option", "set", "1", "blog_upload_space", "3072",
+                "wp", "site", "option", "set", "blog_upload_space", "3072",
                 "--allow-root"
             ], capture_output=True, text=True)
             subprocess.run([
