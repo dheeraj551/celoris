@@ -48,7 +48,7 @@ docker cp /tmp/celoris-security.php celoris-wordpress:/var/www/html/wp-content/m
 rm -f /tmp/celoris-security.php
 
 echo "=== [3/5] Disabling dashboard file editing in wp-config.php ==="
-docker exec celoris-wordpress wp config set DISALLOW_FILE_EDIT true --raw --allow-root
+docker exec celoris-wordpress bash -c "grep -q 'DISALLOW_FILE_EDIT' /var/www/html/wp-config.php || sed -i \"1a define('DISALLOW_FILE_EDIT', true);\" /var/www/html/wp-config.php"
 
 echo "=== [4/5] Hiding PHP Version (expose_php = Off) ==="
 docker exec celoris-wordpress bash -c 'echo "expose_php = Off" > /usr/local/etc/php/conf.d/security.ini'
