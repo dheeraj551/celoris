@@ -23,7 +23,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
       number: '02',
       title: 'Launch WordPress in 60s',
       subtitle: 'Zero-Config Cloud Provisioning',
-      description: 'Our cloud engine automatically creates an isolated MySQL database, installs WordPress 6.7, issues your SSL certificate, and configures LiteSpeed cache.',
+      description: 'Our cloud engine automatically creates an isolated MySQL database, installs the latest WordPress core, configures OPcache & edge caching, and issues your SSL certificate.',
       highlight: 'Automated 1-Click setup',
       previewType: 'provision',
     },
@@ -139,7 +139,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                         <div className="p-3 bg-[#080808] border border-white/10 rounded-lg font-mono text-sm text-emerald-300 flex items-center justify-between">
                           <span>https://studiocraft.celoris.in</span>
                           <span className="text-xs text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded">
-                            Free Forever
+                            Free While Active
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-neutral-400">
@@ -168,15 +168,15 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                           Automated 60-second cloud deployment
                         </h4>
                         <p className="text-xs text-neutral-400 mt-1">
-                          Containerized WordPress 6.7 stack initialized with LiteSpeed cache.
+                          Containerized latest WordPress stack initialized with Cloudflare CDN &amp; server caching.
                         </p>
                       </div>
 
                       <div className="bg-[#050505] p-4 rounded-xl border border-white/10 font-mono text-xs space-y-2 text-neutral-300">
                         <div className="text-neutral-500">// Celoris Auto-Installer v2.4</div>
                         <div className="text-emerald-400">✓ [0.2s] Dedicated MariaDB database provisioned</div>
-                        <div className="text-emerald-400">✓ [0.6s] WordPress 6.7 core installed</div>
-                        <div className="text-emerald-400">✓ [1.1s] LiteSpeed Cache plugin activated</div>
+                        <div className="text-emerald-400">✓ [0.6s] Latest WordPress core installed</div>
+                        <div className="text-emerald-400">✓ [1.1s] OPcache &amp; Cloudflare edge caching activated</div>
                         <div className="text-emerald-400">✓ [1.4s] TLS 1.3 Let's Encrypt certificate deployed</div>
                         <div className="text-emerald-400">✓ [1.8s] Site online at https://studiocraft.celoris.in</div>
                       </div>

@@ -128,7 +128,7 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
             <span className="text-white font-mono font-medium underline decoration-emerald-400/50 decoration-2">
               yourname.celoris.in
             </span>{' '}
-            domain. 3 GB NVMe storage, free Let's Encrypt SSL, and zero credit card required. Perfect for Indian students, design portfolios, and creators.
+            domain. 3 GB NVMe storage, free SSL, and zero credit card required. Free forever while active, protected by automated 30-day archival alerts.
           </motion.p>
 
           {/* Interactive Hero Widget (The Subdomain Claimer) */}
@@ -217,7 +217,7 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-medium text-neutral-300">
               <span className="flex items-center gap-1.5 text-emerald-400">
                 <Check className="w-3.5 h-3.5" />
-                <span>Zero Fees Forever</span>
+                <span>Free Forever While Active</span>
               </span>
               <span className="text-neutral-700 select-none">·</span>
               <span className="flex items-center gap-1.5 text-neutral-300">
@@ -426,7 +426,7 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                 </div>
 
                 <div className="hidden md:flex items-center gap-4 text-neutral-400 font-mono text-[11px]">
-                  <span>Server: <strong className="text-neutral-200">LiteSpeed NVMe</strong></span>
+                  <span>Server: <strong className="text-neutral-200">NVMe Cloud + CDN</strong></span>
                   <span>TTFB: <strong className="text-emerald-400">38ms</strong></span>
                   <span>Storage: <strong className="text-neutral-200">3.0 GB Free NVMe</strong></span>
                 </div>
@@ -485,7 +485,7 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                               <span>Deploy This Template</span>
                               <ArrowRight className="w-3.5 h-3.5" />
                             </button>
-                            <span className="text-xs text-neutral-500 font-mono">WordPress 6.7 + Elementor</span>
+                            <span className="text-xs text-neutral-500 font-mono">Latest WordPress + Elementor</span>
                           </div>
                         </div>
 
@@ -549,10 +549,10 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                         <div className="md:col-span-5 bg-[#0F0F0F] p-4 rounded-xl border border-white/5 font-mono text-[11px] text-neutral-300 space-y-1.5">
                           <div className="text-neutral-500">$ curl -I https://{sanitizedSubdomain}.celoris.in</div>
                           <div className="text-emerald-400">HTTP/2 200 OK</div>
-                          <div>server: LiteSpeed-Cloud/2.4</div>
-                          <div>x-lscache: HIT, edge-mumbai</div>
+                          <div>server: cloudflare</div>
+                          <div>x-cache: HIT, edge-mumbai</div>
                           <div>content-type: text/html; charset=UTF-8</div>
-                          <div className="text-emerald-400">x-powered-by: Celoris-Free-NVMe</div>
+                          <div className="text-emerald-400">via: 1.1 Caddy (WordPress NVMe)</div>
                         </div>
                       </motion.div>
                     )}

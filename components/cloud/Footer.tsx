@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
                 rel="noopener noreferrer"
                 className="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1"
               >
-                <span>Celoris Designs</span>
+                <span>Celoris Designs LLP</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -41,8 +41,8 @@ export const Footer: React.FC = () => {
             </div>
             <ul className="space-y-2">
               <li>
-                <a href="#infrastructure" className="hover:text-emerald-400 transition-colors">
-                  LiteSpeed NVMe SSD
+                <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
+                  High-Speed NVMe Cloud
                 </a>
               </li>
               <li>
@@ -52,7 +52,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a href="#pricing" className="hover:text-emerald-400 transition-colors">
-                  Free Forever Subdomains
+                  Free Active Subdomains
                 </a>
               </li>
               <li>
@@ -89,13 +89,13 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
-                  Portfolio Showcase Guide
+                  How Deployment Works
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-emerald-400 transition-colors">
-                  Class Batch Activation
-                </a>
+                <Link href="/courses" className="hover:text-emerald-400 transition-colors">
+                  Design &amp; Code Courses
+                </Link>
               </li>
             </ul>
           </div>
@@ -144,7 +144,7 @@ export const Footer: React.FC = () => {
         {/* Bottom copyright row */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-400">
           <div>
-            © {new Date().getFullYear()} Celoris Cloud. Built with pride for Indian creators & students.
+            © {new Date().getFullYear()} Celoris Designs LLP. Built with pride for Indian creators & students.
           </div>
           <div className="flex items-center gap-4">
             <Link href="/" className="hover:text-emerald-400 transition-colors">
@@ -153,7 +153,7 @@ export const Footer: React.FC = () => {
             <span>·</span>
             <span className="text-neutral-400">cloud.celoris.in</span>
             <span>·</span>
-            <span className="text-neutral-400">NVMe LiteSpeed Servers</span>
+            <span className="text-neutral-400">High-Speed NVMe Cloud</span>
           </div>
         </div>
       </div>

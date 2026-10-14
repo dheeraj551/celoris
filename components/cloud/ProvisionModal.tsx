@@ -49,10 +49,10 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const matchedPhishingKeyword = PHISHING_KEYWORDS.find((kw) => cleanSubdomain.includes(kw));
 
   const provisioningSteps = [
-    { title: 'Allocating LiteSpeed NVMe Pod', desc: 'Deploying isolated 3 GB container on Asia-South1 (Mumbai)' },
+    { title: 'Allocating NVMe Cloud Pod', desc: 'Deploying isolated 3 GB container on Asia-South1 (Mumbai)' },
     { title: 'Generating Let’s Encrypt SSL', desc: 'Issuing free TLS/HTTPS wildcard certificate' },
     { title: 'Installing WordPress Core', desc: 'Pre-configuring database & Gutenberg performance blocks' },
-    { title: 'Activating LiteSpeed Cache Engine', desc: 'Configuring server-level page caching & CDN routing' }
+    { title: 'Activating Edge Caching & CDN', desc: 'Configuring server-level OPcache & Cloudflare edge routing' }
   ];
 
   const handleSiteTitleChange = (val: string) => {
@@ -368,11 +368,11 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 </div>
                 <div className="flex items-center gap-2 text-neutral-300">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>100% ad-free LiteSpeed server with free Let's Encrypt SSL.</span>
+                  <span>100% ad-free server with free Let's Encrypt SSL.</span>
                 </div>
                 <div className="p-2.5 bg-white/[0.03] border border-white/5 rounded-lg text-[11px] text-neutral-300 leading-relaxed">
-                  <span className="text-amber-400 font-semibold uppercase tracking-wider text-[10px] block mb-0.5">Free Tier Resource Policy</span>
-                  Free sites sleep after <strong className="text-white">7 days of inactivity</strong> (1-click wake up) and are recycled after <strong className="text-white">30 days</strong>. Celoris Pro sites are <strong className="text-emerald-400 font-semibold">100% Always-On 24/7</strong>.
+                  <span className="text-emerald-400 font-semibold uppercase tracking-wider text-[10px] block mb-0.5">Free Forever While Active</span>
+                  Free sites enter power-saving sleep after <strong className="text-white">7 days of inactivity</strong> (1-click wake up) and are archived after <strong className="text-white">30 days</strong> (preceded by 2 email reminders). Pro sites are <strong className="text-emerald-400 font-semibold">100% Always-On 24/7</strong>.
                 </div>
               </div>
 
@@ -544,10 +544,10 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
               <div className="p-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-left space-y-1">
                 <div className="flex items-center gap-1.5 text-amber-300 text-xs font-semibold">
                   <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
-                  <span>Keep Your Site Active</span>
+                  <span>Free Forever While Active</span>
                 </div>
                 <p className="text-[11px] text-neutral-300 leading-relaxed">
-                  Log in to your WordPress Admin at least once every <strong>7 days</strong> to keep your site awake. Inactive sites sleep after 7 days (wakeable in 1 click) and are recycled after 30 days. Pro sites (₹149/mo) never sleep.
+                  Your site is free forever while active! Log in to your WordPress Admin at least once every <strong>7 days</strong> to keep your site awake. Inactive sites sleep after 7 days (wakeable in 1 click) and are safely archived after 30 days (preceded by 2 email alerts). Pro sites (₹149/mo) never sleep.
                 </p>
               </div>
 

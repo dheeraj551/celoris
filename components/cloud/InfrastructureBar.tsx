@@ -16,10 +16,10 @@ export const InfrastructureBar: React.FC = () => {
     {
       id: 0,
       GraphicComponent: CelorisNvmeGraphic,
-      title: 'Ultra-Fast NVMe SSD',
-      headline: 'LiteSpeed-powered servers for instant loading',
-      spec: 'PCIe Gen4 storage with up to 7,000 MB/s read speeds and server-level LSCache.',
-      detail: 'Unlike traditional spinning disks or budget SATA SSDs used by cheap shared hosts, Celoris provisions ultra-fast NVMe storage clusters located strategically in Asia-South for lightning-quick Indian page loads.',
+      title: 'Ultra-Fast NVMe Storage',
+      headline: 'Cloudflare Edge CDN & NVMe for instant loading',
+      spec: 'PCIe Gen4 NVMe storage with server-level OPcache and Cloudflare edge caching.',
+      detail: 'Celoris provisions high-speed NVMe storage clusters paired with low-latency CDN edge nodes for lightning-quick Indian page loads.',
       badge: 'Asia-South Node',
     },
     {
@@ -37,7 +37,7 @@ export const InfrastructureBar: React.FC = () => {
       title: '100% Ad-Free Guarantee',
       headline: 'Your website belongs to you; no injected banner ads',
       spec: 'Zero third-party script injection, zero spam popups, 100% clean code.',
-      detail: 'Many free web hosts litter student portfolios with intrusive third-party banner ads and popups. Celoris Cloud guarantees 100% ad-free hosting forever.',
+      detail: 'Many free web hosts litter student portfolios with intrusive third-party banner ads and aggressive upsell popups. Celoris Cloud guarantees a 100% ad-free experience while active.',
       badge: 'Zero Injections',
     },
     {

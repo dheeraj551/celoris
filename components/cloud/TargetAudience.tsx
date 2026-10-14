@@ -24,10 +24,10 @@ export const TargetAudience: React.FC<TargetAudienceProps> = ({ onClaimClick }) 
       title: 'Design & Tech Students',
       benefit: 'Put a fast, live portfolio link on your resume to stand out to recruiters.',
       description: 'Stop submitting Google Drive links or Figma prototypes that recruiters won’t open. Give hiring managers a live, interactive WordPress website on yourname.celoris.in that loads in under 400 milliseconds.',
-      features: ['100% Free Forever', 'No credit card needed', 'WordPress & Elementor ready', 'SSL green padlock on resume'],
-      demoSubdomain: 'aditya-portfolio',
-      quote: '"I put aditya.celoris.in on my campus placement resume and got shortlisted at 3 design agencies because my live site actually worked on their phones."',
-      quoteAuthor: 'Aditya S., IIT Roorkee Design Batch',
+      features: ['100% Free Forever While Active', 'No credit card needed', 'WordPress & Elementor ready', 'SSL green padlock on resume'],
+      demoSubdomain: 'student-portfolio',
+      useCaseTitle: 'Resume & Campus Placement Live Link',
+      useCaseDetail: 'Provide recruiters and agencies with a live, interactive WordPress link (yourname.celoris.in) that loads instantly on mobile devices with zero server errors.',
     },
     {
       id: 1,
@@ -36,10 +36,10 @@ export const TargetAudience: React.FC<TargetAudienceProps> = ({ onClaimClick }) 
       title: 'Freelance Web Designers',
       benefit: 'Test and demo client landing pages without paying extra hosting fees.',
       description: 'Never spend ₹3,000 buying temporary hosting just to show a local Indian client a staging demo. Spin up client-name.celoris.in in 60 seconds, get approval, and export when ready.',
-      features: ['Fast client demo URLs', 'LiteSpeed NVMe performance', 'Zero ad injection', '1-Click custom domain upgrade'],
+      features: ['Fast client demo URLs', 'High-speed NVMe performance', 'Zero ad injection', '1-Click custom domain upgrade'],
       demoSubdomain: 'dentist-clinic-demo',
-      quote: '"I demoed a redesign for a dental clinic in Pune on drsharma.celoris.in. Client loved the instant speed and signed the ₹25k contract the next day."',
-      quoteAuthor: 'Pooja Verma, Web Freelancer',
+      useCaseTitle: 'Staging Demos for Client Sign-offs',
+      useCaseDetail: 'Spin up a quick staging demo (e.g. clientname.celoris.in) to show prospective Indian clients live page prototypes before purchasing a custom domain.',
     },
     {
       id: 2,
@@ -50,8 +50,8 @@ export const TargetAudience: React.FC<TargetAudienceProps> = ({ onClaimClick }) 
       description: 'Follow along with Celoris instructors step-by-step. While mentors build in class, you deploy your own live WordPress site right alongside without spending a single rupee on hosting.',
       features: ['Official Celoris sandbox', 'Pre-optimized for class templates', 'Instant 60s activation', 'Direct mentorship integration'],
       demoSubdomain: 'batch-assignment-04',
-      quote: '"During the Celoris Live Web Design Masterclass, everyone launched their WordPress site within 2 minutes. No credit card hassles, no server setup errors."',
-      quoteAuthor: 'Rohan K., Celoris Batch 12',
+      useCaseTitle: 'Live Classroom Hands-on Sandbox',
+      useCaseDetail: 'Practice building live during Celoris webinars and masterclasses without spending money on hosting or struggling with manual database setup.',
     },
     {
       id: 3,
@@ -60,10 +60,10 @@ export const TargetAudience: React.FC<TargetAudienceProps> = ({ onClaimClick }) 
       title: 'Creators & Bloggers',
       benefit: 'Launch your personal blog, newsletter landing page, or link-in-bio hub.',
       description: 'Own your digital home and audience instead of relying solely on social media algorithms. Publish articles, embed newsletters, and showcase all your social channels on one clean link.',
-      features: ['Clean SEO-optimized URL', 'Gutenberg block editor', 'Fast NVMe mobile speed', '10,000 monthly visits included'],
-      demoSubdomain: 'priya-writes',
-      quote: '"Much faster than Substack or Medium and I actually own my content with full WordPress customization."',
-      quoteAuthor: 'Priya M., Tech Columnist',
+      features: ['Clean SEO-optimized URL', 'Gutenberg block editor', 'Fast NVMe mobile speed', '15,000 monthly visits included'],
+      demoSubdomain: 'creator-journal',
+      useCaseTitle: 'Independent Content Hub & Newsletter',
+      useCaseDetail: 'Own your digital audience instead of relying solely on social media algorithms, with full WordPress blogging control and fast page loads.',
     },
   ];
 
@@ -152,17 +152,20 @@ export const TargetAudience: React.FC<TargetAudienceProps> = ({ onClaimClick }) 
           })}
         </div>
 
-        {/* Selected Persona Testimonial Spot */}
+        {/* Selected Persona Practical Spotlight */}
         <div className="mt-12 p-6 rounded-2xl bg-[#0D0D0D] border border-emerald-500/20 max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-5">
-          <div className="w-12 h-12 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold text-base shrink-0">
-            {personas[activePersona].quoteAuthor.charAt(0)}
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+            🎯
           </div>
           <div className="space-y-1 text-center sm:text-left">
-            <p className="text-xs sm:text-sm italic text-neutral-200">
-              {personas[activePersona].quote}
+            <div className="text-xs font-semibold text-emerald-400 font-mono uppercase tracking-wider">
+              Spotlight: {personas[activePersona].useCaseTitle}
+            </div>
+            <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
+              {personas[activePersona].useCaseDetail}
             </p>
-            <div className="text-xs font-semibold text-emerald-400 font-mono">
-              — {personas[activePersona].quoteAuthor}
+            <div className="text-[11px] text-neutral-400 pt-1">
+              Founding Cohort: Real student portfolio showcases will be linked here as our initial creators launch their sites.
             </div>
           </div>
         </div>

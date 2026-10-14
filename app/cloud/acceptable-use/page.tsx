@@ -149,11 +149,11 @@ export default function AcceptableUsePage() {
               <span>Inactivity & Recycling Policy</span>
             </h2>
             <p>
-              To maintain cloud hardware health and optimize storage on our LiteSpeed NVMe servers, free tier websites follow an active-use cycle:
+              To maintain cloud hardware health and optimize storage on our NVMe servers, free tier websites follow an active-use cycle:
             </p>
             <ul className="space-y-1.5 pl-4 list-disc text-neutral-400 text-xs sm:text-sm">
               <li>Free sites with no updates or logins for <strong className="text-neutral-200">7 days</strong> enter power-saving sleep mode. The owner can wake it up in 1 click from their account.</li>
-              <li>Free sites untouched for <strong className="text-neutral-200">30 days</strong> are recycled, and the subdomain is released.</li>
+              <li>Free sites untouched for <strong className="text-neutral-200">30 days</strong> are safely archived after 2 automated email reminders, and the subdomain is released.</li>
               <li>Upgrading to Celoris Pro (₹149/mo) provides <strong className="text-emerald-400">100% Always-On 24/7</strong> uptime with zero sleep cycles.</li>
             </ul>
           </section>

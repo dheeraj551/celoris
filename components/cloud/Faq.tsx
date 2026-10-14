@@ -10,7 +10,7 @@ export const Faq: React.FC = () => {
   const faqs = [
     {
       q: 'Is the free tier really free forever?',
-      a: 'Yes. The Starter tier is 100% completely free forever. We do not ask for a credit card, and we will never auto-bill or lock your content behind sudden paywalls. You only pay if you deliberately choose to connect a custom .com/.in domain or require multi-site agency storage down the road.',
+      a: 'Yes. The Starter tier is 100% free forever while active. We do not ask for a credit card, and we will never auto-bill or lock your content behind sudden paywalls. Sites inactive for 30 consecutive days are safely archived after 2 automated email reminders to free up server storage for active creators. You only pay if you choose to connect a custom .com/.in domain or require multi-site agency storage.',
       tag: 'Pricing & Guarantee',
     },
     {
@@ -30,17 +30,17 @@ export const Faq: React.FC = () => {
     },
     {
       q: 'How much storage space do I get on the free plan?',
-      a: 'Every free Starter account receives 3 GB of dedicated high-speed NVMe PCIe Gen4 storage with server-side LiteSpeed caching. 3 GB easily accommodates thousands of high-res design screenshots, portfolios, Gutenberg block themes, and WordPress media. If you require expanded storage (15 GB+) or custom domain mapping, you can upgrade to Celoris Pro for ₹149/mo.',
+      a: 'Every free Starter account receives 3 GB of dedicated high-speed NVMe PCIe storage with server-side caching and Cloudflare edge routing. 3 GB easily accommodates thousands of high-res design screenshots, portfolios, Gutenberg block themes, and WordPress media. If you require expanded storage (15 GB+) or custom domain mapping, you can upgrade to Celoris Pro for ₹149/mo.',
       tag: 'Storage & Capacity',
     },
     {
       q: 'What happens if I don’t use or update my website for a while?',
-      a: 'To guarantee that Celoris Cloud servers remain blazing-fast and protected against spam or bot abandonware, free sites follow an inactivity lifecycle. If a site has no admin logins or updates for 7 consecutive days, it enters power-saving sleep mode to conserve VPS resources. The site owner can wake it up anytime in 1 click! If a site is abandoned with zero logins for 30 consecutive days, it is recycled to free up storage for active creators. If you need 100% Always-On 24/7 uptime that never sleeps or expires, you can upgrade to Celoris Pro for ₹149/mo.',
+      a: 'To guarantee that Celoris Cloud servers remain blazing-fast and protected against spam or bot abandonware, free sites follow an active-use cycle. If a site has no admin logins or updates for 7 consecutive days, it enters power-saving sleep mode to conserve VPS resources. The site owner can wake it up anytime in 1 click! If a site remains untouched for 30 consecutive days, it is safely archived after 2 automated email reminders to free up server storage for active creators. If you need 100% Always-On 24/7 uptime that never sleeps, you can upgrade to Celoris Pro for ₹149/mo.',
       tag: 'Inactivity & Lifecycle',
     },
     {
       q: 'How does Celoris Cloud keep my site fast?',
-      a: 'Our cloud servers run high-performance NVMe PCIe Gen4 SSDs with LiteSpeed web servers and server-level LSCache. Our edge nodes in Asia-South (India) deliver median response times of under 45ms, ensuring your portfolio scores 95+ on Google PageSpeed Insights.',
+      a: 'Our cloud servers run high-performance NVMe PCIe Gen4 SSDs with Docker containerization, OPcache, and Cloudflare CDN edge caching. Our edge nodes deliver median response times of under 45ms across India, ensuring your portfolio scores 95+ on Google PageSpeed Insights.',
       tag: 'Performance & Speed',
     },
     {

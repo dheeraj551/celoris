@@ -14,20 +14,20 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
     {
       id: 'starter',
       name: 'Starter (Hobby / Student)',
-      badge: 'Default Tier · 100% Free Forever',
+      badge: 'Default Tier · 100% Free While Active',
       priceMonthly: 0,
       priceYearly: 0,
-      periodText: 'forever',
+      periodText: 'forever while active',
       description: 'Ideal for Indian college students, portfolio websites, beginners, and Celoris class projects.',
       highlight: true,
       features: [
         '1 Managed WordPress Site',
         'Free yourname.celoris.in Subdomain',
         '3 GB High-Speed NVMe Storage',
-        '15,000 Monthly Visits',
+        '15,000 Monthly Visits Included',
         'Free SSL Certificate (HTTPS)',
         '100% Ad-Free Experience',
-        'Sleeps after 7d inactivity (1-Click Instant Wake)',
+        '7d Sleep (1-Click Wake) · 30d Archival (2 Email Alerts)',
         'Community Forum & Docs Support',
       ],
       ctaText: 'Launch Free 3 GB Site (No Card Needed)',
@@ -159,7 +159,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
                     )}
                     {plan.highlight && (
                       <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded">
-                        Free Forever
+                        Free While Active
                       </span>
                     )}
                   </div>
@@ -179,14 +179,14 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
                         ₹{displayPrice}
                       </span>
                       <span className="text-xs text-neutral-400 font-mono">
-                        {plan.priceMonthly === 0 ? '/ free forever' : plan.periodText}
+                        {plan.priceMonthly === 0 ? '/ free while active' : plan.periodText}
                       </span>
                     </div>
 
                     {plan.priceMonthly === 0 ? (
                       <div className="mt-2 text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
                         <Check className="w-3.5 h-3.5" />
-                        <span>No credit card required. Never expires.</span>
+                        <span>No credit card required. Free forever while active.</span>
                       </div>
                     ) : billingCycle === 'yearly' ? (
                       <div className="mt-2 text-[11px] text-emerald-300 font-mono">
@@ -250,7 +250,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
         <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-[#0d1611] to-emerald-950/20 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-4 max-w-5xl mx-auto">
           <div className="space-y-1 text-center md:text-left">
             <div className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
-              Loved our LiteSpeed NVMe Server?
+              Need Custom Domains &amp; Scaled Storage?
             </div>
             <h4 className="text-base font-bold text-white">
               Upgrade to Pro for Custom Domains &amp; 15 GB NVMe
