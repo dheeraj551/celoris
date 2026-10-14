@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Navbar } from './Navbar';
 import { Hero } from './Hero';
@@ -18,6 +18,19 @@ export default function App() {
   const { user, profile } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedSubdomain, setSelectedSubdomain] = useState('');
+
+  // Auto-open modal if user was redirected back after sign up or log in
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const sub = params.get('subdomain');
+      if (sub && sub.trim().length >= 3) {
+        const clean = sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        setSelectedSubdomain(clean);
+        setModalOpen(true);
+      }
+    }
+  }, []);
 
   const getUserHandle = () => {
     return (profile?.username || user?.email?.split('@')[0] || 'yourname')

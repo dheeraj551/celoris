@@ -413,7 +413,7 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
                 <div className="hidden md:flex items-center gap-4 text-neutral-400 font-mono text-[11px]">
                   <span>Server: <strong className="text-neutral-200">LiteSpeed NVMe</strong></span>
                   <span>TTFB: <strong className="text-emerald-400">38ms</strong></span>
-                  <span>Storage: <strong className="text-neutral-200">1.0 GB Free</strong></span>
+                  <span>Storage: <strong className="text-neutral-200">3.0 GB Free NVMe</strong></span>
                 </div>
               </div>
 

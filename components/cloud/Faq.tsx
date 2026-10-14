@@ -29,6 +29,11 @@ export const Faq: React.FC = () => {
       tag: 'WordPress Access',
     },
     {
+      q: 'How much storage space do I get on the free plan?',
+      a: 'Every free Starter account receives 3 GB of dedicated high-speed NVMe PCIe Gen4 storage with server-side LiteSpeed caching. 3 GB easily accommodates thousands of high-res design screenshots, portfolios, Gutenberg block themes, and WordPress media. If you require expanded storage (15 GB+) or custom domain mapping, you can upgrade to Celoris Pro for ₹149/mo.',
+      tag: 'Storage & Capacity',
+    },
+    {
       q: 'How does Celoris Cloud keep my site fast?',
       a: 'Our cloud servers run high-performance NVMe PCIe Gen4 SSDs with LiteSpeed web servers and server-level LSCache. Our edge nodes in Asia-South (India) deliver median response times of under 45ms, ensuring your portfolio scores 95+ on Google PageSpeed Insights.',
       tag: 'Performance & Speed',

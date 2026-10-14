@@ -70,7 +70,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
       feature: 'Storage & Drive Type',
       traditional: 'SATA HDD or Shared SSD',
       oldFree: 'Slow legacy magnetic disks',
-      celoris: '1 GB High-Speed NVMe PCIe',
+      celoris: '3 GB High-Speed NVMe PCIe',
       isHighlight: false,
       celorisWin: true,
     },

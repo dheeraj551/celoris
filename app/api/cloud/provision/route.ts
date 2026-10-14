@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createRouteClient } from '@/lib/supabase-server';
 
 const VPS_API_URL = process.env.CELORIS_CLOUD_VPS_URL || 'http://169.58.229.99:4000';
 const VPS_SECRET = process.env.CELORIS_CLOUD_SECRET || 'celoris_cloud_secret_786a9f24e';
@@ -12,6 +13,32 @@ const RESERVED_SUBDOMAINS = new Set([
 
 export async function POST(req: NextRequest) {
   try {
+    // Enforce mandatory user registration to prevent bot and spam abuse
+    const supabase = await createRouteClient();
+    let authUser = null;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) authUser = user;
+    } catch (_) {}
+
+    if (!authUser) {
+      const authHeader = req.headers.get('authorization') || '';
+      if (authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        try {
+          const { data: tokenData } = await supabase.auth.getUser(token);
+          if (tokenData?.user) authUser = tokenData.user;
+        } catch (_) {}
+      }
+    }
+
+    if (!authUser) {
+      return NextResponse.json(
+        { error: 'User registration is mandatory before deploying a site. Please register or log in to launch your instance.' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const rawSubdomain = (body.subdomain || '').toString().trim().toLowerCase();
     const title = (body.title || `${rawSubdomain} Site`).toString().trim();

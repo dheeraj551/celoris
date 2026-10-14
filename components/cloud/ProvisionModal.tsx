@@ -16,7 +16,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   subdomain,
   onClose,
 }) => {
-  const { user, profile } = useAuth();
+  const { user, profile, session } = useAuth();
   const [customSubdomain, setCustomSubdomain] = useState('');
   const [hasUserEditedSubdomain, setHasUserEditedSubdomain] = useState(false);
   const [step, setStep] = useState<number>(0);
@@ -39,7 +39,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const fullDomain = `${cleanSubdomain}.celoris.in`;
 
   const provisioningSteps = [
-    { title: 'Allocating LiteSpeed NVMe Pod', desc: 'Deploying isolated container on Asia-South1 (Mumbai)' },
+    { title: 'Allocating LiteSpeed NVMe Pod', desc: 'Deploying isolated 3 GB container on Asia-South1 (Mumbai)' },
     { title: 'Generating Let’s Encrypt SSL', desc: 'Issuing free TLS/HTTPS wildcard certificate' },
     { title: 'Installing WordPress Core', desc: 'Pre-configuring database & Gutenberg performance blocks' },
     { title: 'Activating LiteSpeed Cache Engine', desc: 'Configuring server-level page caching & CDN routing' }
@@ -63,6 +63,11 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const prevIsOpenRef = React.useRef(false);
 
   const handleStartDeployment = async () => {
+    if (!user) {
+      setDeployError('Account registration is required before deploying. Please register or sign in.');
+      return;
+    }
+
     if (cleanSubdomain.length < 3) {
       setDeployError('Subdomain must be at least 3 characters.');
       return;
@@ -82,7 +87,10 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
     try {
       const res = await fetch('/api/cloud/provision', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({
           subdomain: cleanSubdomain,
           title: siteTitle || `${cleanSubdomain} Site`,
@@ -223,7 +231,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                   Launch Your Free WordPress Site
                 </h3>
                 <p className="text-xs text-neutral-400 mt-1">
-                  We will provision your free NVMe database and install WordPress instantly.
+                  We will provision your free 3 GB NVMe container and install WordPress instantly.
                 </p>
               </div>
 
@@ -235,7 +243,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                       <UserCheck className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[11px] text-emerald-300 font-semibold uppercase tracking-wider">Celoris Account Connected</div>
+                      <div className="text-[11px] text-emerald-300 font-semibold uppercase tracking-wider">Celoris Account Verified</div>
                       <div className="text-xs font-medium text-white truncate">{user.email}</div>
                     </div>
                   </div>
@@ -244,18 +252,14 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                   </span>
                 </div>
               ) : (
-                <div className="p-3 bg-white/[0.03] border border-white/10 rounded-xl flex items-center justify-between text-xs">
-                  <div>
-                    <div className="text-[11px] text-neutral-400">Deploying as Guest Visitor</div>
-                    <div className="text-xs text-neutral-300">No account required to test</div>
+                <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-2">
+                  <div className="flex items-center gap-2 text-amber-300">
+                    <ShieldCheck className="w-4 h-4 shrink-0 text-amber-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Account Registration Required</span>
                   </div>
-                  <Link
-                    href="/login?redirect=/cloud"
-                    className="text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 shrink-0"
-                  >
-                    <span>Sign In to Sync</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
+                  <p className="text-xs text-neutral-300 leading-relaxed">
+                    To prevent automated bot abuse and dedicate <strong className="text-emerald-400">3 GB high-speed NVMe storage</strong> to your site, please create a free Celoris account or sign in.
+                  </p>
                 </div>
               )}
 
@@ -265,8 +269,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                   <label className="text-[11px] text-emerald-300 font-semibold uppercase tracking-wider">
                     Assigned Subdomain
                   </label>
-                  <span className="inline-block px-2 py-0.5 text-[10px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 rounded">
-                    Free Forever
+                  <span className="inline-block px-2 py-0.5 text-[10px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 rounded font-mono">
+                    3 GB Free Forever
                   </span>
                 </div>
 
@@ -338,23 +342,41 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
               <div className="pt-2 border-t border-white/[0.06] text-xs text-neutral-400 space-y-1.5">
                 <div className="flex items-center gap-2 text-neutral-300">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>No credit card required. Never auto-charged.</span>
+                  <span>3 GB High-Speed NVMe PCIe Storage Allocated.</span>
                 </div>
                 <div className="flex items-center gap-2 text-neutral-300">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>100% ad-free LiteSpeed NVMe server instance.</span>
+                  <span>100% ad-free LiteSpeed server with free Let's Encrypt SSL.</span>
                 </div>
               </div>
 
-              {/* Launch CTA */}
-              <button
-                onClick={handleStartDeployment}
-                disabled={cleanSubdomain.length < 3 || isProvisioning}
-                className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Deploy WordPress Instance Now</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {/* Launch CTA or Auth Gate Action */}
+              {user ? (
+                <button
+                  onClick={handleStartDeployment}
+                  disabled={cleanSubdomain.length < 3 || isProvisioning}
+                  className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Deploy 3 GB WordPress Instance Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <div className="space-y-2 pt-1">
+                  <Link
+                    href={`/register?redirect=${encodeURIComponent(`/cloud?subdomain=${cleanSubdomain}`)}`}
+                    className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                  >
+                    <span>Create Free Account to Deploy</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    href={`/login?redirect=${encodeURIComponent(`/cloud?subdomain=${cleanSubdomain}`)}`}
+                    className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                  >
+                    <span>Already have an account? Sign In to Launch</span>
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 
@@ -419,12 +441,17 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 <p className="text-xs text-neutral-300 mt-1">
                   Instance active and connected to Let's Encrypt SSL.
                 </p>
-                {user && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 font-medium">
+                <div className="mt-2.5 flex items-center justify-center gap-2 flex-wrap">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] text-emerald-300 font-semibold font-mono">
                     <Sparkles className="w-3 h-3 text-emerald-400" />
-                    <span>Saved to Celoris Account ({user.email})</span>
+                    <span>3.0 GB NVMe Storage Allocated</span>
                   </div>
-                )}
+                  {user && (
+                    <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-neutral-300">
+                      <span>Owner: {user.email}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Credentials Box */}
@@ -487,20 +514,39 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 </div>
               </div>
 
-              {/* Guest prompt to save */}
-              {!user && (
-                <div className="p-3 bg-white/[0.04] border border-white/10 rounded-xl flex items-center justify-between">
-                  <div className="text-xs text-neutral-300">
-                    Want to manage this site from your Celoris account?
+              {/* Premium Plan Upsell Card */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/50 via-[#0d1611] to-emerald-950/30 border border-emerald-500/30 text-left space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-white">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Loving the speed? Connect your custom domain!</span>
                   </div>
-                  <Link
-                    href="/register?redirect=/cloud"
-                    className="text-xs font-semibold px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg transition-colors shrink-0"
-                  >
-                    Save to Account
-                  </Link>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                    Pro ₹149/mo
+                  </span>
                 </div>
-              )}
+                <p className="text-[11px] text-neutral-300 leading-relaxed">
+                  Upgrade to <strong className="text-white">Celoris Pro</strong> to connect <span className="text-emerald-300 font-mono">yourbrand.com</span>, expand to <strong className="text-white">15 GB NVMe storage</strong>, and get custom professional business email.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <a
+                    href="#pricing"
+                    onClick={onClose}
+                    className="text-xs font-bold px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>View Pro & Agency Plans</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </a>
+                  <a
+                    href="https://wa.me/919084718101?text=Hi%20Celoris!%20My%20site%20is%20live%20on%20Celoris%20Cloud.%20I'd%20like%20to%20upgrade%20to%20Pro%20(₹149/mo)%20to%20connect%20my%20own%20custom%20domain."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-neutral-400 hover:text-white px-2 py-1 transition-colors"
+                  >
+                    Upgrade on WhatsApp →
+                  </a>
+                </div>
+              </div>
 
               {/* Actions */}
               <div className="flex gap-3">

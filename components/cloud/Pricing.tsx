@@ -23,14 +23,14 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
       features: [
         '1 Managed WordPress Site',
         'Free yourname.celoris.in Subdomain',
-        '1 GB NVMe Cloud Storage',
-        '10,000 Monthly Visits',
+        '3 GB High-Speed NVMe Storage',
+        '15,000 Monthly Visits',
         'Free SSL Certificate (HTTPS)',
         'Automated Daily Security Scans',
         '100% Ad-Free Experience',
         'Community Forum & Docs Support',
       ],
-      ctaText: 'Launch Free Site (No Card Needed)',
+      ctaText: 'Launch Free 3 GB Site (No Card Needed)',
       ctaStyle: 'bg-emerald-400 hover:bg-emerald-300 text-black font-bold shadow-emerald-900/30',
       isPopular: false,
     },
@@ -47,7 +47,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
       isPopular: true,
       features: [
         'Connect Your Custom Domain (yourbrand.com / .in)',
-        '5 GB High-Speed NVMe Storage',
+        '15 GB High-Speed NVMe Storage',
         '50,000 Monthly Visits',
         'Custom Professional Email (hello@yourbrand.com)',
         'Priority RAM & CPU Allocation',
@@ -55,7 +55,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
         'Priority WhatsApp & Ticket Support',
         'Free SSL for Custom Domains',
       ],
-      ctaText: 'Upgrade to Pro Cloud',
+      ctaText: 'Upgrade to Pro (₹149/mo)',
       ctaStyle: 'bg-emerald-500 hover:bg-emerald-400 text-black font-bold shadow-emerald-900/30',
     },
     {
@@ -71,14 +71,14 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
       isPopular: false,
       features: [
         'Host up to 5 Custom Domain Websites',
-        '25 GB NVMe Cloud Storage',
+        '50 GB NVMe Cloud Storage',
         'Unlimited Monthly Bandwidth',
         'Client Management Dashboard',
         'Automated Weekly Off-site Backups',
         'White-label Staging Previews',
         'Dedicated Support Channel & Call Assist',
       ],
-      ctaText: 'Get Agency Cloud',
+      ctaText: 'Get Agency Cloud (₹499/mo)',
       ctaStyle: 'bg-white/10 hover:bg-white/15 text-white',
     },
   ];
@@ -214,7 +214,27 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
 
                 {/* Card CTA */}
                 <button
-                  onClick={() => onSelectPlan(plan.name)}
+                  onClick={() => {
+                    if (plan.id === 'pro') {
+                      window.open(
+                        'https://wa.me/919084718101?text=' +
+                          encodeURIComponent(
+                            "Hi Celoris Cloud! I'd like to upgrade to the Pro Creator Plan (₹149/mo) to connect my custom domain."
+                          ),
+                        '_blank'
+                      );
+                    } else if (plan.id === 'agency') {
+                      window.open(
+                        'https://wa.me/919084718101?text=' +
+                          encodeURIComponent(
+                            "Hi Celoris Cloud! I'd like to inquire about the Agency Cloud Plan (₹499/mo) for hosting client websites."
+                          ),
+                        '_blank'
+                      );
+                    } else {
+                      onSelectPlan(plan.name);
+                    }
+                  }}
                   className={`w-full py-3 px-4 rounded-xl font-bold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${plan.ctaStyle}`}
                 >
                   <span>{plan.ctaText}</span>
@@ -225,8 +245,32 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
           })}
         </div>
 
+        {/* Upsell / Server Performance Banner */}
+        <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-[#0d1611] to-emerald-950/20 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-4 max-w-5xl mx-auto">
+          <div className="space-y-1 text-center md:text-left">
+            <div className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+              Loved our LiteSpeed NVMe Server?
+            </div>
+            <h4 className="text-base font-bold text-white">
+              Upgrade to Pro for Custom Domains &amp; 15 GB NVMe
+            </h4>
+            <p className="text-xs text-neutral-300">
+              Map your own brand name (<span className="text-emerald-300 font-mono">yourbrand.com</span>), get professional email, and expand your storage anytime for just ₹149/month.
+            </p>
+          </div>
+          <a
+            href="https://wa.me/919084718101?text=Hi%20Celoris%20Cloud!%20I'm%20loving%20the%20free%20server%20speed%20and%20want%20to%20upgrade%20to%20Pro%20(₹149/mo)."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap shrink-0 flex items-center gap-1.5"
+          >
+            <span>Upgrade to Pro Cloud</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
         {/* Bottom Student Guarantee Note */}
-        <div className="mt-12 p-4 bg-[#0A0A0A] rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400 max-w-4xl mx-auto">
+        <div className="mt-8 p-4 bg-[#0A0A0A] rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400 max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
             <span>
