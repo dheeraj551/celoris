@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Check, ExternalLink, ShieldCheck, X, Terminal, ArrowRight, UserCheck, Sparkles } from 'lucide-react';
+import { Check, ExternalLink, ShieldCheck, X, Terminal, ArrowRight, UserCheck, Sparkles, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 interface ProvisionModalProps {
@@ -24,6 +24,14 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const [adminUser, setAdminUser] = useState('admin');
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [deployError, setDeployError] = useState<string | null>(null);
+  const [deployedResult, setDeployedResult] = useState<{
+    siteUrl: string;
+    adminUrl: string;
+    adminUser: string;
+    adminPass: string;
+    fullDomain: string;
+  } | null>(null);
 
   const cleanSubdomain = (subdomain || 'mysite').toLowerCase().replace(/[^a-z0-9-]/g, '');
   const fullDomain = `${cleanSubdomain}.celoris.in`;
@@ -31,49 +39,78 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const provisioningSteps = [
     { title: 'Allocating LiteSpeed NVMe Pod', desc: 'Deploying isolated container on Asia-South1 (Mumbai)' },
     { title: 'Generating Let’s Encrypt SSL', desc: 'Issuing free TLS/HTTPS wildcard certificate' },
-    { title: 'Installing WordPress 6.7 Core', desc: 'Pre-configuring database & Gutenberg performance blocks' },
+    { title: 'Installing WordPress Core', desc: 'Pre-configuring database & Gutenberg performance blocks' },
     { title: 'Activating LiteSpeed Cache Engine', desc: 'Configuring server-level page caching & CDN routing' }
   ];
 
-  const handleStartDeployment = () => {
+  const handleStartDeployment = async () => {
     setIsProvisioning(true);
+    setDeployError(null);
     setStep(0);
     setProgress(15);
 
-    const timer1 = setTimeout(() => { setStep(1); setProgress(45); }, 900);
-    const timer2 = setTimeout(() => { setStep(2); setProgress(75); }, 1900);
-    const timer3 = setTimeout(() => { setStep(3); setProgress(92); }, 2800);
-    const timer4 = setTimeout(() => { 
-      setProgress(100); 
-      setIsProvisioning(false); 
-      setIsCompleted(true); 
+    const timer1 = setTimeout(() => { setStep(1); setProgress(45); }, 800);
+    const timer2 = setTimeout(() => { setStep(2); setProgress(75); }, 1800);
 
-      // Wire to User Management & Local Storage Persistence
-      const newDeployment = {
-        subdomain: fullDomain,
-        siteTitle: siteTitle || `${cleanSubdomain} Portfolio`,
-        adminUser: adminUser || 'admin',
-        deployedAt: new Date().toISOString(),
-        userId: user?.id || null,
-        userEmail: user?.email || null,
-        status: 'active',
-      };
+    try {
+      const res = await fetch('/api/cloud/provision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subdomain: cleanSubdomain,
+          title: siteTitle || `${cleanSubdomain} Site`,
+          email: user?.email || `${cleanSubdomain}@celoris.in`,
+        }),
+      });
 
-      try {
-        const stored = JSON.parse(localStorage.getItem('celoris_cloud_deployments') || '[]');
-        const updated = [newDeployment, ...stored.filter((item: any) => item.subdomain !== fullDomain)].slice(0, 10);
-        localStorage.setItem('celoris_cloud_deployments', JSON.stringify(updated));
-      } catch (err) {
-        console.warn('Could not cache deployment:', err);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to provision WordPress instance');
       }
-    }, 3600);
 
-    return () => {
+      setStep(3);
+      setProgress(95);
+
+      setTimeout(() => {
+        setProgress(100);
+        setIsProvisioning(false);
+        setIsCompleted(true);
+        setDeployedResult({
+          siteUrl: data.siteUrl || `https://${fullDomain}`,
+          adminUrl: data.adminUrl || `https://${fullDomain}/wp-admin`,
+          adminUser: data.adminUser || adminUser || cleanSubdomain,
+          adminPass: data.adminPass || `celoris_${cleanSubdomain}_2026`,
+          fullDomain: data.fullDomain || fullDomain,
+        });
+
+        // Wire to User Management & Local Storage Persistence
+        const newDeployment = {
+          subdomain: data.fullDomain || fullDomain,
+          siteTitle: siteTitle || `${cleanSubdomain} Portfolio`,
+          adminUser: data.adminUser || adminUser,
+          adminPass: data.adminPass || `celoris_${cleanSubdomain}_2026`,
+          deployedAt: new Date().toISOString(),
+          userId: user?.id || null,
+          userEmail: user?.email || null,
+          status: 'active',
+        };
+
+        try {
+          const stored = JSON.parse(localStorage.getItem('celoris_cloud_deployments') || '[]');
+          const updated = [newDeployment, ...stored.filter((item: any) => item.subdomain !== (data.fullDomain || fullDomain))].slice(0, 10);
+          localStorage.setItem('celoris_cloud_deployments', JSON.stringify(updated));
+        } catch (err) {
+          console.warn('Could not cache deployment:', err);
+        }
+      }, 500);
+
+    } catch (err: any) {
       clearTimeout(timer1);
       clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-    };
+      setIsProvisioning(false);
+      setDeployError(err.message || 'Provisioning service is currently busy. Please try again.');
+    }
   };
 
   useEffect(() => {
@@ -82,6 +119,8 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
       setProgress(0);
       setIsProvisioning(false);
       setIsCompleted(false);
+      setDeployError(null);
+      setDeployedResult(null);
       
       const suggestedName = profile?.full_name 
         ? `${profile.full_name}'s Site`
@@ -214,6 +253,17 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 </div>
               </div>
 
+              {/* Deploy Error Banner */}
+              {deployError && (
+                <div className="p-3 bg-red-950/40 border border-red-500/30 rounded-xl flex items-start gap-2.5 text-xs text-red-200 animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="font-semibold text-red-300">Deployment Notice</div>
+                    <div className="text-[11px] text-red-300/80 mt-0.5">{deployError}</div>
+                  </div>
+                </div>
+              )}
+
               {/* Guarantees checklist */}
               <div className="pt-2 border-t border-white/[0.06] text-xs text-neutral-400 space-y-1.5">
                 <div className="flex items-center gap-2 text-neutral-300">
@@ -312,16 +362,16 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                   <div className="text-[11px] text-neutral-400 uppercase font-mono">Public Website URL</div>
                   <div className="flex items-center justify-between mt-1">
                     <a
-                      href={`https://${fullDomain}`}
+                      href={deployedResult?.siteUrl || `https://${fullDomain}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm font-mono text-emerald-400 hover:underline flex items-center gap-1.5"
                     >
-                      <span>https://{fullDomain}</span>
+                      <span>{deployedResult?.siteUrl || `https://${fullDomain}`}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                     <button
-                      onClick={() => copyToClipboard(`https://${fullDomain}`, 'url')}
+                      onClick={() => copyToClipboard(deployedResult?.siteUrl || `https://${fullDomain}`, 'url')}
                       className="text-xs text-neutral-400 hover:text-white px-2 py-1 bg-white/5 hover:bg-white/10 rounded cursor-pointer transition-colors"
                     >
                       {copied === 'url' ? 'Copied!' : 'Copy'}
@@ -331,19 +381,37 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
 
                 <div className="pt-2 border-t border-white/[0.06]">
                   <div className="text-[11px] text-neutral-400 uppercase font-mono">WordPress Admin URL</div>
-                  <div className="text-xs font-mono text-neutral-200 mt-0.5">
-                    https://{fullDomain}/wp-admin
+                  <div className="flex items-center justify-between mt-0.5">
+                    <a
+                      href={deployedResult?.adminUrl || `https://${fullDomain}/wp-admin`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-mono text-neutral-200 hover:text-emerald-400 hover:underline flex items-center gap-1"
+                    >
+                      <span>{deployedResult?.adminUrl || `https://${fullDomain}/wp-admin`}</span>
+                      <ExternalLink className="w-3 h-3 text-neutral-400" />
+                    </a>
+                    <button
+                      onClick={() => copyToClipboard(deployedResult?.adminUrl || `https://${fullDomain}/wp-admin`, 'admin_url')}
+                      className="text-xs text-neutral-400 hover:text-white px-2 py-1 bg-white/5 hover:bg-white/10 rounded cursor-pointer transition-colors"
+                    >
+                      {copied === 'admin_url' ? 'Copied!' : 'Copy'}
+                    </button>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-white/[0.06] grid grid-cols-2 gap-2 text-xs">
                   <div>
                     <span className="text-[11px] text-neutral-400 block font-mono">Username</span>
-                    <span className="font-mono text-neutral-200 font-semibold">{adminUser}</span>
+                    <span className="font-mono text-neutral-200 font-semibold">
+                      {deployedResult?.adminUser || adminUser}
+                    </span>
                   </div>
                   <div>
                     <span className="text-[11px] text-neutral-400 block font-mono">Generated Password</span>
-                    <span className="font-mono text-emerald-400 font-semibold">celoris_wp_2026</span>
+                    <span className="font-mono text-emerald-400 font-semibold">
+                      {deployedResult?.adminPass || `celoris_${cleanSubdomain}_2026`}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -371,16 +439,15 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                 >
                   Close & Explore Features
                 </button>
-                <button
-                  onClick={() => {
-                    alert(`Opening WordPress Admin dashboard for ${fullDomain}...`);
-                    onClose();
-                  }}
-                  className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                <a
+                  href={deployedResult?.adminUrl || `https://${fullDomain}/wp-admin`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs rounded-xl shadow-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-center"
                 >
                   <ArrowRight className="w-3.5 h-3.5" />
                   <span>Open WP Admin</span>
-                </button>
+                </a>
               </div>
             </div>
           )}
