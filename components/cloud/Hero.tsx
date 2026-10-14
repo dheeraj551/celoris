@@ -29,7 +29,18 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
   // Clean subdomain for display
   const currentSubdomain = subdomain.trim() || userDefault || 'yourname';
   const sanitizedSubdomain = currentSubdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
-  const isAvailable = sanitizedSubdomain.length >= 3 && !sanitizedSubdomain.includes(' ');
+
+  const PHISHING_KEYWORDS = [
+    'login', 'signin', 'verify', 'verification', 'kyc', 'paytm', 'sbi', 'upi',
+    'bank', 'hdfc', 'icici', 'axis', 'pnb', 'kotak', 'phonepe', 'gpay',
+    'googlepay', 'bhim', 'aadhaar', 'uidai', 'incometax', 'pan', 'otp',
+    'secure', 'account', 'auth', 'update', 'wallet', 'amazon',
+    'flipkart', 'netflix', 'paypal', 'apple', 'microsoft', 'freecharge', 'cred',
+    'password', 'security', 'invoice', 'telegram', 'whatsapp'
+  ];
+
+  const matchedPhishingKeyword = PHISHING_KEYWORDS.find((kw) => sanitizedSubdomain.includes(kw));
+  const isAvailable = sanitizedSubdomain.length >= 3 && !sanitizedSubdomain.includes(' ') && !matchedPhishingKeyword;
 
   const handleQuickPick = (name: string) => {
     setSubdomain(name);
@@ -101,9 +112,9 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12] [text-wrap:balance]"
           >
-            Deploy Your Website in 60 Seconds.{' '}
+            Free WordPress Hosting in India:{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-white">
-              100% Free Forever.
+              Your Website Live in 60 Seconds.
             </span>
           </motion.h1>
 
@@ -113,11 +124,11 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-5 text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto leading-relaxed [text-wrap:balance]"
           >
-            Fast, ad-free managed WordPress hosting on your own{' '}
+            Fast, ad-free managed WordPress cloud hosting on your own{' '}
             <span className="text-white font-mono font-medium underline decoration-emerald-400/50 decoration-2">
               yourname.celoris.in
             </span>{' '}
-            domain. No credit card required. Perfect for portfolios, student projects, and landing pages.
+            domain. 3 GB NVMe storage, free Let's Encrypt SSL, and zero credit card required. Perfect for Indian students, design portfolios, and creators.
           </motion.p>
 
           {/* Interactive Hero Widget (The Subdomain Claimer) */}
@@ -164,7 +175,11 @@ export const Hero: React.FC<HeroProps> = ({ onClaim }) => {
               {/* Real-time Subdomain Availability Status & Suggestions */}
               <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-2 text-xs">
                 <div className="flex items-center gap-1.5 font-mono">
-                  {isAvailable ? (
+                  {matchedPhishingKeyword ? (
+                    <span className="text-rose-400 font-medium">
+                      Restricted keyword ("{matchedPhishingKeyword}") blocked to prevent phishing abuse
+                    </span>
+                  ) : isAvailable ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-emerald-400" />
                       <span className="text-emerald-400 font-medium">

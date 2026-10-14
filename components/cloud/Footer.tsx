@@ -118,6 +118,16 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/cloud/acceptable-use" className="hover:text-emerald-400 transition-colors">
+                  Acceptable Use Policy
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:abuse@celorisdesigns.com" className="text-rose-400 hover:text-rose-300 transition-colors">
+                  Report Abuse
+                </a>
+              </li>
+              <li>
                 <Link href="/terms" className="hover:text-emerald-400 transition-colors">
                   Terms of Service
                 </Link>

@@ -80,6 +80,22 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             slug = "".join([c for c in subdomain if c.isalnum() or c == '-'])
             full_domain = f"{slug}.celoris.in"
 
+            PHISHING_KEYWORDS = [
+                'login', 'signin', 'verify', 'verification', 'kyc', 'paytm', 'sbi', 'upi',
+                'bank', 'hdfc', 'icici', 'axis', 'pnb', 'kotak', 'phonepe', 'gpay',
+                'googlepay', 'bhim', 'aadhaar', 'uidai', 'incometax', 'pan', 'otp',
+                'secure', 'account', 'auth', 'update', 'wallet', 'amazon',
+                'flipkart', 'netflix', 'paypal', 'apple', 'microsoft', 'freecharge', 'cred',
+                'password', 'security', 'invoice', 'telegram', 'whatsapp'
+            ]
+            for kw in PHISHING_KEYWORDS:
+                if kw in slug:
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": f"Restricted security keyword '{kw}' is prohibited."}).encode('utf-8'))
+                    return
+
             # WordPress Multisite forbids 'admin' as a username, so fallback to slug
             raw_user = data.get('adminUser', '').strip().lower()
             if not raw_user or raw_user == 'admin':

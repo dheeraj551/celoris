@@ -38,6 +38,16 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const cleanSubdomain = (customSubdomain || 'yourname').toLowerCase().replace(/[^a-z0-9-]/g, '');
   const fullDomain = `${cleanSubdomain}.celoris.in`;
 
+  const PHISHING_KEYWORDS = [
+    'login', 'signin', 'verify', 'verification', 'kyc', 'paytm', 'sbi', 'upi',
+    'bank', 'hdfc', 'icici', 'axis', 'pnb', 'kotak', 'phonepe', 'gpay',
+    'googlepay', 'bhim', 'aadhaar', 'uidai', 'incometax', 'pan', 'otp',
+    'secure', 'account', 'auth', 'update', 'wallet', 'amazon',
+    'flipkart', 'netflix', 'paypal', 'apple', 'microsoft', 'freecharge', 'cred',
+    'password', 'security', 'invoice', 'telegram', 'whatsapp'
+  ];
+  const matchedPhishingKeyword = PHISHING_KEYWORDS.find((kw) => cleanSubdomain.includes(kw));
+
   const provisioningSteps = [
     { title: 'Allocating LiteSpeed NVMe Pod', desc: 'Deploying isolated 3 GB container on Asia-South1 (Mumbai)' },
     { title: 'Generating Let’s Encrypt SSL', desc: 'Issuing free TLS/HTTPS wildcard certificate' },
@@ -65,6 +75,11 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const handleStartDeployment = async () => {
     if (!user) {
       setDeployError('Account registration is required before deploying. Please register or sign in.');
+      return;
+    }
+
+    if (matchedPhishingKeyword) {
+      setDeployError(`Subdomain contains restricted security keyword "${matchedPhishingKeyword}". Banking, authentication, and KYC keywords are blocked.`);
       return;
     }
 
@@ -289,14 +304,21 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                   <span className="text-emerald-400 text-xs font-semibold select-none pl-1">.celoris.in</span>
                 </div>
 
-                <div className="text-[11px] text-neutral-400 flex items-center justify-between">
-                  <span className="truncate">
-                    Live URL: <span className="text-emerald-300 font-mono font-medium">https://{fullDomain}</span>
-                  </span>
-                  {cleanSubdomain.length < 3 && (
-                    <span className="text-amber-400 shrink-0 text-[10px]">Min 3 chars</span>
-                  )}
-                </div>
+                {matchedPhishingKeyword ? (
+                  <div className="p-2 bg-rose-950/60 border border-rose-500/30 rounded-lg text-[11px] text-rose-300 flex items-center gap-1.5 animate-in fade-in">
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <span>Restricted keyword: "<strong>{matchedPhishingKeyword}</strong>" is blocked to prevent phishing and financial abuse.</span>
+                  </div>
+                ) : (
+                  <div className="text-[11px] text-neutral-400 flex items-center justify-between">
+                    <span className="truncate">
+                      Live URL: <span className="text-emerald-300 font-mono font-medium">https://{fullDomain}</span>
+                    </span>
+                    {cleanSubdomain.length < 3 && (
+                      <span className="text-amber-400 shrink-0 text-[10px]">Min 3 chars</span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Basic Site Details */}
@@ -358,7 +380,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
               {user ? (
                 <button
                   onClick={handleStartDeployment}
-                  disabled={cleanSubdomain.length < 3 || isProvisioning}
+                  disabled={cleanSubdomain.length < 3 || !!matchedPhishingKeyword || isProvisioning}
                   className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Deploy 3 GB WordPress Instance Now</span>

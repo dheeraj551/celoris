@@ -4,27 +4,75 @@ import React from 'react';
 import '@/components/cloud/index.css';
 
 export const metadata: Metadata = {
-  title: 'Celoris Cloud | 100% Free Managed WordPress Cloud Hosting',
+  title: 'Free WordPress Hosting in India | Celoris Cloud (100% Free Forever)',
   description:
-    'High-speed, ad-free managed WordPress cloud hosting built for Indian design learners, students, freshers, and solo creators. Instant 60-second deploy, free Let’s Encrypt SSL, and custom subdomains.',
+    'Free WordPress hosting in India with instant 60-second deploy, 3 GB NVMe PCIe storage, free Let’s Encrypt SSL, and custom subdomains. Built 100% free forever for students, designers, and solo creators.',
+  keywords: [
+    'free wordpress hosting in india',
+    'free wordpress hosting',
+    'free website hosting india',
+    'litespeed wordpress hosting',
+    'free portfolio hosting',
+    'free student website hosting',
+    'wordpress cloud hosting'
+  ],
   alternates: {
     canonical: 'https://celorisdesigns.com/cloud',
   },
   openGraph: {
-    title: 'Celoris Cloud | 100% Free Managed WordPress Hosting',
+    title: 'Free WordPress Hosting in India | Celoris Cloud (100% Free Forever)',
     description:
-      'Deploy your live portfolio or agency site in 60 seconds with LiteSpeed NVMe storage, free SSL, and clean custom subdomains. 100% free forever for students.',
+      'Deploy your live WordPress site in 60 seconds with 3 GB LiteSpeed NVMe storage, free SSL, and clean subdomains. 100% free forever.',
     url: 'https://celorisdesigns.com/cloud',
-    siteName: 'Celoris',
+    siteName: 'Celoris Cloud',
     locale: 'en_IN',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Celoris Cloud | 100% Free Managed WordPress Hosting',
+    title: 'Free WordPress Hosting in India | Celoris Cloud',
     description:
-      'High-speed, ad-free managed WordPress cloud hosting for students and creators with instant subdomains and NVMe LiteSpeed servers.',
+      'High-speed, ad-free managed WordPress cloud hosting with instant subdomains and NVMe LiteSpeed servers.',
   },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is Celoris Cloud really 100% free WordPress hosting in India?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes, the Starter tier is 100% free forever for Indian students, design learners, and creators. No credit card is required, and there are zero auto-debits or sudden paywalls.'
+      }
+    },
+    {
+      '@type': 'Question',
+      name: 'How much storage is included on the free WordPress plan?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Every free Starter account receives 3 GB of dedicated high-speed NVMe PCIe Gen4 storage with server-side LiteSpeed caching and free wildcard SSL certificates.'
+      }
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I install Elementor and other WordPress plugins?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes! You receive full WordPress Admin (wp-admin) access to install Elementor, Astra, Gutenberg blocks, and plugins from the WordPress repository.'
+      }
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I connect a custom .com or .in domain later?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes, you can upgrade to Celoris Pro for just ₹149/month anytime to connect your own custom domain (yourbrand.com or .in) with 15 GB NVMe storage.'
+      }
+    }
+  ]
 };
 
 const CloudApp = dynamic(() => import('@/components/cloud/App'), {
@@ -39,5 +87,13 @@ const CloudApp = dynamic(() => import('@/components/cloud/App'), {
 });
 
 export default function CloudPage() {
-  return <CloudApp />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <CloudApp />
+    </>
+  );
 }

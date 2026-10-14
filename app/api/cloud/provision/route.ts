@@ -70,6 +70,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Prohibit phishing, banking, KYC, and financial brand impersonation
+    const PHISHING_KEYWORDS = [
+      'login', 'signin', 'verify', 'verification', 'kyc', 'paytm', 'sbi', 'upi',
+      'bank', 'hdfc', 'icici', 'axis', 'pnb', 'kotak', 'phonepe', 'gpay',
+      'googlepay', 'bhim', 'aadhaar', 'uidai', 'incometax', 'pan', 'otp',
+      'secure', 'account', 'auth', 'update', 'wallet', 'amazon',
+      'flipkart', 'netflix', 'paypal', 'apple', 'microsoft', 'freecharge', 'cred',
+      'password', 'security', 'invoice', 'telegram', 'whatsapp'
+    ];
+
+    for (const keyword of PHISHING_KEYWORDS) {
+      if (slug.includes(keyword)) {
+        return NextResponse.json(
+          { 
+            error: `Subdomain "${slug}" contains a restricted security keyword ("${keyword}"). To prevent phishing and preserve server reputation, banking and auth terms are blocked. Please choose your personal name, studio, or brand.` 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Call the VPS Provisioner microservice
     const vpsResponse = await fetch(`${VPS_API_URL}/provision`, {
       method: 'POST',
