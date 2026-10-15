@@ -13,6 +13,16 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({"status": "healthy", "domain": "celoris.in", "service": "celoris-provisioner"}).encode('utf-8'))
+        elif self.path == '/diag':
+            res_sites = subprocess.run(["docker", "exec", "celoris-wordpress", "wp", "site", "list", "--allow-root"], capture_output=True, text=True)
+            res_users = subprocess.run(["docker", "exec", "celoris-wordpress", "wp", "user", "list", "--allow-root"], capture_output=True, text=True)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "sites": res_sites.stdout or res_sites.stderr,
+                "users": res_users.stdout or res_users.stderr
+            }).encode('utf-8'))
         else:
             self.send_response(404)
             self.end_headers()
@@ -96,21 +106,19 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                     self.wfile.write(json.dumps({"error": f"Restricted security keyword '{kw}' is prohibited."}).encode('utf-8'))
                     return
 
-            # WordPress Multisite forbids 'admin' as a username, so fallback to slug
             raw_user = data.get('adminUser', '').strip().lower()
             if not raw_user or raw_user == 'admin':
                 raw_user = slug
             admin_user = "".join([c for c in raw_user if c.isalnum() or c in '_-']) or slug
             admin_pass = data.get('adminPass', f'celoris_{slug}_2026')
 
-            # 1. Create site with dedicated slug email to guarantee 0 collisions
-            site_email = f"{slug}@celoris.in"
+            # 1. Create site without --email flag to prevent WP-CLI user collisions
+            # This creates the subsite cleanly assigned to Super Admin
             subprocess.run([
                 "docker", "exec", "celoris-wordpress",
                 "wp", "site", "create",
                 f"--slug={slug}",
                 f"--title={title}",
-                f"--email={site_email}",
                 "--allow-root"
             ], capture_output=True, text=True)
 
@@ -152,6 +160,14 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                 "wp", "user", "update",
                 admin_user,
                 f"--user_pass={admin_pass}",
+                "--allow-root"
+            ], capture_output=True, text=True)
+
+            # 4. Activate Astra theme on the new site
+            subprocess.run([
+                "docker", "exec", "celoris-wordpress",
+                "wp", "theme", "activate", "astra",
+                f"--url=http://{full_domain}",
                 "--allow-root"
             ], capture_output=True, text=True)
 
