@@ -153,19 +153,12 @@ export function CelorisCloudFeature() {
               {/* Outer Shell */}
               <div className="relative rounded-[20px] sm:rounded-[24px] bg-[#07090d] overflow-hidden">
                 
-                {/* Floating Top Status Badge */}
-                <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-[10px] font-mono text-emerald-300 shadow-lg">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Live 60s Deployment</span>
-                  </div>
-                  <div className="px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[9px] font-mono text-neutral-400">
-                    asia-south1
-                  </div>
-                </div>
-
                 {/* Looping Mascot Video */}
-                <div className="relative aspect-[9/16] w-full bg-black overflow-hidden flex items-center justify-center">
+                <Link
+                  href={`/cloud?subdomain=${encodeURIComponent(cleanSub)}`}
+                  title="Claim your free cloud pod"
+                  className="relative aspect-[9/16] w-full bg-black overflow-hidden flex items-center justify-center cursor-pointer block group/vid"
+                >
                   <video
                     autoPlay
                     loop
@@ -173,12 +166,12 @@ export function CelorisCloudFeature() {
                     playsInline
                     preload="metadata"
                     poster="/videos/celoris_cloud_poster.jpg"
-                    className="w-full h-full object-cover block"
+                    className="w-full h-full object-cover block transition-transform duration-300 group-hover/vid:scale-[1.01]"
                   >
                     <source src="/videos/celoris_cloud_web_1080x1920.mp4" type="video/mp4" media="(min-width: 640px)" />
                     <source src="/videos/celoris_cloud_web_720x1280.mp4" type="video/mp4" />
                   </video>
-                </div>
+                </Link>
 
                 {/* Bottom Quick Action Bar */}
                 <div className="px-4 py-3 bg-[#0a0d14] border-t border-white/[0.08] flex items-center justify-between text-xs">

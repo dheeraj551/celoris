@@ -1,52 +1,52 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Linkedin, Facebook, Youtube } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Linkedin, Facebook, Youtube, ExternalLink, ArrowRight, ShieldCheck, Sparkles, Heart } from "lucide-react"
+import { Capacitor } from '@capacitor/core'
 
 const footerSections = [
   {
-    title: "Platform",
+    title: "Platform & Tools",
     links: [
+      { name: "Free WordPress Cloud", href: "/cloud", badge: "New" },
+      { name: "AI Video Studio", href: "/video-studio" },
+      { name: "PhotoLite Editor", href: "/photolite" },
+      { name: "PolyVault 3D", href: "/polyvault" },
+      { name: "ViO Commercial Studio", href: "/vio-studio" },
       { name: "Pricing & Plans", href: "/pricing" },
-      { name: "Learn", href: "/learn" },
+    ],
+  },
+  {
+    title: "Academy & Careers",
+    links: [
+      { name: "Certified Courses", href: "/learn" },
       { name: "Free Courses with Certificate", href: "/free-courses-with-certificate" },
-      { name: "Job Center", href: "/job-center" },
+      { name: "Live Classrooms", href: "/classrooms" },
+      { name: "Job Center & Hiring", href: "/job-center" },
       { name: "Become a Trainer", href: "/become-trainer" },
-      { name: "Classrooms", href: "/classrooms" },
-      { name: "Free WordPress Cloud", href: "/cloud" },
-      { name: "Apps", href: "/apps" },
     ],
   },
   {
     title: "Company",
     links: [
-      { name: "About", href: "/about" },
-      { name: "Contact", href: "/contact" },
+      { name: "About Celoris", href: "/about" },
+      { name: "Official Blog", href: "/blog" },
+      { name: "WordPress Guide (2026)", href: "/blog/free-wordpress-hosting-india-2026" },
       { name: "Careers", href: "/careers" },
-      { name: "Blog", href: "/blog" },
+      { name: "Contact Us", href: "/contact" },
+      { name: "Help Center", href: "/help" },
     ],
   },
   {
-    title: "Support",
+    title: "Trust & Legal",
     links: [
-      { name: "Help Center", href: "/help" },
       { name: "Privacy Policy", href: "/privacy" },
       { name: "Terms of Service", href: "/terms" },
       { name: "Acceptable Use Policy", href: "/cloud/acceptable-use" },
       { name: "Refund & Cancellation", href: "/refund-policy" },
       { name: "Cookie Policy", href: "/cookies" },
-    ],
-  },
-  {
-    title: "Connect",
-    links: [
-      { name: "Newsletter", href: "/newsletter" },
-      { name: "Community", href: "/community" },
-      { name: "Events", href: "/events" },
-      { name: "Partners", href: "/partners" },
     ],
   },
 ]
@@ -56,9 +56,6 @@ const socialLinks = [
   { icon: Facebook, href: "https://www.facebook.com/celorisdesigns/", label: "Facebook" },
   { icon: Youtube, href: "https://www.youtube.com/@celorisplay", label: "YouTube" },
 ]
-
-import { Capacitor } from '@capacitor/core'
-import { useEffect } from "react"
 
 export default function Footer() {
   const pathname = usePathname()
@@ -70,174 +67,145 @@ export default function Footer() {
     }
   }, [])
 
-  const isDashboardPage = pathname === "/" ||
-    pathname?.startsWith("/become-trainer") ||
-    pathname?.startsWith("/learn") ||
-    pathname?.startsWith("/earn") ||
-    pathname?.startsWith("/social") ||
-    pathname?.startsWith("/classrooms") ||
-    pathname === "/chat" ||
-    pathname?.startsWith("/ai-explorer") ||
-    pathname?.startsWith("/ai-tools") ||
-    pathname?.startsWith("/video-studio") ||
-    pathname?.startsWith("/image-studio") ||
-    pathname?.startsWith("/courses") ||
-    pathname?.startsWith("/teach") ||
-    pathname?.startsWith("/marketing") ||
-    pathname?.startsWith("/vio-studio") ||
-    pathname?.startsWith("/vibe-marketer") ||
-    pathname?.startsWith("/marketing-studio") ||
-    pathname?.startsWith("/celo-ai") ||
-    pathname?.startsWith("/job-center") ||
-    pathname?.startsWith("/cloud") ||
-    pathname?.startsWith("/photolite") ||
-    pathname?.startsWith("/polyvault") ||
-    pathname?.startsWith("/shop") ||
-    pathname?.startsWith("/pricing") ||
-    pathname?.startsWith("/free-video-editor") ||
-    pathname?.startsWith("/celoris-3d") ||
+  // Studio full-screen tools, auth screens, or sub-pages with custom footers (like /cloud)
+  const isExcludedPage =
+    isNative ||
     pathname === "/login" ||
-    pathname === "/register";
+    pathname === "/register" ||
+    pathname === "/chat" ||
+    pathname?.startsWith("/video-studio") ||
+    pathname?.startsWith("/photolite") ||
+    pathname?.startsWith("/vio-studio") ||
+    pathname?.startsWith("/marketing-studio") ||
+    pathname?.startsWith("/motion-swap") ||
+    pathname?.startsWith("/celo-ai") ||
+    pathname?.startsWith("/cloud")
 
-  if (isNative || isDashboardPage) return null
-
-  // The site is dark-themed, so the footer always uses the dark style. A bright
-  // footer under dark pages looked like a separate site.
-  const isDarkPage = true
+  if (isExcludedPage) {
+    return null
+  }
 
   return (
-    <footer className={cn(
-      "border-t transition-all duration-300 px-4",
-      isDarkPage
-        ? "bg-[#050810] border-white/10 text-slate-300"
-        : "bg-surface border-border"
-    )}>
-      <div className="container py-16">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center mb-8">
+    <footer className="relative z-20 bg-[#04060a] border-t border-white/[0.08] text-neutral-300 transition-colors">
+      {/* Top Subtle Ambient Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+        {/* Main Grid: Brand + 4 Link Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-12 pb-14 border-b border-white/[0.08]">
+          
+          {/* Brand Column (2 columns span) */}
+          <div className="lg:col-span-2 space-y-5">
+            <Link href="/" className="inline-flex items-center gap-2 group">
               <img
-                src={isDarkPage ? "/celoris-logo.png" : "/celoris-logo-dark.png"}
+                src="/celoris-logo.png"
                 alt="Celoris Logo"
-                className="h-10 w-auto object-contain"
+                className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
               />
             </Link>
-            <p className={cn(
-              "text-sm mb-8 max-w-sm font-bold uppercase tracking-tight italic",
-              isDarkPage ? "text-slate-400" : "text-text-secondary"
-            )}>
-              Empowering individuals and businesses through comprehensive learning,
-              earning opportunities, and engaging experiences in one unified platform.
+
+            <p className="text-sm text-neutral-400 leading-relaxed max-w-sm">
+              India&apos;s creative studio and academy since 2019. AI video editor, Photoshop-style photo studio, certified professional courses, and free managed WordPress cloud.
             </p>
 
-            <div className="flex space-x-4">
+            {/* Live System Status Indicator */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-xs font-mono text-emerald-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>All Systems Operational · Asia-South1</span>
+            </div>
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-2.5 pt-2">
               {socialLinks.map((social) => (
                 <Link
                   key={social.label}
                   href={social.href}
-                  className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
-                    isDarkPage
-                      ? "bg-white/5 border border-white/10 text-slate-400 hover:bg-emerald-500 hover:text-white hover:border-emerald-500"
-                      : "bg-gray-100 hover:bg-primary-100 text-text-secondary hover:text-primary-500"
-                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 text-neutral-400 transition-all duration-200 flex items-center justify-center"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-5 w-5" />
+                  <social.icon className="h-4 w-4" />
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Footer Links */}
+          {/* 4 Link Columns */}
           {footerSections.map((section) => (
-            <div key={section.title}>
-              <h3 className={cn(
-                "font-black uppercase tracking-widest text-[10px] mb-6 italic",
-                isDarkPage ? "text-emerald-400" : "text-text-primary"
-              )}>
+            <div key={section.title} className="space-y-4">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
                 {section.title}
               </h3>
-              <ul className="space-y-4">
+              <ul className="space-y-2.5">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className={cn(
-                        "text-[11px] font-black uppercase tracking-widest transition-colors italic",
-                        isDarkPage
-                          ? "text-slate-400 hover:text-emerald-400"
-                          : "text-text-secondary hover:text-primary-500"
-                      )}
+                      className="text-xs sm:text-sm text-neutral-400 hover:text-emerald-400 hover:translate-x-0.5 transition-all duration-150 inline-flex items-center gap-1.5 group"
                     >
-                      {link.name}
+                      <span>{link.name}</span>
+                      {link.badge && (
+                        <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">
+                          {link.badge}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
+
         </div>
 
-        {/* Bottom Bar */}
-        <div className={cn(
-          "border-t pt-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-start",
-          isDarkPage ? "border-white/10" : "border-border"
-        )}>
+        {/* Bottom Compliance & Legal Bar */}
+        <div className="pt-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-start text-xs text-neutral-400">
+          
+          {/* Left: Indian Corporate & LLP Verification */}
           <div className="space-y-2">
-            <p className={cn(
-              "text-[10px] font-black uppercase tracking-widest italic",
-              isDarkPage ? "text-slate-200" : "text-text-primary"
-            )}>
-              Celoris Designs LLP
-            </p>
-            <div className={cn(
-              "text-[9px] font-bold uppercase tracking-wider space-y-1 italic",
-              isDarkPage ? "text-slate-500" : "text-text-secondary"
-            )}>
-              <p>LLP Identification No: AAP-3965</p>
-              <p>GST No: 09AAOFC5435B1ZJ</p>
-              <p>Established: 23rd May 2019</p>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white text-sm">Celoris Designs LLP</span>
+              <span className="px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[10px] font-mono text-neutral-300">
+                Verified Indian Entity
+              </span>
             </div>
-            <p className={cn(
-              "text-[10px] font-black uppercase tracking-widest italic pt-4",
-              isDarkPage ? "text-slate-500" : "text-text-secondary"
-            )}>
-              © 2019–2026 Celoris Designs LLP. All rights reserved.
+            <div className="font-mono text-[11px] text-neutral-400 space-y-0.5">
+              <p>LLPIN: <span className="text-neutral-300">AAP-3965</span> · GSTIN: <span className="text-neutral-300">09AAOFC5435B1ZJ</span></p>
+              <p>Incorporated: <span className="text-neutral-300">23rd May 2019</span> under Limited Liability Partnership Act, 2008</p>
+              <p>Registered with Ministry of Corporate Affairs (MCA), Government of India</p>
+            </div>
+            <p className="pt-2 text-[11px] text-neutral-400">
+              © 2019–2026 Celoris Designs LLP. All rights reserved. Made with ❤️ in India 🇮🇳
             </p>
           </div>
 
-          <div className="space-y-4 md:text-right">
-            <div className={cn(
-              "text-[9px] font-bold uppercase tracking-wider space-y-1 italic",
-              isDarkPage ? "text-slate-500" : "text-text-secondary"
-            )}>
-              <p>Incorporated under the Limited Liability Partnership Act, 2008</p>
-              <p>Registered with Ministry of Corporate Affairs, Government of India</p>
-            </div>
-            <div className="flex sm:justify-end space-x-8 text-[10px] font-black uppercase tracking-widest italic pt-2">
+          {/* Right: Quick Legal Links & Navigation */}
+          <div className="space-y-3 md:text-right">
+            <div className="flex flex-wrap md:justify-end gap-x-6 gap-y-2 text-xs font-medium">
               {[
-                { label: "Privacy", href: "/privacy" },
-                { label: "Terms", href: "/terms" },
-                { label: "Refunds", href: "/refund-policy" },
-                { label: "Cookies", href: "/cookies" },
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Terms of Service", href: "/terms" },
+                { label: "Acceptable Use", href: "/cloud/acceptable-use" },
+                { label: "Refund Policy", href: "/refund-policy" },
+                { label: "Cookie Policy", href: "/cookies" },
               ].map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={cn(
-                    "transition-colors",
-                    isDarkPage ? "text-slate-400 hover:text-emerald-400" : "text-text-secondary hover:text-primary-500"
-                  )}
+                  className="text-neutral-400 hover:text-emerald-400 transition-colors"
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
+            <p className="text-[11px] text-neutral-400">
+              Free WordPress Cloud instances are hosted in Asia-South1 (Mumbai) with 99.9% uptime SLA.
+            </p>
           </div>
+
         </div>
+
       </div>
     </footer>
   )
