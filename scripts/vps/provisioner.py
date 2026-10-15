@@ -33,6 +33,12 @@ def run_wp(cmd_args):
     res = subprocess.run(full_cmd, capture_output=True, text=True)
     return res.returncode, res.stdout.strip(), res.stderr.strip()
 
+def run_db_query(sql):
+    """Executes SQL safely inside WordPress PHP via $wpdb (does not require external mysql client binary)."""
+    escaped = sql.replace('\\', '\\\\').replace('"', '\\"').replace('$', '\\$')
+    php_code = f'global $wpdb; echo json_encode($wpdb->query("{escaped}"));'
+    return run_wp(["eval", php_code])
+
 class ProvisionHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/health':
@@ -90,7 +96,8 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                 full_domain = f"{slug}.celoris.in"
 
                 run_wp(["site", "unarchive", slug])
-                run_wp(["db", "query", f"UPDATE wp_blogs SET deleted = 0, archived = 0, mature = 0, spam = 0 WHERE domain = '{full_domain}';"])
+                run_db_query(f"UPDATE wp_blogs SET deleted = 0, archived = 0, mature = 0, spam = 0 WHERE domain = '{full_domain}';")
+                run_wp(["cache", "flush"])
 
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
@@ -131,7 +138,9 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                     run_wp(["site", "delete", str(blog_id), "--yes"])
 
                 # Direct database purge to ensure no zombie record
-                run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}';"])
+                run_db_query(f"DELETE FROM wp_blogs WHERE domain = '{full_domain}';")
+                run_db_query(f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';")
+                run_wp(["cache", "flush"])
 
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
@@ -211,11 +220,11 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             if existing_site_id:
                 print(f"Existing site ID {existing_site_id} found for {slug}. Cleaning up for fresh recreation...")
                 run_wp(["site", "delete", str(existing_site_id), "--yes"])
-                run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE blog_id = {existing_site_id};"])
+                run_db_query(f"DELETE FROM wp_blogs WHERE blog_id = {existing_site_id};")
 
-            # Ensure wp_blogs and wp_signups have no conflicting row with this domain
-            run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}%';"])
-            run_wp(["db", "query", f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';"])
+            # Ensure wp_blogs and wp_signups have no conflicting row with this domain, then flush cache
+            run_db_query(f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}%';")
+            run_db_query(f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';")
             run_wp(["cache", "flush"])
 
             # STEP 2: Create the subsite cleanly without --email flag (prevents user collision)
@@ -228,8 +237,8 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             if create_rc != 0:
                 # If it failed due to existing slug, force-purge, flush cache and retry once
                 print(f"Site create initial attempt returned code {create_rc}: {create_err}. Retrying purge...")
-                run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}%';"])
-                run_wp(["db", "query", f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';"])
+                run_db_query(f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}%';")
+                run_db_query(f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';")
                 run_wp(["cache", "flush"])
                 create_rc, create_out, create_err = run_wp([
                     "site", "create",
@@ -241,7 +250,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                 raise Exception(f"WP-CLI site create failed: {create_err or create_out}")
 
             # STEP 3: Ensure site is active (deleted = 0, archived = 0) in wp_blogs
-            run_wp(["db", "query", f"UPDATE wp_blogs SET deleted = 0, archived = 0, mature = 0, spam = 0 WHERE domain = '{full_domain}';"])
+            run_db_query(f"UPDATE wp_blogs SET deleted = 0, archived = 0, mature = 0, spam = 0 WHERE domain = '{full_domain}';")
 
             # STEP 4: Enforce 3 GB (3072 MB) upload storage limit
             run_wp(["site", "option", "set", "blog_upload_space", "3072"])
@@ -290,12 +299,11 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             # STEP 8: STRICT VERIFICATION
             # Verify site exists and is active (deleted = 0)
             v_rc, v_out, _ = run_wp([
-                "db", "query",
-                f"SELECT blog_id, deleted, archived FROM wp_blogs WHERE domain = '{full_domain}';",
-                "--skip-column-names"
+                "eval",
+                f'global $wpdb; $row = $wpdb->get_row("SELECT blog_id, deleted, archived FROM {{$wpdb->blogs}} WHERE domain = \'{full_domain}\'"); echo $row ? "{$row->blog_id} {$row->deleted} {$row->archived}" : "NOT_FOUND";'
             ])
 
-            if not v_out or len(v_out.split()) < 3:
+            if not v_out or "NOT_FOUND" in v_out or len(v_out.split()) < 3:
                 raise Exception(f"Verification failed: Site '{full_domain}' was not found in wp_blogs database table.")
 
             v_parts = v_out.split()
@@ -305,7 +313,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
 
             if deleted != '0' or archived != '0':
                 # Force reset active status
-                run_wp(["db", "query", f"UPDATE wp_blogs SET deleted = 0, archived = 0 WHERE blog_id = {blog_id};"])
+                run_db_query(f"UPDATE wp_blogs SET deleted = 0, archived = 0 WHERE blog_id = {blog_id};")
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
