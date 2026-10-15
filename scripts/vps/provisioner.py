@@ -213,8 +213,10 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                 run_wp(["site", "delete", str(existing_site_id), "--yes"])
                 run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE blog_id = {existing_site_id};"])
 
-            # Ensure wp_blogs has no conflicting row with this domain
-            run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}';"])
+            # Ensure wp_blogs and wp_signups have no conflicting row with this domain
+            run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}%';"])
+            run_wp(["db", "query", f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';"])
+            run_wp(["cache", "flush"])
 
             # STEP 2: Create the subsite cleanly without --email flag (prevents user collision)
             create_rc, create_out, create_err = run_wp([
@@ -224,9 +226,11 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             ])
 
             if create_rc != 0:
-                # If it failed due to existing slug, force-purge and retry once
+                # If it failed due to existing slug, force-purge, flush cache and retry once
                 print(f"Site create initial attempt returned code {create_rc}: {create_err}. Retrying purge...")
-                run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}.celoris.in%';"])
+                run_wp(["db", "query", f"DELETE FROM wp_blogs WHERE domain = '{full_domain}' OR domain LIKE '%{slug}%';"])
+                run_wp(["db", "query", f"DELETE FROM wp_signups WHERE domain LIKE '%{slug}%';"])
+                run_wp(["cache", "flush"])
                 create_rc, create_out, create_err = run_wp([
                     "site", "create",
                     f"--slug={slug}",

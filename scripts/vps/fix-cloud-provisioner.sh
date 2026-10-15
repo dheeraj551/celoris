@@ -43,17 +43,15 @@ echo "[+] WordPress network themes ready!"
 
 # 4. Clean up any zombie/deleted record for ananyajairath
 echo "=== [4/5] Purging Zombie Records & Re-creating ananyajairath ==="
-# Find existing blog_id if any
-OLD_ID=$(docker exec celoris-wordpress wp db query "SELECT blog_id FROM wp_blogs WHERE domain LIKE '%ananyajairath%' LIMIT 1;" --skip-column-names --allow-root 2>/dev/null || true)
-if [ -n "$OLD_ID" ] && [ "$OLD_ID" != "1" ]; then
-    echo "Found old site ID $OLD_ID for ananyajairath. Purging..."
-    docker exec celoris-wordpress wp site delete "$OLD_ID" --yes --allow-root 2>/dev/null || true
-fi
-docker exec celoris-wordpress wp db query "DELETE FROM wp_blogs WHERE domain LIKE '%ananyajairath%';" --allow-root 2>/dev/null || true
+# Clean up any zombie/deleted record for ananyajairath across all tables
+echo "Purging old database records & flushing WP cache..."
+docker exec celoris-wordpress wp db query "DELETE FROM wp_blogs WHERE domain LIKE '%ananyajairath%';" --allow-root || true
+docker exec celoris-wordpress wp db query "DELETE FROM wp_signups WHERE domain LIKE '%ananyajairath%';" --allow-root 2>/dev/null || true
+docker exec celoris-wordpress wp cache flush --allow-root || true
 
 # Cleanly create ananyajairath
 echo "Creating clean site for ananyajairath..."
-docker exec celoris-wordpress wp site create --slug="ananyajairath" --title="Ananya Jairath" --allow-root
+docker exec celoris-wordpress wp site create --slug="ananyajairath" --title="Ananya Jairath" --allow-root || true
 
 # Ensure active in wp_blogs
 docker exec celoris-wordpress wp db query "UPDATE wp_blogs SET deleted = 0, archived = 0, mature = 0, spam = 0 WHERE domain = 'ananyajairath.celoris.in';" --allow-root
