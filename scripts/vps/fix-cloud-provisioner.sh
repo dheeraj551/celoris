@@ -127,13 +127,24 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 EOF
 
-echo "=== [2/4] Updating Provisioner Container ==="
-CONTAINER_ID=$(docker ps --filter "name=provisioner" -q | head -n 1)
+echo "=== [2/4] Freeing Port 4000 & Starting Provisioner Container ==="
+# Stop any conflicting host systemd service
+systemctl stop celoris-provisioner 2>/dev/null || true
+systemctl disable celoris-provisioner 2>/dev/null || true
+
+# Kill any non-docker host process squatting on port 4000
+if command -v fuser >/dev/null 2>&1; then
+    fuser -k 4000/tcp 2>/dev/null || true
+fi
+sleep 1
+
+CONTAINER_ID=$(docker ps -a --filter "name=provisioner" -q | head -n 1)
 if [ -n "$CONTAINER_ID" ]; then
     echo "[+] Copying updated server.js directly into container $CONTAINER_ID..."
     docker cp "$PROVISIONER_DIR/server.js" "$CONTAINER_ID:/app/server.js"
-    docker restart "$CONTAINER_ID"
-    echo "[+] Container restarted."
+    echo "[+] Starting container $CONTAINER_ID..."
+    docker start "$CONTAINER_ID" || docker restart "$CONTAINER_ID"
+    echo "[+] Container active."
 else
     echo "[!] Container provisioner not found via filter, rebuilding via docker compose..."
     cd /opt/celoris-cloud
