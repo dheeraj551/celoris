@@ -2,9 +2,30 @@ import http.server
 import json
 import subprocess
 import os
+import secrets
 
 PORT = 4000
 AUTH_TOKEN = "celoris_cloud_secret_786a9f24e"
+
+def generate_secure_password(length=16):
+    """Generates an unpredictable, cryptographically strong random password."""
+    uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+    lowercase = "abcdefghijkmnpqrstuvwxyz"
+    digits = "23456789"
+    symbols = "!@#$%&*"
+    all_chars = uppercase + lowercase + digits + symbols
+    
+    # Guarantee at least one of each class
+    pwd = [
+        secrets.choice(uppercase),
+        secrets.choice(lowercase),
+        secrets.choice(digits),
+        secrets.choice(symbols)
+    ]
+    for _ in range(length - 4):
+        pwd.append(secrets.choice(all_chars))
+    secrets.SystemRandom().shuffle(pwd)
+    return "".join(pwd)
 
 def run_wp(cmd_args):
     """Executes a WP-CLI command inside the celoris-wordpress container."""
@@ -165,7 +186,9 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             if not raw_user or raw_user == 'admin':
                 raw_user = slug
             admin_user = "".join([c for c in raw_user if c.isalnum() or c in '_-']) or slug
-            admin_pass = data.get('adminPass', f'celoris_{slug}_2026')
+            admin_pass = data.get('adminPass', '').strip()
+            if not admin_pass or len(admin_pass) < 8 or admin_pass.lower().startswith('celoris_'):
+                admin_pass = generate_secure_password(16)
 
             # STEP 1: Check if the slug or domain already exists in wp_blogs (or was previously deleted/archived)
             rc, sites_json, _ = run_wp(["site", "list", "--fields=blog_id,url,slug,deleted,archived", "--format=json"])

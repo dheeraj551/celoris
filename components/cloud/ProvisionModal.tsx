@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Check, ExternalLink, ShieldCheck, X, Terminal, ArrowRight, UserCheck, Sparkles, AlertCircle } from 'lucide-react';
+import { Check, ExternalLink, ShieldCheck, X, Terminal, ArrowRight, UserCheck, Sparkles, AlertCircle, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 interface ProvisionModalProps {
@@ -10,6 +10,41 @@ interface ProvisionModalProps {
   subdomain: string;
   onClose: () => void;
 }
+
+const generateClientPassword = (length = 16): string => {
+  const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const lowercase = 'abcdefghijkmnpqrstuvwxyz';
+  const digits = '23456789';
+  const symbols = '!@#$%&*';
+  const allChars = uppercase + lowercase + digits + symbols;
+
+  const res: string[] = [
+    uppercase[Math.floor(Math.random() * uppercase.length)],
+    lowercase[Math.floor(Math.random() * lowercase.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    symbols[Math.floor(Math.random() * symbols.length)],
+  ];
+
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    const arr = new Uint32Array(length - 4);
+    window.crypto.getRandomValues(arr);
+    for (let i = 0; i < length - 4; i++) {
+      res.push(allChars[arr[i] % allChars.length]);
+    }
+  } else {
+    for (let i = 4; i < length; i++) {
+      res.push(allChars[Math.floor(Math.random() * allChars.length)]);
+    }
+  }
+
+  // Shuffle array
+  for (let i = res.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [res[i], res[j]] = [res[j], res[i]];
+  }
+
+  return res.join('');
+};
 
 export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   isOpen,
@@ -24,6 +59,9 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
   const [copied, setCopied] = useState<string | null>(null);
   const [siteTitle, setSiteTitle] = useState('');
   const [adminUser, setAdminUser] = useState('admin');
+  const [adminPass, setAdminPass] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCompletedPassword, setShowCompletedPassword] = useState(true);
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
@@ -89,7 +127,7 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
     }
 
     const finalAdminUser = (adminUser.trim() || cleanSubdomain || 'admin').toLowerCase().replace(/[^a-z0-9_-]/g, '');
-    const finalAdminPass = `celoris_${cleanSubdomain}_2026`;
+    const finalAdminPass = adminPass.trim() || generateClientPassword();
 
     setIsProvisioning(true);
     setDeployError(null);
@@ -198,6 +236,9 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
 
       const defaultAdmin = profile?.username || user?.email?.split('@')[0] || initialSub || 'admin';
       setAdminUser(defaultAdmin);
+      setAdminPass(generateClientPassword());
+      setShowPassword(false);
+      setShowCompletedPassword(true);
     }
     prevIsOpenRef.current = isOpen;
   }, [isOpen, subdomain, profile, user]);
@@ -346,6 +387,42 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                     onChange={(e) => setAdminUser(e.target.value)}
                     className="w-full px-3.5 py-2 text-sm bg-[#141414] border border-white/10 rounded-lg text-white font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-medium text-neutral-300">
+                      Admin Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setAdminPass(generateClientPassword())}
+                      className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      <span>Reroll Random</span>
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={adminPass}
+                      onChange={(e) => setAdminPass(e.target.value)}
+                      placeholder="Strong password"
+                      className="w-full px-3.5 py-2 pr-10 text-sm bg-[#141414] border border-white/10 rounded-lg text-white font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white p-1 transition-colors cursor-pointer"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-neutral-500 mt-1">
+                    High-entropy cryptographic password generated automatically.
+                  </p>
                 </div>
               </div>
 
@@ -532,9 +609,28 @@ export const ProvisionModal: React.FC<ProvisionModalProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-[11px] text-neutral-400 block font-mono">Generated Password</span>
-                    <span className="font-mono text-emerald-400 font-semibold">
-                      {deployedResult?.adminPass || `celoris_${cleanSubdomain}_2026`}
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-[11px] text-neutral-400 font-mono">Password</span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setShowCompletedPassword(!showCompletedPassword)}
+                          className="text-neutral-400 hover:text-white p-0.5 transition-colors cursor-pointer"
+                          aria-label={showCompletedPassword ? "Hide password" : "Show password"}
+                        >
+                          {showCompletedPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(deployedResult?.adminPass || adminPass, 'pass')}
+                          className="text-[10px] text-neutral-400 hover:text-white px-1.5 py-0.5 bg-white/5 hover:bg-white/10 rounded cursor-pointer transition-colors"
+                        >
+                          {copied === 'pass' ? 'Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                    </div>
+                    <span className="font-mono text-emerald-400 font-semibold break-all select-all text-xs">
+                      {showCompletedPassword ? (deployedResult?.adminPass || adminPass) : "••••••••••••••••"}
                     </span>
                   </div>
                 </div>

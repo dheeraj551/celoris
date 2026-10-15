@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteClient } from '@/lib/supabase-server';
+import crypto from 'crypto';
 
 const VPS_API_URL = process.env.CELORIS_CLOUD_VPS_URL || 'http://169.58.229.99:4000';
 const VPS_SECRET = process.env.CELORIS_CLOUD_SECRET || 'celoris_cloud_secret_786a9f24e';
@@ -10,6 +11,33 @@ const RESERVED_SUBDOMAINS = new Set([
   'ns1', 'ns2', 'dns', 'cloud', 'app', 'status', 'dashboard',
   'billing', 'support', 'help', 'docs', 'dev', 'staging', 'test', 'demo'
 ]);
+
+function generateSecurePassword(length = 16): string {
+  const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const lowercase = 'abcdefghijkmnpqrstuvwxyz';
+  const numbers = '23456789';
+  const symbols = '!@#$%&*';
+  const all = uppercase + lowercase + numbers + symbols;
+
+  const result = [
+    uppercase[crypto.randomInt(0, uppercase.length)],
+    lowercase[crypto.randomInt(0, lowercase.length)],
+    numbers[crypto.randomInt(0, numbers.length)],
+    symbols[crypto.randomInt(0, symbols.length)],
+  ];
+
+  for (let i = 4; i < length; i++) {
+    result.push(all[crypto.randomInt(0, all.length)]);
+  }
+
+  // Shuffle array using Fisher-Yates
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(0, i + 1);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result.join('');
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,7 +72,12 @@ export async function POST(req: NextRequest) {
     const title = (body.title || `${rawSubdomain} Site`).toString().trim();
     const email = (body.email || `${rawSubdomain}@celoris.in`).toString().trim();
     const adminUser = (body.adminUser || rawSubdomain).toString().trim().toLowerCase().replace(/[^a-z0-9_-]/g, '') || rawSubdomain;
-    const adminPass = (body.adminPass || `celoris_${rawSubdomain}_2026`).toString().trim();
+    
+    // Ensure password is not predictable
+    let adminPass = (body.adminPass || '').toString().trim();
+    if (!adminPass || adminPass.length < 8 || /^celoris_.*_2026$/i.test(adminPass)) {
+      adminPass = generateSecurePassword(16);
+    }
 
     // Clean subdomain: lowercase alphanumeric and hyphens only
     const slug = rawSubdomain.replace(/[^a-z0-9-]/g, '').replace(/^-+|-+$/g, '');
