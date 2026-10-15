@@ -40,6 +40,7 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
 
   const [activeSessionId, setActiveSessionId] = useState<string>(defaultSession.id);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isCandidateInVideoCall, setIsCandidateInVideoCall] = useState(false);
 
   const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
   const activeCandidate = candidates.find(c => c.id === activeSession.candidateId) || candidates[0];
@@ -106,6 +107,7 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
 
   // End live call
   const handleEndCall = () => {
+    setIsCandidateInVideoCall(false);
     setActiveTab('pipeline');
   };
 
@@ -133,7 +135,10 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         userRole={userRole}
-        setUserRole={setUserRole}
+        setUserRole={(newRole) => {
+          setUserRole(newRole);
+          setIsCandidateInVideoCall(false);
+        }}
         isCallActive={activeSession.status === 'live'}
         onScheduleNew={() => {
           setActiveTab('schedule');
@@ -145,12 +150,12 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
 
       <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         {/* If user switches perspective to Candidate View */}
-        {userRole === 'candidate' ? (
+        {userRole === 'candidate' && !isCandidateInVideoCall ? (
           <CandidatePortalView
             candidate={activeCandidate}
             session={activeSession}
             onEnterRoom={() => {
-              setUserRole('interviewer');
+              setIsCandidateInVideoCall(true);
               setActiveTab('video');
             }}
           />
@@ -164,6 +169,7 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
                 onSaveEvaluation={handleSaveEvaluation}
                 onEndCall={handleEndCall}
                 questions={questions}
+                userRole={userRole}
               />
             )}
 

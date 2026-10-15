@@ -1,8 +1,23 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from 'react';
+import { 
+  LiveKitRoom, 
+  RoomAudioRenderer, 
+  VideoTrack, 
+  useTracks, 
+  useLocalParticipant, 
+  useRemoteParticipants,
+  useConnectionState,
+  useIsSpeaking,
+  useRoomContext,
+  isTrackReference
+} from '@livekit/components-react';
+import { Track, ConnectionState, RoomEvent } from 'livekit-client';
 import { 
   Mic, 
   MicOff, 
-  Video, 
+  Video as VideoIcon, 
   VideoOff, 
   Monitor, 
   MonitorOff, 
@@ -13,17 +28,26 @@ import {
   Users, 
   Send, 
   Smile, 
-  Hand, 
   MoreVertical, 
   LayoutGrid, 
   X, 
   Sparkles, 
   Save, 
   Check, 
+  Copy,
   Radio,
-  FileCheck
+  FileCheck,
+  Code,
+  HelpCircle,
+  AlertCircle,
+  RefreshCw,
+  ExternalLink,
+  ChevronRight
 } from 'lucide-react';
-import { InterviewSession, RubricCategory, ScorecardEvaluation, TranscriptSnippet, InterviewQuestion } from '../types';
+import { InterviewSession, RubricCategory, ScorecardEvaluation, InterviewQuestion } from '../types';
+import { CodeWorkspace } from './CodeWorkspace';
+import { QuestionBank } from './QuestionBank';
+import { UserRole } from '../Header';
 
 interface VideoInterviewRoomProps {
   session: InterviewSession;
@@ -32,45 +56,167 @@ interface VideoInterviewRoomProps {
   onSaveEvaluation: (evaluation: ScorecardEvaluation) => void;
   onEndCall: () => void;
   questions: InterviewQuestion[];
+  userRole?: UserRole;
 }
 
 interface ChatMessage {
   id: string;
   sender: string;
-  avatar: string;
+  avatar?: string;
   text: string;
   timestamp: string;
   isMe?: boolean;
 }
 
-export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
+export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = (props) => {
+  const { session, userRole = 'interviewer' } = props;
+  const [token, setToken] = useState<string | null>(null);
+  const [serverUrl, setServerUrl] = useState<string>('wss://livekit.celoris.in');
+  const [isLoadingToken, setIsLoadingToken] = useState<boolean>(true);
+  const [tokenError, setTokenError] = useState<string | null>(null);
+
+  const fetchToken = async () => {
+    try {
+      setIsLoadingToken(true);
+      setTokenError(null);
+      const participantName = userRole === 'candidate' 
+        ? session.candidateName 
+        : 'Lead Interviewer (Celoris)';
+
+      const res = await fetch('/api/livekit/interview-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomId: session.meetingRoomId,
+          participantName,
+          role: userRole
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to acquire LiveKit token');
+      }
+
+      setToken(data.token);
+      if (data.serverUrl) setServerUrl(data.serverUrl);
+    } catch (err: any) {
+      console.error('[VideoInterviewRoom] token error:', err);
+      setTokenError(err?.message || 'Error connecting to token service');
+    } finally {
+      setIsLoadingToken(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchToken();
+  }, [session.meetingRoomId, userRole]);
+
+  // Loading Screen
+  if (isLoadingToken) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#030705] p-6 text-slate-200 select-none relative overflow-hidden">
+        <div className="w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none animate-aurora" />
+        <div className="p-8 rounded-3xl bg-gradient-to-b from-[#0e1712] via-[#070e0a] to-[#040806] border border-emerald-500/30 text-center max-w-md shadow-2xl space-y-4 z-10 relative">
+          <div className="w-14 h-14 rounded-2xl btn-metallic flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_16px_rgba(16,185,129,0.3)] animate-pulse">
+            <Radio className="w-7 h-7 text-emerald-400 drop-shadow-[0_0_8px_#10b981]" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-white tracking-wide">Connecting to LiveKit WebRTC</h3>
+            <p className="text-xs text-emerald-400 font-mono mt-1">wss://livekit.celoris.in</p>
+            <p className="text-xs text-emerald-300/70 mt-2 font-mono">
+              Establishing real-time encrypted stream for Room #{session.meetingRoomId}
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 pt-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="text-[11px] font-mono text-emerald-400">Negotiating SDP & ICE Candidates...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Token Error Screen
+  if (tokenError || !token) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#030705] p-6 text-slate-200 select-none relative overflow-hidden">
+        <div className="p-8 rounded-3xl bg-gradient-to-b from-[#180a0a] to-[#070404] border border-rose-500/40 text-center max-w-md shadow-2xl space-y-4 z-10">
+          <div className="w-12 h-12 rounded-2xl bg-rose-950 border border-rose-700/60 flex items-center justify-center text-rose-400 mx-auto">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">LiveKit Connection Error</h3>
+            <p className="text-xs text-rose-300/80 mt-1 font-mono">{tokenError || 'Unable to join LiveKit room'}</p>
+          </div>
+          <div className="pt-2 flex items-center justify-center gap-3">
+            <button
+              onClick={fetchToken}
+              className="btn-metallic flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-emerald-300"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry Connection</span>
+            </button>
+            <button
+              onClick={props.onEndCall}
+              className="btn-metallic px-4 py-2 rounded-xl text-xs font-semibold text-neutral-300"
+            >
+              Return to Pipeline
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <LiveKitRoom
+      token={token}
+      serverUrl={serverUrl}
+      connect={true}
+      video={true}
+      audio={true}
+      data-lk-theme="default"
+      onDisconnected={props.onEndCall}
+      className="flex-1 flex flex-col h-full w-full select-none"
+    >
+      <RoomAudioRenderer />
+      <LiveKitInterviewStage {...props} />
+    </LiveKitRoom>
+  );
+};
+
+// ==========================================
+// Inner LiveKit Stage with Real WebRTC Hooks
+// ==========================================
+const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   session,
   rubrics,
   onUpdateRubrics,
   onSaveEvaluation,
   onEndCall,
+  questions,
+  userRole = 'interviewer'
 }) => {
-  // Call Controls State
-  const [isMicOn, setIsMicOn] = useState(true);
-  const [isCamOn, setIsCamOn] = useState(true);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [isHandRaised, setIsHandRaised] = useState(false);
+  const room = useRoomContext();
+  const { localParticipant, isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled } = useLocalParticipant();
+  const remoteParticipants = useRemoteParticipants();
+  const connectionState = useConnectionState();
+  const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: false });
+
+  // Sidebar Tabs & Layout
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeSidebarTab, setActiveSidebarTab] = useState<'chat' | 'scorecard' | 'participants'>('chat');
-  
-  // Floating reactions animation
+  const [activeSidebarTab, setActiveSidebarTab] = useState<'chat' | 'scorecard' | 'code' | 'questions' | 'people'>('chat');
+  const [pinnedParticipantIdentity, setPinnedParticipantIdentity] = useState<string | null>(null);
+
+  // Link copy feedback
+  const [hasCopiedLink, setHasCopiedLink] = useState(false);
+
+  // Floating Reactions
   const [floatingEmojis, setFloatingEmojis] = useState<{ id: number; emoji: string; left: number }[]>([]);
 
-  // Main speaker selection
-  const [mainSpeakerId, setMainSpeakerId] = useState<string>('candidate');
-
-  // Real Camera & Stream
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
-  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-
-  // Timer & Session Duration (HH:MM:SS)
-  const [callDurationSeconds, setCallDurationSeconds] = useState(4988); // 01:23:08
+  // Elapsed Call Timer
+  const [callDurationSeconds, setCallDurationSeconds] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -86,142 +232,14 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
     return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  // Setup Local Webcam
-  useEffect(() => {
-    let stream: MediaStream | null = null;
-    let isCancelled = false;
-
-    async function initCamera() {
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: 640, height: 480 },
-            audio: true
-          });
-          if (!isCancelled) {
-            setMediaStream(stream);
-            setHasCameraPermission(true);
-            if (localVideoRef.current) {
-              localVideoRef.current.srcObject = stream;
-            }
-          }
-        } else {
-          setHasCameraPermission(false);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          setHasCameraPermission(false);
-        }
-      }
-    }
-
-    initCamera();
-
-    return () => {
-      isCancelled = true;
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
-
-  const handleToggleMic = () => {
-    setIsMicOn(prev => !prev);
-    if (mediaStream) {
-      mediaStream.getAudioTracks().forEach(track => {
-        track.enabled = !isMicOn;
-      });
-    }
-  };
-
-  const handleToggleCam = () => {
-    setIsCamOn(prev => !prev);
-    if (mediaStream) {
-      mediaStream.getVideoTracks().forEach(track => {
-        track.enabled = !isCamOn;
-      });
-    }
-  };
-
-  const handleToggleScreenShare = async () => {
-    if (!isScreenSharing) {
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-          await navigator.mediaDevices.getDisplayMedia({ video: true });
-          setIsScreenSharing(true);
-        } else {
-          setIsScreenSharing(true);
-        }
-      } catch (err) {
-        setIsScreenSharing(true);
-      }
-    } else {
-      setIsScreenSharing(false);
-    }
-  };
-
-  // Floating Emoji Reaction trigger
-  const triggerReaction = (emoji: string) => {
-    const newEmoji = {
-      id: Date.now() + Math.random(),
-      emoji,
-      left: 30 + Math.random() * 40
-    };
-    setFloatingEmojis(prev => [...prev, newEmoji]);
-    setTimeout(() => {
-      setFloatingEmojis(prev => prev.filter(e => e.id !== newEmoji.id));
-    }, 2400);
-  };
-
-  // Chat State & Messages (Matching reference design in black and green)
+  // Synchronized Real-Time Chat State
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
-      id: 'm1',
-      sender: 'Martin',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-      text: 'Hey guys! 👋 Everyone ready for the interview?',
-      timestamp: '12:05 AM',
-      isMe: false,
-    },
-    {
-      id: 'm2',
-      sender: 'Jackson',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-      text: 'Yes I’m ready, Elena is prepped on distributed systems.',
-      timestamp: '12:06 AM',
-      isMe: false,
-    },
-    {
-      id: 'm3',
-      sender: 'Albert',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80',
-      text: 'Here is the rate limiting spec doc: https://celoris.in/docs/rfc/9024',
-      timestamp: '12:08 AM',
-      isMe: false,
-    },
-    {
-      id: 'm4',
-      sender: 'Alice',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80',
-      text: 'That sliding window approach is perfect! 🔥',
-      timestamp: '12:12 AM',
-      isMe: false,
-    },
-    {
-      id: 'm5',
-      sender: 'Dheeraj Sharma (You)',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-      text: 'Great team! Let’s proceed with failure domains.',
-      timestamp: '12:13 AM',
-      isMe: true,
-    },
-    {
-      id: 'm6',
-      sender: 'Michael',
-      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=120&q=80',
-      text: 'Hey Elena, how is the token bucket syncing across regions?',
-      timestamp: '12:14 AM',
-      isMe: false,
+      id: 'init-1',
+      sender: 'System Bot',
+      text: `LiveKit session established for Room #${session.meetingRoomId}. End-to-end encrypted WebRTC audio & video active.`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMe: false
     }
   ]);
   const [chatInput, setChatInput] = useState('');
@@ -231,46 +249,133 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  // Handle incoming LiveKit data messages (Chat + Reactions)
+  useEffect(() => {
+    const handleDataReceived = (payload: Uint8Array, participant?: any) => {
+      try {
+        const text = new TextDecoder().decode(payload);
+        const data = JSON.parse(text);
+        if (data.type === 'reaction') {
+          triggerLocalFloatingEmoji(data.emoji);
+        } else if (data.type === 'chat') {
+          setChatMessages(prev => [
+            ...prev,
+            {
+              id: data.id || `msg-${Date.now()}`,
+              sender: data.sender || participant?.name || 'Participant',
+              text: data.text,
+              timestamp: data.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isMe: false
+            }
+          ]);
+        }
+      } catch (err) {
+        console.warn('[LiveKit Stage] data channel parse error:', err);
+      }
+    };
+
+    room.on(RoomEvent.DataReceived, handleDataReceived);
+    return () => {
+      room.off(RoomEvent.DataReceived, handleDataReceived);
+    };
+  }, [room]);
+
+  const triggerLocalFloatingEmoji = (emoji: string) => {
+    const newEmoji = {
+      id: Date.now() + Math.random(),
+      emoji,
+      left: Math.floor(25 + Math.random() * 50)
+    };
+    setFloatingEmojis(prev => [...prev, newEmoji]);
+    setTimeout(() => {
+      setFloatingEmojis(prev => prev.filter(e => e.id !== newEmoji.id));
+    }, 2200);
+  };
+
+  const handleBroadcastReaction = (emoji: string) => {
+    triggerLocalFloatingEmoji(emoji);
+    try {
+      const payload = JSON.stringify({ type: 'reaction', emoji });
+      room.localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true });
+    } catch (err) {
+      console.warn('Reaction broadcast error:', err);
+    }
+  };
+
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!chatInput.trim()) return;
 
-    const newMsg: ChatMessage = {
+    const myName = localParticipant.name || (userRole === 'candidate' ? session.candidateName : 'Interviewer');
+    const msg: ChatMessage = {
       id: `msg-${Date.now()}`,
-      sender: 'Sarah Chen (You)',
-      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=120&q=80',
+      sender: `${myName} (You)`,
       text: chatInput.trim(),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isMe: true
     };
 
-    setChatMessages(prev => [...prev, newMsg]);
+    setChatMessages(prev => [...prev, msg]);
+    const outgoingText = chatInput.trim();
     setChatInput('');
 
-    // Trigger candidate reply
-    setTimeout(() => {
-      const candidateReply: ChatMessage = {
-        id: `msg-${Date.now() + 1}`,
-        sender: 'Elena Rostova',
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80',
-        text: 'We apply local memory batching at Envoy ingress with asynchronous delta synchronization every 10ms to Redis cluster.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isMe: false
-      };
-      setChatMessages(prev => [...prev, candidateReply]);
-    }, 1500);
+    try {
+      const payload = JSON.stringify({
+        type: 'chat',
+        id: msg.id,
+        sender: myName,
+        text: outgoingText,
+        timestamp: msg.timestamp
+      });
+      room.localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true });
+    } catch (err) {
+      console.warn('Chat broadcast error:', err);
+    }
   };
 
-  // Scorecard State
+  const handleCopyInviteLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://celoris.in';
+    const link = `${origin}/interviews/${session.meetingRoomId}`;
+    navigator.clipboard.writeText(link);
+    setHasCopiedLink(true);
+    setTimeout(() => setHasCopiedLink(false), 2500);
+  };
+
+  // WebRTC Controls
+  const toggleMic = async () => {
+    try {
+      await localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled);
+    } catch (err) {
+      console.error('Failed to toggle mic:', err);
+    }
+  };
+
+  const toggleCam = async () => {
+    try {
+      await localParticipant.setCameraEnabled(!isCameraEnabled);
+    } catch (err) {
+      console.error('Failed to toggle camera:', err);
+    }
+  };
+
+  const toggleScreen = async () => {
+    try {
+      await localParticipant.setScreenShareEnabled(!isScreenShareEnabled);
+    } catch (err) {
+      console.error('Failed to toggle screen share:', err);
+    }
+  };
+
+  // Scorecard Math & AI Synthesis
   const totalWeight = rubrics.reduce((sum, r) => sum + r.weight, 0);
   const weightedScore = (
     rubrics.reduce((sum, r) => sum + r.score * r.weight, 0) / (totalWeight || 100)
   ).toFixed(1);
-  const [isAiEvaluating, setIsAiEvaluating] = useState(false);
   const [recommendation, setRecommendation] = useState<string>('Strong Hire');
   const [panelistNotes, setPanelistNotes] = useState(
     'Candidate demonstrated senior-level mastery of distributed systems, token bucket algorithms, and horizontal sharding.'
   );
+  const [isAiEvaluating, setIsAiEvaluating] = useState(false);
 
   const handleScoreChange = (id: string, score: number) => {
     onUpdateRubrics(rubrics.map(r => r.id === id ? { ...r, score } : r));
@@ -278,27 +383,12 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
 
   const handleTriggerAiScore = async () => {
     setIsAiEvaluating(true);
-    try {
-      const res = await fetch('/api/ai/evaluate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          candidateName: session.candidateName,
-          role: session.role,
-          round: session.roundType,
-          rubrics,
-          notes: panelistNotes,
-        })
-      });
-      const data = await res.json();
-      if (data.evaluation?.recommendation) {
-        setRecommendation(data.evaluation.recommendation);
-      }
-    } catch (err) {
-      console.warn('AI evaluation fallback:', err);
-    } finally {
+    setTimeout(() => {
+      const parsed = parseFloat(weightedScore);
+      const synth = parsed >= 4.5 ? 'Strong Hire' : parsed >= 3.8 ? 'Hire' : parsed >= 3.0 ? 'Leaning Hire' : 'Leaning No Hire';
+      setRecommendation(synth);
       setIsAiEvaluating(false);
-    }
+    }, 600);
   };
 
   const handleSaveScorecard = () => {
@@ -306,64 +396,44 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
       id: `sc-${Date.now()}`,
       interviewId: session.id,
       candidateId: session.candidateId,
-      interviewerName: 'Sarah Chen',
-      interviewerRole: 'Lead Interviewer & Bar Raiser',
+      interviewerName: localParticipant.name || 'Lead Interviewer',
+      interviewerRole: 'Bar Raiser & Lead Architect',
       submittedAt: new Date().toISOString(),
       overallScore: parseFloat(weightedScore),
       recommendation: recommendation as any,
-      executiveSummary: `${session.candidateName} evaluated with score ${weightedScore}/5.0 during the ${session.roundType} interview.`,
+      executiveSummary: `${session.candidateName} evaluated with score ${weightedScore}/5.0 during ${session.roundType} interview. Clean production instincts and architectural empathy.`,
       strengths: ['Decisive architectural trade-offs', 'Clean failure isolation semantics'],
       concerns: [],
       rubricBreakdown: rubrics,
-      calibrationNotes: 'Ready for hiring committee review.',
+      calibrationNotes: 'Scorecard calibrated against Celoris engineering standards.',
       notes: panelistNotes
     };
     onSaveEvaluation(sc);
   };
 
-  // Panel Attendees List
-  const attendees = [
-    {
-      id: 'sarah',
-      name: 'Sarah Chen (You)',
-      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
-      isMuted: !isMicOn,
-      isCamOff: !isCamOn,
-      role: 'Lead Panelist'
-    },
-    {
-      id: 'attendee-1',
-      name: 'Claire Dubois',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
-      isMuted: true,
-      isCamOff: false,
-      role: 'Head of Talent'
-    },
-    {
-      id: 'attendee-2',
-      name: 'Devon Patel',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-      isMuted: true,
-      isCamOff: false,
-      role: 'Engineering Director'
-    },
-    {
-      id: 'attendee-3',
-      name: 'Alex Rivera',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      isMuted: false,
-      isCamOff: false,
-      role: 'Staff SRE'
-    },
-    {
-      id: 'attendee-4',
-      name: 'Jessica Vance',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
-      isMuted: false,
-      isCamOff: false,
-      role: 'CISO'
-    }
-  ];
+  // Determine Tracks
+  const cameraTracks = tracks.filter(t => t.source === Track.Source.Camera);
+  const screenTracks = tracks.filter(t => t.source === Track.Source.ScreenShare);
+  const localCameraTrack = cameraTracks.find(t => t.participant.isLocal);
+  const remoteCameraTracks = cameraTracks.filter(t => !t.participant.isLocal);
+
+  // Primary Video Source Logic:
+  // 1. If screen share is active, show screen share.
+  // 2. If user pinned a participant, show pinned track.
+  // 3. If there is a remote participant with camera, show remote participant.
+  // 4. Otherwise, show local camera preview (so interviewer/candidate sees their own high-def camera).
+  let primaryTrack: any = screenTracks[0] || null;
+  if (!primaryTrack && pinnedParticipantIdentity) {
+    primaryTrack = cameraTracks.find(t => t.participant.identity === pinnedParticipantIdentity) || null;
+  }
+  if (!primaryTrack && remoteCameraTracks.length > 0) {
+    primaryTrack = remoteCameraTracks[0];
+  }
+  if (!primaryTrack && localCameraTrack) {
+    primaryTrack = localCameraTrack;
+  }
+
+  const isAloneInRoom = remoteParticipants.length === 0;
 
   return (
     <div className="flex-1 flex items-center justify-center bg-[#030705] p-2 sm:p-4 md:p-6 overflow-hidden select-none relative">
@@ -377,12 +447,11 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
         {/* Left Side: Video Canvas & Bottom Call Controls */}
         <div className="flex-1 flex flex-col min-w-0 bg-[#060a08]/90">
           
-          {/* Top Window Bar: Black & Green Metallic Glassy Header (matching main Header) */}
+          {/* Top Window Bar: Black & Green Metallic Glassy Header */}
           <div className="h-14 px-6 flex items-center justify-between border-b border-emerald-950/60 bg-[#060a08]/90 backdrop-blur-md select-none shadow-[0_1px_12px_rgba(0,0,0,0.8)]">
             <div className="flex items-center gap-3">
-              {/* Metallic Squircle Video Camera Icon with Emerald Glow */}
               <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center text-emerald-400 font-semibold shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                <Video className="w-4 h-4 text-emerald-400 drop-shadow-[0_0_6px_#10b981]" />
+                <VideoIcon className="w-4 h-4 text-emerald-400 drop-shadow-[0_0_6px_#10b981]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -392,45 +461,98 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
                     <span className="text-emerald-300 font-normal">{session.roundType} Interview</span>
                   </h2>
                   <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
-                    Live Session
+                    LiveKit Connected
                   </span>
                 </div>
-                <p className="text-[10px] text-emerald-500/80 font-mono mt-0.5">
-                  Thursday, 15 Oct 2026 · Confidential Bar Raiser Panel
+                <p className="text-[10px] text-emerald-500/80 font-mono mt-0.5 flex items-center gap-2">
+                  <span>Room: #{session.meetingRoomId}</span>
+                  <span className="text-emerald-800">·</span>
+                  <span>{1 + remoteParticipants.length} Participant{1 + remoteParticipants.length > 1 ? 's' : ''} in Room</span>
                 </p>
               </div>
             </div>
 
-            {/* Elapsed Timer Pill (MacBook Anodized Aluminum Style) */}
-            <div className="bg-[#0c120f] px-3 py-1 rounded-lg border border-white/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)] text-xs font-mono font-bold text-emerald-300 flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#10b981]"></span>
-              </span>
-              <span>{formatTimer(callDurationSeconds)}</span>
+            {/* Top Right Controls & Timer */}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={handleCopyInviteLink}
+                className="btn-metallic hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold"
+                title="Copy candidate invite link to clipboard"
+              >
+                {hasCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-emerald-400" />}
+                <span>{hasCopiedLink ? 'Copied Link!' : 'Invite Link'}</span>
+              </button>
+
+              <div className="bg-[#0c120f] px-3 py-1 rounded-lg border border-white/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)] text-xs font-mono font-bold text-emerald-300 flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#10b981]"></span>
+                </span>
+                <span>{formatTimer(callDurationSeconds)}</span>
+              </div>
             </div>
           </div>
 
           {/* Video Main Stage Area */}
           <div className="flex-1 p-4 relative min-h-0 flex gap-3">
             
-            {/* Primary Dominant Speaker Video Feed */}
+            {/* Primary Dominant Video Feed */}
             <div className="flex-1 relative rounded-2xl overflow-hidden bg-[#040806] border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.8)] flex items-center justify-center">
               
-              {/* Speaker Video Image */}
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1600&q=80"
-                alt={session.candidateName}
-                className="w-full h-full object-cover filter brightness-100"
-              />
+              {primaryTrack && isTrackReference(primaryTrack) && primaryTrack.publication && !primaryTrack.publication.isMuted ? (
+                <VideoTrack
+                  trackRef={primaryTrack}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                /* Fallback if camera is turned off */
+                <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
+                  <div className="w-24 h-24 rounded-full bg-[#0a140f] border-2 border-emerald-500/40 flex items-center justify-center text-3xl font-bold text-emerald-300 shadow-[0_0_24px_rgba(16,185,129,0.3)]">
+                    {primaryTrack?.participant.name?.substring(0, 2).toUpperCase() || 'CA'}
+                  </div>
+                  <p className="text-sm font-bold text-white">
+                    {primaryTrack?.participant.name || 'Participant'}
+                  </p>
+                  <p className="text-xs text-emerald-500 font-mono">Camera is currently paused</p>
+                </div>
+              )}
 
-              {/* Recording Badge (Top-Left overlay: 🔴 14:08 / 60 min) */}
+              {/* Waiting Overlay when alone in room */}
+              {isAloneInRoom && (
+                <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none z-10 p-4">
+                  <div className="p-5 rounded-2xl bg-[#07120c]/90 border border-emerald-500/40 text-center max-w-sm pointer-events-auto space-y-3 shadow-2xl">
+                    <div className="w-12 h-12 rounded-xl btn-metallic flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                      <Radio className="w-6 h-6 animate-pulse text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-white">Your Camera is Live on WebRTC</h3>
+                      <p className="text-xs text-emerald-300/80 mt-1 font-mono">
+                        Waiting for candidate or panelists to join Room #{session.meetingRoomId}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleCopyInviteLink}
+                      className="btn-metallic-emerald w-full py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-[0_0_16px_rgba(16,185,129,0.4)]"
+                    >
+                      {hasCopiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      <span>{hasCopiedLink ? 'Invite Link Copied to Clipboard!' : 'Copy Candidate Invite Link'}</span>
+                    </button>
+                    <p className="text-[10px] text-emerald-500/70 font-mono">
+                      Open link in another window or device to test two-way WebRTC video &amp; audio.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Live WebRTC Badge (Top-Left) */}
               <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#040806]/85 backdrop-blur-md px-3 py-1.5 rounded-full border border-emerald-500/40 text-xs font-medium text-white shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_6px_#f43f5e]" />
-                <span className="font-mono text-[11px] text-emerald-200">14:08 / 60 min</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#10b981]" />
+                <span className="font-mono text-[11px] text-emerald-200">
+                  {primaryTrack?.source === Track.Source.ScreenShare ? 'Screen Share Active' : 'LiveKit WebRTC 1080p'}
+                </span>
               </div>
 
-              {/* Video Actions (Top-Right overlay: Settings & Maximize) */}
+              {/* Video Actions (Top-Right overlay: Scorecard & Sidebar Toggle) */}
               <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
                 <button 
                   onClick={() => {
@@ -445,7 +567,7 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
                 <button 
                   onClick={() => setIsSidebarOpen(prev => !prev)}
                   className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center transition-all shadow-sm"
-                  title="Toggle Fullscreen Canvas"
+                  title="Toggle Fullscreen Video"
                 >
                   <Maximize2 className="w-4 h-4 text-emerald-400" />
                 </button>
@@ -454,18 +576,21 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
               {/* Speaker Name Tag (Bottom-Left overlay) */}
               <div className="absolute bottom-4 left-4 z-20 bg-[#040806]/85 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-emerald-500/30 text-xs font-bold text-white shadow-md flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                <span>{session.candidateName}</span>
-                <span className="text-[10px] text-emerald-400 font-mono">(Candidate)</span>
+                <span>
+                  {primaryTrack?.participant.isLocal 
+                    ? `${localParticipant.name || 'You'} (Local Cam)` 
+                    : (primaryTrack?.participant.name || session.candidateName)}
+                </span>
               </div>
 
-              {/* Floating Reaction Bar (Glassy Obsidian with Emerald Trim) */}
+              {/* Floating Reaction Bar */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-[#07120c]/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-emerald-500/40 shadow-[0_0_24px_rgba(16,185,129,0.25)] flex items-center gap-2.5">
                 {['😂', '🎉', '👍', '👎', '👏', '😮', '❤️'].map((emoji) => (
                   <button
                     key={emoji}
-                    onClick={() => triggerReaction(emoji)}
+                    onClick={() => handleBroadcastReaction(emoji)}
                     className="hover:scale-125 transition-transform text-base sm:text-lg cursor-pointer px-0.5 active:scale-95"
-                    title={`Send ${emoji}`}
+                    title={`Broadcast ${emoji}`}
                   >
                     {emoji}
                   </button>
@@ -488,49 +613,94 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
 
             {/* Vertical Attendee Thumbnail Column (Right Side of Main Video) */}
             <div className="w-28 sm:w-32 flex flex-col gap-2.5 shrink-0 overflow-y-auto pr-0.5">
-              {attendees.map((att) => (
-                <div
-                  key={att.id}
-                  onClick={() => setMainSpeakerId(att.id)}
-                  className="h-20 sm:h-24 rounded-xl overflow-hidden relative bg-[#060a08] border border-white/10 shadow-md group cursor-pointer hover:border-emerald-500/50 transition-all"
-                >
-                  {/* Local video feed if user's camera is active */}
-                  {att.id === 'sarah' && hasCameraPermission && isCamOn ? (
-                    <video
-                      ref={localVideoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={att.avatar}
-                      alt={att.name}
-                      className="w-full h-full object-cover filter brightness-95"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  
-                  {/* Status Badges with Metallic Edge */}
-                  <div className="absolute top-1.5 right-1.5 z-10">
-                    {att.isMuted ? (
-                      <span className="w-5 h-5 rounded-full bg-rose-600/90 border border-rose-400/40 flex items-center justify-center text-white shadow-sm">
-                        <MicOff className="w-2.5 h-2.5" />
-                      </span>
-                    ) : (
-                      <span className="w-5 h-5 rounded-full bg-emerald-600/90 border border-emerald-400/50 flex items-center justify-center text-white shadow-[0_0_6px_#10b981]">
-                        <Mic className="w-2.5 h-2.5" />
-                      </span>
-                    )}
+              
+              {/* Local Participant Tile (You) */}
+              <div
+                onClick={() => setPinnedParticipantIdentity(localParticipant.identity)}
+                className={`h-20 sm:h-24 rounded-xl overflow-hidden relative bg-[#060a08] border shadow-md group cursor-pointer transition-all ${
+                  pinnedParticipantIdentity === localParticipant.identity
+                    ? 'border-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+                    : 'border-white/10 hover:border-emerald-500/50'
+                }`}
+              >
+                {localCameraTrack && isTrackReference(localCameraTrack) && isCameraEnabled ? (
+                  <VideoTrack
+                    trackRef={localCameraTrack}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-[#07100c] text-emerald-400">
+                    <VideoOff className="w-5 h-5 text-emerald-600 mb-1" />
+                    <span className="text-[9px] font-mono">Cam Muted</span>
                   </div>
-
-                  {/* Name badge */}
-                  <span className="absolute bottom-1 left-1.5 text-[9px] text-white font-medium truncate max-w-[85px] drop-shadow font-mono">
-                    {att.name.split(' ')[0]}
-                  </span>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                
+                {/* Mic Status */}
+                <div className="absolute top-1.5 right-1.5 z-10">
+                  {isMicrophoneEnabled ? (
+                    <span className="w-5 h-5 rounded-full bg-emerald-600/90 border border-emerald-400/50 flex items-center justify-center text-white shadow-[0_0_6px_#10b981]">
+                      <Mic className="w-2.5 h-2.5" />
+                    </span>
+                  ) : (
+                    <span className="w-5 h-5 rounded-full bg-rose-600/90 border border-rose-400/40 flex items-center justify-center text-white shadow-sm">
+                      <MicOff className="w-2.5 h-2.5" />
+                    </span>
+                  )}
                 </div>
-              ))}
+
+                <span className="absolute bottom-1 left-1.5 text-[9px] text-white font-medium truncate max-w-[85px] drop-shadow font-mono">
+                  You
+                </span>
+              </div>
+
+              {/* Remote Participants Tiles */}
+              {remoteParticipants.map((p) => {
+                const pTrack = cameraTracks.find(t => t.participant.identity === p.identity);
+                const isPinned = pinnedParticipantIdentity === p.identity;
+
+                return (
+                  <div
+                    key={p.identity}
+                    onClick={() => setPinnedParticipantIdentity(p.identity)}
+                    className={`h-20 sm:h-24 rounded-xl overflow-hidden relative bg-[#060a08] border shadow-md group cursor-pointer transition-all ${
+                      isPinned 
+                        ? 'border-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)]' 
+                        : 'border-white/10 hover:border-emerald-500/50'
+                    }`}
+                  >
+                    {pTrack && isTrackReference(pTrack) && p.isCameraEnabled ? (
+                      <VideoTrack
+                        trackRef={pTrack}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-[#07100c] text-emerald-300">
+                        <span className="text-xs font-bold font-mono">
+                          {p.name?.substring(0, 2).toUpperCase() || 'CA'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+
+                    <div className="absolute top-1.5 right-1.5 z-10">
+                      {p.isMicrophoneEnabled ? (
+                        <span className="w-5 h-5 rounded-full bg-emerald-600/90 border border-emerald-400/50 flex items-center justify-center text-white shadow-[0_0_6px_#10b981]">
+                          <Mic className="w-2.5 h-2.5" />
+                        </span>
+                      ) : (
+                        <span className="w-5 h-5 rounded-full bg-rose-600/90 border border-rose-400/40 flex items-center justify-center text-white shadow-sm">
+                          <MicOff className="w-2.5 h-2.5" />
+                        </span>
+                      )}
+                    </div>
+
+                    <span className="absolute bottom-1 left-1.5 text-[9px] text-white font-medium truncate max-w-[85px] drop-shadow font-mono">
+                      {p.name || p.identity.substring(0, 8)}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -548,113 +718,76 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
               </button>
             </div>
 
-            {/* Center Controls: MacBook Metallic Hardware Buttons */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Mic Toggle */}
+            {/* Center: Main Hardware Call Buttons */}
+            <div className="flex items-center gap-3">
+              {/* Mic Toggle Button */}
               <button
-                onClick={handleToggleMic}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all relative ${
-                  isMicOn
+                onClick={toggleMic}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                  isMicrophoneEnabled
                     ? 'btn-metallic text-emerald-400'
-                    : 'bg-rose-950/80 text-rose-300 border border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.4)]'
+                    : 'bg-rose-950/80 border border-rose-600/80 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)]'
                 }`}
-                title={isMicOn ? 'Mute Mic' : 'Unmute Mic'}
+                title={isMicrophoneEnabled ? 'Mute Microphone' : 'Unmute Microphone'}
               >
-                {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-                {isMicOn && (
-                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                )}
+                {isMicrophoneEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
               </button>
 
-              {/* Camera Toggle */}
+              {/* Camera Toggle Button */}
               <button
-                onClick={handleToggleCam}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all relative ${
-                  isCamOn
+                onClick={toggleCam}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                  isCameraEnabled
                     ? 'btn-metallic text-emerald-400'
-                    : 'bg-rose-950/80 text-rose-300 border border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.4)]'
+                    : 'bg-rose-950/80 border border-rose-600/80 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)]'
                 }`}
-                title={isCamOn ? 'Turn off camera' : 'Turn on camera'}
+                title={isCameraEnabled ? 'Turn Off Camera' : 'Turn On Camera'}
               >
-                {isCamOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
-                {isCamOn && (
-                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                )}
+                {isCameraEnabled ? <VideoIcon className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
               </button>
 
-              {/* Screen Share */}
+              {/* Screen Share Button */}
               <button
-                onClick={handleToggleScreenShare}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                  isScreenSharing
+                onClick={toggleScreen}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                  isScreenShareEnabled
                     ? 'btn-metallic-emerald text-white shadow-[0_0_16px_rgba(16,185,129,0.5)]'
                     : 'btn-metallic text-emerald-400'
                 }`}
                 title="Share Screen"
               >
-                <Monitor className="w-4 h-4" />
+                {isScreenShareEnabled ? <MonitorOff className="w-5 h-5" /> : <Monitor className="w-5 h-5" />}
               </button>
 
-              {/* Emoji Smile Reaction */}
-              <button
-                onClick={() => triggerReaction('🎉')}
-                className="w-11 h-11 rounded-xl btn-metallic flex items-center justify-center text-emerald-400 transition-colors"
-                title="Reactions"
-              >
-                <Smile className="w-4 h-4" />
-              </button>
-
-              {/* Hand Raise */}
-              <button
-                onClick={() => setIsHandRaised(prev => !prev)}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                  isHandRaised
-                    ? 'btn-metallic-emerald text-white animate-bounce shadow-[0_0_16px_#10b981]'
-                    : 'btn-metallic text-emerald-400'
-                }`}
-                title="Raise Hand"
-              >
-                <Hand className="w-4 h-4" />
-              </button>
-
-              {/* More Options / Scorecard Quick Link */}
+              {/* End Call Button */}
               <button
                 onClick={() => {
-                  setIsSidebarOpen(true);
-                  setActiveSidebarTab('scorecard');
+                  try { room.disconnect(); } catch (_) {}
+                  onEndCall();
                 }}
-                className="w-11 h-11 rounded-xl btn-metallic flex items-center justify-center text-emerald-400 transition-colors"
-                title="Scorecard & Calibration"
+                className="h-12 px-6 rounded-xl bg-gradient-to-b from-rose-600 via-rose-700 to-rose-900 border border-rose-400/40 text-white font-bold text-xs flex items-center gap-2 shadow-[0_4px_16px_rgba(225,29,72,0.4)] hover:brightness-110 active:translate-y-0.5 transition-all"
+                title="Leave Video Call"
               >
-                <MoreVertical className="w-4 h-4" />
-              </button>
-
-              {/* Red Metallic End Call Button */}
-              <button
-                onClick={onEndCall}
-                className="h-11 px-5 rounded-xl bg-gradient-to-b from-rose-600 via-rose-700 to-rose-900 hover:from-rose-500 hover:to-rose-800 text-white font-bold text-xs flex items-center justify-center transition-all shadow-[0_4px_16px_rgba(225,29,72,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] border border-rose-400/30 ml-1"
-                title="End Meeting"
-              >
-                <PhoneOff className="w-4 h-4 fill-current mr-1.5" />
+                <PhoneOff className="w-4 h-4" />
                 <span>End Call</span>
               </button>
             </div>
 
-            {/* Right: Participants & Chat Toggle Buttons */}
+            {/* Right: Quick Tab Switchers */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
                   setIsSidebarOpen(true);
-                  setActiveSidebarTab('participants');
+                  setActiveSidebarTab('code');
                 }}
                 className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                  isSidebarOpen && activeSidebarTab === 'participants'
-                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+                  isSidebarOpen && activeSidebarTab === 'code'
+                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
                     : 'btn-metallic text-emerald-400'
                 }`}
-                title="Participants"
+                title="Code Sandbox"
               >
-                <Users className="w-4 h-4" />
+                <Code className="w-4 h-4" />
               </button>
 
               <button
@@ -664,10 +797,10 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
                 }}
                 className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
                   isSidebarOpen && activeSidebarTab === 'chat'
-                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
                     : 'btn-metallic text-emerald-400'
                 }`}
-                title="Meeting Chat"
+                title="Live Chat"
               >
                 <MessageSquare className="w-4 h-4" />
               </button>
@@ -675,133 +808,146 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
           </div>
         </div>
 
-        {/* Right Sidebar: "Meeting Details" with Glassy Metallic Finish */}
+        {/* Right Side: Collapsible Workspace Dock (Chat / Scorecard / Code / People) */}
         {isSidebarOpen && (
-          <div className="w-80 sm:w-96 border-l border-emerald-950/70 bg-[#060b08]/95 backdrop-blur-xl flex flex-col text-slate-100 transition-all duration-200">
+          <div className="w-80 md:w-96 border-l border-emerald-950/70 bg-[#060b08]/95 flex flex-col justify-between shrink-0 shadow-2xl">
             
-            {/* Sidebar Header matching main Header bar */}
-            <div className="h-14 px-4 border-b border-emerald-950/60 bg-[#060a08]/90 backdrop-blur-md flex items-center justify-between shadow-[0_1px_12px_rgba(0,0,0,0.8)]">
-              <h3 className="font-bold text-xs tracking-wide uppercase text-emerald-400 font-mono flex items-center gap-2">
-                <span>Meeting Details</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-              </h3>
-              <button
-                onClick={() => setIsSidebarOpen(false)}
-                className="w-7 h-7 rounded-lg btn-metallic flex items-center justify-center text-emerald-400 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            {/* Top Workspace Bar */}
+            <div className="p-3.5 border-b border-emerald-950/70 bg-[#08100c]">
+              <div className="flex items-center justify-between pb-2.5">
+                <span className="text-xs font-bold text-white flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981]" />
+                  <span>Interview Workspace</span>
+                </span>
+                <button
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="w-6 h-6 rounded-md btn-metallic flex items-center justify-center text-emerald-400 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
 
-            {/* Segmented Switcher Pill (MacBook Aluminum Style matching Header) */}
-            <div className="p-3 border-b border-emerald-950/70 bg-[#08100c]/80">
-              <div className="flex rounded-lg bg-[#0c120f] p-1 text-xs font-semibold border border-white/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+              {/* Segmented Tab Switcher */}
+              <div className="flex rounded-lg bg-[#0c120f] p-0.5 text-xs font-medium border border-white/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
                 <button
                   onClick={() => setActiveSidebarTab('chat')}
-                  className={`flex-1 py-1.5 rounded-md text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
                     activeSidebarTab === 'chat'
-                      ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
-                      : 'text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-950/40'
+                      ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                      : 'text-emerald-300/70 hover:text-emerald-200'
                   }`}
                 >
                   Chat
                 </button>
                 <button
                   onClick={() => setActiveSidebarTab('scorecard')}
-                  className={`flex-1 py-1.5 rounded-md text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
                     activeSidebarTab === 'scorecard'
-                      ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
-                      : 'text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-950/40'
+                      ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                      : 'text-emerald-300/70 hover:text-emerald-200'
                   }`}
                 >
                   Scorecard
                 </button>
                 <button
-                  onClick={() => setActiveSidebarTab('participants')}
-                  className={`flex-1 py-1.5 rounded-md text-center transition-all ${
-                    activeSidebarTab === 'participants'
-                      ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
-                      : 'text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-950/40'
+                  onClick={() => setActiveSidebarTab('code')}
+                  className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                    activeSidebarTab === 'code'
+                      ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                      : 'text-emerald-300/70 hover:text-emerald-200'
                   }`}
                 >
-                  People ({attendees.length + 1})
+                  Code
+                </button>
+                <button
+                  onClick={() => setActiveSidebarTab('people')}
+                  className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                    activeSidebarTab === 'people'
+                      ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                      : 'text-emerald-300/70 hover:text-emerald-200'
+                  }`}
+                >
+                  People ({1 + remoteParticipants.length})
                 </button>
               </div>
             </div>
 
-            {/* Content Area */}
-            <div className="flex-1 overflow-y-auto">
-              {/* CHAT TAB (Black & Green Metallic Glassy Chat) */}
+            {/* Workspace Content Panels */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              
+              {/* 1. Real-Time Chat Tab */}
               {activeSidebarTab === 'chat' && (
-                <div className="p-4 space-y-3.5 flex flex-col min-h-full justify-end">
-                  {chatMessages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex items-start gap-2.5 ${msg.isMe ? 'flex-row-reverse' : ''}`}
-                    >
-                      <img
-                        src={msg.avatar}
-                        alt={msg.sender}
-                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-emerald-500/40 shadow-sm"
-                      />
-                      <div className={`max-w-[78%] ${msg.isMe ? 'items-end text-right' : ''}`}>
-                        <div className="flex items-center gap-1.5 mb-1 text-[11px] text-emerald-500 font-mono">
-                          <span className="font-bold text-white">
-                            {msg.sender.split(' ')[0]}
-                          </span>
+                <div className="h-full flex flex-col justify-between space-y-3">
+                  <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+                    {chatMessages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`p-3 rounded-2xl text-xs leading-relaxed max-w-[85%] ${
+                          msg.isMe
+                            ? 'ml-auto btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.25)]'
+                            : 'bg-[#09150f] text-emerald-100 border border-emerald-950/80 shadow-inner'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-[10px] mb-1 opacity-80 font-mono">
+                          <span className="font-bold">{msg.sender}</span>
                           <span>{msg.timestamp}</span>
                         </div>
-                        <div
-                          className={`p-3 rounded-2xl text-xs leading-relaxed font-sans shadow-md ${
-                            msg.isMe
-                              ? 'btn-metallic-emerald text-white rounded-tr-none shadow-[0_0_12px_rgba(16,185,129,0.25)]'
-                              : 'bg-[#09150f] text-emerald-100 rounded-tl-none border border-white/10'
-                          }`}
-                        >
-                          {msg.text}
-                        </div>
+                        <p>{msg.text}</p>
                       </div>
-                    </div>
-                  ))}
-                  <div ref={chatBottomRef} />
+                    ))}
+                    <div ref={chatBottomRef} />
+                  </div>
+
+                  <form onSubmit={handleSendMessage} className="pt-2 border-t border-emerald-950/70 flex gap-2">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Send encrypted message to room..."
+                      className="flex-1 metallic-input rounded-xl px-3 py-2 text-xs text-white placeholder-emerald-800 focus:outline-none"
+                    />
+                    <button
+                      type="submit"
+                      className="btn-metallic-emerald px-3.5 py-2 rounded-xl text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
+                  </form>
                 </div>
               )}
 
-              {/* SCORECARD TAB (Calibrated Rubric Scoring in Black & Green) */}
+              {/* 2. Scorecard & Rubrics Tab */}
               {activeSidebarTab === 'scorecard' && (
-                <div className="p-4 space-y-4 text-xs">
-                  <div className="flex items-center justify-between pb-2 border-b border-emerald-950/80">
-                    <div>
-                      <h4 className="font-bold text-white">Live Rubric Scoring</h4>
-                      <p className="text-[11px] text-emerald-500 font-mono">Calibrated bar raiser math</p>
-                    </div>
-                    <span className="font-mono font-bold text-sm bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+                <div className="space-y-4 text-xs">
+                  <div className="flex items-center justify-between pb-2 border-b border-emerald-950/70">
+                    <span className="font-bold text-white uppercase tracking-wider text-[11px] font-mono">
+                      Continuous Rubric Math
+                    </span>
+                    <span className="font-mono font-bold text-xs text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/30">
                       ★ {weightedScore} / 5.0
                     </span>
                   </div>
 
-                  {/* Rubric Category Rating */}
-                  <div className="space-y-2.5">
-                    {rubrics.map((cat) => (
-                      <div key={cat.id} className="p-3 rounded-xl bg-[#08120d] border border-white/10 shadow-sm">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-bold text-white truncate max-w-[190px]">
-                            {cat.name}
-                          </span>
-                          <span className="font-mono text-[10px] text-emerald-400 font-bold">{cat.weight}%</span>
+                  <div className="space-y-3">
+                    {rubrics.map((r) => (
+                      <div key={r.id} className="p-3 bg-[#060b08] rounded-xl border border-emerald-950/70 space-y-1.5 shadow-inner">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white">{r.name}</span>
+                          <span className="font-mono text-emerald-400 font-bold">{r.score} / 5</span>
                         </div>
-                        <div className="flex items-center justify-between gap-1.5 pt-1">
-                          {[1, 2, 3, 4, 5].map((lvl) => (
+                        <p className="text-[10px] text-emerald-400/70 leading-tight">{r.description}</p>
+                        <div className="flex gap-1.5 pt-1">
+                          {[1, 2, 3, 4, 5].map((scoreVal) => (
                             <button
-                              key={lvl}
-                              onClick={() => handleScoreChange(cat.id, lvl)}
-                              className={`flex-1 py-1.5 text-xs font-mono font-bold rounded-lg transition-all ${
-                                cat.score === lvl
-                                  ? 'btn-metallic-emerald text-white shadow-[0_0_12px_#10b981]'
-                                  : 'btn-metallic text-emerald-300/80 hover:text-white'
+                              key={scoreVal}
+                              onClick={() => handleScoreChange(r.id, scoreVal)}
+                              className={`flex-1 py-1 rounded-md font-mono text-[11px] font-bold transition-all ${
+                                r.score === scoreVal
+                                  ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.4)]'
+                                  : 'bg-[#0a140f] text-emerald-500 hover:text-white'
                               }`}
                             >
-                              {lvl}
+                              {scoreVal}
                             </button>
                           ))}
                         </div>
@@ -809,138 +955,101 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = ({
                     ))}
                   </div>
 
-                  {/* AI Score Synth */}
-                  <div className="pt-1">
+                  <div>
+                    <label className="font-bold text-white block mb-1 font-mono text-[11px]">
+                      Interviewer Evaluation Notes
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={panelistNotes}
+                      onChange={(e) => setPanelistNotes(e.target.value)}
+                      className="w-full metallic-input rounded-xl p-2.5 text-xs text-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex flex-col gap-2">
                     <button
                       onClick={handleTriggerAiScore}
                       disabled={isAiEvaluating}
-                      className="btn-metallic w-full py-2.5 px-3 rounded-xl text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                      className="btn-metallic w-full py-2 px-3 rounded-xl text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5"
                     >
                       <Sparkles className={`w-3.5 h-3.5 text-emerald-400 ${isAiEvaluating ? 'animate-spin' : ''}`} />
-                      <span>{isAiEvaluating ? 'Calibrating...' : 'AI Score Synthesis'}</span>
+                      <span>{isAiEvaluating ? 'Synthesizing...' : 'AI Scorecard Synthesis'}</span>
                     </button>
-                  </div>
 
-                  {/* Recommendation */}
-                  <div>
-                    <label className="font-bold text-emerald-200 block mb-1.5 font-mono">
-                      Recommendation
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {['Strong Hire', 'Hire', 'Leaning Hire', 'Leaning No Hire'].map((rec) => (
-                        <button
-                          key={rec}
-                          onClick={() => setRecommendation(rec)}
-                          className={`py-2 px-2.5 rounded-lg text-xs font-bold transition-all ${
-                            recommendation === rec
-                              ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.5)]'
-                              : 'btn-metallic text-emerald-400/80'
-                          }`}
-                        >
-                          {rec}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Save button */}
-                  <div className="pt-2">
                     <button
                       onClick={handleSaveScorecard}
-                      className="btn-metallic-emerald w-full py-2.5 rounded-xl text-white font-bold text-xs shadow-[0_0_16px_rgba(16,185,129,0.4)] flex items-center justify-center gap-1.5"
+                      className="btn-metallic-emerald w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white shadow-[0_0_16px_rgba(16,185,129,0.4)] flex items-center justify-center gap-1.5"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>Save Scorecard Evaluation</span>
+                      <span>Save Scorecard &amp; Consensus</span>
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* PARTICIPANTS TAB */}
-              {activeSidebarTab === 'participants' && (
-                <div className="p-4 space-y-3 text-xs">
-                  <div className="font-bold text-emerald-400 text-[11px] uppercase tracking-wider font-mono">
-                    In Call ({attendees.length + 1})
-                  </div>
-                  
-                  {/* Candidate */}
-                  <div className="p-3 rounded-xl bg-[#08120d] border border-emerald-500/30 flex items-center justify-between shadow-sm">
-                    <div className="flex items-center gap-2.5">
-                      <img
-                        src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80"
-                        alt={session.candidateName}
-                        className="w-8 h-8 rounded-full object-cover border border-emerald-500/40"
-                      />
-                      <div>
-                        <div className="font-bold text-white">{session.candidateName}</div>
-                        <div className="text-[10px] text-emerald-400 font-mono">Candidate</div>
-                      </div>
+              {/* 3. Collaborative Code Workspace Tab */}
+              {activeSidebarTab === 'code' && (
+                <div className="h-[520px] -m-2">
+                  <CodeWorkspace />
+                </div>
+              )}
+
+              {/* 4. Connected Participants Tab */}
+              {activeSidebarTab === 'people' && (
+                <div className="space-y-3 text-xs">
+                  <div className="p-3 bg-[#060b08] rounded-xl border border-emerald-950/70 space-y-1">
+                    <span className="text-[10px] text-emerald-500 font-mono uppercase block">WebRTC Session Stats</span>
+                    <div className="flex items-center justify-between text-xs text-emerald-200">
+                      <span>Server Engine</span>
+                      <span className="font-mono text-emerald-400">LiveKit Cloud (Contabo VPS)</span>
                     </div>
-                    <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/40">
-                      Speaking
-                    </span>
+                    <div className="flex items-center justify-between text-xs text-emerald-200">
+                      <span>Connection Status</span>
+                      <span className="font-mono text-emerald-400 capitalize">{connectionState}</span>
+                    </div>
                   </div>
 
-                  {/* Panelists */}
-                  {attendees.map((att) => (
-                    <div key={att.id} className="p-3 rounded-xl bg-[#08120d] border border-white/5 flex items-center justify-between shadow-sm">
+                  <div className="space-y-2">
+                    {/* Local User */}
+                    <div className="p-3 metallic-card rounded-xl border border-emerald-950/80 flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <img
-                          src={att.avatar}
-                          alt={att.name}
-                          className="w-8 h-8 rounded-full object-cover border border-white/10"
-                        />
+                        <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center font-bold text-emerald-400 font-mono">
+                          YO
+                        </div>
                         <div>
-                          <div className="font-bold text-white">{att.name}</div>
-                          <div className="text-[10px] text-emerald-500 font-mono">{att.role}</div>
+                          <p className="font-bold text-white">{localParticipant.name || 'You'} (You)</p>
+                          <p className="text-[10px] text-emerald-500 font-mono">Local Host</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        {att.isMuted ? (
-                          <span className="w-6 h-6 rounded-full bg-rose-600/90 border border-rose-400/40 flex items-center justify-center text-white">
-                            <MicOff className="w-3 h-3" />
-                          </span>
-                        ) : (
-                          <span className="w-6 h-6 rounded-full bg-emerald-600/90 border border-emerald-400/50 flex items-center justify-center text-white shadow-[0_0_6px_#10b981]">
-                            <Mic className="w-3 h-3" />
-                          </span>
-                        )}
-                      </div>
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
                     </div>
-                  ))}
+
+                    {/* Remote Participants */}
+                    {remoteParticipants.map((p) => (
+                      <div key={p.identity} className="p-3 metallic-card rounded-xl border border-emerald-950/80 flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center font-bold text-emerald-400 font-mono">
+                            {p.name?.substring(0, 2).toUpperCase() || 'CA'}
+                          </div>
+                          <div>
+                            <p className="font-bold text-white">{p.name || p.identity.substring(0, 10)}</p>
+                            <p className="text-[10px] text-emerald-500 font-mono">Connected Peer</p>
+                          </div>
+                        </div>
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
+                      </div>
+                    ))}
+
+                    {isAloneInRoom && (
+                      <div className="p-4 rounded-xl border border-dashed border-emerald-950/80 text-center text-emerald-600 font-mono text-xs">
+                        No external peers connected yet.
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
-
-            {/* Chat Input Bar (Glassy Obsidian with Metallic Send Button) */}
-            {activeSidebarTab === 'chat' && (
-              <form onSubmit={handleSendMessage} className="p-3.5 border-t border-emerald-950/80 bg-[#060b08] flex items-center gap-2">
-                <div className="flex-1 flex items-center bg-[#09140f] rounded-xl px-3 py-2 border border-white/10 shadow-inner">
-                  <input
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Type message here..."
-                    className="w-full bg-transparent text-xs text-white placeholder-emerald-700 focus:outline-none font-sans"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => triggerReaction('👍')}
-                    className="text-emerald-500 hover:text-emerald-300 transition-colors ml-1"
-                  >
-                    <Smile className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Metallic Emerald Send Button */}
-                <button
-                  type="submit"
-                  className="w-10 h-10 rounded-xl btn-metallic-emerald flex items-center justify-center text-white transition-all shadow-[0_0_12px_rgba(16,185,129,0.4)] shrink-0"
-                >
-                  <Send className="w-4 h-4 fill-current -ml-0.5" />
-                </button>
-              </form>
-            )}
           </div>
         )}
       </div>
