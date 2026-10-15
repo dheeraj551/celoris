@@ -131,7 +131,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             subprocess.run([
                 "docker", "exec", "celoris-wordpress",
                 "wp", "option", "set", "blog_upload_space", "3072",
-                f"--url=http://{full_domain}",
+                f"--url=https://{full_domain}",
                 "--allow-root"
             ], capture_output=True, text=True)
 
@@ -142,7 +142,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                 admin_user, user_email,
                 f"--user_pass={admin_pass}",
                 "--role=administrator",
-                f"--url=http://{full_domain}",
+                f"--url=https://{full_domain}",
                 "--allow-root"
             ], capture_output=True, text=True)
 
@@ -151,7 +151,7 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
                 "docker", "exec", "celoris-wordpress",
                 "wp", "user", "set-role",
                 admin_user, "administrator",
-                f"--url=http://{full_domain}",
+                f"--url=https://{full_domain}",
                 "--allow-root"
             ], capture_output=True, text=True)
 
@@ -167,7 +167,21 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             subprocess.run([
                 "docker", "exec", "celoris-wordpress",
                 "wp", "theme", "activate", "astra",
-                f"--url=http://{full_domain}",
+                f"--url=https://{full_domain}",
+                "--allow-root"
+            ], capture_output=True, text=True)
+
+            # 5. Ensure HTTPS siteurl and home
+            subprocess.run([
+                "docker", "exec", "celoris-wordpress",
+                "wp", "option", "update", "siteurl", f"https://{full_domain}",
+                f"--url=https://{full_domain}",
+                "--allow-root"
+            ], capture_output=True, text=True)
+            subprocess.run([
+                "docker", "exec", "celoris-wordpress",
+                "wp", "option", "update", "home", f"https://{full_domain}",
+                f"--url=https://{full_domain}",
                 "--allow-root"
             ], capture_output=True, text=True)
 
