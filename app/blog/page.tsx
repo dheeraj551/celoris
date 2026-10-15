@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'free-wordpress-hosting-india-2026',
+      title: "Free WordPress Hosting in India (2026 Guide) — 3 GB NVMe, Free SSL, No Ads & Zero Credit Card",
+      slug: 'free-wordpress-hosting-india-2026',
+      excerpt: "Deploy high-speed WordPress instances on 3 GB NVMe containers with Let's Encrypt TLS 1.3, custom subdomains, pre-installed Astra & Mow Magazine themes, and 60-second provisioning without credit cards or banner ads.",
+      featured_image_url: "/free-wordpress-hosting-india-2026.png",
+      author_name: 'Celoris Cloud & Infrastructure Lab',
+      category: 'Cloud Hosting • WordPress 2026',
+      reading_time: 9,
+      published_at: '2026-10-15T09:00:00Z',
+    },
+    {
       id: 'premiere-pro-ai-efficiency-guide-2026',
       title: "The AI Post-Production Blueprint: Quantifying Efficiency, Workflows, and Enterprise ROI in Adobe Premiere Pro",
       slug: 'premiere-pro-ai-efficiency-guide-2026',

@@ -159,6 +159,7 @@ export default async function HomePage() {
       meta: b.is_featured ? 'Featured' : (b.category?.trim() || 'New on the blog'),
       href: `/blog/${b.slug}`,
     })),
+    { category: 'blog' as const, label: 'Free WordPress Hosting Guide (2026)', meta: '3 GB NVMe, Free SSL & 0 Ads', href: '/blog/free-wordpress-hosting-india-2026' },
     { category: 'cloud' as const, label: 'Celoris Cloud', meta: 'Free 3 GB NVMe WordPress instance in 60s', href: '/cloud' },
     { category: 'cafe' as const, label: 'Live Classrooms', meta: 'join a class with your trainer', href: '/classrooms?tab=cafe' },
     { category: 'chat' as const, label: 'Celoris Chat', meta: 'private chats with your batchmates', href: '/chat' },
