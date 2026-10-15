@@ -146,90 +146,58 @@ export function CelorisCloudFeature() {
 
           </div>
 
-          {/* Right Column: Interactive Live Pod Status Terminal & Card Preview */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl bg-[#090b10] border border-white/[0.12] p-5 shadow-2xl space-y-4">
+          {/* Right Column: Live Mascot Deployment Animation Video */}
+          <div className="lg:col-span-5 flex flex-col items-center">
+            <div className="relative w-full max-w-[340px] sm:max-w-[360px] rounded-2xl sm:rounded-3xl p-1 bg-gradient-to-b from-emerald-500/35 via-white/10 to-transparent shadow-[0_0_60px_rgba(16,185,129,0.22)] border border-emerald-500/30 group">
               
-              {/* Window Header */}
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-                  <span className="ml-2 text-xs font-mono text-neutral-400">asia-south1 (mumbai)</span>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                  Latency: 14ms
-                </span>
-              </div>
-
-              {/* Live Terminal Log Mock */}
-              <div className="p-3 rounded-xl bg-black/60 border border-white/5 font-mono text-xs space-y-1.5 text-neutral-300">
-                <div className="flex items-center gap-2 text-neutral-400 text-[11px]">
-                  <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>celoris-cloud-daemon ~ provision</span>
-                </div>
-                <div className="text-emerald-400 font-semibold">
-                  ✓ [0.2s] NVMe Pod Allocated: {cleanSub}.celoris.in
-                </div>
-                <div className="text-neutral-400 text-[11px]">
-                  ✓ [0.8s] MariaDB Container Attached (3072 MB Quota)
-                </div>
-                <div className="text-neutral-400 text-[11px]">
-                  ✓ [1.2s] Let's Encrypt TLS 1.3 Certificate Issued
-                </div>
-                <div className="text-cyan-300 text-[11px]">
-                  ✓ [1.8s] Astra 4.14 + Mow Magazine Activated
-                </div>
-                <div className="text-emerald-300 font-bold text-[11px] pt-1">
-                  ● HTTP 200 OK · Site Online at https://{cleanSub}.celoris.in
-                </div>
-              </div>
-
-              {/* Real Subsite Preview Card */}
-              <div className="p-3.5 rounded-xl bg-gradient-to-br from-emerald-950/40 via-[#0d1418] to-slate-900 border border-emerald-500/30 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-md bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
-                      <Globe className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">Live Instance Status</div>
-                      <div className="text-[10px] text-emerald-300 font-mono">https://{cleanSub}.celoris.in</div>
-                    </div>
+              {/* Outer Shell */}
+              <div className="relative rounded-[20px] sm:rounded-[24px] bg-[#07090d] overflow-hidden">
+                
+                {/* Floating Top Status Badge */}
+                <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-[10px] font-mono text-emerald-300 shadow-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Live 60s Deployment</span>
                   </div>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/10 text-xs font-mono">
-                  <div>
-                    <span className="text-[10px] text-neutral-400 block">Storage</span>
-                    <span className="text-emerald-300 font-bold">3.0 GB NVMe</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-neutral-400 block">CMS Engine</span>
-                    <span className="text-white font-bold">WordPress 6.7</span>
+                  <div className="px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[9px] font-mono text-neutral-400">
+                    asia-south1
                   </div>
                 </div>
-              </div>
 
-              {/* View Full Cloud Page Link */}
-              <div className="pt-1 flex items-center justify-between text-xs">
-                <Link
-                  href="/cloud"
-                  className="text-neutral-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1 cursor-pointer font-medium"
-                >
-                  <span>Explore All Plans &amp; Custom Domains</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-                <Link
-                  href={`/cloud?subdomain=${encodeURIComponent(cleanSub)}`}
-                  className="text-xs font-bold text-emerald-400 hover:underline cursor-pointer"
-                >
-                  Launch Now →
-                </Link>
-              </div>
+                {/* Looping Mascot Video */}
+                <div className="relative aspect-[9/16] w-full bg-black overflow-hidden flex items-center justify-center">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    poster="/videos/celoris_cloud_poster.jpg"
+                    className="w-full h-full object-cover block"
+                  >
+                    <source src="/videos/celoris_cloud_web_1080x1920.mp4" type="video/mp4" media="(min-width: 640px)" />
+                    <source src="/videos/celoris_cloud_web_720x1280.mp4" type="video/mp4" />
+                  </video>
+                </div>
 
+                {/* Bottom Quick Action Bar */}
+                <div className="px-4 py-3 bg-[#0a0d14] border-t border-white/[0.08] flex items-center justify-between text-xs">
+                  <Link
+                    href="/cloud"
+                    className="text-neutral-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1 cursor-pointer font-medium text-[11px]"
+                  >
+                    <span>Explore All Plans</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                  <Link
+                    href={`/cloud?subdomain=${encodeURIComponent(cleanSub)}`}
+                    className="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Launch Now</span>
+                    <span>→</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
 
