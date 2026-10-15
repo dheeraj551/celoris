@@ -88,7 +88,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
 
                 {/* Center: Desktop Navigation Links & Dropdowns */}
                 <nav className="hidden lg:flex items-center gap-1.5">
-                    {/* Celoris Cloud & WordPress Hosting Pill */}
+                    {/* Celoris Cloud Nav Pill */}
                     <Link
                         href="/cloud"
                         className={cn(
@@ -97,7 +97,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                 ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
                                 : "text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
                         )}
-                        title="Celoris Cloud — High Speed WordPress Hosting"
+                        title="Celoris Cloud — High Speed Hosting"
                     >
                         <img
                             src="/images/celoris-cloud-logo.png"
@@ -105,14 +105,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                             className="w-4 h-4 rounded-md object-contain shadow-[0_0_8px_rgba(16,185,129,0.5)] group-hover:scale-110 transition-transform shrink-0"
                         />
                         <span>Cloud</span>
-                        <span
-                            className="w-4 h-4 rounded-full bg-white p-[1.5px] inline-flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform"
-                            title="WordPress"
-                        >
-                            <svg role="img" viewBox="0 0 24 24" fill="#0073aa" className="w-full h-full">
-                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zM3.563 12c0-1.077.215-2.11.594-3.068l4.42 12.13C6.12 19.998 3.563 16.29 3.563 12zm8.683 9.475l-3.21-9.325 3.28-9.535c2.723.23 4.908 2.062 5.673 4.545l-4.14 11.395c-.521.155-1.07.247-1.603.32zm5.727-2.632l-3.957-10.875c.783-1.895 1.134-3.518 1.134-4.838 3.03 2.15 5.021 5.69 5.021 9.718 0 2.045-.537 3.961-1.474 5.594l-.724.401zM7.71 10.74l3.125 9.04-3.567-9.837c-.156-.47-.27-.962-.338-1.468l.78 2.265z" />
-                            </svg>
-                        </span>
                     </Link>
 
                     {/* Creative Studios Dropdown */}
@@ -675,24 +667,14 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         <Link
                                             href="/cloud"
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:text-white transition-colors"
+                                            className="flex items-center gap-3 p-2.5 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:text-white transition-colors"
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <img
-                                                    src="/images/celoris-cloud-logo.png"
-                                                    alt="Celoris Cloud"
-                                                    className="w-5 h-5 rounded-md object-contain shadow-sm shrink-0"
-                                                />
-                                                <span className="text-sm font-semibold">Celoris Cloud</span>
-                                            </div>
-                                            <span
-                                                className="w-5 h-5 rounded-full bg-white p-[1.5px] inline-flex items-center justify-center shrink-0 shadow-sm"
-                                                title="WordPress"
-                                            >
-                                                <svg role="img" viewBox="0 0 24 24" fill="#0073aa" className="w-full h-full">
-                                                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zM3.563 12c0-1.077.215-2.11.594-3.068l4.42 12.13C6.12 19.998 3.563 16.29 3.563 12zm8.683 9.475l-3.21-9.325 3.28-9.535c2.723.23 4.908 2.062 5.673 4.545l-4.14 11.395c-.521.155-1.07.247-1.603.32zm5.727-2.632l-3.957-10.875c.783-1.895 1.134-3.518 1.134-4.838 3.03 2.15 5.021 5.69 5.021 9.718 0 2.045-.537 3.961-1.474 5.594l-.724.401zM7.71 10.74l3.125 9.04-3.567-9.837c-.156-.47-.27-.962-.338-1.468l.78 2.265z" />
-                                                </svg>
-                                            </span>
+                                            <img
+                                                src="/images/celoris-cloud-logo.png"
+                                                alt="Celoris Cloud"
+                                                className="w-5 h-5 rounded-md object-contain shadow-sm shrink-0"
+                                            />
+                                            <span className="text-sm font-semibold">Celoris Cloud</span>
                                         </Link>
                                         <Link
                                             href="/pricing"
