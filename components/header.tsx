@@ -43,6 +43,7 @@ export default function Header() {
     pathname?.startsWith("/free-video-editor") ||
     pathname?.startsWith("/celoris-3d") ||
     pathname?.startsWith("/inbox") ||
+    pathname?.startsWith("/interviews") ||
     pathname === "/login" ||
     pathname === "/register";
 

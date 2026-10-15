@@ -79,7 +79,8 @@ export default function Footer() {
     pathname?.startsWith("/marketing-studio") ||
     pathname?.startsWith("/motion-swap") ||
     pathname?.startsWith("/celo-ai") ||
-    pathname?.startsWith("/cloud")
+    pathname?.startsWith("/cloud") ||
+    pathname?.startsWith("/interviews")
 
   if (isExcludedPage) {
     return null
