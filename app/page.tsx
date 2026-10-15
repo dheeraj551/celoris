@@ -159,6 +159,7 @@ export default async function HomePage() {
       meta: b.is_featured ? 'Featured' : (b.category?.trim() || 'New on the blog'),
       href: `/blog/${b.slug}`,
     })),
+    { category: 'cloud' as const, label: 'Celoris Cloud', meta: 'Free 3 GB NVMe WordPress instance in 60s', href: '/cloud' },
     { category: 'cafe' as const, label: 'Live Classrooms', meta: 'join a class with your trainer', href: '/classrooms?tab=cafe' },
     { category: 'chat' as const, label: 'Celoris Chat', meta: 'private chats with your batchmates', href: '/chat' },
     { category: 'apps' as const, label: 'PolyVault', meta: '3D model & asset vault', href: '/polyvault' },

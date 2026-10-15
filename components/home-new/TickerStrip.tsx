@@ -1,16 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { BookOpen, Briefcase, GraduationCap, MessagesSquare, Sparkles, Newspaper, type LucideIcon } from "lucide-react"
+import { BookOpen, Briefcase, GraduationCap, MessagesSquare, Sparkles, Newspaper, Cloud, type LucideIcon } from "lucide-react"
 
 export type TickerItem = {
-  category: "courses" | "jobs" | "cafe" | "chat" | "apps" | "blog"
+  category: "courses" | "jobs" | "cafe" | "chat" | "apps" | "blog" | "cloud"
   label: string
   meta?: string
   href: string
 }
 
 const CATEGORY_META: Record<TickerItem["category"], { tag: string; icon: LucideIcon; className: string }> = {
+  cloud: { tag: "Cloud", icon: Cloud, className: "text-emerald-400 bg-emerald-500/15" },
   courses: { tag: "Courses", icon: BookOpen, className: "text-emerald-400 bg-emerald-500/10" },
   jobs: { tag: "Jobs", icon: Briefcase, className: "text-amber-400 bg-amber-500/10" },
   cafe: { tag: "Classrooms", icon: GraduationCap, className: "text-purple-400 bg-purple-500/10" },

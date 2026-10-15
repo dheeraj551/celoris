@@ -24,6 +24,7 @@ import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 import { VideoStudioFeature } from './VideoStudioFeature';
 import { PhotoLiteFeature } from './PhotoLiteFeature';
 import { PolyVaultFeature } from './PolyVaultFeature';
+import { CelorisCloudFeature } from './CelorisCloudFeature';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { CommandDock } from './CommandDock';
 import { SocialProofCounters } from './SocialProofCounters';
@@ -731,6 +732,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
             <div className="w-full flex flex-col gap-12 items-center mb-24">
                 <div className="w-full">
                     <VideoStudioFeature />
+                </div>
+                <div className="w-full">
+                    <CelorisCloudFeature />
                 </div>
                 <div className="flex flex-col lg:flex-row gap-8 w-full max-w-[1200px] items-stretch justify-center px-4">
                     <div className="flex-1 w-full flex justify-center">

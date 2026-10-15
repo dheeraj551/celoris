@@ -92,7 +92,25 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                 </div>
 
                 {/* Center: Desktop Navigation Links & Dropdowns */}
-                <nav className="hidden lg:flex items-center gap-1">
+                <nav className="hidden lg:flex items-center gap-1.5">
+                    {/* Celoris Cloud — Free WordPress Instances Pill */}
+                    <Link
+                        href="/cloud"
+                        className={cn(
+                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 group relative",
+                            pathname.startsWith('/cloud')
+                                ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                                : "text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                        )}
+                        title="Free 3 GB NVMe WordPress Hosting"
+                    >
+                        <Cloud className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                        <span>Cloud</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/40 text-[9px] font-mono font-bold text-emerald-200 uppercase tracking-wider">
+                            Free WP
+                        </span>
+                    </Link>
+
                     {/* Creative Studios Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -653,10 +671,15 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         <Link
                                             href="/cloud"
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
+                                            className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:text-white transition-colors"
                                         >
-                                            <Cloud className="w-4 h-4 text-emerald-400" />
-                                            <span className="text-sm font-medium">Celoris Cloud</span>
+                                            <div className="flex items-center gap-3">
+                                                <Cloud className="w-4 h-4 text-emerald-400" />
+                                                <span className="text-sm font-semibold">Celoris Cloud</span>
+                                            </div>
+                                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/40">
+                                                Free WP
+                                            </span>
                                         </Link>
                                         <Link
                                             href="/pricing"
