@@ -28,7 +28,6 @@ import {
   Users, 
   Send, 
   Smile, 
-  MoreVertical, 
   LayoutGrid, 
   X, 
   Sparkles, 
@@ -36,17 +35,14 @@ import {
   Check, 
   Copy,
   Radio,
-  FileCheck,
   Code,
-  HelpCircle,
   AlertCircle,
   RefreshCw,
-  ExternalLink,
-  ChevronRight
+  SwitchCamera,
+  ChevronUp
 } from 'lucide-react';
 import { InterviewSession, RubricCategory, ScorecardEvaluation, InterviewQuestion } from '../types';
 import { CodeWorkspace } from './CodeWorkspace';
-import { QuestionBank } from './QuestionBank';
 import { UserRole } from '../Header';
 
 interface VideoInterviewRoomProps {
@@ -62,7 +58,6 @@ interface VideoInterviewRoomProps {
 interface ChatMessage {
   id: string;
   sender: string;
-  avatar?: string;
   text: string;
   timestamp: string;
   isMe?: boolean;
@@ -95,14 +90,14 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = (props) => 
 
       const data = await res.json();
       if (!res.ok || data.error) {
-        throw new Error(data.error || 'Failed to acquire LiveKit token');
+        throw new Error(data.error || 'Failed to initialize session');
       }
 
       setToken(data.token);
       if (data.serverUrl) setServerUrl(data.serverUrl);
     } catch (err: any) {
       console.error('[VideoInterviewRoom] token error:', err);
-      setTokenError(err?.message || 'Error connecting to token service');
+      setTokenError(err?.message || 'Error connecting to video session');
     } finally {
       setIsLoadingToken(false);
     }
@@ -112,42 +107,44 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = (props) => 
     fetchToken();
   }, [session.meetingRoomId, userRole]);
 
-  // Loading Screen
+  // Clean Enterprise Loading Screen (Zero Technical Jargon)
   if (isLoadingToken) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#030705] p-6 text-slate-200 select-none relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#030705] p-4 sm:p-6 text-slate-200 select-none relative overflow-hidden h-[100dvh]">
         <div className="w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none animate-aurora" />
-        <div className="p-8 rounded-3xl bg-gradient-to-b from-[#0e1712] via-[#070e0a] to-[#040806] border border-emerald-500/30 text-center max-w-md shadow-2xl space-y-4 z-10 relative">
+        <div className="p-7 sm:p-8 rounded-3xl bg-gradient-to-b from-[#0e1712] via-[#070e0a] to-[#040806] border border-emerald-500/30 text-center max-w-sm sm:max-w-md shadow-2xl space-y-4 z-10 relative mx-4">
           <div className="w-14 h-14 rounded-2xl btn-metallic flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_16px_rgba(16,185,129,0.3)] animate-pulse">
             <Radio className="w-7 h-7 text-emerald-400 drop-shadow-[0_0_8px_#10b981]" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white tracking-wide">Connecting to LiveKit WebRTC</h3>
-            <p className="text-xs text-emerald-400 font-mono mt-1">wss://livekit.celoris.in</p>
-            <p className="text-xs text-emerald-300/70 mt-2 font-mono">
-              Establishing real-time encrypted stream for Room #{session.meetingRoomId}
+            <h3 className="text-lg font-bold text-white tracking-wide">Joining Interview Room</h3>
+            <p className="text-xs text-emerald-400 font-mono mt-1">Room #{session.meetingRoomId}</p>
+            <p className="text-xs text-emerald-300/80 mt-2 font-sans leading-relaxed">
+              Establishing confidential, encrypted high-definition audio &amp; video session...
             </p>
           </div>
-          <div className="flex items-center justify-center gap-1.5 pt-2">
+          <div className="flex items-center justify-center gap-2 pt-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-[11px] font-mono text-emerald-400">Negotiating SDP & ICE Candidates...</span>
+            <span className="text-[11px] font-mono text-emerald-400">Connecting Media Streams...</span>
           </div>
         </div>
       </div>
     );
   }
 
-  // Token Error Screen
+  // Error Screen
   if (tokenError || !token) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#030705] p-6 text-slate-200 select-none relative overflow-hidden">
-        <div className="p-8 rounded-3xl bg-gradient-to-b from-[#180a0a] to-[#070404] border border-rose-500/40 text-center max-w-md shadow-2xl space-y-4 z-10">
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#030705] p-4 sm:p-6 text-slate-200 select-none relative overflow-hidden h-[100dvh]">
+        <div className="p-7 sm:p-8 rounded-3xl bg-gradient-to-b from-[#180a0a] to-[#070404] border border-rose-500/40 text-center max-w-sm sm:max-w-md shadow-2xl space-y-4 z-10 mx-4">
           <div className="w-12 h-12 rounded-2xl bg-rose-950 border border-rose-700/60 flex items-center justify-center text-rose-400 mx-auto">
             <AlertCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">LiveKit Connection Error</h3>
-            <p className="text-xs text-rose-300/80 mt-1 font-mono">{tokenError || 'Unable to join LiveKit room'}</p>
+            <h3 className="text-base font-bold text-white">Unable to Connect to Room</h3>
+            <p className="text-xs text-rose-300/80 mt-1 font-sans leading-relaxed">
+              Could not join video session. Please ensure camera and microphone permissions are allowed.
+            </p>
           </div>
           <div className="pt-2 flex items-center justify-center gap-3">
             <button
@@ -155,13 +152,13 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = (props) => 
               className="btn-metallic flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-emerald-300"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span>Retry Connection</span>
+              <span>Retry</span>
             </button>
             <button
               onClick={props.onEndCall}
               className="btn-metallic px-4 py-2 rounded-xl text-xs font-semibold text-neutral-300"
             >
-              Return to Pipeline
+              Exit
             </button>
           </div>
         </div>
@@ -187,7 +184,7 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = (props) => 
 };
 
 // ==========================================
-// Inner LiveKit Stage with Real WebRTC Hooks
+// Inner LiveKit Stage with Responsive Mobile & Desktop Layout
 // ==========================================
 const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   session,
@@ -201,12 +198,11 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   const room = useRoomContext();
   const { localParticipant, isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled } = useLocalParticipant();
   const remoteParticipants = useRemoteParticipants();
-  const connectionState = useConnectionState();
   const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: false });
 
-  // Sidebar Tabs & Layout
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeSidebarTab, setActiveSidebarTab] = useState<'chat' | 'scorecard' | 'code' | 'questions' | 'people'>('chat');
+  // Sidebar / Mobile Drawer State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeSidebarTab, setActiveSidebarTab] = useState<'chat' | 'scorecard' | 'code' | 'people'>('chat');
   const [pinnedParticipantIdentity, setPinnedParticipantIdentity] = useState<string | null>(null);
 
   // Link copy feedback
@@ -229,15 +225,18 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
     const hrs = Math.floor(totalSecs / 3600);
     const mins = Math.floor((totalSecs % 3600) / 60);
     const secs = totalSecs % 60;
-    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    if (hrs > 0) {
+      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
   // Synchronized Real-Time Chat State
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       id: 'init-1',
-      sender: 'System Bot',
-      text: `LiveKit session established for Room #${session.meetingRoomId}. End-to-end encrypted WebRTC audio & video active.`,
+      sender: 'System',
+      text: `Secure interview session active for #${session.meetingRoomId}. End-to-end encrypted audio & video connected.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isMe: false
     }
@@ -270,7 +269,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
           ]);
         }
       } catch (err) {
-        console.warn('[LiveKit Stage] data channel parse error:', err);
+        console.warn('[LiveKit Stage] data error:', err);
       }
     };
 
@@ -284,7 +283,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
     const newEmoji = {
       id: Date.now() + Math.random(),
       emoji,
-      left: Math.floor(25 + Math.random() * 50)
+      left: Math.floor(20 + Math.random() * 60)
     };
     setFloatingEmojis(prev => [...prev, newEmoji]);
     setTimeout(() => {
@@ -334,7 +333,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   };
 
   const handleCopyInviteLink = () => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://celoris.in';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://celorisdesigns.com';
     const link = `${origin}/interviews/${session.meetingRoomId}`;
     navigator.clipboard.writeText(link);
     setHasCopiedLink(true);
@@ -366,6 +365,24 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
     }
   };
 
+  // Flip Camera on Mobile Phones
+  const handleFlipCamera = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      if (videoDevices.length > 1) {
+        const currentTrack = localCameraTrack?.publication?.track?.mediaStreamTrack;
+        const currentId = currentTrack?.getSettings()?.deviceId;
+        const nextDevice = videoDevices.find(d => d.deviceId !== currentId) || videoDevices[0];
+        if (nextDevice) {
+          await room.switchActiveDevice('videoinput', nextDevice.deviceId);
+        }
+      }
+    } catch (err) {
+      console.warn('Camera flip error:', err);
+    }
+  };
+
   // Scorecard Math & AI Synthesis
   const totalWeight = rubrics.reduce((sum, r) => sum + r.weight, 0);
   const weightedScore = (
@@ -373,7 +390,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   ).toFixed(1);
   const [recommendation, setRecommendation] = useState<string>('Strong Hire');
   const [panelistNotes, setPanelistNotes] = useState(
-    'Candidate demonstrated senior-level mastery of distributed systems, token bucket algorithms, and horizontal sharding.'
+    'Candidate demonstrated solid technical clarity, architectural design trade-offs, and production empathy.'
   );
   const [isAiEvaluating, setIsAiEvaluating] = useState(false);
 
@@ -397,11 +414,11 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
       interviewId: session.id,
       candidateId: session.candidateId,
       interviewerName: localParticipant.name || 'Lead Interviewer',
-      interviewerRole: 'Bar Raiser & Lead Architect',
+      interviewerRole: 'Lead Technical Evaluator',
       submittedAt: new Date().toISOString(),
       overallScore: parseFloat(weightedScore),
       recommendation: recommendation as any,
-      executiveSummary: `${session.candidateName} evaluated with score ${weightedScore}/5.0 during ${session.roundType} interview. Clean production instincts and architectural empathy.`,
+      executiveSummary: `${session.candidateName} evaluated with score ${weightedScore}/5.0 during ${session.roundType} interview. Clear production instincts and architectural empathy.`,
       strengths: ['Decisive architectural trade-offs', 'Clean failure isolation semantics'],
       concerns: [],
       rubricBreakdown: rubrics,
@@ -421,7 +438,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   // 1. If screen share is active, show screen share.
   // 2. If user pinned a participant, show pinned track.
   // 3. If there is a remote participant with camera, show remote participant.
-  // 4. Otherwise, show local camera preview (so interviewer/candidate sees their own high-def camera).
+  // 4. Otherwise, show local camera preview (so user sees their own camera).
   let primaryTrack: any = screenTracks[0] || null;
   if (!primaryTrack && pinnedParticipantIdentity) {
     primaryTrack = cameraTracks.find(t => t.participant.identity === pinnedParticipantIdentity) || null;
@@ -435,69 +452,244 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
 
   const isAloneInRoom = remoteParticipants.length === 0;
 
-  return (
-    <div className="flex-1 flex items-center justify-center bg-[#030705] p-2 sm:p-4 md:p-6 overflow-hidden select-none relative">
-      {/* Background Ambient Emerald Aurora Glow */}
-      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none animate-aurora" />
-      <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-emerald-900/10 rounded-full blur-[160px] pointer-events-none animate-aurora" style={{ animationDelay: '-5s' }} />
-
-      {/* Main Glassy Metallic Window Chassis */}
-      <div className="w-full max-w-7xl h-[calc(100vh-5rem)] max-h-[880px] rounded-[24px] shadow-[0_24px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(16,185,129,0.18)] flex overflow-hidden border border-emerald-950/70 border-t-white/20 bg-gradient-to-b from-[#0e1712] via-[#070e0a] to-[#040806] relative z-10">
-        
-        {/* Left Side: Video Canvas & Bottom Call Controls */}
-        <div className="flex-1 flex flex-col min-w-0 bg-[#060a08]/90">
-          
-          {/* Top Window Bar: Black & Green Metallic Glassy Header */}
-          <div className="h-14 px-6 flex items-center justify-between border-b border-emerald-950/60 bg-[#060a08]/90 backdrop-blur-md select-none shadow-[0_1px_12px_rgba(0,0,0,0.8)]">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center text-emerald-400 font-semibold shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                <VideoIcon className="w-4 h-4 text-emerald-400 drop-shadow-[0_0_6px_#10b981]" />
+  // Workspace Content (Shared between desktop dock and mobile bottom drawer)
+  const renderWorkspaceContent = () => (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* 1. Real-Time Chat Tab */}
+      {activeSidebarTab === 'chat' && (
+        <div className="h-full flex flex-col justify-between space-y-3 min-h-[300px]">
+          <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+            {chatMessages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`p-3 rounded-2xl text-xs leading-relaxed max-w-[85%] ${
+                  msg.isMe
+                    ? 'ml-auto btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.25)]'
+                    : 'bg-[#09150f] text-emerald-100 border border-emerald-950/80 shadow-inner'
+                }`}
+              >
+                <div className="flex items-center justify-between text-[10px] mb-1 opacity-80 font-mono">
+                  <span className="font-bold">{msg.sender}</span>
+                  <span>{msg.timestamp}</span>
+                </div>
+                <p>{msg.text}</p>
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-white tracking-tight leading-none flex items-center gap-2">
+            ))}
+            <div ref={chatBottomRef} />
+          </div>
+
+          <form onSubmit={handleSendMessage} className="pt-2 border-t border-emerald-950/70 flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Send message to room..."
+              className="flex-1 metallic-input rounded-xl px-3 py-2 text-xs text-white placeholder-emerald-800 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="btn-metallic-emerald px-3.5 py-2 rounded-xl text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]"
+            >
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* 2. Scorecard & Rubrics Tab */}
+      {activeSidebarTab === 'scorecard' && (
+        <div className="space-y-4 text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-emerald-950/70">
+            <span className="font-bold text-white uppercase tracking-wider text-[11px] font-mono">
+              Continuous Rubric Math
+            </span>
+            <span className="font-mono font-bold text-xs text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/30">
+              ★ {weightedScore} / 5.0
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {rubrics.map((r) => (
+              <div key={r.id} className="p-3 bg-[#060b08] rounded-xl border border-emerald-950/70 space-y-1.5 shadow-inner">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white">{r.name}</span>
+                  <span className="font-mono text-emerald-400 font-bold">{r.score} / 5</span>
+                </div>
+                <p className="text-[10px] text-emerald-400/70 leading-tight">{r.description}</p>
+                <div className="flex gap-1.5 pt-1">
+                  {[1, 2, 3, 4, 5].map((scoreVal) => (
+                    <button
+                      key={scoreVal}
+                      onClick={() => handleScoreChange(r.id, scoreVal)}
+                      className={`flex-1 py-1 rounded-md font-mono text-[11px] font-bold transition-all ${
+                        r.score === scoreVal
+                          ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.4)]'
+                          : 'bg-[#0a140f] text-emerald-500 hover:text-white'
+                      }`}
+                    >
+                      {scoreVal}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="font-bold text-white block mb-1 font-mono text-[11px]">
+              Evaluation Notes
+            </label>
+            <textarea
+              rows={3}
+              value={panelistNotes}
+              onChange={(e) => setPanelistNotes(e.target.value)}
+              className="w-full metallic-input rounded-xl p-2.5 text-xs text-white focus:outline-none"
+            />
+          </div>
+
+          <div className="pt-2 flex flex-col gap-2">
+            <button
+              onClick={handleTriggerAiScore}
+              disabled={isAiEvaluating}
+              className="btn-metallic w-full py-2 px-3 rounded-xl text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5"
+            >
+              <Sparkles className={`w-3.5 h-3.5 text-emerald-400 ${isAiEvaluating ? 'animate-spin' : ''}`} />
+              <span>{isAiEvaluating ? 'Synthesizing...' : 'AI Scorecard Synthesis'}</span>
+            </button>
+
+            <button
+              onClick={handleSaveScorecard}
+              className="btn-metallic-emerald w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white shadow-[0_0_16px_rgba(16,185,129,0.4)] flex items-center justify-center gap-1.5"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Save Scorecard</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Collaborative Code Workspace Tab */}
+      {activeSidebarTab === 'code' && (
+        <div className="h-[480px] -m-2">
+          <CodeWorkspace />
+        </div>
+      )}
+
+      {/* 4. Connected Participants Tab */}
+      {activeSidebarTab === 'people' && (
+        <div className="space-y-3 text-xs">
+          <div className="p-3 bg-[#060b08] rounded-xl border border-emerald-950/70 space-y-1">
+            <span className="text-[10px] text-emerald-500 font-mono uppercase block">Session Infrastructure</span>
+            <div className="flex items-center justify-between text-xs text-emerald-200">
+              <span>Network Infrastructure</span>
+              <span className="font-mono text-emerald-400">Celoris High-Speed Media Mesh</span>
+            </div>
+            <div className="flex items-center justify-between text-xs text-emerald-200">
+              <span>Session Security</span>
+              <span className="font-mono text-emerald-400">End-to-End Encrypted</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {/* Local User */}
+            <div className="p-3 metallic-card rounded-xl border border-emerald-950/80 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center font-bold text-emerald-400 font-mono">
+                  YOU
+                </div>
+                <div>
+                  <p className="font-bold text-white">{localParticipant.name || 'You'} (You)</p>
+                  <p className="text-[10px] text-emerald-500 font-mono">Active Participant</p>
+                </div>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
+            </div>
+
+            {/* Remote Participants */}
+            {remoteParticipants.map((p) => (
+              <div key={p.identity} className="p-3 metallic-card rounded-xl border border-emerald-950/80 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center font-bold text-emerald-400 font-mono">
+                    {p.name?.substring(0, 2).toUpperCase() || 'CA'}
+                  </div>
+                  <div>
+                    <p className="font-bold text-white">{p.name || p.identity.substring(0, 10)}</p>
+                    <p className="text-[10px] text-emerald-500 font-mono">Connected Peer</p>
+                  </div>
+                </div>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
+              </div>
+            ))}
+
+            {isAloneInRoom && (
+              <div className="p-4 rounded-xl border border-dashed border-emerald-950/80 text-center text-emerald-600 font-mono text-xs">
+                No external participants connected yet.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="flex-1 flex items-center justify-center bg-[#030705] p-0 md:p-6 h-[100dvh] md:h-auto overflow-hidden select-none relative">
+      {/* Background Ambient Aurora Glow */}
+      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none animate-aurora hidden md:block" />
+      <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-emerald-900/10 rounded-full blur-[160px] pointer-events-none animate-aurora hidden md:block" style={{ animationDelay: '-5s' }} />
+
+      {/* Main Glassy Window Chassis: Full Viewport on Mobile, Floating MacBook Pro Chassis on Desktop */}
+      <div className="w-full md:max-w-7xl h-[100dvh] md:h-[calc(100vh-5rem)] md:max-h-[880px] rounded-none md:rounded-[24px] shadow-none md:shadow-[0_24px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(16,185,129,0.18)] flex flex-col md:flex-row overflow-hidden border-0 md:border md:border-emerald-950/70 md:border-t-white/20 bg-gradient-to-b from-[#0e1712] via-[#070e0a] to-[#040806] relative z-10">
+        
+        {/* Main Video Section & Bottom Controls */}
+        <div className="flex-1 flex flex-col min-w-0 bg-[#060a08] h-full relative">
+          
+          {/* Top Session Bar (Optimized for Mobile & Desktop) */}
+          <div className="h-12 md:h-14 px-3 md:px-6 flex items-center justify-between border-b border-emerald-950/60 bg-[#060a08]/90 backdrop-blur-md select-none shrink-0 z-20">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg btn-metallic flex items-center justify-center text-emerald-400 font-semibold shadow-[0_0_12px_rgba(16,185,129,0.3)] shrink-0">
+                <VideoIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-400 drop-shadow-[0_0_6px_#10b981]" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <h2 className="text-xs md:text-sm font-bold text-white tracking-tight leading-none truncate">
                     <span>{session.candidateName}</span>
-                    <span className="text-emerald-700">·</span>
-                    <span className="text-emerald-300 font-normal">{session.roundType} Interview</span>
+                    <span className="hidden sm:inline text-emerald-700"> · </span>
+                    <span className="hidden sm:inline text-emerald-300 font-normal">{session.roundType}</span>
                   </h2>
-                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
-                    LiveKit Connected
+                  <span className="text-[9px] md:text-[10px] font-mono font-bold uppercase text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30 shrink-0">
+                    Active
                   </span>
                 </div>
-                <p className="text-[10px] text-emerald-500/80 font-mono mt-0.5 flex items-center gap-2">
-                  <span>Room: #{session.meetingRoomId}</span>
-                  <span className="text-emerald-800">·</span>
-                  <span>{1 + remoteParticipants.length} Participant{1 + remoteParticipants.length > 1 ? 's' : ''} in Room</span>
+                <p className="text-[9px] md:text-[10px] text-emerald-500/80 font-mono mt-0.5 truncate">
+                  Room #{session.meetingRoomId} · {1 + remoteParticipants.length} Connected
                 </p>
               </div>
             </div>
 
-            {/* Top Right Controls & Timer */}
-            <div className="flex items-center gap-2.5">
+            {/* Top Right: Timer & Invite Link Button */}
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={handleCopyInviteLink}
-                className="btn-metallic hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold"
+                className="btn-metallic flex items-center gap-1 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-[11px] font-mono font-semibold"
                 title="Copy candidate invite link to clipboard"
               >
-                {hasCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-emerald-400" />}
-                <span>{hasCopiedLink ? 'Copied Link!' : 'Invite Link'}</span>
+                {hasCopiedLink ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-emerald-400" />}
+                <span className="hidden sm:inline">{hasCopiedLink ? 'Copied!' : 'Invite Link'}</span>
               </button>
 
-              <div className="bg-[#0c120f] px-3 py-1 rounded-lg border border-white/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)] text-xs font-mono font-bold text-emerald-300 flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#10b981]"></span>
-                </span>
+              <div className="bg-[#0c120f] px-2.5 py-1 rounded-lg border border-white/10 text-[11px] md:text-xs font-mono font-bold text-emerald-300 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#10b981]"></span>
                 <span>{formatTimer(callDurationSeconds)}</span>
               </div>
             </div>
           </div>
 
-          {/* Video Main Stage Area */}
-          <div className="flex-1 p-4 relative min-h-0 flex gap-3">
+          {/* Video Canvas Stage */}
+          <div className="flex-1 p-2 md:p-4 relative min-h-0 flex flex-col md:flex-row gap-2 md:gap-3 overflow-hidden">
             
-            {/* Primary Dominant Video Feed */}
-            <div className="flex-1 relative rounded-2xl overflow-hidden bg-[#040806] border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.8)] flex items-center justify-center">
+            {/* Primary Dominant Video Frame */}
+            <div className="flex-1 relative rounded-xl md:rounded-2xl overflow-hidden bg-[#040806] border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.8)] flex items-center justify-center min-h-0 w-full">
               
               {primaryTrack && isTrackReference(primaryTrack) && primaryTrack.publication && !primaryTrack.publication.isMuted ? (
                 <VideoTrack
@@ -505,9 +697,9 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                /* Fallback if camera is turned off */
+                /* Fallback when camera is turned off */
                 <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
-                  <div className="w-24 h-24 rounded-full bg-[#0a140f] border-2 border-emerald-500/40 flex items-center justify-center text-3xl font-bold text-emerald-300 shadow-[0_0_24px_rgba(16,185,129,0.3)]">
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#0a140f] border-2 border-emerald-500/40 flex items-center justify-center text-2xl md:text-3xl font-bold text-emerald-300 shadow-[0_0_24px_rgba(16,185,129,0.3)]">
                     {primaryTrack?.participant.name?.substring(0, 2).toUpperCase() || 'CA'}
                   </div>
                   <p className="text-sm font-bold text-white">
@@ -520,12 +712,12 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
               {/* Waiting Overlay when alone in room */}
               {isAloneInRoom && (
                 <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none z-10 p-4">
-                  <div className="p-5 rounded-2xl bg-[#07120c]/90 border border-emerald-500/40 text-center max-w-sm pointer-events-auto space-y-3 shadow-2xl">
-                    <div className="w-12 h-12 rounded-xl btn-metallic flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                      <Radio className="w-6 h-6 animate-pulse text-emerald-400" />
+                  <div className="p-5 md:p-6 rounded-2xl bg-[#07120c]/90 border border-emerald-500/40 text-center max-w-sm pointer-events-auto space-y-3 shadow-2xl">
+                    <div className="w-11 h-11 rounded-xl btn-metallic flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                      <Radio className="w-5 h-5 animate-pulse text-emerald-400" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-white">Your Camera is Live on WebRTC</h3>
+                      <h3 className="font-bold text-sm text-white">Your Camera is Active</h3>
                       <p className="text-xs text-emerald-300/80 mt-1 font-mono">
                         Waiting for candidate or panelists to join Room #{session.meetingRoomId}
                       </p>
@@ -535,61 +727,72 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                       className="btn-metallic-emerald w-full py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-[0_0_16px_rgba(16,185,129,0.4)]"
                     >
                       {hasCopiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      <span>{hasCopiedLink ? 'Invite Link Copied to Clipboard!' : 'Copy Candidate Invite Link'}</span>
+                      <span>{hasCopiedLink ? 'Invite Link Copied!' : 'Copy Candidate Invite Link'}</span>
                     </button>
                     <p className="text-[10px] text-emerald-500/70 font-mono">
-                      Open link in another window or device to test two-way WebRTC video &amp; audio.
+                      Send on WhatsApp or open in browser to connect peer video.
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Live WebRTC Badge (Top-Left) */}
-              <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#040806]/85 backdrop-blur-md px-3 py-1.5 rounded-full border border-emerald-500/40 text-xs font-medium text-white shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#10b981]" />
-                <span className="font-mono text-[11px] text-emerald-200">
-                  {primaryTrack?.source === Track.Source.ScreenShare ? 'Screen Share Active' : 'LiveKit WebRTC 1080p'}
+              {/* Live Session Badge (Top-Left) */}
+              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-[#040806]/85 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-500/40 text-[10px] font-medium text-white shadow-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#10b981]" />
+                <span className="font-mono text-emerald-200">
+                  {primaryTrack?.source === Track.Source.ScreenShare ? 'Screen Share Active' : '1080p HD Encrypted'}
                 </span>
               </div>
 
-              {/* Video Actions (Top-Right overlay: Scorecard & Sidebar Toggle) */}
-              <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
-                <button 
-                  onClick={() => {
-                    setIsSidebarOpen(true);
-                    setActiveSidebarTab('scorecard');
-                  }}
-                  className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center transition-all shadow-sm"
-                  title="Evaluation Scorecard"
-                >
-                  <Settings className="w-4 h-4 text-emerald-400" />
-                </button>
-                <button 
-                  onClick={() => setIsSidebarOpen(prev => !prev)}
-                  className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center transition-all shadow-sm"
-                  title="Toggle Fullscreen Video"
-                >
-                  <Maximize2 className="w-4 h-4 text-emerald-400" />
-                </button>
-              </div>
-
-              {/* Speaker Name Tag (Bottom-Left overlay) */}
-              <div className="absolute bottom-4 left-4 z-20 bg-[#040806]/85 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-emerald-500/30 text-xs font-bold text-white shadow-md flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                <span>
+              {/* Speaker Name Tag (Bottom-Left) */}
+              <div className="absolute bottom-3 left-3 z-20 bg-[#040806]/85 backdrop-blur-md px-3 py-1 rounded-lg border border-emerald-500/30 text-[11px] font-bold text-white shadow-md flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
+                <span className="truncate max-w-[140px] sm:max-w-none">
                   {primaryTrack?.participant.isLocal 
                     ? `${localParticipant.name || 'You'} (Local Cam)` 
                     : (primaryTrack?.participant.name || session.candidateName)}
                 </span>
               </div>
 
-              {/* Floating Reaction Bar */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-[#07120c]/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-emerald-500/40 shadow-[0_0_24px_rgba(16,185,129,0.25)] flex items-center gap-2.5">
+              {/* Mobile Picture-in-Picture (PiP) Floating Card (Top-Right on Mobile) */}
+              {!isAloneInRoom && (
+                <div 
+                  onClick={() => setPinnedParticipantIdentity(prev => prev === localParticipant.identity ? null : localParticipant.identity)}
+                  className="md:hidden absolute top-3 right-3 w-20 h-28 sm:w-24 sm:h-32 rounded-xl overflow-hidden border-2 border-emerald-400/80 shadow-2xl z-30 bg-[#060a08] cursor-pointer"
+                  title="Tap to toggle camera focus"
+                >
+                  {localCameraTrack && isTrackReference(localCameraTrack) && isCameraEnabled ? (
+                    <VideoTrack trackRef={localCameraTrack} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-[#07100c] text-emerald-400">
+                      <VideoOff className="w-4 h-4 text-emerald-600 mb-0.5" />
+                      <span className="text-[8px] font-mono">Muted</span>
+                    </div>
+                  )}
+                  <div className="absolute bottom-1 left-1 bg-black/80 px-1 rounded text-[8px] text-white font-mono">
+                    You
+                  </div>
+                  <div className="absolute top-1 right-1">
+                    {isMicrophoneEnabled ? (
+                      <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[8px] shadow-[0_0_6px_#10b981]">
+                        <Mic className="w-2 h-2" />
+                      </span>
+                    ) : (
+                      <span className="w-3.5 h-3.5 rounded-full bg-rose-500 flex items-center justify-center text-white text-[8px]">
+                        <MicOff className="w-2 h-2" />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Floating Reaction Bar (Mobile & Desktop) */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-[#07120c]/90 backdrop-blur-md px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-2xl border border-emerald-500/40 shadow-xl flex items-center gap-1.5 sm:gap-2.5">
                 {['😂', '🎉', '👍', '👎', '👏', '😮', '❤️'].map((emoji) => (
                   <button
                     key={emoji}
                     onClick={() => handleBroadcastReaction(emoji)}
-                    className="hover:scale-125 transition-transform text-base sm:text-lg cursor-pointer px-0.5 active:scale-95"
+                    className="hover:scale-125 transition-transform text-sm sm:text-base cursor-pointer px-0.5 active:scale-95"
                     title={`Broadcast ${emoji}`}
                   >
                     {emoji}
@@ -602,7 +805,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                 {floatingEmojis.map((item) => (
                   <div
                     key={item.id}
-                    className="absolute bottom-16 text-3xl animate-bounce drop-shadow-[0_0_12px_#10b981]"
+                    className="absolute bottom-14 text-2xl sm:text-3xl animate-bounce drop-shadow-[0_0_12px_#10b981]"
                     style={{ left: `${item.left}%`, transition: 'all 2s ease-out' }}
                   >
                     {item.emoji}
@@ -611,8 +814,8 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
               </div>
             </div>
 
-            {/* Vertical Attendee Thumbnail Column (Right Side of Main Video) */}
-            <div className="w-28 sm:w-32 flex flex-col gap-2.5 shrink-0 overflow-y-auto pr-0.5">
+            {/* Desktop Vertical Attendee Thumbnail Column (Hidden on Mobile, PiP used instead) */}
+            <div className="hidden md:flex w-28 sm:w-32 flex-col gap-2.5 shrink-0 overflow-y-auto pr-0.5">
               
               {/* Local Participant Tile (You) */}
               <div
@@ -636,7 +839,6 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                 
-                {/* Mic Status */}
                 <div className="absolute top-1.5 right-1.5 z-10">
                   {isMicrophoneEnabled ? (
                     <span className="w-5 h-5 rounded-full bg-emerald-600/90 border border-emerald-400/50 flex items-center justify-center text-white shadow-[0_0_6px_#10b981]">
@@ -704,52 +906,61 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
             </div>
           </div>
 
-          {/* Bottom Call Control Bar: MacBook Brushed Aluminum Island */}
-          <div className="h-20 px-6 bg-gradient-to-b from-[#121915] via-[#0b100d] to-[#060907] border-t border-emerald-950/70 flex items-center justify-between">
+          {/* Bottom Call Control Bar (Optimized for Mobile Touch & Desktop) */}
+          <div className="h-16 md:h-20 px-3 md:px-6 bg-gradient-to-b from-[#121915] via-[#0b100d] to-[#060907] border-t border-emerald-950/70 flex items-center justify-between shrink-0 z-20">
             
-            {/* Left: Layout Toggle Icon */}
+            {/* Left: Mobile Tools / Desktop Layout Button */}
             <div>
               <button 
                 onClick={() => setIsSidebarOpen(prev => !prev)}
-                className="w-11 h-11 rounded-xl btn-metallic flex items-center justify-center transition-colors shadow-sm"
-                title="Toggle Sidebar Layout"
+                className="w-10 h-10 md:w-11 md:h-11 rounded-xl btn-metallic flex items-center justify-center transition-colors shadow-sm"
+                title="Toggle Workspace & Tools"
               >
                 <LayoutGrid className="w-4 h-4 text-emerald-400" />
               </button>
             </div>
 
-            {/* Center: Main Hardware Call Buttons */}
-            <div className="flex items-center gap-3">
+            {/* Center: Essential Hardware Call Buttons */}
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Mic Toggle Button */}
               <button
                 onClick={toggleMic}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${
                   isMicrophoneEnabled
                     ? 'btn-metallic text-emerald-400'
                     : 'bg-rose-950/80 border border-rose-600/80 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)]'
                 }`}
-                title={isMicrophoneEnabled ? 'Mute Microphone' : 'Unmute Microphone'}
+                title={isMicrophoneEnabled ? 'Mute Mic' : 'Unmute Mic'}
               >
-                {isMicrophoneEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                {isMicrophoneEnabled ? <Mic className="w-4 h-4 md:w-5 md:h-5" /> : <MicOff className="w-4 h-4 md:w-5 md:h-5" />}
               </button>
 
               {/* Camera Toggle Button */}
               <button
                 onClick={toggleCam}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${
                   isCameraEnabled
                     ? 'btn-metallic text-emerald-400'
                     : 'bg-rose-950/80 border border-rose-600/80 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)]'
                 }`}
-                title={isCameraEnabled ? 'Turn Off Camera' : 'Turn On Camera'}
+                title={isCameraEnabled ? 'Turn Off Cam' : 'Turn On Cam'}
               >
-                {isCameraEnabled ? <VideoIcon className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+                {isCameraEnabled ? <VideoIcon className="w-4 h-4 md:w-5 md:h-5" /> : <VideoOff className="w-4 h-4 md:w-5 md:h-5" />}
               </button>
 
-              {/* Screen Share Button */}
+              {/* Flip Camera Button (On Mobile) */}
+              <button
+                onClick={handleFlipCamera}
+                className="md:hidden w-11 h-11 rounded-xl btn-metallic flex items-center justify-center text-emerald-400"
+                title="Switch Front/Back Camera"
+              >
+                <SwitchCamera className="w-4 h-4" />
+              </button>
+
+              {/* Screen Share Button (On Desktop) */}
               <button
                 onClick={toggleScreen}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                className={`hidden md:flex w-12 h-12 rounded-xl items-center justify-center transition-all ${
                   isScreenShareEnabled
                     ? 'btn-metallic-emerald text-white shadow-[0_0_16px_rgba(16,185,129,0.5)]'
                     : 'btn-metallic text-emerald-400'
@@ -765,22 +976,37 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                   try { room.disconnect(); } catch (_) {}
                   onEndCall();
                 }}
-                className="h-12 px-6 rounded-xl bg-gradient-to-b from-rose-600 via-rose-700 to-rose-900 border border-rose-400/40 text-white font-bold text-xs flex items-center gap-2 shadow-[0_4px_16px_rgba(225,29,72,0.4)] hover:brightness-110 active:translate-y-0.5 transition-all"
+                className="h-11 md:h-12 px-3.5 sm:px-5 md:px-6 rounded-xl bg-gradient-to-b from-rose-600 via-rose-700 to-rose-900 border border-rose-400/40 text-white font-bold text-xs flex items-center gap-1.5 md:gap-2 shadow-[0_4px_16px_rgba(225,29,72,0.4)] hover:brightness-110 active:translate-y-0.5 transition-all"
                 title="Leave Video Call"
               >
-                <PhoneOff className="w-4 h-4" />
-                <span>End Call</span>
+                <PhoneOff className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span>Leave</span>
               </button>
             </div>
 
-            {/* Right: Quick Tab Switchers */}
-            <div className="flex items-center gap-2">
+            {/* Right: Quick Tab Buttons */}
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <button
+                onClick={() => {
+                  setIsSidebarOpen(true);
+                  setActiveSidebarTab('chat');
+                }}
+                className={`w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all ${
+                  isSidebarOpen && activeSidebarTab === 'chat'
+                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
+                    : 'btn-metallic text-emerald-400'
+                }`}
+                title="Chat"
+              >
+                <MessageSquare className="w-4 h-4" />
+              </button>
+
               <button
                 onClick={() => {
                   setIsSidebarOpen(true);
                   setActiveSidebarTab('code');
                 }}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                className={`hidden sm:flex w-10 h-10 md:w-11 md:h-11 rounded-xl items-center justify-center transition-all ${
                   isSidebarOpen && activeSidebarTab === 'code'
                     ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
                     : 'btn-metallic text-emerald-400'
@@ -789,28 +1015,13 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
               >
                 <Code className="w-4 h-4" />
               </button>
-
-              <button
-                onClick={() => {
-                  setIsSidebarOpen(true);
-                  setActiveSidebarTab('chat');
-                }}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                  isSidebarOpen && activeSidebarTab === 'chat'
-                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
-                    : 'btn-metallic text-emerald-400'
-                }`}
-                title="Live Chat"
-              >
-                <MessageSquare className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Collapsible Workspace Dock (Chat / Scorecard / Code / People) */}
+        {/* Desktop Docked Sidebar (Hidden on Mobile) */}
         {isSidebarOpen && (
-          <div className="w-80 md:w-96 border-l border-emerald-950/70 bg-[#060b08]/95 flex flex-col justify-between shrink-0 shadow-2xl">
+          <div className="hidden md:flex w-80 lg:w-96 border-l border-emerald-950/70 bg-[#060b08]/95 flex-col justify-between shrink-0 shadow-2xl">
             
             {/* Top Workspace Bar */}
             <div className="p-3.5 border-b border-emerald-950/70 bg-[#08100c]">
@@ -872,183 +1083,77 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
               </div>
             </div>
 
-            {/* Workspace Content Panels */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {renderWorkspaceContent()}
+          </div>
+        )}
+
+        {/* Mobile Slide-Up Bottom Sheet Drawer (Active on Phones when Workspace is Opened) */}
+        {isSidebarOpen && (
+          <div className="md:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col justify-end animate-in fade-in duration-200">
+            <div className="bg-[#070e0a] border-t border-emerald-500/40 rounded-t-3xl max-h-[82vh] h-[82vh] flex flex-col overflow-hidden shadow-2xl">
               
-              {/* 1. Real-Time Chat Tab */}
-              {activeSidebarTab === 'chat' && (
-                <div className="h-full flex flex-col justify-between space-y-3">
-                  <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
-                    {chatMessages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`p-3 rounded-2xl text-xs leading-relaxed max-w-[85%] ${
-                          msg.isMe
-                            ? 'ml-auto btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.25)]'
-                            : 'bg-[#09150f] text-emerald-100 border border-emerald-950/80 shadow-inner'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between text-[10px] mb-1 opacity-80 font-mono">
-                          <span className="font-bold">{msg.sender}</span>
-                          <span>{msg.timestamp}</span>
-                        </div>
-                        <p>{msg.text}</p>
-                      </div>
-                    ))}
-                    <div ref={chatBottomRef} />
-                  </div>
-
-                  <form onSubmit={handleSendMessage} className="pt-2 border-t border-emerald-950/70 flex gap-2">
-                    <input
-                      type="text"
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Send encrypted message to room..."
-                      className="flex-1 metallic-input rounded-xl px-3 py-2 text-xs text-white placeholder-emerald-800 focus:outline-none"
-                    />
-                    <button
-                      type="submit"
-                      className="btn-metallic-emerald px-3.5 py-2 rounded-xl text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]"
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                    </button>
-                  </form>
+              {/* Drawer Handle & Header */}
+              <div className="p-3 border-b border-emerald-950/70 bg-[#08100c]">
+                <div className="w-12 h-1 rounded-full bg-emerald-500/40 mx-auto mb-2" />
+                <div className="flex items-center justify-between pb-2">
+                  <span className="text-xs font-bold text-white flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981]" />
+                    <span>Workspace &amp; Tools</span>
+                  </span>
+                  <button
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="w-7 h-7 rounded-lg btn-metallic flex items-center justify-center text-emerald-400"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-              )}
 
-              {/* 2. Scorecard & Rubrics Tab */}
-              {activeSidebarTab === 'scorecard' && (
-                <div className="space-y-4 text-xs">
-                  <div className="flex items-center justify-between pb-2 border-b border-emerald-950/70">
-                    <span className="font-bold text-white uppercase tracking-wider text-[11px] font-mono">
-                      Continuous Rubric Math
-                    </span>
-                    <span className="font-mono font-bold text-xs text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/30">
-                      ★ {weightedScore} / 5.0
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    {rubrics.map((r) => (
-                      <div key={r.id} className="p-3 bg-[#060b08] rounded-xl border border-emerald-950/70 space-y-1.5 shadow-inner">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-white">{r.name}</span>
-                          <span className="font-mono text-emerald-400 font-bold">{r.score} / 5</span>
-                        </div>
-                        <p className="text-[10px] text-emerald-400/70 leading-tight">{r.description}</p>
-                        <div className="flex gap-1.5 pt-1">
-                          {[1, 2, 3, 4, 5].map((scoreVal) => (
-                            <button
-                              key={scoreVal}
-                              onClick={() => handleScoreChange(r.id, scoreVal)}
-                              className={`flex-1 py-1 rounded-md font-mono text-[11px] font-bold transition-all ${
-                                r.score === scoreVal
-                                  ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                                  : 'bg-[#0a140f] text-emerald-500 hover:text-white'
-                              }`}
-                            >
-                              {scoreVal}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-white block mb-1 font-mono text-[11px]">
-                      Interviewer Evaluation Notes
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={panelistNotes}
-                      onChange={(e) => setPanelistNotes(e.target.value)}
-                      className="w-full metallic-input rounded-xl p-2.5 text-xs text-white focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="pt-2 flex flex-col gap-2">
-                    <button
-                      onClick={handleTriggerAiScore}
-                      disabled={isAiEvaluating}
-                      className="btn-metallic w-full py-2 px-3 rounded-xl text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5"
-                    >
-                      <Sparkles className={`w-3.5 h-3.5 text-emerald-400 ${isAiEvaluating ? 'animate-spin' : ''}`} />
-                      <span>{isAiEvaluating ? 'Synthesizing...' : 'AI Scorecard Synthesis'}</span>
-                    </button>
-
-                    <button
-                      onClick={handleSaveScorecard}
-                      className="btn-metallic-emerald w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white shadow-[0_0_16px_rgba(16,185,129,0.4)] flex items-center justify-center gap-1.5"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save Scorecard &amp; Consensus</span>
-                    </button>
-                  </div>
+                {/* Segmented Tab Switcher */}
+                <div className="flex rounded-lg bg-[#0c120f] p-0.5 text-xs font-medium border border-white/10">
+                  <button
+                    onClick={() => setActiveSidebarTab('chat')}
+                    className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                      activeSidebarTab === 'chat'
+                        ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                        : 'text-emerald-300/70'
+                    }`}
+                  >
+                    Chat
+                  </button>
+                  <button
+                    onClick={() => setActiveSidebarTab('scorecard')}
+                    className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                      activeSidebarTab === 'scorecard'
+                        ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                        : 'text-emerald-300/70'
+                    }`}
+                  >
+                    Scorecard
+                  </button>
+                  <button
+                    onClick={() => setActiveSidebarTab('code')}
+                    className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                      activeSidebarTab === 'code'
+                        ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                        : 'text-emerald-300/70'
+                    }`}
+                  >
+                    Code
+                  </button>
+                  <button
+                    onClick={() => setActiveSidebarTab('people')}
+                    className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                      activeSidebarTab === 'people'
+                        ? 'btn-metallic-emerald text-white shadow-[0_0_8px_rgba(16,185,129,0.3)]'
+                        : 'text-emerald-300/70'
+                    }`}
+                  >
+                    People ({1 + remoteParticipants.length})
+                  </button>
                 </div>
-              )}
+              </div>
 
-              {/* 3. Collaborative Code Workspace Tab */}
-              {activeSidebarTab === 'code' && (
-                <div className="h-[520px] -m-2">
-                  <CodeWorkspace />
-                </div>
-              )}
-
-              {/* 4. Connected Participants Tab */}
-              {activeSidebarTab === 'people' && (
-                <div className="space-y-3 text-xs">
-                  <div className="p-3 bg-[#060b08] rounded-xl border border-emerald-950/70 space-y-1">
-                    <span className="text-[10px] text-emerald-500 font-mono uppercase block">WebRTC Session Stats</span>
-                    <div className="flex items-center justify-between text-xs text-emerald-200">
-                      <span>Server Engine</span>
-                      <span className="font-mono text-emerald-400">LiveKit Cloud (Contabo VPS)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-emerald-200">
-                      <span>Connection Status</span>
-                      <span className="font-mono text-emerald-400 capitalize">{connectionState}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {/* Local User */}
-                    <div className="p-3 metallic-card rounded-xl border border-emerald-950/80 flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center font-bold text-emerald-400 font-mono">
-                          YO
-                        </div>
-                        <div>
-                          <p className="font-bold text-white">{localParticipant.name || 'You'} (You)</p>
-                          <p className="text-[10px] text-emerald-500 font-mono">Local Host</p>
-                        </div>
-                      </div>
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                    </div>
-
-                    {/* Remote Participants */}
-                    {remoteParticipants.map((p) => (
-                      <div key={p.identity} className="p-3 metallic-card rounded-xl border border-emerald-950/80 flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg btn-metallic flex items-center justify-center font-bold text-emerald-400 font-mono">
-                            {p.name?.substring(0, 2).toUpperCase() || 'CA'}
-                          </div>
-                          <div>
-                            <p className="font-bold text-white">{p.name || p.identity.substring(0, 10)}</p>
-                            <p className="text-[10px] text-emerald-500 font-mono">Connected Peer</p>
-                          </div>
-                        </div>
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                      </div>
-                    ))}
-
-                    {isAloneInRoom && (
-                      <div className="p-4 rounded-xl border border-dashed border-emerald-950/80 text-center text-emerald-600 font-mono text-xs">
-                        No external peers connected yet.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              {renderWorkspaceContent()}
             </div>
           </div>
         )}

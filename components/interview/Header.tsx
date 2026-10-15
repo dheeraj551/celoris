@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Celoris <span className="text-emerald-400">VantageHire</span>
               </span>
               <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
-                LiveKit
+                Studio Suite
               </span>
             </div>
             <div className="text-[11px] text-emerald-600 flex items-center gap-1.5 font-mono">

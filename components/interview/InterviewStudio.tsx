@@ -131,22 +131,25 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
         <div className="absolute -bottom-40 -right-40 w-[700px] h-[700px] bg-emerald-900/10 rounded-full blur-[160px] animate-aurora" style={{ animationDelay: '-5s' }} />
       </div>
 
-      <Header
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        userRole={userRole}
-        setUserRole={(newRole) => {
-          setUserRole(newRole);
-          setIsCandidateInVideoCall(false);
-        }}
-        isCallActive={activeSession.status === 'live'}
-        onScheduleNew={() => {
-          setActiveTab('schedule');
-          setIsScheduleModalOpen(true);
-        }}
-        activeCandidateName={activeCandidate?.name}
-        onGoToLanding={() => setShowLandingPage(true)}
-      />
+      {/* Hide header on mobile during active video call for full native screen view */}
+      <div className={activeTab === 'video' ? 'hidden md:block' : 'block'}>
+        <Header
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          userRole={userRole}
+          setUserRole={(newRole) => {
+            setUserRole(newRole);
+            setIsCandidateInVideoCall(false);
+          }}
+          isCallActive={activeSession.status === 'live'}
+          onScheduleNew={() => {
+            setActiveTab('schedule');
+            setIsScheduleModalOpen(true);
+          }}
+          activeCandidateName={activeCandidate?.name}
+          onGoToLanding={() => setShowLandingPage(true)}
+        />
+      </div>
 
       <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         {/* If user switches perspective to Candidate View */}
