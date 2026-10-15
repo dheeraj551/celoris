@@ -5,13 +5,14 @@ import {
   LiveKitRoom, 
   RoomAudioRenderer, 
   VideoTrack, 
+  AudioTrack,
   useTracks, 
   useLocalParticipant, 
-  useRemoteParticipants,
-  useConnectionState,
-  useIsSpeaking,
-  useRoomContext,
-  isTrackReference
+  useRemoteParticipants, 
+  useConnectionState, 
+  useIsSpeaking, 
+  useRoomContext, 
+  isTrackReference 
 } from '@livekit/components-react';
 import { Track, ConnectionState, RoomEvent } from 'livekit-client';
 import { 
@@ -23,6 +24,7 @@ import {
   MonitorOff, 
   PhoneOff, 
   Maximize2, 
+  Minimize2,
   Settings, 
   MessageSquare, 
   Users, 
@@ -34,12 +36,12 @@ import {
   Save, 
   Check, 
   Copy,
-  Radio,
-  Code,
-  AlertCircle,
-  RefreshCw,
-  SwitchCamera,
-  ChevronUp
+  Radio, 
+  Code, 
+  AlertCircle, 
+  RefreshCw, 
+  SwitchCamera, 
+  ChevronUp 
 } from 'lucide-react';
 import { InterviewSession, RubricCategory, ScorecardEvaluation, InterviewQuestion } from '../types';
 import { CodeWorkspace } from './CodeWorkspace';
@@ -75,7 +77,7 @@ export const VideoInterviewRoom: React.FC<VideoInterviewRoomProps> = (props) => 
       setIsLoadingToken(true);
       setTokenError(null);
       const participantName = userRole === 'candidate' 
-        ? session.candidateName 
+        ? (session.candidateName && session.candidateName !== 'Rohan Verma' ? session.candidateName : 'Candidate') 
         : 'Lead Interviewer (Celoris)';
 
       const res = await fetch('/api/livekit/interview-token', {
@@ -199,6 +201,53 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   const { localParticipant, isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled } = useLocalParticipant();
   const remoteParticipants = useRemoteParticipants();
   const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: false });
+  
+  // Audio tracks for Screen Share Audio (System / Tab Sound)
+  const audioTracks = useTracks([Track.Source.Microphone, Track.Source.ScreenShareAudio], { onlySubscribed: false });
+  const remoteScreenAudioTracks = audioTracks.filter(
+    t => !t.participant.isLocal && t.source === Track.Source.ScreenShareAudio
+  );
+
+  // Fullscreen Video Frame Reference & Mobile/Desktop Fullscreen State
+  const videoFrameRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement && !isFullscreen) {
+        if (videoFrameRef.current?.requestFullscreen) {
+          await videoFrameRef.current.requestFullscreen();
+          setIsFullscreen(true);
+        } else if ((videoFrameRef.current as any)?.webkitRequestFullscreen) {
+          await (videoFrameRef.current as any).webkitRequestFullscreen();
+          setIsFullscreen(true);
+        } else {
+          // CSS fallback for mobile browsers
+          setIsFullscreen(true);
+        }
+      } else {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      // Fallback toggle for browsers blocking requestFullscreen
+      setIsFullscreen(prev => !prev);
+    }
+  };
 
   // Sidebar / Mobile Drawer State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -305,7 +354,9 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
     if (e) e.preventDefault();
     if (!chatInput.trim()) return;
 
-    const myName = localParticipant.name || (userRole === 'candidate' ? session.candidateName : 'Interviewer');
+    const myName = localParticipant.name || (userRole === 'candidate' 
+      ? (session.candidateName && session.candidateName !== 'Rohan Verma' ? session.candidateName : 'Candidate') 
+      : 'Interviewer');
     const msg: ChatMessage = {
       id: `msg-${Date.now()}`,
       sender: `${myName} (You)`,
@@ -357,9 +408,16 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
     }
   };
 
+  // Enable Screen Share with Audio (System / Tab sound sharing)
   const toggleScreen = async () => {
     try {
-      await localParticipant.setScreenShareEnabled(!isScreenShareEnabled);
+      const nextState = !isScreenShareEnabled;
+      await localParticipant.setScreenShareEnabled(nextState, {
+        audio: true,
+        selfBrowserSurface: 'include',
+        surfaceSwitching: 'include',
+        systemAudio: 'include',
+      });
     } catch (err) {
       console.error('Failed to toggle screen share:', err);
     }
@@ -408,7 +466,21 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
     }, 600);
   };
 
+  // Dynamic peer names calculation
+  const remotePeerNames = remoteParticipants
+    .map(p => p.name || p.identity)
+    .filter(Boolean);
+
+  const headerTitle = remotePeerNames.length > 0
+    ? remotePeerNames.join(', ')
+    : (userRole === 'candidate' 
+        ? 'Celoris Technical Evaluation' 
+        : (session.candidateName && session.candidateName !== 'Rohan Verma' 
+            ? session.candidateName 
+            : `Interview Room #${session.meetingRoomId}`));
+
   const handleSaveScorecard = () => {
+    const candidateDisplayName = remotePeerNames[0] || (session.candidateName && session.candidateName !== 'Rohan Verma' ? session.candidateName : 'Candidate');
     const sc: ScorecardEvaluation = {
       id: `sc-${Date.now()}`,
       interviewId: session.id,
@@ -418,7 +490,7 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
       submittedAt: new Date().toISOString(),
       overallScore: parseFloat(weightedScore),
       recommendation: recommendation as any,
-      executiveSummary: `${session.candidateName} evaluated with score ${weightedScore}/5.0 during ${session.roundType} interview. Clear production instincts and architectural empathy.`,
+      executiveSummary: `${candidateDisplayName} evaluated with score ${weightedScore}/5.0 during ${session.roundType} interview. Clear production instincts and architectural empathy.`,
       strengths: ['Decisive architectural trade-offs', 'Clean failure isolation semantics'],
       concerns: [],
       rubricBreakdown: rubrics,
@@ -451,6 +523,10 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
   }
 
   const isAloneInRoom = remoteParticipants.length === 0;
+
+  const speakerName = primaryTrack?.participant.isLocal 
+    ? `${localParticipant.name || 'You'} (Your Camera)` 
+    : (primaryTrack?.participant.name || remotePeerNames[0] || 'Remote Participant');
 
   // Workspace Content (Shared between desktop dock and mobile bottom drawer)
   const renderWorkspaceContent = () => (
@@ -653,9 +729,9 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 md:gap-2">
                   <h2 className="text-xs md:text-sm font-bold text-white tracking-tight leading-none truncate">
-                    <span>{session.candidateName}</span>
+                    <span>{headerTitle}</span>
                     <span className="hidden sm:inline text-emerald-700"> · </span>
-                    <span className="hidden sm:inline text-emerald-300 font-normal">{session.roundType}</span>
+                    <span className="hidden sm:inline text-emerald-300 font-normal">{session.roundType || 'Live Session'}</span>
                   </h2>
                   <span className="text-[9px] md:text-[10px] font-mono font-bold uppercase text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30 shrink-0">
                     Active
@@ -689,21 +765,32 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
           <div className="flex-1 p-2 md:p-4 relative min-h-0 flex flex-col md:flex-row gap-2 md:gap-3 overflow-hidden">
             
             {/* Primary Dominant Video Frame */}
-            <div className="flex-1 relative rounded-xl md:rounded-2xl overflow-hidden bg-[#040806] border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.8)] flex items-center justify-center min-h-0 w-full">
+            <div 
+              ref={videoFrameRef}
+              className={`relative overflow-hidden bg-[#040806] border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.8)] flex items-center justify-center transition-all ${
+                isFullscreen
+                  ? 'fixed inset-0 z-50 w-screen h-[100dvh] rounded-none border-0'
+                  : 'flex-1 rounded-xl md:rounded-2xl min-h-0 w-full'
+              }`}
+            >
               
               {primaryTrack && isTrackReference(primaryTrack) && primaryTrack.publication && !primaryTrack.publication.isMuted ? (
                 <VideoTrack
                   trackRef={primaryTrack}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full ${
+                    primaryTrack?.source === Track.Source.ScreenShare
+                      ? 'object-contain bg-black'
+                      : 'object-cover'
+                  }`}
                 />
               ) : (
                 /* Fallback when camera is turned off */
                 <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#0a140f] border-2 border-emerald-500/40 flex items-center justify-center text-2xl md:text-3xl font-bold text-emerald-300 shadow-[0_0_24px_rgba(16,185,129,0.3)]">
-                    {primaryTrack?.participant.name?.substring(0, 2).toUpperCase() || 'CA'}
+                    {speakerName.substring(0, 2).toUpperCase()}
                   </div>
                   <p className="text-sm font-bold text-white">
-                    {primaryTrack?.participant.name || 'Participant'}
+                    {speakerName}
                   </p>
                   <p className="text-xs text-emerald-500 font-mono">Camera is currently paused</p>
                 </div>
@@ -744,21 +831,55 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                 </span>
               </div>
 
+              {/* Top-Right Controls: Fullscreen Toggle */}
+              <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
+                <button
+                  onClick={toggleFullscreen}
+                  className="btn-metallic flex items-center gap-1.5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold text-emerald-300 hover:text-white bg-[#07120c]/90 backdrop-blur-md border border-emerald-500/40 shadow-lg active:scale-95 transition-all cursor-pointer"
+                  title={isFullscreen ? 'Exit Full Screen' : 'View Full Screen'}
+                >
+                  {isFullscreen ? (
+                    <>
+                      <Minimize2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-[10px] md:text-xs font-mono">Exit</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-[10px] md:text-xs font-mono">Full Screen</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Screen Share Tap to Fullscreen Banner (Mobile / Desktop) */}
+              {primaryTrack?.source === Track.Source.ScreenShare && !isFullscreen && (
+                <button
+                  onClick={toggleFullscreen}
+                  className="absolute top-12 left-1/2 -translate-x-1/2 z-20 bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-400/50 text-emerald-200 px-3 py-1 rounded-full text-[11px] font-mono flex items-center gap-1.5 shadow-lg animate-pulse cursor-pointer"
+                >
+                  <Maximize2 className="w-3 h-3 text-emerald-400" />
+                  <span>Screen Shared · Tap for Fullscreen</span>
+                </button>
+              )}
+
               {/* Speaker Name Tag (Bottom-Left) */}
               <div className="absolute bottom-3 left-3 z-20 bg-[#040806]/85 backdrop-blur-md px-3 py-1 rounded-lg border border-emerald-500/30 text-[11px] font-bold text-white shadow-md flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
                 <span className="truncate max-w-[140px] sm:max-w-none">
-                  {primaryTrack?.participant.isLocal 
-                    ? `${localParticipant.name || 'You'} (Local Cam)` 
-                    : (primaryTrack?.participant.name || session.candidateName)}
+                  {speakerName}
                 </span>
               </div>
 
-              {/* Mobile Picture-in-Picture (PiP) Floating Card (Top-Right on Mobile) */}
+              {/* Mobile Picture-in-Picture (PiP) Floating Card */}
               {!isAloneInRoom && (
                 <div 
                   onClick={() => setPinnedParticipantIdentity(prev => prev === localParticipant.identity ? null : localParticipant.identity)}
-                  className="md:hidden absolute top-3 right-3 w-20 h-28 sm:w-24 sm:h-32 rounded-xl overflow-hidden border-2 border-emerald-400/80 shadow-2xl z-30 bg-[#060a08] cursor-pointer"
+                  className={`md:hidden absolute top-12 right-3 rounded-xl overflow-hidden border-2 border-emerald-400/80 shadow-2xl z-30 bg-[#060a08] cursor-pointer transition-all ${
+                    primaryTrack?.source === Track.Source.ScreenShare
+                      ? 'w-16 h-20 sm:w-20 sm:h-28 opacity-85 hover:opacity-100'
+                      : 'w-20 h-28 sm:w-24 sm:h-32'
+                  }`}
                   title="Tap to toggle camera focus"
                 >
                   {localCameraTrack && isTrackReference(localCameraTrack) && isCameraEnabled ? (
@@ -957,17 +1078,30 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                 <SwitchCamera className="w-4 h-4" />
               </button>
 
-              {/* Screen Share Button (On Desktop) */}
+              {/* Fullscreen Toggle Button */}
+              <button
+                onClick={toggleFullscreen}
+                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${
+                  isFullscreen
+                    ? 'btn-metallic-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+                    : 'btn-metallic text-emerald-400'
+                }`}
+                title={isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
+              >
+                {isFullscreen ? <Minimize2 className="w-4 h-4 md:w-5 md:h-5" /> : <Maximize2 className="w-4 h-4 md:w-5 md:h-5" />}
+              </button>
+
+              {/* Screen Share Button */}
               <button
                 onClick={toggleScreen}
-                className={`hidden md:flex w-12 h-12 rounded-xl items-center justify-center transition-all ${
+                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${
                   isScreenShareEnabled
                     ? 'btn-metallic-emerald text-white shadow-[0_0_16px_rgba(16,185,129,0.5)]'
                     : 'btn-metallic text-emerald-400'
                 }`}
-                title="Share Screen"
+                title={isScreenShareEnabled ? 'Stop Sharing' : 'Share Screen & System Audio'}
               >
-                {isScreenShareEnabled ? <MonitorOff className="w-5 h-5" /> : <Monitor className="w-5 h-5" />}
+                {isScreenShareEnabled ? <MonitorOff className="w-4 h-4 md:w-5 md:h-5" /> : <Monitor className="w-4 h-4 md:w-5 md:h-5" />}
               </button>
 
               {/* End Call Button */}
@@ -982,6 +1116,13 @@ const LiveKitInterviewStage: React.FC<VideoInterviewRoomProps> = ({
                 <PhoneOff className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 <span>Leave</span>
               </button>
+            </div>
+
+            {/* Explicit Remote Screen Audio Renderer (System & Tab Sound) */}
+            <div className="hidden" aria-hidden="true">
+              {remoteScreenAudioTracks.map(track => isTrackReference(track) && (
+                <AudioTrack key={track.publication.trackSid} trackRef={track} />
+              ))}
             </div>
 
             {/* Right: Quick Tab Buttons */}

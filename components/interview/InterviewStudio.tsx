@@ -34,15 +34,35 @@ export function InterviewStudio({ initialRoomId, defaultView = 'landing' }: Inte
   const [questions, setQuestions] = useState(INITIAL_INTERVIEW_QUESTIONS);
   
   // Current active video interview session
-  const defaultSession = (initialRoomId 
-    ? sessions.find(s => s.meetingRoomId.toLowerCase() === initialRoomId.toLowerCase() || s.id === initialRoomId)
+  const defaultSession: InterviewSession = (initialRoomId 
+    ? (sessions.find(s => s.meetingRoomId.toLowerCase() === initialRoomId.toLowerCase() || s.id === initialRoomId) || {
+        id: `sess-${initialRoomId}`,
+        candidateId: `cand-${initialRoomId}`,
+        candidateName: '',
+        candidateEmail: '',
+        role: 'Senior Cloud & Full-Stack Engineer',
+        targetLevel: 'L5 Senior',
+        roundType: 'System Architecture' as const,
+        scheduledDate: new Date().toISOString().split('T')[0],
+        startTime: '14:00',
+        durationMinutes: 45,
+        timezone: 'Asia/Kolkata (IST)',
+        status: 'live' as const,
+        panelists: [
+          { name: 'Lead Interviewer (Celoris)', role: 'Lead Technical Evaluator', isLead: true }
+        ],
+        meetingRoomId: initialRoomId,
+        passcode: '9024'
+      })
     : null) || sessions[0];
 
   const [activeSessionId, setActiveSessionId] = useState<string>(defaultSession.id);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isCandidateInVideoCall, setIsCandidateInVideoCall] = useState(false);
 
-  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
+  const activeSession: InterviewSession = (initialRoomId && defaultSession.id === `sess-${initialRoomId}`)
+    ? defaultSession
+    : (sessions.find(s => s.id === activeSessionId) || sessions[0]);
   const activeCandidate = candidates.find(c => c.id === activeSession.candidateId) || candidates[0];
 
   // Join or switch to a session

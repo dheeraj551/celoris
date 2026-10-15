@@ -173,8 +173,8 @@ export const INITIAL_INTERVIEW_SESSIONS: InterviewSession[] = [
   {
     id: 'int-live-01',
     candidateId: 'cand-01',
-    candidateName: 'Rohan Verma',
-    candidateEmail: 'rohan.verma@celoris.in',
+    candidateName: 'Aryan Verma',
+    candidateEmail: 'aryan.verma@celoris.in',
     role: 'Senior Full-Stack Next.js & Cloud Architect',
     targetLevel: 'L5 Senior',
     roundType: 'System Architecture',
@@ -190,10 +190,10 @@ export const INITIAL_INTERVIEW_SESSIONS: InterviewSession[] = [
     meetingRoomId: 'CEL-INT-9024',
     passcode: '9024',
     transcriptSnippets: [
-      { id: 't1', timestamp: '00:05', speaker: 'Dheeraj (Lead)', text: 'Welcome Rohan. Today we want to focus on designing our multi-tenant cloud ingress tier for Celoris Cloud pods.' },
-      { id: 't2', timestamp: '00:42', speaker: 'Rohan Verma', text: 'Thank you Dheeraj. Before jumping into diagrams: are we aiming for sub-second DNS/TLS issuance or can we batch certificate issuance in a background queue?' },
+      { id: 't1', timestamp: '00:05', speaker: 'Dheeraj (Lead)', text: 'Welcome Aryan. Today we want to focus on designing our multi-tenant cloud ingress tier for Celoris Cloud pods.' },
+      { id: 't2', timestamp: '00:42', speaker: 'Aryan Verma', text: 'Thank you Dheeraj. Before jumping into diagrams: are we aiming for sub-second DNS/TLS issuance or can we batch certificate issuance in a background queue?' },
       { id: 't3', timestamp: '01:15', speaker: 'Dheeraj (Lead)', text: 'We promise user sites live in 60 seconds, so Let\'s Encrypt wildcard certificates are pre-warmed on the edge proxy.' },
-      { id: 't4', timestamp: '02:10', speaker: 'Rohan Verma', text: 'Understood. That means we can use Traefik or Envoy with an in-memory certificate resolver and route *.celoris.in directly to the allocated Docker pod cgroup.' }
+      { id: 't4', timestamp: '02:10', speaker: 'Aryan Verma', text: 'Understood. That means we can use Traefik or Envoy with an in-memory certificate resolver and route *.celoris.in directly to the allocated Docker pod cgroup.' }
     ],
     scorecard: {
       id: 'sc-01',
@@ -204,7 +204,7 @@ export const INITIAL_INTERVIEW_SESSIONS: InterviewSession[] = [
       submittedAt: '2026-10-16T14:45:00Z',
       overallScore: 4.7,
       recommendation: 'Strong Hire',
-      executiveSummary: 'Rohan demonstrated exceptional depth in container orchestration, Next.js App Router performance, and edge proxying. Proactive in scoping failure domains and latency SLAs.',
+      executiveSummary: 'Aryan demonstrated exceptional depth in container orchestration, Next.js App Router performance, and edge proxying. Proactive in scoping failure domains and latency SLAs.',
       strengths: [
         'Nuanced grasp of cgroup resource isolation and MariaDB connection pooling',
         'Strong production instincts: proposed pre-warmed TLS certificates and fail-open proxies',
@@ -218,7 +218,7 @@ export const INITIAL_INTERVIEW_SESSIONS: InterviewSession[] = [
       suggestedFollowUp: [
         'Review experience with distributed tracing (OpenTelemetry / Grafana Tempo)'
       ],
-      notes: 'Rohan immediately sketched clean boundaries between the ingress daemon, MariaDB container, and NVMe quotas.'
+      notes: 'Aryan immediately sketched clean boundaries between the ingress daemon, MariaDB container, and NVMe quotas.'
     }
   },
   {
@@ -302,8 +302,8 @@ export const INITIAL_INTERVIEW_SESSIONS: InterviewSession[] = [
 export const INITIAL_CANDIDATES: Candidate[] = [
   {
     id: 'cand-01',
-    name: 'Rohan Verma',
-    email: 'rohan.verma@celoris.in',
+    name: 'Aryan Verma',
+    email: 'aryan.verma@celoris.in',
     phone: '+91 98765 43210',
     location: 'Bangalore, India (Hybrid / Remote)',
     avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
@@ -316,7 +316,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
     appliedDate: '2026-10-04',
     overallScore: 4.7,
     recommendation: 'Strong Hire',
-    portfolioUrl: 'https://rohan-dev.celoris.in',
+    portfolioUrl: 'https://aryan-dev.celoris.in',
     activeInterviewId: 'int-live-01',
     interviewSessions: [
       INITIAL_INTERVIEW_SESSIONS[0]
