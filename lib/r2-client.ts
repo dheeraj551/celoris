@@ -106,6 +106,16 @@ export async function putR2Object(
   )
 }
 
+export async function getR2Object(key: string) {
+  const client = getR2Client()
+  return client.send(
+    new GetObjectCommand({
+      Bucket: getR2BucketName(),
+      Key: key,
+    })
+  )
+}
+
 export async function deleteR2Object(key: string): Promise<void> {
   const client = getR2Client()
   await client.send(new DeleteObjectCommand({ Bucket: getR2BucketName(), Key: key }))
