@@ -1636,6 +1636,7 @@ export default function App() {
 
         {/* Central Canvas Viewport */}
         <CanvasViewport
+          projectName={projectName}
           canvasWidth={canvasWidth}
           canvasHeight={canvasHeight}
           layers={layers}

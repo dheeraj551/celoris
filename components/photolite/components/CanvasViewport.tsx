@@ -122,6 +122,7 @@ interface CanvasViewportProps {
   onPenFill?: () => void;
   onPenMakeSelection?: () => void;
   onPenClear?: () => void;
+  projectName?: string;
 }
 
 // Photoshop-style Fountain Pen Nib Cursors
@@ -238,6 +239,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   onPenFill,
   onPenMakeSelection,
   onPenClear,
+  projectName = 'Untitled-1',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -2212,8 +2214,22 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       }}
       onDoubleClick={handleDoubleClick}
       style={{ cursor: cursorStyle }}
-      className="relative flex-1 overflow-hidden bg-[#1a1a1a] select-none touch-none flex items-center justify-center"
+      className="relative flex-1 overflow-hidden bg-[#1e1e1e] select-none touch-none flex items-center justify-center"
     >
+      {/* Top Document Tab Strip (Desktop-like fidelity) */}
+      <div className="absolute top-0 left-0 right-0 h-6 bg-[#252525] border-b border-black flex items-center px-2 z-20 select-none">
+        <div className="flex items-center gap-1 px-3 py-1 bg-[#1e1e1e] border-t border-r border-l border-white/10 rounded-t text-[11px] text-gray-200 shadow-sm font-sans">
+          <span>{projectName || 'Untitled-1'} @ {Math.round(zoom * 100)}% (RGB/8)*</span>
+          <button
+            type="button"
+            className="ml-2 text-gray-400 hover:text-white text-[10px] rounded-full hover:bg-white/10 w-3.5 h-3.5 flex items-center justify-center cursor-pointer"
+            title="Document options"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
       {/* Viewport content transformed by Pan & Zoom */}
       <div
         id="canvas-transform-wrapper"
@@ -2524,54 +2540,44 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         </div>
       )}
 
-      {/* Bottom Floating Canvas Status Bar with Zoom Controls */}
-      <div className="absolute bottom-2 left-3 z-30 flex items-center gap-2 rounded bg-[#2b2b2b] px-2.5 py-1 text-[10px] font-mono text-gray-400 border border-black shadow-md">
-        <span>X: {Math.round(cursorPos.x)}px</span>
-        <span>Y: {Math.round(cursorPos.y)}px</span>
-        <span className="text-black">|</span>
-        <span className="text-gray-300">
-          {canvasWidth}×{canvasHeight}
-        </span>
-        <span className="text-black">|</span>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            title="Zoom Out"
-            onClick={() => setZoom((z) => Math.max(0.1, Number((z * 0.8).toFixed(2))))}
-            className="p-0.5 hover:text-white rounded hover:bg-[#1a1a1a] cursor-pointer"
-          >
-            <ZoomOut className="h-3 w-3" />
-          </button>
-          <button
-            type="button"
-            title="Reset to 100%"
-            onClick={() => {
-              setZoom(1);
-              setPan({ x: 0, y: 0 });
-            }}
-            className="text-cyan-400 font-semibold hover:underline cursor-pointer px-0.5"
-          >
-            {Math.round(zoom * 100)}%
-          </button>
-          <button
-            type="button"
-            title="Zoom In"
-            onClick={() => setZoom((z) => Math.min(8, Number((z * 1.25).toFixed(2))))}
-            className="p-0.5 hover:text-white rounded hover:bg-[#1a1a1a] cursor-pointer"
-          >
-            <ZoomIn className="h-3 w-3" />
-          </button>
+      {/* Bottom Desktop Studio Status Bar (Desktop-like dock) */}
+      <div className="absolute bottom-0 left-0 right-0 h-5 bg-[#252525] border-t border-black px-3 z-30 flex items-center justify-between text-[10px] font-mono text-gray-400 select-none">
+        <div className="flex items-center gap-3">
+          <span className="text-gray-300 font-medium">{Math.round(zoom * 100)}%</span>
+          <span className="text-neutral-600">|</span>
+          <span>{canvasWidth} px × {canvasHeight} px [72 ppi]</span>
+          <span className="text-neutral-600">|</span>
+          <span className="text-gray-400">X: {Math.round(cursorPos.x)} Y: {Math.round(cursorPos.y)}</span>
         </div>
-        <span className="text-black">|</span>
-        <button
-          type="button"
-          title="Fit Canvas to Screen"
-          onClick={fitToScreen}
-          className="flex items-center gap-1 hover:text-white rounded px-1.5 py-0.5 bg-[#1a1a1a] border border-black cursor-pointer text-gray-300 hover:border-cyan-400 transition-colors"
-        >
-          <Maximize2 className="h-2.5 w-2.5 text-cyan-400" />
-          <span>Fit</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-emerald-400/80 font-sans text-[9.5px]">PhotoLite Studio • Celoris Designs</span>
+          <div className="flex items-center gap-1 border-l border-neutral-700 pl-2">
+            <button
+              type="button"
+              title="Zoom Out"
+              onClick={() => setZoom((z) => Math.max(0.1, Number((z * 0.8).toFixed(2))))}
+              className="p-0.5 hover:text-white rounded hover:bg-white/10 cursor-pointer"
+            >
+              <ZoomOut className="h-2.5 w-2.5" />
+            </button>
+            <button
+              type="button"
+              title="Fit to Screen"
+              onClick={fitToScreen}
+              className="hover:text-white text-[9.5px] px-1 hover:bg-white/10 rounded cursor-pointer"
+            >
+              Fit
+            </button>
+            <button
+              type="button"
+              title="Zoom In"
+              onClick={() => setZoom((z) => Math.min(8, Number((z * 1.25).toFixed(2))))}
+              className="p-0.5 hover:text-white rounded hover:bg-white/10 cursor-pointer"
+            >
+              <ZoomIn className="h-2.5 w-2.5" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

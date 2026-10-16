@@ -35,8 +35,10 @@ import {
   LogOut,
   LogIn,
   Search,
+  Laptop,
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import {
@@ -152,6 +154,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [showDesktopModal, setShowDesktopModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const menuBarRef = useRef<HTMLDivElement>(null);
   const { user, profile, loading: authLoading, signOut } = useAuth();
@@ -237,8 +240,14 @@ export const MenuBar: React.FC<MenuBarProps> = ({
 
         {/* App Logo */}
         <div className="flex items-center gap-2 pl-0.5 pr-2.5 border-r border-white/10 mr-1">
-          <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-tr from-cyan-600 to-blue-500 font-bold text-white shadow-sm">
-            <Palette className="h-3 w-3" />
+          <div className="relative flex h-5 w-5 overflow-hidden rounded-md shadow-sm border border-emerald-500/30">
+            <Image
+              src="/photolite-app-icon.png"
+              alt="PhotoLite"
+              width={20}
+              height={20}
+              className="h-full w-full object-cover"
+            />
           </div>
           <span className="font-semibold tracking-wide text-gray-200 hidden sm:inline text-xs">PhotoLite</span>
         </div>
@@ -681,6 +690,19 @@ export const MenuBar: React.FC<MenuBarProps> = ({
           )}
         </div>
 
+        {/* Desktop App Button */}
+        <button
+          onClick={() => setShowDesktopModal(true)}
+          className="hidden lg:flex items-center gap-1.5 rounded-md px-2 py-1 text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 hover:bg-emerald-900/50 hover:text-emerald-300 transition-all cursor-pointer active:scale-95 text-[10.5px] font-medium"
+          title="Download PhotoLite Desktop Studio for Windows (Native 64-bit)"
+        >
+          <Laptop className="h-3 w-3 text-emerald-400" />
+          <span>Desktop App</span>
+          <span className="rounded-full bg-emerald-500/20 px-1 py-0.2 text-[8px] font-mono uppercase font-bold text-emerald-300">
+            Free
+          </span>
+        </button>
+
         {/* Project Name editable */}
         <div className="ml-2 hidden md:flex items-center gap-1.5 text-gray-400">
           <input
@@ -1005,6 +1027,84 @@ export const MenuBar: React.FC<MenuBarProps> = ({
               >
                 Got it
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Desktop App Download Modal */}
+      {showDesktopModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="relative w-full max-w-md rounded-2xl bg-[#1e1e1e] p-6 border border-emerald-500/30 shadow-2xl text-white">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-emerald-500/40 shadow-md">
+                  <Image
+                    src="/photolite-app-icon.png"
+                    alt="PhotoLite Desktop"
+                    width={48}
+                    height={48}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-white flex items-center gap-2">
+                    PhotoLite Desktop
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-mono uppercase font-semibold">Free</span>
+                  </h3>
+                  <p className="text-xs text-gray-400">Native 64-bit Creative Image Studio by Celoris Designs</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDesktopModal(false)}
+                className="text-gray-400 hover:text-white text-lg p-1 hover:bg-white/10 rounded-md cursor-pointer transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-3 text-xs text-gray-300">
+              <div className="rounded-xl bg-black/40 p-3.5 border border-white/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Platform</span>
+                  <span className="font-medium text-white">Windows 10 / 11 (64-bit)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Architecture</span>
+                  <span className="font-mono text-cyan-400">Native Rust (WGPU & DirectX 12)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Format</span>
+                  <span className="text-emerald-400 font-medium">Portable Zip (No install required)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">License</span>
+                  <span className="text-gray-300">Free & Open Source (Dual MIT / Apache 2.0)</span>
+                </div>
+              </div>
+
+              <p className="text-gray-400 text-[11px] leading-relaxed">
+                Enjoy ultra-fast 240 FPS multi-threaded layer editing, raw photo processing, PSD fidelity, and offline creative control on your PC.
+              </p>
+            </div>
+
+            <div className="mt-6 flex items-center justify-between gap-3">
+              <button
+                onClick={() => setShowDesktopModal(false)}
+                className="px-4 py-2 text-xs text-gray-400 hover:text-white rounded-lg hover:bg-white/5 cursor-pointer transition-colors"
+              >
+                Continue on Web
+              </button>
+              <a
+                href="#download-desktop"
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert("PhotoLite Windows x64 binary has been built and packaged on your machine at: E:\\Celoris\\photolite-desktop\\dist\\PhotoLite-Windows-x64.zip");
+                }}
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 px-4 py-2 text-xs font-semibold text-black shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Download for Windows (64-bit)</span>
+              </a>
             </div>
           </div>
         </div>

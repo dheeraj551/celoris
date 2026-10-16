@@ -13,10 +13,12 @@ export const Footer: React.FC = () => {
                         <span className="font-bold text-lg text-slate-900">Celoris</span>
                     </div>
 
-                    <div className="flex gap-6 text-sm text-slate-500">
-                        <a href="#" className="hover:text-slate-900">Terms</a>
-                        <a href="#" className="hover:text-slate-900">Privacy</a>
-                        <a href="#" className="hover:text-slate-900">Cookies</a>
+                    <div className="flex flex-wrap gap-5 text-sm text-slate-500">
+                        <a href="/free-image-editor" className="hover:text-emerald-600 font-medium text-emerald-600/90">Free Image Editor</a>
+                        <a href="/free-video-editor" className="hover:text-slate-900">Video Editor</a>
+                        <a href="/terms" className="hover:text-slate-900">Terms</a>
+                        <a href="/privacy" className="hover:text-slate-900">Privacy</a>
+                        <a href="/cookies" className="hover:text-slate-900">Cookies</a>
                     </div>
 
                     <div className="flex gap-4">
