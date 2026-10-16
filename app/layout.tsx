@@ -112,6 +112,8 @@ const organizationSchema = {
   "legalName": "Celoris Designs LLP",
   "alternateName": "Celoris",
   "url": "https://celorisdesigns.com",
+  "foundingDate": "2019-05-23",
+  "taxID": "09AAOFC5435B1ZJ",
   "logo": {
     "@type": "ImageObject",
     "url": "https://celorisdesigns.com/celoris-logo.png",
@@ -121,6 +123,10 @@ const organizationSchema = {
   "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
   "address": {
     "@type": "PostalAddress",
+    "streetAddress": "B-148, Sushant City, Sector-5, Vedvyas Puri",
+    "addressLocality": "Meerut",
+    "addressRegion": "Uttar Pradesh",
+    "postalCode": "250001",
     "addressCountry": "IN"
   },
   "contactPoint": {
@@ -131,10 +137,9 @@ const organizationSchema = {
     "availableLanguage": ["English", "Hindi"]
   },
   "sameAs": [
-    "https://www.linkedin.com/company/celoris",
-    "https://www.facebook.com/celoris",
-    "https://www.youtube.com/celoris",
-    "https://x.com/celoris"
+    "https://www.linkedin.com/company/celorisdesigns/",
+    "https://www.facebook.com/celorisdesigns/",
+    "https://www.youtube.com/@celorisplay"
   ]
 }
 

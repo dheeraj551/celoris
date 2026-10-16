@@ -192,7 +192,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                                 >
                                     Celoris
                                 </motion.span>
-                                {["AI", "Powered", "Image", "and", "Video", "Editor's"].map((word, i) => (
+                                {["AI-Powered", "Image", "&", "Video", "Editing"].map((word, i) => (
                                     <motion.span
                                         key={i}
                                         variants={{
@@ -245,6 +245,13 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             transition={{ duration: 0.6, delay: 0.3 }}
                             className="flex flex-wrap items-center gap-3.5 mb-8"
                         >
+                            <Link
+                                href="/video-studio"
+                                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-bold text-sm sm:text-base shadow-[0_0_28px_rgba(16,185,129,0.4)] hover:shadow-[0_0_36px_rgba(16,185,129,0.6)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                            >
+                                <PlayCircle className="w-4 h-4 stroke-[2.5]" />
+                                <span>Launch Studio — Free</span>
+                            </Link>
 
                             <Link
                                 href="/learn"
@@ -774,9 +781,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                     >
                       <motion.div
                         variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } }}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest mb-6"
+                        className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-6"
                       >
-                        <ShieldCheck size={10} /> Verified Pulse
+                        <ShieldCheck size={12} /> Verified Pulse
                       </motion.div>
                       <motion.h2
                         variants={{ hidden: { opacity: 0, y: 24, filter: "blur(6px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } } }}
@@ -786,9 +793,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                       </motion.h2>
                       <motion.p
                         variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } }}
-                        className="text-slate-500 font-black uppercase tracking-widest text-[8px]"
+                        className="text-slate-400 font-bold uppercase tracking-widest text-[10px] sm:text-xs"
                       >
-                        Direct transmissions from our synchronized node network.
+                        Verified reviews from students, creators &amp; enterprise clients across India
                       </motion.p>
                     </motion.div>
 
