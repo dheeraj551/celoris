@@ -4,9 +4,7 @@ import dynamic from 'next/dynamic'
 import React from 'react'
 
 import { DashboardShell } from "@/components/home-new/DashboardShell"
-import { useAuth } from '@/components/providers/AuthProvider'
-
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 // PhotoLite — Web Image Editor, ported in the same pattern as
@@ -29,21 +27,13 @@ function LoadingSpinner() {
 
 export default function PhotoLitePage() {
     const pathname = usePathname()
-    const router = useRouter()
-    const { user, loading: authLoading } = useAuth()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
         setMounted(true)
     }, [])
 
-    useEffect(() => {
-        if (mounted && !authLoading && !user) {
-            router.push('/login')
-        }
-    }, [mounted, authLoading, user, router])
-
-    if (!mounted || authLoading || !user) {
+    if (!mounted) {
         return <LoadingSpinner />
     }
 
