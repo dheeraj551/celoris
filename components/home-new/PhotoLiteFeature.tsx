@@ -211,7 +211,7 @@ export function PhotoLiteFeature() {
           <div className="mb-10 w-full">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 mb-6">
               <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-widest">
-                PHOTO EDITING
+                PHOTO EDITING • WEB & PC
               </span>
             </div>
 
@@ -224,7 +224,7 @@ export function PhotoLiteFeature() {
             </h2>
 
             <p className="text-lg text-slate-300 font-light leading-relaxed max-w-sm">
-              A full layer-based photo editor in your browser — brushes, crop, text, and filters with a premium studio interface. No downloads, no subscriptions.
+              A full layer-based creative suite for Web & Windows PC — PSD support, blend modes, filters, and offline desktop speed. Zero subscriptions, 100% free.
             </p>
           </div>
 
@@ -325,7 +325,7 @@ export function PhotoLiteFeature() {
           {/* Action Button */}
           <div className="w-full mt-auto">
             <Link 
-              href="/photolite" 
+              href="/free-image-editor" 
               className="group relative inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border border-cyan-400/40 bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 hover:text-white font-medium text-sm transition-all duration-300 shadow-[0_0_25px_rgba(6,182,212,0.25)] hover:shadow-[0_0_35px_rgba(6,182,212,0.4)] hover:scale-[1.02] active:scale-[0.98] backdrop-blur-xl"
             >
               <span>Explore PhotoLite</span>
