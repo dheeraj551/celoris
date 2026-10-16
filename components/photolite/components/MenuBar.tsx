@@ -1095,11 +1095,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({
                 Continue on Web
               </button>
               <a
-                href="#download-desktop"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert("PhotoLite Windows x64 binary has been built and packaged on your machine at: E:\\Celoris\\photolite-desktop\\dist\\PhotoLite-Windows-x64.zip");
-                }}
+                href="/api/download/photolite"
                 className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 px-4 py-2 text-xs font-semibold text-black shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
               >
                 <Download className="h-3.5 w-3.5" />

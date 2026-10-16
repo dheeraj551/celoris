@@ -3,7 +3,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
-  Sparkles,
   Download,
   Layers,
   Zap,
@@ -58,7 +57,7 @@ const softwareApplicationSchema = {
     "price": "0",
     "priceCurrency": "INR"
   },
-  "downloadUrl": "https://celorisdesigns.com/PhotoLite-Windows-x64.zip",
+  "downloadUrl": "https://celorisdesigns.com/api/download/photolite",
   "screenshot": "https://celorisdesigns.com/photolite-studio-preview.png",
   "description": "Free online image editor and Windows PC app with layers, PSD files, blend modes, and filters. No watermark, no subscription, works offline."
 }
@@ -125,7 +124,7 @@ export default function FreeImageEditorPage() {
           <div className="max-w-6xl mx-auto text-center relative z-10">
             {/* Top Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold tracking-wide mb-6 shadow-sm">
-              <Sparkles size={14} className="text-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Free Image Editing Software • Web & Windows 64-bit PC</span>
             </div>
 
@@ -164,7 +163,7 @@ export default function FreeImageEditorPage() {
                 variant="outline"
                 className="w-full sm:w-auto h-14 px-8 rounded-2xl bg-white/5 hover:bg-white/10 text-white border-white/15 hover:border-emerald-500/40 font-semibold text-base shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer"
               >
-                <a href="/PhotoLite-Windows-x64.zip" download="PhotoLite-Windows-x64.zip" className="flex items-center justify-center gap-2.5">
+                <a href="/api/download/photolite" className="flex items-center justify-center gap-2.5">
                   <Laptop className="h-5 w-5 text-emerald-400" />
                   <span>Download for Windows PC</span>
                   <Download className="h-4 w-4 text-emerald-400" />
@@ -198,9 +197,8 @@ export default function FreeImageEditorPage() {
                   loop
                   muted
                   playsInline
-                  controls
                   poster="/photolite-studio-preview.png"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover pointer-events-none select-none"
                 >
                   <source src="/photolite-demo-1080p.mp4" type="video/mp4" />
                   <source src="/photolite-demo-720p.mp4" type="video/mp4" />
@@ -438,7 +436,7 @@ export default function FreeImageEditorPage() {
                 <Link href="/photolite">Launch Web Editor Now</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white/20 bg-black/40 hover:bg-white/10 text-white font-medium h-13 px-8 rounded-xl cursor-pointer">
-                <a href="/PhotoLite-Windows-x64.zip" download="PhotoLite-Windows-x64.zip">
+                <a href="/api/download/photolite">
                   Download Windows PC (64-bit)
                 </a>
               </Button>
