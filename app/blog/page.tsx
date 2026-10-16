@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'best-free-image-editing-software-pc-web-2026',
+      title: "Best Free Image Editing Software for PC & Web (2026 Guide) — PSD Layers, Offline Mode & No Watermark",
+      slug: 'best-free-image-editing-software-pc-web-2026',
+      excerpt: "Benchmark comparison of the top free photo editing software in 2026. Discover full multi-layer PSD editing, zero watermarks, no subscriptions, and native 64-bit offline performance with PhotoLite.",
+      featured_image_url: "/best-free-image-editing-software-pc-web-2026.png",
+      author_name: 'Creative Software & Visual Computing Lab',
+      category: 'Creative Software • 2026 Guide',
+      reading_time: 11,
+      published_at: '2026-10-16T18:00:00Z',
+    },
+    {
       id: 'free-wordpress-hosting-india-2026',
       title: "Free WordPress Hosting in India (2026 Guide) — 3 GB NVMe, Free SSL, No Ads & Zero Credit Card",
       slug: 'free-wordpress-hosting-india-2026',

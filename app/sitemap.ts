@@ -517,6 +517,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'virtual-production-game-engines-ai-2026',
     'yoga-for-beginners-complete-guide',
     'zero-keyframes-motion-swap-puppet-rigging-2026',
+    'free-wordpress-hosting-india-2026',
+    'best-free-image-editing-software-pc-web-2026',
   ]
   const EXTRA_PAGES: { path: string; priority: number; changeFrequency: 'daily' | 'weekly' | 'monthly' }[] = [
     { path: '/blog', priority: 0.8, changeFrequency: 'daily' },
