@@ -343,6 +343,26 @@ export default function AdobePhotoshopAI() {
                             ))}
                         </div>
 
+                        {/* Free Practice Studio Banner */}
+                        <div className="p-6 sm:p-8 rounded-[2rem] bg-gradient-to-r from-emerald-950/40 via-[#0d1c15] to-[#0a141c] border border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div className="space-y-1.5 text-center sm:text-left">
+                                <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 inline-block mb-1">
+                                    Free Online Practice Studio
+                                </span>
+                                <h3 className="text-lg font-bold text-white">Don't have Photoshop installed yet?</h3>
+                                <p className="text-xs text-slate-400 max-w-md">
+                                    Practice your multi-layer editing, PSD files, masks, and blend modes for free with our native web & PC editor.
+                                </p>
+                            </div>
+                            <Link
+                                href="/free-image-editor"
+                                className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+                            >
+                                <span>Try PhotoLite Free</span>
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+
                         {/* Learning Outcomes */}
                         <section className="space-y-8">
                             <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">

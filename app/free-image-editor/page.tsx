@@ -1,7 +1,6 @@
 import { type Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
-import { DashboardShell } from "@/components/home-new/DashboardShell"
 import { Button } from "@/components/ui/button"
 import {
   Sparkles,
@@ -10,43 +9,115 @@ import {
   Zap,
   ShieldCheck,
   CheckCircle2,
-  FileImage,
   ArrowRight,
   Cpu,
-  Palette,
   Laptop,
   Globe,
-  Sliders,
-  Maximize2
+  Scissors,
+  Share2,
+  FileCode2,
+  GraduationCap,
+  HelpCircle,
+  Play
 } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Free Image Editing Software for Web & PC (2026) — PhotoLite by Celoris",
+  title: "Free Image Editor for Web & Windows PC – PhotoLite",
   description:
-    "Free image editing software for Web and Windows PC. Full layer effects, PSD support, RAW camera processing, and 240 FPS GPU acceleration. 100% Free & No Subscription.",
+    "Free online image editor and Windows PC app with layers, PSD files, blend modes and filters. No watermark, no subscription, works offline.",
+  alternates: {
+    canonical: "/free-image-editor",
+  },
   keywords: [
+    "free image editor",
+    "free photo editor for pc",
+    "online psd editor",
+    "free photoshop alternative",
     "free image editing software",
-    "free image editor for pc",
-    "free photo editor windows",
-    "free photoshop alternative online",
     "photolite studio",
     "free layer based photo editor",
-    "celoris designs photolite"
+    "photo editor without subscription"
   ],
   openGraph: {
-    title: "Free Image Editing Software for Web & PC — PhotoLite Studio",
+    title: "Free Image Editor for Web & Windows PC – PhotoLite",
     description:
-      "Professional photo editing in your browser and native Windows desktop. Dual MIT/Apache open architecture, multi-layer effects, zero watermarks.",
+      "Free online image editor and Windows PC app with layers, PSD files, blend modes and filters. No watermark, no subscription, works offline.",
+    url: "https://celorisdesigns.com/free-image-editor",
     images: [{ url: "/photolite-studio-preview.png", width: 1200, height: 630 }],
   },
 }
 
+const softwareApplicationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PhotoLite",
+  "operatingSystem": "Windows 10, Windows 11, Web",
+  "applicationCategory": "MultimediaApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "INR"
+  },
+  "downloadUrl": "https://celorisdesigns.com/PhotoLite-Windows-x64.zip",
+  "screenshot": "https://celorisdesigns.com/photolite-studio-preview.png",
+  "description": "Free online image editor and Windows PC app with layers, PSD files, blend modes, and filters. No watermark, no subscription, works offline."
+}
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is PhotoLite completely free with no subscription?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! PhotoLite by Celoris Designs is completely free to use online in your browser or as a native Windows 64-bit desktop download. There are zero subscription fees, no locked features, and no watermarks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I open and edit PSD files without Photoshop?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. PhotoLite includes a built-in PSD engine that opens and preserves multi-layer Photoshop (.PSD) documents, layer masks, opacity, and blend modes directly on Web and PC."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does PhotoLite work offline on Windows PC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The desktop edition is a native 64-bit portable app for Windows 10 and 11. It does not require installation or internet access to edit your photos."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Free photo editor kaise use kare? (How to use PhotoLite in Hindi)",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PhotoLite ko use karna bilkul aasan hai. Aap seedha 'Launch Free Web Editor' button par click karke apne browser me hi image open kar sakte hain, ya Windows PC ke liye portable version download karke bina internet ke layers aur filters ke sath photo edit kar sakte hain."
+      }
+    }
+  ]
+}
+
 export default function FreeImageEditorPage() {
   return (
-    <DashboardShell>
+    <>
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       <div className="min-h-screen bg-[#070b12] text-slate-200 selection:bg-emerald-500/30 font-sans pb-24">
         {/* Hero Section */}
-        <section className="relative pt-20 pb-16 px-6 lg:px-8 overflow-hidden border-b border-white/5 bg-gradient-to-b from-[#0c1424]/80 via-[#070b12] to-[#070b12]">
+        <section className="relative pt-16 pb-16 px-6 lg:px-8 overflow-hidden border-b border-white/5 bg-gradient-to-b from-[#0c1424]/90 via-[#070b12] to-[#070b12]">
           {/* Subtle Cyber Glowing Background Orbs */}
           <div className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 blur-[130px] rounded-full" />
           <div className="pointer-events-none absolute top-1/3 left-1/3 w-[500px] h-[250px] bg-cyan-500/10 blur-[120px] rounded-full" />
@@ -58,7 +129,7 @@ export default function FreeImageEditorPage() {
               <span>Free Image Editing Software • Web & Windows 64-bit PC</span>
             </div>
 
-            {/* H1 Heading targeting core search keywords */}
+            {/* Exactly 1 Single H1 on the entire page */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.12] mb-6">
               Professional Image Editing. <br />
               <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
@@ -68,7 +139,7 @@ export default function FreeImageEditorPage() {
 
             {/* Subheading */}
             <p className="text-base sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed mb-10">
-              PhotoLite gives you full Photoshop-grade multi-layer editing, PSD file compatibility, 
+              PhotoLite gives you full multi-layer editing, PSD file compatibility, 
               blend modes, filter effects, and hardware-accelerated performance — with 
               <strong className="text-white font-semibold"> zero subscriptions, zero watermarks</strong>, and full offline desktop support.
             </p>
@@ -104,7 +175,7 @@ export default function FreeImageEditorPage() {
             {/* Quick Proof Badges */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> 100% Free & Open Source
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> 100% Free & Open Architecture
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400" /> Native 64-bit DirectX / WGPU
@@ -124,7 +195,7 @@ export default function FreeImageEditorPage() {
               <div className="relative rounded-xl overflow-hidden border border-black/80 aspect-[16/9] bg-[#1a1a1a]">
                 <Image
                   src="/photolite-studio-preview.png"
-                  alt="PhotoLite Studio - Free Image Editing Software Interface"
+                  alt="PhotoLite Studio - Free image editor for Web and Windows PC showing multi-layer workspace"
                   fill
                   priority
                   className="object-cover"
@@ -134,49 +205,80 @@ export default function FreeImageEditorPage() {
           </div>
         </section>
 
-        {/* Core Value Pillars Section */}
-        <section className="py-20 px-6 lg:px-8 max-w-6xl mx-auto">
+        {/* Task-Based Search Sections (Targeting High-Intent User Queries) */}
+        <section className="py-20 px-6 lg:px-8 max-w-6xl mx-auto border-b border-white/5">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Everything You Need in a Creative Studio
+              Real Creative Tasks Made Simple
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-base">
-              Whether you need quick web adjustments or heavy 36-megapixel RAW composition on your Windows workstation, PhotoLite delivers unmatched speed.
+              Learn how creators, digital artists, and students use PhotoLite for everyday graphic workflows without expensive commercial subscriptions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-emerald-500/40 transition-all group">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400 group-hover:scale-110 transition-transform">
-                <Layers className="h-7 w-7" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Task 1: Background Removal */}
+            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-emerald-500/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+                  <Scissors className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">How do I remove an image background for free?</h3>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">Multi-Layer & PSD Engine</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Work seamlessly with full non-destructive layers, blend modes (Multiply, Screen, Overlay), masks, group folders, and import/export standard Adobe Photoshop .PSD files.
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                Use the Magic Wand or Magnetic Lasso tools to select your subject with sub-pixel precision. Invert your selection with <kbd className="px-1.5 py-0.5 bg-black/60 rounded text-cyan-400 text-xs font-mono">Ctrl+Shift+I</kbd> and hit Delete for an instant transparent PNG export.
               </p>
+              <div className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                <span>Magic Wand • Lasso • Transparent PNG Export</span>
+              </div>
             </div>
 
-            {/* Card 2 */}
-            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-cyan-500/40 transition-all group">
-              <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 text-cyan-400 group-hover:scale-110 transition-transform">
-                <Cpu className="h-7 w-7" />
+            {/* Task 2: Thumbnail & Social Resize */}
+            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-cyan-500/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-cyan-500/10 rounded-xl text-cyan-400">
+                  <Share2 className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">How to resize images for YouTube thumbnails and Instagram?</h3>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">Hardware GPU Acceleration</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Built on native Rust with WGPU and modern WebGL. Experience liquid-smooth 240 FPS canvas panning, instant zoom, and real-time GPU brush rendering.
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                Select predefined canvas aspect ratios like 16:9 (1280×720 for YouTube) or 1:1 and 4:5 for Instagram posts. High-resolution Lanczos resampling prevents any pixel blur or artifacting.
               </p>
+              <div className="text-xs text-cyan-400 font-semibold flex items-center gap-1">
+                <span>16:9 YouTube Presets • 9:16 Reels • Zero Blur Resample</span>
+              </div>
             </div>
 
-            {/* Card 3 */}
-            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-teal-500/40 transition-all group">
-              <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center mb-6 text-teal-400 group-hover:scale-110 transition-transform">
-                <ShieldCheck className="h-7 w-7" />
+            {/* Task 3: Edit PSD Online */}
+            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-teal-500/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-teal-500/10 rounded-xl text-teal-400">
+                  <FileCode2 className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Can I edit PSD files online without Photoshop?</h3>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">100% Free & Private</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                No monthly recurring fees, no surprise credit card charges, and no cloud uploads of your personal photos. Your artwork stays strictly on your machine.
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                Yes. Simply drag and drop any .PSD document directly into PhotoLite. All individual layers, text layers, vector masks, and layer blend modes are preserved and fully editable.
               </p>
+              <div className="text-xs text-teal-400 font-semibold flex items-center gap-1">
+                <span>Native PSD Parser • Layer Blend Modes • Text Layers</span>
+              </div>
+            </div>
+
+            {/* Task 4: Poster Design */}
+            <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-purple-500/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400">
+                  <Layers className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">How to design marketing posters and creative flyers?</h3>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                Combine vector typography, custom Bézier shapes, and photo composite layers. Add drop shadows, outer glows, and bevel effects via the native Layer Styles dialog with live GPU preview.
+              </p>
+              <div className="text-xs text-purple-400 font-semibold flex items-center gap-1">
+                <span>Bézier Vector Pen • Typography • Layer fx Styles</span>
+              </div>
             </div>
           </div>
         </section>
@@ -229,7 +331,50 @@ export default function FreeImageEditorPage() {
           </div>
         </section>
 
-        {/* SEO FAQ Section */}
+        {/* Level Up Your Skills — Internal Outbound Links */}
+        <section className="py-16 px-6 lg:px-8 max-w-5xl mx-auto">
+          <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-blue-950/40 via-[#0e1726] to-[#070b12] border border-blue-500/20">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <GraduationCap className="h-6 w-6" />
+              </div>
+              <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">
+                Master Professional Design & Animation
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+              Want to master industry design tools and video creation?
+            </h2>
+            <p className="text-slate-300 text-sm max-w-2xl mb-6 leading-relaxed">
+              Enhance your PhotoLite skills with our guided career training programs. Learn professional composition, typography, and viral short-form video creation.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/courses/adobe-photoshop-with-ai"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md"
+              >
+                <span>Learn Professional Photo Editing Free</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/free-courses-with-certificate/social-media-reels"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-semibold transition-all"
+              >
+                <span>Learn Reels & Video Editing Free</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/graphic-designing-course-noida"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-semibold transition-all"
+              >
+                <span>Graphic Design Certificate Course</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* SEO FAQ Section with Hindi FAQ for Indian Searchers */}
         <section className="py-16 px-6 lg:px-8 max-w-4xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-10">
             Frequently Asked Questions
@@ -237,23 +382,34 @@ export default function FreeImageEditorPage() {
 
           <div className="space-y-4">
             <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-              <h3 className="text-base font-bold text-white mb-2">Is PhotoLite completely free image editing software?</h3>
+              <h3 className="text-base font-bold text-white mb-2">Is PhotoLite completely free with no subscription?</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
-                Yes! PhotoLite by Celoris Designs is dual-licensed and completely free. You can use the web version directly in your browser or download the native 64-bit Windows edition without paying any licensing or subscription fees.
+                Yes! PhotoLite by Celoris Designs is completely free to use online in your browser or as a native Windows 64-bit desktop download. There are zero subscription fees, no locked features, and no watermarks on exports.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-              <h3 className="text-base font-bold text-white mb-2">Does PhotoLite open and save Photoshop (.PSD) files?</h3>
+              <h3 className="text-base font-bold text-white mb-2">Can I open and edit PSD files without commercial software?</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
-                Yes. Both our web and desktop editions contain a built-in PSD engine that decodes layers, blend modes, adjustments, and transparency so you can collaborate easily with Photoshop users.
+                Yes. Both our web and desktop editions contain a built-in PSD engine that decodes layers, blend modes, adjustments, and transparency so you can collaborate easily on industry-standard design templates.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-              <h3 className="text-base font-bold text-white mb-2">What are the system requirements for PhotoLite Desktop on Windows?</h3>
+              <h3 className="text-base font-bold text-white mb-2">Does PhotoLite work offline on Windows PC?</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
-                PhotoLite Desktop runs on Windows 10 and Windows 11 (64-bit). It is compiled with static CRT dependencies and native DirectX/WGPU support, meaning you do not even need an installer — simply extract the portable zip and run `photolite.exe`.
+                Yes. The desktop edition is compiled natively with static CRT libraries and WGPU/DirectX graphics. It requires no installer or internet connection — just extract the portable zip file and run `photolite.exe`.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-emerald-950/20 border border-emerald-500/20">
+              <h3 className="text-base font-bold text-emerald-300 mb-2">Free photo editor kaise use kare? (PhotoLite Kaise Chalayein?)</h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                PhotoLite ko use karna behad aasan hai:
+                <br />
+                1. <strong>Online Web Mode:</strong> Upar diye gaye <em>Launch Free Web Editor</em> button par click karke aap seedha apne browser me photo open karke layers, text aur filters laga sakte hain bina kisi login ya software install kiye.
+                <br />
+                2. <strong>Windows PC Mode:</strong> <em>Download for Windows PC</em> link par click karke zip file download karein. Ise extract karke `photolite.exe` run karein — ye bina internet ke 240 FPS GPU speed ke sath offline kaam karta hai.
               </p>
             </div>
           </div>
@@ -281,6 +437,6 @@ export default function FreeImageEditorPage() {
           </div>
         </section>
       </div>
-    </DashboardShell>
+    </>
   )
 }

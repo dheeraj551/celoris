@@ -529,6 +529,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/free-courses-with-certificate/social-media-reels', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/free-courses-with-certificate/digital-marketing', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/free-video-editor', priority: 0.7, changeFrequency: 'monthly' },
+    { path: '/free-image-editor', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/photolite', priority: 0.85, changeFrequency: 'weekly' },
     { path: '/contact', priority: 0.5, changeFrequency: 'monthly' },
   ]
   for (const page of EXTRA_PAGES) {

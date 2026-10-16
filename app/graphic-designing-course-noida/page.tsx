@@ -326,6 +326,13 @@ export default function GraphicDesigningCourseNoida() {
                                     courseTitle={pageData.title}
                                     buttonClassName="px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black uppercase tracking-widest italic rounded-2xl transition-all"
                                 />
+                                <Link 
+                                    href="/free-image-editor"
+                                    className="px-8 py-4 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400 font-black uppercase tracking-widest italic rounded-2xl transition-all flex items-center gap-2"
+                                >
+                                    <Palette className="h-5 w-5" />
+                                    Try PhotoLite Free
+                                </Link>
                             </div>
                         </div>
 
