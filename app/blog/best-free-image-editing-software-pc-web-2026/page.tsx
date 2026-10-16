@@ -235,15 +235,16 @@ export default function BestFreeImageEditingSoftwareBlog() {
                 </header>
 
                 {/* Featured Cover Banner (User Uploaded High-CTR Graphic) */}
-                <div className="max-w-4xl mx-auto px-6 lg:px-8 mt-10">
-                    <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-[16/9] bg-[#0c1424]">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+                    <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#0c1424]">
                         <Image
                             src="/best-free-image-editing-software-pc-web-2026.png"
                             alt="Best Free Image Editing Software for PC and Web in 2026 - Powerful Tools, Pro Features, Completely Free"
-                            fill
+                            width={1024}
+                            height={535}
                             priority
-                            className="object-cover"
-                            sizes="(max-width: 896px) 100vw, 896px"
+                            className="w-full h-auto block object-contain"
+                            sizes="(max-width: 1024px) 100vw, 1024px"
                         />
                     </div>
                     <p className="text-center text-xs text-slate-400 mt-3">

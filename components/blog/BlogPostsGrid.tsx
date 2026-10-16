@@ -109,8 +109,8 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
             >
               <div className="flex flex-col lg:flex-row">
                 {/* Visual / Motion Banner */}
-                <div className="lg:w-1/2 aspect-video lg:aspect-auto overflow-hidden relative">
-                  <Link href={`/blog/${featured.slug}`}>
+                <div className="lg:w-7/12 aspect-[16/9] lg:aspect-auto overflow-hidden relative bg-[#070b14] flex items-center justify-center">
+                  <Link href={`/blog/${featured.slug}`} className="w-full h-full flex items-center justify-center">
                     {featured.slug === 'premiere-pro-ai-efficiency-guide-2026' ? (
                       <video
                         src="/premiere-pro-ai-banner.mp4"
@@ -125,9 +125,9 @@ export function BlogPostsGrid({ posts, currentPage, totalPages }: BlogPostsGridP
                       <motion.img
                         src={featured.featured_image_url || "/images/homepage/hero.png"}
                         alt={featured.title}
-                        className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                        className="w-full h-full object-cover lg:object-contain group-hover:scale-102 transition-transform duration-500"
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
                       />
                     )}
                   </Link>
