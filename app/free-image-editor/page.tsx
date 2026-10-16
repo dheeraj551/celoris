@@ -189,19 +189,28 @@ export default function FreeImageEditorPage() {
             </div>
           </div>
 
-          {/* Interactive Preview Screenshot Card */}
+          {/* Interactive Live Video Demo Preview Card */}
           <div className="max-w-5xl mx-auto mt-14 relative z-10">
-            <div className="rounded-2xl p-2 sm:p-3 bg-gradient-to-b from-white/15 to-white/5 border border-white/15 shadow-2xl backdrop-blur-xl">
-              <div className="relative rounded-xl overflow-hidden border border-black/80 aspect-[16/9] bg-[#1a1a1a]">
-                <Image
-                  src="/photolite-studio-preview.png"
-                  alt="PhotoLite Studio - Free image editor for Web and Windows PC showing multi-layer workspace"
-                  fill
-                  priority
-                  className="object-cover"
-                />
+            <div className="rounded-2xl p-2 sm:p-3 bg-gradient-to-b from-white/15 to-white/5 border border-white/15 shadow-2xl backdrop-blur-xl group">
+              <div className="relative rounded-xl overflow-hidden border border-black/80 aspect-[16/9] bg-[#141414] shadow-inner">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  controls
+                  poster="/photolite-studio-preview.png"
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/photolite-demo-1080p.mp4" type="video/mp4" />
+                  <source src="/photolite-demo-720p.mp4" type="video/mp4" />
+                  Your browser does not support HTML5 video.
+                </video>
               </div>
             </div>
+            <p className="mt-3 text-center text-xs text-slate-400">
+              🎥 Watch PhotoLite in action: multi-layer composition, brush rendering, and blend modes running smoothly in real-time.
+            </p>
           </div>
         </section>
 
