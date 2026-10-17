@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'how-to-open-and-edit-psd-files-online-without-photoshop-2026',
+      title: "How to Open and Edit PSD Files Online Without Photoshop (2026 Guide) — Full Layers, WASM & Zero Software",
+      slug: 'how-to-open-and-edit-psd-files-online-without-photoshop-2026',
+      excerpt: "The definitive 2026 architectural guide and tutorial on opening, exploring, and editing Adobe Photoshop .PSD and .PSB files directly in your web browser with layers, blend modes, vector masks, and zero software installation.",
+      featured_image_url: "/open-psd-online-guide-2026.jpg",
+      author_name: 'Creative Software & Visual Computing Lab',
+      category: 'Creative Software • 2026 Guide',
+      reading_time: 14,
+      published_at: '2026-10-17T14:00:00Z',
+    },
+    {
       id: 'best-free-image-editing-software-pc-web-2026',
       title: "Best Free Image Editing Software for PC & Web (2026 Guide) — PSD Layers, Offline Mode & No Watermark",
       slug: 'best-free-image-editing-software-pc-web-2026',
