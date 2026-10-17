@@ -29,6 +29,7 @@ export default function robots(): MetadataRoute.Robots {
                     '/learn/',
                     '/ai-tools/',
                     '/free-image-editor',
+                    '/open-psd-online',
                     '/cloud',
                     '/photolite',
                     '/job-center',

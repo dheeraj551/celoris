@@ -347,6 +347,13 @@ export default function FreeImageEditorPage() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
+                href="/open-psd-online"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all"
+              >
+                <span>Open PSD Files Online Free</span>
+                <ArrowRight className="h-4 w-4 text-cyan-400" />
+              </Link>
+              <Link
                 href="/blog/best-free-image-editing-software-pc-web-2026"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all"
               >

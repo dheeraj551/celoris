@@ -532,6 +532,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/free-courses-with-certificate/digital-marketing', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/free-video-editor', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/free-image-editor', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/open-psd-online', priority: 0.95, changeFrequency: 'weekly' },
     { path: '/photolite', priority: 0.85, changeFrequency: 'weekly' },
     { path: '/contact', priority: 0.5, changeFrequency: 'monthly' },
   ]
