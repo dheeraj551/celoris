@@ -347,6 +347,20 @@ export default function FreeImageEditorPage() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
+                href="/blog/best-free-image-editing-software-pc-web-2026"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all"
+              >
+                <span>2026 Free Image Editors Comparison</span>
+                <ArrowRight className="h-4 w-4 text-emerald-400" />
+              </Link>
+              <Link
+                href="/cloud"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-semibold transition-all"
+              >
+                <span>Free WordPress Cloud Hosting</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
                 href="/courses/adobe-photoshop-with-ai"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md"
               >

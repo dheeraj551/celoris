@@ -22,7 +22,18 @@ export default function robots(): MetadataRoute.Robots {
                     'PerplexityBot',
                     'cohere-ai'
                 ],
-                allow: ['/', '/blog/', '/courses/', '/learn/', '/ai-tools/'],
+                allow: [
+                    '/',
+                    '/blog/',
+                    '/courses/',
+                    '/learn/',
+                    '/ai-tools/',
+                    '/free-image-editor',
+                    '/cloud',
+                    '/photolite',
+                    '/job-center',
+                    '/free-courses-with-certificate'
+                ],
                 disallow: ['/admin/', '/api/'],
             }
         ],
