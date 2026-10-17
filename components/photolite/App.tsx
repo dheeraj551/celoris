@@ -50,6 +50,8 @@ import { CommandPaletteModal } from './components/Modals/CommandPaletteModal';
 import { loadNoSignalLayers } from './data/noSignalTemplate';
 import { DESIGN_TEMPLATES } from './data/templates';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { parsePsdFile } from './utils/psdLoader';
+import { retrieveAndClearPendingFile } from './utils/pendingFileStore';
 
 export default function App() {
   const [projectName, setProjectName] = useState('PhotoLite Composition');
@@ -1209,15 +1211,37 @@ export default function App() {
     }
   };
 
-  // Open Image File from Computer
-  const handleOpenFile = () => {
-    fileInputRef.current?.click();
-  };
+  // Load File (supports PSD, PSB, and standard raster images)
+  const loadFile = useCallback(async (file: File) => {
+    const isPsd = /\.(psd|psb)$/i.test(file.name);
+    if (isPsd) {
+      try {
+        const result = await parsePsdFile(file);
+        setProjectName(result.projectName);
+        setCanvasWidth(result.width);
+        setCanvasHeight(result.height);
+        setCropBox({ x: 0, y: 0, width: result.width, height: result.height });
+        setLayers(result.layers);
+        if (result.layers.length > 0) {
+          setActiveLayerId(result.layers[result.layers.length - 1].id);
+        }
+        setSelection({ active: false, type: null });
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+        recordHistory(
+          `Open PSD: ${file.name}`,
+          result.layers,
+          result.width,
+          result.height,
+          result.layers[result.layers.length - 1]?.id || ''
+        );
+        return;
+      } catch (err) {
+        console.error('Failed to parse PSD:', err);
+      }
+    }
 
-  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+    // Standard image fallback (PNG, JPG, WebP, etc.)
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
@@ -1261,6 +1285,26 @@ export default function App() {
       img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
+  }, [recordHistory]);
+
+  // Check for pending file transferred from /open-psd-online or another page
+  useEffect(() => {
+    retrieveAndClearPendingFile().then((pending) => {
+      if (pending) {
+        loadFile(pending);
+      }
+    });
+  }, [loadFile]);
+
+  // Open Image/PSD File from Computer
+  const handleOpenFile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    loadFile(file);
     e.target.value = '';
   };
 
@@ -1442,13 +1486,32 @@ export default function App() {
     handleUpdateLayer(active.id, { filters });
   };
 
+  const handleEditorDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleEditorDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (droppedFile) {
+      loadFile(droppedFile);
+    }
+  };
+
   return (
-    <div id="photolite-app-root" className="flex h-screen w-full flex-col overflow-hidden bg-[#1a1a1a] text-gray-300 font-sans select-none">
+    <div
+      id="photolite-app-root"
+      onDragOver={handleEditorDragOver}
+      onDrop={handleEditorDrop}
+      className="flex h-screen w-full flex-col overflow-hidden bg-[#1a1a1a] text-gray-300 font-sans select-none"
+    >
       {/* Hidden file inputs for opening files */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept=".psd,.psb,image/*"
         onChange={handleFileSelected}
         className="sr-only"
       />

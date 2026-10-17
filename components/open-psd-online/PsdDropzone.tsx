@@ -14,6 +14,7 @@ import {
   FolderOpen
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { storePendingFile } from "@/components/photolite/utils/pendingFileStore"
 
 export function PsdDropzone() {
   const router = useRouter()
@@ -51,13 +52,16 @@ export function PsdDropzone() {
     }
   }
 
-  const processFile = (file: File) => {
+  const processFile = async (file: File) => {
     setFileName(file.name)
     setIsProcessing(true)
-    // Seamlessly transition to the full editor studio
-    setTimeout(() => {
+    try {
+      await storePendingFile(file)
       router.push("/photolite")
-    }, 600)
+    } catch (err) {
+      console.error("Failed to store pending file in IndexedDB:", err)
+      router.push("/photolite")
+    }
   }
 
   return (
