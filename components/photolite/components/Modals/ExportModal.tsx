@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Download, FileImage, Layers, ShieldCheck } from 'lucide-react';
+import { Download, FileImage, Layers, ShieldCheck, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 import { ExportFormat, Layer } from '../../types';
 import { renderCompositeCanvas, downloadCanvas } from '../../utils/canvasUtils';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -80,9 +82,18 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     }
   }, [isOpen, format, quality, scale, layers, canvasWidth, canvasHeight]);
 
+  const { user } = useAuth();
+  const [showAuthGate, setShowAuthGate] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setShowAuthGate(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  const handleExport = () => {
+  const performDownload = () => {
     const comp = renderCompositeCanvas(layers, canvasWidth, canvasHeight);
     let finalCanvas = comp;
 
@@ -101,6 +112,14 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
     downloadCanvas(finalCanvas, format, quality, projectName);
     onClose();
+  };
+
+  const handleExport = () => {
+    if (user) {
+      performDownload();
+    } else {
+      setShowAuthGate(true);
+    }
   };
 
   const outputWidth = Math.round(canvasWidth * scale);
@@ -123,7 +142,60 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+        {showAuthGate ? (
+          <div className="py-8 px-4 text-center max-w-md mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Free High-Resolution Export</span>
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">
+              Save Your Project & Export
+            </h3>
+            <p className="text-xs text-gray-300 mb-6 leading-relaxed">
+              Sign in with Google in 1 click to download your image, save your PSD layers, and access your projects from any device for free.
+            </p>
+
+            <div className="flex justify-center mb-5">
+              <div className="w-full max-w-xs">
+                <GoogleSignInButton
+                  text="continue_with"
+                  oneTap={false}
+                  redirectTo={typeof window !== 'undefined' ? window.location.href : '/photolite'}
+                >
+                  <button
+                    onClick={performDownload}
+                    className="w-full h-11 rounded-lg bg-white text-black hover:bg-gray-100 font-semibold text-xs flex items-center justify-center gap-2 shadow"
+                  >
+                    <span>Sign in with Google</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </GoogleSignInButton>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 text-[11px] text-gray-400 py-3 border-t border-white/10 mb-4">
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> No watermark
+              </span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> Full resolution
+              </span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> 100% Free
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={performDownload}
+              className="text-xs text-gray-400 hover:text-white underline transition cursor-pointer"
+            >
+              Or continue download as guest without saving
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
           {/* Left: Preview thumbnail */}
           <div className="flex flex-col items-center justify-center bg-[#1a1a1a] rounded border border-black p-2.5 overflow-hidden">
             <div className="relative max-h-52 max-w-full flex items-center justify-center overflow-hidden rounded shadow-inner">
@@ -267,6 +339,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             Download {format.toUpperCase()}
           </button>
         </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { type Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { WindowsDownloadCta } from "@/components/free-image-editor/WindowsDownloadCta"
 import {
   Download,
   Layers,
@@ -157,18 +158,7 @@ export default function FreeImageEditorPage() {
                 </Link>
               </Button>
 
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto h-14 px-8 rounded-2xl bg-white/5 hover:bg-white/10 text-white border-white/15 hover:border-emerald-500/40 font-semibold text-base shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer"
-              >
-                <a href="/api/download/photolite" className="flex items-center justify-center gap-2.5">
-                  <Laptop className="h-5 w-5 text-emerald-400" />
-                  <span>Download for Windows PC</span>
-                  <Download className="h-4 w-4 text-emerald-400" />
-                </a>
-              </Button>
+              <WindowsDownloadCta variant="hero" />
             </div>
 
             {/* Quick Proof Badges */}
@@ -435,11 +425,7 @@ export default function FreeImageEditorPage() {
               <Button asChild size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-13 px-8 rounded-xl shadow-lg shadow-emerald-500/20 cursor-pointer">
                 <Link href="/photolite">Launch Web Editor Now</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/20 bg-black/40 hover:bg-white/10 text-white font-medium h-13 px-8 rounded-xl cursor-pointer">
-                <a href="/api/download/photolite">
-                  Download Windows PC (64-bit)
-                </a>
-              </Button>
+              <WindowsDownloadCta variant="bottom" />
             </div>
           </div>
         </section>
