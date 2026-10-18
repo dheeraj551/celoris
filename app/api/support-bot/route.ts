@@ -1,14 +1,13 @@
 import { NextRequest } from 'next/server';
 import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-import { google } from '@ai-sdk/google';
+import { createGoogle, google } from '@ai-sdk/google';
 import { createClient } from '@/lib/supabase-client';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Same Vercel AI Gateway setup as /api/chat (Celo AI) — see that route for
-// the full model catalog. This bot only ever needs one cheap, fast model.
+// Fallback Vercel AI Gateway setup if direct Google AI key is absent
 const gateway = createOpenAI({
   apiKey: process.env.VERCEL_AI_GATEWAY_KEY || '',
   baseURL: 'https://ai-gateway.vercel.sh/v1',
@@ -119,8 +118,20 @@ export async function POST(req: NextRequest) {
     }
 
     const catalogText = await buildCourseCatalogText();
+    const googleApiKey =
+      process.env.GOOGLE_API_KEY ||
+      process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+      '';
     const gatewayKey = process.env.VERCEL_AI_GATEWAY_KEY;
-    const selectedModel = gatewayKey ? gateway('google/gemini-2.5-flash-lite') : google('gemini-2.5-flash');
+
+    // Prioritize direct Google AI via your Google AI API key:
+    // Faster response time, zero gateway proxy, and directly billed to your Google plan
+    const selectedModel = googleApiKey
+      ? createGoogle({ apiKey: googleApiKey })('gemini-3.5-flash-lite')
+      : gatewayKey
+        ? gateway('google/gemini-2.5-flash-lite')
+        : google('gemini-3.5-flash-lite');
 
     const result = streamText({
       model: selectedModel,

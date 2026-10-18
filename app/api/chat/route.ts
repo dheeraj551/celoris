@@ -1,6 +1,6 @@
 import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-import { google } from '@ai-sdk/google';
+import { createGoogle, google } from '@ai-sdk/google';
 
 // Vercel AI Gateway — single endpoint for all models
 const gateway = createOpenAI({
@@ -104,9 +104,10 @@ export async function POST(req: Request) {
     console.log('[Celo AI] Gateway key present:', !!gatewayKey);
 
     // Use Vercel AI Gateway if key is available, otherwise fall back to direct Google AI
+    const googleApiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
     const selectedModel = gatewayKey
       ? getGatewayModel(model)
-      : google('gemini-2.5-flash');
+      : (googleApiKey ? createGoogle({ apiKey: googleApiKey })('gemini-3.8-flash') : google('gemini-3.8-flash'));
 
     const result = streamText({
       model: selectedModel,
@@ -170,8 +171,10 @@ export async function POST(req: Request) {
     try {
       const { prompt, systemInstruction } = await new Request(req.url, { method: 'GET' }).json().catch(() => ({})) as any;
       console.log('[Celo AI] Attempting direct Google AI fallback...');
+      const googleApiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
+      const fallbackModel = googleApiKey ? createGoogle({ apiKey: googleApiKey })('gemini-3.8-flash') : google('gemini-3.8-flash');
       const fallbackResult = streamText({
-        model: google('gemini-2.5-flash'),
+        model: fallbackModel,
         system: systemInstruction || DEFAULT_SYSTEM,
         prompt: prompt || 'Hello',
         temperature: 0.7,
