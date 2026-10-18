@@ -107,21 +107,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                         <span>Cloud</span>
                     </Link>
 
-                    {/* Open PSD Online Nav Pill */}
-                    <Link
-                        href="/open-psd-online"
-                        className={cn(
-                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 group relative",
-                            pathname.startsWith('/open-psd-online')
-                                ? "bg-cyan-500/20 border border-cyan-400/50 text-cyan-200 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                                : "text-cyan-300 hover:text-white bg-cyan-950/40 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/60 shadow-[0_0_12px_rgba(6,182,212,0.15)]"
-                        )}
-                        title="Open PSD Online — Free Browser Photoshop & PSD Editor"
-                    >
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">PSD</span>
-                        <span>Open PSD</span>
-                    </Link>
-
                     {/* Creative Studios Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -143,20 +128,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                             align="start"
                             className="w-72 bg-[#08090d]/95 backdrop-blur-3xl border border-white/[0.12] p-1.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.15)] text-slate-200 z-50 mt-2"
                         >
-                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
-                                <Link href="/open-psd-online" className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
-                                        <span className="text-[10px] font-black">PSD</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-white">Open PSD Online</span>
-                                            <span className="text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded-full">Free</span>
-                                        </div>
-                                        <p className="text-[10px] text-neutral-400 truncate">Browser Photoshop &amp; PSD layers</p>
-                                    </div>
-                                </Link>
-                            </DropdownMenuItem>
                             <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
                                 <Link href="/motion-swap" className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-[#d4f634]/15 border border-[#d4f634]/30 flex items-center justify-center text-[#d4f634] shrink-0">
@@ -218,21 +189,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                             </DropdownMenuItem>
 
                             <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
-                                <Link href="/free-image-editor" className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                                        <Sparkles className="w-4 h-4" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-white">Free Image Editor</span>
-                                            <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">PC & Web</span>
-                                        </div>
-                                        <p className="text-[10px] text-neutral-400 truncate">Client-side high-res photo editing</p>
-                                    </div>
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
                                 <Link href="/polyvault" className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                                         <Box className="w-4 h-4" />
@@ -243,6 +199,38 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">3D Vault</span>
                                         </div>
                                         <p className="text-[10px] text-neutral-400 truncate">Meshes, textures & materials</p>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator className="bg-white/[0.08] my-1" />
+
+                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
+                                <Link href="/open-psd-online" className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                                        <span className="text-[10px] font-black">PSD</span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">Open PSD Online</span>
+                                            <span className="text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded-full">Free</span>
+                                        </div>
+                                        <p className="text-[10px] text-neutral-400 truncate">Browser Photoshop &amp; PSD layers</p>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
+                                <Link href="/free-image-editor" className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                        <Sparkles className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">Free Image Editor</span>
+                                            <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">Web</span>
+                                        </div>
+                                        <p className="text-[10px] text-neutral-400 truncate">Client-side high-res photo editing</p>
                                     </div>
                                 </Link>
                             </DropdownMenuItem>
