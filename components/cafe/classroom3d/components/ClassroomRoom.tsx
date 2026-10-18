@@ -150,6 +150,8 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   // render's (null), which is why "trainer muted you" never silenced the mic.
   const localAudioTrackRef = useRef<IMicrophoneAudioTrack | null>(null);
   const localScreenTrackRef = useRef<ILocalVideoTrack | [ILocalVideoTrack, ILocalAudioTrack] | null>(null);
+  const displayStreamRef = useRef<MediaStream | null>(null);
+  const livekitScreenTracksRef = useRef<{ video?: any; audio?: any } | null>(null);
   // Everyone we're hearing, keyed by uid, so the speaker button can silence them.
   const remoteAudioRef = useRef<Map<string, any>>(new Map());
   const soundMutedRef = useRef(false);
@@ -239,6 +241,8 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
             room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
               if (track.kind === Track.Kind.Video) {
                 setBoardMediaStream(null);
+              } else if (track.kind === Track.Kind.Audio) {
+                try { track.detach(); } catch (_) {}
               }
             });
 
@@ -406,6 +410,17 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
       screen.close();
     }
     localScreenTrackRef.current = null;
+    if (displayStreamRef.current) {
+      displayStreamRef.current.getTracks().forEach((t) => {
+        try { t.stop(); } catch (_) {}
+      });
+      displayStreamRef.current = null;
+    }
+    if (livekitScreenTracksRef.current) {
+      try { livekitScreenTracksRef.current.video?.stop(); } catch (_) {}
+      try { livekitScreenTracksRef.current.audio?.stop(); } catch (_) {}
+      livekitScreenTracksRef.current = null;
+    }
     remoteAudioRef.current.forEach((track) => {
       try { track.stop(); } catch { /* already stopped */ }
     });
@@ -483,94 +498,205 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
 
   const toggleScreenShare = async () => {
     if (!isHost) return;
-    if (livekitRoomRef.current) {
-      const nextShare = !screenSharing;
-      try {
-        await livekitRoomRef.current.localParticipant.setScreenShareEnabled(nextShare, {
-          audio: true,
-          selfBrowserSurface: 'include',
-          surfaceSwitching: 'include',
-          systemAudio: 'include',
-        } as any);
-        setScreenSharing(nextShare);
-        if (nextShare) {
-          const pubs = Array.from(livekitRoomRef.current.localParticipant.videoTrackPublications.values()) as any[];
-          const screenPub = pubs.find((p) => p.source === 'screen_share');
-          if (screenPub?.track?.mediaStreamTrack) {
-            setBoardMediaStream(new MediaStream([screenPub.track.mediaStreamTrack]));
-          }
-        } else {
-          setBoardMediaStream(null);
-        }
-      } catch (err) {
-        console.error('Failed to toggle screen share on LiveKit:', err);
-      }
-      return;
-    }
+
+    // 1. If currently sharing, stop screen share
     if (screenSharing) {
-      if (Array.isArray(localScreenTrack)) {
-        await client.unpublish(localScreenTrack);
-        localScreenTrack[0].close();
-        if (localScreenTrack[1]) localScreenTrack[1].close();
-      } else if (localScreenTrack) {
-        await client.unpublish(localScreenTrack);
-        localScreenTrack.close();
+      if (livekitRoomRef.current && livekitScreenTracksRef.current) {
+        const { video, audio } = livekitScreenTracksRef.current;
+        if (video) {
+          try { await livekitRoomRef.current.localParticipant.unpublishTrack(video); } catch (_) {}
+          try { video.stop(); } catch (_) {}
+        }
+        if (audio) {
+          try { await livekitRoomRef.current.localParticipant.unpublishTrack(audio); } catch (_) {}
+          try { audio.stop(); } catch (_) {}
+        }
+        livekitScreenTracksRef.current = null;
       }
-      localScreenTrackRef.current = null;
+
+      if (localScreenTrackRef.current) {
+        const tr = localScreenTrackRef.current;
+        localScreenTrackRef.current = null;
+        try {
+          if (client) await client.unpublish(tr);
+          if (Array.isArray(tr)) {
+            tr[0].close();
+            if (tr[1]) tr[1].close();
+          } else {
+            tr.close();
+          }
+        } catch (unpubErr) {
+          console.warn('Could not unpublish Agora screen track:', unpubErr);
+        }
+      }
+
+      if (displayStreamRef.current) {
+        displayStreamRef.current.getTracks().forEach((t) => {
+          try { t.stop(); } catch (_) {}
+        });
+        displayStreamRef.current = null;
+      }
+
       setLocalScreenTrack(null);
       setBoardMediaStream(null);
       setScreenSharing(false);
-    } else {
-      try {
-        const AgoraRTC = AgoraRef.current;
-        // Prompt for screen sharing with system audio capture option enabled
-        const screenTrack = await AgoraRTC.createScreenVideoTrack(
-          {
-            encoderConfig: '1080p_2',
-            optimizationMode: 'detail',
-            systemAudio: 'include',
-            selfBrowserSurface: 'include',
-            surfaceSwitching: 'include',
-          },
-          'auto'
-        );
-        await client.publish(screenTrack);
-        localScreenTrackRef.current = screenTrack;
-        setLocalScreenTrack(screenTrack);
+      return;
+    }
 
-        // 'auto' returns either a video track or a [video, audio] tuple if user checked "Share system audio"
-        const videoTrack = Array.isArray(screenTrack) ? screenTrack[0] : screenTrack;
-
-        // Auto-cleanup when user clicks the browser's native "Stop Sharing" floating bar
-        const handleNativeStop = async () => {
-          if (localScreenTrackRef.current) {
-            const tr = localScreenTrackRef.current;
-            localScreenTrackRef.current = null;
-            try {
-              await client.unpublish(tr);
-              if (Array.isArray(tr)) {
-                tr[0].close();
-                if (tr[1]) tr[1].close();
-              } else {
-                tr.close();
-              }
-            } catch (_) {}
-            setLocalScreenTrack(null);
-            setBoardMediaStream(null);
-            setScreenSharing(false);
-          }
-        };
-
-        videoTrack.on('track-ended', handleNativeStop);
-        const rawTrack = videoTrack.getMediaStreamTrack?.();
-        if (rawTrack) {
-          rawTrack.addEventListener('ended', handleNativeStop);
-          setBoardMediaStream(new MediaStream([rawTrack]));
-        }
-        setScreenSharing(true);
-      } catch (err) {
-        console.error('Failed to start screen share', err);
+    // 2. Start screen share: directly invoke navigator.mediaDevices.getDisplayMedia
+    // with explicit audio constraints and systemAudio: 'include' so modern browsers (Chrome, Edge, Brave, Windows 10/11)
+    // always render the "Also share system audio" / "Share tab audio" option!
+    let displayStream: MediaStream;
+    try {
+      displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          displaySurface: 'monitor',
+          frameRate: { ideal: 30, max: 60 },
+          width: { max: 1920 },
+          height: { max: 1080 },
+        },
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          suppressLocalAudioPlayback: false,
+        },
+        systemAudio: 'include',
+        selfBrowserSurface: 'include',
+        surfaceSwitching: 'include',
+        monitorTypeSurfaces: 'include',
+      } as any);
+    } catch (firstErr: any) {
+      if (firstErr?.name === 'NotAllowedError' || firstErr?.name === 'AbortError') {
+        return; // User cancelled prompt
       }
+      try {
+        // Fallback for browsers that reject advanced constraints
+        displayStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true,
+        });
+      } catch (fallbackErr: any) {
+        if (fallbackErr?.name === 'NotAllowedError' || fallbackErr?.name === 'AbortError') {
+          return;
+        }
+        console.error('Failed to getDisplayMedia:', fallbackErr);
+        return;
+      }
+    }
+
+    displayStreamRef.current = displayStream;
+    const rawVideoTrack = displayStream.getVideoTracks()[0];
+    if (!rawVideoTrack) {
+      console.error('No video track found in display stream');
+      return;
+    }
+
+    const rawAudioTracks = displayStream.getAudioTracks();
+    const rawAudioTrack = rawAudioTracks.length > 0 ? rawAudioTracks[0] : null;
+
+    // Helper for cleanup when user clicks browser's native floating "Stop Sharing" bar
+    const handleNativeStop = async () => {
+      if (displayStreamRef.current) {
+        displayStreamRef.current.getTracks().forEach((t) => {
+          try { t.stop(); } catch (_) {}
+        });
+        displayStreamRef.current = null;
+      }
+
+      if (livekitRoomRef.current && livekitScreenTracksRef.current) {
+        const { video, audio } = livekitScreenTracksRef.current;
+        if (video) {
+          try { await livekitRoomRef.current.localParticipant.unpublishTrack(video); } catch (_) {}
+          try { video.stop(); } catch (_) {}
+        }
+        if (audio) {
+          try { await livekitRoomRef.current.localParticipant.unpublishTrack(audio); } catch (_) {}
+          try { audio.stop(); } catch (_) {}
+        }
+        livekitScreenTracksRef.current = null;
+      }
+
+      if (localScreenTrackRef.current) {
+        const tr = localScreenTrackRef.current;
+        localScreenTrackRef.current = null;
+        try {
+          if (client) await client.unpublish(tr);
+          if (Array.isArray(tr)) {
+            tr[0].close();
+            if (tr[1]) tr[1].close();
+          } else {
+            tr.close();
+          }
+        } catch (_) {}
+      }
+
+      setLocalScreenTrack(null);
+      setBoardMediaStream(null);
+      setScreenSharing(false);
+    };
+
+    rawVideoTrack.addEventListener('ended', handleNativeStop);
+    if (rawAudioTrack) {
+      rawAudioTrack.addEventListener('ended', handleNativeStop);
+    }
+
+    // A) If LiveKit is connected
+    if (livekitRoomRef.current) {
+      try {
+        const { Track, LocalVideoTrack, LocalAudioTrack } = await import('livekit-client');
+        const videoTrack = new LocalVideoTrack(rawVideoTrack, undefined, false);
+        videoTrack.source = Track.Source.ScreenShare;
+        await livekitRoomRef.current.localParticipant.publishTrack(videoTrack, {
+          source: Track.Source.ScreenShare,
+          name: 'screen_share',
+        });
+
+        let audioTrack: any = null;
+        if (rawAudioTrack) {
+          audioTrack = new LocalAudioTrack(rawAudioTrack, undefined, false);
+          audioTrack.source = Track.Source.ScreenShareAudio;
+          await livekitRoomRef.current.localParticipant.publishTrack(audioTrack, {
+            source: Track.Source.ScreenShareAudio,
+            name: 'screen_share_audio',
+          });
+        }
+
+        livekitScreenTracksRef.current = { video: videoTrack, audio: audioTrack };
+        setBoardMediaStream(new MediaStream([rawVideoTrack]));
+        setScreenSharing(true);
+      } catch (lkErr) {
+        console.error('Failed to publish screen share on LiveKit:', lkErr);
+        handleNativeStop();
+      }
+      return;
+    }
+
+    // B) Agora RTC
+    try {
+      const AgoraRTC = AgoraRef.current;
+      const videoTrack = AgoraRTC.createCustomVideoTrack({
+        mediaStreamTrack: rawVideoTrack,
+        optimizationMode: 'detail',
+      });
+
+      let audioTrack: any = null;
+      if (rawAudioTrack) {
+        audioTrack = AgoraRTC.createCustomAudioTrack({
+          mediaStreamTrack: rawAudioTrack,
+        });
+      }
+
+      const tracksToPublish = audioTrack ? [videoTrack, audioTrack] : [videoTrack];
+      await client.publish(tracksToPublish);
+
+      localScreenTrackRef.current = audioTrack ? [videoTrack, audioTrack] : videoTrack;
+      setLocalScreenTrack(audioTrack ? [videoTrack, audioTrack] : videoTrack);
+      setBoardMediaStream(new MediaStream([rawVideoTrack]));
+      setScreenSharing(true);
+    } catch (agoraErr) {
+      console.error('Failed to publish screen share on Agora:', agoraErr);
+      handleNativeStop();
     }
   };
 

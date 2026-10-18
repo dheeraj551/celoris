@@ -197,8 +197,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               <MonitorUp className="w-3.5 h-3.5" />
               <span>{screenSharing ? 'Stop sharing screen' : 'Share screen'}</span>
             </button>
-            <p className="text-[10px] text-slate-500 leading-relaxed">
-              Shows live on the 3D chalkboard. Tip: check &quot;Also share system audio&quot; / &quot;Share tab audio&quot; in the browser prompt to broadcast sound.
+            <p className="text-[10px] text-slate-400 leading-relaxed">
+              Broadcasts live to the 3D board. <strong className="text-emerald-400 font-semibold">To stream audio:</strong> select <span className="text-slate-200">Entire Screen</span> and check <span className="text-slate-200">&quot;Also share system audio&quot;</span>, or select a <span className="text-slate-200">Browser Tab</span> with audio enabled.
             </p>
           </section>
         )}
