@@ -16,7 +16,8 @@ import {
   Smartphone,
   ArrowRight,
   BookOpen,
-  MessagesSquare
+  MessagesSquare,
+  MessageSquare
 } from 'lucide-react';
 import { PhoneView } from './types';
 import { SupportView } from './views/SupportView';
@@ -39,7 +40,7 @@ const TEASER_SEEN_KEY = 'celoris-phone-teaser-seen';
 
 export function CelorisPhoneOS() {
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState<PhoneView>('home');
+  const [view, setView] = useState<PhoneView>('support');
   const [isMobile, setIsMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState('10:00');
   const [currentDate, setCurrentDate] = useState('FRI, SEP 25');
@@ -50,11 +51,16 @@ export function CelorisPhoneOS() {
   const phoneRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
-  // Responsive mobile check
+  // Responsive mobile check & instant desktop open to Celoris Support
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mob = window.innerWidth < 768;
+      setIsMobile(mob);
       setPhoneHeight(Math.max(360, Math.min(PHONE_FULL_HEIGHT, window.innerHeight - 16)));
+      // On desktop, immediately show Celoris Support as the page loads
+      if (!mob) {
+        setOpen(true);
+      }
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -174,7 +180,7 @@ export function CelorisPhoneOS() {
 
       {/* Perfectly Balanced 6 Apps Grid (2 Columns x 3 Rows) */}
       <div className="grid grid-cols-2 gap-2.5 my-auto py-2">
-        {/* App 1: Celoris Support (AI Chat, Callback & FAQ) */}
+        {/* App 1: Celoris Support (Live Chat, Callback & FAQ) */}
         <button
           type="button"
           onClick={() => openApp('support')}
@@ -182,10 +188,10 @@ export function CelorisPhoneOS() {
         >
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white mb-1.5 shadow-[0_0_12px_rgba(16,185,129,0.4)] group-hover:scale-105 transition-transform">
-            <Bot className="w-4.5 h-4.5" />
+            <MessageSquare className="w-4.5 h-4.5" />
           </div>
           <span className="text-[11px] font-bold text-white block">Celoris Support</span>
-          <span className="text-[8.5px] text-emerald-300/90 mt-0.5">AI &amp; Helpdesk</span>
+          <span className="text-[8.5px] text-emerald-300/90 mt-0.5">Live Help &amp; WhatsApp</span>
         </button>
 
         {/* App 2: Celoris Chat (Student Connect) */}
