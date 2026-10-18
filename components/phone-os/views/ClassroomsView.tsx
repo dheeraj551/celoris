@@ -174,7 +174,7 @@ export function ClassroomsView({ onBack, onClose }: ClassroomsViewProps) {
         )}
 
         {rooms?.map(room => {
-          const seats = room.max_students || 15;
+          const seats = room.max_students || 10;
           const taken = Math.max(0, room.current_students ?? 0);
           return (
             <Link

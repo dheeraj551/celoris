@@ -18,7 +18,7 @@ import { classPhase, loadRoomSchedule } from '@/lib/cafe-class-queue'
 // closed laptop lid doesn't hold a seat forever — the client is expected to
 // call 'heartbeat' every ~20s while seated, and 'leave' on the way out.
 const STALE_AFTER_SECONDS = 45
-const DEFAULT_MAX_STUDENTS = 15
+const DEFAULT_MAX_STUDENTS = 10
 
 // The host can now set a per-room capacity from the lobby's create form or
 // the in-room "Class Info" editor (cafe_classrooms.max_students) — this

@@ -223,7 +223,7 @@ export async function GET(request: Request) {
                       queueOpenMinutes: schedule.queue_open_minutes,
                       vipReservedSeats: schedule.vip_reserved_seats,
                       vipGraceMinutes: schedule.vip_grace_minutes,
-                      maxStudents: schedule.max_students || 15,
+                      maxStudents: schedule.max_students || 10,
                   }
                 : null,
         })

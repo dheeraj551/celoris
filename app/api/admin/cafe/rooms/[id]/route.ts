@@ -46,7 +46,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
     if (body.trainerName !== undefined) updates.trainer_name = String(body.trainerName).trim() || null
     if (body.maxStudents !== undefined) {
-      updates.max_students = Math.min(200, Math.max(1, parseInt(body.maxStudents, 10) || 15))
+      updates.max_students = Math.min(200, Math.max(1, parseInt(body.maxStudents, 10) || 10))
     }
     if (body.classStatus !== undefined) updates.class_status = body.classStatus
     if (body.currentStudents !== undefined) {

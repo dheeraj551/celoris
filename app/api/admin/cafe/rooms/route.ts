@@ -87,7 +87,7 @@ export async function POST(request: Request) {
 
     const admin = createSupabaseClientForServer()
 
-    const capacity = Math.min(200, Math.max(1, parseInt(body.maxStudents, 10) || 15))
+    const capacity = Math.min(200, Math.max(1, parseInt(body.maxStudents, 10) || 10))
     const present = Math.min(capacity, Math.max(0, parseInt(body.currentStudents, 10) || 1))
 
     const tags = Array.isArray(body.tags)

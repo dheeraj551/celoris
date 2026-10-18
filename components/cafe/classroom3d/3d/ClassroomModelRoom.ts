@@ -1,16 +1,9 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import type { CameraPreset } from '../types';
 
-// The real 3D classroom model (public/models/classroom.glb) and the room
-// layouts the scene switches between.
-//
-// Model: "Classroom" by stylo0 on Sketchfab (Sketchfab Standard licence).
-// It was compressed for the web with gltf-transform (meshopt, 3.7 MB ->
-// 0.6 MB); node names are unchanged. Seat, board and lectern positions
-// below were measured from this exact file, so if the GLB is swapped for a
-// different model these numbers have to be measured again.
+// Procedural 14x18m modern classroom architecture inspired by new_3d_room.html.
+// Generates the room shell, floor, ceiling, sunlit windows, blackboard frame,
+// teacher desk/podium, and exactly 10 student desks arranged in 2 rows of 5.
 
 export const CLASSROOM_MODEL_URL = '/models/classroom.glb';
 
@@ -47,8 +40,7 @@ export interface RoomLayout {
   dust: { halfX: number; minY: number; maxY: number; halfZ: number; size: number };
 }
 
-// The original procedural "grand auditorium" (still used as the fallback if
-// the model can't be downloaded).
+// The original procedural "grand auditorium" (fallback if needed).
 export const AUDITORIUM_LAYOUT: RoomLayout = {
   kind: 'auditorium',
   presets: {
@@ -75,27 +67,22 @@ export const AUDITORIUM_LAYOUT: RoomLayout = {
 };
 
 // ---------------------------------------------------------------- classroom
-// World coordinates after the model is turned 180° so the board faces the
-// same way as the auditorium's (board at -z, students looking towards -z,
-// windows on the left at -x).
+// Coordinates matching new_3d_room.html (ROOM_W = 14, ROOM_H = 4.5, ROOM_D = 18).
+// Board at -z (-8.86), students looking towards -z, windows on the left at -x (-7.0).
 
-/** Green writing surface of the chalkboard. */
+/** Green writing surface of the classroom chalkboard. */
 export const CLASSROOM_BOARD = {
-  center: new THREE.Vector3(-0.159, 1.6485, -4.808),
-  width: 4.354,
-  height: 1.135,
+  center: new THREE.Vector3(0, 2.2, -8.86),
+  width: 6.4,
+  height: 2.6,
   /** A shared screen may overhang the board a little, like a projector image. */
-  maxShareHeight: 1.45,
-  shareCenterY: 1.7,
+  maxShareHeight: 2.4,
+  shareCenterY: 2.2,
 };
 
-// Front-right, just beside the board, so the trainer is in view from the
-// students' desks (including the front row) without blocking the board.
-const LECTERN_POS = new THREE.Vector3(2.55, 0, -3.55);
-const LECTERN_ROT_Y = -0.45;
-
-const DESK_COLUMNS_X = [-2.93, -0.99, 0.95, 2.89]; // left -> right as seen by students
-const DESK_ROWS_Z = [-1.57, -0.07, 1.44, 2.94]; // front row (A) -> back row (D)
+// 10 Student Desks: 2 rows of 5 columns
+export const DESK_COLUMNS_X = [-3.6, -1.8, 0, 1.8, 3.6]; // 5 columns (symmetrical around center)
+export const DESK_ROWS_Z = [-1.6, 1.4]; // 2 rows: Row A (front) and Row B (back)
 
 export const CLASSROOM_SEATS: SeatSlotDef[] = [];
 DESK_ROWS_Z.forEach((z, r) => {
@@ -111,36 +98,34 @@ DESK_ROWS_Z.forEach((z, r) => {
   });
 });
 
-export const CLASSROOM_DESK_TOP_Y = 0.845;
+export const CLASSROOM_DESK_TOP_Y = 0.74;
 
-const boardCenter: Vec3 = [CLASSROOM_BOARD.center.x, 1.6, CLASSROOM_BOARD.center.z];
+const boardCenter: Vec3 = [CLASSROOM_BOARD.center.x, 2.2, CLASSROOM_BOARD.center.z];
 
 export const CLASSROOM_LAYOUT: RoomLayout = {
   kind: 'classroom',
   presets: {
-    // Trainer standing behind the lectern, looking over the class.
-    // Trainer's own eyes, standing behind the lectern and facing the class
-    // (their own figure is hidden for them, like a first-person view).
-    teacher: { pos: [2.3, 1.85, -4.35], look: [-0.4, 0.95, 1.4] },
-    board: { pos: [-0.159, 1.6, -1.25], look: [-0.159, 1.62, -4.808] },
-    overview: { pos: [3.5, 2.55, 4.5], look: [-0.7, 0.75, -1.6] },
-    balcony: { pos: [0, 2.7, 4.55], look: boardCenter },
-    'student-row1': { pos: [-0.97, 1.4, -0.75], look: boardCenter },
-    'student-row3': { pos: [0.95, 1.45, 2.3], look: boardCenter },
+    // Trainer standing in front of the board/desk, looking over the class
+    teacher: { pos: [-1.8, 1.7, -4.8], look: [0, 1.1, 1.5] },
+    board: { pos: [0, 2.2, -4.0], look: boardCenter },
+    overview: { pos: [5.5, 3.8, 5.5], look: [0, 1.5, -2.0] },
+    balcony: { pos: [0, 4.2, 7.5], look: boardCenter },
+    'student-row1': { pos: [0, 1.35, -1.0], look: boardCenter },
+    'student-row3': { pos: [0, 1.45, 2.0], look: boardCenter },
   },
-  camMin: [-4.15, 0.6, -4.55],
-  camMax: [3.8, 3.05, 4.7],
-  targetMin: [-4.3, 0.3, -4.9],
-  targetMax: [4.0, 3.1, 4.8],
+  camMin: [-7.0, 0.5, -9.0],
+  camMax: [7.0, 4.5, 9.0],
+  targetMin: [-7.0, 0.2, -9.0],
+  targetMax: [7.0, 4.0, 9.0],
   minDistance: 1.0,
-  maxDistance: 9.0,
-  focus: { up: 1.55, forward: 1.9, lookUp: 1.0, lookBack: 0.3 },
-  chairOffsetZ: 0.33,
-  seatEye: { up: 1.62, back: 1.0, side: 0.15 },
+  maxDistance: 18.0,
+  focus: { up: 1.35, forward: 1.8, lookUp: 0.9, lookBack: 0.3 },
+  chairOffsetZ: 0.58,
+  seatEye: { up: 1.25, back: 0.5, side: 0 },
   boardLook: boardCenter,
-  teacher: { pos: [2.85, 0, -4.15], rotY: LECTERN_ROT_Y },
-  spotlightY: 3.15,
-  dust: { halfX: 4.0, minY: 0.3, maxY: 3.0, halfZ: 4.6, size: 0.025 },
+  teacher: { pos: [-1.8, 0, -5.2], rotY: 0.35 },
+  spotlightY: 4.4,
+  dust: { halfX: 6.5, minY: 0.3, maxY: 4.2, halfZ: 8.5, size: 0.03 },
 };
 
 export interface ClassroomModel {
@@ -148,111 +133,228 @@ export interface ClassroomModel {
   lectern: THREE.Object3D | null;
 }
 
-let loaderSingleton: GLTFLoader | null = null;
-function getLoader() {
-  if (!loaderSingleton) {
-    loaderSingleton = new GLTFLoader();
-    loaderSingleton.setMeshoptDecoder(MeshoptDecoder);
-  }
-  return loaderSingleton;
-}
-
 const NO_RAYCAST = () => {};
 
-/** Downloads the classroom model and prepares it for the scene. */
-export async function loadClassroomModel(url: string = CLASSROOM_MODEL_URL): Promise<ClassroomModel> {
-  const gltf = await getLoader().loadAsync(url);
-  const root = new THREE.Group();
-  root.name = 'classroom-model';
+/** Builds the procedural 14x18m modern classroom architecture from new_3d_room.html. */
+export function buildProceduralClassroomRoom(root: THREE.Group): { lectern: THREE.Object3D | null } {
+  const ROOM_W = 14;
+  const ROOM_H = 4.5;
+  const ROOM_D = 18;
 
-  const model = gltf.scene;
-  model.rotation.y = Math.PI;
-  root.add(model);
+  // 1. Floor: parquet wood
+  const floorGeo = new THREE.PlaneGeometry(ROOM_W, ROOM_D);
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0xc49a6c, roughness: 0.55 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  floor.raycast = NO_RAYCAST;
+  root.add(floor);
 
-  model.traverse((obj) => {
-    const mesh = obj as THREE.Mesh;
-    if (!mesh.isMesh) return;
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    // Only our own seat hit-boxes and the lectern need to be clickable;
-    // skipping the 85k-triangle room keeps hover checks cheap.
-    mesh.raycast = NO_RAYCAST;
+  // 2. Ceiling & Walls
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xf3f4f6, roughness: 0.95 });
+
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_D), wallMat);
+  ceiling.position.y = ROOM_H;
+  ceiling.rotation.x = Math.PI / 2;
+  ceiling.raycast = NO_RAYCAST;
+  root.add(ceiling);
+
+  const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_H), wallMat);
+  frontWall.position.set(0, ROOM_H / 2, -ROOM_D / 2);
+  frontWall.receiveShadow = true;
+  frontWall.raycast = NO_RAYCAST;
+  root.add(frontWall);
+
+  const backWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_H), wallMat);
+  backWall.position.set(0, ROOM_H / 2, ROOM_D / 2);
+  backWall.rotation.y = Math.PI;
+  backWall.raycast = NO_RAYCAST;
+  root.add(backWall);
+
+  const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_D, ROOM_H), wallMat);
+  rightWall.position.set(ROOM_W / 2, ROOM_H / 2, 0);
+  rightWall.rotation.y = -Math.PI / 2;
+  rightWall.raycast = NO_RAYCAST;
+  root.add(rightWall);
+
+  const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_D, ROOM_H), wallMat);
+  leftWall.position.set(-ROOM_W / 2, ROOM_H / 2, 0);
+  leftWall.rotation.y = Math.PI / 2;
+  leftWall.raycast = NO_RAYCAST;
+  root.add(leftWall);
+
+  // 3. Windows on Left Wall (3 large sunlit windows)
+  const winMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.35 });
+  const winFrameMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 });
+  [-3.5, 0, 3.5].forEach((z) => {
+    const win = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.2), winMat);
+    win.rotation.y = Math.PI / 2;
+    win.position.set(-ROOM_W / 2 + 0.05, 2.3, z);
+    win.raycast = NO_RAYCAST;
+    root.add(win);
+
+    // Subtle window frame
+    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.3, 2.5), winFrameMat);
+    frame.position.set(-ROOM_W / 2 + 0.04, 2.3, z);
+    frame.raycast = NO_RAYCAST;
+    root.add(frame);
   });
-  // Ceiling light fittings: they are the light source, so they shouldn't
-  // throw shadows onto the desks.
-  ['Object_25', 'Object_26'].forEach((name) => {
-    const o = model.getObjectByName(name);
-    if (o) o.castShadow = false;
+
+  // 4. Ceiling Light Panels (matching new_3d_room.html)
+  const lightPanelMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  [[-3.2, -4], [3.2, -4], [-3.2, 2], [3.2, 2]].forEach(([x, z]) => {
+    const panel = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.6), lightPanelMat);
+    panel.position.set(x, ROOM_H - 0.02, z);
+    panel.raycast = NO_RAYCAST;
+    root.add(panel);
+
+    const pLight = new THREE.PointLight(0xffffff, 0.4, 10);
+    pLight.position.set(x, ROOM_H - 0.3, z);
+    root.add(pLight);
   });
 
-  root.updateMatrixWorld(true);
+  // 5. Blackboard Frame & Chalk Tray
+  const boardFrameMat = new THREE.MeshStandardMaterial({ color: 0x3d2b1f, roughness: 0.7 });
+  const boardFrame = new THREE.Mesh(new THREE.BoxGeometry(6.6, 2.8, 0.1), boardFrameMat);
+  boardFrame.position.set(0, 2.2, -ROOM_D / 2 + 0.08);
+  boardFrame.castShadow = true;
+  boardFrame.raycast = NO_RAYCAST;
+  root.add(boardFrame);
 
-  // Move the lectern from the middle of the board to the front-right corner
-  // so it no longer hides the board (and a shared screen) from the class.
-  let lectern: THREE.Object3D | null = null;
-  const lecternMesh = model.getObjectByName('Object_31');
-  if (lecternMesh) {
-    const box = new THREE.Box3().setFromObject(lecternMesh);
-    const centre = box.getCenter(new THREE.Vector3());
-    const pivot = new THREE.Group();
-    pivot.name = 'lectern';
-    pivot.position.set(centre.x, 0, centre.z);
-    root.add(pivot);
-    pivot.updateMatrixWorld(true);
-    pivot.attach(lecternMesh);
-    pivot.position.copy(LECTERN_POS);
-    pivot.rotation.y = LECTERN_ROT_Y;
-    (lecternMesh as THREE.Mesh).raycast = THREE.Mesh.prototype.raycast;
-    lectern = pivot;
-  }
+  const trayMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.6 });
+  const tray = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.08, 0.16), trayMat);
+  tray.position.set(0, 0.76, -ROOM_D / 2 + 0.14);
+  tray.raycast = NO_RAYCAST;
+  root.add(tray);
 
-  addRoomClosure(root);
+  // 6. Teacher Desk & Chair & Lectern
+  const woodMat = new THREE.MeshStandardMaterial({ color: 0x785338, roughness: 0.6 });
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3, metalness: 0.8 });
+  const chairMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
+
+  const teacherDesk = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 1.0), woodMat);
+  teacherDesk.position.set(0, 0.4, -6.0);
+  teacherDesk.castShadow = true;
+  teacherDesk.receiveShadow = true;
+  root.add(teacherDesk);
+
+  // Teacher Chair
+  const tChairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.04, 0.46), chairMat);
+  tChairSeat.position.set(0, 0.44, -6.8);
+  tChairSeat.castShadow = true;
+  tChairSeat.raycast = NO_RAYCAST;
+  root.add(tChairSeat);
+
+  const tChairBack = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.42, 0.04), chairMat);
+  tChairBack.position.set(0, 0.72, -6.8 - 0.21);
+  tChairBack.castShadow = true;
+  tChairBack.raycast = NO_RAYCAST;
+  root.add(tChairBack);
+
+  // Lectern / Podium (clickable to jump to teacher view)
+  const lecternGroup = new THREE.Group();
+  lecternGroup.name = 'lectern';
+  lecternGroup.position.set(2.4, 0, -5.5);
+
+  const lecternBase = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.1, 0.5), woodMat);
+  lecternBase.position.y = 0.55;
+  lecternBase.castShadow = true;
+  lecternGroup.add(lecternBase);
+
+  const lecternTop = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.05, 0.6), woodMat);
+  lecternTop.position.set(0, 1.12, 0);
+  lecternTop.rotation.x = -0.15;
+  lecternTop.castShadow = true;
+  lecternGroup.add(lecternTop);
+
+  lecternGroup.traverse((o) => {
+    o.userData = { isPodium: true, isClickable: true };
+  });
+  root.add(lecternGroup);
+
+  // 7. Exactly 10 Student Desks & Matching Chairs (2 rows x 5 columns)
+  const deskTopGeo = new THREE.BoxGeometry(1.4, 0.06, 0.75);
+  const deskLegGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.74, 12);
+  const notebookGeo = new THREE.BoxGeometry(0.24, 0.015, 0.32);
+  const notebookMat = new THREE.MeshStandardMaterial({ color: 0x0284c7 });
+
+  const chairSeatGeo = new THREE.BoxGeometry(0.46, 0.04, 0.46);
+  const chairBackGeo = new THREE.BoxGeometry(0.46, 0.42, 0.04);
+  const chairLegGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.44, 10);
+
+  DESK_ROWS_Z.forEach((z) => {
+    DESK_COLUMNS_X.forEach((x) => {
+      // Desk
+      const deskGroup = new THREE.Group();
+      deskGroup.position.set(x, 0, z);
+
+      const top = new THREE.Mesh(deskTopGeo, woodMat);
+      top.position.y = 0.74;
+      top.castShadow = true;
+      top.receiveShadow = true;
+      deskGroup.add(top);
+
+      [[-0.6, -0.3], [0.6, -0.3], [-0.6, 0.3], [0.6, 0.3]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(deskLegGeo, metalMat);
+        leg.position.set(lx, 0.37, lz);
+        leg.castShadow = true;
+        deskGroup.add(leg);
+      });
+
+      // Blue notebook facing student
+      const notebook = new THREE.Mesh(notebookGeo, notebookMat);
+      notebook.position.set(-0.25, 0.78, 0.05);
+      notebook.rotation.y = 0.1;
+      deskGroup.add(notebook);
+
+      deskGroup.traverse((o) => {
+        (o as THREE.Mesh).raycast = NO_RAYCAST;
+      });
+      root.add(deskGroup);
+
+      // Chair behind desk at z + 0.58
+      const chairGroup = new THREE.Group();
+      chairGroup.position.set(x, 0, z + 0.58);
+
+      const seat = new THREE.Mesh(chairSeatGeo, chairMat);
+      seat.position.y = 0.44;
+      seat.castShadow = true;
+      chairGroup.add(seat);
+
+      // Backrest at +Z relative to chair so it sits behind the student facing -Z
+      const back = new THREE.Mesh(chairBackGeo, chairMat);
+      back.position.set(0, 0.72, 0.21);
+      back.castShadow = true;
+      chairGroup.add(back);
+
+      [[-0.19, -0.19], [0.19, -0.19], [-0.19, 0.19], [0.19, 0.19]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(chairLegGeo, metalMat);
+        leg.position.set(lx, 0.22, lz);
+        leg.castShadow = true;
+        chairGroup.add(leg);
+      });
+
+      chairGroup.traverse((o) => {
+        (o as THREE.Mesh).raycast = NO_RAYCAST;
+      });
+      root.add(chairGroup);
+    });
+  });
+
+  // 8. Outdoor Scenery outside the windows
   addOutdoorScenery(root);
-  return { root, lectern };
+
+  return { lectern: lecternGroup };
 }
 
-/** The model is a cut-away (no ceiling, no right or back wall): close it up. */
-function addRoomClosure(root: THREE.Group) {
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xe3e3e3, roughness: 0.92 });
-  // Slightly self-lit: a real ceiling is brightened by the tube lights
-  // hanging just below it, which a directional light can't reproduce.
-  const ceilingMat = new THREE.MeshStandardMaterial({
-    color: 0xf2f2f0,
-    roughness: 0.95,
-    emissive: 0xf2f2f0,
-    emissiveIntensity: 0.28,
-  });
-  const skirtingMat = new THREE.MeshStandardMaterial({ color: 0xa56743, roughness: 0.7 });
-
-  const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number, cast = true) => {
-    const m = new THREE.Mesh(geo, mat);
-    m.position.set(x, y, z);
-    m.castShadow = cast;
-    m.receiveShadow = true;
-    m.raycast = NO_RAYCAST;
-    root.add(m);
-    return m;
-  };
-
-  // Right wall (x = 4.02) and back wall (z = 4.87), full height 3.24 m.
-  add(new THREE.BoxGeometry(0.3, 3.54, 10.34), wallMat, 4.17, 1.47, 0);
-  add(new THREE.BoxGeometry(9.1, 3.54, 0.3), wallMat, -0.22, 1.47, 5.02);
-  // Ceiling. It doesn't cast shadows, so the overhead "ceiling lights"
-  // (a directional light above the room) still reach the desks.
-  add(new THREE.BoxGeometry(9.2, 0.16, 10.4), ceilingMat, -0.22, 3.32, 0, false);
-  // Skirting boards matching the board frames' wood.
-  add(new THREE.BoxGeometry(0.02, 0.1, 9.7), skirtingMat, 4.01, 0.05, 0);
-  add(new THREE.BoxGeometry(8.4, 0.1, 0.02), skirtingMat, -0.2, 0.05, 4.86);
-}
-
-/** Grass and a few trees so the windows don't look out onto nothing. */
+/** Grass and trees outside the windows so the room feels bright and natural. */
 function addOutdoorScenery(root: THREE.Group) {
   const ground = new THREE.Mesh(
-    new THREE.CircleGeometry(60, 48),
+    new THREE.CircleGeometry(50, 36),
     new THREE.MeshStandardMaterial({ color: 0x6f8f4e, roughness: 1 })
   );
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -0.32;
+  ground.position.set(-18, -0.05, 0);
   ground.receiveShadow = true;
   ground.raycast = NO_RAYCAST;
   root.add(ground);
@@ -261,27 +363,36 @@ function addOutdoorScenery(root: THREE.Group) {
   const leafMats = [0x4f7a3a, 0x5d8a41, 0x44693a].map(
     (c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85, flatShading: true })
   );
-  const trunkGeo = new THREE.CylinderGeometry(0.12, 0.16, 1.6, 7);
-  const leafGeo = new THREE.IcosahedronGeometry(1.25, 0);
+  const trunkGeo = new THREE.CylinderGeometry(0.14, 0.18, 2.0, 7);
+  const leafGeo = new THREE.IcosahedronGeometry(1.4, 0);
+
   const trees: Array<[number, number, number]> = [
-    [-9.5, -6.5, 1.1], [-11, -1.5, 1.35], [-9.8, 3.2, 1.0], [-12.5, 7.5, 1.4],
-    [-15, -9, 1.6], [-16.5, 1.5, 1.7], [-14, 11, 1.5], [-19, -4, 1.9], [-20, 7, 1.8],
+    [-11.5, -6.5, 1.1], [-13, -1.5, 1.35], [-11.8, 3.2, 1.0], [-14.5, 7.5, 1.4],
+    [-17, -9, 1.6], [-18.5, 1.5, 1.7], [-16, 11, 1.5], [-21, -4, 1.9], [-22, 7, 1.8],
   ];
   trees.forEach(([x, z, s], i) => {
     const tree = new THREE.Group();
     const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-    trunk.position.y = 0.8;
+    trunk.position.y = 1.0;
     const leaves = new THREE.Mesh(leafGeo, leafMats[i % leafMats.length]);
-    leaves.position.y = 2.2;
-    leaves.scale.set(1, 1.15, 1);
+    leaves.position.y = 2.6;
+    leaves.scale.set(1, 1.2, 1);
     tree.add(trunk, leaves);
-    tree.position.set(x, -0.32, z);
+    tree.position.set(x, -0.05, z);
     tree.scale.setScalar(s);
     tree.traverse((o) => {
       (o as THREE.Mesh).raycast = NO_RAYCAST;
     });
     root.add(tree);
   });
+}
+
+/** Asynchronously resolves the procedural 3D room model without relying on external network downloads. */
+export async function loadClassroomModel(_url: string = CLASSROOM_MODEL_URL): Promise<ClassroomModel> {
+  const root = new THREE.Group();
+  root.name = 'classroom-model';
+  const { lectern } = buildProceduralClassroomRoom(root);
+  return { root, lectern };
 }
 
 /** Frees GPU memory for everything under `obj` (geometries, materials, textures). */

@@ -132,7 +132,7 @@ export default function App() {
             // room) rather than a live presence count — kept manual on
             // purpose per the trainer's own preference.
             onlineCount: typeof r.current_students === 'number' ? r.current_students : 1,
-            maxStudents: r.max_students || 15,
+            maxStudents: r.max_students || 10,
             status: (r.class_status as any) || 'Ready',
             nextBatchInfo: r.next_batch_info || undefined,
             nextClassAt: r.next_class_at || null,

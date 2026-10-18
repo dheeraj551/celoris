@@ -15,7 +15,7 @@ export interface Room {
   description: string;
   category: 'study' | 'course' | 'mixer' | 'night' | 'onboarding' | 'classroom' | 'whiteboard' | 'livekit_classroom';
   onlineCount: number;
-  /** Host-set seat cap for this table (e.g. 15). Defaults to 15 when not set. */
+  /** Host-set seat cap for this table (e.g. 10). Defaults to 10 when not set. */
   maxStudents?: number;
   status: 'Ready' | 'Live' | 'Full';
   /** Free-text note the host can set so students see when to come back

@@ -46,6 +46,8 @@ export interface Desk3DObject {
   materials: THREE.Material[];
   laptopScreenMat?: THREE.MeshStandardMaterial;
   baseY: number;
+  headGroup?: THREE.Group;
+  hips?: THREE.Group;
 }
 
 export class Classroom3DScene {
@@ -70,6 +72,8 @@ export class Classroom3DScene {
   private teacherFigureGroup: THREE.Group | null = null;
   private teacherFigureMaterials: THREE.Material[] = [];
   private teacherNameSprite: THREE.Sprite | null = null;
+  private teacherHeadGroup: THREE.Group | null = null;
+  private teacherRightArm: THREE.Group | null = null;
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
 
@@ -347,42 +351,46 @@ export class Classroom3DScene {
     this.scene.environmentIntensity = 0.45;
     this.renderer.toneMappingExposure = 1.0;
 
-    // 3. Lights re-aimed for a 9 x 10 m room.
+    // 3. Lights re-aimed for the 14 x 18 m modern classroom.
     if (this.mainAuditoriumLight) {
-      this.mainAuditoriumLight.position.set(1.2, 9, 1.5);
+      this.mainAuditoriumLight.position.set(0, 10, 0);
       const cam = this.mainAuditoriumLight.shadow.camera;
-      cam.left = -6;
-      cam.right = 6;
-      cam.top = 6;
-      cam.bottom = -6;
+      cam.left = -9;
+      cam.right = 9;
+      cam.top = 10;
+      cam.bottom = -10;
       cam.near = 1;
-      cam.far = 20;
+      cam.far = 25;
       cam.updateProjectionMatrix();
       this.mainAuditoriumLight.shadow.bias = -0.0006;
       this.mainAuditoriumLight.shadow.normalBias = 0.02;
     }
     if (this.sunLight) {
       const cam = this.sunLight.shadow.camera;
-      cam.left = -8;
-      cam.right = 8;
-      cam.top = 8;
-      cam.bottom = -8;
+      cam.left = -10;
+      cam.right = 10;
+      cam.top = 10;
+      cam.bottom = -10;
       cam.updateProjectionMatrix();
       this.sunLight.shadow.bias = -0.0006;
       this.sunLight.shadow.normalBias = 0.02;
     }
     if (this.stageBoardSpot) {
-      this.stageBoardSpot.position.set(CLASSROOM_BOARD.center.x, 3.1, -2.3);
-      this.stageBoardSpot.target.position.set(CLASSROOM_BOARD.center.x, 1.6, -4.8);
-      this.stageBoardSpot.angle = Math.PI / 4;
-      this.stageBoardSpot.distance = 8;
+      this.stageBoardSpot.position.set(CLASSROOM_BOARD.center.x, 4.2, -5.5);
+      this.stageBoardSpot.target.position.set(
+        CLASSROOM_BOARD.center.x,
+        CLASSROOM_BOARD.center.y,
+        CLASSROOM_BOARD.center.z
+      );
+      this.stageBoardSpot.angle = Math.PI / 3;
+      this.stageBoardSpot.distance = 12;
     }
     if (this.lecternSpot) {
       const [tx, , tz] = this.layout.teacher.pos;
-      this.lecternSpot.position.set(tx - 0.6, 3.1, tz + 1.6);
-      this.lecternSpot.target.position.set(tx - 0.2, 1.1, tz + 0.5);
-      this.lecternSpot.angle = Math.PI / 6;
-      this.lecternSpot.distance = 6;
+      this.lecternSpot.position.set(tx - 0.5, 4.0, tz + 2.0);
+      this.lecternSpot.target.position.set(tx, 1.2, tz);
+      this.lecternSpot.angle = Math.PI / 4;
+      this.lecternSpot.distance = 8;
     }
     if (this.studentSpotlight) {
       this.studentSpotlight.angle = Math.PI / 7;
@@ -2050,15 +2058,16 @@ export class Classroom3DScene {
   }
 
   /**
-   * Classroom: 16 real desks from the model (4 rows x 4). Students are
-   * seated front row first, filling from the middle columns outwards so a
-   * small class sits together near the board rather than along one wall.
+   * Classroom: exactly 10 student desks arranged in 2 rows of 5 columns.
+   * Students are seated front row first, filling from the center column
+   * outwards (col 2 = 0, cols 1/3 = -1.8/1.8, cols 0/4 = -3.6/3.6) so
+   * the class sits attentively near the board.
    */
   private rebuildClassroomSeats() {
     const seatedStudents = this.students.filter((s) => !s.isHost);
-    const fillOrder = [1, 2, 0, 3];
+    const fillOrder = [2, 1, 3, 0, 4];
     const order: SeatSlotDef[] = [];
-    for (let r = 1; r <= 4; r++) {
+    for (let r = 1; r <= 2; r++) {
       fillOrder.forEach((c) => {
         const slot = CLASSROOM_SEATS.find((sd) => sd.row === r && sd.col === c);
         if (slot) order.push(slot);
@@ -2099,9 +2108,8 @@ export class Classroom3DScene {
   }
 
   /**
-   * Stands a simple figure for the host at the 3D podium (built in
-   * setupTeacherPodium()), labeled with their name — separate from the
-   * auditorium desk grid so the trainer doesn't occupy a student seat.
+   * Stands an articulated 3D figure for the host/trainer holding a pointer/chalk stick,
+   * facing the students and gesturing towards the lecture board (matching new_3d_room.html).
    */
   private rebuildTeacherFigure() {
     if (this.teacherFigureGroup) {
@@ -2109,56 +2117,139 @@ export class Classroom3DScene {
       disposeObject(this.teacherFigureGroup);
       this.teacherFigureGroup = null;
       this.teacherFigureMaterials = [];
+      this.teacherHeadGroup = null;
+      this.teacherRightArm = null;
     }
     this.teacherNameSprite = null;
 
     const teacher = this.students.find((s) => s.isHost);
     if (!teacher) return;
-    // The trainer's Podium view is from their own eyes, so they don't see
-    // their own figure (it would block the view); everyone else does.
+    // Trainer's own view is from their eyes, so their figure is hidden for them.
     if (teacher.id === this.viewerId) return;
 
     const group = new THREE.Group();
-    // Standing just behind the podium / lectern, turned towards the class.
     group.position.set(...this.layout.teacher.pos);
     group.rotation.y = this.layout.teacher.rotY;
 
-    const skinMat = new THREE.MeshStandardMaterial({ color: 0xf5d0b0, roughness: 0.7 });
-    const clothesMat = new THREE.MeshStandardMaterial({ color: teacher.color, roughness: 0.55, metalness: 0.1 });
-    const hairMat = new THREE.MeshStandardMaterial({ color: 0x2b1c12, roughness: 0.8 });
-    const trouserMat = new THREE.MeshStandardMaterial({ color: 0x2b3444, roughness: 0.7 });
-    this.teacherFigureMaterials.push(skinMat, clothesMat, hairMat, trouserMat);
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xe0ac69, roughness: 0.8 });
+    const shirtMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.7 });
+    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.9 });
+    const shoeMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    this.teacherFigureMaterials.push(skinMat, shirtMat, pantsMat, hairMat, shoeMat, eyeMat, eyeWhiteMat);
 
-    // Legs, so the figure isn't a floating torso when seen from the side.
-    [-0.14, 0.14].forEach((x) => {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.08, 0.7, 10), trouserMat);
-      leg.position.set(x, 0.35, 0);
-      leg.castShadow = true;
-      group.add(leg);
-    });
+    // Hips Root
+    const hips = new THREE.Group();
+    hips.position.y = 0.84;
+    group.add(hips);
 
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.92, 0.38), clothesMat);
-    torso.position.set(0, 1.15, 0);
+    // Torso
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.50, 0.22), shirtMat);
+    torso.position.y = 0.25;
     torso.castShadow = true;
     torso.userData = { studentId: teacher.id, isClickable: true, isTeacherFigure: true };
-    group.add(torso);
+    hips.add(torso);
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.19, 16, 16), skinMat);
-    head.position.set(0, 1.74, 0);
+    // Neck & Head
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 0.55, 0);
+    hips.add(headGroup);
+    this.teacherHeadGroup = headGroup;
+
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.24, 0.22), skinMat);
+    head.position.y = 0.12;
     head.castShadow = true;
     head.userData = { studentId: teacher.id, isClickable: true, isTeacherFigure: true };
-    group.add(head);
+    headGroup.add(head);
 
-    const hair = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 14), hairMat);
-    hair.position.set(0, 1.78, -0.02);
-    group.add(hair);
+    // Visible Face & Eyes (+Z local)
+    [-0.055, 0.055].forEach((ex) => {
+      const eyeWhite = new THREE.Mesh(new THREE.PlaneGeometry(0.045, 0.035), eyeWhiteMat);
+      eyeWhite.position.set(ex, 0.135, 0.111);
+      headGroup.add(eyeWhite);
 
-    const nameSprite = this.createNameSprite(teacher, this.layout.kind === 'classroom' ? 'Trainer' : 'Podium');
-    nameSprite.position.set(0, 2.2, 0);
-    if (this.layout.kind === 'classroom') {
-      this.makeScreenSizeLabel(nameSprite, 0.042);
-      nameSprite.position.set(0, 2.05, 0);
-    }
+      const pupil = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.024), eyeMat);
+      pupil.position.set(ex, 0.135, 0.112);
+      headGroup.add(pupil);
+    });
+
+    // Glasses
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(0.23, 0.055, 0.02),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 })
+    );
+    frame.position.set(0, 0.135, 0.12);
+    headGroup.add(frame);
+
+    // Short hair with front fringe
+    const hairTop = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.07, 0.24), hairMat);
+    hairTop.position.set(0, 0.24, 0);
+    headGroup.add(hairTop);
+
+    const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.04, 0.04), hairMat);
+    fringe.position.set(0, 0.21, 0.11);
+    headGroup.add(fringe);
+
+    // Left Arm by side
+    const leftArm = new THREE.Group();
+    leftArm.position.set(-0.23, 0.44, 0);
+    hips.add(leftArm);
+
+    const leftUpperArm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.28, 0.10), shirtMat);
+    leftUpperArm.position.y = -0.14;
+    leftUpperArm.castShadow = true;
+    leftArm.add(leftUpperArm);
+
+    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.08), skinMat);
+    leftHand.position.y = -0.31;
+    leftArm.add(leftHand);
+
+    // Right Arm (gesturing / pointing at board)
+    const rightArm = new THREE.Group();
+    rightArm.position.set(0.23, 0.44, 0);
+    hips.add(rightArm);
+    this.teacherRightArm = rightArm;
+
+    const rightUpperArm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.28, 0.10), shirtMat);
+    rightUpperArm.position.y = -0.14;
+    rightUpperArm.castShadow = true;
+    rightArm.add(rightUpperArm);
+
+    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.08), skinMat);
+    rightHand.position.y = -0.31;
+    rightArm.add(rightHand);
+
+    // Chalk stick / pointer
+    const chalkStick = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, 0.28, 8),
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+    chalkStick.rotation.x = Math.PI / 2;
+    chalkStick.position.set(0, -0.31, 0.12);
+    rightArm.add(chalkStick);
+
+    // Initial arm gesture
+    rightArm.rotation.x = -Math.PI / 2.2;
+    rightArm.rotation.z = -0.35;
+
+    // Standing Legs
+    [-0.11, 0.11].forEach((lx) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.76, 0.12), pantsMat);
+      leg.position.set(lx, -0.38, 0);
+      leg.castShadow = true;
+      hips.add(leg);
+
+      const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.18), shoeMat);
+      shoe.position.set(lx, -0.76, 0.04);
+      shoe.castShadow = true;
+      hips.add(shoe);
+    });
+
+    const nameSprite = this.createNameSprite(teacher, 'Trainer');
+    nameSprite.position.set(0, 1.95, 0);
+    this.makeScreenSizeLabel(nameSprite, 0.042);
     group.add(nameSprite);
     this.teacherNameSprite = nameSprite;
 
@@ -2245,6 +2336,9 @@ export class Classroom3DScene {
     let nameSprite: THREE.Sprite | undefined;
     let laptopScreenMat: THREE.MeshStandardMaterial | undefined;
 
+    let headGroup: THREE.Group | undefined;
+    let hips: THREE.Group | undefined;
+
     if (isOccupied && seat.student) {
       const student = seat.student;
 
@@ -2301,6 +2395,8 @@ export class Classroom3DScene {
       avatar.studentGroup.position.set(0, 0, 0.85);
       rightArmPivot = avatar.rightArmPivot;
       haloMesh = avatar.haloMesh;
+      headGroup = avatar.headGroup;
+      hips = avatar.hips;
       group.add(avatar.studentGroup);
 
       // 5. Floating Name Billboard with Seat Code (not over your own head)
@@ -2338,6 +2434,8 @@ export class Classroom3DScene {
       materials,
       laptopScreenMat,
       baseY: seat.y,
+      headGroup,
+      hips,
     };
   }
 
@@ -2361,9 +2459,9 @@ export class Classroom3DScene {
     const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
     hitMat.colorWrite = false;
     materials.push(hitMat);
-    // Desk top + the seated student, not the gaps around them.
-    const hitBox = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.25, 1.0), hitMat);
-    hitBox.position.set(0, 0.625, 0.2);
+    // Desk top + the seated student
+    const hitBox = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.3, 1.2), hitMat);
+    hitBox.position.set(0, 0.65, 0.25);
     hitBox.userData = student
       ? { seatCode: seat.code, studentId: student.id, isClickable: true }
       : { seatCode: seat.code, isEmptySeat: true, isClickable: true };
@@ -2373,6 +2471,8 @@ export class Classroom3DScene {
     let haloMesh: THREE.Mesh | undefined;
     let nameSprite: THREE.Sprite | undefined;
     let laptopScreenMat: THREE.MeshStandardMaterial | undefined;
+    let headGroup: THREE.Group | undefined;
+    let hips: THREE.Group | undefined;
 
     if (student) {
       // Laptop on the desk
@@ -2396,17 +2496,18 @@ export class Classroom3DScene {
       group.add(laptopScreen);
 
       const avatar = this.buildStudentAvatar(student, seat.code, isAway, baseOpacity, materials);
-      avatar.studentGroup.position.set(0, 0.05, chairZ + 0.08);
-      avatar.studentGroup.scale.setScalar(0.92);
+      avatar.studentGroup.position.set(0, 0, chairZ);
       rightArmPivot = avatar.rightArmPivot;
       haloMesh = avatar.haloMesh;
+      headGroup = avatar.headGroup;
+      hips = avatar.hips;
       group.add(avatar.studentGroup);
 
       // Your own label would sit right in front of your camera.
       if (student.id !== this.viewerId) {
         nameSprite = this.createNameSprite(student, `Seat ${seat.code}`);
         this.makeScreenSizeLabel(nameSprite, 0.042);
-        nameSprite.position.set(0, 1.52, chairZ);
+        nameSprite.position.set(0, 1.55, chairZ);
         group.add(nameSprite);
       }
     } else {
@@ -2428,13 +2529,15 @@ export class Classroom3DScene {
       materials,
       laptopScreenMat,
       baseY: seat.y,
+      headGroup,
+      hips,
     };
   }
 
   /**
-   * Seated student figure (torso, head, hair, arms with a raisable right
-   * arm and a halo when the hand is up). Origin = centre of the chair seat
-   * at floor level, facing -z (towards the board).
+   * Seated student figure with articulated limbs, expressive face, hair,
+   * clothes, and raisable right arm (matching new_3d_room.html).
+   * Local +Z is forward; rotating Math.PI makes student face -Z (the board & teacher).
    */
   private buildStudentAvatar(
     student: Student,
@@ -2442,98 +2545,200 @@ export class Classroom3DScene {
     isAway: boolean,
     baseOpacity: number,
     materials: THREE.Material[]
-  ): { studentGroup: THREE.Group; rightArmPivot: THREE.Group; haloMesh?: THREE.Mesh } {
+  ): {
+    studentGroup: THREE.Group;
+    rightArmPivot: THREE.Group;
+    haloMesh?: THREE.Mesh;
+    headGroup: THREE.Group;
+    hips: THREE.Group;
+  } {
     let haloMesh: THREE.Mesh | undefined;
     const studentGroup = new THREE.Group();
+    // Critical: Avatar's front (+Z) faces -Z (the front board and teacher)
+    studentGroup.rotation.y = Math.PI;
 
     const skinMat = new THREE.MeshStandardMaterial({
-      color: 0xf5d0b0,
-      roughness: 0.7,
-      transparent: isAway,
-      opacity: baseOpacity,
-    });
-    const clothesMat = new THREE.MeshStandardMaterial({
-      color: student.color,
-      roughness: 0.6,
-      transparent: isAway,
-      opacity: baseOpacity,
-    });
-    materials.push(skinMat, clothesMat);
-
-    // Torso
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.34), clothesMat);
-    torso.position.set(0, 0.76, 0);
-    torso.castShadow = true;
-    torso.userData = { seatCode: seatCode, studentId: student.id, isClickable: true };
-    studentGroup.add(torso);
-
-    // Head
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), skinMat);
-    head.position.set(0, 1.25, 0);
-    head.castShadow = true;
-    head.userData = { seatCode: seatCode, studentId: student.id, isClickable: true };
-    studentGroup.add(head);
-
-    // Hair
-    const hairMat = new THREE.MeshStandardMaterial({
-      color: student.row % 2 === 0 ? 0x221711 : 0x4a3222,
+      color: 0xffdbac,
       roughness: 0.8,
       transparent: isAway,
       opacity: baseOpacity,
     });
-    materials.push(hairMat);
-    // Hair as a cap over the top and back of the head. Students face -z
-    // (the board), so the back of the head is +z; a full offset sphere used
-    // to hide their faces from the trainer's side.
-    const hair = new THREE.Mesh(
-      new THREE.SphereGeometry(0.195, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.58),
-      hairMat
-    );
-    hair.position.set(0, 1.265, 0.02);
-    hair.rotation.x = 0.55;
-    studentGroup.add(hair);
+    const shirtMat = new THREE.MeshStandardMaterial({
+      color: student.color,
+      roughness: 0.7,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    const pantsMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.8,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    const hairColor = student.row % 2 === 0 ? 0x1f2937 : 0x78350f;
+    const hairMat = new THREE.MeshStandardMaterial({
+      color: hairColor,
+      roughness: 0.9,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    const shoeMat = new THREE.MeshStandardMaterial({
+      color: 0x111111,
+      roughness: 0.5,
+      transparent: isAway,
+      opacity: baseOpacity,
+    });
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    materials.push(skinMat, shirtMat, pantsMat, hairMat, shoeMat, eyeMat, eyeWhiteMat);
 
-    // Left arm resting on desk
-    const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.55, 10), clothesMat);
-    leftArm.position.set(-0.36, 0.8, -0.32);
-    leftArm.rotation.x = -Math.PI / 2.8;
-    leftArm.rotation.z = 0.25;
-    studentGroup.add(leftArm);
+    // Hips Root at seat level
+    const hips = new THREE.Group();
+    hips.position.y = 0.44;
+    studentGroup.add(hips);
 
-    // Right arm (kinematic shoulder pivot for hand raising!)
+    // Torso
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.50, 0.22), shirtMat);
+    torso.position.y = 0.25;
+    torso.castShadow = true;
+    torso.userData = { seatCode, studentId: student.id, isClickable: true };
+    hips.add(torso);
+
+    // Neck & Head
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 0.55, 0);
+    hips.add(headGroup);
+
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.24, 0.22), skinMat);
+    head.position.y = 0.12;
+    head.castShadow = true;
+    head.userData = { seatCode, studentId: student.id, isClickable: true };
+    headGroup.add(head);
+
+    // Visible Face & Eyes (+Z local)
+    [-0.055, 0.055].forEach((ex) => {
+      const eyeWhite = new THREE.Mesh(new THREE.PlaneGeometry(0.045, 0.035), eyeWhiteMat);
+      eyeWhite.position.set(ex, 0.135, 0.111);
+      headGroup.add(eyeWhite);
+
+      const pupil = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.024), eyeMat);
+      pupil.position.set(ex, 0.135, 0.112);
+      headGroup.add(pupil);
+    });
+
+    // Glasses (alternate by seat/name)
+    const hasGlasses = (student.name.charCodeAt(0) + (student.col || 0)) % 2 === 0;
+    if (hasGlasses) {
+      const frame = new THREE.Mesh(
+        new THREE.BoxGeometry(0.23, 0.055, 0.02),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 })
+      );
+      frame.position.set(0, 0.135, 0.12);
+      headGroup.add(frame);
+    }
+
+    // Hair Style
+    const hasBun = student.name.length % 2 === 1;
+    if (hasBun) {
+      const topHair = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.07, 0.23), hairMat);
+      topHair.position.set(0, 0.24, 0);
+      headGroup.add(topHair);
+
+      const bun = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), hairMat);
+      bun.position.set(0, 0.25, -0.11);
+      headGroup.add(bun);
+    } else {
+      const hairTop = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.07, 0.24), hairMat);
+      hairTop.position.set(0, 0.24, 0);
+      headGroup.add(hairTop);
+
+      const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.04, 0.04), hairMat);
+      fringe.position.set(0, 0.21, 0.11);
+      headGroup.add(fringe);
+    }
+
+    // Left Arm resting forward on desk
+    const leftArmShoulder = new THREE.Group();
+    leftArmShoulder.position.set(-0.23, 0.44, 0);
+    hips.add(leftArmShoulder);
+
+    const leftUpperArm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.28, 0.10), shirtMat);
+    leftUpperArm.position.y = -0.14;
+    leftUpperArm.castShadow = true;
+    leftArmShoulder.add(leftUpperArm);
+
+    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.08), skinMat);
+    leftHand.position.y = -0.31;
+    leftArmShoulder.add(leftHand);
+
+    leftArmShoulder.rotation.x = -Math.PI / 3.4;
+
+    // Right Arm with kinematic shoulder pivot for hand raising
     const rightArmPivot = new THREE.Group();
-    rightArmPivot.position.set(0.32, 0.98, 0);
+    rightArmPivot.position.set(0.23, 0.44, 0);
+    hips.add(rightArmPivot);
 
-    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.45, 10), clothesMat);
-    upperArm.position.set(0, -0.2, 0);
-    rightArmPivot.add(upperArm);
+    const rightUpperArm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.28, 0.10), shirtMat);
+    rightUpperArm.position.y = -0.14;
+    rightUpperArm.castShadow = true;
+    rightArmPivot.add(rightUpperArm);
 
-    const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), skinMat);
-    rightHand.position.set(0, -0.45, 0);
+    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.08), skinMat);
+    rightHand.position.y = -0.31;
     rightArmPivot.add(rightHand);
 
     if (student.isHandRaised && !isAway) {
-      rightArmPivot.rotation.z = -Math.PI * 0.88;
-      rightArmPivot.rotation.x = -0.15;
+      rightArmPivot.rotation.x = -Math.PI * 0.88;
+      rightArmPivot.rotation.z = -0.15;
     } else {
-      rightArmPivot.rotation.x = -Math.PI / 2.8;
-      rightArmPivot.rotation.z = -0.25;
+      rightArmPivot.rotation.x = -Math.PI / 3.4;
+      rightArmPivot.rotation.z = 0;
     }
-    studentGroup.add(rightArmPivot);
+
+    // Articulated Legs (seated pose)
+    const createLeg = (side: number) => {
+      const hipJoint = new THREE.Group();
+      hipJoint.position.set(side * 0.11, 0, 0);
+      hips.add(hipJoint);
+
+      const upperLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.38, 0.12), pantsMat);
+      upperLeg.position.y = -0.19;
+      upperLeg.castShadow = true;
+      hipJoint.add(upperLeg);
+
+      const kneeJoint = new THREE.Group();
+      kneeJoint.position.set(0, -0.38, 0);
+      hipJoint.add(kneeJoint);
+
+      const lowerLeg = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.38, 0.11), pantsMat);
+      lowerLeg.position.y = -0.19;
+      lowerLeg.castShadow = true;
+      kneeJoint.add(lowerLeg);
+
+      const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.18), shoeMat);
+      shoe.position.set(0, -0.38, 0.04);
+      shoe.castShadow = true;
+      kneeJoint.add(shoe);
+
+      hipJoint.rotation.x = -Math.PI / 2;
+      kneeJoint.rotation.x = Math.PI / 2;
+    };
+
+    createLeg(-1);
+    createLeg(1);
 
     // Hand Raised Halo Beacon
     if (student.isHandRaised && !isAway) {
-      const haloGeo = new THREE.TorusGeometry(0.25, 0.03, 10, 24);
+      const haloGeo = new THREE.TorusGeometry(0.24, 0.028, 10, 24);
       const haloMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.9 });
       materials.push(haloMat);
       haloMesh = new THREE.Mesh(haloGeo, haloMat);
-      haloMesh.position.set(0.32, 1.9, 0);
+      haloMesh.position.set(0.23, 1.45, 0);
       haloMesh.rotation.x = Math.PI / 2;
-      studentGroup.add(haloMesh);
+      hips.add(haloMesh);
     }
 
-
-    return { studentGroup, rightArmPivot, haloMesh };
+    return { studentGroup, rightArmPivot, haloMesh, headGroup, hips };
   }
 
   /**
@@ -3039,12 +3244,13 @@ export class Classroom3DScene {
     this.controls.target.y = THREE.MathUtils.clamp(this.controls.target.y, L.targetMin[1], L.targetMax[1]);
     this.controls.target.z = THREE.MathUtils.clamp(this.controls.target.z, L.targetMin[2], L.targetMax[2]);
 
-    // 2. Animate student raised arms and halos
-    this.desks.forEach((desk) => {
+    // 2. Animate student raised arms, halos, and idle motion
+    this.desks.forEach((desk, idx) => {
       const student = desk.student;
       if (student && student.isHandRaised && student.status === 'present' && desk.rightArmPivot) {
         const wave = Math.sin(elapsedTime * 4.2 + desk.group.position.x) * 0.08;
-        desk.rightArmPivot.rotation.z = -Math.PI * 0.88 + wave;
+        desk.rightArmPivot.rotation.x = -Math.PI * 0.88 + wave;
+        desk.rightArmPivot.rotation.z = -0.15;
 
         if (desk.haloMesh) {
           desk.haloMesh.rotation.z = elapsedTime * 2;
@@ -3052,7 +3258,31 @@ export class Classroom3DScene {
           desk.haloMesh.scale.set(s, s, s);
         }
       }
+
+      // Idle subtle breathing and head turning for students
+      if (desk.headGroup) {
+        desk.headGroup.rotation.y = Math.sin(elapsedTime * 0.7 + idx) * 0.06;
+        desk.headGroup.rotation.x = Math.cos(elapsedTime * 0.5 + idx) * 0.03;
+      }
+      if (desk.hips) {
+        desk.hips.position.y = 0.44 + Math.sin(elapsedTime * 2.0 + idx) * 0.003;
+      }
     });
+
+    // 2a. Animate trainer gesturing at board and turning head toward hand-raising students
+    if (this.teacherRightArm) {
+      this.teacherRightArm.rotation.x = -Math.PI / 2.2 + Math.sin(elapsedTime * 2.0) * 0.15;
+      this.teacherRightArm.rotation.z = -0.35 + Math.cos(elapsedTime * 1.5) * 0.08;
+    }
+    const hasHandRaised = this.students.some((s) => s.isHandRaised && !s.isHost);
+    if (this.teacherHeadGroup) {
+      const targetAngle = hasHandRaised ? 0.45 : 0.0;
+      this.teacherHeadGroup.rotation.y = THREE.MathUtils.lerp(
+        this.teacherHeadGroup.rotation.y,
+        targetAngle,
+        0.08
+      );
+    }
 
     // 2b. Classroom: keep a shared screen at the video's own aspect ratio
     //     (its size is only known once frames arrive, and can change).

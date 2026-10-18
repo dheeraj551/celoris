@@ -36,7 +36,7 @@ export interface ClassInfo {
   maxStudents: number;
   status: 'Ready' | 'Live' | 'Full';
   /** Manually set by an admin (not auto-tracked from real presence) — this
-      is what the café lobby card shows as the "X/15" headcount. */
+      is what the café lobby card shows as the "X/10" headcount. */
   currentStudents: number;
   /** Free-text note shown on the lobby card once this room is Full, e.g.
       "Next batch 6 PM today". */
@@ -60,12 +60,8 @@ function colorForId(id: string) {
   return SEAT_PALETTE[hash % SEAT_PALETTE.length];
 }
 
-// Seat tier sizes (mirrors Classroom3DScene.rebuildAuditoriumSeats' rowTiers
-// counts: Row A=6, B=8, C=8, D=9, E=9) — used to predict which row a
-// student will land in purely from their position in the (deterministically
-// sorted) roster array, so we know which camera view to offer them before
-// the 3D scene has actually assigned seats.
-const SEAT_TIER_COUNTS = [6, 8, 8, 9, 9];
+// Seat tier sizes (mirrors 2 rows of 5 desks = 10 total student seats)
+const SEAT_TIER_COUNTS = [5, 5];
 function rowForSeatIndex(index: number): number {
   let cumulative = 0;
   for (let i = 0; i < SEAT_TIER_COUNTS.length; i++) {
@@ -118,7 +114,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   const [classInfo, setClassInfo] = useState<ClassInfo>({
     name: roomName,
     trainerName: '',
-    maxStudents: 15,
+    maxStudents: 10,
     status: 'Ready',
     currentStudents: 1,
     nextBatchInfo: '',
@@ -352,7 +348,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           ...prev,
           name: data.name || roomName,
           trainerName: data.trainer_name || '',
-          maxStudents: data.max_students || 15,
+          maxStudents: data.max_students || 10,
           status: (data.class_status as ClassInfo['status']) || 'Ready',
           currentStudents: typeof data.current_students === 'number' ? data.current_students : 1,
           nextBatchInfo: data.next_batch_info || '',
