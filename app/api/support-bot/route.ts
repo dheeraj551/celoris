@@ -58,9 +58,11 @@ async function buildCourseCatalogText(): Promise<string> {
     .join('\n');
 }
 
-type Intent = 'student' | 'teacher' | 'jobseeker' | 'customer' | null | undefined;
+type Intent = 'student' | 'teacher' | 'jobseeker' | 'customer' | 'wordpress' | 'image_editor' | null | undefined;
 
 const INTENT_FOCUS: Record<string, string> = {
+  wordpress: `This visitor is asking about Free WordPress Hosting (/cloud). Celoris Cloud provides 100% free managed WordPress hosting with 3 GB NVMe PCIe storage, 60-second instant deployment, free Let's Encrypt SSL, and custom subdomains (yourname.celoris.in). Full wp-admin access to install Elementor, Astra, and plugins. No credit card required. Free forever while active. Tell them they can claim their free website in 60 seconds at /cloud.`,
+  image_editor: `This visitor is asking about the Free Online Image Editor (/open-psd-online and /free-image-editor). Celoris provides a free in-browser Photoshop-style image editor where anyone can open & edit PSD files, remove backgrounds, and design graphics with zero downloads and no signup required.`,
   student: `This visitor identified themselves as a student looking to learn. Keep "Learn" (/learn/courses) as your primary lens — recommend 1-2 relevant courses from the catalog below based on what they say, unless they steer the conversation elsewhere.`,
   teacher: `This visitor identified themselves as a teacher. Keep "Teach" (/teach) as your primary lens — explain that they can sign up as an instructor, publish courses with 0% platform commission, and earn direct payouts, unless they steer the conversation elsewhere.`,
   jobseeker: `This visitor identified themselves as looking for a job. Keep "Job Center" (/job-center) as your primary lens — SkillVerify Pro: job alerts and skill-verification exams — unless they steer the conversation elsewhere.`,
@@ -70,9 +72,11 @@ const INTENT_FOCUS: Record<string, string> = {
 function buildSystemPrompt(catalogText: string, intent: Intent): string {
   const focusLine = intent && INTENT_FOCUS[intent] ? INTENT_FOCUS[intent] : '';
 
-  return `You are Celoris Support — a friendly, concise chat assistant embedded on the Celoris website (celorisdesigns.com) that helps visitors find the right part of Celoris for them and answers quick questions about courses, teaching, freelance work, and their account.
+  return `You are Celoris Support — a friendly, concise chat assistant embedded on the Celoris website (celorisdesigns.com) that helps visitors find the right part of Celoris for them and answers quick questions about free cloud hosting, image editing, courses, teaching, freelance work, and their account.
 
 Celoris has these visitor-facing sections. Only ever recommend a section/link from this list — never invent a page or URL:
+- Celoris Cloud (/cloud) — 100% free managed WordPress hosting in India: 3 GB NVMe PCIe storage, 60-second deploy, free SSL, custom subdomain, and full wp-admin access.
+- Free Image Editor (/open-psd-online) — free in-browser PSD & photo editor: multi-layer editing, AI cutout, zero software downloads.
 - Learn (/learn/courses) — browse and enroll in courses. See the live course catalog below for exact titles, subjects, prices and durations.
 - Teach (/teach) — become an instructor: sign up, publish courses with 0% platform commission, and earn direct payouts.
 - Job Center (/job-center) — SkillVerify Pro: job alerts and skill-verification exams for job seekers.
@@ -97,7 +101,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const messages = Array.isArray(body?.messages) ? body.messages : [];
     const rawIntent = typeof body?.intent === 'string' ? body.intent : undefined;
-    const intent: Intent = (['student', 'teacher', 'jobseeker', 'customer'] as const).includes(rawIntent as any)
+    const intent: Intent = (['student', 'teacher', 'jobseeker', 'customer', 'wordpress', 'image_editor'] as const).includes(rawIntent as any)
       ? (rawIntent as Intent)
       : undefined;
 
