@@ -486,7 +486,12 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     if (livekitRoomRef.current) {
       const nextShare = !screenSharing;
       try {
-        await livekitRoomRef.current.localParticipant.setScreenShareEnabled(nextShare);
+        await livekitRoomRef.current.localParticipant.setScreenShareEnabled(nextShare, {
+          audio: true,
+          selfBrowserSurface: 'include',
+          surfaceSwitching: 'include',
+          systemAudio: 'include',
+        } as any);
         setScreenSharing(nextShare);
         if (nextShare) {
           const pubs = Array.from(livekitRoomRef.current.localParticipant.videoTrackPublications.values()) as any[];
@@ -518,16 +523,50 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
     } else {
       try {
         const AgoraRTC = AgoraRef.current;
-        const screenTrack = await AgoraRTC.createScreenVideoTrack({}, 'auto');
+        // Prompt for screen sharing with system audio capture option enabled
+        const screenTrack = await AgoraRTC.createScreenVideoTrack(
+          {
+            encoderConfig: '1080p_2',
+            optimizationMode: 'detail',
+            systemAudio: 'include',
+            selfBrowserSurface: 'include',
+            surfaceSwitching: 'include',
+          },
+          'auto'
+        );
         await client.publish(screenTrack);
         localScreenTrackRef.current = screenTrack;
         setLocalScreenTrack(screenTrack);
-        // 'auto' can return either a lone video track or a [video, audio]
-        // tuple depending on whether the browser let the user share system
-        // audio — either way, the video track is what feeds the 3D board.
+
+        // 'auto' returns either a video track or a [video, audio] tuple if user checked "Share system audio"
         const videoTrack = Array.isArray(screenTrack) ? screenTrack[0] : screenTrack;
+
+        // Auto-cleanup when user clicks the browser's native "Stop Sharing" floating bar
+        const handleNativeStop = async () => {
+          if (localScreenTrackRef.current) {
+            const tr = localScreenTrackRef.current;
+            localScreenTrackRef.current = null;
+            try {
+              await client.unpublish(tr);
+              if (Array.isArray(tr)) {
+                tr[0].close();
+                if (tr[1]) tr[1].close();
+              } else {
+                tr.close();
+              }
+            } catch (_) {}
+            setLocalScreenTrack(null);
+            setBoardMediaStream(null);
+            setScreenSharing(false);
+          }
+        };
+
+        videoTrack.on('track-ended', handleNativeStop);
         const rawTrack = videoTrack.getMediaStreamTrack?.();
-        if (rawTrack) setBoardMediaStream(new MediaStream([rawTrack]));
+        if (rawTrack) {
+          rawTrack.addEventListener('ended', handleNativeStop);
+          setBoardMediaStream(new MediaStream([rawTrack]));
+        }
         setScreenSharing(true);
       } catch (err) {
         console.error('Failed to start screen share', err);

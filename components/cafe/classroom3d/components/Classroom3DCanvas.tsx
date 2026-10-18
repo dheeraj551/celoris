@@ -18,6 +18,9 @@ import {
   UserPlus, 
   X, 
   Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
   Tv,
   Presentation,
   Sliders,
@@ -98,6 +101,28 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
   const boardVideoRef = useRef<HTMLVideoElement | null>(null);
   const wasSharingRef = useRef(false);
 
+  // Fullscreen Screen Share State (ideal for small mobile phone screens!)
+  const [isFullScreenShare, setIsFullScreenShare] = useState<boolean>(false);
+  const [zoomScale, setZoomScale] = useState<number>(1);
+  const [isObjectFitContain, setIsObjectFitContain] = useState<boolean>(true);
+  const fullscreenVideoRef = useRef<HTMLVideoElement | null>(null);
+  const liveBoardStreamRef = useRef(liveBoardStream);
+
+  useEffect(() => {
+    liveBoardStreamRef.current = liveBoardStream;
+    if (!liveBoardStream) {
+      setIsFullScreenShare(false);
+      setZoomScale(1);
+    }
+  }, [liveBoardStream]);
+
+  useEffect(() => {
+    if (isFullScreenShare && fullscreenVideoRef.current && liveBoardStream) {
+      fullscreenVideoRef.current.srcObject = liveBoardStream;
+      fullscreenVideoRef.current.play().catch(() => {});
+    }
+  }, [isFullScreenShare, liveBoardStream]);
+
   // Selected empty seat state
   const [selectedSeatCode, setSelectedSeatCode] = useState<string | null>(null);
 
@@ -171,6 +196,13 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
 
     scene.onCameraPresetChange = (preset) => {
       onCameraPresetChange(preset);
+    };
+
+    scene.onSmartBoardClick = () => {
+      if (liveBoardStreamRef.current) {
+        setIsFullScreenShare(true);
+        setZoomScale(1);
+      }
     };
 
     const handleResize = () => {
@@ -386,6 +418,30 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
         className="absolute w-px h-px opacity-0 pointer-events-none"
         aria-hidden="true"
       />
+
+      {/* Floating Pill: Fullscreen Screen Share (Prominent for mobile devices) */}
+      {liveBoardStream && (
+        <div className="absolute top-16 left-4 z-20 flex items-center space-x-2 pointer-events-auto">
+          <button
+            onClick={() => {
+              setIsFullScreenShare(true);
+              setZoomScale(1);
+            }}
+            className="flex items-center space-x-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-sky-600/95 hover:bg-sky-500 active:scale-95 text-white shadow-[0_0_20px_rgba(56,189,248,0.45)] backdrop-blur-md text-xs font-semibold border border-sky-400/50 transition-all cursor-pointer group"
+            title="Expand live screen share to full screen for mobile and high detail"
+          >
+            <Maximize2 className="w-4 h-4 text-sky-200 group-hover:scale-110 transition-transform" />
+            <span>Fullscreen Screen Share</span>
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10px] bg-sky-950/80 px-1.5 py-0.5 rounded text-sky-200 font-normal border border-sky-700/50 hidden sm:inline">
+              Zoom &amp; Read
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* 2. TOP FLOATING BAR: Camera Presets & Realtime Capacity */}
       <div className="absolute top-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
@@ -891,6 +947,130 @@ export const Classroom3DCanvas: React.FC<Classroom3DCanvasProps> = ({
           )}
         </div>
       </div>
+
+      {/* 5. FULLSCREEN SCREEN SHARE OVERLAY (Mobile Friendly with Zoom & Pan) */}
+      {isFullScreenShare && liveBoardStream && (
+        <div className="fixed inset-0 z-50 bg-[#060a14] flex flex-col select-none animate-in fade-in duration-200">
+          {/* Top Bar */}
+          <div className="h-14 px-3 sm:px-4 bg-[#0a0f1d] border-b border-slate-800 flex items-center justify-between z-10 shrink-0">
+            {/* Title & Live indicator */}
+            <div className="flex items-center space-x-2 sm:space-x-2.5">
+              <span className="flex h-2.5 w-2.5 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <div>
+                <h3 className="text-xs sm:text-sm font-semibold text-slate-100 flex items-center gap-1.5">
+                  <span>Live Presentation Share</span>
+                  <span className="text-[10px] bg-emerald-950/80 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800/50 uppercase font-mono">
+                    Live
+                  </span>
+                </h3>
+                <p className="text-[10px] text-slate-400 hidden sm:block">
+                  Pinch or use zoom controls to read small text and code clearly
+                </p>
+              </div>
+            </div>
+
+            {/* Controls: Zoom, Fit, Browser Fullscreen, Close */}
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
+              {/* Zoom Controls */}
+              <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+                <button
+                  onClick={() => setZoomScale((z) => Math.max(1, Number((z - 0.25).toFixed(2))))}
+                  disabled={zoomScale <= 1}
+                  className="p-1.5 text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed rounded"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setZoomScale(1)}
+                  className="px-1.5 sm:px-2 text-[11px] font-mono font-medium text-sky-400 hover:text-sky-300"
+                  title="Reset Zoom"
+                >
+                  {Math.round(zoomScale * 100)}%
+                </button>
+                <button
+                  onClick={() => setZoomScale((z) => Math.min(3, Number((z + 0.25).toFixed(2))))}
+                  disabled={zoomScale >= 3}
+                  className="p-1.5 text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed rounded"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Fit toggle */}
+              <button
+                onClick={() => setIsObjectFitContain((c) => !c)}
+                className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-medium hidden sm:flex items-center gap-1"
+                title={isObjectFitContain ? 'Fill Screen (Cover)' : 'Fit Entire Screen (Contain)'}
+              >
+                <span>{isObjectFitContain ? 'Contain' : 'Fill'}</span>
+              </button>
+
+              {/* Native browser fullscreen */}
+              <button
+                onClick={() => {
+                  if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                  } else {
+                    document.exitFullscreen().catch(() => {});
+                  }
+                }}
+                className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                title="Toggle Browser Fullscreen"
+              >
+                <Maximize2 className="w-4 h-4" />
+              </button>
+
+              {/* Exit Fullscreen button */}
+              <button
+                onClick={() => setIsFullScreenShare(false)}
+                className="flex items-center space-x-1 px-2.5 py-1.5 sm:px-3 rounded-lg bg-red-600/90 hover:bg-red-500 text-white text-xs font-semibold transition-colors"
+                title="Return to 3D Classroom"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Back to 3D</span>
+                <span className="sm:hidden">Close</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Main Video Area */}
+          <div className="flex-1 relative overflow-auto bg-black flex items-center justify-center p-1 sm:p-4 touch-pinch-zoom">
+            <video
+              ref={fullscreenVideoRef}
+              autoPlay
+              playsInline
+              muted
+              className={`max-w-full max-h-full transition-transform duration-100 ${
+                isObjectFitContain ? 'object-contain' : 'object-cover w-full h-full'
+              }`}
+              style={{
+                transform: `scale(${zoomScale})`,
+                transformOrigin: 'center center',
+              }}
+              onDoubleClick={() => setZoomScale((z) => (z > 1 ? 1 : 1.75))}
+            />
+          </div>
+
+          {/* Bottom helper bar for mobile */}
+          <div className="h-10 px-3 sm:px-4 bg-[#0a0f1d] border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
+            <div className="flex items-center gap-1.5 text-slate-400">
+              <span className="sm:hidden text-amber-400">💡 Rotate phone horizontally for wide landscape presentation</span>
+              <span className="hidden sm:inline">Double-click or double-tap video to toggle 1.75x zoom</span>
+            </div>
+            <button
+              onClick={() => setIsFullScreenShare(false)}
+              className="text-sky-400 hover:text-sky-300 font-medium"
+            >
+              Close &amp; Return to Classroom
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

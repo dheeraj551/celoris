@@ -63,6 +63,7 @@ export class Classroom3DScene {
   private onSelectStudent?: (student: Student) => void;
   private onSelectEmptySeat?: (seatCode: string) => void;
   public onCameraPresetChange?: (preset: CameraPreset) => void;
+  public onSmartBoardClick?: () => void;
 
   private allSeats: SeatDefinition[] = [];
   private desks: Desk3DObject[] = [];
@@ -3110,6 +3111,7 @@ export class Classroom3DScene {
             return;
           }
           if (cur.userData && cur.userData.isSmartBoard) {
+            this.onSmartBoardClick?.();
             this.setCameraPreset('board');
             if (this.onCameraPresetChange) {
               this.onCameraPresetChange('board');
