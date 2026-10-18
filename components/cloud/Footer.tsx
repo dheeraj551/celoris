@@ -97,6 +97,16 @@ export const Footer: React.FC = () => {
                   Design &amp; Code Courses
                 </Link>
               </li>
+              <li>
+                <Link href="/open-psd-online" className="text-emerald-400/90 hover:text-emerald-300 font-medium transition-colors">
+                  Open PSD Online (Free)
+                </Link>
+              </li>
+              <li>
+                <Link href="/free-image-editor" className="hover:text-emerald-400 transition-colors">
+                  Free Image Editor
+                </Link>
+              </li>
             </ul>
           </div>
 

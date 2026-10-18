@@ -11,6 +11,8 @@ const footerSections = [
     title: "Platform & Tools",
     links: [
       { name: "Free WordPress Cloud", href: "/cloud", badge: "New" },
+      { name: "Open PSD Online", href: "/open-psd-online", badge: "Free" },
+      { name: "Free Image Editor", href: "/free-image-editor" },
       { name: "AI Video Studio", href: "/video-studio" },
       { name: "PhotoLite Editor", href: "/photolite" },
       { name: "PolyVault 3D", href: "/polyvault" },
@@ -33,6 +35,7 @@ const footerSections = [
     links: [
       { name: "About Celoris", href: "/about" },
       { name: "Official Blog", href: "/blog" },
+      { name: "Open PSD Guide (2026)", href: "/blog/how-to-open-and-edit-psd-files-online-without-photoshop-2026" },
       { name: "WordPress Guide (2026)", href: "/blog/free-wordpress-hosting-india-2026" },
       { name: "Careers", href: "/careers" },
       { name: "Contact Us", href: "/contact" },
