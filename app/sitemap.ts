@@ -518,6 +518,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'yoga-for-beginners-complete-guide',
     'zero-keyframes-motion-swap-puppet-rigging-2026',
     'free-wordpress-hosting-india-2026',
+    'free-portfolio-hosting-students-india-2026',
     'best-free-image-editing-software-pc-web-2026',
     'how-to-open-and-edit-psd-files-online-without-photoshop-2026',
   ]
