@@ -298,9 +298,10 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
 
             # STEP 8: STRICT VERIFICATION
             # Verify site exists and is active (deleted = 0)
+            php_verify = 'global $wpdb; $row = $wpdb->get_row("SELECT blog_id, deleted, archived FROM " . $wpdb->blogs . " WHERE domain = \'' + full_domain + '\'"); echo $row ? ($row->blog_id . " " . $row->deleted . " " . $row->archived) : "NOT_FOUND";'
             v_rc, v_out, _ = run_wp([
                 "eval",
-                f'global $wpdb; $row = $wpdb->get_row("SELECT blog_id, deleted, archived FROM {{$wpdb->blogs}} WHERE domain = \'{full_domain}\'"); echo $row ? "{$row->blog_id} {$row->deleted} {$row->archived}" : "NOT_FOUND";'
+                php_verify
             ])
 
             if not v_out or "NOT_FOUND" in v_out or len(v_out.split()) < 3:
