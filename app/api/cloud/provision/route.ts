@@ -167,10 +167,13 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Celoris Cloud Provisioning Error:', error);
+    const isFetchFailure = error?.message?.toLowerCase().includes('fetch failed') || error?.code === 'ECONNREFUSED';
+    const friendlyMessage = isFetchFailure
+      ? 'The cloud provisioning engine is currently starting up or momentarily busy. Please try again in 1 minute, or reach out to our WhatsApp support for instant activation.'
+      : (error?.message || 'Failed to connect to Celoris Cloud provisioning engine. Please try again.');
+
     return NextResponse.json(
-      { 
-        error: error.message || 'Failed to connect to Celoris Cloud provisioning engine. Please try again.' 
-      },
+      { error: friendlyMessage },
       { status: 500 }
     );
   }
