@@ -10,40 +10,44 @@ import {
     Layers, Database, ShieldAlert, FileText, ArrowDownRight,
     GraduationCap, Briefcase, Code, Rocket, Award, Share2,
     Search, CheckSquare, Laptop, Smartphone, Eye, Lightbulb,
-    BarChart3, Radio, FileCode2, Gauge, QrCode, Bookmark
+    BarChart3, Radio, FileCode2, Gauge, QrCode, Bookmark,
+    Cloud, ServerCrash, DollarSign, ShieldX, Key, Binary,
+    Network, CheckCircle, Flame
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ShareButtons from '@/components/ShareButtons';
 import BlogEngagement from '@/components/blog/BlogEngagement';
 
 export const metadata: Metadata = {
-    title: "Free Portfolio Hosting for Students in India (2026 Guide) — No Credit Card, 3 GB NVMe, Headless CMS & Free SSL",
-    description: "The definitive 2026 manual for BCA, B.Tech, MCA, and design students in India to launch high-performance web portfolios and college projects for free. Features 3 GB NVMe PCIe storage, WP REST API headless architecture, sub-15ms Indian edge latency, zero credit cards, and resume ATS link optimization.",
+    title: "Student Portfolio & Full-Stack Hosting Architecture in India (2026 Guide) — Zero Credit Card, Sub-15ms Latency & Free Cloud Allocation",
+    description: "The complete technical manual for B.Tech, BCA, MCA, and self-taught developers in India. How to deploy production portfolios, Next.js full-stack capstone apps, and WordPress instances with zero billing risk, sub-15ms Indian edge routing, MongoDB Atlas, Supabase, and no credit card required.",
     keywords: [
         'Free portfolio hosting for students India 2026',
+        'Student full-stack hosting architecture India',
         'How to host student portfolio free without credit card',
         'Free WordPress hosting for college project viva',
         'Best free hosting for BCA BTech MCA projects',
         'Host resume website free custom subdomain',
         'Headless WordPress student portfolio REST API',
         '000webhost alternatives for students India 2026',
-        'GitHub Pages alternative dynamic backend WordPress',
-        'Celoris Cloud student hosting tier',
-        'Free web project hosting India NVMe SSD',
+        'GitHub Pages vs Vercel vs Cloudflare Pages vs Celoris',
+        'Azure for Students free credits India',
+        'MongoDB Atlas M0 AWS Mumbai ap-south-1',
+        'Supabase free tier India developer',
         'ATS friendly portfolio link on resume'
     ],
     alternates: {
         canonical: 'https://celorisdesigns.com/blog/free-portfolio-hosting-students-india-2026',
     },
     openGraph: {
-        title: "Free Portfolio Hosting for Students in India (2026 Guide) — Celoris Cloud",
-        description: "Deploy an ad-free student portfolio or college project in 60 seconds. 3 GB NVMe PCIe storage, Let's Encrypt TLS 1.3, Headless REST API support, and zero credit card mandates.",
+        title: "Student Portfolio & Full-Stack Hosting Architecture in India (2026 Guide)",
+        description: "Deploy an ad-free student portfolio or full-stack capstone project in 60 seconds. 3 GB NVMe PCIe storage, Let's Encrypt TLS 1.3, Headless REST API, Cloudflare edge, and zero credit card mandates.",
         url: 'https://celorisdesigns.com/blog/free-portfolio-hosting-students-india-2026',
         siteName: 'Celoris',
         locale: 'en_IN',
         images: [
             {
-                url: 'https://celorisdesigns.com/free-portfolio-hosting-students-india-2026.png',
+                url: 'https://celorisdesigns.com/free-portfolio-hosting-students-india-2026.jpg',
                 width: 1200,
                 height: 675,
                 alt: 'Free Portfolio Hosting for Students in India 2026 Guide - Celoris Cloud',
@@ -51,14 +55,14 @@ export const metadata: Metadata = {
         ],
         type: 'article',
         publishedTime: '2026-10-19T08:00:00Z',
-        modifiedTime: '2026-10-19T14:45:00Z',
+        modifiedTime: '2026-10-19T15:50:00Z',
         authors: ['Celoris Cloud Developer Relations & Academic Outreach Group'],
     },
     twitter: {
         card: 'summary_large_image',
-        title: "Free Portfolio Hosting for Students in India (2026 Guide) — Celoris Cloud",
+        title: "Student Portfolio & Full-Stack Hosting Architecture in India (2026 Guide)",
         description: "Zero-cost, ad-free student portfolio hosting with 3 GB NVMe storage, custom subdomain, Headless REST API, and 60-second automated deployment.",
-        images: ['https://celorisdesigns.com/free-portfolio-hosting-students-india-2026.png'],
+        images: ['https://celorisdesigns.com/free-portfolio-hosting-students-india-2026.jpg'],
     }
 };
 
@@ -83,18 +87,18 @@ const jsonLdData = {
                 {
                     "@type": "ListItem",
                     "position": 3,
-                    "name": "Free Portfolio Hosting for Students in India (2026)",
+                    "name": "Student Portfolio & Full-Stack Hosting Architecture (2026)",
                     "item": "https://celorisdesigns.com/blog/free-portfolio-hosting-students-india-2026"
                 }
             ]
         },
         {
             "@type": "Article",
-            "headline": "Free Portfolio Hosting for Students in India (2026 Guide) — No Credit Card, 3 GB NVMe, Headless CMS & Free SSL",
-            "description": "Deep-dive technical handbook for Indian engineering, BCA, MCA, and design students to host their live resume portfolio or college project at zero cost.",
-            "image": "https://celorisdesigns.com/free-portfolio-hosting-students-india-2026.png",
+            "headline": "Student Portfolio & Full-Stack Hosting Architecture in India (2026 Guide) — Zero Credit Card, Sub-15ms Latency & Free Cloud Allocation",
+            "description": "Comprehensive technical guide for Indian engineering students (B.Tech, BCA, MCA) and junior developers to deploy production-grade portfolios and capstone applications with zero billing risk, sub-15ms domestic latency, and no credit card requirements.",
+            "image": "https://celorisdesigns.com/free-portfolio-hosting-students-india-2026.jpg",
             "datePublished": "2026-10-19T08:00:00Z",
-            "dateModified": "2026-10-19T14:45:00Z",
+            "dateModified": "2026-10-19T15:50:00Z",
             "author": {
                 "@type": "Organization",
                 "name": "Celoris Cloud Developer Relations & Academic Outreach",
@@ -115,28 +119,28 @@ const jsonLdData = {
         },
         {
             "@type": "HowTo",
-            "name": "How to Host a Free Student Portfolio Website in India (Step-by-Step)",
-            "description": "Deploy a live HTTPS portfolio website with 3 GB NVMe storage on Celoris Cloud in less than 60 seconds without paying or providing a credit card.",
+            "name": "How to Host a Production Full-Stack Portfolio or College Project in India (Zero Cost)",
+            "description": "Deploy a live HTTPS portfolio website with dedicated storage, database, and zero credit card requirements.",
             "step": [
                 {
                     "@type": "HowToStep",
-                    "name": "Step 1: Choose Your Subdomain",
-                    "text": "Visit celoris.in/cloud and pick your personal brand handle (e.g. yourname.celoris.in) which will serve as your live resume link."
+                    "name": "Step 1: Choose Your Platform & Domain Handle",
+                    "text": "Select your deployment architecture: Celoris Cloud for 1-click dynamic WordPress with 3 GB NVMe, or Cloudflare Pages / Vercel for custom React/Next.js frontends."
                 },
                 {
                     "@type": "HowToStep",
-                    "name": "Step 2: Sign in with Google (1-Tap)",
-                    "text": "Authenticate using your college or personal Google account. No credit card or billing mandate is ever required."
+                    "name": "Step 2: Provision Low-Latency Database in AWS Mumbai",
+                    "text": "Configure a free MongoDB Atlas M0 cluster or Supabase Postgres instance located strictly in AWS Asia Pacific (Mumbai) ap-south-1 for sub-15ms database query roundtrips."
                 },
                 {
                     "@type": "HowToStep",
-                    "name": "Step 3: Click Deploy and Go Live",
-                    "text": "The Celoris automated container provisioner spins up an isolated WordPress instance with 3 GB NVMe storage, pre-installed Astra theme, and Let's Encrypt SSL in 60 seconds."
+                    "name": "Step 3: Connect Frontend via Environment Variables",
+                    "text": "Authenticate via GitHub or Google (zero credit card mandate), set your secure connection string, and build."
                 },
                 {
                     "@type": "HowToStep",
-                    "name": "Step 4: Connect as a Headless CMS (Optional)",
-                    "text": "If building with React, Next.js, or Vue, fetch project case studies directly from your Celoris WordPress instance via the native /wp-json/wp/v2/posts REST API."
+                    "name": "Step 4: Audit Against the 12-Point Pre-Interview Checklist",
+                    "text": "Verify mobile layout, ATS resume link cleanliness, custom favicon, and 1-click resume PDF download before sharing with recruiters."
                 }
             ]
         },
@@ -145,26 +149,26 @@ const jsonLdData = {
             "mainEntity": [
                 {
                     "@type": "Question",
-                    "name": "Do I need a credit card or debit card to get free student hosting?",
+                    "name": "Why do international cloud platforms reject Indian student debit cards?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "No. Celoris Cloud does not ask for credit cards, debit cards, UPI mandates, or billing details. You simply sign in with Google and launch your live portfolio instantly."
+                        "text": "The Reserve Bank of India (RBI) enforces strict e-mandate and two-factor authentication (AFA) guidelines for recurring subscriptions. Standard RuPay cards and domestic student debit cards lack international recurring auto-debit authorizations, causing platforms like AWS, DigitalOcean, and GCP to reject them during account signup."
                     }
                 },
                 {
                     "@type": "Question",
-                    "name": "Can I put this live link on my resume and LinkedIn profile?",
+                    "name": "What happened to 000webhost, and why is Celoris Cloud a better 2026 alternative?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Yes! Your site gets a clean, professional, SSL-secured link like 'https://yourname.celoris.in' which you can share directly with recruiters, college professors, and freelance clients."
+                        "text": "000webhost was permanently shut down in July 2024 by Hostinger. Celoris Cloud replaces it with enterprise-grade Docker container isolation, 3 GB NVMe PCIe Gen4 storage in Mumbai, Let's Encrypt TLS 1.3 wildcard SSL, pre-installed Astra themes, and zero advertising popups."
                     }
                 },
                 {
                     "@type": "Question",
-                    "name": "How is this different from GitHub Pages or Vercel?",
+                    "name": "How do I avoid surprise cloud bills on student projects?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "GitHub Pages and Vercel only support static frontend files (HTML/CSS/JS or Next.js) and do not support dynamic PHP, WordPress backends, or native MySQL databases on their free tiers. Celoris Cloud gives you a full WordPress CMS with a MariaDB database and 3 GB NVMe storage."
+                        "text": "Never enter a credit card on pay-as-you-go metered clouds. Use platforms with strict hard caps (like Vercel Hobby, which pauses upon hitting 100 GB rather than billing overages), Azure for Students (which deallocates VMs rather than charging when credits expire), or 100% free container platforms like Celoris Cloud."
                     }
                 },
                 {
@@ -172,23 +176,15 @@ const jsonLdData = {
                     "name": "Can I use Celoris Cloud as a Headless CMS for my React or Next.js portfolio?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Yes! Every Celoris WordPress instance comes with the native WP REST API enabled out-of-the-box at 'https://yourname.celoris.in/wp-json/wp/v2/posts'. You can manage your projects, client testimonials, and blog posts inside the WordPress UI and fetch them dynamically into your Next.js or React frontend."
+                        "text": "Yes! Every Celoris WordPress instance includes the native WP REST API enabled at 'https://yourname.celoris.in/wp-json/wp/v2/posts'. You can manage case studies, blog posts, and project media through the WordPress dashboard and fetch them dynamically into Next.js using Incremental Static Regeneration (ISR)."
                     }
                 },
                 {
                     "@type": "Question",
-                    "name": "What happened to 000webhost? Can I use Celoris as an alternative?",
+                    "name": "How can Indian students get free Microsoft Azure credits and certification discounts?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "000webhost was permanently shut down in July 2024 by Hostinger. Celoris Cloud is the modern 2026 alternative, offering NVMe PCIe Gen4 speeds, sub-15ms Indian edge routing, and zero advertising banners."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How much storage and bandwidth do students get?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Every free student instance receives 3,072 MB (3 GB) of dedicated NVMe PCIe Gen4 storage and unmetered fair-use bandwidth, which is more than enough for high-resolution graphics, video embeds, and hundreds of portfolio project pages."
+                        "text": "Verified students with college email addresses can activate the 'Azure for Students' program for $100 annual free credit (~₹8,300 INR) with no credit card. Additionally, attending Microsoft Virtual Training Days grants a 50% exam discount voucher on AZ-900, AI-900, and SC-900 certification exams."
                     }
                 }
             ]
@@ -240,11 +236,11 @@ export default function FreePortfolioHostingStudentsIndia2026() {
                     </div>
 
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                        Free Portfolio Hosting for Students in India (2026 Guide) — No Credit Card, 3 GB NVMe &amp; Free SSL
+                        Student Portfolio &amp; Full-Stack Hosting Architecture in India (2026 Guide)
                     </h1>
 
                     <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-3xl">
-                        The definitive engineering roadmap for BCA, B.Tech, MCA, and design students in India. Take your college project demos, resume showcase, and full-stack applications live in 60 seconds with zero hosting bills, zero credit card mandates, and guaranteed sub-15ms domestic Indian latency.
+                        The comprehensive technical reference for BCA, B.Tech, MCA, self-taught developers, and educators across India. How to deploy production portfolios, Next.js capstone applications, and dynamic WordPress instances with zero billing risk, sub-15ms domestic Indian edge routing, and no credit card mandates.
                     </p>
 
                     <div className="flex flex-wrap items-center justify-between gap-4 pt-4 text-sm text-slate-400">
@@ -255,11 +251,11 @@ export default function FreePortfolioHostingStudentsIndia2026() {
                             </span>
                             <span className="flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-cyan-400" />
-                                12 min read
+                                14 min read
                             </span>
                             <span className="flex items-center gap-2">
                                 <BookOpen className="w-4 h-4 text-purple-400" />
-                                Complete Technical Manual
+                                Executive Technical Reference
                             </span>
                         </div>
                         <ShareButtons
@@ -272,8 +268,8 @@ export default function FreePortfolioHostingStudentsIndia2026() {
                 {/* Hero Banner Image */}
                 <div className="my-10 relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900/50">
                     <Image
-                        src="/free-portfolio-hosting-students-india-2026.png"
-                        alt="Free Student Portfolio and Web Project Hosting India 2026 - Celoris Cloud"
+                        src="/free-portfolio-hosting-students-india-2026.jpg"
+                        alt="Free Portfolio Hosting for Students in India 2026 - Build. Showcase. Get hired. Celoris Designs"
                         width={1200}
                         height={675}
                         priority
@@ -282,35 +278,41 @@ export default function FreePortfolioHostingStudentsIndia2026() {
                 </div>
 
                 {/* Table of Contents Box */}
-                <nav className="my-10 p-6 rounded-2xl bg-slate-900/70 border border-slate-800">
+                <nav className="my-10 p-6 sm:p-8 rounded-2xl bg-slate-900/70 border border-slate-800">
                     <div className="flex items-center gap-2 text-white font-bold text-base mb-4">
                         <Bookmark className="w-4 h-4 text-emerald-400" />
-                        Table of Contents & Quick Navigation
+                        Table of Contents & Quick Technical Navigation
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-300">
                         <a href="#the-student-dilemma" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">01.</span> The Indian Student Hosting Dilemma (Why 000webhost Failed)
+                            <span className="text-emerald-400 font-mono text-xs">01.</span> The Indian Student Cloud Dilemma (RBI Auto-Debit &amp; Cold Starts)
                         </a>
-                        <a href="#recruiter-psychology" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">02.</span> Recruiter Psychology: The 5-Second Resume Scan
+                        <a href="#platform-comparison" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">02.</span> Zero-Credit-Card Platform Comparison Matrix
                         </a>
-                        <a href="#celoris-architecture" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">03.</span> Celoris Cloud Architecture (NVMe + Contabo Mumbai)
+                        <a href="#platform-mechanics" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">03.</span> Deep-Dive: Cloudflare Pages, Vercel Hobby &amp; Azure for Students
                         </a>
-                        <a href="#comparison" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">04.</span> Deep Benchmarks: Celoris vs GitHub Pages vs Hostinger
+                        <a href="#database-architecture" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">04.</span> Database Architecture: MongoDB Atlas &amp; Supabase (AWS Mumbai)
                         </a>
-                        <a href="#step-by-step" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">05.</span> Step-by-Step: Launching in 60 Seconds
+                        <a href="#specialization-blueprints" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">05.</span> Architectural Blueprints by Academic Specialisation (BCA/B.Tech/UI-UX)
                         </a>
-                        <a href="#headless-architecture" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">06.</span> Advanced: Using Celoris as a Headless CMS (React/Next.js)
+                        <a href="#code-integration" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">06.</span> Code Blueprints: Next.js + MongoDB &amp; Headless WordPress REST API
+                        </a>
+                        <a href="#celoris-cloud-setup" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">07.</span> Celoris Cloud: 1-Click 3 GB NVMe WordPress Deployment
                         </a>
                         <a href="#portfolio-checklist" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">07.</span> The 12-Point Pre-Interview Portfolio Audit Checklist
+                            <span className="text-emerald-400 font-mono text-xs">08.</span> The 12-Point Pre-Interview Student Portfolio Audit Checklist
+                        </a>
+                        <a href="#career-roadmap" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
+                            <span className="text-emerald-400 font-mono text-xs">09.</span> Career Roadmap: Microsoft Certifications &amp; 50% Exam Vouchers
                         </a>
                         <a href="#faq" className="hover:text-emerald-400 transition-colors flex items-center gap-2">
-                            <span className="text-emerald-400 font-mono text-xs">08.</span> Frequently Asked Questions (FAQ)
+                            <span className="text-emerald-400 font-mono text-xs">10.</span> Frequently Asked Questions (FAQ)
                         </a>
                     </div>
                 </nav>
@@ -323,19 +325,19 @@ export default function FreePortfolioHostingStudentsIndia2026() {
                             Claim Your Free Student Subdomain in 60 Seconds
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                            Ready to make your resume link live?
+                            Build. Showcase. Get Hired.
                         </h2>
                         <p className="text-slate-300 text-sm sm:text-base">
-                            Get <code className="text-emerald-400 font-mono">yourname.celoris.in</code> with 3 GB NVMe storage, pre-installed Astra theme, and Let&apos;s Encrypt SSL. 100% Free forever.
+                            Get <code className="text-emerald-400 font-mono">yourname.celoris.in</code> with 3 GB NVMe PCIe storage, pre-installed Astra theme, and Let&apos;s Encrypt TLS 1.3. 100% Free forever with zero credit card mandates.
                         </p>
                         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                             <Link href="/cloud" className="w-full sm:w-auto">
                                 <Button className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-6 text-base rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all">
                                     <Rocket className="w-5 h-5 mr-2" />
-                                    Launch Free Student Portfolio Now
+                                    Create Your Free Portfolio Now
                                 </Button>
                             </Link>
-                            <Link href="#comparison" className="w-full sm:w-auto">
+                            <Link href="#platform-comparison" className="w-full sm:w-auto">
                                 <Button variant="outline" className="w-full sm:w-auto border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white px-6 py-6 rounded-xl">
                                     Compare Hosting Tiers
                                 </Button>
@@ -347,347 +349,455 @@ export default function FreePortfolioHostingStudentsIndia2026() {
                 {/* Article Body */}
                 <article className="prose prose-invert prose-emerald max-w-none space-y-16 text-slate-300">
                     
-                    {/* SECTION 1: The Student Dilemma */}
+                    {/* SECTION 1: The Indian Student Cloud Dilemma */}
                     <section id="the-student-dilemma" className="space-y-6 pt-4">
                         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-                            <span>01 / The Hosting Landscape</span>
+                            <span>01 / The Indian Student Cloud Dilemma (2026 Context)</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
                             <GraduationCap className="w-7 h-7 text-emerald-400" />
-                            The Indian Student Hosting Dilemma: Why 000webhost Left Millions Stranded
+                            The 4 Structural Barriers Facing Indian Developers
                         </h2>
                         <p className="text-base sm:text-lg leading-relaxed">
-                            For over fifteen years, engineering students across Delhi, Pune, Bengaluru, Hyderabad, and Tier-2 engineering colleges in India followed an identical rite of passage: you built your college project or portfolio in PHP/WordPress, uploaded it to <strong>000webhost</strong>, and pasted the URL into your final-year viva project report.
-                        </p>
-                        <p className="text-base sm:text-lg leading-relaxed">
-                            In <strong>July 2024, Hostinger permanently shut down 000webhost</strong>. This sudden shutdown sent shockwaves through the Indian academic community, leaving hundreds of thousands of computer science students, faculty advisors, and junior developers with literally nowhere to deploy their dynamic WordPress and PHP projects without pulling out a credit card.
+                            Deploying production-ready portfolios and full-stack capstone projects is now a baseline expectation for engineering students (B.Tech, BCA, MCA) applying to top product companies and fast-growing Indian tech startups. However, Indian developers encounter specific structural barriers when attempting to use global cloud infrastructure:
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 not-prose my-6">
-                            <div className="p-5 rounded-xl bg-slate-900/60 border border-red-500/20 space-y-2">
+                            <div className="p-6 rounded-xl bg-slate-900/60 border border-red-500/20 space-y-2">
                                 <div className="flex items-center gap-2 text-red-400 font-bold">
                                     <ShieldAlert className="w-5 h-5" />
-                                    The Credit Card &amp; Auto-Debit Wall
+                                    1. The Credit Card &amp; RBI Auto-Debit Wall
                                 </div>
-                                <p className="text-sm text-slate-400">
-                                    Mainstream hosting giants (GoDaddy, Hostinger, Bluehost) advertise &quot;₹69/month&quot;, but deliberately hide the catch: you must pay for 48 months upfront (₹3,500–₹5,000 INR) plus agree to recurring international auto-debit mandates that standard Indian RuPay/student debit cards reject.
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Strict Reserve Bank of India (RBI) e-mandate and recurring payment guidelines cause international cloud platforms (AWS, GCP, DigitalOcean) to reject standard Indian RuPay cards and student debit accounts. Mandatory auto-debit setup forms an immediate barrier for students without credit cards.
                                 </p>
                             </div>
-                            <div className="p-5 rounded-xl bg-slate-900/60 border border-amber-500/20 space-y-2">
+                            <div className="p-6 rounded-xl bg-slate-900/60 border border-amber-500/20 space-y-2">
                                 <div className="flex items-center gap-2 text-amber-400 font-bold">
-                                    <Clock className="w-5 h-5" />
-                                    The 60-Second Cold Start Killer
+                                    <DollarSign className="w-5 h-5" />
+                                    2. Usage-Based Bill Shock Risk
                                 </div>
-                                <p className="text-sm text-slate-400">
-                                    Modern developer platforms like Render, Railway, or Fly.io provide free tiers, but put containers to &quot;sleep&quot; after 15 minutes of idle time. When an interviewer clicks your resume link, the page stalls for 50–70 seconds spinning cold boot containers before crashing with a 504 Gateway Timeout.
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Platforms that rely on un-capped metered billing (such as AWS Pay-As-You-Go or Vercel Pro) carry severe financial risks if a project experiences bot traffic, viral scrapers, or unexpected query spikes. A student waking up to a $1,200 bill is a real and terrifying reality.
                                 </p>
                             </div>
-                            <div className="p-5 rounded-xl bg-slate-900/60 border border-cyan-500/20 space-y-2">
-                                <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                                    <Code className="w-5 h-5" />
-                                    GitHub Pages is Static Only
-                                </div>
-                                <p className="text-sm text-slate-400">
-                                    While GitHub Pages is wonderful for static HTML and CSS, it cannot execute PHP scripts, maintain persistent MySQL/MariaDB relational databases, or run full-featured CMS platforms like WordPress or WooCommerce.
-                                </p>
-                            </div>
-                            <div className="p-5 rounded-xl bg-slate-900/60 border border-purple-500/20 space-y-2">
+                            <div className="p-6 rounded-xl bg-slate-900/60 border border-purple-500/20 space-y-2">
                                 <div className="flex items-center gap-2 text-purple-400 font-bold">
-                                    <ShieldCheck className="w-5 h-5" />
-                                    Spam Ads &amp; Domain Blacklisting
+                                    <ServerCrash className="w-5 h-5" />
+                                    3. The 000webhost Shutdown
                                 </div>
-                                <p className="text-sm text-slate-400">
-                                    Legacy free web hosts monetize by injecting flashing pop-unders, gambling advertisements, or intrusive banner ads across your portfolio, instantly demolishing your credibility during a technical job interview.
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Hostinger&apos;s permanent shutdown of <strong>000webhost in July 2024</strong> eliminated the historical go-to free PHP/MySQL hosting service used by millions of Indian college students, leaving a massive void for dynamic project submissions and vivas.
+                                </p>
+                            </div>
+                            <div className="p-6 rounded-xl bg-slate-900/60 border border-cyan-500/20 space-y-2">
+                                <div className="flex items-center gap-2 text-cyan-400 font-bold">
+                                    <Clock className="w-5 h-5" />
+                                    4. Cold Starts &amp; Sleeping Containers
+                                </div>
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Free Container-as-a-Service (PaaS) platforms like Render, Koyeb, and SnapDeploy put free web services to sleep after 15 minutes of inactivity. When a recruiter or viva examiner clicks a resume link, the page stalls for 30 to 60 seconds on a cold start before failing.
                                 </p>
                             </div>
                         </div>
+
+                        <p className="text-base sm:text-lg leading-relaxed">
+                            To bypass these friction points, students require infrastructure that guarantees zero financial risk, eliminates credit card mandates, utilizes local Indian Point-of-Presence (PoP) edge nodes, and pairs high-speed frontend hosting with low-latency persistent databases.
+                        </p>
                     </section>
 
-                    {/* SECTION 2: Recruiter Psychology */}
-                    <section id="recruiter-psychology" className="space-y-6">
+                    {/* SECTION 2: Platform Comparison Matrix */}
+                    <section id="platform-comparison" className="space-y-6">
                         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-400">
-                            <span>02 / Career Strategy</span>
+                            <span>02 / Platform Comparison Matrix</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                            <Eye className="w-7 h-7 text-cyan-400" />
-                            Recruiter Psychology: The 5-Second Resume Scan
-                        </h2>
-                        <p className="text-base sm:text-lg leading-relaxed">
-                            Technical recruiters and engineering hiring managers at fast-moving product startups review between 150 to 300 developer resumes every single morning. They do not clone your GitHub repositories, and they will not run <code className="text-emerald-400 font-mono text-sm">npm install &amp;&amp; npm run dev</code> on their personal laptops.
-                        </p>
-                        <blockquote className="p-5 rounded-2xl bg-slate-900/90 border-l-4 border-cyan-400 text-slate-200 not-prose my-6 space-y-2">
-                            <p className="italic font-medium text-base">
-                                &quot;If a candidate provides a localhost URL, an insecure http:// link that throws SSL warnings in Chrome, or a dead 000webhost error page, the resume is discarded immediately. A candidate who provides a fast, custom HTTPS domain with working interactive project demos immediately jumps into the top 5% of all applicants.&quot;
-                            </p>
-                            <span className="block text-xs text-cyan-400 font-mono uppercase tracking-wide">
-                                — Senior Engineering Manager, B2B SaaS Startup (Bengaluru)
-                            </span>
-                        </blockquote>
-
-                        <h3 className="text-xl font-bold text-white mt-6">
-                            How to Optimize Your Portfolio Link for ATS Resume Parsers:
-                        </h3>
-                        <p className="text-sm sm:text-base leading-relaxed">
-                            Applicant Tracking Systems (such as Workday, Lever, and Greenhouse) scan PDF resumes with automated regex parsers. If your link is formatted improperly, ATS parsers can strip the hyperlink or mark the file corrupted:
-                        </p>
-                        <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3 font-mono text-xs not-prose">
-                            <div className="flex items-center gap-2 text-red-400">
-                                <span>❌ BAD (ATS Rejection):</span>
-                                <span className="line-through text-slate-500">http://localhost:3000/my-portfolio</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-red-400">
-                                <span>❌ BAD (Insecure &amp; Broken):</span>
-                                <span className="line-through text-slate-500">http://aarav-tech.000webhostapp.com (Expired/Insecure)</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-emerald-400">
-                                <span>✅ PERFECT (ATS Clean &amp; Instant):</span>
-                                <span className="text-emerald-300 font-bold">https://aaravdev.celoris.in</span>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* SECTION 3: Celoris Cloud Architecture */}
-                    <section id="celoris-architecture" className="space-y-6">
-                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-purple-400">
-                            <span>03 / Cloud Infrastructure</span>
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                            <Server className="w-7 h-7 text-purple-400" />
-                            Inside Celoris Cloud: High-Density NVMe Containers in Mumbai
-                        </h2>
-                        <p className="text-base sm:text-lg leading-relaxed">
-                            Celoris Cloud does not operate like traditional slow shared cPanel hosting. Instead, our infrastructure runs on dedicated enterprise bare-metal compute instances located at the <strong>Equinix / Contabo Mumbai Datacenter</strong>, directly peered with National Internet Exchange of India (NIXI) and major domestic telcos (Jio, Airtel, Tata Communications).
-                        </p>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 not-prose my-6">
-                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
-                                <Gauge className="w-8 h-8 text-emerald-400" />
-                                <h3 className="text-lg font-bold text-white">Sub-15ms Domestic TTFB</h3>
-                                <p className="text-xs text-slate-400 leading-relaxed">
-                                    Because our servers are located domestically in Mumbai rather than Frankfurt or Virginia, visitors from Delhi, Bangalore, or Kolkata experience lightning-fast page loads.
-                                </p>
-                            </div>
-                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
-                                <Cpu className="w-8 h-8 text-cyan-400" />
-                                <h3 className="text-lg font-bold text-white">3 GB NVMe Storage</h3>
-                                <p className="text-xs text-slate-400 leading-relaxed">
-                                    Every instance receives 3,072 MB dedicated NVMe PCIe Gen4 storage. That is 10x more capacity than legacy free tiers, allowing hundreds of high-res project mockups.
-                                </p>
-                            </div>
-                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
-                                <Lock className="w-8 h-8 text-purple-400" />
-                                <h3 className="text-lg font-bold text-white">Automated Let&apos;s Encrypt TLS</h3>
-                                <p className="text-xs text-slate-400 leading-relaxed">
-                                    Pre-configured Let&apos;s Encrypt wildcard TLS 1.3 certificates guarantee green security padlocks on all browsers with zero manual certificate renewal.
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* SECTION 4: Comparison Matrix */}
-                    <section id="comparison" className="space-y-6">
-                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-                            <span>04 / Benchmarking &amp; Metrics</span>
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                            <BarChart3 className="w-7 h-7 text-emerald-400" />
-                            Technical Benchmarks: Celoris vs GitHub Pages vs Hostinger
+                            <Layers className="w-7 h-7 text-cyan-400" />
+                            Comprehensive Zero-Credit-Card Platform Comparison
                         </h2>
                         <p className="text-slate-400 text-sm sm:text-base">
-                            Here is an objective, technical head-to-head comparison between Celoris Cloud and other common student options available in India in 2026:
+                            A granular, side-by-side technical evaluation of primary zero-credit-card hosting options available to Indian developers in 2026:
                         </p>
 
                         <div className="overflow-x-auto not-prose rounded-2xl border border-slate-800 bg-slate-900/40">
                             <table className="w-full text-left text-sm text-slate-300">
                                 <thead className="bg-slate-900/90 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
                                     <tr>
-                                        <th className="p-4">Benchmark Metric</th>
-                                        <th className="p-4 text-emerald-400 font-bold bg-emerald-950/20">Celoris Cloud</th>
-                                        <th className="p-4">GitHub Pages</th>
-                                        <th className="p-4">Hostinger Shared</th>
-                                        <th className="p-4">000webhost (RIP)</th>
+                                        <th className="p-4">Platform</th>
+                                        <th className="p-4">Bandwidth / Egress</th>
+                                        <th className="p-4">Dynamic Quota</th>
+                                        <th className="p-4">Credit Card?</th>
+                                        <th className="p-4">Indian Edge PoPs</th>
+                                        <th className="p-4">Key Gotchas</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60 font-mono text-xs sm:text-sm">
-                                    <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">Student Pricing</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">₹0 Forever</td>
-                                        <td className="p-4">₹0 Forever</td>
-                                        <td className="p-4 text-red-400">₹3,500+ Upfront</td>
-                                        <td className="p-4 text-slate-500">Shut Down (Dead)</td>
+                                    <tr className="bg-emerald-950/20">
+                                        <td className="p-4 font-sans font-bold text-emerald-400 flex items-center gap-2">
+                                            <Sparkles className="w-4 h-4 text-emerald-400" />
+                                            Celoris Cloud
+                                        </td>
+                                        <td className="p-4 font-bold text-emerald-300">Unmetered Fair-Use</td>
+                                        <td className="p-4 text-emerald-300">3 GB NVMe Container + MariaDB</td>
+                                        <td className="p-4 text-emerald-400 font-bold">NO (Google 1-Tap)</td>
+                                        <td className="p-4 text-emerald-300">Mumbai Datacenter (Sub-15ms)</td>
+                                        <td className="p-4 text-slate-400">Requires login once every 90 days</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">Credit Card Required</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">NO (Google 1-Tap)</td>
-                                        <td className="p-4">No</td>
-                                        <td className="p-4 text-red-400">Yes (Mandatory)</td>
-                                        <td className="p-4 text-slate-500">—</td>
+                                        <td className="p-4 font-sans font-semibold text-white">Cloudflare Pages</td>
+                                        <td className="p-4 text-emerald-400 font-bold">Unmetered Static</td>
+                                        <td className="p-4">100k req/day via Workers</td>
+                                        <td className="p-4 text-emerald-400 font-bold">No</td>
+                                        <td className="p-4">22+ PoPs (BOM, DEL, BLR, MAA)</td>
+                                        <td className="p-4 text-slate-400">10ms CPU limit on free Workers</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">Dynamic CMS / PHP</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">Yes (Full WordPress)</td>
-                                        <td className="p-4 text-red-400">No (Static Only)</td>
-                                        <td className="p-4 text-emerald-400">Yes</td>
-                                        <td className="p-4 text-slate-500">—</td>
+                                        <td className="p-4 font-sans font-semibold text-white">Vercel Hobby</td>
+                                        <td className="p-4">100 GB Fast Transfer</td>
+                                        <td className="p-4">1M invocations / 4 CPU hrs</td>
+                                        <td className="p-4 text-emerald-400 font-bold">No</td>
+                                        <td className="p-4">Mumbai (`bom1`) &amp; New Delhi</td>
+                                        <td className="p-4 text-red-400">Non-commercial only; auto-pauses at cap</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">Storage Capacity</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">3 GB NVMe PCIe</td>
-                                        <td className="p-4">1 GB Git Limit</td>
-                                        <td className="p-4">10–50 GB (Paid)</td>
-                                        <td className="p-4 text-slate-500">300 MB (Dead)</td>
+                                        <td className="p-4 font-sans font-semibold text-white">Azure for Students</td>
+                                        <td className="p-4">100 GB SWA + $100 Credit</td>
+                                        <td className="p-4">750 hrs B1s Linux VM</td>
+                                        <td className="p-4 text-emerald-400 font-bold">No (.edu verification)</td>
+                                        <td className="p-4">Central, South, West India</td>
+                                        <td className="p-4 text-slate-400">Annual re-verification required</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">Cold Start / Sleep</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">Instant (No Sleep)</td>
-                                        <td className="p-4">Instant</td>
-                                        <td className="p-4">Instant</td>
-                                        <td className="p-4 text-slate-500">1 Hour Sleep/Day</td>
+                                        <td className="p-4 font-sans font-semibold text-white">GitHub Pages</td>
+                                        <td className="p-4">100 GB soft cap</td>
+                                        <td className="p-4 text-red-400">Static Only (No Backend)</td>
+                                        <td className="p-4 text-emerald-400 font-bold">No</td>
+                                        <td className="p-4">Global Fastly CDN</td>
+                                        <td className="p-4 text-red-400">1 GB repo size limit; no dynamic PHP/DB</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">TTFB Latency (India)</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">14–22 ms</td>
-                                        <td className="p-4">45–75 ms</td>
-                                        <td className="p-4">35–60 ms</td>
-                                        <td className="p-4 text-slate-500">450+ ms</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="p-4 font-sans font-semibold text-white">Third-Party Popups</td>
-                                        <td className="p-4 text-emerald-400 font-bold bg-emerald-950/20">Zero Ads</td>
-                                        <td className="p-4">Zero Ads</td>
-                                        <td className="p-4">Zero Ads</td>
-                                        <td className="p-4 text-red-400">Obnoxious Popups</td>
+                                        <td className="p-4 font-sans font-semibold text-white">Render Hobby</td>
+                                        <td className="p-4">5 GB pooled</td>
+                                        <td className="p-4 text-amber-400">Free Web Services</td>
+                                        <td className="p-4 text-emerald-400 font-bold">No</td>
+                                        <td className="p-4">Single region</td>
+                                        <td className="p-4 text-red-400">30–60s cold start wake delay</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </section>
 
-                    {/* SECTION 5: Step-by-Step Tutorial */}
-                    <section id="step-by-step" className="space-y-6">
-                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-400">
-                            <span>05 / Implementation Guide</span>
+                    {/* SECTION 3: Deep-Dive Platform Analysis */}
+                    <section id="platform-mechanics" className="space-y-6">
+                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-purple-400">
+                            <span>03 / Architecture Mechanics</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                            <Terminal className="w-7 h-7 text-cyan-400" />
-                            Step-by-Step: How to Launch Your Free Student Portfolio in 60 Seconds
+                            <Server className="w-7 h-7 text-purple-400" />
+                            Deep-Dive Platform Analysis &amp; Mechanics
+                        </h2>
+
+                        <div className="space-y-6">
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Cloud className="w-5 h-5 text-cyan-400" />
+                                    Cloudflare Pages &amp; Workers (Edge Topology)
+                                </h3>
+                                <p className="text-sm sm:text-base leading-relaxed text-slate-300">
+                                    Cloudflare operates 22+ Points of Presence across Tier-1 and Tier-2 Indian cities (Mumbai, New Delhi, Bengaluru, Chennai, Hyderabad, Kolkata, and 16 more). Requests to static assets (HTML, CSS, JS, WebP images) are <strong>unmetered</strong> on all free plans. Dynamic logic runs via <strong>Cloudflare Workers</strong>, which utilize lightweight V8 JavaScript isolates rather than full container VMs, booting up in less than 5 milliseconds.
+                                </p>
+                                <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800">
+                                    [ Indian End User (Jio / Airtel / Vi) ] ──&gt; (Sub-15ms Domestic Edge) ──&gt; [ Cloudflare V8 Isolate (&lt;5ms Cold Start) ]
+                                </div>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Zap className="w-5 h-5 text-emerald-400" />
+                                    Vercel Hobby (Next.js &amp; Hard Cap Safeguards)
+                                </h3>
+                                <p className="text-sm sm:text-base leading-relaxed text-slate-300">
+                                    Vercel Hobby enforces strict <strong>hard caps</strong> rather than metered charges. If your project reaches 100 GB data transfer or 1M invocations, the project pauses automatically until the next billing cycle, ensuring zero bill shock. It includes 4 Active CPU hours per month:
+                                </p>
+                                <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-emerald-300 border border-slate-800">
+                                    Capacity = 14,400 seconds / 0.050 s per request = ~288,000 dynamic requests/month
+                                </div>
+                                <p className="text-xs text-slate-400">
+                                    This capacity is more than ample for student portfolios, resume showcases, and capstone project evaluators.
+                                </p>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Award className="w-5 h-5 text-purple-400" />
+                                    Azure for Students (Enterprise Cloud Allocation)
+                                </h3>
+                                <p className="text-sm sm:text-base leading-relaxed text-slate-300">
+                                    Microsoft Azure provides an institutional program for university students aged 18+. Verification is done via an official college email address (<code className="text-purple-300">.edu</code> or university domain) without any credit card. It grants <strong>$100 annual credit (~₹8,300 INR)</strong> renewed every year, 750 hours/month of a Burstable B1s Linux VM, 1M Azure Functions requests, and 25 GB Azure Cosmos DB.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* SECTION 4: Database & Persistent Storage */}
+                    <section id="database-architecture" className="space-y-6">
+                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
+                            <span>04 / Database &amp; Persistent Storage</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                            <Database className="w-7 h-7 text-emerald-400" />
+                            Database &amp; Persistent Storage Architecture (AWS Mumbai)
                         </h2>
                         <p className="text-base sm:text-lg leading-relaxed">
-                            Deploying your live resume portfolio or college project requires zero command-line expertise or server setup. Follow this simple walkthrough:
+                            A production-ready full-stack portfolio requires pairing frontend edge hosting with low-latency database infrastructure located strictly within Indian regions:
                         </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 not-prose my-6">
+                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                                <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                                    <Database className="w-5 h-5" />
+                                    MongoDB Atlas M0
+                                </div>
+                                <p className="text-xs text-slate-300 leading-relaxed">
+                                    Free 512 MB NVMe cluster. Selecting <strong>AWS Asia Pacific (Mumbai) `ap-south-1`</strong> places your database in the exact same cloud hub as Indian edge servers, yielding sub-20ms query round-trips with zero cost forever.
+                                </p>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                                <div className="flex items-center gap-2 text-cyan-400 font-bold">
+                                    <Lock className="w-5 h-5" />
+                                    Supabase Managed Postgres
+                                </div>
+                                <p className="text-xs text-slate-300 leading-relaxed">
+                                    Full PostgreSQL in AWS Mumbai with built-in Auth, Row-Level Security (RLS), and auto-generated REST/GraphQL APIs. Includes 500 MB database storage, 5 GB monthly egress, and 50,000 monthly active users.
+                                </p>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                                <div className="flex items-center gap-2 text-purple-400 font-bold">
+                                    <Cloud className="w-5 h-5" />
+                                    Cloudflare D1 &amp; R2
+                                </div>
+                                <p className="text-xs text-slate-300 leading-relaxed">
+                                    <strong>D1:</strong> Serverless edge SQL database with 5 GB free storage executing inside edge isolates. <strong>R2:</strong> Object storage with zero egress fees (10 GB free) ideal for hosting design assets and PDFs.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* SECTION 5: Architectural Blueprints by Specialisation */}
+                    <section id="specialization-blueprints" className="space-y-6">
+                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-400">
+                            <span>05 / Academic Specialisation Blueprints</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                            <Briefcase className="w-7 h-7 text-cyan-400" />
+                            Architectural Blueprints by Student Specialisation
+                        </h2>
 
                         <div className="space-y-4 not-prose">
-                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 shrink-0">
-                                    1
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <h3 className="text-base font-bold text-white">B.Tech / MCA Full-Stack Capstone (MERN / Next.js)</h3>
+                                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Full-Stack Web</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-bold text-white">Pick Your Subdomain Name</h3>
-                                    <p className="text-slate-400 text-sm leading-relaxed">
-                                        Navigate to <Link href="/cloud" className="text-emerald-400 hover:underline font-mono">celoris.in/cloud</Link>. In the subdomain box, enter your professional handle (e.g. <code className="text-emerald-300">priyasharma</code> or <code className="text-emerald-300">aaravdev</code>). This becomes your permanent resume URL: <code className="text-emerald-400 font-mono">https://priyasharma.celoris.in</code>.
-                                    </p>
-                                </div>
+                                <p className="text-xs text-slate-300">
+                                    <strong>Stack:</strong> Next.js on Vercel Hobby + MongoDB Atlas M0 (AWS Mumbai `ap-south-1`) + Supabase Auth.
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                    <strong>Rationale:</strong> Industry-standard enterprise stack; Vercel hard caps prevent unexpected charges during high-volume college project vivas.
+                                </p>
                             </div>
 
-                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-400 shrink-0">
-                                    2
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <h3 className="text-base font-bold text-white">BCA / B.Sc Dynamic Web Systems (PHP, CMS, E-Commerce)</h3>
+                                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">WordPress / CMS</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-bold text-white">Sign in with Google (1-Tap)</h3>
-                                    <p className="text-slate-400 text-sm leading-relaxed">
-                                        Authenticate using your personal or college Google account. No credit cards, billing addresses, or OTP SMS mandates are requested.
-                                    </p>
-                                </div>
+                                <p className="text-xs text-slate-300">
+                                    <strong>Stack:</strong> Celoris Cloud (3 GB NVMe Container + MariaDB + Astra) on Mumbai Edge.
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                    <strong>Rationale:</strong> 1-click automated deployment, zero credit cards, no sleeping containers, pre-configured SSL, and custom subdomain (<code className="text-cyan-300">name.celoris.in</code>).
+                                </p>
                             </div>
 
-                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center font-bold text-purple-400 shrink-0">
-                                    3
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <h3 className="text-base font-bold text-white">UI/UX &amp; Graphic Design Portfolios (Figma, High-Res Media)</h3>
+                                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">Design Portfolio</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-bold text-white">Instant Provisioning &amp; Admin Credentials</h3>
-                                    <p className="text-slate-400 text-sm leading-relaxed">
-                                        Click <strong>&quot;Deploy Website&quot;</strong>. Within 45 seconds, the automated container engine sets up your MariaDB database, configures the Astra theme, issues your SSL certificate, and displays your administrator login credentials. Click the Admin link to access your dashboard!
-                                    </p>
+                                <p className="text-xs text-slate-300">
+                                    <strong>Stack:</strong> Cloudflare Pages + Cloudflare R2 / Celoris Cloud Media CDN.
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                    <strong>Rationale:</strong> Eliminates bandwidth overage concerns when serving high-resolution case study mockups, interactive Figma prototypes, and video showreels.
+                                </p>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <h3 className="text-base font-bold text-white">AI / ML &amp; Data Science Demonstrations (Python, FastAPI, PyTorch)</h3>
+                                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Data &amp; AI</span>
                                 </div>
+                                <p className="text-xs text-slate-300">
+                                    <strong>Stack:</strong> Azure Static Web Apps (Frontend) + Azure B1s Linux VM (750 Free Hrs via Student Credit) for Python runtime + Cosmos DB.
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                    <strong>Rationale:</strong> Provides a persistent Linux compute environment for Python runtimes and model inference that cannot run on edge JS isolates.
+                                </p>
                             </div>
                         </div>
                     </section>
 
-                    {/* SECTION 6: Advanced Headless CMS Architecture */}
-                    <section id="headless-architecture" className="space-y-6">
+                    {/* SECTION 6: Code Integration Blueprints */}
+                    <section id="code-integration" className="space-y-6">
                         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-                            <span>06 / Modern Developer Architecture</span>
+                            <span>06 / Implementation Code Blueprints</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                            <FileCode2 className="w-7 h-7 text-emerald-400" />
-                            Advanced: Using Celoris Cloud as a Headless CMS for React &amp; Next.js
+                            <Code className="w-7 h-7 text-emerald-400" />
+                            Production Code Blueprints (Next.js &amp; Headless WordPress)
                         </h2>
                         <p className="text-base sm:text-lg leading-relaxed">
-                            Are you building a modern portfolio using <strong>Next.js, React, Astro, or Vue.js</strong>? You do not have to write all your project case studies into static JSON files or pay for Sanity/Strapi paid tiers.
-                        </p>
-                        <p className="text-base sm:text-lg leading-relaxed">
-                            Every Celoris Cloud instance has the <strong>native WordPress REST API enabled</strong> by default. You can manage your projects, client feedback, and articles through the user-friendly WordPress dashboard, and fetch them dynamically into your custom React frontend via standard HTTP GET requests:
+                            Here are production-ready boilerplate implementations for connecting decoupled backends with zero billing risk:
                         </p>
 
-                        <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 not-prose my-6 space-y-3">
-                            <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-3">
-                                <span className="font-mono text-emerald-400">components/ProjectsFetcher.tsx (React / Next.js)</span>
-                                <span>Native WP REST API</span>
-                            </div>
-                            <pre className="text-xs sm:text-sm font-mono text-slate-200 overflow-x-auto leading-relaxed">
-{`// Fetch your project case studies from your Celoris WordPress backend
-async function getStudentProjects() {
-  const res = await fetch('https://yourname.celoris.in/wp-json/wp/v2/posts?_embed', {
-    next: { revalidate: 3600 } // ISR Cache: updates hourly with zero latency
-  });
+                        <div className="space-y-6 not-prose my-6">
+                            {/* Blueprint A: MongoDB Connection */}
+                            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                                <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-3">
+                                    <span className="font-mono text-emerald-400">Blueprint A: lib/dbConnect.ts (Next.js + MongoDB Atlas Mumbai)</span>
+                                    <span>Serverless Connection Caching</span>
+                                </div>
+                                <pre className="text-xs font-mono text-slate-200 overflow-x-auto leading-relaxed">
+{`import mongoose from 'mongoose';
 
-  if (!res.ok) throw new Error('Failed to load portfolio projects');
-  
-  const projects = await res.json();
-  return projects.map((item: any) => ({
-    id: item.id,
-    title: item.title.rendered,
-    content: item.content.rendered,
-    techStack: item.excerpt.rendered,
-    featuredImage: item._embedded?.['wp:featuredmedia']?.[0]?.source_url
-  }));
+const MONGODB_URI = process.env.MONGODB_URI!;
+
+if (!MONGODB_URI) {
+  throw new Error('Please define MONGODB_URI in .env.local');
+}
+
+let cached = (global as any).mongoose || { conn: null, promise: null };
+
+export async function dbConnect() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+    }).then((mongoose) => mongoose);
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
 }`}
-                            </pre>
+                                </pre>
+                            </div>
+
+                            {/* Blueprint B: Headless WordPress REST API */}
+                            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                                <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-3">
+                                    <span className="font-mono text-cyan-400">Blueprint B: app/api/projects/route.ts (Headless Celoris WordPress REST API)</span>
+                                    <span>ISR Static Generation</span>
+                                </div>
+                                <pre className="text-xs font-mono text-slate-200 overflow-x-auto leading-relaxed">
+{`import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    // Consume project case studies from your Celoris WordPress cloud instance
+    const res = await fetch('https://yourname.celoris.in/wp-json/wp/v2/posts?_embed', {
+      next: { revalidate: 3600 } // Incremental Static Regeneration: cached for 1 hour
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch from WordPress CMS');
+    
+    const posts = await res.json();
+    const formatted = posts.map((item: any) => ({
+      id: item.id,
+      title: item.title.rendered,
+      slug: item.slug,
+      summary: item.excerpt.rendered,
+      featuredImage: item._embedded?.['wp:featuredmedia']?.[0]?.source_url || null
+    }));
+
+    return NextResponse.json({ success: true, projects: formatted });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}`}
+                                </pre>
+                            </div>
                         </div>
-                        <p className="text-sm text-slate-400">
-                            💡 <strong>Why this impresses recruiters:</strong> In an interview, explaining that your portfolio utilizes a <em>Headless Decoupled Architecture</em> with a custom Next.js frontend consuming a containerized WordPress REST API demonstrates senior-level full-stack system architecture thinking!
-                        </p>
                     </section>
 
-                    {/* SECTION 7: Pre-Interview Checklist */}
-                    <section id="portfolio-checklist" className="space-y-6">
+                    {/* SECTION 7: Celoris Cloud Deployment */}
+                    <section id="celoris-cloud-setup" className="space-y-6">
                         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-purple-400">
-                            <span>07 / Quality Assurance</span>
+                            <span>07 / 1-Click Cloud Deployment</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                            <CheckSquare className="w-7 h-7 text-purple-400" />
+                            <Rocket className="w-7 h-7 text-purple-400" />
+                            Celoris Cloud: 1-Click 3 GB NVMe WordPress Deployment
+                        </h2>
+                        <p className="text-base sm:text-lg leading-relaxed">
+                            For students who need an instant, live, fully configured dynamic website without writing backend scaffolding or configuring Nginx/Apache, Celoris Cloud provides automated 60-second provisioning:
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 not-prose my-6">
+                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                                <span className="text-xs font-bold text-emerald-400 font-mono">STEP 01</span>
+                                <h3 className="text-base font-bold text-white">Pick Your Subdomain</h3>
+                                <p className="text-xs text-slate-400">
+                                    Visit <Link href="/cloud" className="text-emerald-400 hover:underline font-mono">celoris.in/cloud</Link> and enter your personal brand handle (e.g. <code className="text-emerald-300">priyasharma</code>).
+                                </p>
+                            </div>
+                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                                <span className="text-xs font-bold text-cyan-400 font-mono">STEP 02</span>
+                                <h3 className="text-base font-bold text-white">Google 1-Tap Auth</h3>
+                                <p className="text-xs text-slate-400">
+                                    Sign in using your Google account. No credit cards, OTP SMS fees, or billing mandates required.
+                                </p>
+                            </div>
+                            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                                <span className="text-xs font-bold text-purple-400 font-mono">STEP 03</span>
+                                <h3 className="text-base font-bold text-white">Instant Go-Live</h3>
+                                <p className="text-xs text-slate-400">
+                                    The engine provisions your 3 GB NVMe container, activates the Astra theme, issues SSL, and displays your admin login credentials.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* SECTION 8: 12-Point Audit Checklist */}
+                    <section id="portfolio-checklist" className="space-y-6">
+                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
+                            <span>08 / Quality Assurance</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                            <CheckSquare className="w-7 h-7 text-emerald-400" />
                             The 12-Point Pre-Interview Student Portfolio Audit Checklist
                         </h2>
                         <p className="text-base sm:text-lg leading-relaxed">
-                            Before copying your portfolio link into your resume, job applications, or college project submission report, ensure you tick off every box in this audit checklist:
+                            Before copying your portfolio link into your resume, LinkedIn profile, or college project viva submission report, verify every box in this audit checklist:
                         </p>
 
-                        <div className="space-y-3 not-prose">
+                        <div className="space-y-3 not-prose my-6">
                             {[
-                                { title: "HTTPS Padlock Active", desc: "Ensure your link opens as https:// without browser SSL security warnings." },
-                                { title: "Mobile Responsive Layout", desc: "Test on both a 6-inch phone and a 15-inch laptop. Over 65% of initial recruiter clicks happen on mobile." },
-                                { title: "1-Click Resume PDF Download", desc: "Place a visible 'Download Resume' button in your top navigation header." },
-                                { title: "Clear 3-Second Value Headline", desc: "State your exact role and graduation year immediately (e.g. 'B.Tech CS 2026 | Full-Stack Developer')." },
-                                { title: "Working Live Project Demos", desc: "Every project listed must have either a working live demo URL or a clean GitHub repository." },
-                                { title: "Zero Broken Placeholder Text", desc: "Delete all default 'Lorem Ipsum' or 'Hello World' default posts before sharing." },
-                                { title: "Fast Sub-2s Load Speed", desc: "Compress featured images to WebP so your site loads under 2 seconds on mobile 4G/5G." },
-                                { title: "LinkedIn & GitHub Links Verified", desc: "Double check that your social profile links open in new tabs and lead to active profiles." },
-                                { title: "Working Contact Form or Email", desc: "Send yourself a test message from your contact form to guarantee inquiries reach your inbox." },
-                                { title: "Project Problem & Tech Stack Bullets", desc: "Explain the problem you solved, frameworks used, and challenges overcome for each project." },
-                                { title: "Custom Favicon Configured", desc: "Replace the generic WordPress icon with your personal brand monogram or initials." },
-                                { title: "Clean URL in Resume Header", desc: "Hyperlink the text neatly (e.g. 'Portfolio: priyasharma.celoris.in') without messy tracking strings." },
+                                { title: "1. Active HTTPS Padlock", desc: "Confirm the URL opens via HTTPS without browser SSL security warnings." },
+                                { title: "2. Mobile Responsiveness", desc: "Test layout on mobile screens (6-inch phone) and desktop monitors. Over 65% of initial recruiter clicks happen on mobile." },
+                                { title: "3. Direct PDF Resume Download Button", desc: "Position a visible 'Download Resume' button in your top navigation header." },
+                                { title: "4. 3-Second Value Headline", desc: "Clearly state your name, academic background, and target role (e.g., 'B.Tech CS 2026 | Full-Stack Developer') above the fold." },
+                                { title: "5. Live Working Project Demos", desc: "Ensure every listed project includes a working live deployment link or clean GitHub repository." },
+                                { title: "6. Zero Placeholder Text", desc: "Delete all default 'Lorem Ipsum', 'Hello World', or test posts before sharing." },
+                                { title: "7. Compressed WebP Images", desc: "Optimize all project screenshots to WebP format to guarantee sub-2s mobile load speeds." },
+                                { title: "8. Social Links Verified", desc: "Ensure GitHub, LinkedIn, and email links open correctly in new tabs." },
+                                { title: "9. Verified Contact Form", desc: "Send yourself a test message from your contact form to confirm email delivery." },
+                                { title: "10. Problem Statement & Tech Stack Badges", desc: "Clearly explain the problem solved, tech stack used, and core technical challenge overcome for each project." },
+                                { title: "11. Custom Favicon", desc: "Replace default host icons with your personal monogram or initials." },
+                                { title: "12. Clean Resume Header Link", desc: "Format hyperlinks cleanly without tracking parameters (e.g. 'https://aaravdev.celoris.in')." },
                             ].map((item, idx) => (
                                 <div key={idx} className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 flex items-start gap-3">
                                     <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 shrink-0 text-xs mt-0.5">
@@ -702,10 +812,75 @@ async function getStudentProjects() {
                         </div>
                     </section>
 
-                    {/* SECTION 8: FAQ Section */}
+                    {/* SECTION 9: Career Roadmap & Microsoft Certifications */}
+                    <section id="career-roadmap" className="space-y-6">
+                        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-400">
+                            <span>09 / Career Acceleration</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                            <Award className="w-7 h-7 text-cyan-400" />
+                            Career Roadmap: Microsoft Certifications &amp; Free Credits (India 2026)
+                        </h2>
+                        <p className="text-base sm:text-lg leading-relaxed">
+                            Combining a live portfolio with industry cloud certifications helps strengthen resume credentials for campus placements and off-campus roles at Indian IT firms and cloud consultancies:
+                        </p>
+
+                        <div className="overflow-x-auto not-prose rounded-2xl border border-slate-800 bg-slate-900/40 my-6">
+                            <table className="w-full text-left text-sm text-slate-300">
+                                <thead className="bg-slate-900/90 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                                    <tr>
+                                        <th className="p-4">Certification</th>
+                                        <th className="p-4">Focus Area</th>
+                                        <th className="p-4">Standard Fee (India)</th>
+                                        <th className="p-4">High-Value Discount Route</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/60 font-mono text-xs sm:text-sm">
+                                    <tr>
+                                        <td className="p-4 font-sans font-bold text-white">AZ-900 (Azure Fundamentals)</td>
+                                        <td className="p-4 font-sans">Core Cloud Concepts, IaaS/PaaS, Security</td>
+                                        <td className="p-4">₹3,696 INR</td>
+                                        <td className="p-4 text-emerald-400 font-bold">50% Voucher via Virtual Training Days</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-4 font-sans font-bold text-white">AI-900 (Azure AI Fundamentals)</td>
+                                        <td className="p-4 font-sans">AI/ML concepts, Azure OpenAI, Vision, NLP</td>
+                                        <td className="p-4">₹3,696 INR</td>
+                                        <td className="p-4 text-emerald-400 font-bold">50% Voucher via Virtual Training Days</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-4 font-sans font-bold text-white">PL-300 (Power BI Data Analyst)</td>
+                                        <td className="p-4 font-sans">Power Query, DAX, Dashboard Design</td>
+                                        <td className="p-4">₹4,800 INR</td>
+                                        <td className="p-4 text-emerald-400 font-bold">Free Applied Skills Credentials</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-4 font-sans font-bold text-white">SC-900 (Security Fundamentals)</td>
+                                        <td className="p-4 font-sans">Zero Trust, Entra ID, Identity &amp; Compliance</td>
+                                        <td className="p-4">₹3,696 INR</td>
+                                        <td className="p-4 text-emerald-400 font-bold">50% Voucher via Virtual Training Days</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3 not-prose">
+                            <h3 className="text-base font-bold text-white flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-emerald-400" />
+                                How to Access Student Benefits &amp; Exam Vouchers:
+                            </h3>
+                            <ul className="text-xs sm:text-sm text-slate-300 space-y-2 list-disc pl-5">
+                                <li><strong>Microsoft Virtual Training Days:</strong> Attending free 2-day online webinars grants attendees a <strong>50% discount voucher</strong> on fundamentals exams (reducing AZ-900 from ₹3,696 to ~₹1,848).</li>
+                                <li><strong>GitHub Student Developer Pack:</strong> Provides verified students with free access to LinkedIn Learning courses, Canva Pro, JetBrains IDE licenses, and custom domains.</li>
+                                <li><strong>Azure for Students:</strong> Grants $100 annual credit (~₹8,300) without credit cards to practice cloud deployments.</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    {/* SECTION 10: FAQ Section */}
                     <section id="faq" className="space-y-6 pt-4">
                         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-                            <span>08 / Common Queries</span>
+                            <span>10 / Frequently Asked Questions</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
                             <HelpCircle className="w-7 h-7 text-emerald-400" />
@@ -754,7 +929,7 @@ async function getStudentProjects() {
                                     Can I connect my own custom .com or .in domain later?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-slate-400 text-sm leading-relaxed">
-                                    Yes! While every student gets an instant clean subdomain like `yourname.celoris.in`, you can seamlessly point your own custom domain (e.g. `yourname.com`) using our standard CNAME mapping at any time.
+                                    Yes! While every student gets an instant clean subdomain like `yourname.celoris.in`, you can seamlessly point your own custom domain (e.g. `yourname.com`) using standard CNAME mapping at any time.
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -769,7 +944,7 @@ async function getStudentProjects() {
                             Claim Your Free 3 GB Student Cloud Instance
                         </h2>
                         <p className="text-slate-300 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
-                            Stop keeping your projects on localhost. Deploy your high-speed portfolio link in 60 seconds and start impressing recruiters today.
+                            Build. Showcase. Get hired. Deploy your high-speed portfolio link in 60 seconds and start impressing recruiters today.
                         </p>
                         <div className="pt-2">
                             <Link href="/cloud">
