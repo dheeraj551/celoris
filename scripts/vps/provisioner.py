@@ -39,8 +39,20 @@ def run_db_query(sql):
     php_code = f'global $wpdb; echo json_encode($wpdb->query("{escaped}"));'
     return run_wp(["eval", php_code])
 
+def ensure_ssl_config():
+    """Ensures wp-config.php properly forces $_SERVER['HTTPS'] = 'on' behind Cloudflare / Caddy reverse proxies."""
+    try:
+        check_cmd = ["docker", "exec", "celoris-wordpress", "grep", "-q", "HTTPS.*on", "/var/www/html/wp-config.php"]
+        check_res = subprocess.run(check_cmd, capture_output=True)
+        if check_res.returncode != 0:
+            sed_cmd = ["docker", "exec", "celoris-wordpress", "sed", "-i", "2i $_SERVER['HTTPS'] = 'on';", "/var/www/html/wp-config.php"]
+            subprocess.run(sed_cmd, capture_output=True)
+    except Exception as e:
+        print(f"Warning: ensure_ssl_config error: {e}")
+
 class ProvisionHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
+        ensure_ssl_config()
         if self.path == '/health':
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
@@ -342,5 +354,6 @@ class ProvisionHandler(http.server.BaseHTTPRequestHandler):
             }).encode('utf-8'))
 
 if __name__ == '__main__':
+    ensure_ssl_config()
     server = http.server.ThreadingHTTPServer(('0.0.0.0', PORT), ProvisionHandler)
     server.serve_forever()
