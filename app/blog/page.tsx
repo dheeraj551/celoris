@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'free-portfolio-hosting-students-india-2026',
+      title: "Student Portfolio & Full-Stack Hosting Architecture in India (2026 Guide) — Zero Credit Card & Sub-15ms Edge",
+      slug: 'free-portfolio-hosting-students-india-2026',
+      excerpt: "The complete technical manual for B.Tech, BCA, MCA, and self-taught developers in India. How to deploy production portfolios, Next.js full-stack capstone apps, and WordPress instances with zero billing risk, sub-15ms Indian edge routing, MongoDB Atlas, Supabase, and no credit card required.",
+      featured_image_url: "/free-portfolio-hosting-students-india-2026.jpg",
+      author_name: 'Celoris Cloud & Academic Outreach Group',
+      category: 'Cloud Hosting • Student Guide 2026',
+      reading_time: 14,
+      published_at: '2026-10-19T08:00:00Z',
+    },
+    {
       id: 'how-to-open-and-edit-psd-files-online-without-photoshop-2026',
       title: "How to Open and Edit PSD Files Online Without Photoshop (2026 Guide) — Full Layers, WASM & Zero Software",
       slug: 'how-to-open-and-edit-psd-files-online-without-photoshop-2026',

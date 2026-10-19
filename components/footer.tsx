@@ -38,6 +38,7 @@ const footerSections = [
       { name: "Official Blog", href: "/blog" },
       { name: "Open PSD Guide (2026)", href: "/blog/how-to-open-and-edit-psd-files-online-without-photoshop-2026" },
       { name: "WordPress Guide (2026)", href: "/blog/free-wordpress-hosting-india-2026" },
+      { name: "Student Portfolio Guide (2026)", href: "/blog/free-portfolio-hosting-students-india-2026" },
       { name: "Careers", href: "/careers" },
       { name: "Contact Us", href: "/contact" },
       { name: "Help Center", href: "/help" },

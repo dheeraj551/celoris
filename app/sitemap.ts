@@ -529,6 +529,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/wordpress-course-noida', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/job-center', priority: 0.9, changeFrequency: 'daily' },
     { path: '/cloud', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/fivem-servers', priority: 0.9, changeFrequency: 'weekly' },
     { path: '/free-courses-with-certificate', priority: 0.9, changeFrequency: 'weekly' },
     { path: '/free-courses-with-certificate/social-media-reels', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/free-courses-with-certificate/digital-marketing', priority: 0.8, changeFrequency: 'weekly' },
