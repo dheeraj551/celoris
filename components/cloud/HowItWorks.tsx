@@ -41,7 +41,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
     <section id="how-it-works" className="py-24 bg-[#080808] border-t border-white/[0.06] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="text-xs font-mono font-semibold text-emerald-400 tracking-wider uppercase mb-2">
+          <div className="text-xs font-mono font-semibold text-amber-400 tracking-wider uppercase mb-2">
             Simple 3-Step Journey
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight [text-wrap:balance]">
@@ -64,15 +64,15 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                   onClick={() => setActiveStep(idx)}
                   className={`p-6 rounded-2xl border transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-[#121212] border-emerald-500/60 shadow-xl shadow-black'
-                      : 'bg-[#0D0D0D] border-white/[0.08] hover:border-emerald-500/30 hover:bg-[#111111]'
+                      ? 'bg-[#121212] border-amber-500/60 shadow-xl shadow-black'
+                      : 'bg-[#0D0D0D] border-white/[0.08] hover:border-amber-500/30 hover:bg-[#111111]'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-mono font-bold text-emerald-400 tracking-wider">
+                    <span className="text-xs font-mono font-bold text-amber-400 tracking-wider">
                       Step {s.number}
                     </span>
-                    <span className="text-[11px] font-mono text-emerald-400 font-medium">
+                    <span className="text-[11px] font-mono text-amber-400 font-medium">
                       {s.highlight}
                     </span>
                   </div>
@@ -89,7 +89,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                     <span className="text-[11px] text-neutral-400 font-medium">
                       {s.subtitle}
                     </span>
-                    <span className={`text-xs font-medium transition-colors ${isActive ? 'text-emerald-400' : 'text-neutral-500'}`}>
+                    <span className={`text-xs font-medium transition-colors ${isActive ? 'text-amber-400' : 'text-neutral-500'}`}>
                       {isActive ? 'Active Preview →' : 'Click to View'}
                     </span>
                   </div>
@@ -105,12 +105,12 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                 {/* Header bar */}
                 <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
                     <span className="text-xs font-mono text-neutral-300">
                       Celoris Workflow Simulator · Step {steps[activeStep].number}
                     </span>
                   </div>
-                  <div className="text-xs font-mono text-emerald-400">
+                  <div className="text-xs font-mono text-amber-400">
                     60s Cloud Engine
                   </div>
                 </div>
@@ -120,7 +120,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                   {activeStep === 0 && (
                     <div className="space-y-6 animate-in fade-in duration-200">
                       <div>
-                        <span className="text-xs font-mono text-emerald-400 font-semibold uppercase">
+                        <span className="text-xs font-mono text-amber-400 font-semibold uppercase">
                           Step 01 Simulation
                         </span>
                         <h4 className="text-xl font-bold text-white mt-1">
@@ -131,26 +131,26 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                         </p>
                       </div>
 
-                      <div className="p-4 bg-[#111111] border border-emerald-500/30 rounded-xl space-y-3">
+                      <div className="p-4 bg-[#111111] border border-amber-500/30 rounded-xl space-y-3">
                         <div className="flex items-center justify-between text-xs text-neutral-300">
                           <span>Target Subdomain</span>
-                          <span className="text-emerald-400 font-mono font-medium">✓ Available</span>
+                          <span className="text-amber-400 font-mono font-medium">✓ Available</span>
                         </div>
-                        <div className="p-3 bg-[#080808] border border-white/10 rounded-lg font-mono text-sm text-emerald-300 flex items-center justify-between">
+                        <div className="p-3 bg-[#080808] border border-white/10 rounded-lg font-mono text-sm text-amber-300 flex items-center justify-between">
                           <span>https://studiocraft.celoris.in</span>
-                          <span className="text-xs text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded">
+                          <span className="text-xs text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded">
                             Free While Active
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-neutral-400">
-                          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                          <ShieldCheck className="w-4 h-4 text-amber-400" />
                           <span>Wildcard Let’s Encrypt TLS automatically tied to this route</span>
                         </div>
                       </div>
 
                       <button
                         onClick={() => onClaimClick('studiocraft')}
-                        className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
+                        className="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
                       >
                         <span>Test Launch with studiocraft</span>
                         <ArrowRight className="w-4 h-4" />
@@ -161,7 +161,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                   {activeStep === 1 && (
                     <div className="space-y-6 animate-in fade-in duration-200">
                       <div>
-                        <span className="text-xs font-mono text-emerald-400 font-semibold uppercase">
+                        <span className="text-xs font-mono text-amber-400 font-semibold uppercase">
                           Step 02 Simulation
                         </span>
                         <h4 className="text-xl font-bold text-white mt-1">
@@ -174,17 +174,17 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
 
                       <div className="bg-[#050505] p-4 rounded-xl border border-white/10 font-mono text-xs space-y-2 text-neutral-300">
                         <div className="text-neutral-500">// Celoris Auto-Installer v2.4</div>
-                        <div className="text-emerald-400">✓ [0.2s] Dedicated MariaDB database provisioned</div>
-                        <div className="text-emerald-400">✓ [0.6s] Latest WordPress core installed</div>
-                        <div className="text-emerald-400">✓ [1.1s] OPcache &amp; Cloudflare edge caching activated</div>
-                        <div className="text-emerald-400">✓ [1.4s] TLS 1.3 Let's Encrypt certificate deployed</div>
-                        <div className="text-emerald-400">✓ [1.8s] Site online at https://studiocraft.celoris.in</div>
+                        <div className="text-amber-400">✓ [0.2s] Dedicated MariaDB database provisioned</div>
+                        <div className="text-amber-400">✓ [0.6s] Latest WordPress core installed</div>
+                        <div className="text-amber-400">✓ [1.1s] OPcache &amp; Cloudflare edge caching activated</div>
+                        <div className="text-amber-400">✓ [1.4s] TLS 1.3 Let's Encrypt certificate deployed</div>
+                        <div className="text-amber-400">✓ [1.8s] Site online at https://studiocraft.celoris.in</div>
                       </div>
 
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => setActiveStep(2)}
-                          className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
+                          className="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
                         >
                           <span>Proceed to Step 03: Sharing</span>
                           <ArrowRight className="w-4 h-4" />
@@ -196,7 +196,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                   {activeStep === 2 && (
                     <div className="space-y-6 animate-in fade-in duration-200">
                       <div>
-                        <span className="text-xs font-mono text-emerald-400 font-semibold uppercase">
+                        <span className="text-xs font-mono text-amber-400 font-semibold uppercase">
                           Step 03 Simulation
                         </span>
                         <h4 className="text-xl font-bold text-white mt-1">
@@ -209,12 +209,12 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
 
                       <div className="p-4 bg-[#111111] border border-white/10 rounded-xl space-y-3">
                         <div className="text-xs font-semibold text-neutral-300">Resume / LinkedIn Ready Link:</div>
-                        <div className="p-3 bg-[#080808] border border-emerald-500/30 rounded-lg flex items-center justify-between">
-                          <span className="font-mono text-sm text-emerald-400">
+                        <div className="p-3 bg-[#080808] border border-amber-500/30 rounded-lg flex items-center justify-between">
+                          <span className="font-mono text-sm text-amber-400">
                             studiocraft.celoris.in
                           </span>
                           <span className="text-xs text-neutral-400 flex items-center gap-1">
-                            <Share2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <Share2 className="w-3.5 h-3.5 text-amber-400" />
                             <span>100% Ad-Free</span>
                           </span>
                         </div>
@@ -225,7 +225,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
 
                       <button
                         onClick={() => onClaimClick()}
-                        className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
+                        className="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Claim Your Subdomain Now</span>
@@ -242,9 +242,9 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onClaimClick }) => {
                         key={i}
                         className={`h-1.5 rounded-full transition-all duration-200 ${
                           activeStep === i
-                            ? 'w-8 bg-emerald-400'
+                            ? 'w-8 bg-amber-400'
                             : activeStep > i
-                            ? 'w-4 bg-emerald-600'
+                            ? 'w-4 bg-amber-600'
                             : 'w-4 bg-neutral-800'
                         }`}
                       />

@@ -29,7 +29,7 @@ export const CelorisSpeedGauge: React.FC<{ score?: number; className?: string }>
       />
     </svg>
     <div className="absolute inset-0 flex items-center justify-center">
-      <span className="font-mono text-xs font-bold text-emerald-400 tabular-nums">
+      <span className="font-mono text-xs font-bold text-amber-400 tabular-nums">
         {score}
       </span>
     </div>

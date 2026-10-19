@@ -55,7 +55,7 @@ export const InfrastructureBar: React.FC = () => {
     <section id="infrastructure" className="py-16 bg-[#080808] border-y border-white/[0.06] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="text-xs font-mono font-semibold text-emerald-400 tracking-wider uppercase mb-2">
+          <div className="text-xs font-mono font-semibold text-amber-400 tracking-wider uppercase mb-2">
             Enterprise Infrastructure · Free For Students
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight [text-wrap:balance]">
@@ -78,13 +78,13 @@ export const InfrastructureBar: React.FC = () => {
                 onClick={() => setSelectedFeature(isExpanded ? null : feat.id)}
                 className={`p-5 rounded-xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                   isExpanded
-                    ? 'bg-[#121212] border-emerald-500/50 shadow-lg shadow-black'
-                    : 'bg-[#0D0D0D] border-white/[0.08] hover:border-emerald-500/30 hover:bg-[#111111]'
+                    ? 'bg-[#121212] border-amber-500/50 shadow-lg shadow-black'
+                    : 'bg-[#0D0D0D] border-white/[0.08] hover:border-amber-500/30 hover:bg-[#111111]'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-11 h-11 rounded-lg bg-[#0A0A0A] border border-emerald-500/30 p-1 flex items-center justify-center">
+                    <div className="w-11 h-11 rounded-lg bg-[#0A0A0A] border border-amber-500/30 p-1 flex items-center justify-center">
                       <Graphic className="w-9 h-9" />
                     </div>
                     <span className="text-[11px] font-mono font-medium text-neutral-400">
@@ -96,7 +96,7 @@ export const InfrastructureBar: React.FC = () => {
                     <span>{feat.title}</span>
                     <ChevronDown
                       className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${
-                        isExpanded ? 'rotate-180 text-emerald-400' : ''
+                        isExpanded ? 'rotate-180 text-amber-400' : ''
                       }`}
                     />
                   </h3>
@@ -109,7 +109,7 @@ export const InfrastructureBar: React.FC = () => {
                 {/* Expanded Technical Details */}
                 {isExpanded && (
                   <div className="mt-4 pt-4 border-t border-white/10 space-y-2 text-xs animate-in fade-in duration-150">
-                    <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                    <div className="text-[11px] font-mono text-amber-400 flex items-center gap-1.5">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{feat.spec}</span>
                     </div>

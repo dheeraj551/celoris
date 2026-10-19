@@ -61,7 +61,7 @@ export const Faq: React.FC = () => {
     <section id="faq" className="py-24 bg-[#050505] relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <div className="text-xs font-mono font-semibold text-emerald-400 tracking-wider uppercase mb-2">
+          <div className="text-xs font-mono font-semibold text-amber-400 tracking-wider uppercase mb-2">
             Clear Answers · Zero Fine Print
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight [text-wrap:balance]">
@@ -79,7 +79,7 @@ export const Faq: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search questions (e.g. SSL, Elementor, custom domain)..."
-              className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-[#101010] border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500"
+              className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-[#101010] border border-white/10 rounded-xl text-white placeholder:text-neutral-500 focus:outline-none focus:border-amber-500"
             />
           </div>
         </div>
@@ -94,8 +94,8 @@ export const Faq: React.FC = () => {
                 key={idx}
                 className={`rounded-xl border transition-all duration-200 overflow-hidden ${
                   isOpen
-                    ? 'bg-[#121212] border-emerald-500/40 shadow-lg'
-                    : 'bg-[#0D0D0D] border-white/[0.08] hover:border-emerald-500/25'
+                    ? 'bg-[#121212] border-amber-500/40 shadow-lg'
+                    : 'bg-[#0D0D0D] border-white/[0.08] hover:border-amber-500/25'
                 }`}
               >
                 <button
@@ -112,7 +112,7 @@ export const Faq: React.FC = () => {
                     </span>
                     <ChevronDown
                       className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-emerald-400' : ''
+                        isOpen ? 'rotate-180 text-amber-400' : ''
                       }`}
                     />
                   </div>
@@ -137,7 +137,7 @@ export const Faq: React.FC = () => {
         {/* Support Help Card */}
         <div className="mt-12 p-6 rounded-2xl bg-[#0D0D0D] border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
               <MessageCircle className="w-5 h-5" />
             </div>
             <div>
@@ -149,7 +149,7 @@ export const Faq: React.FC = () => {
             href="https://wa.me/919084718101?text=Hi%20Celoris%20Cloud!%20I%20have%20a%20question%20about%20free%20WordPress%20hosting."
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 text-xs font-semibold text-emerald-400 hover:text-black hover:bg-emerald-400 border border-emerald-500/30 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-4 py-2 text-xs font-semibold text-amber-400 hover:text-black hover:bg-amber-400 border border-amber-500/30 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
           >
             <MessageCircle className="w-3.5 h-3.5" />
             <span>Chat on WhatsApp →</span>

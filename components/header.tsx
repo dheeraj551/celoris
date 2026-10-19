@@ -36,6 +36,7 @@ export default function Header() {
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/job-center") ||
     pathname?.startsWith("/cloud") ||
+    pathname?.startsWith("/fivem-servers") ||
     pathname?.startsWith("/photolite") ||
     pathname?.startsWith("/polyvault") ||
     pathname?.startsWith("/shop") ||

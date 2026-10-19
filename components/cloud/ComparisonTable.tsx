@@ -101,11 +101,11 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
   return (
     <section id="comparison" className="py-24 bg-[#050505] relative overflow-hidden">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-emerald-500/5 blur-[160px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-amber-500/5 blur-[160px] pointer-events-none rounded-full" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="text-xs font-mono font-semibold text-emerald-400 tracking-wider uppercase mb-2">
+          <div className="text-xs font-mono font-semibold text-amber-400 tracking-wider uppercase mb-2">
             The Truth About Hosting For Beginners
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight [text-wrap:balance]">
@@ -120,7 +120,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
             <button
               onClick={() => setFilterView('all')}
               className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
-                filterView === 'all' ? 'bg-emerald-500 text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'
+                filterView === 'all' ? 'bg-amber-500 text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'
               }`}
             >
               All Comparisons
@@ -128,7 +128,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
             <button
               onClick={() => setFilterView('cost')}
               className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
-                filterView === 'cost' ? 'bg-emerald-500 text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'
+                filterView === 'cost' ? 'bg-amber-500 text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'
               }`}
             >
               Cost & Cards
@@ -136,7 +136,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
             <button
               onClick={() => setFilterView('experience')}
               className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
-                filterView === 'experience' ? 'bg-emerald-500 text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'
+                filterView === 'experience' ? 'bg-amber-500 text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'
               }`}
             >
               Speed & Quality
@@ -164,12 +164,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
                     Ad-Injected & Strict Limits
                   </span>
                 </th>
-                <th className="py-5 px-6 text-xs font-semibold uppercase tracking-wider text-emerald-400 w-1/4 bg-emerald-950/30 border-l border-r border-emerald-500/30">
+                <th className="py-5 px-6 text-xs font-semibold uppercase tracking-wider text-amber-400 w-1/4 bg-amber-950/30 border-l border-r border-amber-500/30">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
                     <span className="text-sm font-bold text-white">Celoris Cloud</span>
                   </div>
-                  <span className="block text-[11px] font-medium text-emerald-300 normal-case mt-0.5">
+                  <span className="block text-[11px] font-medium text-amber-300 normal-case mt-0.5">
                     100% Free Forever While Active
                   </span>
                 </th>
@@ -198,9 +198,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
                       <span>{row.oldFree}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-6 bg-emerald-950/20 border-l border-r border-emerald-500/25 font-semibold text-white text-xs sm:text-sm">
-                    <div className="flex items-center gap-2 text-emerald-300">
-                      <Check className="w-4 h-4 text-emerald-400 shrink-0 stroke-[2.5]" />
+                  <td className="py-4 px-6 bg-amber-950/20 border-l border-r border-amber-500/25 font-semibold text-white text-xs sm:text-sm">
+                    <div className="flex items-center gap-2 text-amber-300">
+                      <Check className="w-4 h-4 text-amber-400 shrink-0 stroke-[2.5]" />
                       <span>{row.celoris}</span>
                     </div>
                   </td>
@@ -212,10 +212,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ onClaimClick }
                 <td colSpan={3} className="py-4 px-6 text-xs text-neutral-400">
                   Ready to test our cloud without giving anyone your credit card?
                 </td>
-                <td className="py-4 px-6 bg-emerald-950/30 border-l border-r border-emerald-500/30">
+                <td className="py-4 px-6 bg-amber-950/30 border-l border-r border-amber-500/30">
                   <button
                     onClick={onClaimClick}
-                    className="w-full py-2 px-3 text-xs font-bold text-black bg-emerald-400 hover:bg-emerald-300 rounded-lg shadow-sm flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                    className="w-full py-2 px-3 text-xs font-bold text-black bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                   >
                     <span>Launch Free Site</span>
                     <ArrowRight className="w-3.5 h-3.5" />

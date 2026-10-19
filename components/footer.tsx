@@ -11,6 +11,7 @@ const footerSections = [
     title: "Platform & Tools",
     links: [
       { name: "Free WordPress Cloud", href: "/cloud", badge: "New" },
+      { name: "FiveM Server Hosting", href: "/fivem-servers", badge: "Gaming" },
       { name: "Open PSD Online", href: "/open-psd-online", badge: "Free" },
       { name: "Free Image Editor", href: "/free-image-editor" },
       { name: "AI Video Studio", href: "/video-studio" },
@@ -83,6 +84,7 @@ export default function Footer() {
     pathname?.startsWith("/motion-swap") ||
     pathname?.startsWith("/celo-ai") ||
     pathname?.startsWith("/cloud") ||
+    pathname?.startsWith("/fivem-servers") ||
     pathname?.startsWith("/interviews")
 
   if (isExcludedPage) {

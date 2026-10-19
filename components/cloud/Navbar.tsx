@@ -92,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
             </Link>
             <Link
               href="/cloud"
-              className="flex items-center whitespace-nowrap shrink-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg"
+              className="flex items-center whitespace-nowrap shrink-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg"
               aria-label="Celoris Cloud Home"
             >
               <CelorisLogo size="md" />
@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
                   onClick={(e) => handleNavClick(e, item.id)}
                   className={`relative py-1 transition-colors whitespace-nowrap shrink-0 ${
                     isActive
-                      ? 'text-emerald-400 font-semibold'
+                      ? 'text-amber-400 font-semibold'
                       : 'text-neutral-400 hover:text-neutral-200'
                   }`}
                   aria-current={isActive ? 'location' : undefined}
@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
                   {item.label}
                   {isActive && (
                     <span
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-emerald-400 rounded-full"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-amber-400 rounded-full"
                       aria-hidden="true"
                     />
                   )}
@@ -136,15 +136,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="relative h-8 w-8 rounded-full p-0 border border-white/20 hover:border-emerald-400/60 transition-all duration-200 hover:scale-105 shadow-[0_0_12px_rgba(0,0,0,0.5)] cursor-pointer overflow-hidden group focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                    className="relative h-8 w-8 rounded-full p-0 border border-white/20 hover:border-amber-400/60 transition-all duration-200 hover:scale-105 shadow-[0_0_12px_rgba(0,0,0,0.5)] cursor-pointer overflow-hidden group focus:outline-none focus:ring-2 focus:ring-amber-400/50"
                     aria-label="User Account"
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
+                        src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=f59e0b&color=fff`}
                         alt={profile?.full_name || 'User'}
                       />
-                      <AvatarFallback className="bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-bold text-[10px]">
+                      <AvatarFallback className="bg-gradient-to-tr from-amber-500 to-yellow-400 text-black font-bold text-[10px]">
                         {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -157,10 +157,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
                   <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] mb-2 flex items-center gap-2.5">
                     <Avatar className="h-8 w-8 border border-white/15 shrink-0">
                       <AvatarImage
-                        src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=10b981&color=fff`}
+                        src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || user.email || 'User')}&background=f59e0b&color=fff`}
                         alt={profile?.full_name || 'User'}
                       />
-                      <AvatarFallback className="bg-emerald-500 text-black font-bold text-xs">
+                      <AvatarFallback className="bg-amber-500 text-black font-bold text-xs">
                         {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -175,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
                   </div>
                   <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer text-xs">
                     <Link href="/dashboard" className="flex items-center gap-2 text-neutral-300 hover:text-white">
-                      <LayoutDashboard className="w-3.5 h-3.5 text-emerald-400" />
+                      <LayoutDashboard className="w-3.5 h-3.5 text-amber-400" />
                       <span>Main Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
@@ -206,14 +206,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onClaimClick }) => {
                 href="/login?redirect=/cloud"
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-neutral-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors border border-white/10"
               >
-                <LogIn className="w-3.5 h-3.5 text-emerald-400" />
+                <LogIn className="w-3.5 h-3.5 text-amber-400" />
                 <span>Sign In</span>
               </Link>
             )}
 
             <button
               onClick={() => onClaimClick()}
-              className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-black bg-emerald-400 hover:bg-emerald-300 rounded-lg shadow-sm shadow-emerald-500/25 transition-all duration-150 active:scale-95 whitespace-nowrap shrink-0 cursor-pointer"
+              className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-black bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm shadow-amber-500/25 transition-all duration-150 active:scale-95 whitespace-nowrap shrink-0 cursor-pointer"
             >
               Claim Free Site
             </button>

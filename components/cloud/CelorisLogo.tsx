@@ -27,7 +27,7 @@ export const CelorisLogo: React.FC<CelorisLogoProps> = ({
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
       {/* Celoris Cloud Official Glowing Leaf & Cloud Emblem */}
-      <div className={`relative rounded-xl overflow-hidden shadow-sm shadow-emerald-500/30 border border-emerald-500/30 bg-black flex-shrink-0 ${iconSizes[size]}`}>
+      <div className={`relative rounded-xl overflow-hidden shadow-sm shadow-amber-500/30 border border-amber-500/30 bg-black flex-shrink-0 ${iconSizes[size]}`}>
         <Image
           src="/images/celoris-cloud-logo.png"
           alt="Celoris Cloud Logo"
@@ -44,7 +44,7 @@ export const CelorisLogo: React.FC<CelorisLogoProps> = ({
           Celoris
         </span>
         {showSubtext && (
-          <span className={`font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-200 ${textSizes[size]}`}>
+          <span className={`font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200 ${textSizes[size]}`}>
             Cloud
           </span>
         )}

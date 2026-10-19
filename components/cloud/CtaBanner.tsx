@@ -18,16 +18,16 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onClaimClick }) => {
   return (
     <section className="py-20 bg-[#050505] border-t border-white/[0.08] relative overflow-hidden">
       {/* Glow backgrounds */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 blur-[130px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-amber-500/10 blur-[130px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl p-8 sm:p-12 bg-[#0D0D0D] border border-emerald-500/30 shadow-2xl shadow-black text-center relative overflow-hidden">
+        <div className="rounded-3xl p-8 sm:p-12 bg-[#0D0D0D] border border-amber-500/30 shadow-2xl shadow-black text-center relative overflow-hidden">
           {/* Subtle grid pattern */}
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-xs text-emerald-300">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-500/30 text-xs text-amber-300">
+              <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
               <span>Zero Risk · 100% Free Forever</span>
             </div>
 
@@ -41,7 +41,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onClaimClick }) => {
 
             {/* Quick Claim Input Bar */}
             <form onSubmit={handleSubmit} className="pt-2 max-w-md mx-auto">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 bg-[#080808] border border-white/15 rounded-2xl focus-within:border-emerald-500/60 transition-colors">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 bg-[#080808] border border-white/15 rounded-2xl focus-within:border-amber-500/60 transition-colors">
                 <div className="flex items-center flex-1 px-3 py-2">
                   <span className="text-neutral-500 font-mono text-xs select-none">https://</span>
                   <input
@@ -51,11 +51,11 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onClaimClick }) => {
                     placeholder="yourname"
                     className="flex-1 bg-transparent text-white font-mono text-sm font-semibold focus:outline-none placeholder:text-neutral-600 px-1 min-w-0"
                   />
-                  <span className="text-emerald-400 font-mono text-xs font-semibold select-none">.celoris.in</span>
+                  <span className="text-amber-400 font-mono text-xs font-semibold select-none">.celoris.in</span>
                 </div>
                 <button
                   type="submit"
-                  className="py-2.5 px-5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                  className="py-2.5 px-5 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
                 >
                   <span>Claim Free Site Now</span>
                   <ArrowRight className="w-4 h-4" />
@@ -65,13 +65,13 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onClaimClick }) => {
 
             {/* Micro Guarantees */}
             <div className="pt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-neutral-400">
-              <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="flex items-center gap-1.5 text-amber-400">
                 <Check className="w-3.5 h-3.5" />
                 <span>No Credit Card Needed</span>
               </span>
               <span className="text-neutral-700">·</span>
               <span className="flex items-center gap-1.5 text-neutral-300">
-                <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                <Shield className="w-3.5 h-3.5 text-amber-400" />
                 <span>Free SSL & NVMe SSD</span>
               </span>
               <span className="text-neutral-700">·</span>

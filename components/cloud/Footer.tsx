@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
               High-speed, ad-free managed WordPress cloud hosting built specifically for Indian students, design learners, freshers, and solo creators.
             </p>
             <div className="flex items-center gap-2 text-neutral-400 text-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
               <span>All Cloud Systems Operational · Asia-South1 (Mumbai)</span>
             </div>
             <div className="pt-2 text-neutral-400 text-[11px]">
@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
                 href="https://celorisdesigns.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1"
+                className="text-amber-400 hover:text-amber-300 font-semibold inline-flex items-center gap-1"
               >
                 <span>Celoris Designs LLP</span>
                 <ExternalLink className="w-3 h-3" />
@@ -41,27 +41,27 @@ export const Footer: React.FC = () => {
             </div>
             <ul className="space-y-2">
               <li>
-                <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
+                <a href="#how-it-works" className="hover:text-amber-400 transition-colors">
                   High-Speed NVMe Cloud
                 </a>
               </li>
               <li>
-                <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
+                <a href="#how-it-works" className="hover:text-amber-400 transition-colors">
                   1-Click WordPress Deploy
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-emerald-400 transition-colors">
+                <a href="#pricing" className="hover:text-amber-400 transition-colors">
                   Free Active Subdomains
                 </a>
               </li>
               <li>
-                <a href="#comparison" className="hover:text-emerald-400 transition-colors">
+                <a href="#comparison" className="hover:text-amber-400 transition-colors">
                   Why Celoris Cloud?
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-emerald-400 transition-colors">
+                <a href="#pricing" className="hover:text-amber-400 transition-colors">
                   Custom Domain Connect
                 </a>
               </li>
@@ -77,33 +77,33 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   href="/classrooms"
-                  className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+                  className="hover:text-amber-400 transition-colors flex items-center gap-1"
                 >
                   <span>Celoris Live Classes</span>
                 </Link>
               </li>
               <li>
-                <a href="#faq" className="hover:text-emerald-400 transition-colors">
+                <a href="#faq" className="hover:text-amber-400 transition-colors">
                   Student FAQ
                 </a>
               </li>
               <li>
-                <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
+                <a href="#how-it-works" className="hover:text-amber-400 transition-colors">
                   How Deployment Works
                 </a>
               </li>
               <li>
-                <Link href="/courses" className="hover:text-emerald-400 transition-colors">
+                <Link href="/courses" className="hover:text-amber-400 transition-colors">
                   Design &amp; Code Courses
                 </Link>
               </li>
               <li>
-                <Link href="/open-psd-online" className="text-emerald-400/90 hover:text-emerald-300 font-medium transition-colors">
+                <Link href="/open-psd-online" className="text-amber-400/90 hover:text-amber-300 font-medium transition-colors">
                   Open PSD Online (Free)
                 </Link>
               </li>
               <li>
-                <Link href="/free-image-editor" className="hover:text-emerald-400 transition-colors">
+                <Link href="/free-image-editor" className="hover:text-amber-400 transition-colors">
                   Free Image Editor
                 </Link>
               </li>
@@ -117,18 +117,18 @@ export const Footer: React.FC = () => {
             </div>
             <ul className="space-y-2">
               <li>
-                <span className="text-emerald-400 font-medium">100% Ad-Free Guarantee</span>
+                <span className="text-amber-400 font-medium">100% Ad-Free Guarantee</span>
               </li>
               <li>
                 <span className="text-neutral-400">Zero Auto-Debit Policy</span>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-emerald-400 transition-colors">
+                <Link href="/privacy" className="hover:text-amber-400 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/cloud/acceptable-use" className="hover:text-emerald-400 transition-colors">
+                <Link href="/cloud/acceptable-use" className="hover:text-amber-400 transition-colors">
                   Acceptable Use Policy
                 </Link>
               </li>
@@ -138,12 +138,12 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-emerald-400 transition-colors">
+                <Link href="/terms" className="hover:text-amber-400 transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/refund-policy" className="hover:text-emerald-400 transition-colors">
+                <Link href="/refund-policy" className="hover:text-amber-400 transition-colors">
                   Refund & Cancellation
                 </Link>
               </li>
@@ -157,7 +157,7 @@ export const Footer: React.FC = () => {
             © {new Date().getFullYear()} Celoris Designs LLP. Built with pride for Indian creators & students.
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-emerald-400 transition-colors">
+            <Link href="/" className="hover:text-amber-400 transition-colors">
               celorisdesigns.com
             </Link>
             <span>·</span>

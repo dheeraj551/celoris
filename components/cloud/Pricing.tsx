@@ -31,7 +31,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
         'Community Forum & Docs Support',
       ],
       ctaText: 'Launch Free 3 GB Site (No Card Needed)',
-      ctaStyle: 'bg-emerald-400 hover:bg-emerald-300 text-black font-bold shadow-emerald-900/30',
+      ctaStyle: 'bg-amber-400 hover:bg-amber-300 text-black font-bold shadow-amber-900/30',
       isPopular: false,
     },
     {
@@ -56,7 +56,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
         'Priority WhatsApp & Ticket Support',
       ],
       ctaText: 'Upgrade to Pro (₹149/mo)',
-      ctaStyle: 'bg-emerald-500 hover:bg-emerald-400 text-black font-bold shadow-emerald-900/30',
+      ctaStyle: 'bg-amber-500 hover:bg-amber-400 text-black font-bold shadow-amber-900/30',
     },
     {
       id: 'agency',
@@ -87,12 +87,12 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
   return (
     <section id="pricing" className="py-24 bg-[#050505] relative overflow-hidden">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/3 right-10 w-[600px] h-[400px] bg-emerald-500/10 blur-[150px] pointer-events-none rounded-full" />
-      <div className="absolute bottom-10 left-10 w-[600px] h-[400px] bg-emerald-600/10 blur-[150px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/3 right-10 w-[600px] h-[400px] bg-amber-500/10 blur-[150px] pointer-events-none rounded-full" />
+      <div className="absolute bottom-10 left-10 w-[600px] h-[400px] bg-amber-600/10 blur-[150px] pointer-events-none rounded-full" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="text-xs font-mono font-semibold text-emerald-400 tracking-wider uppercase mb-2">
+          <div className="text-xs font-mono font-semibold text-amber-400 tracking-wider uppercase mb-2">
             Honest & Transparent Freemium Model
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight [text-wrap:balance]">
@@ -108,7 +108,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
               onClick={() => setBillingCycle('monthly')}
               className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 billingCycle === 'monthly'
-                  ? 'bg-emerald-500 text-black font-bold shadow-sm'
+                  ? 'bg-amber-500 text-black font-bold shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
@@ -118,12 +118,12 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
               onClick={() => setBillingCycle('yearly')}
               className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
                 billingCycle === 'yearly'
-                  ? 'bg-emerald-500 text-black font-bold shadow-sm'
+                  ? 'bg-amber-500 text-black font-bold shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
               <span>Annual Billing</span>
-              <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30">
+              <span className="text-[10px] text-amber-300 font-bold bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/30">
                 Save 27%
               </span>
             </button>
@@ -140,9 +140,9 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
                 key={plan.id}
                 className={`relative rounded-2xl p-7 flex flex-col justify-between transition-all duration-200 ${
                   plan.highlight
-                    ? 'bg-[#0A0A0A] border-2 border-emerald-500/60 shadow-2xl shadow-black ring-1 ring-emerald-500/20'
+                    ? 'bg-[#0A0A0A] border-2 border-amber-500/60 shadow-2xl shadow-black ring-1 ring-amber-500/20'
                     : plan.isPopular
-                    ? 'bg-[#0E0E0E] border-2 border-emerald-500/60 shadow-2xl shadow-black ring-1 ring-emerald-500/30'
+                    ? 'bg-[#0E0E0E] border-2 border-amber-500/60 shadow-2xl shadow-black ring-1 ring-amber-500/30'
                     : 'bg-[#080808] border border-white/10 hover:border-white/20'
                 }`}
               >
@@ -153,12 +153,12 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
                       {plan.badge}
                     </span>
                     {plan.isPopular && (
-                      <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded">
+                      <span className="text-[11px] font-bold text-amber-300 bg-amber-950/80 border border-amber-500/40 px-2 py-0.5 rounded">
                         Most Popular
                       </span>
                     )}
                     {plan.highlight && (
-                      <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded">
+                      <span className="text-[11px] font-bold text-amber-300 bg-amber-950/80 border border-amber-500/40 px-2 py-0.5 rounded">
                         Free While Active
                       </span>
                     )}
@@ -184,12 +184,12 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
                     </div>
 
                     {plan.priceMonthly === 0 ? (
-                      <div className="mt-2 text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
+                      <div className="mt-2 text-[11px] text-amber-400 font-medium flex items-center gap-1.5">
                         <Check className="w-3.5 h-3.5" />
                         <span>No credit card required. Free forever while active.</span>
                       </div>
                     ) : billingCycle === 'yearly' ? (
-                      <div className="mt-2 text-[11px] text-emerald-300 font-mono">
+                      <div className="mt-2 text-[11px] text-amber-300 font-mono">
                         Total ₹{plan.annualTotal} paid annually (save over ₹480/yr)
                       </div>
                     ) : (
@@ -206,7 +206,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
                     </div>
                     {plan.features.map((feat, fIdx) => (
                       <div key={fIdx} className="flex items-start gap-2.5 text-neutral-300">
-                        <Check className="w-4 h-4 shrink-0 mt-0.5 stroke-[2] text-emerald-400" />
+                        <Check className="w-4 h-4 shrink-0 mt-0.5 stroke-[2] text-amber-400" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -247,23 +247,23 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
         </div>
 
         {/* Upsell / Server Performance Banner */}
-        <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-[#0d1611] to-emerald-950/20 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-4 max-w-5xl mx-auto">
+        <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-amber-950/40 via-[#0d1611] to-amber-950/20 border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-4 max-w-5xl mx-auto">
           <div className="space-y-1 text-center md:text-left">
-            <div className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+            <div className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
               Need Custom Domains &amp; Scaled Storage?
             </div>
             <h4 className="text-base font-bold text-white">
               Upgrade to Pro for Custom Domains &amp; 15 GB NVMe
             </h4>
             <p className="text-xs text-neutral-300">
-              Map your own brand name (<span className="text-emerald-300 font-mono">yourbrand.com</span>), get professional email, and expand your storage anytime for just ₹149/month.
+              Map your own brand name (<span className="text-amber-300 font-mono">yourbrand.com</span>), get professional email, and expand your storage anytime for just ₹149/month.
             </p>
           </div>
           <a
             href="https://wa.me/919084718101?text=Hi%20Celoris%20Cloud!%20I'm%20loving%20the%20free%20server%20speed%20and%20want%20to%20upgrade%20to%20Pro%20(₹149/mo)."
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition-all shadow-lg shadow-amber-500/20 whitespace-nowrap shrink-0 flex items-center gap-1.5"
           >
             <span>Upgrade to Pro Cloud</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -273,14 +273,14 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectPlan }) => {
         {/* Bottom Student Guarantee Note */}
         <div className="mt-8 p-4 bg-[#0A0A0A] rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400 max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+            <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
             <span>
               <strong>Are you attending Celoris Free Live Classes?</strong> Your student account is automatically eligible for immediate instant provisioning without any waitlists.
             </span>
           </div>
           <button
             onClick={() => onSelectPlan('Starter (Hobby / Student)')}
-            className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline shrink-0 cursor-pointer"
+            className="text-xs font-semibold text-amber-400 hover:text-amber-300 underline shrink-0 cursor-pointer"
           >
             Claim Live Class Instance →
           </button>

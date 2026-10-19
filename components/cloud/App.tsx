@@ -8,6 +8,7 @@ import { InfrastructureBar } from './InfrastructureBar';
 import { ComparisonTable } from './ComparisonTable';
 import { HowItWorks } from './HowItWorks';
 import { Pricing } from './Pricing';
+import { FiveMBanner } from './FiveMBanner';
 import { TargetAudience } from './TargetAudience';
 import { Faq } from './Faq';
 import { CtaBanner } from './CtaBanner';
@@ -52,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="min-h-screen bg-[#050505] text-neutral-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
       {/* Top Navigation */}
       <Navbar onClaimClick={() => handleOpenClaimModal()} />
 
@@ -72,6 +73,9 @@ export default function App() {
 
         {/* Section 5: Transparent Pricing Grid */}
         <Pricing onSelectPlan={(plan) => handleOpenClaimModal(plan.toLowerCase().includes('starter') ? selectedSubdomain : undefined)} />
+
+        {/* Section 5.5: GTA V & FiveM Server Infrastructure Cross-Promotion */}
+        <FiveMBanner />
 
         {/* Section 6: Who is Celoris Cloud Built For? */}
         <TargetAudience onClaimClick={handleOpenClaimModal} />
