@@ -67,6 +67,18 @@ export function CelorisPhoneOS() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Programmatic event listener to open phone from buttons (Chat, Phone, Call, etc.)
+  useEffect(() => {
+    const handleOpenPhone = (e: any) => {
+      const targetView = e?.detail?.view || 'support';
+      setView(targetView);
+      setOpen(true);
+      setTeaserVisible(false);
+    };
+    window.addEventListener('celoris:open-phone', handleOpenPhone);
+    return () => window.removeEventListener('celoris:open-phone', handleOpenPhone);
+  }, []);
+
   // Live Digital Clock
   useEffect(() => {
     const updateClock = () => {

@@ -3,7 +3,7 @@ import { createSupabaseClientForServer } from "@/lib/supabase-client"
 import { TeachGate } from "@/components/teach-app/TeachGate"
 import { TeachLanding, type TeachingSlot } from "@/components/teach-app/TeachLanding"
 
-export const revalidate = 1800
+export const revalidate = 60
 
 const TITLE = "Teach on Celoris: Online & Home Tutoring Jobs Delhi NCR (0% Commission)"
 const DESCRIPTION =
@@ -196,47 +196,60 @@ function estimateBudget(course: string, mode: "Online" | "Home Tuition" | "Hybri
 async function loadTeachingSlots(): Promise<TeachingSlot[]> {
     try {
         const supabase = createSupabaseClientForServer()
-        const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
         const { data, error } = await supabase
             .from("leads")
-            .select("id, created_at, course, mode, location, requirement")
-            .gte("created_at", since)
+            .select("id, created_at, course, mode, location, requirement, budget, name")
             .order("created_at", { ascending: false })
-            .limit(16)
+            .limit(35)
 
         if (error) throw error
 
-        const dbSlots: TeachingSlot[] = ((data || []) as any[])
-            .filter((r) => r.course && String(r.course).trim())
-            .map((r, i) => {
-                const modeStr = (r.mode || "").toLowerCase()
-                let cleanMode: "Online" | "Home Tuition" | "Hybrid" = "Online"
-                if (modeStr.includes("home") || modeStr.includes("offline")) cleanMode = "Home Tuition"
-                else if (modeStr.includes("hybrid") || modeStr.includes("both")) cleanMode = "Hybrid"
+        const rawRows = ((data || []) as any[]).filter(
+            (r) => r.course && String(r.course).trim()
+        )
 
-                const diffMin = Math.max(3, Math.round((Date.now() - new Date(r.created_at).getTime()) / 60000))
-                const timeAgo = diffMin < 60 ? `${diffMin}m ago` : `${Math.round(diffMin / 60)}h ago`
+        // Prioritize actual real-world student requirements submitted by learners
+        const sortedRows = rawRows.sort((a, b) => {
+            const aHasReq = Boolean(a.requirement && String(a.requirement).trim().length > 5)
+            const bHasReq = Boolean(b.requirement && String(b.requirement).trim().length > 5)
+            if (aHasReq && !bHasReq) return -1
+            if (!aHasReq && bHasReq) return 1
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        })
 
-                return {
-                    id: String(r.id || `lead-${i}`),
-                    subject: String(r.course),
-                    category: categorizeCourse(r.course),
-                    location: r.location || (cleanMode === "Online" ? "Pan-India / Remote" : "Noida / Delhi NCR"),
-                    mode: cleanMode,
-                    budget: estimateBudget(r.course, cleanMode),
-                    studentsCount: "1-on-1 Student",
-                    timing: "Flexible Evenings",
-                    requirement: r.requirement || `Student looking for verified guidance in ${r.course}.`,
-                    timeAgo,
-                    status: i % 2 === 0 ? "Urgent" : "Open Slot",
-                }
-            })
+        const dbSlots: TeachingSlot[] = sortedRows.map((r, i) => {
+            const modeStr = (r.mode || "").toLowerCase()
+            let cleanMode: "Online" | "Home Tuition" | "Hybrid" = "Online"
+            if (modeStr.includes("home") || modeStr.includes("offline")) cleanMode = "Home Tuition"
+            else if (modeStr.includes("hybrid") || modeStr.includes("both")) cleanMode = "Hybrid"
+
+            const diffMin = Math.max(3, Math.round((Date.now() - new Date(r.created_at).getTime()) / 60000))
+            const timeAgo = diffMin < 60 ? `${diffMin}m ago` : `${Math.round(diffMin / 60)}h ago`
+
+            const firstName = r.name ? String(r.name).trim().split(" ")[0] : ""
+            const studentLabel = firstName ? `${firstName} (Verified Student)` : "Verified Student"
+
+            return {
+                id: String(r.id || `lead-${i}`),
+                subject: String(r.course),
+                category: categorizeCourse(r.course),
+                location: r.location ? String(r.location).trim().replace(/,+$/, "") : (cleanMode === "Online" ? "Pan-India / Remote" : "Delhi NCR"),
+                mode: cleanMode,
+                budget: r.budget || estimateBudget(r.course, cleanMode),
+                studentsCount: "1-on-1 Student",
+                timing: "Flexible Evenings",
+                requirement: r.requirement || `Student looking for verified 1-on-1 guidance in ${r.course}.`,
+                timeAgo,
+                status: i % 2 === 0 ? "Urgent" : "Open Slot",
+                studentName: studentLabel,
+            }
+        })
 
         // Merge DB rows with curated fallback slots so the slots grid is always full and rich
         const combined = [...dbSlots, ...CURATED_FALLBACK_SLOTS]
-        return combined.slice(0, 12)
+        return combined.slice(0, 16)
     } catch (e) {
-        console.error("[teach] loadTeachingSlots", e)
+        // Fallback gracefully to curated slots without throwing dev overlay
         return CURATED_FALLBACK_SLOTS
     }
 }

@@ -101,6 +101,16 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
   const { toast } = useToast();
 
   useEffect(() => {
+    const handleSupportEvent = (e: any) => {
+      if (e?.detail?.subTab) {
+        setSubTab(e.detail.subTab);
+      }
+    };
+    window.addEventListener('celoris:open-phone', handleSupportEvent);
+    return () => window.removeEventListener('celoris:open-phone', handleSupportEvent);
+  }, []);
+
+  useEffect(() => {
     if (scrollRef.current && subTab === 'chat') {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }

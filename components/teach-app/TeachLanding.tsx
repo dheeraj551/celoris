@@ -1,16 +1,19 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import {
     ArrowRight, CheckCircle2, Clock, MapPin,
     ShieldCheck, Users, IndianRupee, Sparkles,
     Briefcase, MessageSquare, AlertTriangle, XCircle,
-    ChevronRight, BookOpen, Laptop, Video, Award
+    ChevronRight, BookOpen, Laptop, Video, Award, PhoneCall
 } from "lucide-react"
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { WhatsAppTrainerAlerts } from "@/components/teach-app/WhatsAppTrainerAlerts"
+import { ClaimSlotModal } from "@/components/teach-app/ClaimSlotModal"
+import { PublicTrainerDashboard } from "@/components/teach-app/PublicTrainerDashboard"
+import { openPhoneOS } from "@/components/phone-os/trigger"
 import { useAuth } from "@/components/providers/AuthProvider"
 
 export interface TeachingSlot {
@@ -25,6 +28,7 @@ export interface TeachingSlot {
     requirement: string
     timeAgo: string
     status: string
+    studentName?: string
 }
 
 const LOGIN_NEXT = "/login?next=%2Fteach"
@@ -115,6 +119,10 @@ export function TeachLanding({ slots = [] }: { slots: TeachingSlot[] }) {
     const { user, profile } = useAuth()
     const [selectedMode, setSelectedMode] = useState<string>("All")
     const [selectedCategory, setSelectedCategory] = useState<string>("All")
+    const [claimModalSlot, setClaimModalSlot] = useState<TeachingSlot | null>(null)
+    const [claimModalOpen, setClaimModalOpen] = useState(false)
+
+    // Service support phone auto-open disabled on teach page as requested
 
     const isTrainer = Boolean(
         profile &&
@@ -126,6 +134,15 @@ export function TeachLanding({ slots = [] }: { slots: TeachingSlot[] }) {
          profile.is_trainer === true) &&
         profile.role !== "student"
     )
+
+    const handleClaimClick = (slot: TeachingSlot) => {
+        if (user && isTrainer) {
+            window.location.href = `/teach/dashboard/trainer/enquiries?slot=${encodeURIComponent(slot.id)}`
+        } else {
+            setClaimModalSlot(slot)
+            setClaimModalOpen(true)
+        }
+    }
 
     // Filter logic
     const filteredSlots = slots.filter((slot) => {
@@ -156,95 +173,16 @@ export function TeachLanding({ slots = [] }: { slots: TeachingSlot[] }) {
                 </div>
             )}
 
-            {/* 1. Hero Section */}
-            <section className="relative overflow-hidden">
-                <div className="pointer-events-none absolute -top-24 left-1/2 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[110px]" />
-                <div className="relative mx-auto max-w-5xl px-4 pt-14 pb-12 text-center sm:px-6 sm:pt-20">
-                    {/* Eyebrow badge with live animated radar dot */}
-                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                        </span>
-                        0% Commission · Celoris Educator Network
-                    </span>
-
-                    <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-6xl leading-[1.1]">
-                        Teach your passion.{" "}
-                        <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">
-                            Keep 100% of your fees.
-                        </span>
-                    </h1>
-
-                    <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-300 sm:text-lg leading-relaxed">
-                        No per-lead coins. No bidding paywalls. Connect directly with verified learners and small batches across Delhi/NCR and Pan-India.
-                    </p>
-
-                    {/* Action buttons */}
-                    <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                        <div className="w-full sm:w-[280px]">
-                            <GoogleSignInButton
-                                text="continue_with"
-                                oneTap
-                                oneTapDelayMs={4000}
-                                hideWhenSignedIn
-                                redirectTo="/teach"
-                            >
-                                <Link
-                                    href={LOGIN_NEXT}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-bold text-black transition hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95"
-                                >
-                                    Start teaching for free
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
-                            </GoogleSignInButton>
-                        </div>
-
-                        <a
-                            href="#open-slots"
-                            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.05] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[0.1] hover:border-emerald-500/40"
-                        >
-                            See open student slots ({slots.length})
-                            <ArrowRight className="h-4 w-4 text-emerald-400" />
-                        </a>
-
-                        <a
-                            href="#whatsapp-alerts"
-                            className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-5 py-3.5 text-sm font-semibold text-[#25D366] transition hover:bg-[#25D366]/20 shadow-[0_0_15px_rgba(37,211,102,0.15)] hover:scale-105 active:scale-95"
-                        >
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#25D366]" />
-                            </span>
-                            <WhatsAppIcon className="h-4 w-4" />
-                            WhatsApp Alerts
-                        </a>
-                    </div>
-
-                    <p className="mt-3.5 text-xs text-neutral-400">
-                        100% Free for trainers &amp; tutors. Prefer email?{" "}
-                        <Link href={LOGIN_NEXT} className="text-emerald-400 underline-offset-2 hover:underline">
-                            Sign in here
-                        </Link>
-                        .
-                    </p>
-
-                    {/* Subject tags */}
-                    <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-2">
-                        {SUBJECT_TAGS.map((t) => (
-                            <span
-                                key={t}
-                                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-neutral-300"
-                            >
-                                {t}
-                            </span>
-                        ))}
-                    </div>
-                </div>
+            {/* 1. Primary Interactive Hero Showcase (Direct Student Bookings CRM) */}
+            <section id="open-slots" className="relative pt-6 sm:pt-10 pb-8 px-4 sm:px-6 max-w-7xl mx-auto scroll-mt-20">
+                <PublicTrainerDashboard
+                    onClaimSlot={handleClaimClick}
+                    isTrainer={isTrainer}
+                />
             </section>
 
             {/* 2. How Teaching on Celoris Works */}
-            <section className="mx-auto max-w-5xl px-4 sm:px-6 mt-8">
+            <section className="mx-auto max-w-5xl px-4 sm:px-6 mt-12">
                 <h2 className="text-center text-2xl font-bold text-white sm:text-3xl tracking-tight">
                     How teaching on Celoris works
                 </h2>
@@ -269,130 +207,6 @@ export function TeachLanding({ slots = [] }: { slots: TeachingSlot[] }) {
                 </div>
             </section>
 
-            {/* 3. Open Student Slots Right Now */}
-            <section id="open-slots" className="mx-auto mt-16 max-w-5xl scroll-mt-20 px-4 sm:px-6">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between border-b border-white/[0.08] pb-4">
-                    <div>
-                        <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 mb-1">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                            </span>
-                            Live Student Demand
-                        </div>
-                        <h2 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
-                            Open student slots right now
-                        </h2>
-                        <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-                            {filteredSlots.length} verified student {filteredSlots.length === 1 ? "inquiry" : "inquiries"} · Delhi/NCR &amp; Pan-India Online
-                        </p>
-                    </div>
-
-                    {/* Mode filter pills */}
-                    <div className="flex flex-wrap gap-1.5 pt-2 sm:pt-0">
-                        {["All", "Online", "Home Tuition", "Hybrid"].map((mode) => (
-                            <button
-                                key={mode}
-                                onClick={() => setSelectedMode(mode)}
-                                className={`rounded-full px-3 py-1 text-xs font-semibold transition-all cursor-pointer ${
-                                    selectedMode === mode
-                                        ? "bg-emerald-500 text-black font-bold shadow-sm"
-                                        : "bg-white/[0.04] border border-white/10 text-neutral-300 hover:bg-white/[0.08]"
-                                }`}
-                            >
-                                {mode}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Slots Grid */}
-                {filteredSlots.length === 0 ? (
-                    <div className="mt-6 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 text-center text-sm text-neutral-300">
-                        <p className="font-semibold text-white">No slots matching this filter right now.</p>
-                        <p className="text-xs text-neutral-400 mt-1">Switch to &quot;All&quot; or subscribe below to receive WhatsApp alerts as soon as new students post.</p>
-                    </div>
-                ) : (
-                    <div className="mt-6 grid gap-4 md:grid-cols-2">
-                        {filteredSlots.map((slot) => {
-                            const waUrl = `https://wa.me/919084718101?text=${encodeURIComponent(
-                                `Hi Celoris! I'm an educator interested in taking the student teaching slot: ${slot.subject} (${slot.budget}, ${slot.location}). How can I be assigned?`
-                            )}`
-
-                            return (
-                                <div
-                                    key={slot.id}
-                                    className="flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 hover:border-emerald-500/30 transition-all duration-200"
-                                >
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div>
-                                            <span className="inline-block text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 mb-1">
-                                                {slot.category}
-                                            </span>
-                                            <h3 className="text-base font-bold text-white leading-snug">
-                                                {slot.subject}
-                                            </h3>
-                                        </div>
-                                        <div className="flex flex-col items-end shrink-0">
-                                            <span className="font-mono text-[11px] text-neutral-500 flex items-center gap-1">
-                                                <Clock className="h-3 w-3" />
-                                                {slot.timeAgo}
-                                            </span>
-                                            <span className="mt-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                                                {slot.status}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Requirement detail */}
-                                    <p className="mt-2 text-xs text-neutral-300 leading-relaxed line-clamp-2">
-                                        &ldquo;{slot.requirement}&rdquo;
-                                    </p>
-
-                                    {/* Badges: Pay & Location & Mode */}
-                                    <div className="mt-3.5 flex flex-wrap gap-2 text-xs">
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-300">
-                                            <IndianRupee className="h-3 w-3" />
-                                            {slot.budget}
-                                        </span>
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-neutral-300">
-                                            <MapPin className="h-3 w-3 text-emerald-400" />
-                                            {slot.location}
-                                        </span>
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-neutral-300">
-                                            <Users className="h-3 w-3 text-neutral-400" />
-                                            {slot.studentsCount}
-                                        </span>
-                                    </div>
-
-                                    {/* Action Bar */}
-                                    <div className="mt-5 flex items-center justify-between gap-3 pt-3.5 border-t border-white/[0.06]">
-                                        <Link
-                                            href={LOGIN_NEXT}
-                                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
-                                        >
-                                            Claim Slot &amp; Contact
-                                            <ArrowRight className="h-3.5 w-3.5" />
-                                        </Link>
-
-                                        {/* Official WhatsApp Inquire Button */}
-                                        <a
-                                            href={waUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#25D366] hover:text-black transition-all duration-200 py-1.5 px-3 rounded-full bg-[#25D366]/10 hover:bg-[#25D366] border border-[#25D366]/30 hover:border-[#25D366] shadow-[0_0_12px_rgba(37,211,102,0.12)] hover:shadow-[0_0_20px_rgba(37,211,102,0.4)] group hover:scale-105 active:scale-95"
-                                            title="Claim student on WhatsApp"
-                                        >
-                                            <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366] group-hover:text-black transition-colors" />
-                                            <span>WhatsApp</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
-                )}
-            </section>
 
             {/* 4. Instant WhatsApp Trainer Alerts */}
             <section id="whatsapp-alerts" className="mx-auto mt-14 max-w-5xl scroll-mt-20 px-4 sm:px-6">
@@ -497,6 +311,35 @@ export function TeachLanding({ slots = [] }: { slots: TeachingSlot[] }) {
                     Celoris does not charge membership fees or coin packages to educators. All verified trainers retain 100% of student tuition payments.
                 </p>
             </section>
+
+            {/* 8. Claim Slot & Trainer Registration Modal */}
+            <ClaimSlotModal
+                slot={claimModalSlot}
+                isOpen={claimModalOpen}
+                onClose={() => setClaimModalOpen(false)}
+            />
+
+            {/* 9. Floating WhatsApp Quick Support (Replaces the companion phone) */}
+            <aside aria-label="WhatsApp Support" className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 group">
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-white/10 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
+                    Chat on WhatsApp
+                </span>
+                <a
+                    href="https://wa.me/919084718101?text=Hi%20Celoris!%20I%20have%20a%20query%20about%20teaching%20on%20Celoris."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-[0_8px_30px_rgba(37,211,102,0.45)] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+                    title="Chat with Celoris Support on WhatsApp"
+                    aria-label="Chat with Celoris Support on WhatsApp"
+                >
+                    <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-300 border-2 border-[#050608]" />
+                    </span>
+                    <WhatsAppIcon className="w-7 h-7 text-white" />
+                </a>
+            </aside>
         </div>
     )
 }

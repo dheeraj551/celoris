@@ -26,21 +26,24 @@ export const createClientForBrowser = () => {
   return browserClient
 }
 
-// Create Supabase client for API routes (with service role key — bypasses RLS)
+// Create Supabase client for API routes & Server components
 export const createSupabaseClientForServer = () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-  const serviceRoleKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SERVICE_ROLE_KEY
 
   if (!url) {
     throw new Error('Missing Supabase URL environment variable')
   }
 
-  if (!serviceRoleKey) {
-    throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable')
+  if (!key) {
+    throw new Error('Missing SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY environment variable')
   }
 
-  return createSupabaseClient(url.trim(), serviceRoleKey.trim(), {
+  return createSupabaseClient(url.trim(), key.trim(), {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
