@@ -82,7 +82,7 @@ const APPLE_FEATURES: Record<FeatureKey, FeatureConfig> = {
     x: 35,
     y: -30,
     spotlight: "chat",
-    badge: "Direct Contact",
+    badge: "In-App Connect",
     desc: "Connect directly with students via in-app chat, 1-on-1 audio calling, and HD video demo rooms.",
   },
   commission: {

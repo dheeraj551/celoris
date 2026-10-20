@@ -77,8 +77,8 @@ const COMPARISON_POINTS = [
         celorisWins: true,
     },
     {
-        feature: "Student Contact Access",
-        celoris: "Direct & Uncensored",
+        feature: "Student Communication",
+        celoris: "Direct In-App Chat & Calls (0 Coins)",
         traditional: "Locked behind paid bidding coins",
         celorisWins: true,
     },
