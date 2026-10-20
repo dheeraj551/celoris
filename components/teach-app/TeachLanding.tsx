@@ -90,7 +90,7 @@ const COMPARISON_POINTS = [
     },
     {
         feature: "Delhi/NCR Home Tuition",
-        celoris: "Verified verified parents & students",
+        celoris: "Verified parents & students",
         traditional: "Recycled outdated inquiries",
         celorisWins: true,
     },

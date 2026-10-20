@@ -121,8 +121,8 @@ const APPLE_FEATURES: Record<FeatureKey, FeatureConfig> = {
     x: 20,
     y: -130,
     spotlight: "payouts",
-    badge: "Immediate Payout",
-    desc: "Direct student fee transfers straight to your personal UPI ID without 30-day withholding periods.",
+    badge: "₹48.5k Avg Monthly",
+    desc: "Active 1-on-1 educators on Celoris earn an average benchmark of ₹48,500/month. Student payments go directly to your personal UPI ID with 0% platform cuts.",
   },
 }
 
@@ -160,7 +160,17 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedMode, setSelectedMode] = useState<string>("All")
   const [activeMobileTab, setActiveMobileTab] = useState<"leads" | "demo" | "schedule" | "earnings" | "profile">("leads")
+  const [isMobileScreen, setIsMobileScreen] = useState(false)
   const PAGE_SIZE = 5
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth < 1024)
+    }
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   // Mouse hover 3D tilt tracking (Apple-style interactive gyro effect)
   const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 })
@@ -331,7 +341,7 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
           </span>
-          <span>Live Interactive Feed Demonstration</span>
+          <span>Live Student Inquiries Feed</span>
         </div>
 
         {/* Big Bold Headline */}
@@ -429,19 +439,19 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
 
         {/* CENTER COLUMN: Pristine White iOS Smartphone Mockup with 3D Camera Pivot Animation */}
         <div
-          className="lg:col-span-6 flex justify-center order-1 lg:order-2 relative"
-          style={{ perspective: 1400 }}
+          className="lg:col-span-6 flex flex-col items-center justify-center order-1 lg:order-2 relative"
+          style={{ perspective: isMobileScreen ? undefined : 1400 }}
         >
           {/* Intense Green Floor Ambient Halo Underneath the Phone */}
           <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-80 sm:w-96 h-36 bg-[#00e599]/30 blur-[75px] rounded-full pointer-events-none z-0" />
 
           <motion.div
             animate={{
-              rotateY: currentConfig.rotateY + (activeFeature === "overview" ? mouseTilt.x : 0),
-              rotateX: currentConfig.rotateX + (activeFeature === "overview" ? mouseTilt.y : 0),
-              scale: currentConfig.scale,
-              x: currentConfig.x,
-              y: currentConfig.y,
+              rotateY: isMobileScreen ? 0 : currentConfig.rotateY + (activeFeature === "overview" ? mouseTilt.x : 0),
+              rotateX: isMobileScreen ? 0 : currentConfig.rotateX + (activeFeature === "overview" ? mouseTilt.y : 0),
+              scale: isMobileScreen ? (activeFeature === "overview" ? 1 : 1.02) : currentConfig.scale,
+              x: isMobileScreen ? 0 : currentConfig.x,
+              y: isMobileScreen ? 0 : currentConfig.y,
             }}
             transition={{
               type: "spring",
@@ -450,10 +460,9 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
               mass: 0.75,
             }}
             style={{
-              transformStyle: "preserve-3d",
-              height: "725px",
+              transformStyle: isMobileScreen ? undefined : "preserve-3d",
             }}
-            className="relative z-10 w-full max-w-[390px] sm:max-w-[415px] rounded-[48px] border-[10px] border-[#222836] bg-[#f8fafc] shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(0,229,153,0.18),0_0_0_2px_rgba(255,255,255,0.15)] overflow-hidden flex flex-col"
+            className="relative z-10 w-full max-w-[390px] sm:max-w-[415px] h-[540px] sm:h-[620px] lg:h-[700px] rounded-[44px] sm:rounded-[48px] border-[8px] sm:border-[10px] border-[#222836] bg-[#f8fafc] shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(0,229,153,0.18),0_0_0_2px_rgba(255,255,255,0.15)] overflow-hidden flex flex-col"
           >
             {/* Glossy Screen Reflection Glare */}
             <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/40 via-white/10 to-transparent z-30" />
@@ -580,7 +589,7 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
             </div>
 
             {/* Scrollable Mobile Feed of Real Leads (White Background, Clean Cards, NO Circle Placeholder Bugs) */}
-            <div className="flex-1 overflow-y-auto px-3.5 py-3 space-y-3 custom-scrollbar bg-[#F8FAFC]">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-3 space-y-3 custom-scrollbar bg-[#F8FAFC]">
               {loading ? (
                 <div className="py-24 text-center text-slate-400 space-y-2">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
@@ -786,9 +795,12 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
                   className={`flex flex-col items-center justify-center py-1 transition-colors cursor-pointer rounded-lg ${
                     currentConfig.spotlight === "payouts" ? "bg-emerald-50 ring-1 ring-emerald-400" : "text-slate-400 hover:text-slate-800"
                   }`}
+                  title="Average monthly trainer earnings benchmark"
                 >
                   <IndianRupee className="w-4 h-4 text-emerald-600" />
-                  <span className="text-[9px] font-bold text-emerald-700 mt-0.5">₹48.5k</span>
+                  <span className="text-[9px] font-bold text-emerald-700 mt-0.5">
+                    ₹48.5k <span className="text-[7px] font-medium text-slate-500">(Avg)</span>
+                  </span>
                 </button>
 
                 {/* 5. Profile Tab */}
@@ -813,16 +825,16 @@ export function PublicTrainerDashboard({ onClaimSlot, isTrainer }: PublicTrainer
           </motion.div>
 
           {/* Coming Soon on Google Play badge */}
-          <div className="mt-6 flex flex-col items-center justify-center gap-1.5 z-20">
+          <div className="mt-5 flex flex-col items-center justify-center gap-1.5 z-20">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-[11px] text-neutral-200 font-medium shadow-sm backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse" />
-              <span>Interactive Web Preview · App Coming Soon</span>
+              <span>Native Mobile App · Coming Soon to Google Play</span>
             </div>
             <div className="transition-transform hover:scale-105 active:scale-95 duration-200 mt-1">
               <img
                 src="/images/teach/google-play-coming-soon.png"
                 alt="Coming Soon on Google Play"
-                className="h-11 sm:h-12 w-auto object-contain drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
+                className="h-10 sm:h-11 w-auto object-contain drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
               />
             </div>
           </div>
