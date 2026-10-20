@@ -214,14 +214,14 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[#07090e] text-white select-none">
-      {/* Top Header */}
-      <div className="px-3 py-2.5 bg-[#0e111a] border-b border-white/[0.08] flex items-center justify-between shadow-sm">
+    <div className="flex-1 flex flex-col min-h-0 bg-[#F8FAFC] text-slate-800 select-none">
+      {/* Top Header (Pristine iOS White Header) */}
+      <div className="px-3 py-2.5 bg-white border-b border-slate-100 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onBack}
-            className="p-1 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1 rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
             title="Back to Home Screen"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -229,19 +229,19 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
           <div className="flex items-center gap-1.5">
             <SupportAvatar className="w-6 h-6" />
             <div>
-              <span className="text-xs font-bold tracking-tight text-white block">Celoris Support</span>
+              <span className="text-xs font-extrabold tracking-tight text-slate-900 block">Celoris Support</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono shadow-[0_0_8px_rgba(16,185,129,0.25)]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-semibold">Online</span>
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-mono shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-bold">Online</span>
         </div>
       </div>
 
       {/* Sub Tabs: Live Chat | Call Back | FAQ */}
-      <div className="px-3 py-1.5 bg-[#090c13] border-b border-white/[0.06] flex items-center gap-1">
+      <div className="px-3 py-1.5 bg-slate-100/90 border-b border-slate-200/70 flex items-center gap-1">
         {[
           { id: 'chat', label: 'Live Chat', icon: MessageSquare },
           { id: 'lead', label: 'Call Back', icon: Phone },
@@ -254,8 +254,8 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
               onClick={() => setSubTab(tab.id as any)}
               className={`flex-1 py-1 px-2 rounded-lg text-[9.5px] font-medium transition-colors flex items-center justify-center gap-1 ${
                 subTab === tab.id
-                  ? 'bg-emerald-600 text-white font-bold shadow-sm'
-                  : 'bg-white/[0.03] text-slate-400 hover:bg-white/[0.07] hover:text-white'
+                  ? 'bg-slate-900 text-white font-bold shadow-xs'
+                  : 'bg-white text-slate-600 hover:bg-slate-200 hover:text-slate-900 border border-slate-200/60'
               }`}
             >
               <Icon className="w-3 h-3" />
@@ -267,7 +267,7 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
 
       {/* VIEW 1: STREAMING CHAT */}
       {subTab === 'chat' && (
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 bg-[#F8FAFC]">
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-2 custom-scrollbar">
             {messages.map((m, i) => (
               <motion.div
@@ -279,15 +279,15 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
                 <div
                   className={`max-w-[88%] rounded-2xl px-3 py-1.5 text-[11px] leading-relaxed whitespace-pre-wrap ${
                     m.role === 'user'
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-br-xs shadow-md'
-                      : 'bg-white/[0.06] border border-white/[0.08] text-neutral-200 rounded-bl-xs'
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-br-xs shadow-xs'
+                      : 'bg-white border border-slate-200/90 text-slate-800 rounded-bl-xs shadow-xs'
                   }`}
                 >
                   {m.content || (
                     <span className="inline-flex gap-1 py-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:-0.3s]" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:-0.15s]" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400 animate-bounce" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce" />
                     </span>
                   )}
                 </div>
@@ -301,7 +301,7 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
                     key={option.key}
                     onClick={() => handleIntentSelect(option)}
                     disabled={sending}
-                    className="text-left text-[9.5px] rounded-xl border border-white/10 bg-white/[0.04] p-1.5 text-neutral-300 hover:border-emerald-400/50 hover:bg-emerald-500/10 hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+                    className="text-left text-[9.5px] rounded-xl border border-slate-200/90 bg-white p-2 text-slate-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900 transition-all disabled:opacity-50 cursor-pointer shadow-2xs font-medium"
                   >
                     {option.label}
                   </button>
@@ -311,11 +311,11 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
           </div>
 
           {/* WhatsApp Escalation Bar with Eye-Catching Animation */}
-          <div className="px-3 py-1.5 bg-gradient-to-r from-emerald-950/40 via-black/60 to-emerald-950/40 border-t border-emerald-500/20 flex items-center justify-between text-[10px]">
+          <div className="px-3 py-1.5 bg-emerald-50/80 border-t border-emerald-200/70 flex items-center justify-between text-[10px]">
             <button
               type="button"
               onClick={() => setSubTab('lead')}
-              className="text-slate-400 hover:text-emerald-300 transition-colors text-[9px] underline underline-offset-2"
+              className="text-slate-600 hover:text-emerald-700 transition-colors text-[9px] underline underline-offset-2 font-medium cursor-pointer"
             >
               Request call
             </button>
@@ -325,28 +325,23 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/50 text-[#25D366] font-bold text-[10px] shadow-[0_0_12px_rgba(37,211,102,0.35)] transition-all overflow-hidden group cursor-pointer"
+              className="relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#25D366] hover:bg-[#20bc5a] text-white font-bold text-[10px] shadow-[0_2px_10px_rgba(37,211,102,0.35)] transition-all overflow-hidden group cursor-pointer"
             >
               {/* Animated pulsating green ping indicator */}
               <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#25D366]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
               </span>
 
-              <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366] group-hover:scale-110 transition-transform shrink-0" />
+              <WhatsAppIcon className="h-3.5 w-3.5 text-white group-hover:scale-110 transition-transform shrink-0" />
 
               {/* Animated attention-grabbing text */}
               <motion.span
                 animate={{
-                  scale: [1, 1.06, 1],
-                  filter: [
-                    'drop-shadow(0 0 0px rgba(37,211,102,0))',
-                    'drop-shadow(0 0 5px rgba(37,211,102,0.9))',
-                    'drop-shadow(0 0 0px rgba(37,211,102,0))'
-                  ]
+                  scale: [1, 1.04, 1],
                 }}
                 transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-                className="tracking-tight font-extrabold text-[#25D366]"
+                className="tracking-tight font-extrabold text-white"
               >
                 WhatsApp Agent
               </motion.span>
@@ -354,21 +349,21 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
           </div>
 
           {/* Chat Form */}
-          <form onSubmit={handleSend} className="p-2 border-t border-white/[0.08] flex items-center gap-1.5 bg-[#06070a]">
+          <form onSubmit={handleSend} className="p-2 border-t border-slate-200/80 flex items-center gap-1.5 bg-white">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
-              className="bg-white/[0.04] border-white/10 text-white text-[11px] h-8 rounded-full px-3 focus-visible:ring-emerald-500/50"
+              className="bg-slate-100 border-slate-200/90 text-slate-900 placeholder:text-slate-400 text-[11px] h-8 rounded-full px-3 focus-visible:bg-white focus-visible:ring-emerald-500/50"
               disabled={sending}
             />
             <Button
               type="submit"
               size="icon"
-              className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white cursor-pointer shadow-[0_0_10px_rgba(16,185,129,0.4)]"
+              className="h-8 w-8 shrink-0 rounded-full bg-[#00e599] hover:bg-[#00cc88] text-black cursor-pointer shadow-xs font-bold"
               disabled={sending || !input.trim()}
             >
-              {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+              {sending ? <Loader2 className="h-3 w-3 animate-spin text-black" /> : <Send className="h-3 w-3 text-black" />}
             </Button>
           </form>
         </div>
@@ -376,20 +371,20 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
 
       {/* VIEW 2: REQUEST CALLBACK FORM */}
       {subTab === 'lead' && (
-        <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 custom-scrollbar bg-[#F8FAFC]">
           {leadSent ? (
             <div className="h-full flex flex-col items-center justify-center text-center gap-2.5 py-6">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 shadow-[0_0_16px_rgba(16,185,129,0.4)]">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-xs">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <p className="text-xs font-bold text-white">Callback Scheduled!</p>
-              <p className="text-[10px] text-neutral-400 max-w-[200px]">
+              <p className="text-xs font-bold text-slate-900">Callback Scheduled!</p>
+              <p className="text-[10px] text-slate-500 max-w-[200px]">
                 Our team will contact you shortly at {leadData.email || leadData.phone}.
               </p>
               <Button
                 size="sm"
                 variant="outline"
-                className="mt-1 h-7 text-[10px] rounded-full border-white/20 text-white hover:bg-white/10"
+                className="mt-1 h-7 text-[10px] rounded-full border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer shadow-2xs"
                 onClick={() => { setSubTab('chat'); setLeadSent(false); }}
               >
                 Back to Chat
@@ -401,61 +396,61 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
                 href={buildWhatsAppLink(messages)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-[#25D366] hover:bg-[#20bc5a] text-black font-bold text-[11px] transition-colors shadow-md"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-[#25D366] hover:bg-[#20bc5a] text-white font-bold text-[11px] transition-colors shadow-sm"
               >
                 <WhatsAppIcon className="h-3.5 w-3.5" />
                 <span>Instant WhatsApp Chat</span>
               </a>
 
               <div className="flex items-center gap-2 py-0.5">
-                <div className="h-px flex-1 bg-white/10" />
-                <span className="text-[8.5px] text-neutral-400 uppercase tracking-widest font-mono">or direct callback</span>
-                <div className="h-px flex-1 bg-white/10" />
+                <div className="h-px flex-1 bg-slate-200" />
+                <span className="text-[8.5px] text-slate-400 uppercase tracking-widest font-mono">or direct callback</span>
+                <div className="h-px flex-1 bg-slate-200" />
               </div>
 
               <div className="space-y-0.5">
-                <Label htmlFor="support-lead-name" className="text-neutral-300 text-[10px]">Your Name</Label>
+                <Label htmlFor="support-lead-name" className="text-slate-700 font-semibold text-[10px]">Your Name</Label>
                 <Input
                   id="support-lead-name"
                   required
                   placeholder="John Doe"
-                  className="bg-white/[0.04] border-white/10 text-white h-7.5 text-[11px] rounded-lg"
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 h-7.5 text-[11px] rounded-lg focus-visible:ring-emerald-500"
                   value={leadData.name}
                   onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
                 />
               </div>
 
               <div className="space-y-0.5">
-                <Label htmlFor="support-lead-email" className="text-neutral-300 text-[10px]">Email</Label>
+                <Label htmlFor="support-lead-email" className="text-slate-700 font-semibold text-[10px]">Email</Label>
                 <Input
                   id="support-lead-email"
                   type="email"
                   required
                   placeholder="you@email.com"
-                  className="bg-white/[0.04] border-white/10 text-white h-7.5 text-[11px] rounded-lg"
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 h-7.5 text-[11px] rounded-lg focus-visible:ring-emerald-500"
                   value={leadData.email}
                   onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
                 />
               </div>
 
               <div className="space-y-0.5">
-                <Label htmlFor="support-lead-phone" className="text-neutral-300 text-[10px]">Phone (optional)</Label>
+                <Label htmlFor="support-lead-phone" className="text-slate-700 font-semibold text-[10px]">Phone (optional)</Label>
                 <Input
                   id="support-lead-phone"
                   type="tel"
                   placeholder="+91 98765 43210"
-                  className="bg-white/[0.04] border-white/10 text-white h-7.5 text-[11px] rounded-lg"
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 h-7.5 text-[11px] rounded-lg focus-visible:ring-emerald-500"
                   value={leadData.phone}
                   onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
                 />
               </div>
 
               <div className="space-y-0.5">
-                <Label htmlFor="support-lead-msg" className="text-neutral-300 text-[10px]">How can we help?</Label>
+                <Label htmlFor="support-lead-msg" className="text-slate-700 font-semibold text-[10px]">How can we help?</Label>
                 <Textarea
                   id="support-lead-msg"
                   placeholder="Courses, tools, or partnerships..."
-                  className="bg-white/[0.04] border-white/10 text-white text-[11px] min-h-[46px] rounded-lg resize-none"
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 text-[11px] min-h-[46px] rounded-lg resize-none focus-visible:ring-emerald-500"
                   value={leadData.message}
                   onChange={(e) => setLeadData({ ...leadData, message: e.target.value })}
                 />
@@ -464,7 +459,7 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
               <Button
                 type="submit"
                 disabled={leadSending}
-                className="w-full h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-[11px] shadow-lg cursor-pointer"
+                className="w-full h-8 rounded-full bg-[#00e599] hover:bg-[#00cc88] text-black font-extrabold text-[11px] shadow-sm cursor-pointer"
               >
                 {leadSending ? (
                   <span className="flex items-center gap-1.5">
@@ -480,26 +475,26 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
 
       {/* VIEW 3: FAQ ACCORDION */}
       {subTab === 'faq' && (
-        <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar bg-[#F8FAFC]">
           {FAQ_ITEMS.map((item, idx) => (
             <div
               key={idx}
-              className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-white border border-slate-200/90 hover:border-slate-300 transition-colors cursor-pointer shadow-2xs"
               onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
             >
               <div className="flex items-center justify-between gap-1.5">
-                <p className="text-[11px] font-bold text-white leading-snug">{item.q}</p>
+                <p className="text-[11px] font-bold text-slate-900 leading-snug">{item.q}</p>
                 {expandedFaq === idx ? (
-                  <ChevronUp className="w-3 h-3 text-neutral-400 shrink-0" />
+                  <ChevronUp className="w-3 h-3 text-slate-400 shrink-0" />
                 ) : (
-                  <ChevronDown className="w-3 h-3 text-neutral-400 shrink-0" />
+                  <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
                 )}
               </div>
               {expandedFaq === idx && (
                 <motion.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="text-[10px] text-neutral-300 leading-relaxed mt-1.5 pt-1.5 border-t border-white/5"
+                  className="text-[10px] text-slate-600 leading-relaxed mt-1.5 pt-1.5 border-t border-slate-100"
                 >
                   {item.a}
                 </motion.p>
@@ -511,9 +506,9 @@ export function SupportView({ onBack, onClose }: SupportViewProps) {
             <button
               type="button"
               onClick={() => setSubTab('chat')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-medium hover:bg-emerald-500/25 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold hover:bg-emerald-100 transition-colors cursor-pointer shadow-2xs"
             >
-              <MessageSquare className="w-3 h-3" />
+              <MessageSquare className="w-3 h-3 text-emerald-600" />
               <span>Ask Celoris Support</span>
             </button>
           </div>
