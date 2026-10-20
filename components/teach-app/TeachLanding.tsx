@@ -49,7 +49,7 @@ const HOW_IT_WORKS_STEPS = [
     {
         step: "01",
         title: "Create your free profile",
-        desc: "List your subjects, teaching mode (online or home tuition), hourly rate, and portfolio in under 2 minutes. Free forever.",
+        desc: "List your subjects, hourly rate, and expertise in under 2 minutes. Start teaching online on Celoris with zero upfront cost.",
     },
     {
         step: "02",
@@ -89,8 +89,8 @@ const COMPARISON_POINTS = [
         celorisWins: true,
     },
     {
-        feature: "Delhi/NCR Home Tuition",
-        celoris: "Verified parents & students",
+        feature: "Student Inquiries",
+        celoris: "Verified active students & parents",
         traditional: "Recycled outdated inquiries",
         celorisWins: true,
     },
@@ -106,8 +106,8 @@ const FAQS = [
         a: "No! All student requests and open teaching slots are publicly visible on this page. When you want to claim a slot or accept a student, you can connect directly in 1 click with Google.",
     },
     {
-        q: "Can I teach both online and home tuitions?",
-        a: "Absolutely. You choose your preferred mode: 100% online (via Google Meet / LiveKit / Zoom) or offline home tuition across Noida, South Delhi, Gurugram, or Ghaziabad.",
+        q: "Can I teach offline or use apps like Zoom / Google Meet?",
+        a: "Currently, Celoris is 100% online. All classes and demo sessions are conducted exclusively on Celoris using our built-in HD classrooms, live chat, and audio calling. Offline home tuitions and external tools like Zoom or Google Meet are not used.",
     },
     {
         q: "How do students pay my tuition fee?",

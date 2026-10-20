@@ -171,7 +171,7 @@ export function WhatsAppTrainerAlerts() {
             </span>
           </h3>
           <p className="mt-2 text-xs sm:text-sm text-neutral-300 leading-relaxed">
-            Never miss high-budget student inquiries or offline home tutoring slots in Delhi/NCR. Direct WhatsApp alerts with 1-click slot claiming.
+            Never miss high-budget student inquiries across Delhi/NCR and Pan-India. Direct WhatsApp alerts with 1-click slot claiming.
           </p>
 
           {/* Animated WhatsApp Live Notification Simulator */}
