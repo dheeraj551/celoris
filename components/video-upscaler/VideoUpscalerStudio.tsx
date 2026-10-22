@@ -27,7 +27,6 @@ import {
   type UpscaleSettings,
   type GpuDeviceInfo
 } from "./shaderEngine";
-import { WebGpuNeuralEngine } from "./webgpuNeuralEngine";
 
 export function VideoUpscalerStudio() {
   // GPU Info
@@ -56,7 +55,6 @@ export function VideoUpscalerStudio() {
 
   // View Mode: 'upscaled' (100% Full), 'split' (Before/After), 'original' (Raw)
   const [viewMode, setViewMode] = useState<"upscaled" | "split" | "original">("upscaled");
-  const [engineMode, setEngineMode] = useState<"neural_webgpu" | "instant_hardware">("neural_webgpu");
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
 
@@ -295,11 +293,7 @@ export function VideoUpscalerStudio() {
     };
 
     recorder.start(1000);
-    setStatusMessage(
-      engineMode === "neural_webgpu"
-        ? "Executing WebGPU Convolutional Neural Compute Shaders at 100% GPU..."
-        : "Upscaling video frames with hardware shaders..."
-    );
+    setStatusMessage("Upscaling video frames with GPU shaders...");
 
     v.muted = false;
     v.play().catch(() => undefined);
@@ -699,57 +693,6 @@ export function VideoUpscalerStudio() {
               <span className="text-[11px] font-mono text-emerald-400 font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                 GPU Kernel v2.4
               </span>
-            </div>
-
-            {/* GPU Compute Engine Mode */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-neutral-300">GPU Compute Engine</label>
-                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                  engineMode === "neural_webgpu"
-                    ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                    : "bg-white/[0.05] text-neutral-400"
-                }`}>
-                  {engineMode === "neural_webgpu" ? "100% GPU Compute" : "Compositor Mode"}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setEngineMode("neural_webgpu")}
-                  className={`p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                    engineMode === "neural_webgpu"
-                      ? "bg-emerald-500/20 border border-emerald-400/40 text-white"
-                      : "bg-white/[0.03] border border-white/[0.06] text-neutral-400 hover:bg-white/[0.06]"
-                  }`}
-                >
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-                    Neural WebGPU
-                  </div>
-                  <div className="text-[10px] text-neutral-400 leading-tight mt-0.5">
-                    Full GPU Compute (High Load)
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setEngineMode("instant_hardware")}
-                  className={`p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                    engineMode === "instant_hardware"
-                      ? "bg-emerald-500/20 border border-emerald-400/40 text-white"
-                      : "bg-white/[0.03] border border-white/[0.06] text-neutral-400 hover:bg-white/[0.06]"
-                  }`}
-                >
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-teal-400" />
-                    Instant Mode
-                  </div>
-                  <div className="text-[10px] text-neutral-400 leading-tight mt-0.5">
-                    Low GPU Load, 60fps Real-Time
-                  </div>
-                </button>
-              </div>
             </div>
 
             {/* Resolution Multiplier */}
