@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   UploadCloud,
-  Sparkles,
   Zap,
   Cpu,
   ShieldCheck,
@@ -18,7 +17,8 @@ import {
   FileVideo,
   X,
   Loader2,
-  ChevronRight
+  ChevronRight,
+  Video
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -382,7 +382,7 @@ export function VideoUpscalerStudio() {
       </svg>
 
       {/* Hidden Offscreen Canvas for Export Rendering */}
-      <canvas ref={exportCanvasRef} className="hidden" />
+      <canvas ref={exportCanvasRef} className="pointer-events-none fixed -top-[9999px] -left-[9999px] opacity-0" />
 
       {/* Top Banner / Hardware Acceleration Info */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#0d131f] border border-white/[0.08] shadow-lg backdrop-blur-xl">
@@ -426,7 +426,7 @@ export function VideoUpscalerStudio() {
                       : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
                   }`}
                 >
-                  ✨ 100% Full Upscaled
+                  Full View
                 </button>
                 <button
                   type="button"
@@ -437,7 +437,7 @@ export function VideoUpscalerStudio() {
                       : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
                   }`}
                 >
-                  ↔️ Split Comparison
+                  Split View
                 </button>
                 <button
                   type="button"
@@ -448,7 +448,7 @@ export function VideoUpscalerStudio() {
                       : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
                   }`}
                 >
-                  👁️ Original Only
+                  Original
                 </button>
               </div>
 
@@ -571,22 +571,6 @@ export function VideoUpscalerStudio() {
                   ↔
                 </div>
               </div>
-            )}
-
-            {/* Top Badges */}
-            {mediaUrl && (
-              <>
-                {(viewMode === "original" || viewMode === "split") && (
-                  <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/10 text-[11px] font-mono font-bold text-neutral-300">
-                    ORIGINAL · {originalDimensions.width}×{originalDimensions.height}
-                  </div>
-                )}
-                {(viewMode === "upscaled" || viewMode === "split") && (
-                  <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-emerald-500/25 backdrop-blur-md border border-emerald-400/40 text-[11px] font-mono font-bold text-emerald-300">
-                    UPSCALED · {targetWidth}×{targetHeight} ({settings.scale}x)
-                  </div>
-                )}
-              </>
             )}
           </div>
 
@@ -838,7 +822,7 @@ export function VideoUpscalerStudio() {
           {/* Lead Generation Card: Celoris Job Center */}
           <div className="p-5 rounded-3xl bg-gradient-to-b from-[#101c18] to-[#0a0f14] border border-emerald-500/30 space-y-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <Video className="w-4 h-4 text-emerald-400" />
               <span className="text-xs font-black uppercase tracking-wider text-emerald-300">
                 Are you a Video Editor?
               </span>

@@ -2,7 +2,6 @@ import { type Metadata } from "next";
 import { DashboardShell } from "@/components/home-new/DashboardShell";
 import { VideoUpscalerStudio } from "@/components/video-upscaler/VideoUpscalerStudio";
 import {
-  Sparkles,
   Zap,
   Cpu,
   ShieldCheck,
@@ -14,6 +13,7 @@ import {
   Lock,
   ArrowRight,
   HelpCircle,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,7 @@ export default function FreeVideoUpscalerPage() {
         <section className="pt-20 pb-10 px-4 sm:px-8 relative overflow-hidden z-10 border-b border-white/5 bg-[#090d16]/60 backdrop-blur-3xl">
           <div className="max-w-5xl mx-auto text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-black uppercase tracking-widest">
-              <Sparkles size={13} className="animate-pulse" /> 100% Private WebGPU & WebGL2 Super-Resolution
+              <Cpu size={13} className="animate-pulse" /> 100% Private WebGPU & WebGL2 Super-Resolution
             </div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white uppercase italic">
