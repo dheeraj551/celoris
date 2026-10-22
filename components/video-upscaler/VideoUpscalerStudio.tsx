@@ -72,9 +72,11 @@ export function VideoUpscalerStudio() {
   // Refs
   const mainVideoRef = useRef<HTMLVideoElement | null>(null);
   const splitCompareVideoRef = useRef<HTMLVideoElement | null>(null);
+  const neuralCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const exportCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<WebGLUpscalerEngine | null>(null);
+  const neuralEngineRef = useRef<WebGpuNeuralEngine | null>(null);
   const previewContainerRef = useRef<HTMLDivElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
@@ -87,6 +89,31 @@ export function VideoUpscalerStudio() {
       setGpuInfo(info);
     });
   }, []);
+
+  // Initialize WebGPU Neural Network Pipeline
+  useEffect(() => {
+    if (
+      mediaUrl &&
+      isVideo &&
+      engineMode === "neural_webgpu" &&
+      mainVideoRef.current &&
+      neuralCanvasRef.current
+    ) {
+      const v = mainVideoRef.current;
+      const canvas = neuralCanvasRef.current;
+      const engine = new WebGpuNeuralEngine({
+        video: v,
+        canvas: canvas,
+        profile: settings.profile,
+      });
+
+      engine.initialize().then((success) => {
+        if (success) {
+          neuralEngineRef.current = engine;
+        }
+      });
+    }
+  }, [mediaUrl, isVideo, engineMode, settings.profile]);
 
   // Calculate Target Dimensions
   const targetWidth = Math.round((originalDimensions.width || 1080) * settings.scale);
@@ -252,9 +279,13 @@ export function VideoUpscalerStudio() {
     }
 
     // Video canvas capture stream at 30 fps
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-    const canvasStream = canvas.captureStream(30);
+    const activeCanvas =
+      engineMode === "neural_webgpu" && neuralCanvasRef.current
+        ? neuralCanvasRef.current
+        : canvas;
+    activeCanvas.width = targetWidth;
+    activeCanvas.height = targetHeight;
+    const canvasStream = activeCanvas.captureStream(30);
 
     const combinedTracks = [
       ...canvasStream.getVideoTracks(),
@@ -324,15 +355,17 @@ export function VideoUpscalerStudio() {
         return;
       }
 
-      // Render frame through super-resolution engine
-      engine.renderFrame(
-        v,
-        v.videoWidth,
-        v.videoHeight,
-        targetWidth,
-        targetHeight,
-        settings
-      );
+      // Render frame through super-resolution engine if in instant mode
+      if (engineMode === "instant_hardware") {
+        engine.renderFrame(
+          v,
+          v.videoWidth,
+          v.videoHeight,
+          targetWidth,
+          targetHeight,
+          settings
+        );
+      }
 
       const percent = Math.min(99, Math.round((v.currentTime / v.duration) * 100));
       setProgressPercent(percent);
@@ -502,23 +535,38 @@ export function VideoUpscalerStudio() {
               </label>
             )}
 
-            {/* MAIN VIDEO LAYER (Upscaled / Filtered) */}
+            {/* MAIN VIDEO & NEURAL CANVAS LAYER */}
             {mediaUrl && isVideo && (
-              <video
-                ref={mainVideoRef}
-                src={mediaUrl}
-                playsInline
-                muted
-                loop
-                onLoadedMetadata={handleVideoLoadedMetadata}
-                onTimeUpdate={() => {
-                  if (mainVideoRef.current) setCurrentTime(mainVideoRef.current.currentTime);
-                }}
-                style={{
-                  filter: getEnhanceFilter()
-                }}
-                className="w-full h-full object-contain"
-              />
+              <>
+                {/* WebGPU Neural Canvas (Visible in Neural Mode) */}
+                <canvas
+                  ref={neuralCanvasRef}
+                  className={`w-full h-full object-contain ${
+                    engineMode === "neural_webgpu" ? "block" : "hidden"
+                  }`}
+                />
+
+                {/* Video Tag (Visible in Instant Mode, Offscreen in Neural Mode) */}
+                <video
+                  ref={mainVideoRef}
+                  src={mediaUrl}
+                  playsInline
+                  muted
+                  loop
+                  onLoadedMetadata={handleVideoLoadedMetadata}
+                  onTimeUpdate={() => {
+                    if (mainVideoRef.current) setCurrentTime(mainVideoRef.current.currentTime);
+                  }}
+                  style={{
+                    filter: getEnhanceFilter()
+                  }}
+                  className={
+                    engineMode === "neural_webgpu"
+                      ? "opacity-0 pointer-events-none fixed -top-[9999px] -left-[9999px] w-[1280px] h-[720px]"
+                      : "w-full h-full object-contain"
+                  }
+                />
+              </>
             )}
 
             {/* SPLIT COMPARE LAYER (Original Raw, Clipped to Left) */}
