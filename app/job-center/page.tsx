@@ -11,17 +11,30 @@ import { JobCenterLanding, type PublicJob } from "@/components/job-center/JobCen
 
 export const revalidate = 1800
 
-const TITLE = "Job Center: Free Skill Tests, Certificates & Jobs"
+const TITLE = "Get Hired Online on Skills - Free Skill Test & Verified Employers | Celoris Job Center"
 const DESCRIPTION =
-    "Skilled. Certified. Job-ready. Take a free Celoris skill test, earn a verified certificate and badge, and apply to remote jobs and paid gigs that ask for it."
+    "Get hired online without a resume. Take a free 5-minute skill test, get your verified Celoris Skill ID and connect directly with verified employers. 0% commission."
+
+const KEYWORDS = [
+    "get hired online",
+    "skill-based jobs",
+    "online skill test for jobs",
+    "jobs without resume",
+    "verified employers India",
+    "no commission job portal",
+    "Celoris Job Center",
+    "Celoris Skill ID",
+]
 
 export const metadata: Metadata = {
-    // The root layout adds " | Celoris" automatically.
-    title: TITLE,
+    title: {
+        absolute: TITLE,
+    },
     description: DESCRIPTION,
+    keywords: KEYWORDS,
     alternates: { canonical: "https://celorisdesigns.com/job-center" },
     openGraph: {
-        title: "Skilled. Certified. Job-ready. | Celoris Job Center",
+        title: TITLE,
         description: DESCRIPTION,
         url: "https://celorisdesigns.com/job-center",
         siteName: "Celoris",
@@ -32,13 +45,13 @@ export const metadata: Metadata = {
                 url: "https://celorisdesigns.com/hero-banner.jpg",
                 width: 1200,
                 height: 630,
-                alt: "Celoris Job Center — Free Skill Tests & Jobs",
+                alt: "Celoris Job Center — Free Skill Tests & Remote Jobs",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Skilled. Certified. Job-ready. | Celoris Job Center",
+        title: TITLE,
         description: DESCRIPTION,
         images: ["https://celorisdesigns.com/hero-banner.jpg"],
     },
@@ -62,7 +75,7 @@ async function loadOpenJobs(): Promise<PublicJob[]> {
             .map((r) => ({
                 id: String(r.id),
                 title: String(r.title || "").trim(),
-                company: String(r.company || "").trim(),
+                company: (!r.company || /confidential/i.test(r.company)) ? "Celoris" : String(r.company).trim(),
                 location: String(r.location || "").trim(),
                 pay: String(r.salary_range || "").trim(),
                 industry: String(r.industry || "").trim(),
@@ -85,8 +98,9 @@ export default async function JobCenterPage() {
         "@type": "WebPage",
         "@id": "https://celorisdesigns.com/job-center#webpage",
         url: "https://celorisdesigns.com/job-center",
-        name: `${TITLE} | Celoris`,
+        name: TITLE,
         description: DESCRIPTION,
+        keywords: KEYWORDS.join(", "),
         inLanguage: "en-IN",
         isPartOf: { "@type": "WebSite", name: "Celoris", url: "https://celorisdesigns.com" },
         publisher: { "@type": "Organization", name: "Celoris Designs LLP", url: "https://celorisdesigns.com" },
