@@ -59,7 +59,8 @@ export function VideoUpscalerStudio() {
     profile: "cinematic"
   });
 
-  // Comparison Slider State (0 to 100%)
+  // Comparison Slider & View Mode State
+  const [viewMode, setViewMode] = useState<"upscaled" | "split" | "original">("upscaled");
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
 
@@ -143,7 +144,11 @@ export function VideoUpscalerStudio() {
       setOriginalDimensions({ width: v.videoWidth, height: v.videoHeight });
       setVideoDuration(v.duration);
       setTotalFramesEstimate(Math.round(v.duration * 30));
-      setTimeout(() => renderPreview(), 100);
+      // Nudge currentTime to 0.05s to ensure frame is decoded by Chromium/GPU
+      try {
+        v.currentTime = 0.05;
+      } catch (_) {}
+      setTimeout(() => renderPreview(), 150);
     }
   };
 
@@ -385,17 +390,66 @@ export function VideoUpscalerStudio() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Media Viewport & Before/After Comparison */}
         <div className="lg:col-span-8 space-y-4">
+          {/* View Mode Bar */}
+          {mediaUrl && (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-[#0c1017] border border-white/[0.08]">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("upscaled")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "upscaled"
+                      ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
+                  }`}
+                >
+                  ✨ 100% Full Upscaled
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("split")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "split"
+                      ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
+                  }`}
+                >
+                  ↔️ Split Comparison
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("original")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "original"
+                      ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
+                  }`}
+                >
+                  👁️ Original Only
+                </button>
+              </div>
+
+              <div className="text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/[0.05]">
+                {originalDimensions.width}×{originalDimensions.height} → {targetWidth}×{targetHeight} ({settings.scale}x)
+              </div>
+            </div>
+          )}
+
           <div
             ref={previewContainerRef}
-            onMouseMove={(e) => isDraggingSlider && handleSliderMove(e.clientX)}
-            onTouchMove={(e) => isDraggingSlider && handleSliderMove(e.touches[0].clientX)}
+            onMouseMove={(e) => viewMode === "split" && isDraggingSlider && handleSliderMove(e.clientX)}
+            onTouchMove={(e) => viewMode === "split" && isDraggingSlider && handleSliderMove(e.touches[0].clientX)}
             onMouseUp={() => setIsDraggingSlider(false)}
             onTouchEnd={() => setIsDraggingSlider(false)}
-            className="relative w-full aspect-[9/16] sm:aspect-video max-h-[640px] rounded-3xl bg-black border border-white/[0.1] shadow-2xl overflow-hidden flex items-center justify-center select-none"
+            className={`relative w-full rounded-3xl bg-black border border-white/[0.1] shadow-2xl overflow-hidden flex items-center justify-center select-none ${
+              originalDimensions.height > originalDimensions.width
+                ? "max-w-[420px] aspect-[9/16] mx-auto"
+                : "aspect-video max-h-[640px]"
+            }`}
           >
             {/* Upload Empty State */}
             {!mediaUrl && (
-              <label className="flex flex-col items-center justify-center p-8 sm:p-12 text-center cursor-pointer group transition-all">
+              <label className="flex flex-col items-center justify-center p-8 sm:p-12 text-center cursor-pointer group transition-all w-full h-full min-h-[380px]">
                 <input
                   type="file"
                   accept="video/*,image/*"
@@ -418,15 +472,19 @@ export function VideoUpscalerStudio() {
               </label>
             )}
 
-            {/* Hidden Source Media */}
+            {/* Offscreen Source Video (Active for Frame Decoding) */}
             {mediaUrl && isVideo && (
               <video
                 ref={videoRef}
                 src={mediaUrl}
                 playsInline
                 preload="auto"
+                muted
                 onLoadedMetadata={handleVideoLoadedMetadata}
-                className="hidden"
+                onLoadedData={() => renderPreview()}
+                onSeeked={() => renderPreview()}
+                onCanPlay={() => renderPreview()}
+                className="opacity-0 pointer-events-none fixed -top-[9999px] -left-[9999px] w-[4px] h-[4px]"
               />
             )}
             {mediaUrl && !isVideo && (
@@ -434,23 +492,27 @@ export function VideoUpscalerStudio() {
                 ref={imageRef}
                 src={mediaUrl}
                 alt="Source preview"
-                className="hidden"
+                className="opacity-0 pointer-events-none fixed -top-[9999px] -left-[9999px] w-[4px] h-[4px]"
                 onLoad={() => renderPreview()}
               />
             )}
 
-            {/* Active Canvas / Upscaled Layer (Full Background) */}
-            {mediaUrl && (
+            {/* Active Canvas / Upscaled Layer */}
+            {mediaUrl && (viewMode === "upscaled" || viewMode === "split") && (
               <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full object-contain"
               />
             )}
 
-            {/* Original Preview Layer (Clipped to Slider Left) */}
-            {mediaUrl && isVideo && (
+            {/* Original Preview Layer */}
+            {mediaUrl && isVideo && (viewMode === "original" || viewMode === "split") && (
               <div
-                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+                style={
+                  viewMode === "split"
+                    ? { clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }
+                    : undefined
+                }
                 className="absolute inset-0 w-full h-full pointer-events-none"
               >
                 <video
@@ -458,13 +520,17 @@ export function VideoUpscalerStudio() {
                   src={mediaUrl}
                   playsInline
                   muted
-                  className="w-full h-full object-contain filter blur-[0.2px]"
+                  className="w-full h-full object-contain"
                 />
               </div>
             )}
-            {mediaUrl && !isVideo && (
+            {mediaUrl && !isVideo && (viewMode === "original" || viewMode === "split") && (
               <div
-                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+                style={
+                  viewMode === "split"
+                    ? { clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }
+                    : undefined
+                }
                 className="absolute inset-0 w-full h-full pointer-events-none"
               >
                 <img
@@ -476,14 +542,14 @@ export function VideoUpscalerStudio() {
             )}
 
             {/* Interactive Before/After Split Line & Handle */}
-            {mediaUrl && (
+            {mediaUrl && viewMode === "split" && (
               <div
                 style={{ left: `${sliderPosition}%` }}
                 onMouseDown={() => setIsDraggingSlider(true)}
                 onTouchStart={() => setIsDraggingSlider(true)}
-                className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] cursor-ew-resize z-20 flex items-center justify-center"
+                className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.9)] cursor-ew-resize z-20 flex items-center justify-center"
               >
-                <div className="w-8 h-8 rounded-full bg-white text-black shadow-xl flex items-center justify-center font-bold text-xs select-none">
+                <div className="w-8 h-8 rounded-full bg-white text-black shadow-2xl flex items-center justify-center font-bold text-xs select-none border-2 border-emerald-400">
                   ↔
                 </div>
               </div>
@@ -492,12 +558,16 @@ export function VideoUpscalerStudio() {
             {/* Badges Over Viewport */}
             {mediaUrl && (
               <>
-                <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[11px] font-mono font-bold text-neutral-300">
-                  ORIGINAL · {originalDimensions.width}×{originalDimensions.height}
-                </div>
-                <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 text-[11px] font-mono font-bold text-emerald-300">
-                  UPSCALED · {targetWidth}×{targetHeight} ({settings.scale}x)
-                </div>
+                {(viewMode === "original" || viewMode === "split") && (
+                  <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/10 text-[11px] font-mono font-bold text-neutral-300">
+                    ORIGINAL · {originalDimensions.width}×{originalDimensions.height}
+                  </div>
+                )}
+                {(viewMode === "upscaled" || viewMode === "split") && (
+                  <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-emerald-500/25 backdrop-blur-md border border-emerald-400/40 text-[11px] font-mono font-bold text-emerald-300">
+                    UPSCALED · {targetWidth}×{targetHeight} ({settings.scale}x)
+                  </div>
+                )}
               </>
             )}
           </div>

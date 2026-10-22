@@ -304,6 +304,10 @@ export class WebGLUpscalerEngine {
     targetHeight: number,
     settings: UpscaleSettings
   ) {
+    if (source instanceof HTMLVideoElement && source.readyState < 2) {
+      return;
+    }
+
     if (!this.gl || !this.program || !this.texture) {
       this.renderFallback2D(source, targetWidth, targetHeight, settings);
       return;
