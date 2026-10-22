@@ -23,6 +23,7 @@ import {
     Wallet,
     User as UserIcon,
     Sparkles,
+    Cpu,
     Search,
     X,
     IndianRupee,
@@ -231,6 +232,21 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">Web</span>
                                         </div>
                                         <p className="text-[10px] text-neutral-400 truncate">Client-side high-res photo editing</p>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
+                                <Link href="/free-video-upscaler" className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400 shrink-0">
+                                        <Cpu className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">AI Video Upscaler</span>
+                                            <span className="text-[9px] font-mono font-bold text-teal-400 bg-teal-500/10 px-1.5 py-0.5 rounded-full">4K</span>
+                                        </div>
+                                        <p className="text-[10px] text-neutral-400 truncate">Private WebGPU 4K reel enhancer</p>
                                     </div>
                                 </Link>
                             </DropdownMenuItem>
@@ -658,6 +674,19 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <div className="flex-1">
                                                 <span className="text-sm font-bold text-white block">Free Image Editor</span>
                                                 <span className="text-[10px] text-neutral-400">PC &amp; Web Photo Tool</span>
+                                            </div>
+                                        </Link>
+                                        <Link
+                                            href="/free-video-upscaler"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-colors"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400">
+                                                <Cpu className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <span className="text-sm font-bold text-white block">AI Video Upscaler</span>
+                                                <span className="text-[10px] text-neutral-400">Private 4K WebGPU Upscaler</span>
                                             </div>
                                         </Link>
                                         <Link

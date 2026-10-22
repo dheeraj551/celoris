@@ -17,6 +17,7 @@ export const Footer: React.FC = () => {
                         <a href="/open-psd-online" className="hover:text-emerald-600 font-medium text-emerald-600/90">Open PSD Online</a>
                         <a href="/free-image-editor" className="hover:text-emerald-600 font-medium text-emerald-600/90">Free Image Editor</a>
                         <a href="/free-video-editor" className="hover:text-slate-900">Video Editor</a>
+                        <a href="/free-video-upscaler" className="hover:text-emerald-600 font-medium text-emerald-600/90">AI Video Upscaler</a>
                         <a href="/blog/how-to-open-and-edit-psd-files-online-without-photoshop-2026" className="hover:text-slate-900">PSD Guide (2026)</a>
                         <a href="/terms" className="hover:text-slate-900">Terms</a>
                         <a href="/privacy" className="hover:text-slate-900">Privacy</a>
