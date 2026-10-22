@@ -62,6 +62,7 @@ export function VideoUpscalerStudio() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progressPercent, setProgressPercent] = useState(0);
   const [processedFrames, setProcessedFrames] = useState(0);
+  const [totalFramesEstimate, setTotalFramesEstimate] = useState(0);
   const [upscaledDownloadUrl, setUpscaledDownloadUrl] = useState<string | null>(null);
   const [downloadSize, setDownloadSize] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
@@ -76,6 +77,7 @@ export function VideoUpscalerStudio() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const processIntervalRef = useRef<any>(null);
 
   // Initialize GPU detection
   useEffect(() => {
@@ -180,17 +182,40 @@ export function VideoUpscalerStudio() {
   // ==========================================
   // REAL CLIENT-SIDE VIDEO UPSCALING & EXPORT
   // ==========================================
+  const cancelVideoUpscaleProcess = () => {
+    if (processIntervalRef.current) {
+      clearInterval(processIntervalRef.current);
+      processIntervalRef.current = null;
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+    if (mainVideoRef.current) {
+      mainVideoRef.current.pause();
+      mainVideoRef.current.loop = true;
+    }
+    setIsProcessing(false);
+    setStatusMessage("Upscaling canceled.");
+  };
+
   const startVideoUpscaleProcess = async () => {
     if (!mainVideoRef.current || !exportCanvasRef.current) return;
 
     const v = mainVideoRef.current;
     const canvas = exportCanvasRef.current;
 
+    // Turn off looping so it ends precisely at video duration
+    v.loop = false;
+    if (splitCompareVideoRef.current) splitCompareVideoRef.current.loop = false;
+
     // Initialize WebGL engine if needed
     if (!engineRef.current) {
       engineRef.current = new WebGLUpscalerEngine(canvas);
     }
     const engine = engineRef.current;
+
+    const totalFrames = Math.max(1, Math.round(v.duration * 30));
+    setTotalFramesEstimate(totalFrames);
 
     // Reset states
     setIsProcessing(true);
@@ -199,12 +224,12 @@ export function VideoUpscalerStudio() {
     setStatusMessage("Configuring WebGPU 4K canvas & audio pipeline...");
     recordedChunksRef.current = [];
 
-    // Pause video & seek to 0
+    // Pause video & seek to start
     v.pause();
     if (splitCompareVideoRef.current) splitCompareVideoRef.current.pause();
     setIsPlaying(false);
     v.currentTime = 0;
-    await new Promise((r) => setTimeout(r, 250));
+    await new Promise((r) => setTimeout(r, 200));
 
     // Audio capture setup
     let audioStream: MediaStream | null = null;
@@ -263,21 +288,33 @@ export function VideoUpscalerStudio() {
       setIsProcessing(false);
       setProgressPercent(100);
       setStatusMessage("Upscaling complete! Your 4K video is ready.");
+      // Restore loop for preview
+      v.loop = true;
     };
 
     recorder.start(1000);
     setStatusMessage("Upscaling video frames with GPU shaders...");
 
     v.muted = false;
-    v.play();
+    v.play().catch(() => undefined);
 
-    const processInterval = setInterval(() => {
-      if (!v || v.paused || v.ended) {
-        if (v && v.ended) {
-          clearInterval(processInterval);
-          recorder.stop();
-          v.pause();
+    if (processIntervalRef.current) clearInterval(processIntervalRef.current);
+    processIntervalRef.current = setInterval(() => {
+      if (!v) {
+        if (processIntervalRef.current) clearInterval(processIntervalRef.current);
+        return;
+      }
+
+      // Check completion: either currentTime reached duration OR v.ended
+      if (v.ended || v.currentTime >= v.duration - 0.25) {
+        if (processIntervalRef.current) {
+          clearInterval(processIntervalRef.current);
+          processIntervalRef.current = null;
         }
+        if (recorder.state === "recording") {
+          recorder.stop();
+        }
+        v.pause();
         return;
       }
 
@@ -293,7 +330,7 @@ export function VideoUpscalerStudio() {
 
       const percent = Math.min(99, Math.round((v.currentTime / v.duration) * 100));
       setProgressPercent(percent);
-      setProcessedFrames((prev) => prev + 1);
+      setProcessedFrames((prev) => Math.min(prev + 1, totalFrames));
       setCurrentTime(v.currentTime);
     }, 1000 / 30);
   };
@@ -604,7 +641,16 @@ export function VideoUpscalerStudio() {
                   <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
                   {statusMessage}
                 </span>
-                <span className="font-mono font-extrabold text-white">{progressPercent}%</span>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-extrabold text-white">{progressPercent}%</span>
+                  <button
+                    type="button"
+                    onClick={cancelVideoUpscaleProcess}
+                    className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 font-bold text-[11px] transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
 
               <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
@@ -615,8 +661,10 @@ export function VideoUpscalerStudio() {
               </div>
 
               <div className="flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-                <span>Frames processed: {processedFrames}</span>
-                <span>Output: {targetWidth}×{targetHeight} (4K 60fps)</span>
+                <span>
+                  Frames: {processedFrames} / {totalFramesEstimate || Math.round(videoDuration * 30)}
+                </span>
+                <span>Output: {targetWidth}×{targetHeight} (4K 30fps)</span>
               </div>
             </div>
           )}
