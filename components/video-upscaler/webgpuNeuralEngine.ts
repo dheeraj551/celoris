@@ -1,28 +1,25 @@
-// WebGPU Neural Network Super-Resolution Engine
-// Executes multi-pass Convolutional Neural Networks (CNN) & GANs on GPU Compute hardware
+// WebGPU Neural Network Compute Shader Pipeline
+// Runs Convolutional Neural Network (CNN) + GAN Shaders directly on GPU Compute units
 
-export interface WebGpuNeuralEngineOptions {
-  video: HTMLVideoElement;
-  canvas: HTMLCanvasElement;
-  profile?: "cinematic" | "anime" | "portrait" | "ultra_sharp";
-  scale?: number;
-  onFrame?: () => void;
+export interface WebGpuNeuralStatus {
+  isSupported: boolean;
+  active: boolean;
+  deviceVendor?: string;
+  error?: string;
 }
 
 export class WebGpuNeuralEngine {
   private video: HTMLVideoElement;
   private canvas: HTMLCanvasElement;
   private isRunning: boolean = false;
-  private isInitialized: boolean = false;
-  private profile: string = "cinematic";
+  private device: any = null;
 
-  constructor(options: WebGpuNeuralEngineOptions) {
-    this.video = options.video;
-    this.canvas = options.canvas;
-    this.profile = options.profile || "cinematic";
+  constructor(video: HTMLVideoElement, canvas: HTMLCanvasElement) {
+    this.video = video;
+    this.canvas = canvas;
   }
 
-  public static async isSupported(): Promise<boolean> {
+  public static async isWebGpuSupported(): Promise<boolean> {
     if (typeof window === "undefined" || !("gpu" in navigator)) return false;
     try {
       const adapter = await (navigator as any).gpu.requestAdapter({
@@ -34,73 +31,68 @@ export class WebGpuNeuralEngine {
     }
   }
 
-  /**
-   * Initializes and binds the WebGPU Neural Network compute pipeline to the video and canvas.
-   * This executes genuine multi-stage CNN + GAN shaders on every video frame callback,
-   * driving high GPU compute utilization.
-   */
-  public async initialize(): Promise<boolean> {
+  public async startNeuralPipeline(profile: "cinematic" | "anime" | "portrait" | "ultra_sharp" = "cinematic"): Promise<boolean> {
     if (typeof window === "undefined" || !("gpu" in navigator)) {
       return false;
     }
 
     try {
-      // Dynamic import to prevent SSR failure
+      // Dynamic import to prevent SSR issues in Next.js
       const anime4k = await import("anime4k-webgpu");
-      const { render, ModeAA, ModeCA, ModeA, ModeB } = anime4k;
+      const { render, ModeA, ModeB, ModeC, ModeAA, ModeCA } = anime4k;
 
-      const v = this.video;
-      const canvas = this.canvas;
+      this.isRunning = true;
 
-      const width = v.videoWidth || 1080;
-      const height = v.videoHeight || 1920;
-      const targetW = width * 2;
-      const targetH = height * 2;
+      // Select neural network architecture based on profile
+      const targetW = Math.round(this.video.videoWidth * 2);
+      const targetH = Math.round(this.video.videoHeight * 2);
 
-      canvas.width = targetW;
-      canvas.height = targetH;
+      this.canvas.width = targetW || 1920;
+      this.canvas.height = targetH || 1080;
 
       await render({
-        video: v,
-        canvas: canvas,
+        video: this.video,
+        canvas: this.canvas,
         pipelineBuilder: (device: any, inputTexture: any) => {
+          this.device = device;
           const descriptor = {
             device,
             inputTexture,
-            nativeDimensions: { width, height },
-            targetDimensions: { width: targetW, height: targetH },
+            nativeDimensions: {
+              width: this.video.videoWidth || 1080,
+              height: this.video.videoHeight || 1920,
+            },
+            targetDimensions: {
+              width: targetW || 2160,
+              height: targetH || 3840,
+            },
           };
 
-          // Heavy multi-pass neural network presets:
-          // ModeCA / ModeAA run 4 to 6 separate CNN layers (CNNVL, CNNx2VL, CNNM, CNNx2M, GAN)
-          if (this.profile === "anime") {
+          // Heavy compute pipeline selection
+          if (profile === "anime") {
+            // ModeA: Fast CNN edge reconstruction
             return [new ModeA(descriptor)];
-          } else if (this.profile === "portrait") {
+          } else if (profile === "portrait") {
+            // ModeB: Bilateral Denoise + CNN
             return [new ModeB(descriptor)];
-          } else if (this.profile === "ultra_sharp") {
+          } else if (profile === "ultra_sharp") {
+            // ModeCA: High Compute GAN + CNN Ultra
             return [new ModeCA(descriptor)];
           }
-          // Default: ModeAA (High-Fidelity Dual-Pass CNN Restoration + 2x Upscaling)
+          // Default: ModeAA High-Fidelity Dual-Pass CNN
           return [new ModeAA(descriptor)];
         },
       });
 
-      this.isInitialized = true;
-      this.isRunning = true;
       return true;
     } catch (err) {
-      console.error("WebGPU Neural Engine failed to initialize:", err);
-      this.isInitialized = false;
+      console.warn("WebGPU Neural Compute init fallback:", err);
       this.isRunning = false;
       return false;
     }
   }
 
-  public getInitialized(): boolean {
-    return this.isInitialized;
-  }
-
-  public setProfile(profile: string) {
-    this.profile = profile;
+  public stop() {
+    this.isRunning = false;
   }
 }
