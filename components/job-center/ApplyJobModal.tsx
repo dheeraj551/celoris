@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
+import { GoogleIcon } from "@/components/icons/GoogleIcon"
 import type { PublicJob } from "./JobCenterLanding"
 
 interface ApplyJobModalProps {
@@ -132,17 +133,18 @@ export function ApplyJobModal({ job, isOpen, onClose }: ApplyJobModalProps) {
             <div className="flex justify-center">
               <GoogleSignInButton
                 text="continue_with"
+                theme="outline"
+                shape="rectangular"
                 oneTap
                 oneTapDelayMs={1500}
                 redirectTo={targetRedirect}
               >
                 <Link
                   href={`/login?next=${encodeURIComponent(targetRedirect)}`}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00e599] hover:bg-[#00cc88] px-5 py-3.5 text-sm font-extrabold text-black shadow-[0_0_25px_rgba(0,229,153,0.35)] transition-all cursor-pointer active:scale-95"
+                  className="w-full h-11 px-5 rounded-lg bg-white hover:bg-neutral-50 text-[#3c4043] font-semibold text-xs border border-[#dadce0] shadow-sm transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer"
                 >
-                  <Zap className="h-4 w-4 fill-black" />
-                  <span>Start Free 5-Min Test &amp; Apply</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <GoogleIcon className="w-4 h-4 shrink-0" />
+                  <span>Continue with Google</span>
                 </Link>
               </GoogleSignInButton>
             </div>

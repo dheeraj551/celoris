@@ -32,6 +32,8 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
+import { GoogleIcon } from "@/components/icons/GoogleIcon"
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { formatDistanceToNow } from "date-fns"
 import type { PublicJob } from "./JobCenterLanding"
 
@@ -386,8 +388,8 @@ export function PublicJobDashboard({
       {/* Main 3-Column Layout: Feature Pills (Left) | iOS Smartphone (Center) | Benefits & CTA (Right) */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center max-w-6xl mx-auto px-2 sm:px-4">
         
-        {/* LEFT COLUMN: Apple-Style Interactive Feature Pills (Visible on Desktop / Collapsible on Mobile) */}
-        <div className="flex flex-col gap-3.5 lg:col-span-3 order-2 lg:order-1">
+        {/* LEFT COLUMN: Apple-Style Interactive Feature Pills (Visible on Desktop, Hidden on Mobile) */}
+        <div className="hidden lg:flex flex-col gap-3.5 lg:col-span-3 order-2 lg:order-1">
           <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 font-bold mb-1 flex items-center justify-between">
             <span>Explore App Features</span>
             {activeFeature !== "overview" && (
@@ -895,30 +897,22 @@ export function PublicJobDashboard({
             <p className="text-xs text-neutral-300 leading-relaxed">
               Sign in with Google in 10 seconds to take your first skill test and unlock direct employer chat.
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                if (paginatedJobs[0]) {
-                  handleJobAction(paginatedJobs[0], "apply")
-                } else {
-                  onApplyJob({
-                    id: "general-apply",
-                    title: "Creative & Tech Gigs",
-                    company: "Celoris Verified Network",
-                    location: "Remote (Pan-India)",
-                    pay: "₹25,000 – ₹38,000 / mo",
-                    industry: "Design & Dev",
-                    workMode: "100% Remote",
-                    badges: ["Certified Skill"],
-                    createdAt: new Date().toISOString(),
-                  })
-                }
-              }}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#00e599] hover:bg-[#00cc88] text-black font-extrabold text-xs transition-all shadow-[0_0_20px_rgba(0,229,153,0.35)] cursor-pointer active:scale-95 text-center flex items-center justify-center gap-1.5"
-            >
-              <Zap className="h-3.5 w-3.5 fill-black" />
-              <span>Sign In with Google</span>
-            </button>
+            <div className="w-full pt-1 flex justify-center">
+              <GoogleSignInButton
+                text="signin_with"
+                theme="outline"
+                shape="rectangular"
+                redirectTo="/job-center"
+              >
+                <Link
+                  href="/login?next=%2Fjob-center"
+                  className="w-full h-11 px-4 rounded-lg bg-white hover:bg-neutral-50 text-[#3c4043] font-semibold text-xs border border-[#dadce0] shadow-sm transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer"
+                >
+                  <GoogleIcon className="w-4 h-4 shrink-0" />
+                  <span>Sign in with Google</span>
+                </Link>
+              </GoogleSignInButton>
+            </div>
           </motion.div>
         </div>
 

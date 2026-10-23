@@ -89,6 +89,10 @@ interface GoogleSignInButtonProps {
   hideWhenSignedIn?: boolean
   /** Where to go after sign-in. Defaults to ?next= / ?redirect= or "/". */
   redirectTo?: string
+  /** Google button visual theme: "outline" (clean white with standard border), "filled_black", or "filled_blue" */
+  theme?: "outline" | "filled_blue" | "filled_black"
+  /** Shape of the button: "rectangular" or "pill" */
+  shape?: "rectangular" | "pill"
 }
 
 export function GoogleSignInButton({
@@ -100,6 +104,8 @@ export function GoogleSignInButton({
   oneTapDelayMs = 0,
   hideWhenSignedIn = false,
   redirectTo,
+  theme = "outline",
+  shape = "rectangular",
 }: GoogleSignInButtonProps) {
   const holderRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<"loading" | "gis" | "fallback">("loading")
@@ -174,9 +180,9 @@ export function GoogleSignInButton({
           const width = Math.min(400, Math.max(200, Math.floor(box)))
           window.google.accounts.id.renderButton(holder, {
             type: "standard",
-            theme: "filled_black",
+            theme: theme,
             size: "large",
-            shape: "pill",
+            shape: shape,
             text,
             logo_alignment: "left",
             width,
