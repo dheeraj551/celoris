@@ -18,7 +18,9 @@ import {
   X,
   Loader2,
   ChevronRight,
-  Video
+  Video,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -56,6 +58,7 @@ export function VideoUpscalerStudio() {
   // View Mode: 'upscaled' (100% Full), 'split' (Before/After), 'original' (Raw)
   const [viewMode, setViewMode] = useState<"upscaled" | "split" | "original">("upscaled");
   const [sliderPosition, setSliderPosition] = useState(50);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
 
   // Processing & Export State
@@ -84,7 +87,28 @@ export function VideoUpscalerStudio() {
     detectGpuDevice().then((info) => {
       setGpuInfo(info);
     });
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
   }, []);
+
+  const toggleFullscreen = () => {
+    if (!previewContainerRef.current) return;
+    if (!document.fullscreenElement) {
+      if (previewContainerRef.current.requestFullscreen) {
+        previewContainerRef.current.requestFullscreen().catch(() => {});
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
 
   // Calculate Target Dimensions
   const targetWidth = Math.round((originalDimensions.width || 1080) * settings.scale);
@@ -465,12 +489,69 @@ export function VideoUpscalerStudio() {
             onTouchMove={(e) => viewMode === "split" && isDraggingSlider && handleSliderMove(e.touches[0].clientX)}
             onMouseUp={() => setIsDraggingSlider(false)}
             onTouchEnd={() => setIsDraggingSlider(false)}
-            className={`relative w-full rounded-3xl bg-[#050810] border border-white/[0.1] shadow-2xl overflow-hidden flex items-center justify-center select-none ${
-              isVertical && mediaUrl
+            className={`relative w-full rounded-3xl bg-[#050810] border border-white/[0.1] shadow-2xl overflow-hidden flex items-center justify-center select-none transition-all ${
+              isFullscreen
+                ? "w-screen h-screen !max-w-none !max-h-none !rounded-none !border-none"
+                : isVertical && mediaUrl
                 ? "max-w-[420px] aspect-[9/16] mx-auto"
                 : "aspect-video max-h-[640px]"
             }`}
           >
+            {/* Top-Right Fullscreen Overlay Button */}
+            {mediaUrl && (
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="absolute top-3.5 right-3.5 z-30 p-2 sm:px-3 sm:py-2 rounded-xl bg-black/70 hover:bg-black/90 text-white border border-white/20 backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-lg cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
+                title={isFullscreen ? "Exit Fullscreen (Esc)" : "Fullscreen Preview"}
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="w-4 h-4 text-emerald-400" />
+                ) : (
+                  <Maximize2 className="w-4 h-4 text-emerald-400" />
+                )}
+                <span className="hidden sm:inline font-mono">{isFullscreen ? "Exit" : "Fullscreen"}</span>
+              </button>
+            )}
+
+            {/* Fullscreen View Mode Switcher */}
+            {isFullscreen && (
+              <div className="absolute top-3.5 left-3.5 z-30 flex items-center gap-1 p-1 rounded-xl bg-black/80 border border-white/20 backdrop-blur-md shadow-2xl">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("upscaled")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "upscaled"
+                      ? "bg-emerald-500 text-black shadow-md"
+                      : "text-white hover:text-emerald-300"
+                  }`}
+                >
+                  Full View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("split")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "split"
+                      ? "bg-emerald-500 text-black shadow-md"
+                      : "text-white hover:text-emerald-300"
+                  }`}
+                >
+                  Split View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("original")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    viewMode === "original"
+                      ? "bg-emerald-500 text-black shadow-md"
+                      : "text-white hover:text-emerald-300"
+                  }`}
+                >
+                  Original
+                </button>
+              </div>
+            )}
             {/* Upload Empty State */}
             {!mediaUrl && (
               <label className="flex flex-col items-center justify-center p-8 sm:p-12 text-center cursor-pointer group transition-all w-full h-full min-h-[380px]">
@@ -572,6 +653,38 @@ export function VideoUpscalerStudio() {
                 </div>
               </div>
             )}
+            {/* Fullscreen Floating Bottom Playback Bar */}
+            {isFullscreen && isVideo && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-[92%] max-w-2xl px-5 py-3 rounded-2xl bg-black/85 border border-white/20 backdrop-blur-xl flex items-center gap-4 shadow-2xl">
+                <button
+                  type="button"
+                  onClick={togglePlay}
+                  className="p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold transition-all cursor-pointer shrink-0"
+                >
+                  {isPlaying ? <Pause className="w-4 h-4 fill-black" /> : <Play className="w-4 h-4 fill-black" />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max={videoDuration || 100}
+                  step="0.05"
+                  value={currentTime}
+                  onChange={(e) => handleSeek(parseFloat(e.target.value))}
+                  className="w-full accent-emerald-400 cursor-pointer"
+                />
+                <span className="font-mono text-xs text-neutral-300 whitespace-nowrap">
+                  {Math.floor(currentTime)}s / {Math.floor(videoDuration)}s
+                </span>
+                <button
+                  type="button"
+                  onClick={toggleFullscreen}
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0"
+                  title="Exit Fullscreen (Esc)"
+                >
+                  <Minimize2 className="w-4 h-4 text-emerald-400" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Video Playback & Scrub Bar (If Video) */}
@@ -600,6 +713,15 @@ export function VideoUpscalerStudio() {
               <span className="font-mono text-xs text-neutral-400 whitespace-nowrap">
                 {Math.floor(currentTime)}s / {Math.floor(videoDuration)}s
               </span>
+
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="p-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white hover:text-emerald-400 transition-colors cursor-pointer"
+                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
+              >
+                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              </button>
 
               <button
                 type="button"
