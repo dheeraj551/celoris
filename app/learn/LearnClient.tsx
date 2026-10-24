@@ -1,13 +1,12 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { BookOpen, Users, TrendingUp, Calculator, Bot, Sparkles, ArrowRight, Zap, X, Send, MessageSquare, Mail } from "lucide-react"
+import { BookOpen, Users, TrendingUp, Calculator, ArrowRight, Zap, X, Send, MessageSquare, Mail, GraduationCap } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Courses } from "@/components/home-new/Courses"
 import StudentInquiries from "@/components/StudentInquiries"
-import { FreeOnlineClasses, type UpcomingClass } from "@/components/learn/FreeOnlineClasses"
 import { BenefitBanner } from "@/components/learn/BenefitBanner"
 import { PageWrapper } from "@/components/PageWrapper"
 import { motion, AnimatePresence } from "framer-motion"
@@ -328,7 +327,7 @@ function OnlineTrainersList({ onConnect }: { onConnect: (trainer: any) => void }
   );
 }
 
-export default function LearnClient({ initialCourses, initialNotices, upcomingClasses = [] }: { initialCourses: any[], initialNotices: any[], upcomingClasses?: UpcomingClass[] }) {
+export default function LearnClient({ initialCourses, initialNotices }: { initialCourses: any[], initialNotices: any[] }) {
   const { profile, user } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
@@ -420,7 +419,7 @@ export default function LearnClient({ initialCourses, initialNotices, upcomingCl
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-8"
           >
-            <Sparkles size={12} className="animate-pulse" /> Celoris Academy
+            <GraduationCap size={13} className="text-emerald-400" /> Celoris Academy
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -470,21 +469,6 @@ export default function LearnClient({ initialCourses, initialNotices, upcomingCl
           />
         </div>
       </motion.section>
-
-      {/* Free Online Classes - Upcoming Section */}
-      <motion.section 
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="py-12 relative z-10 border-b border-white/5"
-      >
-        <div className="max-w-6xl mx-auto">
-          <FreeOnlineClasses upcomingClasses={upcomingClasses} />
-        </div>
-      </motion.section>
-
-
 
       <BenefitBanner />
 

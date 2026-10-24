@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BookOpen, Users, TrendingUp, Loader2, Sparkles } from "lucide-react"
+import { BookOpen, Users, TrendingUp, Loader2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -178,7 +178,7 @@ export default function StudentInquiries() {
                         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none" />
                         <DialogHeader className="relative z-10 mb-8">
                             <div className="h-12 w-12 bg-emerald-500/20 rounded-xl flex items-center justify-center border border-emerald-500/20 mb-6">
-                                <Sparkles className="text-emerald-400" size={24} />
+                                <BookOpen className="text-emerald-400" size={24} />
                             </div>
                             <DialogTitle className="text-3xl font-black text-white italic uppercase tracking-tighter">Initialize Uplink</DialogTitle>
                             <DialogDescription className="text-slate-400 font-medium italic">

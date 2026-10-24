@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Users, ShieldCheck, Mail, Sparkles, Loader2, X } from "lucide-react"
+import { Users, ShieldCheck, Mail, Zap, Loader2, X } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase-client"
@@ -270,7 +270,7 @@ export function CourseTrainerBooth({ courseId }: { courseId: string }) {
                     disabled={claiming}
                     className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all mt-auto text-xs"
                   >
-                    {claiming ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Sparkles className="w-4 h-4 mr-2 text-emerald-400" />}
+                    {claiming ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Zap className="w-4 h-4 mr-2 text-emerald-400" />}
                     Claim (500 Coins)
                   </Button>
                 </>

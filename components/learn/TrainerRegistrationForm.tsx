@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import {
     User, CheckCircle, Upload, Calendar, Phone, Mail,
     MapPin, BookOpen, Clock, DollarSign, Languages, FileText,
-    ChevronRight, ChevronLeft, X, AlertCircle, Sparkles, GraduationCap
+    ChevronRight, ChevronLeft, X, AlertCircle, GraduationCap
 } from 'lucide-react'
 import { createClientForBrowser } from '@/lib/supabase-client'
 
@@ -299,7 +299,7 @@ export default function TrainerRegistrationForm({ noticeId, subject, studentName
                             animate={{ opacity: 1, x: 0 }}
                             className="flex items-center gap-3 mb-2"
                         >
-                            <Sparkles className="text-emerald-400 h-5 w-5" />
+                            <GraduationCap className="text-emerald-400 h-5 w-5" />
                             <span className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] flex-grow">Official Application <span className="text-slate-500 ml-2">{applicationId}</span></span>
                         </motion.div>
                         <div className="flex flex-col md:flex-row md:items-baseline gap-2">

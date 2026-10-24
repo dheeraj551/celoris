@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { createClient } from "@/lib/supabase-client"
-import { Loader2, PlusCircle, Sparkles, CheckCircle2 } from "lucide-react"
+import { Loader2, PlusCircle, CheckCircle2 } from "lucide-react"
 import { maskContactInfo } from "@/lib/contact-shield"
 
 export function PostLearningNeedModal() {
@@ -124,7 +124,7 @@ export function PostLearningNeedModal() {
       <DialogContent className="sm:max-w-[480px] bg-[#0d1321] text-white border-white/10 rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Sparkles size={14} /> Direct Trainer Connect
+            <CheckCircle2 size={14} className="text-emerald-400" /> Direct Trainer Connect
           </div>
           <DialogTitle className="text-2xl font-black italic uppercase tracking-tight">Post Your Learning Need</DialogTitle>
           <DialogDescription className="text-slate-400 text-xs sm:text-sm">

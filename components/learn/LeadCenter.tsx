@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2, UserPlus, Phone, MapPin, IndianRupee, Mail, FileSpreadsheet, Sparkles } from "lucide-react"
+import { Loader2, UserPlus, Phone, MapPin, IndianRupee, Mail, FileSpreadsheet, Headphones } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -183,7 +183,7 @@ export default function LeadCenter() {
                             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none" />
                             <DialogHeader className="relative z-10 mb-8">
                                 <div className="h-12 w-12 bg-emerald-500/20 rounded-xl flex items-center justify-center border border-emerald-500/20 mb-6">
-                                    <Sparkles className="text-emerald-400" size={24} />
+                                    <Headphones className="text-emerald-400" size={24} />
                                 </div>
                                 <DialogTitle className="text-3xl font-black text-white italic uppercase tracking-tighter">Request Support</DialogTitle>
                                 <DialogDescription className="text-slate-400 font-medium italic">

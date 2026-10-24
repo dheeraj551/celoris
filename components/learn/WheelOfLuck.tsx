@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Gift, Sparkles, RotateCcw } from 'lucide-react';
+import { MessageCircle, Gift, RotateCcw } from 'lucide-react';
 
 interface WheelOfLuckProps {
     courses: any[];
@@ -334,7 +334,7 @@ export const WheelOfLuck = ({ courses }: WheelOfLuckProps) => {
 
                                     <div className="text-center mb-6">
                                         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-3">
-                                            <Sparkles size={10} className="animate-pulse" /> You Won!
+                                            <Gift size={10} className="animate-pulse" /> You Won!
                                         </span>
                                         <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">
                                             Free Masterclass
