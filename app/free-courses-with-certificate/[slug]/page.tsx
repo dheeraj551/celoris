@@ -14,8 +14,10 @@ import {
     getBootcamp,
     istDateTime,
 } from "@/lib/bootcamps"
+import { getSeatStats } from "@/lib/bootcamp-seats"
 
-export const revalidate = 3600
+// Seat numbers are read live from the applications, so refresh every 5 minutes.
+export const revalidate = 300
 
 const BASE = "https://celorisdesigns.com/free-courses-with-certificate"
 
@@ -56,7 +58,11 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
     const firstLabel = formatBatchDate(first)
     const endLabel = formatBatchDate(last)
     const firstSession = b.sessions[0]
-    const remainingSeats = (b.totalSeats || 10) - (b.offlineEnrolled || 0)
+    const live = (await getSeatStats())[b.slug]
+    const freeSeats = live?.freeSeats ?? (b.totalSeats || 10) - (b.offlineEnrolled || 0)
+    const remainingSeats = live?.seatsLeft ?? freeSeats
+    const applications = live?.applications ?? 0
+    const filledSeats = (b.totalSeats || 10) - remainingSeats
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -102,7 +108,7 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                                 <span className="text-3xl font-black text-emerald-400">FREE</span>
                             </div>
                             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
-                                100% Free Giveaway (Save ₹{b.originalPrice.toLocaleString("en-IN")})
+                                Free seats for selected students (save ₹{b.originalPrice.toLocaleString("en-IN")})
                             </span>
                         </div>
 
@@ -128,22 +134,29 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                             {/* Live Cohort Availability Progress */}
                             <div className="mb-5 rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] p-4">
                                 <div className="flex items-center justify-between text-xs sm:text-sm font-mono mb-2">
-                                    <span className="text-neutral-200 font-semibold">Strictly 10 Seats Cohort:</span>
-                                    <span className="text-amber-300 font-bold">Only {remainingSeats} Giveaway Seats Left!</span>
+                                    <span className="text-neutral-200 font-semibold">{b.totalSeats} seats in this batch:</span>
+                                    <span className="text-amber-300 font-bold">
+                                        {remainingSeats > 0 ? `${remainingSeats} of ${freeSeats} free seats still open` : "All free seats given"}
+                                    </span>
                                 </div>
                                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
                                     <div
                                         className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-400"
-                                        style={{ width: `${(b.offlineEnrolled / b.totalSeats) * 100}%` }}
+                                        style={{ width: `${Math.min(100, (filledSeats / b.totalSeats) * 100)}%` }}
                                     />
                                 </div>
                                 <div className="mt-2 flex flex-wrap items-center justify-between text-xs text-neutral-400 font-mono gap-1">
-                                    <span>{b.offlineEnrolled} of {b.totalSeats} seats claimed via offline marketing</span>
-                                    <span className="text-emerald-400 font-semibold">{remainingSeats} spots available as free giveaway</span>
+                                    <span>{b.offlineEnrolled} of {b.totalSeats} seats taken by paid students</span>
+                                    <span className="text-emerald-400 font-semibold">
+                                        {applications > 0 ? `${applications} applied for the free seats so far` : "Applications are open"}
+                                    </span>
                                 </div>
                             </div>
 
-                            <p className="mb-4 text-sm font-medium text-white">Claim your free seat in the batch starting {firstLabel} ({b.startTimeLabel || "12:00 PM IST"})</p>
+                            <p className="mb-1 text-sm font-medium text-white">Apply for a free seat in the batch starting {firstLabel} ({b.startTimeLabel || "12:00 PM IST"})</p>
+                            <p className="mb-4 text-xs text-neutral-400">
+                                Free seats go to the applicants we select. Selected students get a WhatsApp message with the class link before Class 1.
+                            </p>
                             <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={firstLabel} scheduleLabel={b.scheduleLabel} />
                         </div>
                     </div>
@@ -203,7 +216,7 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                             <Award className="h-6 w-6 text-emerald-400" />
                             <h3 className="mt-3 text-lg font-semibold text-white">Your certificate</h3>
                             <p className="mt-2 text-sm text-neutral-400">
-                                Attend at least {MIN_ATTENDANCE} of the {SESSIONS} live classes and pass the final exam on the second Sunday. You earn the Celoris
+                                Attend at least {MIN_ATTENDANCE} of the {SESSIONS} live classes and pass the final exam on the last day of the batch. You earn the Celoris
                                 certificate and the &ldquo;{b.badge}&rdquo; badge on your Job Center profile.
                             </p>
                         </div>
@@ -237,18 +250,18 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                         <div className="flex flex-col">
                             <div className="flex items-center gap-1.5">
                                 <span className="text-xs font-semibold text-white">Starts {firstLabel}</span>
-                                <span className="text-[10px] font-mono text-amber-300 font-bold">({remainingSeats} left)</span>
+                                <span className="text-[10px] font-mono text-amber-300 font-bold">({remainingSeats} free seats left)</span>
                             </div>
                             <span className="text-[11px] font-mono text-emerald-400">
                                 <span className="line-through text-neutral-500 mr-1">₹{b.originalPrice.toLocaleString("en-IN")}</span>
-                                FREE Giveaway
+                                FREE if selected
                             </span>
                         </div>
                         <a
                             href="#enroll"
                             className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition hover:bg-emerald-400 active:scale-95 shadow-md whitespace-nowrap"
                         >
-                            <span>Claim Free Seat</span>
+                            <span>Apply</span>
                             <ArrowRight className="h-3.5 w-3.5" />
                         </a>
                     </div>

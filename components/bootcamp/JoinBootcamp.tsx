@@ -5,10 +5,21 @@ import { useEffect, useState } from "react"
 import { ArrowRight, Calendar, CheckCircle2, Loader2, Share2 } from "lucide-react"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
-import { MIN_ATTENDANCE, SESSIONS, currentBatchStart, examInstant, getBootcamp, sessionInstants } from "@/lib/bootcamps"
+import {
+    APPLICATION_MAX_CHARS,
+    APPLICATION_MIN_CHARS,
+    APPLICATION_QUESTION,
+    MIN_ATTENDANCE,
+    SESSIONS,
+    currentBatchStart,
+    examInstant,
+    getBootcamp,
+    sessionInstants,
+} from "@/lib/bootcamps"
 
-// One-tap join for a free bootcamp: Google sign-in, then a WhatsApp number for
-// class reminders. The batch date is decided on the server.
+// Apply for a free bootcamp seat: Google sign-in, one short question and a WhatsApp
+// number. Free seats go to selected applicants; the team marks them "selected".
+// The batch date is decided on the server.
 
 interface Props {
     slug: string
@@ -17,12 +28,13 @@ interface Props {
     scheduleLabel?: string
 }
 
-type Status = { enrolled: boolean; batchLabel?: string; batchStart?: string; moved?: boolean }
+type Status = { enrolled: boolean; selected?: boolean; batchLabel?: string; batchStart?: string; moved?: boolean }
 
 export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Props) {
     const { user, loading } = useAuth()
     const [status, setStatus] = useState<Status | null>(null)
     const [phone, setPhone] = useState("")
+    const [answer, setAnswer] = useState("")
     const [consent, setConsent] = useState(true)
     const [busy, setBusy] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -33,7 +45,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
         let cancelled = false
         fetch(`/api/bootcamps/enroll?slug=${encodeURIComponent(slug)}`)
             .then((r) => (r.ok ? r.json() : { enrolled: false }))
-            .then((d) => !cancelled && setStatus({ enrolled: !!d.enrolled, batchLabel: d.batchLabel, batchStart: d.batchStart }))
+            .then((d) => !cancelled && setStatus({ enrolled: !!d.enrolled, selected: !!d.selected, batchLabel: d.batchLabel, batchStart: d.batchStart }))
             .catch(() => !cancelled && setStatus({ enrolled: false }))
         return () => {
             cancelled = true
@@ -43,6 +55,11 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
     const submit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (busy) return
+        const reply = answer.replace(/\s+/g, " ").trim()
+        if (reply.length < APPLICATION_MIN_CHARS) {
+            setError("Tell us in one line what you will do with this skill (at least 20 characters).")
+            return
+        }
         const digits = phone.replace(/\D/g, "").slice(-10)
         if (!/^[6-9]\d{9}$/.test(digits)) {
             setError("Enter a valid 10-digit WhatsApp number.")
@@ -58,13 +75,17 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             const res = await fetch("/api/bootcamps/enroll", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ slug, whatsapp: digits, consent }),
+                body: JSON.stringify({ slug, whatsapp: digits, consent, answer: reply }),
             })
             const data = await res.json().catch(() => ({}))
-            if (!res.ok) throw new Error(data?.error || "Could not join right now. Please try again.")
-            setStatus({ enrolled: true, batchLabel: data.batchLabel, batchStart: data.batchStart, moved: !!data.movedToNextBatch })
+            if (!res.ok) throw new Error(data?.error || "Could not send your application right now. Please try again.")
+            setStatus({ enrolled: true, selected: false, batchLabel: data.batchLabel, batchStart: data.batchStart, moved: !!data.movedToNextBatch })
             try {
                 (window as any).gtag?.("event", "bootcamp_join", { bootcamp: slug })
+            } catch {}
+            try {
+                // Meta Pixel standard event, only fires if the pixel is on the site.
+                (window as any).fbq?.("track", "SubmitApplication", { content_name: slug })
             } catch {}
         } catch (err: any) {
             setError(err.message)
@@ -90,12 +111,46 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                             href={`/login?next=${encodeURIComponent(here)}`}
                             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
                         >
-                            Claim Free Seat (Save ₹1,500)
+                            Apply for a Free Seat (₹1,500 value)
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </GoogleSignInButton>
                 </div>
-                <p className="text-xs text-neutral-400">Sign in with Google to claim your free seat (₹1,500 value giveaway). Next batch: {batchLabel}.</p>
+                <p className="text-xs text-neutral-400">
+                    Sign in with Google and answer one short question. We pick the students for the free seats. Next batch: {batchLabel}.
+                </p>
+            </div>
+        )
+    }
+
+    if (status?.enrolled && !status.selected) {
+        const shareText = encodeURIComponent(
+            `I just applied for a free seat in the ${shortTitle} live course with certificate on Celoris (worth ₹1,500). Only a few free seats, and they pick who gets them. Apply here: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
+        )
+        return (
+            <div className="space-y-4">
+                <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+                    <div className="text-sm text-neutral-200">
+                        <p className="font-semibold text-white">Application received for the {shortTitle} batch starting {status.batchLabel || batchLabel}.</p>
+                        {status.moved && (
+                            <p className="mt-1 text-amber-300/90">All free seats in the current batch are already given, so your application is for the next batch.</p>
+                        )}
+                        <p className="mt-1 text-neutral-300">
+                            Our team reads every application and picks the students for the free seats. If you&apos;re selected, we&apos;ll send you a
+                            WhatsApp message with the class link before Class 1. If you&apos;re not picked this time, we&apos;ll tell you about the next batch.
+                        </p>
+                    </div>
+                </div>
+                <a
+                    href={`https://api.whatsapp.com/send?text=${shareText}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/15 hover:bg-emerald-500/25 px-4 py-2 text-xs font-semibold text-emerald-300 transition-all shadow-sm"
+                >
+                    <Share2 className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Tell a friend to apply</span>
+                </a>
             </div>
         )
     }
@@ -157,7 +212,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             setTimeout(() => URL.revokeObjectURL(url), 1000)
         }
         const shareText = encodeURIComponent(
-            `Hey! I just claimed a free seat in the ${shortTitle} bootcamp with certificate on Celoris (worth ₹1,500, now 100% free giveaway) starting ${status.batchLabel || batchLabel}. Limited giveaway seats, grab yours: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
+            `Hey! I got selected for a free seat in the ${shortTitle} live course with certificate on Celoris (worth ₹1,500) starting ${status.batchLabel || batchLabel}. Apply for the next free seats here: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
         )
         const shareUrl = `https://api.whatsapp.com/send?text=${shareText}`
 
@@ -166,7 +221,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                 <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
                     <div className="text-sm text-neutral-200">
-                        <p className="font-semibold text-white">You&apos;re in the {shortTitle} batch starting {status.batchLabel || batchLabel}.</p>
+                        <p className="font-semibold text-white">You&apos;re selected! Your free seat in the {shortTitle} batch starting {status.batchLabel || batchLabel} is confirmed.</p>
                         {status.moved && (
                             <p className="mt-1 text-amber-300/90">The current batch was full, so we reserved your seat in the next one.</p>
                         )}
@@ -218,6 +273,23 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
 
     return (
         <form onSubmit={submit} className="space-y-3">
+            <div>
+                <label htmlFor={`apply-${slug}`} className="mb-1.5 block text-sm font-medium text-white">
+                    {APPLICATION_QUESTION}
+                </label>
+                <textarea
+                    id={`apply-${slug}`}
+                    rows={3}
+                    maxLength={APPLICATION_MAX_CHARS}
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    placeholder="For example: start a Reels page for my family's shop, or get a marketing internship."
+                    className="w-full rounded-2xl border border-white/15 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                />
+                <p className="mt-1 text-right text-[11px] text-neutral-500">
+                    {answer.trim().length}/{APPLICATION_MAX_CHARS}
+                </p>
+            </div>
             <div className="flex flex-col gap-2 sm:flex-row">
                 <div className="relative flex-1">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-400">+91</span>
@@ -238,7 +310,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-60 whitespace-nowrap"
                 >
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                    Claim Free Seat (Save ₹1,500)
+                    Apply for Free Seat
                 </button>
             </div>
             <label className="flex items-start gap-2 text-xs text-neutral-400">
@@ -247,7 +319,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             </label>
             <p className="text-[11px] text-neutral-400/80 flex items-center gap-1.5 pt-0.5">
                 <span>🔒</span>
-                <span>You&apos;ll get the live class link, assignments and reminders on WhatsApp before each session.</span>
+                <span>If you&apos;re selected, you&apos;ll get the live class link, assignments and reminders on WhatsApp.</span>
             </p>
             {error && <p className="text-xs text-rose-400">{error}</p>}
         </form>

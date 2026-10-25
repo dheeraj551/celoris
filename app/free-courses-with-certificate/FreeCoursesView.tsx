@@ -22,7 +22,8 @@ import {
     X,
 } from "lucide-react"
 import { SpotlightCard } from "@/components/ui/spotlight-card"
-import { DAYS, MIN_ATTENDANCE, SESSION_TIME_LABEL, SESSIONS, getBootcamp } from "@/lib/bootcamps"
+import { DAYS, MIN_ATTENDANCE, SESSION_TIME_LABEL, SESSIONS, getBootcamp, type BootcampSlug } from "@/lib/bootcamps"
+import type { SeatStats } from "@/lib/bootcamp-seats"
 
 // Class list for a bootcamp, built from lib/bootcamps so the hub and the course pages always agree.
 function buildSyllabus(slug: string) {
@@ -38,6 +39,8 @@ interface FreeCoursesViewProps {
     batchLabel: string
     batchIso?: string
     faqs: { q: string; a: string }[]
+    /** Live seat numbers per bootcamp, read on the server. */
+    seats?: Partial<Record<BootcampSlug, SeatStats>>
 }
 
 const reelsBootcamp = getBootcamp("social-media-reels")
@@ -50,7 +53,7 @@ const FEATURED_COURSES = [
         masterclassUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         bootcampUrl: "/free-courses-with-certificate/social-media-reels",
         image: "/free-courses/social-media-reels.jpg",
-        badgePill: "100% Free Giveaway",
+        badgePill: "Free Seats for Selected Students",
         categoryPill: "Content Creation",
         originalPrice: reelsBootcamp?.originalPrice || 1500,
         price: "FREE",
@@ -59,7 +62,7 @@ const FEATURED_COURSES = [
         remainingSeats: (reelsBootcamp?.totalSeats || 10) - (reelsBootcamp?.offlineEnrolled || 5),
         title: "Free Social Media Reels Bootcamp with Certificate",
         description:
-            "7 live one-hour classes over two weeks with Ananya Jairath: find your niche, write hooks, shoot on a smartphone, edit in CapCut and build a 3-Reel portfolio. Final exam on the second Sunday, then apply to Reels jobs on the Celoris Job Center.",
+            "7 live one-hour classes over two weeks with Ananya Jairath: find your niche, write hooks, shoot on a smartphone, edit in CapCut and build a 3-Reel portfolio. Final exam on the last day of the batch, then apply to Reels jobs on the Celoris Job Center.",
         instructor: "Ananya Jairath",
         duration: "7 live hours · 2 weeks",
         bootcampShortTitle: "Social Media Reels",
@@ -76,7 +79,7 @@ const FEATURED_COURSES = [
         masterclassUrl: "/learn/course/digital-marketing-mastery",
         bootcampUrl: "/free-courses-with-certificate/digital-marketing",
         image: "/free-courses/digital-marketing.jpg",
-        badgePill: "100% Free Giveaway",
+        badgePill: "Free Seats for Selected Students",
         categoryPill: "Marketing",
         originalPrice: dmBootcamp?.originalPrice || 1500,
         price: "FREE",
@@ -85,7 +88,7 @@ const FEATURED_COURSES = [
         remainingSeats: (dmBootcamp?.totalSeats || 10) - (dmBootcamp?.offlineEnrolled || 6),
         title: "Free Digital Marketing Bootcamp with Certificate",
         description:
-            "7 live one-hour classes over two weeks with Dheeraj Kushwaha: the funnel, SEO and Google Business Profile, social media, Meta and Google Search ads, and GA4 tracking. Final exam on the second Sunday, then apply to marketing jobs on the Celoris Job Center.",
+            "7 live one-hour classes over two weeks with Dheeraj Kushwaha: the funnel, SEO and Google Business Profile, social media, Meta and Google Search ads, and GA4 tracking. Final exam on the last day of the batch, then apply to marketing jobs on the Celoris Job Center.",
         instructor: "Dheeraj Kushwaha",
         duration: "7 live hours · 2 weeks",
         bootcampShortTitle: "Digital Marketing",
@@ -166,7 +169,7 @@ function BatchCountdown({ batchIso }: { batchIso?: string }) {
     )
 }
 
-export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewProps) {
+export function FreeCoursesView({ batchLabel, batchIso, faqs, seats }: FreeCoursesViewProps) {
     const [openFaq, setOpenFaq] = useState<number | null>(null)
     const [showCertPreview, setShowCertPreview] = useState(false)
     const [openSyllabus, setOpenSyllabus] = useState<string | null>(null)
@@ -226,7 +229,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                             </span>
                             <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
-                                Festive Special · 100% Free Giveaway
+                                Festive Special · Free Seats Giveaway
                             </span>
                         </motion.div>
 
@@ -237,7 +240,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             transition={{ duration: 0.7, delay: 0.15 }}
                             className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl"
                         >
-                            Festive Offer: Free Giveaways,{" "}
+                            Festive Offer: Free Seats,{" "}
                             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(52,211,153,0.35)]">
                                 taught live with certificate.
                             </span>
@@ -250,7 +253,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             transition={{ duration: 0.7, delay: 0.3 }}
                             className="mx-auto mt-5 max-w-2xl text-base text-neutral-300 sm:text-lg leading-relaxed"
                         >
-                            Live interactive classes with real Celoris trainers: {SESSIONS} one-hour classes over two weeks on alternate evenings, then a final exam on the second Sunday. Pass it and earn your verified certificate.
+                            Live interactive classes with real Celoris trainers: {SESSIONS} one-hour classes over two weeks on alternate days, then a final exam on the last day. Pass it and earn your verified certificate. Free seats go to the applicants we select.
                         </motion.p>
 
                         {/* Interactive Info Badges */}
@@ -272,7 +275,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 backdrop-blur-md shadow-lg transition-colors hover:border-emerald-500/40 hover:bg-white/[0.08]"
                             >
                                 <Clock className="h-4 w-4 text-emerald-400" />
-                                <span className="font-medium">{SESSIONS} live hours over 2 weeks · alternate evenings</span>
+                                <span className="font-medium">{SESSIONS} live hours over 2 weeks · alternate days</span>
                             </motion.span>
                             <motion.span
                                 whileHover={{ scale: 1.05, y: -2 }}
@@ -305,7 +308,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-medium text-amber-300 backdrop-blur-md"
                         >
                             <Flame className="h-4 w-4 text-amber-400 animate-pulse" />
-                            <span>Strictly 10 seats per batch · Offline registrations already claimed 50%+ · Remaining seats given as Free Giveaway!</span>
+                            <span>10 seats per course · Paid students already took more than half · The rest go free to selected applicants</span>
                         </motion.div>
 
                         {/* Live Countdown Timer */}
@@ -349,7 +352,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             </h2>
                         </div>
                         <p className="text-xs sm:text-sm text-neutral-400 max-w-md">
-                            Two <span className="text-emerald-400 font-semibold">free live bootcamps with certificate</span>, with a new batch every 14 days. Each one leads into a full paid course if you want to go deeper.
+                            Two <span className="text-emerald-400 font-semibold">live courses with certificate</span>, with free seats for selected students and a new batch every 14 days. Each one leads into a full paid course if you want to go deeper.
                         </p>
                     </div>
 
@@ -395,7 +398,13 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                     </div>
 
                     <div className="grid gap-8 md:grid-cols-2">
-                        {FEATURED_COURSES.map((course, idx) => (
+                        {FEATURED_COURSES.map((course, idx) => {
+                            const live = seats?.[course.slug as BootcampSlug]
+                            const freeSeats = live?.freeSeats ?? course.remainingSeats
+                            const seatsLeft = live?.seatsLeft ?? course.remainingSeats
+                            const applications = live?.applications ?? 0
+                            const filled = course.totalSeats - seatsLeft
+                            return (
                             <motion.div
                                 key={course.id}
                                 initial={{ opacity: 0, y: 30 }}
@@ -466,25 +475,29 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                             <span className="line-through text-slate-500 text-sm font-semibold">₹{course.originalPrice.toLocaleString("en-IN")}</span>
                                             <span className="text-emerald-400 font-black text-2xl tracking-tight">FREE</span>
                                             <span className="text-[10px] uppercase font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-                                                Save ₹{course.originalPrice.toLocaleString("en-IN")} Giveaway
+                                                For selected students
                                             </span>
                                         </div>
 
                                         {/* Live Cohort Availability & Giveaway Seats */}
                                         <div className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/[0.05] p-3">
                                             <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                                                <span className="text-neutral-300 font-medium">Batch Seats:</span>
-                                                <span className="text-amber-300 font-bold">Only {course.remainingSeats} Seats Left!</span>
+                                                <span className="text-neutral-300 font-medium">Free seats:</span>
+                                                <span className="text-amber-300 font-bold">
+                                                    {seatsLeft > 0 ? `${seatsLeft} of ${freeSeats} still open` : "All given — apply for the next batch"}
+                                                </span>
                                             </div>
                                             <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
                                                 <div
                                                     className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-400"
-                                                    style={{ width: `${(course.offlineEnrolled / course.totalSeats) * 100}%` }}
+                                                    style={{ width: `${Math.min(100, (filled / course.totalSeats) * 100)}%` }}
                                                 />
                                             </div>
-                                            <div className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-                                                <span>{course.offlineEnrolled}/{course.totalSeats} claimed offline</span>
-                                                <span className="text-emerald-400 font-semibold">{course.remainingSeats} giveaway seats open</span>
+                                            <div className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400 font-mono gap-2 flex-wrap">
+                                                <span>{course.offlineEnrolled}/{course.totalSeats} taken by paid students</span>
+                                                <span className="text-emerald-400 font-semibold">
+                                                    {applications > 0 ? `${applications} applied so far` : "Applications open"}
+                                                </span>
                                             </div>
                                         </div>
 
@@ -571,7 +584,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                                     href={course.bootcampUrl}
                                                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-neutral-950 text-xs font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:shadow-[0_0_30px_rgba(52,211,153,0.55)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
                                                 >
-                                                    <span>Claim Free Seat (Save ₹1,500)</span>
+                                                    <span>Apply for Free Seat</span>
                                                     <ArrowRight size={13} className="stroke-[2.5]" />
                                                 </Link>
                                             </div>
@@ -581,7 +594,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                         <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-400 font-mono gap-2 flex-wrap">
                                             <a
                                                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                                                    `Hey! Join me in this free ${course.bootcampShortTitle} live bootcamp with certificate (worth ₹1,500, now 100% free giveaway) starting ${batchLabel}: https://celorisdesigns.com${course.bootcampUrl}`
+                                                    `Hey! Celoris is giving free seats in its ${course.bootcampShortTitle} live course with certificate (worth ₹1,500) to selected students, starting ${batchLabel}. Apply here: https://celorisdesigns.com${course.bootcampUrl}`
                                                 )}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
@@ -595,14 +608,15 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                                 href={course.bootcampUrl}
                                                 className="text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline flex items-center gap-1"
                                             >
-                                                <span>Claim Free Seat</span>
+                                                <span>Apply for Free Seat</span>
                                                 <span>→</span>
                                             </Link>
                                         </div>
                                     </div>
                                 </SpotlightCard>
                             </motion.div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </section>
 
@@ -622,14 +636,14 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             {
                                 icon: CalendarDays,
                                 step: "Step 1",
-                                title: "Join a batch",
-                                body: "Sign in with Google and reserve your seat in seconds. A brand-new batch starts every 14 days on Monday evening.",
+                                title: "Apply for a free seat",
+                                body: "Sign in with Google and tell us in one line what you will do with the skill. We pick the students for the free seats. A new batch starts every 14 days.",
                             },
                             {
                                 icon: Award,
                                 step: "Step 2",
                                 title: "Attend live & pass test",
-                                body: "Join the live classes punctually on scheduled evenings. There are no recordings, so attendance is required to qualify for the final skill test and certificate.",
+                                body: "Join the live classes punctually at the scheduled times. There are no recordings, so attendance is required to qualify for the final skill test and certificate.",
                                 isCertStep: true,
                             },
                             {
@@ -755,7 +769,20 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                         })}
                     </div>
 
-                    <p className="mt-8 text-center text-xs text-neutral-500">
+                    <p className="mt-8 text-center text-sm text-neutral-400">
+                        Still have a question after reading the FAQ?{" "}
+                        <a
+                            href="https://wa.me/919084718101?text=Hi%2C%20I%20have%20a%20question%20about%20the%20Celoris%20Free%20Live%20Courses%20with%20Certificate."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-400 underline-offset-2 hover:underline"
+                        >
+                            Message us on WhatsApp
+                        </a>
+                        .
+                    </p>
+
+                    <p className="mt-4 text-center text-xs text-neutral-500">
                         A Celoris certificate verifies practical skills and completion. Hiring decisions are made by employers on the Celoris Job Center.
                     </p>
                 </section>
@@ -820,7 +847,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 </div>
 
                                 <p className="text-xs text-neutral-300 max-w-md mx-auto leading-relaxed">
-                                    has successfully attended the 7-day live online bootcamp and passed the practical skill examination in
+                                    has successfully attended the 7-class live online bootcamp and passed the practical skill examination in
                                 </p>
                                 <p className="mt-2 text-base font-bold text-white">
                                     Social Media Video Editing &amp; Content Strategy
@@ -846,34 +873,6 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                 )}
             </AnimatePresence>
 
-            {/* Floating WhatsApp Quick Connect Button - fully mobile-optimized (bottom-left, safe-area insets, 48px touch target) */}
-            <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 pb-[env(safe-area-inset-bottom,0px)]">
-                <motion.a
-                    href="https://wa.me/919084718101?text=Hi%2C%20I%20have%20a%20question%20about%20the%20Celoris%20Free%20Live%20Courses%20with%20Certificate."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.8, type: "spring", damping: 15 }}
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.92 }}
-                    className="relative group flex items-center justify-center gap-2 rounded-full bg-[#25D366] text-white shadow-[0_8px_25px_rgba(37,211,102,0.45)] transition-all hover:bg-[#20ba5a] hover:shadow-[0_12px_30px_rgba(37,211,102,0.65)] active:scale-95 touch-manipulation h-12 w-12 sm:h-auto sm:w-auto sm:px-4 sm:py-3 cursor-pointer"
-                    aria-label="Chat with advisor on WhatsApp"
-                >
-                    {/* Live Online Badge on Mobile */}
-                    <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:hidden">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-                        <span className="relative inline-flex h-3 w-3 rounded-full bg-white border-2 border-[#25D366]" />
-                    </span>
-
-                    <svg className="h-6 w-6 sm:h-5 sm:w-5 fill-current shrink-0" viewBox="0 0 24 24">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-                    </svg>
-                    <span className="hidden sm:inline font-semibold text-xs tracking-wide whitespace-nowrap">
-                        Questions? Chat on WhatsApp
-                    </span>
-                </motion.a>
-            </div>
         </div>
     )
 }

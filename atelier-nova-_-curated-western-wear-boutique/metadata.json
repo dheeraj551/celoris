@@ -1,0 +1,7 @@
+{
+  "name": "Atelier Nova | Curated Western Wear Boutique",
+  "description": "Minimalist Instagram-style shoppable boutique for Western women's wear with shoppable reels, client consultation messaging, direct booking, and analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

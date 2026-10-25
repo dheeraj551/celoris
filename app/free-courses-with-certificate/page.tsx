@@ -10,17 +10,18 @@ import {
     formatBatchDate,
     istDateTime,
 } from "@/lib/bootcamps"
+import { getSeatStats } from "@/lib/bootcamp-seats"
 
-// Hub for the free live bootcamps (4 sessions per batch). Targets "free online courses with
-// certificate" searches. The next batch date is computed, so the page stays
-// current on its own (refreshed hourly).
+// Hub for the free live bootcamps (7 sessions per batch). Targets "free online courses with
+// certificate" searches. The next batch date is computed and the seat numbers are read
+// live from the applications, so the page stays current on its own (refreshed every 5 minutes).
 
-export const revalidate = 3600
+export const revalidate = 300
 
 const URL = "https://celorisdesigns.com/free-courses-with-certificate"
 const TITLE = "Festive Offer: Free Giveaways with Certificate | Live Online Courses"
 const DESCRIPTION =
-    "Festive Offer: 100% Free Giveaways in Social Media Reels (12:00 PM) and Digital Marketing (3:00 PM) starting 28 Oct 2026. Normally ₹1,500, now free for a strictly limited 10-seat cohort. Taught live in Hinglish by Celoris mentors with verified certificate and Job Center preference."
+    "Festive Offer: free seats for selected students in Social Media Reels (12:00 PM) and Digital Marketing (3:00 PM) live courses, starting 28 Oct 2026. Normally ₹1,500 each, 10 seats per batch. Taught live in Hinglish by Celoris trainers, with a verified certificate and Job Center preference."
 
 export const metadata: Metadata = {
     // The root layout adds " | Celoris".
@@ -55,7 +56,7 @@ function getFaqs(batchLabel: string) {
     return [
         {
             q: "Are these courses really free?",
-            a: "Yes. Both bootcamps carry an official price of ₹1,500 each, but remaining cohort seats are released as a 100% Free Giveaway. You get all 7 live sessions, personal trainer feedback, the final exam, and verified certificate at zero cost.",
+            a: "Yes, for selected students. Both courses normally cost ₹1,500 each. Paid students fill part of every batch, and the remaining seats are given free to the applicants we select. A free seat gets you all 7 live classes, trainer feedback, the final exam and the verified certificate at zero cost.",
         },
         {
             q: "What is the schedule for both courses?",
@@ -63,7 +64,11 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "Why are seats capped at 10 students per batch?",
-            a: "To ensure each student gets individual attention and practical review from the mentor. Our offline marketing has already registered students (5 in Reels, 6 in Digital Marketing), leaving only 4 to 5 free giveaway seats open for online applicants.",
+            a: "So that every student gets individual attention and practical review from the trainer. In this batch, paid students already took 5 seats in Reels and 6 in Digital Marketing, which leaves 9 free seats in total for the applicants we select.",
+        },
+        {
+            q: "How are the free seats given out?",
+            a: "Sign in with Google and answer one question: what will you do with this skill in the next 3 months? Our team reads every application and picks the students who are most likely to use the skill. Selected students get a WhatsApp message with the class link before Class 1. If you are not picked, you can join at the normal fee or apply again for the next batch.",
         },
         {
             q: "What if I miss a live class on one day?",
@@ -83,7 +88,7 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "When is the final exam?",
-            a: `On the second Sunday of your batch, online on Celoris (12:00 PM for Social Media Reels, 3:00 PM for Digital Marketing). Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes to sit the exam.`,
+            a: `On the last day of your batch, the Tuesday of week 2, online on Celoris (12:00 PM for Social Media Reels, 3:00 PM for Digital Marketing). Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes to sit the exam.`,
         },
         {
             q: "Can I get extra help outside class?",
@@ -95,15 +100,16 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "When does the next batch start?",
-            a: `The upcoming batch starts on ${batchLabel}. With only 4 to 5 giveaway seats remaining per track, claim your free seat before the batch closes.`,
+            a: `The upcoming batch starts on ${batchLabel}, and a new batch starts every 14 days after that. Apply for a free seat before the batch starts.`,
         },
     ]
 }
 
-export default function FreeCoursesHubPage() {
+export default async function FreeCoursesHubPage() {
     const batch = currentBatchStart()
     const batchLabel = formatBatchDate(batch)
     const faqs = getFaqs(batchLabel)
+    const seats = await getSeatStats()
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -149,7 +155,7 @@ export default function FreeCoursesHubPage() {
     return (
         <DashboardShell>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <FreeCoursesView batchLabel={batchLabel} batchIso={batch} faqs={faqs} />
+            <FreeCoursesView batchLabel={batchLabel} batchIso={batch} faqs={faqs} seats={seats} />
         </DashboardShell>
     )
 }

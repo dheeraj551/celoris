@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #030705;
+    color: #e2f5ea;
+  }
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom scrollbar in emerald and obsidian */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #030705;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
+/* Metallic & Anodized Hardware Styles (MacBook Pro Aluminum & Titanium Feel) */
+.btn-metallic {
+  background: linear-gradient(180deg, #242b27 0%, #151b18 50%, #0d1210 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.26);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 
+              inset 0 -1px 0 rgba(0, 0, 0, 0.5), 
+              0 2px 4px rgba(0, 0, 0, 0.6);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #d1fae5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.btn-metallic:hover {
+  background: linear-gradient(180deg, #2e3732 0%, #1b231f 50%, #121815 100%);
+  border-color: rgba(52, 211, 153, 0.4);
+  border-top-color: rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 
+              0 0 14px rgba(16, 185, 129, 0.3), 
+              0 2px 6px rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+}
+
+.btn-metallic:active {
+  background: linear-gradient(180deg, #0e1311 0%, #161d19 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 
+              inset 0 1px 1px rgba(0, 0, 0, 0.6);
+  transform: translateY(1px);
+}
+
+/* Anodized Emerald Metallic Button (Primary CTAs) */
+.btn-metallic-emerald {
+  background: linear-gradient(180deg, #10b981 0%, #059669 45%, #047857 100%);
+  border: 1px solid rgba(167, 243, 208, 0.35);
+  border-top-color: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 
+              inset 0 -1px 0 rgba(0, 0, 0, 0.4), 
+              0 2px 8px rgba(5, 150, 105, 0.45), 
+              0 0 16px rgba(16, 185, 129, 0.3);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.btn-metallic-emerald:hover {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 45%, #059669 100%);
+  border-color: rgba(209, 250, 229, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 
+              0 4px 18px rgba(16, 185, 129, 0.55), 
+              0 0 28px rgba(52, 211, 153, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-metallic-emerald:active {
+  background: linear-gradient(180deg, #047857 0%, #065f46 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  transform: translateY(1px);
+}
+
+/* Aluminum Mac Space Gray Button */
+.btn-metallic-aluminum {
+  background: linear-gradient(180deg, #3b4440 0%, #28302c 50%, #1c221f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top-color: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 
+              0 2px 4px rgba(0, 0, 0, 0.5);
+  color: #e2f5ea;
+}
+
+.btn-metallic-aluminum:hover {
+  background: linear-gradient(180deg, #47524d 0%, #313b36 50%, #222a26 100%);
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 
+              0 0 10px rgba(16, 185, 129, 0.25);
+}
+
+/* Metallic Edge Card / Surface */
+.metallic-card {
+  background: linear-gradient(180deg, #0d1511 0%, #070d0a 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.08),
+              0 0 16px rgba(16, 185, 129, 0.06);
+}
+
+.metallic-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.8), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.14),
+              0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+/* Glassy Metallic Surface (MacBook Space Black Glass Finish) */
+.glass-panel {
+  background: rgba(6, 12, 9, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.14),
+              0 0 24px rgba(16, 185, 129, 0.1);
+}
+
+/* Elevated Glassy Card */
+.glass-card-metallic {
+  background: linear-gradient(180deg, rgba(14, 24, 18, 0.75) 0%, rgba(6, 11, 8, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12),
+              0 0 16px rgba(16, 185, 129, 0.08);
+}
+
+.glass-card-metallic:hover {
+  border-color: rgba(52, 211, 153, 0.45);
+  border-top-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.9),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2),
+              0 0 24px rgba(16, 185, 129, 0.2);
+}
+
+/* Metallic Input / Search Controls */
+.metallic-input {
+  background: #08100c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7),
+              0 1px 0 rgba(255, 255, 255, 0.04);
+  color: #e2f5ea;
+  transition: all 0.2s ease;
+}
+
+.metallic-input:focus {
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7),
+              0 0 12px rgba(16, 185, 129, 0.35);
+  outline: none;
+}
+
+/* Segmented Control Bar */
+.metallic-segmented {
+  background: #070e0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8),
+              0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Metallic Badge */
+.metallic-badge {
+  background: linear-gradient(180deg, #13241b 0%, #08140e 100%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  color: #6ee7b7;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Emerald Range Slider */
+input[type="range"] {
+  accent-color: #10b981;
+}
+
+/* Glowing Animations */
+@keyframes emerald-aurora {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1) translate(0px, 0px);
+  }
+  50% {
+    opacity: 0.32;
+    transform: scale(1.08) translate(10px, -15px);
+  }
+}
+
+.animate-aurora {
+  animation: emerald-aurora 8s ease-in-out infinite alternate;
+}
+
+@keyframes equalizer-bounce {
+  0%, 100% { height: 20%; }
+  50% { height: 90%; }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+@keyframes sheen-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-sheen {
+  animation: sheen-sweep 3s ease-in-out infinite;
+}

@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-warm-bg: #FAF9F6;
+  --color-warm-card: #FFFFFF;
+  --color-warm-border: #EAE6DF;
+  --color-warm-stone: #8E877E;
+  --color-noir: #181716;
+}
+
+/* Custom scrollbar hiding and fluid reel snap */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.reel-container {
+  scroll-snap-type: y mandatory;
+}
+
+.reel-slide {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Story ring subtle gradient animation */
+@keyframes ring-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.story-ring {
+  background: linear-gradient(45deg, #C29D59, #8C6239, #DFBA73, #B8860B);
+}

@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createRouteClient } from "@/lib/supabase-server"
 import { createSupabaseClientForServer } from "@/lib/supabase-client"
-import { SEATS_PER_BATCH, bootcampDates, currentBatchStart, formatBatchDate, getBootcamp, nextBatchStart } from "@/lib/bootcamps"
+import {
+    APPLICATION_MAX_CHARS,
+    APPLICATION_MIN_CHARS,
+    APPLIED_STATUS,
+    SELECTED_STATUSES,
+    bootcampDates,
+    currentBatchStart,
+    formatBatchDate,
+    freeSeatsFor,
+    getBootcamp,
+    nextBatchStart,
+} from "@/lib/bootcamps"
 
-// Free bootcamp enrollment. The signed-in user comes from the session cookie (or a
-// Bearer token); the batch date is always decided here, never by the browser.
+// Free bootcamp applications. Free seats are given to selected applicants: a new
+// sign-up is saved as "applied", and the team changes it to "selected" when they
+// pick someone. The signed-in user comes from the session cookie (or a Bearer
+// token); the batch date is always decided here, never by the browser.
 
 export const dynamic = "force-dynamic"
 
@@ -26,7 +39,7 @@ export async function GET(request: NextRequest) {
         const admin: any = createSupabaseClientForServer()
         const { data } = await admin
             .from("bootcamp_enrollments")
-            .select("batch_start")
+            .select("batch_start,status")
             .eq("user_id", user.id)
             .eq("bootcamp", slug)
             .gte("batch_start", currentBatchStart(new Date(), bootcamp))
@@ -34,7 +47,15 @@ export async function GET(request: NextRequest) {
             .limit(1)
         const row = (data || [])[0]
         return NextResponse.json(
-            row ? { enrolled: true, batchStart: row.batch_start, batchLabel: formatBatchDate(bootcampDates(bootcamp, row.batch_start).first) } : { enrolled: false },
+            row
+                ? {
+                      enrolled: true,
+                      status: row.status,
+                      selected: (SELECTED_STATUSES as readonly string[]).includes(row.status),
+                      batchStart: row.batch_start,
+                      batchLabel: formatBatchDate(bootcampDates(bootcamp, row.batch_start).first),
+                  }
+                : { enrolled: false },
             { headers: { "Cache-Control": "no-store" } }
         )
     } catch (e) {
@@ -57,11 +78,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Enter a valid 10-digit WhatsApp number." }, { status: 400 })
         }
         const consent = body?.consent === true
+        const answer = String(body?.answer || "").replace(/\s+/g, " ").trim()
+        if (answer.length < APPLICATION_MIN_CHARS) {
+            return NextResponse.json({ error: "Tell us in one line what you will do with this skill (at least 20 characters)." }, { status: 400 })
+        }
 
         const admin: any = createSupabaseClientForServer()
 
-        // Seats are limited per batch: if this batch is full, the seat goes to the next one.
-        // For the launch batch, offline enrolled students already claimed part of the 10 seats.
+        // Anyone can apply while a batch still has free seats to give. Once every free
+        // seat in a batch has been given to a selected applicant, the application goes
+        // to the next batch. For the launch batch, offline (paid) students already took
+        // part of the 10 seats.
         let batchStart = currentBatchStart(new Date(), bootcamp)
         for (let i = 0; i < 6; i++) {
             const { count } = await admin
@@ -69,11 +96,9 @@ export async function POST(request: NextRequest) {
                 .select("id", { count: "exact", head: true })
                 .eq("bootcamp", bootcamp.slug)
                 .eq("batch_start", batchStart)
+                .in("status", SELECTED_STATUSES as unknown as string[])
                 .neq("user_id", user.id)
-            const availableSeats = batchStart === "2026-10-28"
-                ? Math.max(1, SEATS_PER_BATCH - (bootcamp.offlineEnrolled || 0))
-                : SEATS_PER_BATCH
-            if ((count ?? 0) < availableSeats) break
+            if ((count ?? 0) < freeSeatsFor(bootcamp, batchStart)) break
             batchStart = nextBatchStart(batchStart)
         }
 
@@ -87,6 +112,8 @@ export async function POST(request: NextRequest) {
                 email: user.email || null,
                 whatsapp,
                 whatsapp_consent: consent,
+                status: APPLIED_STATUS,
+                application_answer: answer.slice(0, APPLICATION_MAX_CHARS),
             },
             { onConflict: "user_id,bootcamp,batch_start", ignoreDuplicates: true }
         )
@@ -94,6 +121,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             ok: true,
+            status: APPLIED_STATUS,
             batchStart,
             batchLabel: formatBatchDate(bootcampDates(bootcamp, batchStart).first),
             movedToNextBatch: batchStart !== currentBatchStart(new Date(), bootcamp),

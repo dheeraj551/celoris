@@ -1,6 +1,6 @@
 // Free live bootcamps ("Free online courses with certificate"): 7 one-hour live
-// classes over two weeks on alternate evenings, then a final exam on the second
-// Sunday. A new batch starts every 14 days.
+// classes over two weeks on alternate days, then a final exam on the last day of
+// the batch (Tuesday of week 2). A new batch starts every 14 days.
 // Single source of truth for the hub, the bootcamp pages and the enrollment API.
 
 export type BootcampSlug = "social-media-reels" | "digital-marketing"
@@ -40,7 +40,7 @@ export interface Bootcamp {
     days: BootcampDay[]
     /** Exact class times, in the same order as `days`. */
     sessions: BootcampSession[]
-    /** Final certification exam (Sunday of week 2). */
+    /** Final certification exam (Tuesday of week 2). */
     exam: BootcampSession
     keywords: string[]
     originalPrice: number
@@ -63,6 +63,23 @@ export const DAYS = SESSIONS
 export const MIN_ATTENDANCE = 5
 /** Seats per bootcamp per batch (enforced by the enrollment API). */
 export const SEATS_PER_BATCH = 10
+
+/**
+ * Free seats are given to selected applicants, not first-come-first-served.
+ * Online sign-ups are saved with status "applied"; the team picks people and sets
+ * their status to "selected" (old rows with "enrolled" count as selected too).
+ */
+export const SELECTED_STATUSES = ["selected", "enrolled"] as const
+export const APPLIED_STATUS = "applied"
+/** Length limits for the one-line application answer. */
+export const APPLICATION_MIN_CHARS = 20
+export const APPLICATION_MAX_CHARS = 500
+export const APPLICATION_QUESTION = "What will you do with this skill in the next 3 months?"
+
+/** Free seats in a batch: in the launch batch, offline (paid) students already took part of the seats. */
+export function freeSeatsFor(b: Bootcamp, batchStart: string): number {
+    return batchStart === FIRST_BATCH_START ? Math.max(1, SEATS_PER_BATCH - (b.offlineEnrolled || 0)) : SEATS_PER_BATCH
+}
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
 

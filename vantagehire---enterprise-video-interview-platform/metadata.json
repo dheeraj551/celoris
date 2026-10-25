@@ -1,0 +1,12 @@
+{
+  "name": "VantageHire - Enterprise Video Interview Platform",
+  "description": "Enterprise video interview platform with integrated panel scheduling, automated rubric scoring, and end-to-end candidate pipeline tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

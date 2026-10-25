@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Classroom - Correct Student Orientation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #111; }
+    #canvas-container { width: 100vw; height: 100vh; display: block; }
+
+    #ui {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      max-width: 330px;
+      z-index: 100;
+    }
+    h1 { font-size: 1.15rem; margin-bottom: 4px; color: #38bdf8; }
+    p { font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px; line-height: 1.35; }
+    
+    .label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #cbd5e1; display: block; margin: 8px 0 4px; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 6px 11px;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { background: #1d4ed8; transform: translateY(-1px); }
+    button.action-btn { background: #059669; }
+    button.action-btn:hover { background: #047857; }
+    button.secondary { background: #334155; }
+    button.secondary:hover { background: #475569; }
+
+    #lesson-box {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 3px solid #38bdf8;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      border-radius: 0 6px 6px 0;
+      margin-top: 8px;
+    }
+    #lesson-title { font-weight: bold; color: #38bdf8; }
+    #lesson-desc { color: #e2e8f0; font-size: 0.72rem; margin-top: 2px; }
+  </style>
+
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <div id="ui">
+    <h1>3D Virtual Classroom</h1>
+    <p>Students are now focused attentively on the trainer and the lecture board.</p>
+    
+    <span class="label">Camera Presets</span>
+    <div class="btn-group">
+      <button onclick="setView('trainerSide')">Trainer's View</button>
+      <button onclick="setView('studentPOV')">Front Student POV</button>
+      <button onclick="setView('sideLook')">Side Class View</button>
+      <button class="secondary" onclick="setView('birdEye')">Room Wide</button>
+    </div>
+
+    <span class="label">Interactive Classroom</span>
+    <div class="btn-group">
+      <button class="action-btn" onclick="toggleHandRaise()">Toggle Student Hand Raise</button>
+      <button onclick="nextLesson()">Next Lesson Slide</button>
+    </div>
+
+    <div id="lesson-box">
+      <div id="lesson-title">Topic: Physics & Gravitation</div>
+      <div id="lesson-desc">F = G * (m1 * m2) / r²</div>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <script>
+    // --- 1. SCENE SETUP ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xa0c4d8);
+
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 - 0.02;
+
+    const ROOM_W = 14, ROOM_H = 4.5, ROOM_D = 18;
+
+    // --- 2. LIGHTING ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfff9ee, 0.85);
+    sunLight.position.set(-14, 12, -2);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.bias = -0.0003;
+    scene.add(sunLight);
+
+    // Ceiling fixtures
+    [[-3.2, -4], [3.2, -4], [-3.2, 2], [3.2, 2]].forEach(([x, z]) => {
+      const pLight = new THREE.PointLight(0xffffff, 0.4, 10);
+      pLight.position.set(x, ROOM_H - 0.3, z);
+      scene.add(pLight);
+
+      const panel = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 0.05, 0.6),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+      panel.position.set(x, ROOM_H - 0.02, z);
+      scene.add(panel);
+    });
+
+    // --- 3. CLASSROOM SHELL ---
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(ROOM_W, ROOM_D),
+      new THREE.MeshStandardMaterial({ color: 0xc49a6c, roughness: 0.55 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf3f4f6, roughness: 0.95 });
+
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_D), wallMat);
+    ceiling.position.y = ROOM_H;
+    ceiling.rotation.x = Math.PI / 2;
+    scene.add(ceiling);
+
+    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_H), wallMat);
+    frontWall.position.set(0, ROOM_H / 2, -ROOM_D / 2);
+    frontWall.receiveShadow = true;
+    scene.add(frontWall);
+
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_H), wallMat);
+    backWall.position.set(0, ROOM_H / 2, ROOM_D / 2);
+    backWall.rotation.y = Math.PI;
+    scene.add(backWall);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_D, ROOM_H), wallMat);
+    rightWall.position.set(ROOM_W / 2, ROOM_H / 2, 0);
+    rightWall.rotation.y = -Math.PI / 2;
+    scene.add(rightWall);
+
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_D, ROOM_H), wallMat);
+    leftWall.position.set(-ROOM_W / 2, ROOM_H / 2, 0);
+    leftWall.rotation.y = Math.PI / 2;
+    scene.add(leftWall);
+
+    // Large Windows on the left wall
+    [-3.5, 0, 3.5].forEach(z => {
+      const win = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.4, 2.2),
+        new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.35 })
+      );
+      win.rotation.y = Math.PI / 2;
+      win.position.set(-ROOM_W / 2 + 0.05, 2.3, z);
+      scene.add(win);
+    });
+
+    // --- 4. DYNAMIC BLACKBOARD ---
+    const boardCanvas = document.createElement('canvas');
+    boardCanvas.width = 1024;
+    boardCanvas.height = 512;
+    const ctx = boardCanvas.getContext('2d');
+    const boardTexture = new THREE.CanvasTexture(boardCanvas);
+
+    const lessons = [
+      {
+        title: "Topic 1: Physics & Gravitation",
+        lines: [
+          "Newton's Gravitational Law: F = G * (m1 * m2) / r²",
+          "• G = 6.6743 × 10⁻¹¹ N⋅m²/kg²",
+          "• Gravitational acceleration (g) ≈ 9.81 m/s²",
+          "Q: What happens to the force if radius 'r' is doubled?"
+        ]
+      },
+      {
+        title: "Topic 2: Organic Chemistry",
+        lines: [
+          "Photosynthesis Energy Reaction:",
+          "6CO₂ + 6H₂O + Solar Photons  --->  C₆H₁₂O₆ + 6O₂",
+          "• Carbon dioxide & water converted into glucose & oxygen",
+          "• Chloroplast thylakoids capture active sunlight"
+        ]
+      },
+      {
+        title: "Topic 3: Computer Architecture",
+        lines: [
+          "The Von Neumann Architecture:",
+          "• CPU (ALU + Control Unit) + Registers",
+          "• Memory Unit (RAM / Cache) & Bus Interface",
+          "Principle: Instructions and data share the same memory space"
+        ]
+      }
+    ];
+
+    let currentLesson = 0;
+    function renderBoard(idx) {
+      const d = lessons[idx];
+      ctx.fillStyle = '#1e3d2f';
+      ctx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
+
+      ctx.strokeStyle = '#2f5e49';
+      ctx.lineWidth = 14;
+      ctx.strokeRect(10, 10, boardCanvas.width - 20, boardCanvas.height - 20);
+
+      ctx.font = 'bold 36px "Courier New", monospace';
+      ctx.fillStyle = '#e8f7ee';
+      ctx.fillText(d.title, 40, 75);
+
+      ctx.strokeStyle = '#4e8d6f';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(40, 95); ctx.lineTo(980, 95);
+      ctx.stroke();
+
+      ctx.font = '24px "Courier New", monospace';
+      ctx.fillStyle = '#ffffff';
+      let y = 160;
+      d.lines.forEach(l => { ctx.fillText(l, 45, y); y += 55; });
+
+      boardTexture.needsUpdate = true;
+      document.getElementById('lesson-title').innerText = d.title;
+      document.getElementById('lesson-desc').innerText = d.lines[0];
+    }
+    renderBoard(0);
+
+    function nextLesson() {
+      currentLesson = (currentLesson + 1) % lessons.length;
+      renderBoard(currentLesson);
+    }
+
+    const boardFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(6.6, 2.8, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0x3d2b1f })
+    );
+    boardFrame.position.set(0, 2.2, -ROOM_D / 2 + 0.08);
+    scene.add(boardFrame);
+
+    const board = new THREE.Mesh(
+      new THREE.PlaneGeometry(6.4, 2.6),
+      new THREE.MeshStandardMaterial({ map: boardTexture, roughness: 0.9 })
+    );
+    board.position.set(0, 2.2, -ROOM_D / 2 + 0.14);
+    scene.add(board);
+
+    // --- 5. CLASSROOM FURNITURE ---
+    const woodMat = new THREE.MeshStandardMaterial({ color: 0x785338, roughness: 0.6 });
+    const metalMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3, metalness: 0.8 });
+    const chairMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
+
+    function createDesk(x, z) {
+      const g = new THREE.Group();
+      // Table top
+      const top = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.06, 0.75), woodMat);
+      top.position.y = 0.74;
+      top.castShadow = true;
+      top.receiveShadow = true;
+      g.add(top);
+
+      // Legs
+      const legGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.74);
+      [[-0.6, -0.3], [0.6, -0.3], [-0.6, 0.3], [0.6, 0.3]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(legGeo, metalMat);
+        leg.position.set(lx, 0.37, lz);
+        leg.castShadow = true;
+        g.add(leg);
+      });
+
+      // Notebook on desk (facing student)
+      const notebook = new THREE.Mesh(
+        new THREE.BoxGeometry(0.24, 0.015, 0.32),
+        new THREE.MeshStandardMaterial({ color: 0x0284c7 })
+      );
+      notebook.position.set(-0.25, 0.78, 0.05);
+      notebook.rotation.y = 0.1;
+      g.add(notebook);
+
+      g.position.set(x, 0, z);
+      scene.add(g);
+    }
+
+    function createChair(x, z) {
+      const g = new THREE.Group();
+      // Seat
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.04, 0.46), chairMat);
+      seat.position.y = 0.44;
+      seat.castShadow = true;
+      g.add(seat);
+
+      // Backrest (positioned at +Z relative to chair so it sits behind the student)
+      const back = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.42, 0.04), chairMat);
+      back.position.set(0, 0.72, 0.21);
+      back.castShadow = true;
+      g.add(back);
+
+      // Legs
+      const legGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.44);
+      [[-0.19, -0.19], [0.19, -0.19], [-0.19, 0.19], [0.19, 0.19]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(legGeo, metalMat);
+        leg.position.set(lx, 0.22, lz);
+        leg.castShadow = true;
+        g.add(leg);
+      });
+
+      g.position.set(x, 0, z);
+      scene.add(g);
+    }
+
+    // Teacher Desk & Chair
+    const teacherDesk = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 1.0), woodMat);
+    teacherDesk.position.set(0, 0.4, -6.0);
+    teacherDesk.castShadow = true;
+    scene.add(teacherDesk);
+
+    createChair(0, -6.8);
+
+    // --- 6. ARTICULATED 3D CHARACTERS WITH EXPRESSIVE FACES ---
+    const animatedStudents = [];
+    let handRaisedStudent = null;
+    let handRaiseState = false;
+
+    function buildCharacter({
+      isSeated = false,
+      skinColor = 0xffdbac,
+      shirtColor = 0x2563eb,
+      pantsColor = 0x1e293b,
+      hairColor = 0x2b1d0c,
+      hairStyle = 'short',
+      hasGlasses = false
+    }) {
+      const charGroup = new THREE.Group();
+
+      const skinMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.8 });
+      const shirtMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.7 });
+      const pantsMat = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.8 });
+      const hairMat = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.9 });
+      const shoeMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+      const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+      // Hips Root
+      const hips = new THREE.Group();
+      charGroup.add(hips);
+
+      // Torso
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.50, 0.22), shirtMat);
+      torso.position.y = 0.25;
+      torso.castShadow = true;
+      hips.add(torso);
+
+      // Neck & Head
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 0.55, 0);
+      hips.add(headGroup);
+
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.24, 0.22), skinMat);
+      head.position.y = 0.12;
+      head.castShadow = true;
+      headGroup.add(head);
+
+      // --- VISIBLE FACE & EYES (Located on front face: +Z local) ---
+      [-0.055, 0.055].forEach(ex => {
+        // Eye whites
+        const eyeWhite = new THREE.Mesh(new THREE.PlaneGeometry(0.045, 0.035), eyeWhiteMat);
+        eyeWhite.position.set(ex, 0.135, 0.111);
+        headGroup.add(eyeWhite);
+
+        // Pupils
+        const pupil = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.024), eyeMat);
+        pupil.position.set(ex, 0.135, 0.112);
+        headGroup.add(pupil);
+      });
+
+      // Glasses
+      if (hasGlasses) {
+        const frame = new THREE.Mesh(
+          new THREE.BoxGeometry(0.23, 0.055, 0.02),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 })
+        );
+        frame.position.set(0, 0.135, 0.12);
+        headGroup.add(frame);
+      }
+
+      // Hair
+      if (hairStyle === 'bun') {
+        const topHair = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.07, 0.23), hairMat);
+        topHair.position.set(0, 0.24, 0);
+        headGroup.add(topHair);
+
+        const bun = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), hairMat);
+        bun.position.set(0, 0.25, -0.11); // Bun sits at the back
+        headGroup.add(bun);
+      } else {
+        // Short haircut with front fringe
+        const hairTop = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.07, 0.24), hairMat);
+        hairTop.position.set(0, 0.24, 0);
+        headGroup.add(hairTop);
+
+        const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.04, 0.04), hairMat);
+        fringe.position.set(0, 0.21, 0.11);
+        headGroup.add(fringe);
+      }
+
+      // Arms
+      function createArm(side) {
+        const shoulder = new THREE.Group();
+        shoulder.position.set(side * 0.23, 0.44, 0);
+        hips.add(shoulder);
+
+        const upperArm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.28, 0.10), shirtMat);
+        upperArm.position.y = -0.14;
+        upperArm.castShadow = true;
+        shoulder.add(upperArm);
+
+        const hand = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.08), skinMat);
+        hand.position.y = -0.31;
+        shoulder.add(hand);
+
+        return shoulder;
+      }
+
+      const leftArm = createArm(-1);
+      const rightArm = createArm(1);
+
+      // Legs
+      function createLeg(side) {
+        const hipJoint = new THREE.Group();
+        hipJoint.position.set(side * 0.11, 0, 0);
+        hips.add(hipJoint);
+
+        const upperLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.38, 0.12), pantsMat);
+        upperLeg.position.y = -0.19;
+        upperLeg.castShadow = true;
+        hipJoint.add(upperLeg);
+
+        const kneeJoint = new THREE.Group();
+        kneeJoint.position.set(0, -0.38, 0);
+        hipJoint.add(kneeJoint);
+
+        const lowerLeg = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.38, 0.11), pantsMat);
+        lowerLeg.position.y = -0.19;
+        lowerLeg.castShadow = true;
+        kneeJoint.add(lowerLeg);
+
+        const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.18), shoeMat);
+        shoe.position.set(0, -0.38, 0.04);
+        shoe.castShadow = true;
+        kneeJoint.add(shoe);
+
+        return { hipJoint, kneeJoint };
+      }
+
+      const leftLeg = createLeg(-1);
+      const rightLeg = createLeg(1);
+
+      // Poses
+      if (isSeated) {
+        // Seated on chair:
+        hips.position.y = 0.44; // Seat level
+        
+        // Thighs extend forward (+Z in local coords)
+        leftLeg.hipJoint.rotation.x = -Math.PI / 2;
+        rightLeg.hipJoint.rotation.x = -Math.PI / 2;
+        
+        // Calves point down
+        leftLeg.kneeJoint.rotation.x = Math.PI / 2;
+        rightLeg.kneeJoint.rotation.x = Math.PI / 2;
+
+        // Hands resting forward on the desk
+        leftArm.rotation.x = -Math.PI / 3.4;
+        rightArm.rotation.x = -Math.PI / 3.4;
+      } else {
+        // Standing (Trainer)
+        hips.position.y = 0.84;
+      }
+
+      return { root: charGroup, hips, headGroup, leftArm, rightArm, isSeated };
+    }
+
+    // --- 7. SPAWN TRAINER & STUDENTS ---
+
+    // 1. Trainer (Facing students at +Z direction, gesturing at board)
+    const trainer = buildCharacter({
+      isSeated: false,
+      skinColor: 0xe0ac69,
+      shirtColor: 0x1e3a8a, // Navy suit
+      pantsColor: 0x334155,
+      hairColor: 0x1f2937,
+      hairStyle: 'short',
+      hasGlasses: true
+    });
+    trainer.root.position.set(-1.8, 0, -5.2);
+    trainer.root.rotation.y = 0.35; // Looking slightly between the board and students
+    scene.add(trainer.root);
+
+    // Pointer stick
+    const chalkStick = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.015, 0.015, 0.28),
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+    chalkStick.rotation.x = Math.PI / 2;
+    chalkStick.position.set(0, -0.32, 0.12);
+    trainer.rightArm.add(chalkStick);
+
+    // 2. 9 Student Desks & Attentive Students
+    const studentCols = [-3.2, 0, 3.2];
+    const studentRows = [-3.0, 0.5, 4.0];
+
+    const studentStyles = [
+      { shirtColor: 0xd97706, hairColor: 0x78350f, skinColor: 0xfcd34d, hairStyle: 'short' },
+      { shirtColor: 0x059669, hairColor: 0x171717, skinColor: 0x8d5524, hairStyle: 'bun', hasGlasses: true },
+      { shirtColor: 0xdc2626, hairColor: 0x451a03, skinColor: 0xffdbac, hairStyle: 'short' },
+      { shirtColor: 0x7c3aed, hairColor: 0x1c1917, skinColor: 0xc68642, hairStyle: 'bun' },
+      { shirtColor: 0x0284c7, hairColor: 0x713f12, skinColor: 0xf1c27d, hairStyle: 'short' },
+      { shirtColor: 0xdb2777, hairColor: 0x0a0a0a, skinColor: 0xe0ac69, hairStyle: 'short', hasGlasses: true },
+      { shirtColor: 0x475569, hairColor: 0x3f2e20, skinColor: 0xffdbac, hairStyle: 'short' },
+      { shirtColor: 0x16a34a, hairColor: 0x262626, skinColor: 0x8d5524, hairStyle: 'bun' },
+      { shirtColor: 0xe11d48, hairColor: 0x543d2b, skinColor: 0xfcd34d, hairStyle: 'short' }
+    ];
+
+    let styleIdx = 0;
+    studentCols.forEach((x, colIdx) => {
+      studentRows.forEach((z, rowIdx) => {
+        // Place Desk at z
+        createDesk(x, z);
+        
+        // Place Chair behind the desk at z + 0.58
+        createChair(x, z + 0.58);
+
+        // Spawn student
+        const cfg = studentStyles[styleIdx % studentStyles.length];
+        const student = buildCharacter({
+          isSeated: true,
+          ...cfg
+        });
+
+        // Position student on chair and ROTATE 180° (Math.PI) to face front (-Z)
+        student.root.position.set(x, 0, z + 0.58);
+        student.root.rotation.y = Math.PI; // CRITICAL: Makes student face the teacher and blackboard!
+        scene.add(student.root);
+
+        animatedStudents.push(student);
+
+        // Front Center Student has the hand raise interaction
+        if (colIdx === 1 && rowIdx === 0) {
+          handRaisedStudent = student;
+        }
+
+        styleIdx++;
+      });
+    });
+
+    // --- 8. HAND RAISE & INTERACTION ---
+    function toggleHandRaise() {
+      handRaiseState = !handRaiseState;
+    }
+
+    // --- 9. CAMERA VIEWS ---
+    function setView(view) {
+      if (view === 'trainerSide') {
+        // Look from trainer's perspective down the classroom
+        gsapCam(-1.8, 1.7, -4.8, 0, 1.1, 1.5);
+      } else if (view === 'studentPOV') {
+        // Look from front-row student's view up to the trainer and board
+        gsapCam(0, 1.25, -2.2, 0, 2.0, -8.5);
+      } else if (view === 'sideLook') {
+        // Side view clearly showing students facing forward
+        gsapCam(-5.8, 2.2, 0.5, 0, 1.2, 0);
+      } else if (view === 'birdEye') {
+        // High overview
+        gsapCam(0, 8.2, 8.5, 0, 1.2, -1.0);
+      }
+    }
+
+    function gsapCam(px, py, pz, tx, ty, tz) {
+      const sP = camera.position.clone();
+      const eP = new THREE.Vector3(px, py, pz);
+      const sT = controls.target.clone();
+      const eT = new THREE.Vector3(tx, ty, tz);
+      let t = 0;
+
+      function step() {
+        t += 0.04;
+        if (t <= 1) {
+          camera.position.lerpVectors(sP, eP, t);
+          controls.target.lerpVectors(sT, eT, t);
+          requestAnimationFrame(step);
+        } else {
+          camera.position.copy(eP);
+          controls.target.copy(eT);
+        }
+      }
+      step();
+    }
+
+    // Default starting view (angled side-front view)
+    camera.position.set(-4.5, 3.2, 4.5);
+    controls.target.set(0, 1.4, -1.5);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // --- 10. ANIMATION LOOP ---
+    let clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // 1. Trainer Animation (Gesturing at the board)
+      trainer.rightArm.rotation.x = -Math.PI / 2.2 + Math.sin(time * 2.0) * 0.15;
+      trainer.rightArm.rotation.z = -0.35 + Math.cos(time * 1.5) * 0.08;
+      trainer.hips.position.y = 0.84 + Math.sin(time * 2.5) * 0.004;
+
+      // Trainer turns head toward hand-raising student
+      if (handRaiseState) {
+        trainer.headGroup.rotation.y = THREE.MathUtils.lerp(trainer.headGroup.rotation.y, 0.45, 0.08);
+      } else {
+        trainer.headGroup.rotation.y = THREE.MathUtils.lerp(trainer.headGroup.rotation.y, 0.0, 0.08);
+      }
+
+      // 2. Students Idle Motion (Head turns slightly while looking forward)
+      animatedStudents.forEach((st, idx) => {
+        st.headGroup.rotation.y = Math.sin(time * 0.7 + idx) * 0.08;
+        st.headGroup.rotation.x = Math.cos(time * 0.5 + idx) * 0.04;
+        st.hips.position.y = 0.44 + Math.sin(time * 2.0 + idx) * 0.003;
+      });
+
+      // 3. Hand Raise Logic
+      if (handRaisedStudent) {
+        const targetArmAngle = handRaiseState ? -Math.PI * 0.88 : -Math.PI / 3.4;
+        handRaisedStudent.rightArm.rotation.x = THREE.MathUtils.lerp(
+          handRaisedStudent.rightArm.rotation.x,
+          targetArmAngle,
+          0.1
+        );
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>

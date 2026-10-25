@@ -1,0 +1,29 @@
+CELORIS PLAY - VIDEO 2  -  LINES TO GENERATE IN THE LEDA VOICE
+Generate each line as its own .wav (same settings as the Act 2 lines) and save them in:
+  E:\Dream\output\final\act1\vo\
+Any file name is fine; starting it with the number below makes my job quicker.
+
+ACT 1 - MEET RAY  (times are inside act1_meet_ray.mp4; max length in brackets)
+01  (0:08.5, max 4.5s)  And waiting outside is Ray. He's not a quest giver. He's the guy who knows everybody.
+02  (0:13.0, max 6s)    You can say no. Then he leaves you alone, and the city is yours. But I said yes.
+03  (0:19.0, max 5.5s)  Three paths. Money and fame are coming later in this series. Each path changes which jobs you get, who you meet, and how the city treats you.
+04  (0:24.5, max 11s)   I wanted to see what a quiet life looks like in the most chaotic city in gaming. So I picked Peace. Ray did not take it seriously.
+05  (0:36.0, max 7.5s)  And just like that, my first vehicle. A beach cruiser. It's mine for real, saved to my garage.
+06  (0:43.6, max 8.5s)  Taxi pays better. But look: it's locked. You need a commercial licence.
+    (0:52.5  no voice - let the LOCKED! freeze land)
+07  (0:57.7, max 6.5s)  That's the loop. Small jobs pay for licences. Licences unlock better jobs. Nothing is handed to you.
+08  (1:04.3, max 5.5s)  And here's the twist: get caught by the police after a chase, and you lose everything in your pockets. Cash, ID, licences. Back to Ray. Back to the bicycle... No pressure.
+09  (1:09.8, max 8.5s)  Ray sent me to Marco. This is the Celoris newsstand, custom built for the server.
+10  (1:18.3, max 18s)   Twenty papers, a random neighbourhood, and one rule: deliver all of them before you come back. No quitting halfway.
+
+Lines 03 and 08 are longer than their gap. Generate them as written anyway: I'll re-time Act 1 around them
+(there is spare footage at those two spots), so nothing needs re-recording.
+
+ENDING - WHAT'S NEXT + CALL TO ACTION  (after Act 2)
+11  Next stop: driving school. Two-wheeler, car, commercial and heavy vehicle licences. Each one opens new jobs.
+12  But the city has rules. Jump a red light in front of a cop, and you'll find out what happens.
+13  And I'm working on something I'm really excited about: an AI director that throws surprises at you. Like a passenger who isn't what he seems.
+14  Ray will be here when you come back. He always is.
+15  Should I open Celoris City to everyone one day? Tell me in the comments. And if you run your own server: the newspaper job you just saw is on the Celoris store, and when this channel hits 2,000 subscribers, it goes free for everyone. See you in chapter two.
+
+(The script's "Twenty papers, eight hundred dollars" line is dropped: Act 2's last line already says it.)
