@@ -226,7 +226,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                             </span>
                             <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
-                                Live, free, with certificate
+                                Festive Special · 100% Free Giveaway
                             </span>
                         </motion.div>
 
@@ -237,9 +237,9 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             transition={{ duration: 0.7, delay: 0.15 }}
                             className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl"
                         >
-                            Free online courses with certificate,{" "}
+                            Festive Offer: Free Giveaways,{" "}
                             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(52,211,153,0.35)]">
-                                taught live.
+                                taught live with certificate.
                             </span>
                         </motion.h1>
 

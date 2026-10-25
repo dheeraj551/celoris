@@ -18,9 +18,9 @@ import {
 export const revalidate = 3600
 
 const URL = "https://celorisdesigns.com/free-courses-with-certificate"
-const TITLE = "Free Online Courses with Certificate: Live Classes (₹1,500 Giveaway)"
+const TITLE = "Festive Offer: Free Giveaways with Certificate | Live Online Courses"
 const DESCRIPTION =
-    "Free live online courses with certificate in Social Media Reels (12:00 PM) and Digital Marketing (3:00 PM) starting 28 Oct 2026. Normally ₹1,500, now 100% free giveaway for a strictly limited 10-seat cohort. Taught live in Hinglish by Celoris mentors with verified certificate and Job Center hiring preference."
+    "Festive Offer: 100% Free Giveaways in Social Media Reels (12:00 PM) and Digital Marketing (3:00 PM) starting 28 Oct 2026. Normally ₹1,500, now free for a strictly limited 10-seat cohort. Taught live in Hinglish by Celoris mentors with verified certificate and Job Center preference."
 
 export const metadata: Metadata = {
     // The root layout adds " | Celoris".
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     alternates: { canonical: URL },
     openGraph: {
-        title: "Free Live Online Courses with Certificate | Celoris",
+        title: "Festive Offer: Free Course Giveaways with Certificate | Celoris",
         description: DESCRIPTION,
         url: URL,
         siteName: "Celoris",
