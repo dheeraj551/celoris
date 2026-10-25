@@ -43,13 +43,17 @@ export interface Bootcamp {
     /** Final certification exam (Sunday of week 2). */
     exam: BootcampSession
     keywords: string[]
+    originalPrice: number
+    offlineEnrolled: number
+    totalSeats: number
+    startTimeLabel?: string
 }
 
-/** First batch: Monday 26 Oct 2026. A new batch starts every 14 days (alternate Mondays). */
-export const FIRST_BATCH_START = "2026-10-26"
+/** First batch: Wednesday 28 Oct 2026. A new batch starts every 14 days. */
+export const FIRST_BATCH_START = "2026-10-28"
 export const BATCH_CYCLE_DAYS = 14
-export const SESSION_TIME_LABEL = "8:00 PM IST"
-export const SESSION_HOUR_IST = 20
+export const SESSION_TIME_LABEL = "Live Interactive Sessions"
+export const SESSION_HOUR_IST = 12
 export const SESSION_MINUTES = 60
 /** Live one-hour classes per batch (7 hours in total). */
 export const SESSIONS = 7
@@ -58,7 +62,7 @@ export const DAYS = SESSIONS
 /** Certificate rule: attend at least this many of the SESSIONS, then pass the final exam. */
 export const MIN_ATTENDANCE = 5
 /** Seats per bootcamp per batch (enforced by the enrollment API). */
-export const SEATS_PER_BATCH = 15
+export const SEATS_PER_BATCH = 10
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
 
@@ -145,7 +149,11 @@ export const BOOTCAMPS: Bootcamp[] = [
         trainer: "Ananya Jairath",
         trainerRole: "Commercial Video Creator & Content Mentor",
         badge: "Instagram Reels Video Editor",
-        scheduleLabel: "Mon, Wed, Fri at 8:00 PM IST (+ Sun 8:00 PM in week 1) · Exam: Sun, week 2",
+        scheduleLabel: "Starts Wed 28 Oct at 12:00 PM IST (Noon) · 7 Live Sessions",
+        startTimeLabel: "12:00 PM IST (Noon)",
+        originalPrice: 1500,
+        offlineEnrolled: 5,
+        totalSeats: 10,
         fullCourseUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         whoFor: "Students, job seekers, freelancers and small business owners who want to make Reels for themselves or for clients.",
         outcomes: [
@@ -166,15 +174,15 @@ export const BOOTCAMPS: Bootcamp[] = [
             { day: 7, title: "Portfolio and freelancing", detail: "Assemble your 3-Reel portfolio, find clients, and price your Reels work." },
         ],
         sessions: [
-            { offsetDays: 0, hour: 20, minute: 0, label: "Week 1 · Mon 8:00 PM" },
-            { offsetDays: 2, hour: 20, minute: 0, label: "Week 1 · Wed 8:00 PM" },
-            { offsetDays: 4, hour: 20, minute: 0, label: "Week 1 · Fri 8:00 PM" },
-            { offsetDays: 6, hour: 20, minute: 0, label: "Week 1 · Sun 8:00 PM" },
-            { offsetDays: 7, hour: 20, minute: 0, label: "Week 2 · Mon 8:00 PM" },
-            { offsetDays: 9, hour: 20, minute: 0, label: "Week 2 · Wed 8:00 PM" },
-            { offsetDays: 11, hour: 20, minute: 0, label: "Week 2 · Fri 8:00 PM" },
+            { offsetDays: 0, hour: 12, minute: 0, label: "Week 1 · Wed 12:00 PM" },
+            { offsetDays: 2, hour: 12, minute: 0, label: "Week 1 · Fri 12:00 PM" },
+            { offsetDays: 4, hour: 12, minute: 0, label: "Week 1 · Sun 12:00 PM" },
+            { offsetDays: 7, hour: 12, minute: 0, label: "Week 2 · Wed 12:00 PM" },
+            { offsetDays: 9, hour: 12, minute: 0, label: "Week 2 · Fri 12:00 PM" },
+            { offsetDays: 11, hour: 12, minute: 0, label: "Week 2 · Sun 12:00 PM" },
+            { offsetDays: 12, hour: 12, minute: 0, label: "Week 2 · Mon 12:00 PM" },
         ],
-        exam: { offsetDays: 13, hour: 20, minute: 0, label: "Week 2 · Sun 8:00 PM" },
+        exam: { offsetDays: 13, hour: 12, minute: 0, label: "Week 2 · Tue 12:00 PM" },
         keywords: ["free reels course with certificate", "instagram reels course free", "free video editing course with certificate"],
     },
     {
@@ -185,7 +193,11 @@ export const BOOTCAMPS: Bootcamp[] = [
         trainer: "Dheeraj Kushwaha",
         trainerRole: "Performance Marketing & Growth Strategist",
         badge: "Digital Marketing Executive",
-        scheduleLabel: "Tue, Thu, Sat at 8:00 PM IST (+ Sun 9:00 PM in week 1) · Exam: Sun, week 2",
+        scheduleLabel: "Starts Wed 28 Oct at 3:00 PM IST (Afternoon) · 7 Live Sessions",
+        startTimeLabel: "3:00 PM IST (Afternoon)",
+        originalPrice: 1500,
+        offlineEnrolled: 6,
+        totalSeats: 10,
         fullCourseUrl: "/learn/course/digital-marketing-mastery",
         whoFor: "Students, job seekers and business owners who want practical digital marketing skills for a job, freelancing or their own business.",
         outcomes: [
@@ -206,15 +218,15 @@ export const BOOTCAMPS: Bootcamp[] = [
             { day: 7, title: "Your campaign plan", detail: "Build a one-page client campaign plan, and how to start freelancing or job hunting." },
         ],
         sessions: [
-            { offsetDays: 1, hour: 20, minute: 0, label: "Week 1 · Tue 8:00 PM" },
-            { offsetDays: 3, hour: 20, minute: 0, label: "Week 1 · Thu 8:00 PM" },
-            { offsetDays: 5, hour: 20, minute: 0, label: "Week 1 · Sat 8:00 PM" },
-            { offsetDays: 6, hour: 21, minute: 0, label: "Week 1 · Sun 9:00 PM" },
-            { offsetDays: 8, hour: 20, minute: 0, label: "Week 2 · Tue 8:00 PM" },
-            { offsetDays: 10, hour: 20, minute: 0, label: "Week 2 · Thu 8:00 PM" },
-            { offsetDays: 12, hour: 20, minute: 0, label: "Week 2 · Sat 8:00 PM" },
+            { offsetDays: 0, hour: 15, minute: 0, label: "Week 1 · Wed 3:00 PM" },
+            { offsetDays: 2, hour: 15, minute: 0, label: "Week 1 · Fri 3:00 PM" },
+            { offsetDays: 4, hour: 15, minute: 0, label: "Week 1 · Sun 3:00 PM" },
+            { offsetDays: 7, hour: 15, minute: 0, label: "Week 2 · Wed 3:00 PM" },
+            { offsetDays: 9, hour: 15, minute: 0, label: "Week 2 · Fri 3:00 PM" },
+            { offsetDays: 11, hour: 15, minute: 0, label: "Week 2 · Sun 3:00 PM" },
+            { offsetDays: 12, hour: 15, minute: 0, label: "Week 2 · Mon 3:00 PM" },
         ],
-        exam: { offsetDays: 13, hour: 21, minute: 0, label: "Week 2 · Sun 9:00 PM" },
+        exam: { offsetDays: 13, hour: 15, minute: 0, label: "Week 2 · Tue 3:00 PM" },
         keywords: ["free digital marketing course with certificate", "digital marketing course free online", "free online courses with certificate"],
     },
 ]

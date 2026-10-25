@@ -18,9 +18,9 @@ import {
 export const revalidate = 3600
 
 const URL = "https://celorisdesigns.com/free-courses-with-certificate"
-const TITLE = "Free Online Courses with Certificate: Live Classes"
+const TITLE = "Free Online Courses with Certificate: Live Classes (₹1,500 Giveaway)"
 const DESCRIPTION =
-    "Free live online courses with certificate in Social Media Reels and Digital Marketing: 7 live hours over two weeks on alternate evenings, taught in Hinglish by real trainers, with a final exam on the second Sunday. Earn a verified Celoris certificate and apply to jobs on the Celoris Job Center."
+    "Free live online courses with certificate in Social Media Reels (12:00 PM) and Digital Marketing (3:00 PM) starting 28 Oct 2026. Normally ₹1,500, now 100% free giveaway for a strictly limited 10-seat cohort. Taught live in Hinglish by Celoris mentors with verified certificate and Job Center hiring preference."
 
 export const metadata: Metadata = {
     // The root layout adds " | Celoris".
@@ -55,15 +55,19 @@ function getFaqs(batchLabel: string) {
     return [
         {
             q: "Are these courses really free?",
-            a: "Yes. The live bootcamp, the final skill test and the certificate are 100% free. You only need to sign in with Google and attend.",
+            a: "Yes. Both bootcamps carry an official price of ₹1,500 each, but remaining cohort seats are released as a 100% Free Giveaway. You get all 7 live sessions, personal trainer feedback, the final exam, and verified certificate at zero cost.",
         },
         {
             q: "What is the schedule for both courses?",
-            a: "Each course is 7 one-hour live classes over two weeks, on alternate evenings so the two courses never clash. Social Media Reels: Mon, Wed, Fri at 8:00 PM IST, plus Sunday 8:00 PM in week 1. Digital Marketing: Tue, Thu, Sat at 8:00 PM IST, plus Sunday 9:00 PM in week 1. The second Sunday is the final certification exam.",
+            a: "Both bootcamps start on Wednesday, 28 Oct 2026. Social Media Reels runs at 12:00 PM IST (Noon), and Digital Marketing runs at 3:00 PM IST (Afternoon). Each course consists of 7 live one-hour classes with zero timing clashes.",
         },
         {
-            q: "What if I miss a live class on one evening?",
-            a: "Because these classes are free and taught live with real trainers, we have no recordings. Students are responsible for being punctual and attending every live session. You must maintain attendance and complete the final skill test to qualify for the certificate.",
+            q: "Why are seats capped at 10 students per batch?",
+            a: "To ensure each student gets individual attention and practical review from the mentor. Our offline marketing has already registered students (5 in Reels, 6 in Digital Marketing), leaving only 4 to 5 free giveaway seats open for online applicants.",
+        },
+        {
+            q: "What if I miss a live class on one day?",
+            a: "Because these classes are free and taught live with real trainers, we have no recordings. Students are responsible for being punctual and attending every live session. You must maintain attendance (at least 5 of 7 classes) and complete the final skill test to qualify for the certificate.",
         },
         {
             q: "How do I get the certificate?",
@@ -79,7 +83,7 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "When is the final exam?",
-            a: `On the second Sunday of your batch, online on Celoris (8:00 PM for Social Media Reels, 9:00 PM for Digital Marketing). Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes to sit the exam.`,
+            a: `On the second Sunday of your batch, online on Celoris (12:00 PM for Social Media Reels, 3:00 PM for Digital Marketing). Attend at least ${MIN_ATTENDANCE} of the ${SESSIONS} classes to sit the exam.`,
         },
         {
             q: "Can I get extra help outside class?",
@@ -87,11 +91,11 @@ function getFaqs(batchLabel: string) {
         },
         {
             q: "Can I attend both courses at the same time?",
-            a: "Yes! Because the schedules run on alternate evenings (Social Media Reels on Mon/Wed/Fri and Digital Marketing on Tue/Thu/Sat) and staggered on Sunday (8:00 PM vs 9:00 PM IST), you can enroll in both courses without any timing clashes and earn both verified certificates.",
+            a: "Yes! Because the schedules run at separate hours (Social Media Reels at 12:00 PM IST Noon and Digital Marketing at 3:00 PM IST Afternoon), you can enroll in both courses without any timing clashes and earn dual verified certificates.",
         },
         {
             q: "When does the next batch start?",
-            a: `A new batch starts every 14 days on Monday. The upcoming batch starts ${batchLabel}. Reserve your seat before the batch fills up.`,
+            a: `The upcoming batch starts on ${batchLabel}. With only 4 to 5 giveaway seats remaining per track, claim your free seat before the batch closes.`,
         },
     ]
 }

@@ -90,12 +90,12 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                             href={`/login?next=${encodeURIComponent(here)}`}
                             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
                         >
-                            Join the free batch
+                            Claim Free Seat (Save ₹1,500)
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </GoogleSignInButton>
                 </div>
-                <p className="text-xs text-neutral-400">Sign in with Google to reserve your seat. Next batch: {batchLabel}.</p>
+                <p className="text-xs text-neutral-400">Sign in with Google to claim your free seat (₹1,500 value giveaway). Next batch: {batchLabel}.</p>
             </div>
         )
     }
@@ -157,7 +157,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             setTimeout(() => URL.revokeObjectURL(url), 1000)
         }
         const shareText = encodeURIComponent(
-            `Hey! I just enrolled in the free ${shortTitle} bootcamp with certificate on Celoris starting ${status.batchLabel || batchLabel}. Seats are free, reserve yours and learn with me: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
+            `Hey! I just claimed a free seat in the ${shortTitle} bootcamp with certificate on Celoris (worth ₹1,500, now 100% free giveaway) starting ${status.batchLabel || batchLabel}. Limited giveaway seats, grab yours: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
         )
         const shareUrl = `https://api.whatsapp.com/send?text=${shareText}`
 
@@ -235,10 +235,10 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                 <button
                     type="submit"
                     disabled={busy}
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-60 whitespace-nowrap"
                 >
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                    Reserve my free seat
+                    Claim Free Seat (Save ₹1,500)
                 </button>
             </div>
             <label className="flex items-start gap-2 text-xs text-neutral-400">

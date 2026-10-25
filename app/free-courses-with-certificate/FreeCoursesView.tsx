@@ -40,6 +40,9 @@ interface FreeCoursesViewProps {
     faqs: { q: string; a: string }[]
 }
 
+const reelsBootcamp = getBootcamp("social-media-reels")
+const dmBootcamp = getBootcamp("digital-marketing")
+
 const FEATURED_COURSES = [
     {
         id: "short-form-video",
@@ -47,8 +50,13 @@ const FEATURED_COURSES = [
         masterclassUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         bootcampUrl: "/free-courses-with-certificate/social-media-reels",
         image: "/free-courses/social-media-reels.jpg",
-        badgePill: "Free · Certificate",
+        badgePill: "100% Free Giveaway",
         categoryPill: "Content Creation",
+        originalPrice: reelsBootcamp?.originalPrice || 1500,
+        price: "FREE",
+        offlineEnrolled: reelsBootcamp?.offlineEnrolled || 5,
+        totalSeats: reelsBootcamp?.totalSeats || 10,
+        remainingSeats: (reelsBootcamp?.totalSeats || 10) - (reelsBootcamp?.offlineEnrolled || 5),
         title: "Free Social Media Reels Bootcamp with Certificate",
         description:
             "7 live one-hour classes over two weeks with Ananya Jairath: find your niche, write hooks, shoot on a smartphone, edit in CapCut and build a 3-Reel portfolio. Final exam on the second Sunday, then apply to Reels jobs on the Celoris Job Center.",
@@ -58,7 +66,8 @@ const FEATURED_COURSES = [
         trainer: "Ananya Jairath",
         trainerRole: "Commercial Video Creator & Content Mentor",
         toolsRequired: "Any smartphone + free CapCut app (No laptop or camera needed)",
-        schedule: getBootcamp("social-media-reels")?.scheduleLabel || "",
+        schedule: reelsBootcamp?.scheduleLabel || "",
+        startTime: reelsBootcamp?.startTimeLabel || "12:00 PM IST (Noon)",
         syllabus: buildSyllabus("social-media-reels"),
     },
     {
@@ -67,8 +76,13 @@ const FEATURED_COURSES = [
         masterclassUrl: "/learn/course/digital-marketing-mastery",
         bootcampUrl: "/free-courses-with-certificate/digital-marketing",
         image: "/free-courses/digital-marketing.jpg",
-        badgePill: "Free · Certificate",
+        badgePill: "100% Free Giveaway",
         categoryPill: "Marketing",
+        originalPrice: dmBootcamp?.originalPrice || 1500,
+        price: "FREE",
+        offlineEnrolled: dmBootcamp?.offlineEnrolled || 6,
+        totalSeats: dmBootcamp?.totalSeats || 10,
+        remainingSeats: (dmBootcamp?.totalSeats || 10) - (dmBootcamp?.offlineEnrolled || 6),
         title: "Free Digital Marketing Bootcamp with Certificate",
         description:
             "7 live one-hour classes over two weeks with Dheeraj Kushwaha: the funnel, SEO and Google Business Profile, social media, Meta and Google Search ads, and GA4 tracking. Final exam on the second Sunday, then apply to marketing jobs on the Celoris Job Center.",
@@ -78,7 +92,8 @@ const FEATURED_COURSES = [
         trainer: "Dheeraj Kushwaha",
         trainerRole: "Performance Marketing & Growth Strategist",
         toolsRequired: "Smartphone or basic laptop with browser (Zero paid tools needed)",
-        schedule: getBootcamp("digital-marketing")?.scheduleLabel || "",
+        schedule: dmBootcamp?.scheduleLabel || "",
+        startTime: dmBootcamp?.startTimeLabel || "3:00 PM IST (Afternoon)",
         syllabus: buildSyllabus("digital-marketing"),
     },
 ]
@@ -94,7 +109,7 @@ function BatchCountdown({ batchIso }: { batchIso?: string }) {
 
     useEffect(() => {
         setMounted(true)
-        const targetDate = batchIso ? new Date(`${batchIso}T20:00:00+05:30`) : new Date("2026-10-26T20:00:00+05:30")
+        const targetDate = batchIso ? new Date(`${batchIso}T12:00:00+05:30`) : new Date("2026-10-28T12:00:00+05:30")
 
         const updateTimer = () => {
             const now = new Date()
@@ -290,7 +305,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                             className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-medium text-amber-300 backdrop-blur-md"
                         >
                             <Flame className="h-4 w-4 text-amber-400 animate-pulse" />
-                            <span>Limited to 15 seats per batch, so the trainer can give you personal feedback</span>
+                            <span>Strictly 10 seats per batch · Offline registrations already claimed 50%+ · Remaining seats given as Free Giveaway!</span>
                         </motion.div>
 
                         {/* Live Countdown Timer */}
@@ -440,11 +455,38 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                         </div>
 
                                         {/* Course Title */}
-                                        <h3 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-3 group-hover:text-emerald-300 transition-colors tracking-tight">
+                                        <h3 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-2 group-hover:text-emerald-300 transition-colors tracking-tight">
                                             <Link href={course.bootcampUrl}>
                                                 {course.title}
                                             </Link>
                                         </h3>
+
+                                        {/* Price Strike-Through & Value Reveal */}
+                                        <div className="flex items-center gap-2.5 mb-3 flex-wrap">
+                                            <span className="line-through text-slate-500 text-sm font-semibold">₹{course.originalPrice.toLocaleString("en-IN")}</span>
+                                            <span className="text-emerald-400 font-black text-2xl tracking-tight">FREE</span>
+                                            <span className="text-[10px] uppercase font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+                                                Save ₹{course.originalPrice.toLocaleString("en-IN")} Giveaway
+                                            </span>
+                                        </div>
+
+                                        {/* Live Cohort Availability & Giveaway Seats */}
+                                        <div className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/[0.05] p-3">
+                                            <div className="flex items-center justify-between text-xs font-mono mb-1.5">
+                                                <span className="text-neutral-300 font-medium">Batch Seats:</span>
+                                                <span className="text-amber-300 font-bold">Only {course.remainingSeats} Seats Left!</span>
+                                            </div>
+                                            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+                                                <div
+                                                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-400"
+                                                    style={{ width: `${(course.offlineEnrolled / course.totalSeats) * 100}%` }}
+                                                />
+                                            </div>
+                                            <div className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
+                                                <span>{course.offlineEnrolled}/{course.totalSeats} claimed offline</span>
+                                                <span className="text-emerald-400 font-semibold">{course.remainingSeats} giveaway seats open</span>
+                                            </div>
+                                        </div>
 
                                         {/* Description */}
                                         <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3">
@@ -529,7 +571,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                                     href={course.bootcampUrl}
                                                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-neutral-950 text-xs font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:shadow-[0_0_30px_rgba(52,211,153,0.55)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
                                                 >
-                                                    <span>Learn More</span>
+                                                    <span>Claim Free Seat (Save ₹1,500)</span>
                                                     <ArrowRight size={13} className="stroke-[2.5]" />
                                                 </Link>
                                             </div>
@@ -539,7 +581,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                         <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-400 font-mono gap-2 flex-wrap">
                                             <a
                                                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                                                    `Hey! Join me in this free ${course.bootcampShortTitle} live bootcamp with certificate starting ${batchLabel}: https://celorisdesigns.com${course.bootcampUrl}`
+                                                    `Hey! Join me in this free ${course.bootcampShortTitle} live bootcamp with certificate (worth ₹1,500, now 100% free giveaway) starting ${batchLabel}: https://celorisdesigns.com${course.bootcampUrl}`
                                                 )}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
@@ -553,7 +595,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs }: FreeCoursesViewP
                                                 href={course.bootcampUrl}
                                                 className="text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline flex items-center gap-1"
                                             >
-                                                <span>See Free Plan &amp; Enroll</span>
+                                                <span>Claim Free Seat</span>
                                                 <span>→</span>
                                             </Link>
                                         </div>

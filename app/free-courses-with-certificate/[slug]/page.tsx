@@ -56,6 +56,7 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
     const firstLabel = formatBatchDate(first)
     const endLabel = formatBatchDate(last)
     const firstSession = b.sessions[0]
+    const remainingSeats = (b.totalSeats || 10) - (b.offlineEnrolled || 0)
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -94,6 +95,17 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-5xl">{b.title}</h1>
                         <p className="mt-3 max-w-2xl text-base text-neutral-300 sm:text-lg">{b.tagline}</p>
 
+                        {/* Price Strikethrough & Free Giveaway Framing */}
+                        <div className="mt-5 flex flex-wrap items-center gap-3">
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-base font-semibold text-neutral-500 line-through">₹{b.originalPrice.toLocaleString("en-IN")}</span>
+                                <span className="text-3xl font-black text-emerald-400">FREE</span>
+                            </div>
+                            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
+                                100% Free Giveaway (Save ₹{b.originalPrice.toLocaleString("en-IN")})
+                            </span>
+                        </div>
+
                         <div className="mt-6 flex flex-wrap gap-2 text-sm">
                             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2">
                                 <CalendarDays className="h-4 w-4 text-emerald-400" /> {firstLabel} to {endLabel}
@@ -113,7 +125,25 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                         </div>
 
                         <div id="enroll" className="mt-8 rounded-3xl border border-white/[0.1] bg-white/[0.03] p-5 sm:p-6 scroll-mt-20">
-                            <p className="mb-4 text-sm font-medium text-white">Free seat in the batch starting {firstLabel}</p>
+                            {/* Live Cohort Availability Progress */}
+                            <div className="mb-5 rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] p-4">
+                                <div className="flex items-center justify-between text-xs sm:text-sm font-mono mb-2">
+                                    <span className="text-neutral-200 font-semibold">Strictly 10 Seats Cohort:</span>
+                                    <span className="text-amber-300 font-bold">Only {remainingSeats} Giveaway Seats Left!</span>
+                                </div>
+                                <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+                                    <div
+                                        className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-400"
+                                        style={{ width: `${(b.offlineEnrolled / b.totalSeats) * 100}%` }}
+                                    />
+                                </div>
+                                <div className="mt-2 flex flex-wrap items-center justify-between text-xs text-neutral-400 font-mono gap-1">
+                                    <span>{b.offlineEnrolled} of {b.totalSeats} seats claimed via offline marketing</span>
+                                    <span className="text-emerald-400 font-semibold">{remainingSeats} spots available as free giveaway</span>
+                                </div>
+                            </div>
+
+                            <p className="mb-4 text-sm font-medium text-white">Claim your free seat in the batch starting {firstLabel} ({b.startTimeLabel || "12:00 PM IST"})</p>
                             <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={firstLabel} scheduleLabel={b.scheduleLabel} />
                         </div>
                     </div>
@@ -205,14 +235,20 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                 <div className="fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-40 rounded-2xl border border-white/10 bg-[#050608]/95 p-3 backdrop-blur-xl sm:hidden shadow-2xl">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex flex-col">
-                            <span className="text-xs font-semibold text-white">Starts {firstLabel}</span>
-                            <span className="text-[11px] font-mono text-emerald-400">100% Free · Certificate</span>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-semibold text-white">Starts {firstLabel}</span>
+                                <span className="text-[10px] font-mono text-amber-300 font-bold">({remainingSeats} left)</span>
+                            </div>
+                            <span className="text-[11px] font-mono text-emerald-400">
+                                <span className="line-through text-neutral-500 mr-1">₹{b.originalPrice.toLocaleString("en-IN")}</span>
+                                FREE Giveaway
+                            </span>
                         </div>
                         <a
                             href="#enroll"
                             className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition hover:bg-emerald-400 active:scale-95 shadow-md whitespace-nowrap"
                         >
-                            <span>Reserve Seat</span>
+                            <span>Claim Free Seat</span>
                             <ArrowRight className="h-3.5 w-3.5" />
                         </a>
                     </div>

@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
         const admin: any = createSupabaseClientForServer()
 
         // Seats are limited per batch: if this batch is full, the seat goes to the next one.
+        // For the launch batch, offline enrolled students already claimed part of the 10 seats.
         let batchStart = currentBatchStart(new Date(), bootcamp)
         for (let i = 0; i < 6; i++) {
             const { count } = await admin
@@ -69,7 +70,10 @@ export async function POST(request: NextRequest) {
                 .eq("bootcamp", bootcamp.slug)
                 .eq("batch_start", batchStart)
                 .neq("user_id", user.id)
-            if ((count ?? 0) < SEATS_PER_BATCH) break
+            const availableSeats = batchStart === "2026-10-28"
+                ? Math.max(1, SEATS_PER_BATCH - (bootcamp.offlineEnrolled || 0))
+                : SEATS_PER_BATCH
+            if ((count ?? 0) < availableSeats) break
             batchStart = nextBatchStart(batchStart)
         }
 
