@@ -51,5 +51,21 @@ export const createSupabaseClientForServer = () => {
   }) as any
 }
 
+// Service-role client for server code that must work regardless of RLS and column
+// privileges: admin API routes (gated by proxy.ts) and server-decided writes like
+// bootcamp applications. Never use it in browser code, and never return secret
+// columns (classroom codes etc.) from a public route.
+// Note: createSupabaseClientForServer() above currently prefers the anon key, so it
+// can't read protected columns such as cafe_classrooms.student_code.
+export const createServiceRoleClient = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY
+  if (!url) throw new Error('Missing Supabase URL environment variable')
+  if (!key) throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable')
+  return createSupabaseClient(url.trim(), key.trim(), {
+    auth: { autoRefreshToken: false, persistSession: false },
+  }) as any
+}
+
 // Backward compatibility alias
 export const createClient = createClientForBrowser

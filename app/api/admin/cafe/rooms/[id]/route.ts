@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseClientForServer } from '@/lib/supabase-client'
+import { createServiceRoleClient } from '@/lib/supabase-client'
 
 // Admin-only café room management — update + delete a single room by id.
 // Same auth note as app/api/admin/cafe/rooms/route.ts: gated client-side
@@ -29,7 +29,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     const body = await request.json()
-    const admin = createSupabaseClientForServer()
+    const admin = createServiceRoleClient()
 
     // Only touch fields the caller actually sent — this route is used both
     // by the full "edit room" form and by the quick present-count +/-
@@ -100,7 +100,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ error: 'Room id is required' }, { status: 400 })
     }
 
-    const admin = createSupabaseClientForServer()
+    const admin = createServiceRoleClient()
 
     // Soft delete, same as the student-facing /api/social/cafe/delete-room
     // route — keeps history instead of losing the row outright.

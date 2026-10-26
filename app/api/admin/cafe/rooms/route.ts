@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseClientForServer, createClientForBrowser } from '@/lib/supabase-client'
+import { createServiceRoleClient } from '@/lib/supabase-client'
 
 // Admin-only café room management — list + create.
 //
@@ -36,8 +36,10 @@ export async function GET() {
     let data = null
     let error = null
 
+    // Admins need every column, including the room codes, which the anon key is not
+    // allowed to read, so this must use the service-role client.
     try {
-      const admin = createSupabaseClientForServer()
+      const admin = createServiceRoleClient()
       const res = await admin
         .from('cafe_classrooms')
         .select('*')
@@ -46,21 +48,6 @@ export async function GET() {
       error = res.error
     } catch (e: any) {
       error = e
-    }
-
-    // Resilient fallback to browser/anon client if service-role key is invalid/unavailable
-    if (error) {
-      try {
-        const fallback = createClientForBrowser()
-        const res = await fallback
-          .from('cafe_classrooms')
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (!res.error && res.data) {
-          data = res.data
-          error = null
-        }
-      } catch (_) {}
     }
 
     if (error) {
@@ -85,7 +72,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Room name is required' }, { status: 400 })
     }
 
-    const admin = createSupabaseClientForServer()
+    const admin = createServiceRoleClient()
 
     const capacity = Math.min(200, Math.max(1, parseInt(body.maxStudents, 10) || 10))
     const present = Math.min(capacity, Math.max(0, parseInt(body.currentStudents, 10) || 1))

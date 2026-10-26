@@ -101,6 +101,7 @@ export default function AdminSocialPage() {
   // --- Café Rooms management ---
   const [cafeRooms, setCafeRooms] = useState<CafeRoom[]>([])
   const [loadingRooms, setLoadingRooms] = useState(true)
+  const [roomsLoadError, setRoomsLoadError] = useState<string | null>(null)
   const [roomModalOpen, setRoomModalOpen] = useState(false)
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null)
   const [roomForm, setRoomForm] = useState(emptyRoomForm)
@@ -274,13 +275,18 @@ export default function AdminSocialPage() {
 
   const loadCafeRooms = async () => {
     setLoadingRooms(true)
+    setRoomsLoadError(null)
     try {
       const response = await fetch('/api/admin/cafe/rooms')
-      if (!response.ok) throw new Error('Failed to fetch café rooms')
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}))
+        throw new Error(body?.error || `Failed to fetch café rooms (${response.status})`)
+      }
       const { rooms } = await response.json()
       setCafeRooms((rooms || []).filter((r: CafeRoom) => r.is_active))
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading café rooms:', error)
+      setRoomsLoadError(error?.message || 'Failed to fetch café rooms')
     } finally {
       setLoadingRooms(false)
     }
@@ -694,6 +700,12 @@ export default function AdminSocialPage() {
 
           {loadingRooms ? (
             <p className="text-sm text-slate-400">Loading rooms...</p>
+          ) : roomsLoadError ? (
+            <Card className="bg-slate-800 border-red-500/40">
+              <CardContent className="p-6 text-center text-sm text-red-300">
+                Couldn&apos;t load the rooms: {roomsLoadError}
+              </CardContent>
+            </Card>
           ) : cafeRooms.length === 0 ? (
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 text-center text-sm text-slate-400">

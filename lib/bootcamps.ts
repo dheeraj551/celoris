@@ -35,6 +35,8 @@ export interface Bootcamp {
     trainerRole?: string
     /** Matching paid course page, offered after the bootcamp. */
     fullCourseUrl: string
+    /** The live classroom (cafe_classrooms.id) where this bootcamp is taught, shared with paid Pro members. */
+    classroomId?: string
     whoFor: string
     outcomes: string[]
     days: BootcampDay[]
@@ -172,6 +174,7 @@ export const BOOTCAMPS: Bootcamp[] = [
         offlineEnrolled: 5,
         totalSeats: 10,
         fullCourseUrl: "/learn/course/master-youtube-shorts-instagram-reels",
+        classroomId: "4f44c85d-edd6-4e74-b0e5-d1f0498b59f6",
         whoFor: "Students, job seekers, freelancers and small business owners who want to make Reels for themselves or for clients.",
         outcomes: [
             "Pick a niche and set up a profile that grows",
@@ -216,6 +219,7 @@ export const BOOTCAMPS: Bootcamp[] = [
         offlineEnrolled: 6,
         totalSeats: 10,
         fullCourseUrl: "/learn/course/digital-marketing-mastery",
+        classroomId: "d27f7a5f-2e0c-42c3-806f-1bca2aa9890e",
         whoFor: "Students, job seekers and business owners who want practical digital marketing skills for a job, freelancing or their own business.",
         outcomes: [
             "Understand the full marketing funnel and where each channel fits",

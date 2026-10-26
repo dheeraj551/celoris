@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createRouteClient } from "@/lib/supabase-server"
-import { createSupabaseClientForServer } from "@/lib/supabase-client"
+import { createServiceRoleClient } from "@/lib/supabase-client"
 import {
     APPLICATION_MAX_CHARS,
     APPLICATION_MIN_CHARS,
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         const bootcamp = getBootcamp(slug)
         if (!bootcamp) return NextResponse.json({ enrolled: false })
 
-        const admin: any = createSupabaseClientForServer()
+        const admin: any = createServiceRoleClient()
         const { data } = await admin
             .from("bootcamp_enrollments")
             .select("batch_start,status")
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Tell us in one line what you will do with this skill (at least 20 characters)." }, { status: 400 })
         }
 
-        const admin: any = createSupabaseClientForServer()
+        const admin: any = createServiceRoleClient()
 
         // Anyone can apply while a batch still has free seats to give. Once every free
         // seat in a batch has been given to a selected applicant, the application goes

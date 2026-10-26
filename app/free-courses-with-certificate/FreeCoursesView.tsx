@@ -24,6 +24,8 @@ import {
 import { SpotlightCard } from "@/components/ui/spotlight-card"
 import { DAYS, MIN_ATTENDANCE, SESSION_TIME_LABEL, SESSIONS, getBootcamp, type BootcampSlug } from "@/lib/bootcamps"
 import type { SeatStats } from "@/lib/bootcamp-seats"
+import type { BootcampClassroom } from "@/lib/bootcamp-classrooms"
+import { BootcampClassroomCard } from "@/components/bootcamp/BootcampClassroomCard"
 
 // Class list for a bootcamp, built from lib/bootcamps so the hub and the course pages always agree.
 function buildSyllabus(slug: string) {
@@ -41,6 +43,10 @@ interface FreeCoursesViewProps {
     faqs: { q: string; a: string }[]
     /** Live seat numbers per bootcamp, read on the server. */
     seats?: Partial<Record<BootcampSlug, SeatStats>>
+    /** The live classroom each bootcamp is taught in. */
+    classrooms?: Partial<Record<BootcampSlug, BootcampClassroom>>
+    /** First class date and time per bootcamp, e.g. "Wed, 28 Oct 2026, 12:00 PM IST". */
+    firstClassLabels?: Record<string, string>
 }
 
 const reelsBootcamp = getBootcamp("social-media-reels")
@@ -169,7 +175,7 @@ function BatchCountdown({ batchIso }: { batchIso?: string }) {
     )
 }
 
-export function FreeCoursesView({ batchLabel, batchIso, faqs, seats }: FreeCoursesViewProps) {
+export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms, firstClassLabels }: FreeCoursesViewProps) {
     const [openFaq, setOpenFaq] = useState<number | null>(null)
     const [showCertPreview, setShowCertPreview] = useState(false)
     const [openSyllabus, setOpenSyllabus] = useState<string | null>(null)
@@ -404,6 +410,7 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats }: FreeCours
                             const seatsLeft = live?.seatsLeft ?? course.remainingSeats
                             const applications = live?.applications ?? 0
                             const filled = course.totalSeats - seatsLeft
+                            const classroom = classrooms?.[course.slug as BootcampSlug]
                             return (
                             <motion.div
                                 key={course.id}
@@ -511,6 +518,17 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats }: FreeCours
                                             <CalendarDays className="h-4 w-4 shrink-0 text-emerald-400" />
                                             <span>Live Schedule: <strong className="text-white">{course.schedule}</strong></span>
                                         </div>
+
+                                        {/* The real classroom this bootcamp is taught in */}
+                                        {classroom && (
+                                            <div className="mb-3.5">
+                                                <BootcampClassroomCard
+                                                    classroom={classroom}
+                                                    firstClassLabel={firstClassLabels?.[course.slug] || batchLabel}
+                                                    compact
+                                                />
+                                            </div>
+                                        )}
 
                                         {/* Requirements / Tools Pill */}
                                         <div className="mb-3.5 flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-1.5 text-[11px] font-mono text-neutral-300">
@@ -693,7 +711,13 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats }: FreeCours
                         ))}
                     </div>
 
-                    <div className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-sm text-neutral-300">
+                        <span className="font-semibold text-amber-300">Same classroom as paid students: </span>
+                        free-seat students join the same live Celoris classroom as our paid Pro members, with the same trainer. Pro members get extra
+                        perks, like speaking on the mic; free students ask their questions in the class chat.
+                    </div>
+
+                    <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <Briefcase className="h-5 w-5 text-emerald-400 shrink-0" />
                             <p className="text-sm text-neutral-300">

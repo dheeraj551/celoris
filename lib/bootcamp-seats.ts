@@ -1,7 +1,7 @@
 // Live seat numbers for the free bootcamps (server only: uses the service-role client).
 // Used by the hub and the course pages so the "seats left" counter is always real.
 
-import { createSupabaseClientForServer } from "@/lib/supabase-client"
+import { createServiceRoleClient } from "@/lib/supabase-client"
 import { APPLIED_STATUS, BOOTCAMPS, SELECTED_STATUSES, type BootcampSlug, currentBatchStart, freeSeatsFor } from "@/lib/bootcamps"
 
 export interface SeatStats {
@@ -20,7 +20,7 @@ export async function getSeatStats(now: Date = new Date()): Promise<Record<Bootc
     const out = {} as Record<BootcampSlug, SeatStats>
     let rows: { bootcamp: string; batch_start: string; status: string }[] = []
     try {
-        const admin: any = createSupabaseClientForServer()
+        const admin: any = createServiceRoleClient()
         const starts = BOOTCAMPS.map((b) => currentBatchStart(now, b))
         const { data } = await admin
             .from("bootcamp_enrollments")

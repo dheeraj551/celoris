@@ -11,6 +11,7 @@ import {
     istDateTime,
 } from "@/lib/bootcamps"
 import { getSeatStats } from "@/lib/bootcamp-seats"
+import { getBootcampClassrooms } from "@/lib/bootcamp-classrooms"
 
 // Hub for the free live bootcamps (7 sessions per batch). Targets "free online courses with
 // certificate" searches. The next batch date is computed and the seat numbers are read
@@ -109,7 +110,14 @@ export default async function FreeCoursesHubPage() {
     const batch = currentBatchStart()
     const batchLabel = formatBatchDate(batch)
     const faqs = getFaqs(batchLabel)
-    const seats = await getSeatStats()
+    const [seats, classrooms] = await Promise.all([getSeatStats(), getBootcampClassrooms()])
+    // "Wed, 28 Oct 2026, 12:00 PM IST" for each bootcamp's first class
+    const firstClassLabels = Object.fromEntries(
+        BOOTCAMPS.map((b) => {
+            const { first } = bootcampDates(b, currentBatchStart(new Date(), b))
+            return [b.slug, `${formatBatchDate(first)}, ${(b.startTimeLabel || "").replace(/\s*\(.*\)\s*$/, "")}`]
+        })
+    )
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -155,7 +163,7 @@ export default async function FreeCoursesHubPage() {
     return (
         <DashboardShell>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <FreeCoursesView batchLabel={batchLabel} batchIso={batch} faqs={faqs} seats={seats} />
+            <FreeCoursesView batchLabel={batchLabel} batchIso={batch} faqs={faqs} seats={seats} classrooms={classrooms} firstClassLabels={firstClassLabels} />
         </DashboardShell>
     )
 }

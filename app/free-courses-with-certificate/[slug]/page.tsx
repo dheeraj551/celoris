@@ -15,6 +15,8 @@ import {
     istDateTime,
 } from "@/lib/bootcamps"
 import { getSeatStats } from "@/lib/bootcamp-seats"
+import { getBootcampClassrooms } from "@/lib/bootcamp-classrooms"
+import { BootcampClassroomCard } from "@/components/bootcamp/BootcampClassroomCard"
 
 // Seat numbers are read live from the applications, so refresh every 5 minutes.
 export const revalidate = 300
@@ -58,7 +60,10 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
     const firstLabel = formatBatchDate(first)
     const endLabel = formatBatchDate(last)
     const firstSession = b.sessions[0]
-    const live = (await getSeatStats())[b.slug]
+    const [seatStats, classrooms] = await Promise.all([getSeatStats(), getBootcampClassrooms()])
+    const live = seatStats[b.slug]
+    const classroom = classrooms[b.slug]
+    const firstClassLabel = `${firstLabel}, ${(b.startTimeLabel || "").replace(/\s*\(.*\)\s*$/, "")}`
     const freeSeats = live?.freeSeats ?? (b.totalSeats || 10) - (b.offlineEnrolled || 0)
     const remainingSeats = live?.seatsLeft ?? freeSeats
     const applications = live?.applications ?? 0
@@ -161,6 +166,14 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                         </div>
                     </div>
                 </section>
+
+                {/* Where the classes happen */}
+                {classroom && (
+                    <section className="mx-auto mb-12 max-w-4xl px-4 sm:px-6">
+                        <h2 className="mb-4 text-2xl font-semibold text-white">Where your classes happen</h2>
+                        <BootcampClassroomCard classroom={classroom} firstClassLabel={firstClassLabel} />
+                    </section>
+                )}
 
                 {/* Outcomes */}
                 <section className="mx-auto max-w-4xl px-4 sm:px-6">
