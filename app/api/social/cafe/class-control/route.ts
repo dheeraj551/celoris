@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       const update = {
         class_starts_at: new Date(startsMs).toISOString(),
         class_started_at: null,
+        class_ended_at: null,
         queue_open_minutes: clampInt(body.queueOpenMinutes, 0, 240, current.queue_open_minutes ?? 30),
         vip_reserved_seats: clampInt(body.reservedSeats, 0, 50, current.vip_reserved_seats ?? 3),
         vip_grace_minutes: clampInt(body.graceMinutes, 0, 120, current.vip_grace_minutes ?? 10),
@@ -63,9 +64,10 @@ export async function POST(request: Request) {
 
     if (action === 'start') {
       const now = new Date().toISOString()
-      const update: Record<string, string> = { class_started_at: now }
-      // Starting a room that had no schedule turns queue mode on right away.
-      if (!current.class_starts_at || classPhase(current).mode === 'open') update.class_starts_at = now
+      // Opens the room right now, also outside the scheduled times.
+      const update: Record<string, string | null> = { class_started_at: now, class_ended_at: null }
+      const mode = classPhase(current).mode
+      if (mode !== 'queueing' && mode !== 'started') update.class_starts_at = now
       const { error } = await admin.from('cafe_classrooms').update(update).eq('id', roomId)
       if (error) throw error
       const admitted = await fillSeats(admin, roomId)
@@ -73,10 +75,12 @@ export async function POST(request: Request) {
     }
 
     if (action === 'end') {
-      const { error } = await admin.from('cafe_classrooms').update({ class_starts_at: null, class_started_at: null }).eq('id', roomId)
+      // Closes the room until the next scheduled class.
+      const update = { class_starts_at: null, class_started_at: null, class_ended_at: new Date().toISOString() }
+      const { error } = await admin.from('cafe_classrooms').update(update).eq('id', roomId)
       if (error) throw error
       await admin.from('cafe_classroom_queue').delete().eq('room_id', roomId)
-      return NextResponse.json({ ok: true, phase: { mode: 'open' } })
+      return NextResponse.json({ ok: true, phase: classPhase({ ...current, ...update }) })
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })

@@ -12,8 +12,8 @@ import { createSupabaseClientForServer } from '@/lib/supabase-client'
 // Rules:
 //   - the room's DB owner (host_id)              -> 'trainer'
 //   - a recent cafe_room_roles grant (12 hours)   -> that role
-//   - room has no trainer/student code at all     -> 'student'
-//   - anything else                               -> 'none' (not admitted)
+//   - anyone else                                 -> 'student' (a seat still
+//     needs the schedule and the queue, see lib/cafe-class-queue.ts)
 //
 // Rollout safety: if the cafe_room_roles table doesn't exist yet (the SQL
 // migration in supabase/migrations/20260923_cafe_whiteboard_room.sql hasn't
@@ -71,8 +71,9 @@ export async function resolveRoomAccess(admin: AdminClient, roomId: string, user
     return { ...base, role: grant.role === 'trainer' ? 'trainer' : 'student', legacy: false }
   }
 
-  const hasCodes = !!(room.trainer_code || '').trim() || !!(room.student_code || '').trim()
-  return { ...base, role: hasCodes ? 'none' : 'student', legacy: false }
+  // Oct 2026: students no longer need a code — seats are controlled by the
+  // class schedule and the queue (see lib/cafe-class-queue.ts).
+  return { ...base, role: 'student', legacy: false }
 }
 
 /** Records the role a code unlocked. Silently no-ops before the migration. */

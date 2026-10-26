@@ -9,6 +9,7 @@ import { CalendarClock, Play, Square, Crown, Loader2 } from 'lucide-react';
 
 type Phase =
   | { mode: 'open' }
+  | { mode: 'closed' }
   | { mode: 'not_open'; opensAt: string; startsAt: string }
   | { mode: 'queueing'; opensAt: string; startsAt: string }
   | { mode: 'started'; startsAt: string; startedAt: string; graceEndsAt: string };
@@ -75,7 +76,7 @@ export const ClassSchedulePanel: React.FC<{ roomId: string; theme?: 'dark' | 'li
   };
 
   const control = async (action: 'schedule' | 'start' | 'end') => {
-    if (action === 'end' && !window.confirm('End this class? The waiting line will be cleared and the room goes back to normal walk-in mode.')) return;
+    if (action === 'end' && !window.confirm('End this class? The waiting line will be cleared and the room closes to students until the next class.')) return;
     setBusy(action);
     setMessage(null);
     try {
@@ -117,10 +118,12 @@ export const ClassSchedulePanel: React.FC<{ roomId: string; theme?: 'dark' | 'li
   let status: React.ReactNode;
   if (phase.mode === 'open') {
     status = <p className={text}>No class scheduled — students walk in until the room is full.</p>;
+  } else if (phase.mode === 'closed') {
+    status = <p className={text}>No class scheduled — the room is closed to students. Press Start class to open it now.</p>;
   } else if (phase.mode === 'not_open') {
     status = (
       <p className={text}>
-        Class at <b>{fmtTime(phase.startsAt)}</b>. Waiting line opens at {fmtTime(phase.opensAt)}.
+        Class at <b>{fmtTime(phase.startsAt)}</b>. The room opens to students at {fmtTime(phase.opensAt)}.
       </p>
     );
   } else if (phase.mode === 'queueing') {

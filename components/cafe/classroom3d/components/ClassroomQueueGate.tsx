@@ -40,6 +40,7 @@ interface ClassroomQueueGateProps {
 
 type Phase =
   | { mode: 'open' }
+  | { mode: 'closed' }
   | { mode: 'not_open'; opensAt: string; startsAt: string }
   | { mode: 'queueing'; opensAt: string; startsAt: string }
   | { mode: 'started'; startsAt: string; startedAt: string; graceEndsAt: string };
@@ -135,6 +136,13 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
 
         // Line not open yet: show the countdown and try again when it opens
         // (checking at least once a minute in case the trainer reschedules).
+        // No class scheduled right now: check again every minute.
+        if (body.state === 'closed') {
+          setLoading(false);
+          retryTimerRef.current = setTimeout(() => setJoinAttempt((n) => n + 1), 60000);
+          return;
+        }
+
         if (body.state === 'not_open') {
           setLoading(false);
           const opensIn = body.phase?.opensAt ? Date.parse(body.phase.opensAt) - Date.now() : 60000;
@@ -278,17 +286,19 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
         ) : (
           <>
             <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto">
-              {phase.mode === 'not_open' ? <CalendarClock className="w-7 h-7 text-blue-400" /> : <Clock className="w-7 h-7 text-blue-400" />}
+              {phase.mode === 'not_open' || phase.mode === 'closed' ? <CalendarClock className="w-7 h-7 text-blue-400" /> : <Clock className="w-7 h-7 text-blue-400" />}
             </div>
             <div>
               <h3 className="text-white font-bold text-lg">
-                {phase.mode === 'not_open' ? 'The line opens soon' : "You're in line"}
+                {phase.mode === 'closed' ? 'This classroom is closed' : phase.mode === 'not_open' ? 'The classroom opens soon' : "You're in line"}
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                {phase.mode === 'not_open' ? (
-                  <>"{roomName}" starts at {fmtTime(phase.startsAt)}. The waiting line opens at {fmtTime(phase.opensAt)} — keep this page open and you'll join automatically.</>
+                {phase.mode === 'closed' ? (
+                  <>"{roomName}" opens 30 minutes before its next class. No class is scheduled right now — check back later.</>
+                ) : phase.mode === 'not_open' ? (
+                  <>"{roomName}" starts at {fmtTime(phase.startsAt)}. The classroom opens at {fmtTime(phase.opensAt)}, 30 minutes before class — keep this page open and you'll join the line automatically.</>
                 ) : phase.mode === 'queueing' ? (
-                  <>Class starts at {fmtTime(phase.startsAt)}. When the trainer starts it, seats go to the line in order — stay on this page to keep your place.</>
+                  <>Class starts at {fmtTime(phase.startsAt)}. Pro members are seated first; when the class starts, the remaining seats go to the line in order — stay on this page to keep your place.</>
                 ) : phase.mode === 'started' ? (
                   <>The class is running. You'll be let in automatically as soon as a seat frees up — stay on this page.</>
                 ) : (
@@ -297,14 +307,25 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
               </p>
             </div>
 
-            {plan !== 'free' && PLAN_NAMES[plan] && phase.mode !== 'not_open' && (
+            {plan !== 'free' && PLAN_NAMES[plan] && phase.mode !== 'not_open' && phase.mode !== 'closed' && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-semibold">
                 <Crown className="w-3.5 h-3.5" />
-                <span>{PLAN_NAMES[plan]} member — you're ahead of free students</span>
+                <span>
+                  {plan === 'pro' || plan === 'max'
+                    ? `${PLAN_NAMES[plan]} member — you'll be seated the moment a seat is free`
+                    : `${PLAN_NAMES[plan]} member — you're ahead of free students`}
+                </span>
               </div>
             )}
+            {(plan === 'free' || plan === 'basic') && phase.mode !== 'closed' && (
+              <p className="text-[11px] text-slate-400">
+                <Crown className="inline w-3 h-3 text-amber-400 mr-1 -mt-0.5" />
+                Pro members skip the line and can chat, ask questions and speak in class.{' '}
+                <a href="/pricing" className="text-amber-300 font-semibold hover:underline">See Pro</a>
+              </p>
+            )}
 
-            {phase.mode === 'not_open' ? (
+            {phase.mode === 'closed' ? null : phase.mode === 'not_open' ? (
               <div className="py-2">
                 <div className="text-3xl font-bold text-white font-mono">{countdown ?? '—'}</div>
                 <div className="text-[10px] uppercase tracking-wider text-slate-500">until the line opens</div>
@@ -330,7 +351,7 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
               </div>
             )}
 
-            {phase.mode !== 'not_open' && (
+            {phase.mode !== 'not_open' && phase.mode !== 'closed' && (
             <form onSubmit={handleRedeemBoost} className="space-y-2 pt-2 border-t border-slate-800">
               <label className="text-[10px] uppercase tracking-wider text-slate-500 block text-left">
                 Have a boost code?
@@ -361,7 +382,7 @@ export const ClassroomQueueGate: React.FC<ClassroomQueueGateProps> = ({ roomId, 
               className="w-full h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5"
             >
               <LogOut className="w-3.5 h-3.5" />
-              {phase.mode === 'not_open' ? 'Back to Café' : 'Leave queue'}
+              {phase.mode === 'not_open' || phase.mode === 'closed' ? 'Back to Classrooms' : 'Leave queue'}
             </button>
           </>
         )}

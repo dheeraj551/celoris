@@ -84,21 +84,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, role: 'trainer' })
     }
 
-    if (requiredStudent && provided && provided.toLowerCase() === requiredStudent.toLowerCase()) {
-      await grantRoomRole(admin, roomId, user.id, 'student')
-      return NextResponse.json({ ok: true, role: 'student' })
+    // Oct 2026: students no longer need a code. Who gets a seat, and when, is
+    // decided by the class schedule and the queue (lib/cafe-class-queue.ts).
+    // A code that was typed but isn't the trainer code is still rejected, so a
+    // trainer who mistypes theirs doesn't silently land as a student.
+    if (provided && requiredTrainer && provided.toLowerCase() !== requiredTrainer.toLowerCase()) {
+      return NextResponse.json(
+        { ok: false, error: 'That trainer code is not correct. Students can join without a code.' },
+        { status: 403 }
+      )
     }
-
-    // Neither code is set on this room — nothing to gate.
-    if (!requiredTrainer && !requiredStudent) {
-      await grantRoomRole(admin, roomId, user.id, 'student')
-      return NextResponse.json({ ok: true, role: 'student' })
-    }
-
-    return NextResponse.json(
-      { ok: false, error: 'Incorrect code. Check with your trainer or the Celoris team.' },
-      { status: 403 }
-    )
+    void requiredStudent
+    await grantRoomRole(admin, roomId, user.id, 'student')
+    return NextResponse.json({ ok: true, role: 'student' })
   } catch (error: any) {
     console.error('verify-admit-code error:', error)
     return NextResponse.json({ error: error.message || 'Unknown error' }, { status: 500 })

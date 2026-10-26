@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createRouteClient } from '@/lib/supabase-server'
 import { createSupabaseClientForServer } from '@/lib/supabase-client'
 import { resolveRoomAccess } from '@/lib/cafe-room-access'
-import { classPhase, fillSeats, getUserPlan, loadRoomSchedule, PLAN_PRIORITY } from '@/lib/cafe-class-queue'
+import { admitDirect, classPhase, ensureSessionStarted, fillSeats, getUserPlan, isDirectEntry, loadRoomSchedule, PLAN_PRIORITY } from '@/lib/cafe-class-queue'
 
 // Manages the classroom waiting queue — a student joins this only once
 // classroom-presence's 'join' returns a "room full" error (see
@@ -20,6 +20,9 @@ import { classPhase, fillSeats, getUserPlan, loadRoomSchedule, PLAN_PRIORITY } f
 // can't power the trainer's "see everyone waiting" view, which is exactly
 // why GET below reads with the service-role client instead of relying on
 // Realtime/RLS for that side.
+// Oct 2026 — rooms only open 30 min before a class (see lib/cafe-class-queue.ts).
+// Pro and Max members are seated straight away (cafe_admit_direct); everyone
+// else waits in line and is let in automatically once the class starts.
 // Sept 2026 — scheduled classes (see lib/cafe-class-queue.ts): when a room
 // has a scheduled class, EVERY student goes through this queue (it opens 30
 // min before the start), ordered by membership plan then arrival time, and
@@ -78,6 +81,13 @@ export async function POST(request: Request) {
                 // Too early — the waiting screen shows a countdown and retries.
                 return NextResponse.json({ state: 'not_open', phase })
             }
+            if (phase.mode === 'closed') {
+                // No class scheduled for this room right now.
+                return NextResponse.json({ state: 'closed', phase })
+            }
+            await ensureSessionStarted(admin, roomId, phase)
+            // Rows from an earlier class don't count for this one.
+            const sessionOpensAt = phase.mode === 'queueing' || phase.mode === 'started' ? Date.parse(phase.opensAt) : 0
 
             const plan = await getUserPlan(admin, user.id)
             const now = new Date().toISOString()
@@ -87,14 +97,15 @@ export async function POST(request: Request) {
             // 'expired' row (admitted but never took the seat) rejoins at the back.
             const { data: existing } = await admin
                 .from('cafe_classroom_queue')
-                .select('id, status, redeemed_boost_10, redeemed_boost_50, redeemed_boost_100')
+                .select('id, status, joined_queue_at, redeemed_boost_10, redeemed_boost_50, redeemed_boost_100')
                 .eq('room_id', roomId)
                 .eq('user_id', user.id)
                 .maybeSingle()
 
             if (existing) {
                 const priority = PLAN_PRIORITY[plan] + boostTotal(existing)
-                if (existing.status === 'expired') {
+                const fromEarlierClass = !!sessionOpensAt && Date.parse(existing.joined_queue_at || '') < sessionOpensAt
+                if (existing.status === 'expired' || fromEarlierClass) {
                     await admin
                         .from('cafe_classroom_queue')
                         .update({ status: 'waiting', joined_queue_at: now, admitted_at: null, last_heartbeat: now, plan_tier: plan, priority_score: priority })
@@ -131,9 +142,14 @@ export async function POST(request: Request) {
                 }
             }
 
-            // Class already running: a seat may be free right now (e.g. a
-            // paid member arriving within the grace period) — admit instantly.
-            if (phase.mode === 'started') await fillSeats(admin, roomId)
+            // Pro/Max walk straight in. Everyone else: if the class is already
+            // running, a seat may be free right now — admit in line order.
+            if (isDirectEntry(plan)) {
+                const seated = await admitDirect(admin, roomId, user.id)
+                if (!seated && phase.mode === 'started') await fillSeats(admin, roomId)
+            } else if (phase.mode === 'started') {
+                await fillSeats(admin, roomId)
+            }
 
             const { data: entry } = await admin
                 .from('cafe_classroom_queue')
@@ -174,7 +190,8 @@ export async function GET(request: Request) {
         const phase = classPhase(schedule)
 
         // Waiting students poll this every few seconds, so this doubles as
-        // the "a seat just freed up → admit the next person" trigger.
+        // the "class started / a seat just freed up → admit the next person" trigger.
+        await ensureSessionStarted(admin, roomId, phase)
         if (phase.mode === 'started') await fillSeats(admin, roomId)
 
         const staleCutoff = new Date(Date.now() - STALE_AFTER_SECONDS * 1000).toISOString()

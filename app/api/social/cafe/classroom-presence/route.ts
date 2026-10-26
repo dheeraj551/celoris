@@ -84,21 +84,27 @@ export async function POST(request: Request) {
             // Scheduled class (lib/cafe-class-queue.ts): students only get a
             // seat through the queue — the trainer's Start button and the
             // automatic seat-filling mark them 'admitted' in order.
+            // Oct 2026: students only ever get a seat through the queue (Pro/Max
+            // are admitted instantly, everyone else in line order), and only
+            // while the room is open (30 min before class until it ends).
             if (action === 'join' && seatRole === 'student') {
                 const phase = classPhase(await loadRoomSchedule(admin, roomId))
                 if (phase.mode !== 'open') {
                     const { data: queueRow } = await admin
                         .from('cafe_classroom_queue')
-                        .select('status')
+                        .select('status, admitted_at')
                         .eq('room_id', roomId)
                         .eq('user_id', user.id)
                         .maybeSingle()
-                    if (queueRow?.status !== 'admitted') {
+                    const opensAt = phase.mode === 'queueing' || phase.mode === 'started' ? Date.parse(phase.opensAt) : Infinity
+                    const admittedThisClass =
+                        queueRow?.status === 'admitted' && !!queueRow.admitted_at && Date.parse(queueRow.admitted_at) >= opensAt - 60_000
+                    if (!admittedThisClass) {
                         return NextResponse.json(
                             {
-                                error: phase.mode === 'not_open'
-                                    ? 'The waiting line for this class hasn\'t opened yet.'
-                                    : 'This class uses a waiting line — join the queue to get your seat.',
+                                error: phase.mode === 'not_open' || phase.mode === 'closed'
+                                    ? 'This classroom opens 30 minutes before class.'
+                                    : 'Join the line to get your seat.',
                                 queue: true,
                                 phase,
                             },

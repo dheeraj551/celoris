@@ -35,6 +35,8 @@ interface RightSidebarProps {
   onSelectStudent: (studentId: string | null) => void;
   chatMessages: ChatMessage[];
   onSendMessage: (text: string) => void;
+  /** Set for students whose plan can't chat (free/Basic watch only). */
+  chatLock?: { reason: string } | null;
   onCallOnStudent: (student: Student) => void;
   /** Real live-presentation control — the original demo's "Share screen"
       button here wasn't wired to anything (the in-3D board manages its own
@@ -71,6 +73,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   onSelectStudent,
   chatMessages,
   onSendMessage,
+  chatLock = null,
   onCallOnStudent,
   screenSharing,
   onToggleScreenShare,
@@ -323,6 +326,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       </div>
 
       <div className="p-3 bg-[#0d121f] border-t border-[#1e293b]">
+        {chatLock ? (
+          <div className="flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg border border-amber-500/30 bg-amber-500/[0.06] text-[11px] text-amber-200">
+            <span>{chatLock.reason}. You can watch the class.</span>
+            <a href="/pricing" className="font-bold text-amber-300 hover:underline shrink-0">
+              See Pro
+            </a>
+          </div>
+        ) : (
         <form onSubmit={handleSend} className="flex items-center space-x-1.5">
           <input
             type="text"
@@ -340,6 +351,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             <Send className="w-3.5 h-3.5" />
           </button>
         </form>
+        )}
       </div>
     </aside>
   );

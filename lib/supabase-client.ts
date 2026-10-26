@@ -29,11 +29,16 @@ export const createClientForBrowser = () => {
 // Create Supabase client for API routes & Server components
 export const createSupabaseClientForServer = () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+  // Server code (API routes, server components) uses the service-role key, as
+  // every route that calls this expects ("const admin = ..."). The anon key is
+  // only a fallback when the service key is missing. Never import this in
+  // browser code, and never return secret columns (room codes etc.) from a
+  // public route.
   const key =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SERVICE_ROLE_KEY
+    process.env.SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_ANON_KEY
 
   if (!url) {
     throw new Error('Missing Supabase URL environment variable')
@@ -55,8 +60,6 @@ export const createSupabaseClientForServer = () => {
 // privileges: admin API routes (gated by proxy.ts) and server-decided writes like
 // bootcamp applications. Never use it in browser code, and never return secret
 // columns (classroom codes etc.) from a public route.
-// Note: createSupabaseClientForServer() above currently prefers the anon key, so it
-// can't read protected columns such as cafe_classrooms.student_code.
 export const createServiceRoleClient = () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY

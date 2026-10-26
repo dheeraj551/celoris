@@ -209,10 +209,11 @@ export default function App() {
       return;
     }
 
-    // Gate entry behind the room's trainer/student code, if either is set.
-    // The code is verified server-side (see submitAdmitCode), which also
-    // tells us which one matched — this page never holds either real code.
-    if (room?.requiresStudentCode || room?.requiresTrainerCode) {
+    // Oct 2026: students join without a code (the schedule and the queue
+    // decide who gets a seat). Rooms with a trainer code show a small choice:
+    // "Join as student" or enter the trainer code. The code is verified
+    // server-side (see submitAdmitCode) — this page never holds the real code.
+    if (room?.requiresTrainerCode) {
       setAdmitModalRoom(room);
       setAdmitCodeInput('');
       setAdmitCodeError(null);
@@ -222,6 +223,16 @@ export default function App() {
     setJoinedRoomRole('student');
     setJoinedRoomId(roomId);
     setActiveTab('cafe'); // force switch to cafe tab to show active session
+  };
+
+  const joinAsStudent = () => {
+    if (!admitModalRoom) return;
+    const roomId = admitModalRoom.id;
+    setJoinedRoomRole('student');
+    setAdmitModalRoom(null);
+    setAdmitCodeError(null);
+    setJoinedRoomId(roomId);
+    setActiveTab('cafe');
   };
 
   const submitAdmitCode = async (e: React.FormEvent) => {
@@ -665,17 +676,28 @@ export default function App() {
               <div className="w-10 h-10 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center mx-auto mb-2">
                 <Lock className="w-5 h-5 text-purple-400" />
               </div>
-              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Classroom Code Required</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Join Classroom</h3>
               <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
-                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> is protected. Enter your student or trainer code to enter the classroom.
+                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> opens 30 minutes before class. Pro members are seated straight away; everyone else joins the line and gets in as seats free up.
               </p>
             </div>
+
+            <button
+              type="button"
+              onClick={joinAsStudent}
+              disabled={verifyingAdmitCode}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-50 text-black font-extrabold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.2)] cursor-pointer"
+            >
+              Join as Student
+            </button>
+
+            <p className="text-[10px] uppercase tracking-wider text-gray-500 text-center">Trainer? Enter your trainer code</p>
 
             <form onSubmit={submitAdmitCode} className="space-y-3 text-left">
               <input
                 type="text"
                 autoFocus
-                placeholder="Enter classroom code"
+                placeholder="Trainer code"
                 value={admitCodeInput}
                 onChange={(e) => { setAdmitCodeInput(e.target.value); setAdmitCodeError(null); }}
                 className="w-full bg-[#121212] border border-white/[0.1] focus:border-purple-500/50 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none text-center tracking-wider font-mono"
@@ -689,9 +711,9 @@ export default function App() {
               <button
                 type="submit"
                 disabled={verifyingAdmitCode || !admitCodeInput.trim()}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-50 text-black font-extrabold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.2)] cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.12] hover:bg-white/[0.1] disabled:opacity-50 text-white font-bold text-xs transition-all cursor-pointer"
               >
-                {verifyingAdmitCode ? 'Verifying Code...' : 'Enter Classroom'}
+                {verifyingAdmitCode ? 'Verifying Code...' : 'Enter as Trainer'}
               </button>
             </form>
           </div>

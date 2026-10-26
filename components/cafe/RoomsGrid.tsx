@@ -265,13 +265,11 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                     </div>
                   )}
 
-                  {/* Passcode Required notice */}
-                  {room.requiresStudentCode && (
-                    <div className="inline-flex items-center gap-1.5 mb-2.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[10px] font-mono font-semibold">
-                      <Lock className="w-3 h-3 text-amber-400" />
-                      <span>Class Code Required</span>
-                    </div>
-                  )}
+                  {/* Entry rules notice (Oct 2026: no student code; opens 30 min before class) */}
+                  <div className="inline-flex items-center gap-1.5 mb-2.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[10px] font-mono font-semibold">
+                    <Lock className="w-3 h-3 text-amber-400" />
+                    <span>Opens 30 min before class · Pro skips the line</span>
+                  </div>
 
                   {/* Schedule time notice */}
                   {(session || cleanedBatch) && (
@@ -394,17 +392,8 @@ export default function RoomsGrid({ rooms, onJoinRoom, onCreateRoom, currentUser
                         : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black shadow-emerald-500/20 hover:scale-[1.02] active:scale-98'}
                     `}
                   >
-                    {room.requiresStudentCode ? (
-                      <>
-                        <Lock className="w-3.5 h-3.5" />
-                        <span>Enter with Passcode</span>
-                      </>
-                    ) : (
-                      <>
-                        <GraduationCap className="w-4 h-4" />
-                        <span>Enter Classroom</span>
-                      </>
-                    )}
+                    <GraduationCap className="w-4 h-4" />
+                    <span>Enter Classroom</span>
                   </button>
                 </div>
               </div>

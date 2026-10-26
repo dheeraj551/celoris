@@ -205,7 +205,11 @@ export const QuestionsPanel: React.FC<{
 
           <div className="flex items-center justify-between gap-2">
             <span className={`text-[10px] ${c.muted}`}>
-              {left === null ? "Unlimited questions" : `${left} of ${me.freeLimit} question${me.freeLimit === 1 ? "" : "s"} left this class`}
+              {left === null
+                ? "Unlimited questions"
+                : me.freeLimit === 0
+                ? "Asking questions comes with Pro — you can watch the class"
+                : `${left} of ${me.freeLimit} question${me.freeLimit === 1 ? "" : "s"} left this class`}
             </span>
             <button
               type="submit"

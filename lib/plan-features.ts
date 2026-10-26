@@ -146,7 +146,8 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       exam_retake_days: 7,
       polyvault_download_wait_seconds: 30,
       classroom_speak: false,
-      classroom_questions_per_class: 2,
+      // Oct 2026: free and Basic students watch only; questions are Pro/Max.
+      classroom_questions_per_class: 0,
       classroom_super_questions: false,
     },
   },
@@ -166,7 +167,7 @@ export const DEFAULT_TIER_SETTINGS: Record<PlanTier, TierSettings> = {
       exam_retake_days: 5,
       polyvault_download_wait_seconds: 15,
       classroom_speak: false,
-      classroom_questions_per_class: 5,
+      classroom_questions_per_class: 0,
       classroom_super_questions: false,
     },
   },

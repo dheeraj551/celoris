@@ -128,6 +128,9 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   // person's plan lets them be called on to speak (trainers always can).
   const qa = useClassroomQA({ roomId, userId: user?.id, enabled: !roomFullError });
   const planLetsMeSpeak = isHost || (qa.me ? qa.me.canSpeak : !!qa.loadError);
+  // Oct 2026: only Pro and Max members (and trainers) can use the class chat.
+  // Free and Basic students watch the class.
+  const canChat = isHost || qa.me?.tier === 'pro' || qa.me?.tier === 'max';
   const planLetsMeSpeakRef = useRef(planLetsMeSpeak);
   planLetsMeSpeakRef.current = planLetsMeSpeak;
   const lectureMode = qa.mode === 'lecture';
@@ -751,7 +754,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
   };
 
   const sendMessage = (text: string) => {
-    if (!user) return;
+    if (!user || !canChat) return;
     const msg: ChatMessage = {
       id: `msg-${Date.now()}`,
       sender: profile?.full_name || (isHost ? 'Trainer' : 'Student'),
@@ -939,6 +942,7 @@ export default function ClassroomRoom({ roomId, roomName, isHost, onLeave }: Cla
           onSelectStudent={setSelectedStudentId}
           chatMessages={messages}
           onSendMessage={sendMessage}
+          chatLock={canChat ? null : { reason: 'Chat, questions and speaking in class come with Pro' }}
           onCallOnStudent={callOnStudent}
           screenSharing={screenSharing}
           onToggleScreenShare={toggleScreenShare}
