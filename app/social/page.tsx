@@ -225,28 +225,35 @@ export default function App() {
     setActiveTab('cafe'); // force switch to cafe tab to show active session
   };
 
-  // Deep link direct classroom entry: /classrooms?room=<id> or /classrooms?join=<id>
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const directRoomId = params.get('room') || params.get('join');
-      if (directRoomId && allRooms.length > 0 && !joinedRoomId) {
-        const found = allRooms.find((r) => r.id === directRoomId);
-        if (found) {
-          handleJoinRoom(found.id);
-        }
-      }
-    } catch {
-      // ignore
-    }
-  }, [allRooms, joinedRoomId]);
-
-  const joinAsStudent = () => {
+  const joinAsStudent = async () => {
     if (!admitModalRoom) return;
     const roomId = admitModalRoom.id;
+    setVerifyingAdmitCode(true);
+    setAdmitCodeError(null);
+    try {
+      // Records this visit as a student on the server. Without this, an account
+      // that entered the trainer code earlier (that lasts 12 hours) would still
+      // be seated as the trainer and skip the line.
+      const response = await fetch('/api/social/cafe/verify-admit-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId, code: '' }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        setAdmitCodeError(result.error || 'Could not join right now. Try again.');
+        setVerifyingAdmitCode(false);
+        return;
+      }
+    } catch (err) {
+      console.error('Join as student failed:', err);
+      setAdmitCodeError('Something went wrong. Try again.');
+      setVerifyingAdmitCode(false);
+      return;
+    }
+    setVerifyingAdmitCode(false);
     setJoinedRoomRole('student');
     setAdmitModalRoom(null);
-    setAdmitCodeError(null);
     setJoinedRoomId(roomId);
     setActiveTab('cafe');
   };
