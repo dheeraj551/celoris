@@ -363,17 +363,24 @@ export default function CourseDetailClient({
                     </span>
                   </div>
                 </div>
-                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  {batch?.offer ? (
-                    batch.offer.claimed > 0
-                      ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Passes Left`
-                      : `${batch.offer.left} Passes Left`
-                  ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
-                    "All Passes Claimed"
-                  ) : (
-                    "15 Passes Open"
-                  )}
-                </span>
+                {batch?.offer?.state === "full" ||
+                batch?.offer?.state === "round_full" ||
+                (batch?.offer && batch.offer.left <= 0) ||
+                (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0) ? (
+                  <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                    All Passes Claimed · Sold Out
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                    {batch?.offer && batch.offer.left > 0 ? (
+                      batch.offer.claimed > 0
+                        ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Passes Left`
+                        : `${batch.offer.left} Passes Left`
+                    ) : (
+                      `${batch?.seatsTotal ?? 10} Passes Open`
+                    )}
+                  </span>
+                )}
               </div>
             ) : isDigitalMarketing ? (
               <div className="rounded-2xl p-3.5 sm:p-4 border bg-[#111625] border-amber-500/40 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
@@ -419,17 +426,24 @@ export default function CourseDetailClient({
                     <span className="text-emerald-300 font-semibold text-xs sm:text-sm">Next Batch: 20 Oct</span>
                   </div>
                 </div>
-                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  {batch?.offer ? (
-                    batch.offer.claimed > 0
-                      ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Passes Left`
-                      : `${batch.offer.left} Passes Left`
-                  ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
-                    "All Passes Claimed"
-                  ) : (
-                    "15 Passes Open"
-                  )}
-                </span>
+                {batch?.offer?.state === "full" ||
+                batch?.offer?.state === "round_full" ||
+                (batch?.offer && batch.offer.left <= 0) ||
+                (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0) ? (
+                  <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                    All Passes Claimed · Sold Out
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                    {batch?.offer && batch.offer.left > 0 ? (
+                      batch.offer.claimed > 0
+                        ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Passes Left`
+                        : `${batch.offer.left} Passes Left`
+                    ) : (
+                      `${batch?.seatsTotal ?? 10} Passes Open`
+                    )}
+                  </span>
+                )}
               </div>
             ) : null}
 
@@ -1213,7 +1227,12 @@ export default function CourseDetailClient({
                     ? "Starts 13 Oct · 7:00 PM IST • 15 Passes Open"
                     : isDigitalMarketing
                       ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
-                      : `${batch?.batchStart ? `${batch.batchStarted ? "Started" : "Starts"} ${istFullDate(batch.batchStart)}` : "Dates soon"} • ${offer ? `${offer.left} Passes Left` : batch?.offer?.state === "full" ? "Batch Full" : "Passes Open"}`}
+                      : isShortForm &&
+                        (batch?.offer?.state === "full" ||
+                          batch?.offer?.state === "round_full" ||
+                          (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0))
+                        ? `${batch?.batchStart ? `Batch ${batch?.batchNumber || "05"}: Starts ${istFullDate(batch.batchStart)}` : "Next batch soon"} • All 10 Passes Claimed · Waitlist Open`
+                        : `${batch?.batchStart ? `${batch.batchStarted ? "Started" : "Starts"} ${istFullDate(batch.batchStart)}` : "Dates soon"} • ${offer ? `${offer.left} Passes Left` : batch?.offer?.state === "full" ? "Batch Full" : `${batch?.seatsTotal ?? 10} Passes Open`}`}
                 </p>
               </div>
             </div>
@@ -1225,9 +1244,21 @@ export default function CourseDetailClient({
                   el.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer"
+              className={`${
+                isShortForm &&
+                (batch?.offer?.state === "full" ||
+                  batch?.offer?.state === "round_full" ||
+                  (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0))
+                  ? "bg-amber-500 hover:bg-amber-400 text-slate-950"
+                  : "bg-emerald-600 hover:bg-emerald-500 text-white"
+              } text-xs font-bold px-4 py-2 rounded-xl shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer`}
             >
-              Claim Spot →
+              {isShortForm &&
+              (batch?.offer?.state === "full" ||
+                batch?.offer?.state === "round_full" ||
+                (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0))
+                ? "Join Waitlist →"
+                : "Claim Spot →"}
             </button>
           </div>
         </div>

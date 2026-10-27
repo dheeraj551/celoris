@@ -144,7 +144,7 @@ function computeOffer({
 
   const base = { round, perRound: cap, roundStart, passes: 0, claimed: 0, left: 0, endsAt: null as string | null, active: false }
   if (!roundEnd || (hardStop !== null && hardStop <= t)) return { ...base, state: 'ended' }
-  if (seatsLeft <= 0) return { ...base, state: 'full' }
+  if (seatsLeft <= 0) return { ...base, state: 'full', passes: cap, claimed: cap, left: 0 }
 
   // Claimed passes for this batch: count every distinct student who holds an active pass.
   // Never reset or wipe out claimed passes when the round or class start rolls forward.

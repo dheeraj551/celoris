@@ -75,16 +75,14 @@ export interface CourseBatchDefault {
 
 export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
   'f5badaa4-3ca2-4c70-96c3-a1ed97ee9ead': {
-    // Batch 04 started Sun 11 Oct 2026; Batch 05 starts Wed 21 Oct 2026.
-    // TODO(Dheeraj): confirm the 21 Oct class time — 3:00 PM IST assumed
-    // (same slot as Batch 04).
+    // Batch 04 started Sun 11 Oct 2026; Batch 05 starts Wed 28 Oct 2026.
     batchNumber: '05',
-    soldOutBatch: 'Batch 04 (Full · Started 11 Oct)',
-    batchStart: '2026-10-21T15:00:00.000+05:30',
+    soldOutBatch: 'Batch 04 (Sold Out · Started 11 Oct)',
+    batchStart: '2026-10-28T15:00:00.000+05:30',
     scheduleLabel: 'Wednesdays · 3:00 PM IST',
-    seatsTotal: 15,
-    registered: 0,
-    passesTotal: 15,
+    seatsTotal: 10,
+    registered: 10,
+    passesTotal: 10,
     countFrom: '2026-10-11T15:00:00.000+05:30',
   },
   'e7698318-7f57-421f-866e-0101ee239c01': {
