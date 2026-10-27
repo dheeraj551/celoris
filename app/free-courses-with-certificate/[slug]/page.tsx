@@ -1,7 +1,7 @@
 import { type Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowRight, Award, Briefcase, CalendarDays, CheckCircle2, Clock, Languages, User, Video } from "lucide-react"
+import { ArrowRight, Award, Briefcase, CalendarDays, CheckCircle2, Clock, GraduationCap, Languages, User, Video } from "lucide-react"
 import { DashboardShell } from "@/components/home-new/DashboardShell"
 import { JoinBootcamp } from "@/components/bootcamp/JoinBootcamp"
 import {
@@ -163,6 +163,27 @@ export default async function BootcampPage({ params }: { params: Promise<{ slug:
                                 Free seats go to the applicants we select. Selected students get a WhatsApp message with the class link before Class 1.
                             </p>
                             <JoinBootcamp slug={b.slug} shortTitle={b.shortTitle} batchLabel={firstLabel} scheduleLabel={b.scheduleLabel} />
+
+                            {/* Direct Classroom Entry for Confirmed Students */}
+                            <div className="mt-6 pt-5 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-emerald-500/[0.04] border border-emerald-500/20 rounded-2xl p-4">
+                                <div>
+                                    <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                        <span>Already confirmed for this batch?</span>
+                                    </p>
+                                    <p className="text-[11px] text-neutral-300 mt-0.5">
+                                        Enter your live 3D Virtual Aula directly — opens 30 min before class.
+                                    </p>
+                                </div>
+                                <Link
+                                    href={b.classroomId ? `/classrooms?room=${b.classroomId}` : "/classrooms"}
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black shadow-md shadow-emerald-500/20 transition-all hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.02] active:scale-98 whitespace-nowrap"
+                                >
+                                    <GraduationCap className="h-4 w-4" />
+                                    <span>Enter Classroom</span>
+                                    <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </section>

@@ -215,6 +215,7 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
             `Hey! I got selected for a free seat in the ${shortTitle} live course with certificate on Celoris (worth ₹1,500) starting ${status.batchLabel || batchLabel}. Apply for the next free seats here: https://celorisdesigns.com/free-courses-with-certificate/${slug}`
         )
         const shareUrl = `https://api.whatsapp.com/send?text=${shareText}`
+        const classroomUrl = bootcamp?.classroomId ? `/classrooms?room=${bootcamp.classroomId}` : "/classrooms"
 
         return (
             <div className="space-y-4">
@@ -227,9 +228,9 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
                         )}
                         <p className="mt-1 text-neutral-300">
                             {scheduleLabel ? `Schedule: ${scheduleLabel}. ` : "Classes run live online. "}
-                            We&apos;ll send the class link on WhatsApp before each session, and you&apos;ll also find it in{" "}
-                            <Link href="/classrooms" className="text-emerald-400 underline-offset-2 hover:underline">
-                                Classrooms
+                            We&apos;ll send the class link on WhatsApp before each session, and you can also enter directly in{" "}
+                            <Link href={classroomUrl} className="text-emerald-400 font-semibold underline-offset-2 hover:underline">
+                                3D Classrooms
                             </Link>
                             . <span className="font-medium text-amber-300/90">Please attend live on time — recordings are not provided for free batches.</span>
                         </p>
@@ -238,6 +239,13 @@ export function JoinBootcamp({ slug, shortTitle, batchLabel, scheduleLabel }: Pr
 
                 {/* Post-enrollment high-impact action buttons */}
                 <div className="flex flex-wrap items-center gap-3 pt-1">
+                    <Link
+                        href={classroomUrl}
+                        className="inline-flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-bold uppercase tracking-wider text-black transition-all shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95"
+                    >
+                        <span>Enter Live Classroom</span>
+                        <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                    </Link>
                     <a
                         href={calendarUrl}
                         target="_blank"

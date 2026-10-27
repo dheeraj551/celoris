@@ -225,6 +225,22 @@ export default function App() {
     setActiveTab('cafe'); // force switch to cafe tab to show active session
   };
 
+  // Deep link direct classroom entry: /classrooms?room=<id> or /classrooms?join=<id>
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const directRoomId = params.get('room') || params.get('join');
+      if (directRoomId && allRooms.length > 0 && !joinedRoomId) {
+        const found = allRooms.find((r) => r.id === directRoomId);
+        if (found) {
+          handleJoinRoom(found.id);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [allRooms, joinedRoomId]);
+
   const joinAsStudent = () => {
     if (!admitModalRoom) return;
     const roomId = admitModalRoom.id;

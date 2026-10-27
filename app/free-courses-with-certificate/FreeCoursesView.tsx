@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
     ArrowRight,
     Award,
+    Box,
     Briefcase,
     CalendarDays,
     ChevronDown,
     Clock,
     Compass,
     Flame,
+    GraduationCap,
     Languages,
     PlayCircle,
     QrCode,
@@ -58,6 +60,8 @@ const FEATURED_COURSES = [
         slug: "social-media-reels",
         masterclassUrl: "/learn/course/master-youtube-shorts-instagram-reels",
         bootcampUrl: "/free-courses-with-certificate/social-media-reels",
+        classroomId: reelsBootcamp?.classroomId || "4f44c85d-edd6-4e74-b0e5-d1f0498b59f6",
+        classroomUrl: "/classrooms?room=4f44c85d-edd6-4e74-b0e5-d1f0498b59f6",
         image: "/free-courses/social-media-reels.jpg",
         badgePill: "Free Seats for Selected Students",
         categoryPill: "Content Creation",
@@ -84,6 +88,8 @@ const FEATURED_COURSES = [
         slug: "digital-marketing",
         masterclassUrl: "/learn/course/digital-marketing-mastery",
         bootcampUrl: "/free-courses-with-certificate/digital-marketing",
+        classroomId: dmBootcamp?.classroomId || "d27f7a5f-2e0c-42c3-806f-1bca2aa9890e",
+        classroomUrl: "/classrooms?room=d27f7a5f-2e0c-42c3-806f-1bca2aa9890e",
         image: "/free-courses/digital-marketing.jpg",
         badgePill: "Free Seats for Selected Students",
         categoryPill: "Marketing",
@@ -346,6 +352,177 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                                 <span className="text-neutral-300">Verified Certificate for Job Center</span>
                             </div>
                         </motion.div>
+
+                        {/* Direct Classroom Quick-Access Jump Pill */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.75 }}
+                            className="mt-6 flex justify-center"
+                        >
+                            <a
+                                href="#live-classrooms"
+                                className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 px-5 py-2 text-xs font-bold text-emerald-300 shadow-[0_0_25px_rgba(16,185,129,0.25)] transition-all hover:scale-105 active:scale-95"
+                            >
+                                <span className="relative flex h-2 w-2">
+                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                                </span>
+                                <GraduationCap className="h-4 w-4 text-emerald-400" />
+                                <span>Already registered? Enter Live Classroom Direct ↓</span>
+                            </a>
+                        </motion.div>
+                    </div>
+                </section>
+
+                {/* Direct Live Classroom Entry Section (3D Virtual Aula) */}
+                <section id="live-classrooms" className="mx-auto max-w-6xl px-4 sm:px-6 mb-16 scroll-mt-24">
+                    <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/[0.08] via-[#0b0e14]/95 to-[#0b0e14] p-5 sm:p-7 backdrop-blur-2xl shadow-[0_0_50px_rgba(16,185,129,0.12)]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/[0.08] gap-3">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400">
+                                        Showing 2 Active Classroom Batches
+                                    </span>
+                                </div>
+                                <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                                    Enter Your Live Classroom Direct
+                                </h2>
+                                <p className="mt-1 text-xs sm:text-sm text-neutral-300">
+                                    Enrolled students join directly here. Opens 30 minutes before class — zero searching required.
+                                </p>
+                            </div>
+                            <Link
+                                href="/classrooms"
+                                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-neutral-300 hover:border-emerald-500/40 hover:text-emerald-300 transition-all shrink-0 self-start sm:self-center"
+                            >
+                                <span>All Classrooms</span>
+                                <ArrowRight size={13} />
+                            </Link>
+                        </div>
+
+                        <div className="mt-6 grid gap-5 md:grid-cols-2">
+                            {/* Card 1: Digital Marketing */}
+                            <div className="flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#0c0d14]/90 p-5 hover:border-emerald-500/40 transition-colors">
+                                <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                                            <Box className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>3D Virtual Aula</span>
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-mono text-neutral-400">
+                                            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>28 Oct</span>
+                                        </span>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-white leading-snug">
+                                        Digital Marketing Mastery — From Basics to Campaign-Ready
+                                    </h3>
+                                    <p className="mt-2 text-xs text-neutral-400 leading-relaxed">
+                                        This course takes you from zero to job-ready, covering everything from SEO fundamentals to running live Meta and Google ad campaigns.
+                                    </p>
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        <span className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">#Digital</span>
+                                        <span className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">#Marketing</span>
+                                        <span className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">#Training</span>
+                                    </div>
+                                    <div className="mt-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-[11px] font-mono text-amber-300">
+                                        Opens 30 min before class · Pro skips the line
+                                    </div>
+                                    <div className="mt-3 rounded-xl border border-white/[0.06] bg-black/40 p-3">
+                                        <p className="text-xs font-mono font-semibold text-emerald-400">
+                                            Next Class: Wed, 28 Oct · 12:00 PM IST
+                                        </p>
+                                        <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                                            Batch: Batch starting 28 Oct 2026 12:00 PM
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="mt-5 pt-3 border-t border-white/[0.08]">
+                                    <div className="flex items-center justify-between mb-3 text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold flex items-center justify-center font-mono">
+                                                D
+                                            </div>
+                                            <div>
+                                                <span className="text-[9px] uppercase font-mono text-neutral-400 block leading-tight">Trainer</span>
+                                                <span className="text-white font-semibold">Dheeraj Kushwaha</span>
+                                            </div>
+                                        </div>
+                                        <span className="font-mono text-[11px] text-emerald-400">10 Seats Cohort</span>
+                                    </div>
+                                    <Link
+                                        href="/classrooms?room=d27f7a5f-2e0c-42c3-806f-1bca2aa9890e"
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black shadow-md shadow-emerald-500/20 transition-all hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.01] active:scale-98"
+                                    >
+                                        <GraduationCap className="h-4 w-4" />
+                                        <span>Enter Classroom</span>
+                                        <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Card 2: Social Media Reels */}
+                            <div className="flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#0c0d14]/90 p-5 hover:border-emerald-500/40 transition-colors">
+                                <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                                            <Box className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>3D Virtual Aula</span>
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-mono text-neutral-400">
+                                            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>28 Oct</span>
+                                        </span>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-white leading-snug">
+                                        The Short-Form Video Masterclass — YouTube Shorts &amp; Instagram Reels
+                                    </h3>
+                                    <p className="mt-2 text-xs text-neutral-400 leading-relaxed">
+                                        Foundations &amp; Mindset · Find your niche, write hooks, shoot on smartphone, edit in CapCut, and assemble a 3-Reel portfolio.
+                                    </p>
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        <span className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">#Classroom</span>
+                                        <span className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">#Live</span>
+                                        <span className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">#DigitalMarketing</span>
+                                    </div>
+                                    <div className="mt-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-[11px] font-mono text-amber-300">
+                                        Opens 30 min before class · Pro skips the line
+                                    </div>
+                                    <div className="mt-3 rounded-xl border border-white/[0.06] bg-black/40 p-3">
+                                        <p className="text-xs font-mono font-semibold text-emerald-400">
+                                            Next Class: Wed, 28 Oct · 3:00 PM IST
+                                        </p>
+                                        <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                                            Batch: Batch #03 · Class 01: Foundations &amp; Creator Mindset
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="mt-5 pt-3 border-t border-white/[0.08]">
+                                    <div className="flex items-center justify-between mb-3 text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold flex items-center justify-center font-mono">
+                                                A
+                                            </div>
+                                            <div>
+                                                <span className="text-[9px] uppercase font-mono text-neutral-400 block leading-tight">Trainer</span>
+                                                <span className="text-white font-semibold">Ananya Jairath</span>
+                                            </div>
+                                        </div>
+                                        <span className="font-mono text-[11px] text-emerald-400">10 Seats Cohort</span>
+                                    </div>
+                                    <Link
+                                        href="/classrooms?room=4f44c85d-edd6-4e74-b0e5-d1f0498b59f6"
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black shadow-md shadow-emerald-500/20 transition-all hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.01] active:scale-98"
+                                    >
+                                        <GraduationCap className="h-4 w-4" />
+                                        <span>Enter Classroom</span>
+                                        <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -597,13 +774,20 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                                                 </span>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <Link
+                                                    href={course.classroomUrl}
+                                                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:shadow-[0_0_30px_rgba(52,211,153,0.55)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                                                >
+                                                    <GraduationCap className="w-3.5 h-3.5" />
+                                                    <span>Enter Classroom</span>
+                                                </Link>
                                                 <Link
                                                     href={course.bootcampUrl}
-                                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-neutral-950 text-xs font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:shadow-[0_0_30px_rgba(52,211,153,0.55)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                                                    className="inline-flex items-center gap-1.5 px-4 py-2 border border-white/10 hover:border-emerald-500/40 bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all whitespace-nowrap"
                                                 >
-                                                    <span>Apply for Free Seat</span>
-                                                    <ArrowRight size={13} className="stroke-[2.5]" />
+                                                    <span>Apply Free</span>
+                                                    <ArrowRight size={12} className="stroke-[2.5]" />
                                                 </Link>
                                             </div>
                                         </div>
@@ -623,10 +807,10 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                                                 <span>Invite friend</span>
                                             </a>
                                             <Link
-                                                href={course.bootcampUrl}
-                                                className="text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline flex items-center gap-1"
+                                                href={course.classroomUrl}
+                                                className="text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline flex items-center gap-1 font-semibold"
                                             >
-                                                <span>Apply for Free Seat</span>
+                                                <span>Enter 3D Classroom</span>
                                                 <span>→</span>
                                             </Link>
                                         </div>
