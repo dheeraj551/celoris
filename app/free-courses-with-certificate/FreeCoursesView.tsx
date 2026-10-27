@@ -818,12 +818,14 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                                         {/* Masterclass cross-link for students wanting the deep-dive */}
                                         {course.masterclassUrl && (
                                             <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono">
-                                                <span className="text-neutral-400">Want the full 6-week mentorship?</span>
+                                                <span className="text-neutral-400">
+                                                    {course.slug === "digital-marketing" ? "Want full career training & live ad budgets?" : "Want full 6-week studio creator mentorship?"}
+                                                </span>
                                                 <Link
                                                     href={course.masterclassUrl}
                                                     className="text-amber-300 hover:text-amber-200 font-semibold inline-flex items-center gap-1 hover:underline"
                                                 >
-                                                    <span>Full Masterclass</span>
+                                                    <span>{course.slug === "digital-marketing" ? "Digital Marketing Course" : "Reels Masterclass"}</span>
                                                     <span>→</span>
                                                 </Link>
                                             </div>
@@ -835,50 +837,111 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                         })}
                     </div>
 
-                    {/* Deep-Dive Paid Masterclass Showcase */}
-                    <div className="mt-10 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/[0.08] via-[#0b0e14]/95 to-[#0b0e14] p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_50px_rgba(245,158,11,0.12)]">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            <div className="max-w-2xl">
-                                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
-                                        <Video className="w-3.5 h-3.5 text-amber-400" />
-                                        <span>Full Studio Masterclass</span>
-                                    </span>
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider text-rose-300 bg-rose-500/20 border border-rose-500/40 px-3 py-1 rounded-full">
-                                        <span>Batch 05 Sold Out (All 10 Passes Claimed)</span>
-                                    </span>
+                    {/* Deep-Dive Paid Masterclasses & Career Tracks Showcase */}
+                    <div className="mt-14">
+                        <div className="text-center mb-6">
+                            <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
+                                Beyond the Bootcamp · Full Career Tracks
+                            </span>
+                            <h3 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                                Want the Complete Live Masterclass?
+                            </h3>
+                            <p className="mt-1 text-xs sm:text-sm text-neutral-400 max-w-xl mx-auto">
+                                Intensive multi-week programs with portfolio reviews, 1-on-1 mentorship, live ad spends, and job placement assistance.
+                            </p>
+                        </div>
+
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {/* Card 1: Shorts & Reels */}
+                            <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/[0.08] via-[#0b0e14]/95 to-[#0b0e14] p-6 sm:p-7 backdrop-blur-2xl shadow-[0_0_50px_rgba(245,158,11,0.1)] flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
+                                            <Video className="w-3.5 h-3.5 text-amber-400" />
+                                            <span>Creator Masterclass</span>
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider text-rose-300 bg-rose-500/20 border border-rose-500/40 px-3 py-1 rounded-full">
+                                            <span>Batch 05 Sold Out (10/10 Seats)</span>
+                                        </span>
+                                    </div>
+                                    <h4 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug">
+                                        Master YouTube Shorts &amp; Instagram Reels
+                                    </h4>
+                                    <p className="mt-2 text-xs sm:text-sm text-neutral-300 leading-relaxed">
+                                        6-week studio program: retention psychology, viral scripting frameworks, CapCut &amp; desktop editing, brand sponsor deal kits, and live 1-on-1 feedback with Ananya Jairath.
+                                    </p>
+                                    <div className="mt-4 space-y-1.5 text-xs font-mono">
+                                        <div className="flex items-center gap-1.5 text-amber-300">
+                                            <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                                            <span>Batch 05: Starts Wed, 28 Oct · 3:00 PM IST</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-neutral-400">
+                                            <Users className="w-4 h-4 text-neutral-400 shrink-0" />
+                                            <span>10 Seats strictly capped · Waitlist open for Batch 06</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                                    Master YouTube Shorts &amp; Instagram Reels — Complete Masterclass
-                                </h3>
-                                <p className="mt-2.5 text-xs sm:text-sm text-neutral-300 leading-relaxed">
-                                    For creators and editors wanting the full 6-week live accelerator: retention psychology, viral scripting frameworks, advanced CapCut &amp; desktop editing, brand sponsor deal kits, and live 1-on-1 feedback with Ananya Jairath.
-                                </p>
-                                <div className="mt-4 flex flex-wrap items-center gap-4 text-xs font-mono">
-                                    <div className="flex items-center gap-1.5 text-amber-300">
-                                        <Clock className="w-4 h-4 text-amber-400" />
-                                        <span>Batch 05 Starts: Wed, 28 Oct · 3:00 PM IST</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5 text-neutral-400">
-                                        <Users className="w-4 h-4 text-neutral-400" />
-                                        <span>Cohort Size: 10 Seats (Waitlist Open)</span>
-                                    </div>
+                                <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3 flex-wrap">
+                                    <Link
+                                        href="/learn/course/master-youtube-shorts-instagram-reels"
+                                        className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-5 py-2.5 text-xs uppercase tracking-wider font-mono transition-all hover:scale-105 active:scale-95"
+                                    >
+                                        <span>View Masterclass</span>
+                                        <ArrowRight size={13} className="stroke-[2.5]" />
+                                    </Link>
+                                    <Link
+                                        href="/learn/course/master-youtube-shorts-instagram-reels"
+                                        className="text-xs font-mono text-amber-300 hover:text-white underline-offset-2 hover:underline"
+                                    >
+                                        Join Waitlist →
+                                    </Link>
                                 </div>
                             </div>
-                            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 lg:w-64">
-                                <Link
-                                    href="/learn/course/master-youtube-shorts-instagram-reels"
-                                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-6 py-3.5 text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 text-center font-mono"
-                                >
-                                    <span>Explore Masterclass</span>
-                                    <ArrowRight size={14} className="stroke-[2.5]" />
-                                </Link>
-                                <Link
-                                    href="/learn/course/master-youtube-shorts-instagram-reels"
-                                    className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-white/10 hover:border-amber-500/40 bg-white/[0.03] text-neutral-300 hover:text-white px-4 py-2.5 text-xs font-mono transition-all text-center"
-                                >
-                                    <span>Join Waitlist for Next Batch →</span>
-                                </Link>
+
+                            {/* Card 2: Digital Marketing Mastery */}
+                            <div className="rounded-3xl border border-teal-500/30 bg-gradient-to-b from-teal-500/[0.08] via-[#0b0e14]/95 to-[#0b0e14] p-6 sm:p-7 backdrop-blur-2xl shadow-[0_0_50px_rgba(20,184,166,0.1)] flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-teal-300 bg-teal-500/15 border border-teal-500/30 px-3 py-1 rounded-full">
+                                            <Award className="w-3.5 h-3.5 text-teal-400" />
+                                            <span>Live Agency Masterclass</span>
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider text-rose-300 bg-rose-500/20 border border-rose-500/40 px-3 py-1 rounded-full">
+                                            <span>Batch #43 Sold Out (All 10 Claimed)</span>
+                                        </span>
+                                    </div>
+                                    <h4 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug">
+                                        Digital Marketing Mastery — Live Ads &amp; AI Tools
+                                    </h4>
+                                    <p className="mt-2 text-xs sm:text-sm text-neutral-300 leading-relaxed">
+                                        Comprehensive hands-on training: real Meta &amp; Google ad spend budgets, SEO audit setups, GA4 tracking, and AI-powered client funnels with UrbanPro Top Tutor Dheeraj Kushwaha.
+                                    </p>
+                                    <div className="mt-4 space-y-1.5 text-xs font-mono">
+                                        <div className="flex items-center gap-1.5 text-teal-300">
+                                            <Clock className="w-4 h-4 text-teal-400 shrink-0" />
+                                            <span>Batch #43: Starts Wed, 28 Oct · 12:00 PM IST</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-neutral-400">
+                                            <Users className="w-4 h-4 text-neutral-400 shrink-0" />
+                                            <span>Trainer: Dheeraj Kushwaha (UrbanPro 4.5★ Top Tutor)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3 flex-wrap">
+                                    <Link
+                                        href="/learn/course/digital-marketing-mastery"
+                                        className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 text-xs uppercase tracking-wider font-mono transition-all hover:scale-105 active:scale-95"
+                                    >
+                                        <span>View Course Page</span>
+                                        <ArrowRight size={13} className="stroke-[2.5]" />
+                                    </Link>
+                                    <Link
+                                        href="/learn/course/digital-marketing-mastery"
+                                        className="text-xs font-mono text-teal-300 hover:text-white underline-offset-2 hover:underline"
+                                    >
+                                        Join Waitlist →
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

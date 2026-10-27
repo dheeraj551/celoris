@@ -46,7 +46,8 @@ export const COURSE_SEO: Record<string, { title: string; description: string; im
     title: 'Digital Marketing Course with AI Tools & Live Ads',
     description:
       'Live practical digital marketing course in India: master Meta Ads, Google Ads, SEO, GA4 analytics & AI workflows. Build real campaigns & get certified.',
-    image: '/courses/digital-marketing-mastery-og.png',
+    image: '/courses/digital-marketing-mastery-og.jpg',
+    heroImage: '/courses/digital-marketing-mastery-og.jpg',
   },
   'f00459e9-20a0-4866-ba05-79aa574f7dff': {
     title: 'Master Microsoft Excel with Copilot AI Course in India',
@@ -87,13 +88,14 @@ export const COURSE_BATCH_DEFAULTS: Record<string, CourseBatchDefault> = {
   },
   'e7698318-7f57-421f-866e-0101ee239c01': {
     batchNumber: '43',
-    soldOutBatch: 'Batch #42 (Sold Out)',
-    batchStart: '2026-10-01T20:00:00.000+05:30',
-    scheduleLabel: 'Tonight · 8:00 PM IST',
-    seatsTotal: 15,
+    soldOutBatch: 'Batch #42 (Sold Out · Started 11 Oct)',
+    batchStart: '2026-10-28T12:00:00.000+05:30',
+    scheduleLabel: 'Starts Wed 28 Oct · 12:00 PM IST',
+    seatsTotal: 10,
     registered: 10,
-    passesTotal: 5,
-    nextBatchDate: '11 Oct 2026',
+    passesTotal: 10,
+    nextBatchDate: '11 Nov 2026',
+    countFrom: '2026-10-11T12:00:00.000+05:30',
   },
   'f00459e9-20a0-4866-ba05-79aa574f7dff': {
     batchNumber: '08',

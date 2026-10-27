@@ -390,26 +390,41 @@ export default function CourseDetailClient({
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
                   </span>
                   <div className="text-sm font-medium flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                    <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">Batch #42 (Sold Out)</span>
+                    <span className="text-rose-400 line-through font-semibold text-xs sm:text-sm">
+                      {batch?.soldOutNotice || "Batch #42 (Sold Out)"}
+                    </span>
                     <span className="text-slate-400 hidden sm:inline">•</span>
-                    <span className="font-bold text-amber-300 text-xs sm:text-sm">Batch #43: Launching Tonight · 8:00 PM IST</span>
+                    <span className="font-bold text-amber-300 text-xs sm:text-sm">
+                      {batch?.batchStart
+                        ? `${batch.batchNumber ? `Batch #${batch.batchNumber}: ` : ""}${batch.batchStarted ? "Started" : "Starts"} ${istFullDate(batch.batchStart)} · ${istTime(batch.batchStart)} IST`
+                        : "Batch #43: Starts Wed, 28 Oct · 12:00 PM IST"}
+                    </span>
                     <span className="text-slate-400 hidden sm:inline">•</span>
-                    <span className="text-emerald-300 font-semibold text-xs sm:text-sm">Next Batch: 11 Oct</span>
+                    <span className="text-emerald-300 font-semibold text-xs sm:text-sm">
+                      Next Batch: {batch?.nextBatchDate || "11 Nov"}
+                    </span>
                   </div>
                 </div>
-                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
-                  {batch?.offer ? (
-                    batch.offer.claimed > 0
-                      ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Left`
-                      : `${batch.offer.left} Passes Left`
-                  ) : batch?.offer?.state === "round_full" || batch?.offer?.state === "full" ? (
-                    "All Passes Claimed"
-                  ) : typeof batch?.seatsLeft === "number" ? (
-                    `Only ${batch.seatsLeft} Seats Left`
-                  ) : (
-                    "Only 5 Seats Left"
-                  )}
-                </span>
+                {batch?.offer?.state === "full" ||
+                batch?.offer?.state === "round_full" ||
+                (batch?.offer && batch.offer.left <= 0) ||
+                (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0) ? (
+                  <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                    All Passes Claimed · Sold Out
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500 text-slate-950 shadow-sm self-start sm:self-auto font-mono whitespace-nowrap">
+                    {batch?.offer && batch.offer.left > 0 ? (
+                      batch.offer.claimed > 0
+                        ? `${batch.offer.claimed} Claimed · ${batch.offer.left} Left`
+                        : `${batch.offer.left} Passes Left`
+                    ) : typeof batch?.seatsLeft === "number" ? (
+                      `Only ${batch.seatsLeft} Seats Left`
+                    ) : (
+                      "All Passes Claimed"
+                    )}
+                  </span>
+                )}
               </div>
             ) : isCopilot ? (
               <div className="rounded-2xl p-3.5 sm:p-4 border bg-[#111625] border-emerald-500/40 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
@@ -1029,6 +1044,57 @@ export default function CourseDetailClient({
               </Card>
             )}
 
+            {/* UrbanPro Verified Trainer Social Proof (Digital Marketing) */}
+            {isDigitalMarketing && (
+              <div className="mt-8 p-5 sm:p-6 rounded-3xl border border-teal-200/80 bg-gradient-to-br from-teal-50/70 via-white to-emerald-50/50 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 p-0.5 shadow-md flex items-center justify-center text-white font-bold text-xl font-mono">
+                        D
+                      </div>
+                      <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-[10px] text-slate-950 shadow-xs font-bold" title="Top Tutor on UrbanPro">
+                        🏆
+                      </span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-bold text-slate-900 text-base">Dheeraj Kushwaha</h3>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[11px] font-bold font-mono">
+                          <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse" />
+                          UrbanPro Top Tutor
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 mt-0.5">
+                        Performance Marketing &amp; Growth Strategist · Lead Instructor
+                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                        <span className="inline-flex items-center gap-1 text-amber-600 font-bold">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          4.5 / 5.0 <span className="text-slate-500 font-normal">Rating</span>
+                        </span>
+                        <span className="text-slate-300">•</span>
+                        <span className="text-slate-600 font-medium">
+                          <strong className="text-slate-800">194+</strong> Student Consultations
+                        </span>
+                        <span className="text-slate-300">•</span>
+                        <span className="text-teal-700 font-semibold inline-flex items-center gap-1">
+                          <BadgeCheck className="w-3.5 h-3.5 text-teal-600" />
+                          Recommended on UrbanPro
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap sm:flex-col gap-2 shrink-0 sm:items-end">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-teal-300 bg-white text-xs font-mono font-bold text-teal-800 shadow-xs">
+                      <ShieldCheck className="w-4 h-4 text-teal-600" />
+                      <span>Vetted &amp; Certified Tutor</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Trainer Booth */}
             <div className="mt-8">
               <CourseTrainerBooth courseId={course.id} />
@@ -1046,7 +1112,7 @@ export default function CourseDetailClient({
                       {isCopilot
                         ? "Have questions about the Copilot in Excel Masterclass?"
                         : isDigitalMarketing
-                          ? "Have questions before joining tonight at 8:00 PM?"
+                          ? "Have questions about the Digital Marketing Mastery Course?"
                           : "Have questions about the 10-Hour Masterclass?"}
                     </h3>
                     <p className="text-xs text-slate-600">
@@ -1063,7 +1129,7 @@ export default function CourseDetailClient({
                     isCopilot
                       ? "Hi Celoris! I have a question about the Master Copilot in Excel Batch 08 launching 13 Oct 2026 at 7:00 PM IST."
                       : isDigitalMarketing
-                        ? "Hi Celoris! I have a question about Digital Marketing Mastery Batch #43 launching tonight at 8:00 PM."
+                        ? "Hi Celoris! I have a question about the Digital Marketing Mastery course starting Wed, 28 Oct."
                         : `Hi Celoris! I have a question about the 10-Hour YouTube Shorts & Instagram Reels Masterclass${batch?.batchNumber && batch?.batchStart ? ` (Batch ${batch.batchNumber}, starting ${istFullDate(batch.batchStart)})` : ""}.`
                   )}`}
                   target="_blank"
@@ -1212,8 +1278,16 @@ export default function CourseDetailClient({
                     </>
                   ) : isDigitalMarketing ? (
                     <>
-                      <span className="line-through text-rose-400 mr-1.5">Batch #42 Full</span>
-                      <span className="text-emerald-400">Batch #43 Tonight</span>
+                      <span className="line-through text-rose-400 mr-1.5">
+                        {batch?.soldOutNotice ? batch.soldOutNotice.replace(/\s*\(.*\)\s*$/, "") : "Batch #42"} Full
+                      </span>
+                      <span className="text-emerald-400">
+                        {batch?.offer?.state === "full" ||
+                        batch?.offer?.state === "round_full" ||
+                        (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0)
+                          ? `Batch #${batch?.batchNumber || "43"} Waitlist`
+                          : `Batch #${batch?.batchNumber || "43"} Open`}
+                      </span>
                     </>
                   ) : (
                     <>
@@ -1226,7 +1300,11 @@ export default function CourseDetailClient({
                   {isCopilot
                     ? "Starts 13 Oct · 7:00 PM IST • 15 Passes Open"
                     : isDigitalMarketing
-                      ? "Launching Tonight · 8:00 PM IST • Only 5 Seats Left"
+                      ? (batch?.offer?.state === "full" ||
+                          batch?.offer?.state === "round_full" ||
+                          (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0))
+                        ? `${batch?.batchStart ? `Batch #${batch?.batchNumber || "43"}: Starts ${istFullDate(batch.batchStart)}` : "Starts Wed, 28 Oct · 12:00 PM IST"} • All 10 Passes Claimed · Waitlist Open`
+                        : `${batch?.batchStart ? `Starts ${istFullDate(batch.batchStart)}` : "Starts Wed, 28 Oct"} • ${offer ? `${offer.left} Passes Left` : "Passes Open"}`
                       : isShortForm &&
                         (batch?.offer?.state === "full" ||
                           batch?.offer?.state === "round_full" ||
@@ -1245,7 +1323,7 @@ export default function CourseDetailClient({
                 }
               }}
               className={`${
-                isShortForm &&
+                (isShortForm || isDigitalMarketing) &&
                 (batch?.offer?.state === "full" ||
                   batch?.offer?.state === "round_full" ||
                   (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0))
@@ -1253,7 +1331,7 @@ export default function CourseDetailClient({
                   : "bg-emerald-600 hover:bg-emerald-500 text-white"
               } text-xs font-bold px-4 py-2 rounded-xl shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer`}
             >
-              {isShortForm &&
+              {(isShortForm || isDigitalMarketing) &&
               (batch?.offer?.state === "full" ||
                 batch?.offer?.state === "round_full" ||
                 (batch?.seatsLeft !== null && batch?.seatsLeft !== undefined && batch.seatsLeft <= 0))
