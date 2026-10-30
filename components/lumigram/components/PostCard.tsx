@@ -84,6 +84,9 @@ export const PostCard: React.FC<PostCardProps> = ({
     setCommentInput('');
   };
 
+  const currentMediaUrl = safeImages[currentImageIndex] || safeImages[0];
+  const isVideo = post.mediaType === 'video' || /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(currentMediaUrl || '');
+
   return (
     <article className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl mb-6 shadow-xs overflow-hidden transition-colors">
       {/* Header */}
@@ -109,7 +112,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 {post.user.username}
               </button>
               {post.user.isVerified && (
-                <CheckCircle2 size={14} className="text-sky-500 fill-sky-500 text-white" />
+                <CheckCircle2 size={14} className="text-emerald-500 fill-emerald-500 text-white" />
               )}
               <span className="text-neutral-400 dark:text-neutral-500 text-xs">•</span>
               <span className="text-neutral-500 dark:text-neutral-400 text-xs font-normal">
@@ -181,27 +184,45 @@ export const PostCard: React.FC<PostCardProps> = ({
         </div>
       </div>
 
-      {/* Media Carousel / Single Image with Double Tap */}
+      {/* Media Carousel / Single Image or Video with Double Tap */}
       <div
-        className="relative w-full aspect-square bg-neutral-100 dark:bg-neutral-950 flex items-center justify-center overflow-hidden cursor-pointer select-none"
+        className={`relative w-full bg-neutral-100 dark:bg-neutral-950 flex items-center justify-center overflow-hidden select-none ${
+          post.aspectRatio === 'vertical' || post.aspectRatio === '9:16'
+            ? 'aspect-[9/16] max-h-[620px]'
+            : post.aspectRatio === 'portrait'
+            ? 'aspect-[4/5]'
+            : post.aspectRatio === 'landscape'
+            ? 'aspect-[16/9]'
+            : 'aspect-square'
+        }`}
         onClick={handleDoubleTap}
       >
-        <img
-          src={safeImages[currentImageIndex] || safeImages[0]}
-          alt={post.caption || 'Post image'}
-          className={`w-full h-full object-cover transition-transform duration-300 ${
-            post.filter === 'clarendon'
-              ? 'contrast-125 saturate-125'
-              : post.filter === 'juno'
-              ? 'saturate-150 contrast-110 hue-rotate-15'
-              : post.filter === 'valencia'
-              ? 'sepia-25 brightness-105'
-              : post.filter === 'vintage'
-              ? 'grayscale contrast-125'
-              : ''
-          }`}
-          loading="lazy"
-        />
+        {isVideo ? (
+          <video
+            src={currentMediaUrl}
+            controls
+            playsInline
+            loop
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <img
+            src={currentMediaUrl}
+            alt={post.caption || 'Post image'}
+            className={`w-full h-full object-cover transition-transform duration-300 ${
+              post.filter === 'clarendon'
+                ? 'contrast-125 saturate-125'
+                : post.filter === 'juno'
+                ? 'saturate-150 contrast-110 hue-rotate-15'
+                : post.filter === 'valencia'
+                ? 'sepia-25 brightness-105'
+                : post.filter === 'vintage'
+                ? 'grayscale contrast-125'
+                : ''
+            }`}
+            loading="lazy"
+          />
+        )}
 
         {/* Double-tap Bursting Heart Animation */}
         {showHeartAnimation && (

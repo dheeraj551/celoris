@@ -10,6 +10,7 @@ interface RightSidebarProps {
   onToggleFollow: (user: User) => void;
   onSelectUser: (user: User) => void;
   onOpenArch?: () => void;
+  onEditProfile?: () => void;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -17,6 +18,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   suggestedUsers,
   onToggleFollow,
   onSelectUser,
+  onEditProfile,
 }) => {
   return (
     <aside className="hidden xl:block w-80 p-6 space-y-6 shrink-0">
@@ -33,7 +35,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           />
           <div>
             <div className="flex items-center gap-1 font-bold text-xs text-neutral-900 dark:text-neutral-100 group-hover:underline">
-              {currentUser.username}
+              @{currentUser.username}
               <CheckCircle2 size={13} className="text-emerald-500 fill-emerald-500 text-white" />
             </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-[150px]">
@@ -42,9 +44,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           </div>
         </button>
 
-        <span className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 cursor-pointer">
-          Switch
-        </span>
+        <button
+          type="button"
+          onClick={onEditProfile}
+          className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 hover:underline cursor-pointer"
+        >
+          Edit
+        </button>
       </div>
 
       {/* Ad Studio Quick Snapshot */}

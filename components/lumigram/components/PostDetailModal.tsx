@@ -67,23 +67,38 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
 
         {/* Media Left Column */}
         <div className="relative md:w-3/5 bg-black flex items-center justify-center select-none overflow-hidden aspect-square md:aspect-auto">
-          <img
-            src={post.images[currentImgIndex]}
-            alt={post.caption}
-            className={`w-full h-full object-cover ${
-              post.filter === 'clarendon'
-                ? 'contrast-125 saturate-125'
-                : post.filter === 'juno'
-                ? 'saturate-150 contrast-110'
-                : post.filter === 'valencia'
-                ? 'sepia-25 brightness-105'
-                : post.filter === 'vintage'
-                ? 'grayscale contrast-125'
-                : ''
-            }`}
-          />
+          {(() => {
+            const currentUrl = (post.images && post.images[currentImgIndex]) || post.images?.[0] || '';
+            const isVid = post.mediaType === 'video' || /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(currentUrl);
+            return isVid ? (
+              <video
+                src={currentUrl}
+                controls
+                autoPlay
+                playsInline
+                loop
+                className="w-full h-full object-contain max-h-[80vh]"
+              />
+            ) : (
+              <img
+                src={currentUrl || '/courses/digital-marketing-mastery-og.jpg'}
+                alt={post.caption || 'Media detail'}
+                className={`w-full h-full object-contain max-h-[80vh] ${
+                  post.filter === 'clarendon'
+                    ? 'contrast-125 saturate-125'
+                    : post.filter === 'juno'
+                    ? 'saturate-150 contrast-110'
+                    : post.filter === 'valencia'
+                    ? 'sepia-25 brightness-105'
+                    : post.filter === 'vintage'
+                    ? 'grayscale contrast-125'
+                    : ''
+                }`}
+              />
+            );
+          })()}
 
-          {post.images.length > 1 && (
+          {Array.isArray(post.images) && post.images.length > 1 && (
             <>
               {currentImgIndex > 0 && (
                 <button

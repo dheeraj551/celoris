@@ -57,8 +57,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedImage, setSelectedImage] = useState<string>(SAMPLE_PRESETS[0].url);
   const [selectedRawFile, setSelectedRawFile] = useState<File | null>(null);
+  const [isVideo, setIsVideo] = useState<boolean>(false);
   const [selectedFilter, setSelectedFilter] = useState<string>('normal');
-  const [aspectRatio, setAspectRatio] = useState<'square' | 'portrait' | 'landscape'>('square');
+  const [aspectRatio, setAspectRatio] = useState<'square' | 'portrait' | 'landscape' | 'vertical'>('square');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -70,6 +71,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       setSelectedRawFile(file);
+      const isVid = file.type.startsWith('video/') || /\.(mp4|mov|webm|m4v)$/i.test(file.name);
+      setIsVideo(isVid);
+      if (isVid) {
+        setAspectRatio('vertical'); // Default reels to 9:16
+      }
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
@@ -120,6 +126,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         body: JSON.stringify({
           content: caption,
           imageUrls: [finalImageUrl],
+          mediaType: isVideo ? 'video' : 'image',
+          aspectRatio,
           location: location || 'Celoris Studio · Noida',
           userId: currentUser.id,
         }),
@@ -137,6 +145,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         userId: currentUser.id,
         user: currentUser,
         images: [finalImageUrl],
+        mediaType: isVideo ? 'video' : 'image',
         caption: caption || 'Celoris Pulse update',
         location: location || 'Celoris Studio · Noida',
         filter: selectedFilter,
@@ -266,16 +275,16 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   <Upload size={32} />
                 </div>
                 <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                  Upload high-resolution photo
+                  Upload photo or video reel
                 </h4>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm">
-                  Drag and drop files here or click to browse. Supports JPG, PNG, WEBP with direct cloud edge ingest.
+                  Drag and drop files here or click to browse. Supports JPG, PNG, WEBP, and MP4, MOV, WEBM videos.
                 </p>
                 <input
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  accept="image/*"
+                  accept="image/*,video/*"
                   className="hidden"
                 />
               </div>
@@ -317,21 +326,35 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               {/* Preview */}
               <div className="md:col-span-2 flex flex-col items-center justify-center bg-neutral-950 rounded-2xl overflow-hidden p-2">
                 <div
-                  className={`w-full max-w-[380px] overflow-hidden rounded-xl bg-black transition-all ${
-                    aspectRatio === 'square'
+                  className={`w-full max-w-[340px] overflow-hidden rounded-xl bg-black transition-all ${
+                    aspectRatio === 'vertical'
+                      ? 'aspect-[9/16] max-h-[460px]'
+                      : aspectRatio === 'square'
                       ? 'aspect-square'
                       : aspectRatio === 'portrait'
                       ? 'aspect-[4/5]'
                       : 'aspect-[16/9]'
                   }`}
                 >
-                  <img
-                    src={selectedImage}
-                    alt="Preview"
-                    className={`w-full h-full object-cover transition-all ${
-                      FILTERS.find((f) => f.id === selectedFilter)?.css || ''
-                    }`}
-                  />
+                  {isVideo ? (
+                    <video
+                      src={selectedImage}
+                      controls
+                      autoPlay
+                      muted
+                      playsInline
+                      loop
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={selectedImage}
+                      alt="Preview"
+                      className={`w-full h-full object-cover transition-all ${
+                        FILTERS.find((f) => f.id === selectedFilter)?.css || ''
+                      }`}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -341,19 +364,24 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   <label className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-2">
                     Aspect Ratio
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['square', 'portrait', 'landscape'] as const).map((ratio) => (
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[
+                      { id: 'square', label: '1:1' },
+                      { id: 'portrait', label: '4:5' },
+                      { id: 'landscape', label: '16:9' },
+                      { id: 'vertical', label: '9:16' },
+                    ].map((ratio) => (
                       <button
-                        key={ratio}
+                        key={ratio.id}
                         type="button"
-                        onClick={() => setAspectRatio(ratio)}
+                        onClick={() => setAspectRatio(ratio.id as any)}
                         className={`py-2 text-xs font-medium rounded-xl border transition-colors cursor-pointer ${
-                          aspectRatio === ratio
-                            ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-transparent'
+                          aspectRatio === ratio.id
+                            ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-transparent shadow-xs font-bold'
                             : 'border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                         }`}
                       >
-                        {ratio === 'square' ? '1:1' : ratio === 'portrait' ? '4:5' : '16:9'}
+                        {ratio.label}
                       </button>
                     ))}
                   </div>
@@ -438,7 +466,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               {isUploading && (
                 <div className="pt-2">
                   <div className="flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-400 mb-1.5">
-                    <span>Direct Object Ingest & WebP Transcoding...</span>
+                    <span>Publishing to Celoris Pulse...</span>
                     <span>{uploadProgress}%</span>
                   </div>
                   <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">

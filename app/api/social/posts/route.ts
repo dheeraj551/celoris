@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
         image_urls,
         media_url,
         media_type,
+        aspect_ratio,
         location,
         likes_count,
         comments_count,
@@ -53,13 +54,18 @@ export async function GET(request: NextRequest) {
 
           if (usersData) {
             usersData.forEach((u: any) => {
+              const cleanName = (u.full_name || '').trim() || u.username || 'Celoris Student';
+              const cleanUsername = (u.username && u.username.length > 2 && u.username !== 'any')
+                ? u.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
+                : cleanName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
               authorMap[u.id] = {
                 id: u.id,
-                username: (u.username || 'student').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                name: u.full_name || u.username || 'Celoris Student',
+                username: cleanUsername,
+                name: cleanName,
                 avatar: u.profile_pic_url || '/courses/digital-marketing-mastery-og.jpg',
                 role: u.role || 'Creator & Student',
-                isVerified: u.role === 'admin' || u.role === 'instructor',
+                isVerified: u.role === 'admin' || u.role === 'instructor' || u.role === 'tutor',
               };
             });
           }
@@ -76,14 +82,16 @@ export async function GET(request: NextRequest) {
           if (profilesData) {
             profilesData.forEach((p: any) => {
               if (!authorMap[p.id]) {
-                const username = p.email ? p.email.split('@')[0] : (p.name || 'student');
+                const displayName = (p.full_name || '').trim() || (p.name && !['tutor', 'user', 'student'].includes(p.name.toLowerCase()) ? p.name : null) || 'Celoris Student';
+                const cleanUsername = displayName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
                 authorMap[p.id] = {
                   id: p.id,
-                  username: username.toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                  name: p.full_name || p.name || 'Celoris Student',
+                  username: cleanUsername,
+                  name: displayName,
                   avatar: p.avatar_url || '/courses/digital-marketing-mastery-og.jpg',
                   role: p.role || 'Creator & Student',
-                  isVerified: p.role === 'admin' || p.role === 'instructor',
+                  isVerified: p.role === 'admin' || p.role === 'instructor' || p.role === 'tutor',
                 };
               }
             });
@@ -132,14 +140,18 @@ export async function GET(request: NextRequest) {
         .filter((w: string) => w.startsWith('#'))
         .map((w: string) => w.replace('#', '').toLowerCase());
 
+      const firstUrl = images[0] || '';
+      const isVideo = p.media_type === 'video' || /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(firstUrl);
+
       return {
         id: p.id,
         userId: p.user_id || author.id,
         caption,
         images,
+        mediaType: isVideo ? 'video' : 'image',
         location: p.location || '',
         filter: 'normal',
-        aspectRatio: 'square',
+        aspectRatio: p.aspect_ratio || 'square',
         likesCount: p.likes_count || 0,
         isLiked: false,
         isSaved: false,
@@ -182,7 +194,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { content, imageUrls, location, hook, userId: explicitUserId } = body;
+    const { content, imageUrls, mediaType, aspectRatio, location, hook, userId: explicitUserId } = body;
 
     let userId: string | null = null;
     let authorProfile: any = null;
@@ -205,7 +217,7 @@ export async function POST(request: NextRequest) {
 
     if (!content && (!imageUrls || imageUrls.length === 0)) {
       return NextResponse.json(
-        { error: 'Post must have either text or an image' },
+        { error: 'Post must have either text or media' },
         { status: 400 }
       );
     }
@@ -222,13 +234,18 @@ export async function POST(request: NextRequest) {
           .maybeSingle();
 
         if (userRow) {
+          const cleanName = (userRow.full_name || '').trim() || userRow.username || 'Celoris Student';
+          const cleanUsername = (userRow.username && userRow.username.length > 2 && userRow.username !== 'any')
+            ? userRow.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
+            : cleanName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
           authorProfile = {
             id: userRow.id,
-            username: (userRow.username || 'student').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-            name: userRow.full_name || userRow.username || 'Celoris Student',
+            username: cleanUsername,
+            name: cleanName,
             avatar: userRow.profile_pic_url || '/courses/digital-marketing-mastery-og.jpg',
             role: userRow.role || 'Creator & Student',
-            isVerified: userRow.role === 'admin' || userRow.role === 'instructor',
+            isVerified: userRow.role === 'admin' || userRow.role === 'instructor' || userRow.role === 'tutor',
           };
         }
       } catch (err) {
@@ -246,6 +263,7 @@ export async function POST(request: NextRequest) {
     };
 
     const firstImage = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
+    const isVideo = mediaType === 'video' || (firstImage && /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(firstImage));
 
     // 4. Insert post into Supabase posts table
     const { data: newPost, error: insertError } = await admin
@@ -255,7 +273,8 @@ export async function POST(request: NextRequest) {
         content: content || '',
         image_urls: imageUrls || [],
         media_url: firstImage || '',
-        media_type: 'image',
+        media_type: isVideo ? 'video' : 'image',
+        aspect_ratio: aspectRatio || 'square',
         location: location || null,
         hook: hook || null,
         is_public: true,
@@ -287,9 +306,10 @@ export async function POST(request: NextRequest) {
         images: Array.isArray(newPost.image_urls) && newPost.image_urls.length > 0
           ? newPost.image_urls
           : [newPost.media_url].filter(Boolean),
+        mediaType: newPost.media_type || (isVideo ? 'video' : 'image'),
         location: newPost.location || '',
         filter: 'normal',
-        aspectRatio: 'square',
+        aspectRatio: newPost.aspect_ratio || aspectRatio || 'square',
         likesCount: 0,
         isLiked: false,
         isSaved: false,

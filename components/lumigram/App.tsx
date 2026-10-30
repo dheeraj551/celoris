@@ -49,6 +49,7 @@ import { ReportModal } from './components/ReportModal';
 import { SettingsModal } from './components/SettingsModal';
 import { RightSidebar } from './components/RightSidebar';
 import { PushNotificationToast } from './components/PushNotificationToast';
+import { EditProfileModal } from './components/EditProfileModal';
 
 export default function App() {
   // Celoris User Management & Wallet sync
@@ -94,25 +95,49 @@ export default function App() {
   const [boostObjective, setBoostObjective] = useState<'leads' | 'traffic'>('leads');
   const [selectedCities, setSelectedCities] = useState<string[]>(['Delhi NCR', 'Mumbai', 'Jaipur']);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState<boolean>(false);
 
   // Synchronize authenticated Celoris student profile & real wallet
   useEffect(() => {
     if (authUser) {
-      const realName = profile?.full_name || profile?.name || authUser.email?.split('@')[0] || 'Celoris Student';
-      const realUsername = (profile?.email || authUser.email || 'student').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
-      const realAvatar = profile?.avatar_url || profile?.profile_pic_url || CURRENT_USER.avatar;
+      const metadataName = (authUser?.user_metadata?.full_name || authUser?.user_metadata?.name || '').trim();
+      const isGenericRole = ['tutor', 'user', 'student', 'admin', 'instructor'].includes((profile?.name || '').trim().toLowerCase());
+
+      const savedCustomName = typeof window !== 'undefined' ? localStorage.getItem('celoris_pulse_name') : null;
+      const savedCustomUsername = typeof window !== 'undefined' ? localStorage.getItem('celoris_pulse_username') : null;
+
+      const realName = savedCustomName
+        || (profile?.full_name && profile.full_name.trim())
+        || (!isGenericRole && profile?.name && profile.name.trim())
+        || metadataName
+        || 'Ananya Jairath';
+
+      let realUsername = savedCustomUsername;
+      if (!realUsername) {
+        if (profile?.username && profile.username.trim().length > 2 && profile.username !== 'any') {
+          realUsername = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        } else if (metadataName) {
+          realUsername = metadataName.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        } else if (realName && !isGenericRole) {
+          realUsername = realName.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        } else {
+          realUsername = (profile?.email || authUser.email || 'student').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+        }
+      }
+
+      const realAvatar = profile?.avatar_url || profile?.profile_pic_url || authUser?.user_metadata?.avatar_url || authUser?.user_metadata?.picture || CURRENT_USER.avatar;
       const realUser: User = {
         id: authUser.id,
         name: realName,
-        username: realUsername,
+        username: realUsername || 'ananya_jairath',
         avatar: realAvatar,
         bio: profile?.bio || 'Performance Marketing Student @ Celoris',
         website: profile?.website || 'https://celorisdesigns.com',
-        isVerified: profile?.role === 'admin' || profile?.role === 'instructor',
+        isVerified: profile?.role === 'admin' || profile?.role === 'instructor' || profile?.role === 'tutor',
         followersCount: 142,
         followingCount: 38,
         postsCount: 1,
-        role: profile?.role || 'Student',
+        role: profile?.role || 'Creator & Student',
       };
       setCurrentUser(realUser);
       setSelectedProfileUser(realUser);
@@ -702,6 +727,7 @@ export default function App() {
               savedPosts={savedPosts}
               onToggleFollow={handleToggleFollow}
               onOpenSettings={() => setIsSettingsOpen(true)}
+              onEditProfile={() => setIsEditProfileOpen(true)}
               onSelectPost={(p) => setSelectedDetailPost(p)}
             />
           )}
@@ -715,6 +741,7 @@ export default function App() {
           suggestedUsers={suggestedUsers}
           onToggleFollow={handleToggleFollow}
           onSelectUser={handleSelectUser}
+          onEditProfile={() => setIsEditProfileOpen(true)}
         />
       )}
 
@@ -773,6 +800,18 @@ export default function App() {
           onClose={() => setIsSettingsOpen(false)}
           onUpdateSettings={(newSettings) => setAccountSettings(newSettings)}
           onToggleTheme={handleToggleTheme}
+        />
+      )}
+
+      {/* MODAL: Edit Profile & Nickname */}
+      {isEditProfileOpen && (
+        <EditProfileModal
+          currentUser={currentUser}
+          onClose={() => setIsEditProfileOpen(false)}
+          onUpdateUser={(updated) => {
+            setCurrentUser(updated);
+            setSelectedProfileUser(updated);
+          }}
         />
       )}
 

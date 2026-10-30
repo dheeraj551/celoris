@@ -26,6 +26,7 @@ interface ProfileViewProps {
   onToggleFollow: (user: User) => void;
   onOpenSettings: () => void;
   onSelectPost: (post: Post) => void;
+  onEditProfile?: () => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -36,6 +37,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onToggleFollow,
   onOpenSettings,
   onSelectPost,
+  onEditProfile,
 }) => {
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'reels' | 'tagged'>('posts');
   const isSelf = user.id === currentUser.id;
@@ -89,6 +91,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div className="flex items-center justify-center gap-2">
                 {isSelf ? (
                   <>
+                    <button
+                      onClick={onEditProfile}
+                      className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      Edit Profile
+                    </button>
                     <button
                       onClick={onOpenSettings}
                       className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 transition-colors flex items-center gap-1.5 cursor-pointer"
