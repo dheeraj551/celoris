@@ -1,0 +1,769 @@
+"use client";
+import React, { useState, useEffect } from 'react';
+import { MOCK_USERS } from '@/components/cafe/data/mockData';
+import { Room, User } from '@/components/cafe/types';
+import LandingHero from '@/components/cafe/LandingHero';
+import RoomsGrid from '@/components/cafe/RoomsGrid';
+import SafeSecure from '@/components/cafe/SafeSecure';
+import ChatRoom from '@/components/cafe/ChatRoom';
+import CreationToolsDemo from '@/components/cafe/CreationToolsDemo';
+import LearnTab from '@/components/cafe/LearnTab';
+import TeachTab from '@/components/cafe/TeachTab';
+import dynamic from 'next/dynamic';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { createClient } from '@/lib/supabase-client';
+
+const ClassroomTable = dynamic(() => import('@/components/cafe/classroom3d/components/ClassroomRoom'), { ssr: false });
+// 2D whiteboard classroom (category 'whiteboard') — same seats/queue, Agora
+// voice + screen share and room codes as the 3D classroom above.
+const WhiteboardRoom = dynamic(() => import('@/components/whiteboard-room/WhiteboardRoom'), { ssr: false });
+
+import { 
+  Menu, 
+  Users, 
+  X, 
+  Check, 
+  Sparkles, 
+  Coffee, 
+  ArrowRight,
+  ShieldAlert,
+  GraduationCap,
+  Heart,
+  Briefcase,
+  Home,
+  MessageSquare,
+  Compass,
+  User as UserIcon,
+  ShieldCheck,
+  ChevronRight,
+  Lock
+} from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<string>('home');
+  const [joinedRoomId, setJoinedRoomId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [isOnlineListOpen, setIsOnlineListOpen] = useState<boolean>(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState<boolean>(false);
+  const [allRooms, setAllRooms] = useState<Room[]>([]); // Initialize empty for realtime rooms
+
+  // Room creation now lives in the admin dashboard (Admin → Social
+  // Management → Café Rooms) instead of here — students/trainers no longer
+  // get a "Host Custom Table" button on this page at all.
+
+  // Room-entry code gate — asked when a room has a student_code and/or
+  // trainer_code set (see requiresStudentCode/requiresTrainerCode on Room).
+  // The code itself is never fetched into this page's state; it's verified
+  // server-side (see submitAdmitCode below), which also tells us whether
+  // whoever typed it in matched the trainer code or the student code.
+  const [admitModalRoom, setAdmitModalRoom] = useState<Room | null>(null);
+  const [admitCodeInput, setAdmitCodeInput] = useState('');
+  const [admitCodeError, setAdmitCodeError] = useState<string | null>(null);
+  const [verifyingAdmitCode, setVerifyingAdmitCode] = useState(false);
+  // The role resolved for whichever room we're currently seated at — 'host'
+  // for a legacy directly-owned room or 'trainer' (matched the room's
+  // trainer_code) get the full trainer experience in ClassroomTable
+  // (isHost=true: mic, podium, calling on students); 'student' does not.
+  const [joinedRoomRole, setJoinedRoomRole] = useState<'host' | 'trainer' | 'student' | null>(null);
+  const supabase = createClient();
+  const { user } = useAuth();
+
+  // Current logged in user info (mocked)
+  const currentUser = {
+    name: 'Dheeraj Kushwaha',
+    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150', // high quality portrait
+    skill: 'Fullstack Development & UI',
+    college: 'IIT Bombay',
+    isOnline: true,
+    isVerified: true
+  };
+
+  // Find the currently joined room details
+  const joinedRoom = allRooms.find(r => r.id === joinedRoomId);
+
+  // Deep link: /social?tab=cafe (used by the homepage phone's Classrooms app)
+  // opens straight on the classroom lobby instead of the Café home.
+  useEffect(() => {
+    try {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (tab && ['home', 'cafe', 'learn', 'teach'].includes(tab)) {
+        setActiveTab(tab);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Scroll to top on page or tab changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, joinedRoomId]);
+
+  // Fetch rooms and subscribe to realtime updates
+  useEffect(() => {
+    const fetchRooms = async () => {
+      // Explicit column list — deliberately EXCLUDES trainer_code/
+      // student_code. Any room needing a code is still flagged via
+      // requires_student_code / requires_trainer_code (generated booleans),
+      // so the lobby can show "code required" without either actual code
+      // ever reaching a student's browser. See
+      // /api/social/cafe/verify-admit-code for where they're actually checked.
+      const { data, error } = await supabase
+        .from('cafe_classrooms')
+        .select('id, name, description, category, tags, host_id, trainer_name, max_students, current_students, class_status, next_batch_info, requires_student_code, requires_trainer_code, course_url, course_title, course_image_url, course_description, next_class_at, class_duration_minutes, repeats_weekly, created_at')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        // Trainer name, capacity and class status are entered directly on
+        // the room (now only via the admin dashboard's Café Rooms panel)
+        // instead of being looked up from `profiles` — that lookup was
+        // unreliable (missing full_name/avatar_url) and is what produced
+        // the "Host" placeholder and the broken avatar image on the lobby
+        // cards.
+        const mappedRooms: Room[] = data.map((r: any) => {
+          const trainerName = r.trainer_name || 'Trainer';
+          return {
+            id: r.id,
+            name: r.name,
+            description: r.description || '',
+            category: r.category as any,
+            // Host-set headcount (see the "Class Info" panel inside the
+            // room) rather than a live presence count — kept manual on
+            // purpose per the trainer's own preference.
+            onlineCount: typeof r.current_students === 'number' ? r.current_students : 1,
+            maxStudents: r.max_students || 10,
+            status: (r.class_status as any) || 'Ready',
+            nextBatchInfo: r.next_batch_info || undefined,
+            nextClassAt: r.next_class_at || null,
+            classDurationMinutes: r.class_duration_minutes ?? null,
+            repeatsWeekly: !!r.repeats_weekly,
+            requiresStudentCode: !!r.requires_student_code,
+            requiresTrainerCode: !!r.requires_trainer_code,
+            courseUrl: r.course_url || undefined,
+            courseTitle: r.course_title || undefined,
+            courseImageUrl: r.course_image_url || undefined,
+            courseDescription: r.course_description || undefined,
+            tags: r.tags || [],
+            host: {
+              id: r.host_id,
+              name: trainerName,
+              avatar: '',
+              role: 'Host'
+            },
+            participants: [
+              {
+                id: r.host_id,
+                name: trainerName,
+                avatar: '',
+                skill: '',
+                isOnline: true
+              }
+            ]
+          };
+        });
+        setAllRooms(mappedRooms);
+      }
+    };
+
+    fetchRooms();
+
+    // Unique channel name to avoid collisions across renders/tabs
+    const channelName = `cafe-classrooms-realtime-${Math.random().toString(36).slice(2, 8)}`;
+    const channel = supabase.channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'cafe_classrooms' }, () => {
+        fetchRooms();
+      })
+      .subscribe();
+
+    // Periodic sync every 20s so live schedules, countdowns, and rollovers stay 100% accurate
+    const syncTimer = setInterval(() => {
+      fetchRooms();
+    }, 20000);
+
+    // Refresh immediately when returning to tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchRooms();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(syncTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleJoinRoom = (roomId: string) => {
+    const room = allRooms.find((r) => r.id === roomId);
+    const isRoomHost = !!room?.host?.id && room.host.id === user?.id;
+
+    // Legacy rooms created directly by a user (before room creation moved
+    // to admin-only) still let their actual DB owner straight in.
+    if (isRoomHost) {
+      setJoinedRoomRole('host');
+      setJoinedRoomId(roomId);
+      setActiveTab('cafe');
+      return;
+    }
+
+    // Oct 2026: students join without a code (the schedule and the queue
+    // decide who gets a seat). Rooms with a trainer code show a small choice:
+    // "Join as student" or enter the trainer code. The code is verified
+    // server-side (see submitAdmitCode) — this page never holds the real code.
+    if (room?.requiresTrainerCode) {
+      setAdmitModalRoom(room);
+      setAdmitCodeInput('');
+      setAdmitCodeError(null);
+      return;
+    }
+
+    setJoinedRoomRole('student');
+    setJoinedRoomId(roomId);
+    setActiveTab('cafe'); // force switch to cafe tab to show active session
+  };
+
+  const joinAsStudent = async () => {
+    if (!admitModalRoom) return;
+    const roomId = admitModalRoom.id;
+    setVerifyingAdmitCode(true);
+    setAdmitCodeError(null);
+    try {
+      // Records this visit as a student on the server. Without this, an account
+      // that entered the trainer code earlier (that lasts 12 hours) would still
+      // be seated as the trainer and skip the line.
+      const response = await fetch('/api/social/cafe/verify-admit-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId, code: '' }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        setAdmitCodeError(result.error || 'Could not join right now. Try again.');
+        setVerifyingAdmitCode(false);
+        return;
+      }
+    } catch (err) {
+      console.error('Join as student failed:', err);
+      setAdmitCodeError('Something went wrong. Try again.');
+      setVerifyingAdmitCode(false);
+      return;
+    }
+    setVerifyingAdmitCode(false);
+    setJoinedRoomRole('student');
+    setAdmitModalRoom(null);
+    setJoinedRoomId(roomId);
+    setActiveTab('cafe');
+  };
+
+  const submitAdmitCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!admitModalRoom) return;
+
+    setVerifyingAdmitCode(true);
+    setAdmitCodeError(null);
+
+    try {
+      const response = await fetch('/api/social/cafe/verify-admit-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId: admitModalRoom.id, code: admitCodeInput }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.ok) {
+        setAdmitCodeError(result.error || 'Incorrect code.');
+        setVerifyingAdmitCode(false);
+        return;
+      }
+
+      const roomId = admitModalRoom.id;
+      setJoinedRoomRole(result.role || 'student');
+      setAdmitModalRoom(null);
+      setVerifyingAdmitCode(false);
+      setJoinedRoomId(roomId);
+      setActiveTab('cafe');
+    } catch (err) {
+      console.error('Admit code verification failed:', err);
+      setAdmitCodeError('Something went wrong. Try again.');
+      setVerifyingAdmitCode(false);
+    }
+  };
+
+  const inviteUserToTable = (userName: string) => {
+    alert(`Invitation sent to ${userName} to join your active classroom session. They've received a prompt inside their lobby dashboard!`);
+  };
+
+  const handleDeleteRoom = async (roomId: string) => {
+    if (!user) return;
+    const confirmed = window.confirm('Are you sure you want to delete this room? This cannot be undone.');
+    if (!confirmed) return;
+
+    // Routed through a server API (service-role, ownership checked server-side)
+    // instead of a direct client -> Supabase update, to sidestep the RLS
+    // "new row violates row-level security policy" issue on cafe_classrooms.
+    try {
+      const response = await fetch('/api/social/cafe/delete-room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Permission denied. You may not be the room host.');
+      }
+
+      setAllRooms(prev => prev.filter(r => r.id !== roomId));
+      if (joinedRoomId === roomId) setJoinedRoomId(null);
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      alert(`Failed to delete room: ${error.message || 'Permission denied. You may not be the room host.'}`);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#070707] text-gray-200 font-sans flex flex-col selection:bg-emerald-500 selection:text-[#0a0a0a]">
+      {/* Decorative radial body bg blur */}
+      <div className="fixed -top-40 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-[radial-gradient(circle_at_center,_rgba(16,185,129,0.04)_0%,_transparent_65%)] pointer-events-none -z-10"></div>
+
+
+
+      {/* DOCK LAYOUT: CENTRAL CONTAINER */}
+      <div className="flex-1 flex overflow-hidden">
+        
+        {/* Main central container for views */}
+        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-8 custom-scrollbar">
+          
+          {/* Active room session header callout if viewing another tab */}
+          {joinedRoomId && joinedRoom && activeTab !== 'cafe' && (
+            <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-purple-950/40 to-[#0d1624] border border-purple-500/30 flex items-center justify-between text-xs text-purple-300 animate-fade-in">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>You are currently inside <strong className="text-white">"{joinedRoom.name}"</strong> classroom.</span>
+              </div>
+              <button 
+                onClick={() => setActiveTab('cafe')}
+                className="font-bold underline text-emerald-400 hover:text-emerald-300"
+              >
+                Return to Classroom
+              </button>
+            </div>
+          )}
+
+          {/* DYNAMIC TAB SWITCHER CONTROLLER */}
+          {activeTab === 'home' && (
+            <div className="space-y-16">
+              {/* Landing Hero */}
+              <LandingHero 
+                onEnterCafe={() => { setActiveTab('cafe'); setJoinedRoomId(null); }}
+                onSeeOnline={() => setIsOnlineListOpen(true)}
+                activeRooms={allRooms}
+                onJoinRoom={handleJoinRoom}
+              />
+
+              {/* Safe & Secure - placed high for trust reinforcement */}
+              <SafeSecure />
+
+              {/* Home Grid Section: Featured Rooms & Lounge Categories */}
+              <div className="space-y-6">
+                <div className="text-center md:text-left">
+                  <span className="text-xs text-emerald-400 font-bold uppercase tracking-widest block mb-1">Discover Celoris</span>
+                  <h2 className="text-2xl md:text-3xl font-display font-black italic text-white tracking-wide uppercase">
+                    CHOOSE YOUR CLASSROOM
+                  </h2>
+                  <p className="text-xs text-gray-400 max-w-xl mt-1">
+                    Pick a live classroom or whiteboard room, join the queue, and learn with your trainer and batch.
+                  </p>
+                </div>
+
+                <RoomsGrid
+                  rooms={allRooms}
+                  onJoinRoom={handleJoinRoom}
+                  currentUser={user}
+                  onDeleteRoom={handleDeleteRoom}
+                />
+              </div>
+
+              {/* Bottom Classroom CTA Banner */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-950/60 via-[#0d101a] to-emerald-950/40 p-8 md:p-12 text-center text-white shadow-2xl group border border-purple-500/25">
+                <div className="absolute top-0 right-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                
+                <div className="max-w-2xl mx-auto space-y-5 relative z-10">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 mb-1">
+                    <GraduationCap className="w-4 h-4 text-purple-300" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-200">INTERACTIVE LIVE COHORTS</span>
+                  </div>
+
+                  <h3 className="text-3xl md:text-5xl font-display font-black italic tracking-tight leading-none uppercase text-white">
+                    Step Into the Classroom
+                  </h3>
+                  
+                  <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
+                    Learn live with verified mentors and batchmates from top colleges across India. Ask questions in real time, collaborate on shared whiteboards, and build industry-ready portfolio projects.
+                  </p>
+
+                  <button
+                    onClick={() => { setActiveTab('cafe'); setJoinedRoomId(null); }}
+                    className="mt-4 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-black font-extrabold text-sm transition-all duration-300 hover:scale-[1.03] shadow-xl hover:shadow-emerald-500/25 cursor-pointer flex items-center justify-center gap-2 mx-auto"
+                  >
+                    <span>Browse All Classrooms</span>
+                    <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'cafe' && (
+            <div className="space-y-6">
+              {joinedRoomId && joinedRoom ? (
+                // Seated Chat / Virtual Table View
+                joinedRoom.category === 'whiteboard' ? (
+                  <WhiteboardRoom
+                    roomId={joinedRoom.id}
+                    roomName={joinedRoom.name}
+                    isHost={joinedRoomRole === 'host' || joinedRoomRole === 'trainer'}
+                    onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
+                  />
+                ) : (joinedRoom.category === 'classroom' || joinedRoom.category === 'livekit_classroom') ? (
+                  <ClassroomTable
+                    roomId={joinedRoom.id}
+                    roomName={joinedRoom.name}
+                    isHost={joinedRoomRole === 'host' || joinedRoomRole === 'trainer'}
+                    onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
+                  />
+                ) : (
+                  <ChatRoom
+                    room={joinedRoom}
+                    onLeave={() => { setJoinedRoomId(null); setJoinedRoomRole(null); }}
+                    currentUser={currentUser}
+                  />
+                )
+              ) : (
+                // Classroom Lobby View
+                <div className="space-y-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] bg-purple-500/15 text-purple-300 border border-purple-500/30 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider font-mono">
+                          Active Classroom Batches
+                        </span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-display font-black italic text-white tracking-wide mt-1 uppercase">
+                        CELORIS CLASSROOMS
+                      </h2>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Interactive 3D Virtual Aula and Realtime Whiteboard sessions led by verified instructors.
+                      </p>
+                    </div>
+                  </div>
+
+                  <RoomsGrid
+                    rooms={allRooms}
+                    onJoinRoom={handleJoinRoom}
+                    currentUser={user}
+                    onDeleteRoom={handleDeleteRoom}
+                  />
+
+                  {/* Safe secure reminder within lobby list */}
+                  <div className="mt-8">
+                    <SafeSecure />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'learn' && (
+            <LearnTab onUpgradeClick={() => setUpgradeModalOpen(true)} />
+          )}
+
+          {activeTab === 'teach' && (
+            <TeachTab />
+          )}
+
+          {(activeTab === 'video' || activeTab === 'image' || activeTab === '3d') && (
+            <CreationToolsDemo toolId={activeTab as 'video' | 'image' | '3d'} />
+          )}
+
+        </main>
+      </div>
+
+      {/* MOBILE BOTTOM FLOATING NAVIGATION BAR */}
+      <div className="sticky bottom-0 z-40 bg-[#0d0d0d] border-t border-emerald-950/40 px-6 py-2.5 flex items-center justify-between lg:hidden shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
+        <button 
+          onClick={() => { setActiveTab('home'); setJoinedRoomId(null); }}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-3.5 rounded-xl transition-colors ${activeTab === 'home' ? 'text-emerald-400' : 'text-gray-500'}`}
+        >
+          <Home className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Home</span>
+        </button>
+
+        <button 
+          onClick={() => { setActiveTab('cafe'); }}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-3.5 rounded-xl transition-colors ${activeTab === 'cafe' && !joinedRoomId ? 'text-emerald-400' : 'text-gray-500'}`}
+        >
+          <GraduationCap className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Classrooms</span>
+        </button>
+
+        {joinedRoomId && (
+          <button 
+            onClick={() => { setActiveTab('cafe'); }}
+            className="flex flex-col items-center justify-center gap-1 py-1.5 px-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 animate-pulse"
+          >
+            <MessageSquare className="w-5 h-5" />
+            <span className="text-[10px] font-black">Chat</span>
+          </button>
+        )}
+
+        <button 
+          onClick={() => { setActiveTab('learn'); setJoinedRoomId(null); }}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-3.5 rounded-xl transition-colors ${activeTab === 'learn' ? 'text-emerald-400' : 'text-gray-500'}`}
+        >
+          <GraduationCap className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Learn</span>
+        </button>
+
+        <button 
+          onClick={() => { setIsOnlineListOpen(true); }}
+          className="flex flex-col items-center justify-center gap-1 py-1 px-3.5 rounded-xl text-gray-500"
+        >
+          <Users className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Online</span>
+        </button>
+      </div>
+
+      {/* SIDE DRAWER: "WHO'S ONLINE" INDIAN STUDENTS LIST */}
+      <div className={`
+        fixed inset-y-0 right-0 z-50 flex flex-col w-80 bg-[#0d0d0d] border-l border-emerald-950/40 text-gray-300
+        transform transition-transform duration-300 ease-in-out
+        ${isOnlineListOpen ? 'translate-x-0' : 'translate-x-full'}
+      `}>
+        <div className="p-6 border-b border-emerald-950/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-emerald-400" />
+            <span className="font-display font-black italic tracking-wide text-white">WHO'S ONLINE</span>
+          </div>
+          <button 
+            onClick={() => setIsOnlineListOpen(false)}
+            className="p-1.5 rounded-lg hover:bg-emerald-950/30 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Indian students listing */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+          <span className="px-2 text-[10px] font-bold tracking-[0.15em] text-emerald-600/80 uppercase block mb-1">
+            Indian Colleges Active
+          </span>
+
+          <div className="space-y-3">
+            {MOCK_USERS.map((student) => (
+              <div 
+                key={student.id}
+                className="flex items-center justify-between p-3 rounded-xl bg-[#121212]/50 border border-emerald-950/10 hover:border-emerald-500/20 transition-all duration-200 group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img 
+                      src={student.avatar} 
+                      alt={student.name} 
+                      className="w-10 h-10 rounded-full object-cover border border-emerald-950/20"
+                    />
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#121212]"></span>
+                  </div>
+                  <div className="text-left">
+                    <div className="flex items-center gap-1">
+                      <span className="block text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">{student.name}</span>
+                      {student.isVerified && <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                    </div>
+                    <span className="block text-[10px] text-gray-500">{student.college || 'Celoris Member'}</span>
+                    <span className="block text-[10px] text-emerald-400/80 font-semibold mt-0.5">{student.skill}</span>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => inviteUserToTable(student.name)}
+                  className="px-2.5 py-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-500 text-emerald-400 hover:text-[#0a0a0a] text-[10px] font-bold transition-all"
+                  title={`Invite ${student.name} to join your current room`}
+                >
+                  Invite
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-4 bg-gradient-to-t from-emerald-950/10 to-transparent border-t border-emerald-950/20 text-center">
+          <span className="text-[10px] text-gray-500">Every single user verified with official student ID badges</span>
+        </div>
+      </div>
+
+      {/* OVERLAY BACKGROUNDS */}
+      {isOnlineListOpen && (
+        <div 
+          onClick={() => setIsOnlineListOpen(false)}
+          className="fixed inset-0 bg-[#000]/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+        />
+      )}
+      {sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-[#000]/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+        />
+      )}
+
+      {/* MODAL: PREMIUM UPGRADE MEMBERSHIP CHECKOUT */}
+      {upgradeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            onClick={() => setUpgradeModalOpen(false)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+          />
+          
+          <div className="relative bg-[#0d0d0d] border border-emerald-500/30 rounded-3xl max-w-md w-full p-6 md:p-8 space-y-6 shadow-[0_20px_50px_rgba(16,185,129,0.15)] animate-fade-in text-center">
+            
+            <button 
+              onClick={() => setUpgradeModalOpen(false)}
+              className="absolute top-4 right-4 p-1 rounded-lg hover:bg-emerald-950/30 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-inner mb-2">
+                <Sparkles className="w-6 h-6 text-emerald-400 animate-pulse" />
+              </div>
+              <h3 className="text-xl font-display font-black italic tracking-wide text-white uppercase">UPGRADE MEMBERSHIP</h3>
+              <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
+                Secure unlimited HD video screen shares, host premium private study tables, and unlock elite creator suites.
+              </p>
+            </div>
+
+            <div className="bg-[#121212] border border-emerald-950/30 rounded-2xl p-4 text-left space-y-3">
+              <div className="flex items-center justify-between border-b border-emerald-950/20 pb-2.5">
+                <span className="text-xs text-gray-400 font-semibold">Celoris Premium Plan</span>
+                <span className="text-xs text-emerald-400 font-mono font-bold">₹199 / month</span>
+              </div>
+              <ul className="space-y-2 text-[11px] text-gray-400">
+                <li className="flex items-center gap-2">✓ <span className="text-white">Unlimited 1080p Screen Streams</span></li>
+                <li className="flex items-center gap-2">✓ <span className="text-white">Full Video, Image, and 3D Studio suites</span></li>
+                <li className="flex items-center gap-2">✓ <span className="text-white">Priority seating with Community Mentors</span></li>
+                <li className="flex items-center gap-2">✓ <span className="text-white">Verified Custom Skill Badge styling</span></li>
+              </ul>
+            </div>
+
+            <button 
+              onClick={() => {
+                alert("Upgrade Complete: Welcome to Celoris VIP tier! Your premium badges will populate in your profile within a few minutes.");
+                setUpgradeModalOpen(false);
+              }}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-[#0a0a0a] font-bold text-xs transition-all shadow-[0_4px_15px_rgba(16,185,129,0.25)]"
+            >
+              Confirm Student Payment (₹199/mo)
+            </button>
+            <span className="block text-[10px] text-gray-500 leading-none">Pause, cancel, or switch plans anytime from settings dashboard.</span>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ENTER ROOM CODE (shown for rooms the admin has locked with a
+          trainer and/or student code — see requiresStudentCode /
+          requiresTrainerCode on Room). One input for both: the server
+          checks it against both codes and tells us which one matched. */}
+      {admitModalRoom && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            onClick={() => { if (!verifyingAdmitCode) { setAdmitModalRoom(null); setAdmitCodeError(null); } }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+          />
+
+          <div className="relative bg-[#0d0d0d] border border-emerald-950/40 rounded-3xl max-w-sm w-full p-6 md:p-8 space-y-5 shadow-2xl animate-fade-in">
+            <button
+              onClick={() => { setAdmitModalRoom(null); setAdmitCodeError(null); }}
+              disabled={verifyingAdmitCode}
+              className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-emerald-950/30 hover:text-white transition-colors disabled:opacity-40"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center space-y-2">
+              <div className="w-10 h-10 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center mx-auto mb-2">
+                <Lock className="w-5 h-5 text-purple-400" />
+              </div>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wide font-display italic">Join Classroom</h3>
+              <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
+                <strong className="text-gray-200">"{admitModalRoom.name}"</strong> opens 30 minutes before class. Pro members are seated straight away; everyone else joins the line and gets in as seats free up.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={joinAsStudent}
+              disabled={verifyingAdmitCode}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-50 text-black font-extrabold text-xs transition-all shadow-[0_4px_12px_rgba(16,185,129,0.2)] cursor-pointer"
+            >
+              Join as Student
+            </button>
+
+            <p className="text-[10px] uppercase tracking-wider text-gray-500 text-center">Trainer? Enter your trainer code</p>
+
+            <form onSubmit={submitAdmitCode} className="space-y-3 text-left">
+              <input
+                type="text"
+                autoFocus
+                placeholder="Trainer code"
+                value={admitCodeInput}
+                onChange={(e) => { setAdmitCodeInput(e.target.value); setAdmitCodeError(null); }}
+                className="w-full bg-[#121212] border border-white/[0.1] focus:border-purple-500/50 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none text-center tracking-wider font-mono"
+                required
+              />
+
+              {admitCodeError && (
+                <p className="text-[11px] text-red-400 text-center">{admitCodeError}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={verifyingAdmitCode || !admitCodeInput.trim()}
+                className="w-full py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.12] hover:bg-white/[0.1] disabled:opacity-50 text-white font-bold text-xs transition-all cursor-pointer"
+              >
+                {verifyingAdmitCode ? 'Verifying Code...' : 'Enter as Trainer'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* FOOTER PLATFORM */}
+      <footer className="bg-[#0b0b0b] border-t border-white/[0.08] py-10 px-4 mt-auto">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-center md:text-left">
+            <span className="font-display font-black italic tracking-widest text-white block">CELORIS CLASSROOMS</span>
+            <span className="text-[11px] text-gray-400 uppercase tracking-widest block mt-1 font-mono">INTERACTIVE LIVE LEARNING &amp; COLLABORATIVE STUDIOS</span>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-6 text-xs text-gray-500">
+            <a href="#about" className="hover:text-emerald-400 transition-colors">Honor Code</a>
+            <a href="#rules" className="hover:text-emerald-400 transition-colors">Safe Space Guidelines</a>
+            <a href="#parent" className="hover:text-emerald-400 transition-colors">Parents Information</a>
+            <a href="#contact" className="hover:text-emerald-400 transition-colors">Moderation Hotline</a>
+          </div>
+
+          <div className="text-center md:text-right text-[11px] text-zinc-600">
+            <span>© 2026 Celoris Inc. Verified and secured for Indian college campuses.</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+}

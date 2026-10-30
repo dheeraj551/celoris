@@ -1,14 +1,45 @@
-import type { Metadata } from 'next'
-import SocialLayout from '../social/layout'
+"use client"
 
-// /classrooms is the Classrooms page (it used to live at /social, which now
-// redirects here — see next.config.js). Same members-only layout as before.
-export const metadata: Metadata = {
-  title: 'Live Classrooms',
-  description: 'Join live trainer-led classes in small batches — 3D classrooms and whiteboard rooms on Celoris.',
-  alternates: { canonical: '/classrooms' },
+import React, { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { CapacitorProvider } from "@/components/providers/CapacitorProvider"
+import { useAuth } from "@/components/providers/AuthProvider"
+import { DashboardShell } from "@/components/home-new/DashboardShell"
+
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#050810]">
+      <div className="h-12 w-12 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin" />
+    </div>
+  )
 }
 
 export default function ClassroomsLayout({ children }: { children: React.ReactNode }) {
-  return <SocialLayout>{children}</SocialLayout>
+  const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !authLoading && !user) {
+      router.push('/login')
+    }
+  }, [mounted, authLoading, user, router])
+
+  if (!mounted || authLoading || !user) {
+    return <LoadingSpinner />
+  }
+
+  return (
+    <CapacitorProvider>
+      <DashboardShell>
+        <div className="relative min-h-screen">
+          <main>{children}</main>
+        </div>
+      </DashboardShell>
+    </CapacitorProvider>
+  )
 }

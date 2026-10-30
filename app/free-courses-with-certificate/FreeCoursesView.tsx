@@ -353,12 +353,12 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                             </div>
                         </motion.div>
 
-                        {/* Direct Classroom Quick-Access Jump Pill */}
+                        {/* Direct Classroom Quick-Access Jump Pill & Social Sandbox */}
                         <motion.div
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.75 }}
-                            className="mt-6 flex justify-center"
+                            className="mt-6 flex flex-wrap items-center justify-center gap-3"
                         >
                             <a
                                 href="#live-classrooms"
@@ -371,6 +371,13 @@ export function FreeCoursesView({ batchLabel, batchIso, faqs, seats, classrooms,
                                 <GraduationCap className="h-4 w-4 text-emerald-400" />
                                 <span>Already registered? Enter Live Classroom Direct ↓</span>
                             </a>
+                            <Link
+                                href="/social"
+                                className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-5 py-2 text-xs font-bold text-amber-300 shadow-[0_0_25px_rgba(245,158,11,0.2)] transition-all hover:scale-105 active:scale-95"
+                            >
+                                <Flame className="h-3.5 w-3.5 text-amber-400" />
+                                <span>Celoris Social · Practice with ₹10k Ad Credits →</span>
+                            </Link>
                         </motion.div>
                     </div>
                 </section>
