@@ -56,6 +56,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedImage, setSelectedImage] = useState<string>(SAMPLE_PRESETS[0].url);
+  const [selectedRawFile, setSelectedRawFile] = useState<File | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<string>('normal');
   const [aspectRatio, setAspectRatio] = useState<'square' | 'portrait' | 'landscape'>('square');
   const [caption, setCaption] = useState('');
@@ -68,6 +69,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedRawFile(file);
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
@@ -79,24 +81,82 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     setIsUploading(true);
-    setUploadProgress(10);
+    setUploadProgress(20);
 
-    // Simulate direct-to-S3 pre-signed upload with chunking & edge processing
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          finishPublish();
-          return 100;
+    let finalImageUrl = selectedImage;
+
+    try {
+      // 1. Upload file to VPS storage if user picked a local file
+      if (selectedRawFile) {
+        setUploadProgress(40);
+        const formData = new FormData();
+        formData.append('file', selectedRawFile);
+
+        const uploadRes = await fetch('/api/social/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok && uploadData.url) {
+          finalImageUrl = uploadData.url;
         }
-        return prev + 25;
+      }
+
+      setUploadProgress(70);
+
+      // 2. Persist post to Supabase database
+      const extractedTags = caption
+        .split(' ')
+        .filter((w) => w.startsWith('#'))
+        .map((w) => w.replace('#', '').toLowerCase());
+
+      const dbRes = await fetch('/api/social/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: caption,
+          imageUrls: [finalImageUrl],
+          location: location || 'Celoris Studio · Noida',
+          userId: currentUser.id,
+        }),
       });
-    }, 140);
+
+      const dbData = await dbRes.json();
+      setUploadProgress(100);
+
+      const createdPost: Post = dbData?.post || {
+        id: `post_${Date.now()}`,
+        userId: currentUser.id,
+        user: currentUser,
+        images: [finalImageUrl],
+        caption: caption || 'Celoris Pulse update',
+        location: location || 'Celoris Studio · Noida',
+        filter: selectedFilter,
+        aspectRatio,
+        likesCount: 0,
+        isLiked: false,
+        isSaved: false,
+        commentsCount: 0,
+        comments: [],
+        createdAt: new Date().toISOString(),
+        tags: extractedTags.length ? extractedTags : ['marketing', 'celoris'],
+      };
+
+      soundManager.playSendSound();
+      onPostCreated(createdPost);
+      onClose();
+    } catch (err) {
+      console.error('Error sharing post to VPS/Supabase:', err);
+      // Fallback
+      finishPublish(finalImageUrl);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  const finishPublish = () => {
+  const finishPublish = (imageUrl: string) => {
     const extractedTags = caption
       .split(' ')
       .filter((w) => w.startsWith('#'))
@@ -106,9 +166,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       id: `post_${Date.now()}`,
       userId: currentUser.id,
       user: currentUser,
-      images: [selectedImage],
-      caption: caption || 'Moments framed in light ✨',
-      location: location || 'Tokyo, Japan',
+      images: [imageUrl],
+      caption: caption || 'Celoris Pulse update',
+      location: location || 'Celoris Studio · Noida',
       filter: selectedFilter,
       aspectRatio,
       likesCount: 0,
@@ -117,15 +177,14 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       commentsCount: 0,
       comments: [],
       createdAt: new Date().toISOString(),
-      tags: extractedTags.length ? extractedTags : ['photography', 'art', 'lumigram'],
+      tags: extractedTags.length ? extractedTags : ['marketing', 'celoris'],
     };
 
     setTimeout(() => {
       soundManager.playSendSound();
       onPostCreated(newPost);
-      setIsUploading(false);
       onClose();
-    }, 400);
+    }, 200);
   };
 
   return (

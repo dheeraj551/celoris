@@ -33,6 +33,7 @@ import {
 } from './utils/socialLogic';
 import { soundManager } from './utils/sound';
 import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap } from 'lucide-react';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 import { Navigation } from './components/Navigation';
 import { StoriesBar } from './components/StoriesBar';
@@ -50,6 +51,9 @@ import { RightSidebar } from './components/RightSidebar';
 import { PushNotificationToast } from './components/PushNotificationToast';
 
 export default function App() {
+  // Celoris User Management & Wallet sync
+  const { user: authUser, profile, refreshProfile } = useAuth();
+
   // Theme state
   const [theme, setTheme] = useState<ThemeMode>('dark');
 
@@ -67,7 +71,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads'>('feed');
   const [selectedProfileUser, setSelectedProfileUser] = useState<User>(CURRENT_USER);
 
-  // Ad Studio Campaign Simulator state
+  // Ad Studio Campaign state
   const [walletBalance, setWalletBalance] = useState<number>(10000);
   const [campaigns, setCampaigns] = useState<ActiveCampaign[]>([
     {
@@ -91,14 +95,72 @@ export default function App() {
   const [selectedCities, setSelectedCities] = useState<string[]>(['Delhi NCR', 'Mumbai', 'Jaipur']);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
 
-  // Load wallet from LocalStorage
+  // Synchronize authenticated Celoris student profile & real wallet
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('celoris_social_wallet');
-      if (saved) setWalletBalance(Number(saved));
-    } catch {}
+    if (authUser) {
+      const realName = profile?.full_name || profile?.name || authUser.email?.split('@')[0] || 'Celoris Student';
+      const realUsername = (profile?.email || authUser.email || 'student').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const realAvatar = profile?.avatar_url || profile?.profile_pic_url || CURRENT_USER.avatar;
+      const realUser: User = {
+        id: authUser.id,
+        name: realName,
+        username: realUsername,
+        avatar: realAvatar,
+        bio: profile?.bio || 'Performance Marketing Student @ Celoris',
+        website: profile?.website || 'https://celorisdesigns.com',
+        isVerified: profile?.role === 'admin' || profile?.role === 'instructor',
+        followersCount: 142,
+        followingCount: 38,
+        postsCount: 1,
+        role: profile?.role || 'Student',
+      };
+      setCurrentUser(realUser);
+      setSelectedProfileUser(realUser);
+
+      if (profile?.wallet_balance !== undefined && profile?.wallet_balance !== null) {
+        setWalletBalance(Number(profile.wallet_balance));
+      }
+    }
+  }, [authUser, profile]);
+
+  // Fetch real posts and active campaigns from Supabase database
+  useEffect(() => {
+    const fetchLiveSocial = async () => {
+      try {
+        const res = await fetch('/api/social/posts');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.posts) && data.posts.length > 0) {
+            // Merge with SEED_POSTS so instructors/mentors remain visible
+            const combined = [...data.posts, ...SEED_POSTS.filter((s) => !data.posts.some((p: any) => p.id === s.id))];
+            setPosts(combined);
+          }
+          if (Array.isArray(data.campaigns) && data.campaigns.length > 0) {
+            const mappedCampaigns: ActiveCampaign[] = data.campaigns.map((c: any) => ({
+              id: c.id,
+              postId: c.post_id || 'post_1',
+              postTitle: c.post_title || 'Active Campaign',
+              objective: c.objective || 'WhatsApp Leads',
+              dailyBudget: Number(c.daily_budget) || 500,
+              spent: Number(c.spent) || 500,
+              status: c.status || 'Active',
+              impressions: c.impressions || 1200,
+              clicks: c.clicks || 35,
+              cpc: '₹6.50',
+              ctr: '2.8%',
+              leads: c.leads || 4,
+            }));
+            setCampaigns(mappedCampaigns);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load live social posts:', err);
+      }
+    };
+    fetchLiveSocial();
   }, []);
 
+  // Update wallet helper
   const updateWallet = (val: number) => {
     setWalletBalance(val);
     try {
@@ -297,31 +359,40 @@ export default function App() {
   const handleLaunchBoost = async () => {
     if (!boostingPost) return;
     if (walletBalance < boostBudget) {
-      alert('Insufficient virtual wallet balance! Reset your wallet in Ads Manager.');
+      alert(`Insufficient wallet credits! Your balance is ₹${walletBalance.toLocaleString('en-IN')}, but this campaign requires ₹${boostBudget.toLocaleString('en-IN')}. Please add credits in your Celoris account.`);
       return;
     }
     setIsSimulating(true);
     try {
-      const res = await fetch('/api/social/simulate-ad', {
+      const res = await fetch('/api/social/boost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          hook: boostingPost.hook || boostingPost.caption.slice(0, 45),
-          caption: boostingPost.caption,
-          objective: boostObjective,
-          targetAudience: {
-            cities: selectedCities,
-            ageRange: '18-28',
-            niche: 'Upskilling & Career',
-          },
+          postId: boostingPost.id,
+          postTitle: boostingPost.hook || boostingPost.caption.slice(0, 35) + '...',
           budget: boostBudget,
+          objective: boostObjective,
+          targetCities: selectedCities,
+          userId: currentUser.id,
         }),
       });
-      const data = await res.json();
-      const sim = data?.data;
 
-      const newBal = walletBalance - boostBudget;
-      updateWallet(newBal);
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Failed to amplify campaign');
+        return;
+      }
+
+      if (data.newBalance !== undefined) {
+        updateWallet(data.newBalance);
+        if (refreshProfile) {
+          try {
+            await refreshProfile({ wallet_balance: data.newBalance });
+          } catch {}
+        }
+      }
+
+      const campaignData = data.campaign;
 
       setPosts((prev) =>
         prev.map((p) => {
@@ -332,11 +403,11 @@ export default function App() {
               sponsorData: {
                 buttonText: boostObjective === 'leads' ? 'Send Message' : 'Learn More',
                 destination: '/learn/course/digital-marketing-mastery',
-                impressions: sim?.estimated_impressions || 3600,
-                clicks: sim?.estimated_clicks || 84,
-                cpc: sim?.estimated_cpc || '₹6.80',
-                ctr: sim?.estimated_ctr || '2.35%',
-                leads: sim?.estimated_leads || 11,
+                impressions: campaignData?.impressions || 3600,
+                clicks: campaignData?.clicks || 84,
+                cpc: '₹6.40',
+                ctr: '2.7%',
+                leads: campaignData?.leads || 9,
                 dailyBudget: boostBudget,
               },
             };
@@ -346,25 +417,25 @@ export default function App() {
       );
 
       const newCampaign: ActiveCampaign = {
-        id: `camp-${Date.now()}`,
+        id: campaignData?.id || `camp-${Date.now()}`,
         postId: boostingPost.id,
         postTitle: boostingPost.hook || boostingPost.caption.slice(0, 35) + '...',
         objective: boostObjective === 'leads' ? 'WhatsApp Leads' : 'Traffic',
         dailyBudget: boostBudget,
         spent: boostBudget,
         status: 'Active',
-        impressions: sim?.estimated_impressions || 3600,
-        clicks: sim?.estimated_clicks || 84,
-        cpc: sim?.estimated_cpc || '₹6.80',
-        ctr: sim?.estimated_ctr || '2.35%',
-        leads: sim?.estimated_leads || 11,
+        impressions: campaignData?.impressions || 3600,
+        clicks: campaignData?.clicks || 84,
+        cpc: '₹6.40',
+        ctr: '2.7%',
+        leads: campaignData?.leads || 9,
       };
-      setCampaigns([newCampaign, ...campaigns]);
+      setCampaigns((prev) => [newCampaign, ...prev]);
       setBoostingPost(null);
       soundManager.playSendSound();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Simulation failed. Please try again.');
+      alert('Amplification failed: ' + (err?.message || 'Please try again.'));
     } finally {
       setIsSimulating(false);
     }
