@@ -24,7 +24,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
           <div className="relative">
             <button
               onClick={onOpenCreateStory}
-              className="relative block rounded-full p-0.5 focus:outline-none focus:ring-2 focus:ring-pink-500 cursor-pointer"
+              className="relative block rounded-full p-0.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
               aria-label="Add to your story"
             >
               <img
@@ -36,7 +36,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
             <button
               onClick={onOpenCreateStory}
               aria-label="Add to story"
-              className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1 border-2 border-white dark:border-neutral-900 shadow-md transition-colors cursor-pointer"
+              className="absolute bottom-0 right-0 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full p-1 border-2 border-white dark:border-neutral-900 shadow-md transition-colors cursor-pointer"
             >
               <Plus size={14} strokeWidth={3} />
             </button>
@@ -60,7 +60,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
               <div
                 className={`p-[2.5px] rounded-full transition-transform duration-200 group-hover:scale-105 ${
                   story.hasUnseen
-                    ? 'bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600'
+                    ? 'bg-gradient-to-tr from-emerald-500 via-teal-400 to-emerald-300'
                     : 'bg-neutral-300 dark:bg-neutral-700'
                 }`}
               >

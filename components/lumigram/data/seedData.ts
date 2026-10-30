@@ -123,7 +123,7 @@ export const SEED_POSTS: Post[] = [
     userId: 'user_dheeraj',
     user: SEED_USERS.dheeraj,
     images: ['/courses/digital-marketing-mastery-og.jpg'],
-    caption: 'Stop spending ₹15,000/month on generic agency ads that deliver zero leads. 🛑\n\nWhen we tested this exact customer journey angle for our D2C packaging client, the CPC dropped straight from ₹18.40 to ₹6.40 in 48 hours. The secret? Calling out the hidden cost in the first 1.5 seconds instead of showing boring b-roll.\n\nBatch #43 students: make sure to inspect your audience fatigue metrics before launching tonight! 🚀 #marketing #digitalmarketing #metaads #celoris',
+    caption: 'Stop spending ₹15,000/month on generic agency ads that deliver zero leads. 🛑\n\nWhen we tested this exact customer journey angle for our D2C packaging client, the CPC dropped straight from ₹18.40 to ₹6.40 in 48 hours. The secret? Calling out the hidden cost in the first 1.5 seconds instead of showing boring b-roll.\n\nBatch #43 students: make sure to inspect your audience fatigue metrics before launching tonight! 🚀 #marketing #digitalmarketing #performanceads #celoris',
     location: 'Celoris Studio · Noida',
     filter: 'normal',
     aspectRatio: 'square',
@@ -144,7 +144,7 @@ export const SEED_POSTS: Post[] = [
     },
     commentsCount: 3,
     createdAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-    tags: ['marketing', 'digitalmarketing', 'metaads', 'celoris'],
+    tags: ['marketing', 'digitalmarketing', 'performanceads', 'celoris'],
     comments: [
       {
         id: 'c_dh_1',

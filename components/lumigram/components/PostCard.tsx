@@ -13,7 +13,7 @@ import {
   MapPin,
   Flag,
   Share2,
-  Rocket,
+  TrendingUp,
 } from 'lucide-react';
 import { Post, User } from '../types';
 import { formatTimeAgo, formatCount } from '../utils/socialLogic';
@@ -92,7 +92,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <img
               src={post.user.avatar}
               alt={post.user.username}
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-pink-500 transition-all"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-emerald-500 transition-all"
             />
           </button>
           <div>
@@ -251,7 +251,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         )}
       </div>
 
-      {/* Sponsored Instagram CTA Banner */}
+      {/* Sponsored Campaign CTA Banner */}
       {post.isSponsored && post.sponsorData && (
         <div className="bg-neutral-100 dark:bg-neutral-800/80 border-b border-neutral-200 dark:border-neutral-800 px-4 py-2.5 flex items-center justify-between">
           <div className="text-xs">
@@ -264,8 +264,8 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
           <button
             type="button"
-            onClick={() => alert(`Simulated Instagram Ad click! Destination: ${post.sponsorData?.destination}`)}
-            className="bg-[#0095f6] hover:bg-[#1877f2] text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
+            onClick={() => alert(`Ad destination: ${post.sponsorData?.destination}`)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-1.5 rounded-xl transition-colors cursor-pointer"
           >
             {post.sponsorData.buttonText} &gt;
           </button>
@@ -360,16 +360,16 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         )}
 
-        {/* Instagram Boost Post Button for Students */}
+        {/* Ad Studio Amplify Button */}
         {onBoostPost && !post.isSponsored && (
           <div className="mt-3">
             <button
               type="button"
               onClick={() => onBoostPost(post)}
-              className="w-full py-2 rounded-xl bg-[#0095f6] hover:bg-[#1877f2] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
             >
-              <Rocket size={14} />
-              <span>Boost post (Practice with ₹10k Credits)</span>
+              <TrendingUp size={14} />
+              <span>Amplify in Ad Studio (₹10,000 Credits)</span>
             </button>
           </div>
         )}

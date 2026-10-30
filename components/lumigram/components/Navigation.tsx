@@ -8,10 +8,8 @@ import {
   PlusSquare,
   User as UserIcon,
   Settings,
-  Server,
   Sun,
   Moon,
-  Sparkles,
   BarChart2,
   Coins,
 } from 'lucide-react';
@@ -26,7 +24,7 @@ interface NavigationProps {
   walletBalance?: number;
   onSelectTab: (tab: 'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads') => void;
   onOpenCreate: () => void;
-  onOpenArch: () => void;
+  onOpenArch?: () => void;
   onOpenSettings: () => void;
   onToggleTheme: () => void;
 }
@@ -40,7 +38,6 @@ export const Navigation: React.FC<NavigationProps> = ({
   walletBalance = 10000,
   onSelectTab,
   onOpenCreate,
-  onOpenArch,
   onOpenSettings,
   onToggleTheme,
 }) => {
@@ -49,17 +46,29 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex flex-col justify-between w-64 lg:w-72 h-screen sticky top-0 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black p-5 z-40 transition-colors">
         <div className="space-y-6">
-          {/* Brand Logo */}
+          {/* Brand Logo with Official Celoris Pulse Artwork */}
           <button
             onClick={() => onSelectTab('feed')}
-            className="flex items-center gap-2 px-3 py-2 text-left group cursor-pointer focus:outline-none"
+            className="flex items-center gap-3 px-2 py-2 text-left group cursor-pointer focus:outline-none"
           >
-            <span className="font-serif italic font-bold text-2xl tracking-tight text-neutral-900 dark:text-white select-none">
-              Instagram
-            </span>
-            <span className="text-[10px] font-mono text-emerald-500 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/30">
-              SANDBOX
-            </span>
+            <img
+              src="/images/celoris-pulse-logo.png"
+              alt="Celoris Pulse"
+              className="w-10 h-10 object-contain shrink-0 group-hover:scale-105 transition-transform"
+            />
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-xl tracking-tight text-neutral-900 dark:text-white leading-none">
+                  celoris
+                </span>
+                <span className="font-extrabold text-xl tracking-tight text-emerald-500 leading-none">
+                  PULSE
+                </span>
+              </div>
+              <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium tracking-wide">
+                a celoris social cloud
+              </span>
+            </div>
           </button>
 
           {/* Navigation Items */}
@@ -68,11 +77,11 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={() => onSelectTab('feed')}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'feed'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white font-bold'
+                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
-              <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px]' : ''} />
+              <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px] text-emerald-500' : ''} />
               <span>Home Feed</span>
             </button>
 
@@ -86,7 +95,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             >
               <div className="flex items-center gap-4">
                 <BarChart2 size={22} className="text-emerald-500" />
-                <span>Meta Ads Manager</span>
+                <span>Ad Studio</span>
               </div>
               <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">
                 ₹{walletBalance.toLocaleString('en-IN')}
@@ -97,11 +106,11 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={() => onSelectTab('explore')}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'explore'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white font-bold'
+                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
-              <Compass size={22} className={activeTab === 'explore' ? 'stroke-[2.5px]' : ''} />
+              <Compass size={22} className={activeTab === 'explore' ? 'stroke-[2.5px] text-emerald-500' : ''} />
               <span>Explore &amp; Search</span>
             </button>
 
@@ -109,16 +118,16 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={() => onSelectTab('messages')}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'messages'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white font-bold'
+                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-4">
-                <MessageSquare size={22} className={activeTab === 'messages' ? 'stroke-[2.5px]' : ''} />
+                <MessageSquare size={22} className={activeTab === 'messages' ? 'stroke-[2.5px] text-emerald-500' : ''} />
                 <span>Messages</span>
               </div>
               {unreadMessagesCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-500 text-white shadow-xs">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500 text-white shadow-xs">
                   {unreadMessagesCount}
                 </span>
               )}
@@ -128,12 +137,12 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={() => onSelectTab('activity')}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'activity'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white font-bold'
+                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-4">
-                <Heart size={22} className={activeTab === 'activity' ? 'stroke-[2.5px]' : ''} />
+                <Heart size={22} className={activeTab === 'activity' ? 'stroke-[2.5px] text-rose-500' : ''} />
                 <span>Notifications</span>
               </div>
               {unreadNotificationsCount > 0 && (
@@ -153,7 +162,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={() => onSelectTab('profile')}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'profile'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white font-bold'
+                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
@@ -194,21 +203,33 @@ export const Navigation: React.FC<NavigationProps> = ({
       </aside>
 
       {/* MOBILE TOP BAR */}
-      <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 py-2.5 flex items-center justify-between">
         <button
           onClick={() => onSelectTab('feed')}
-          className="flex items-center gap-1.5 cursor-pointer"
+          className="flex items-center gap-2.5 cursor-pointer text-left"
         >
-          <span className="font-serif italic font-bold text-2xl tracking-tight text-neutral-900 dark:text-white select-none">
-            Instagram
-          </span>
-          <span className="text-[9px] font-mono text-emerald-500 font-bold bg-emerald-500/10 px-1 py-0.2 rounded border border-emerald-500/30">
-            SANDBOX
-          </span>
+          <img
+            src="/images/celoris-pulse-logo.png"
+            alt="Celoris Pulse"
+            className="w-8 h-8 object-contain shrink-0"
+          />
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1">
+              <span className="font-extrabold text-base tracking-tight text-neutral-900 dark:text-white leading-none">
+                celoris
+              </span>
+              <span className="font-extrabold text-base tracking-tight text-emerald-500 leading-none">
+                PULSE
+              </span>
+            </div>
+            <span className="text-[8.5px] text-neutral-400 font-medium leading-tight">
+              a celoris social cloud
+            </span>
+          </div>
         </button>
 
         <div className="flex items-center gap-2">
-          {/* Virtual Wallet Quick Pill */}
+          {/* Ad Studio Wallet Quick Pill */}
           <button
             onClick={() => onSelectTab(activeTab === 'ads' ? 'feed' : 'ads')}
             className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-xs font-mono font-bold cursor-pointer"
@@ -240,11 +261,11 @@ export const Navigation: React.FC<NavigationProps> = ({
           aria-label="Home Feed"
           className={`p-2.5 rounded-xl cursor-pointer ${
             activeTab === 'feed'
-              ? 'text-neutral-900 dark:text-white'
+              ? 'text-emerald-500 font-bold'
               : 'text-neutral-500 dark:text-neutral-400'
           }`}
         >
-          <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px]' : ''} />
+          <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px] text-emerald-500' : ''} />
         </button>
 
         <button
@@ -252,11 +273,11 @@ export const Navigation: React.FC<NavigationProps> = ({
           aria-label="Explore"
           className={`p-2.5 rounded-xl cursor-pointer ${
             activeTab === 'explore'
-              ? 'text-neutral-900 dark:text-white'
+              ? 'text-emerald-500 font-bold'
               : 'text-neutral-500 dark:text-neutral-400'
           }`}
         >
-          <Compass size={22} className={activeTab === 'explore' ? 'stroke-[2.5px]' : ''} />
+          <Compass size={22} className={activeTab === 'explore' ? 'stroke-[2.5px] text-emerald-500' : ''} />
         </button>
 
         <button
@@ -269,7 +290,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         <button
           onClick={() => onSelectTab('ads')}
-          aria-label="Meta Ads Manager"
+          aria-label="Ad Studio"
           className={`p-2.5 rounded-xl cursor-pointer ${
             activeTab === 'ads'
               ? 'text-emerald-500 font-bold'
@@ -289,7 +310,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             alt={currentUser.name}
             className={`w-6 h-6 rounded-full object-cover ring-2 ${
               activeTab === 'profile'
-                ? 'ring-neutral-900 dark:ring-white'
+                ? 'ring-emerald-500'
                 : 'ring-transparent'
             }`}
           />

@@ -245,7 +245,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({
               placeholder="Search chats..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-pink-500"
+              className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             />
           </div>
         </div>
@@ -290,7 +290,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({
                 </div>
 
                 {conv.unreadCount > 0 && !isSelected && (
-                  <span className="w-2.5 h-2.5 rounded-full bg-pink-500 shrink-0" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
                 )}
               </button>
             );
@@ -365,7 +365,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({
                   <div
                     className={`relative max-w-[75%] rounded-2xl p-3.5 shadow-xs ${
                       isMine
-                        ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-br-xs'
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-br-xs'
                         : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-neutral-700 rounded-bl-xs'
                     }`}
                   >
@@ -459,14 +459,14 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({
               placeholder={`Message ${activeConversation.participant.name}...`}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="flex-1 px-4 py-2.5 rounded-full text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="flex-1 px-4 py-2.5 rounded-full text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
 
             {inputText.trim() ? (
               <button
                 type="submit"
                 aria-label="Send message"
-                className="p-2.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-90 transition-opacity cursor-pointer"
+                className="p-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-90 transition-opacity cursor-pointer"
               >
                 <Send size={16} />
               </button>

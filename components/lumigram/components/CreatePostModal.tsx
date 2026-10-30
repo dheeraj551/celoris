@@ -5,7 +5,6 @@ import {
   X,
   Upload,
   Image as ImageIcon,
-  Sparkles,
   MapPin,
   Tag,
   ArrowRight,
@@ -165,7 +164,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               <button
                 onClick={handleShare}
                 disabled={isUploading}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-95 disabled:opacity-50 flex items-center gap-1.5 shadow-sm cursor-pointer"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95 disabled:opacity-50 flex items-center gap-1.5 shadow-sm cursor-pointer"
               >
                 {isUploading ? (
                   <>
@@ -197,9 +196,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             <div className="space-y-6">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-pink-500 dark:hover:border-pink-500 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-neutral-50 dark:bg-neutral-950/50"
+                className="border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-neutral-50 dark:bg-neutral-950/50"
               >
-                <div className="w-16 h-16 rounded-full bg-pink-50 dark:bg-pink-950/40 text-pink-500 flex items-center justify-center mb-3">
+                <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 flex items-center justify-center mb-3">
                   <Upload size={32} />
                 </div>
                 <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
@@ -220,7 +219,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               {/* Instant Studio Presets */}
               <div>
                 <h5 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3 flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-amber-500" />
+                  <ImageIcon size={14} className="text-emerald-500" />
                   Or choose a sample photo
                 </h5>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -231,7 +230,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         setSelectedImage(preset.url);
                         setStep(2);
                       }}
-                      className="group relative aspect-square rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 cursor-pointer hover:ring-2 hover:ring-pink-500 transition-all"
+                      className="group relative aspect-square rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all"
                     >
                       <img
                         src={preset.url}
@@ -308,7 +307,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         onClick={() => setSelectedFilter(f.id)}
                         className={`p-2 rounded-xl text-left border transition-all cursor-pointer ${
                           selectedFilter === f.id
-                            ? 'border-pink-500 bg-pink-50/50 dark:bg-pink-950/30'
+                            ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30'
                             : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
                         }`}
                       >
@@ -352,7 +351,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
                   placeholder="Share the story behind this shot... Use #hashtags and @mentions"
-                  className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                  className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                 />
               </div>
 
@@ -367,7 +366,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Shibuya, Tokyo or Dolomites, Italy"
-                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
@@ -380,7 +379,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </div>
                   <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-200"
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full transition-all duration-200"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>

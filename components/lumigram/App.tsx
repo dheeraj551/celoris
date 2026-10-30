@@ -45,7 +45,6 @@ import { ActivityFeed } from './components/ActivityFeed';
 import { ExploreTab } from './components/ExploreTab';
 import { ProfileView } from './components/ProfileView';
 import { ReportModal } from './components/ReportModal';
-import { ScalableArchModal } from './components/ScalableArchModal';
 import { SettingsModal } from './components/SettingsModal';
 import { RightSidebar } from './components/RightSidebar';
 import { PushNotificationToast } from './components/PushNotificationToast';
@@ -68,7 +67,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads'>('feed');
   const [selectedProfileUser, setSelectedProfileUser] = useState<User>(CURRENT_USER);
 
-  // Meta Ad Practice Sandbox state
+  // Ad Studio Campaign Simulator state
   const [walletBalance, setWalletBalance] = useState<number>(10000);
   const [campaigns, setCampaigns] = useState<ActiveCampaign[]>([
     {
@@ -110,7 +109,6 @@ export default function App() {
   // Active modals
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isArchOpen, setIsArchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [reportingPost, setReportingPost] = useState<Post | null>(null);
   const [selectedDetailPost, setSelectedDetailPost] = useState<Post | null>(null);
@@ -417,7 +415,6 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenCreate={() => setIsCreateOpen(true)}
-        onOpenArch={() => setIsArchOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onToggleTheme={handleToggleTheme}
       />
@@ -465,17 +462,17 @@ export default function App() {
             </div>
           )}
 
-          {/* TAB: META ADS MANAGER */}
+          {/* TAB: AD STUDIO */}
           {activeTab === 'ads' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
                 <div>
                   <h2 className="text-xl font-bold text-neutral-900 dark:text-white flex items-center gap-2">
                     <BarChart2 className="text-emerald-500" />
-                    <span>Meta Ads Manager</span>
+                    <span>Ad Studio</span>
                   </h2>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Celoris Practice Sandbox · Zero real money risk
+                    A Celoris Social Cloud · Real-time Campaign Engine
                   </p>
                 </div>
                 <button
@@ -551,7 +548,7 @@ export default function App() {
                     onClick={() => setActiveTab('feed')}
                     className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
                   >
-                    + Boost a post from feed
+                    + Amplify a post from feed
                   </button>
                 </div>
 
@@ -647,11 +644,10 @@ export default function App() {
           suggestedUsers={suggestedUsers}
           onToggleFollow={handleToggleFollow}
           onSelectUser={handleSelectUser}
-          onOpenArch={() => setIsArchOpen(true)}
         />
       )}
 
-      {/* MODAL: Fullscreen Instagram Story Viewer */}
+      {/* MODAL: Fullscreen Story Viewer */}
       {activeStoryIndex !== null && (
         <StoryViewerModal
           stories={stories}
@@ -697,9 +693,6 @@ export default function App() {
         />
       )}
 
-      {/* MODAL: Scalable Cloud Architecture Telemetry */}
-      {isArchOpen && <ScalableArchModal onClose={() => setIsArchOpen(false)} />}
-
       {/* MODAL: Settings & Privacy */}
       {isSettingsOpen && (
         <SettingsModal
@@ -712,22 +705,22 @@ export default function App() {
         />
       )}
 
-      {/* MODAL: Instagram Boost Post Simulator */}
+      {/* MODAL: Ad Studio Campaign Booster */}
       {boostingPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-emerald-500 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white">
                   <TrendingUp size={16} />
                 </div>
                 <div>
                   <h3 className="font-bold text-base text-neutral-900 dark:text-white">
-                    Boost post (Meta Ad Sandbox)
+                    Amplify Post in Ad Studio
                   </h3>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Live Meta Auction Simulation · Practice with ₹10,000 Credits
+                    Live Campaign Simulator · Practice with ₹10,000 Credits
                   </p>
                 </div>
               </div>
@@ -861,7 +854,7 @@ export default function App() {
             {/* Live Forecast Pill */}
             <div className="mt-5 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-neutral-700 dark:text-neutral-300 space-y-1">
               <div className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center justify-between">
-                <span>Estimated 24h Meta Reach</span>
+                <span>Estimated 24h Campaign Reach</span>
                 <span className="font-mono font-bold">~{Math.round(boostBudget * 7.2).toLocaleString()} views</span>
               </div>
               <div className="flex justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
@@ -888,12 +881,12 @@ export default function App() {
                 {isSimulating ? (
                   <>
                     <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Running Meta Auction Simulation...</span>
+                    <span>Launching Campaign Simulation...</span>
                   </>
                 ) : (
                   <>
                     <Zap size={14} />
-                    <span>Boost Post (Deduct ₹{boostBudget})</span>
+                    <span>Amplify Post (Deduct ₹{boostBudget})</span>
                   </>
                 )}
               </button>

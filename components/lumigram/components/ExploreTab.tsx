@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Search, Heart, MessageCircle, Sparkles, Tag, MapPin, X } from 'lucide-react';
+import { Search, Heart, MessageCircle, Compass, Tag, MapPin, X } from 'lucide-react';
 import { Post, User } from '../types';
 import { filterExplorePosts, formatCount } from '../utils/socialLogic';
 
@@ -44,7 +44,7 @@ export const ExploreTab: React.FC<ExploreTabProps> = ({
           placeholder="Search creators, hashtags (#neon, #nature), locations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-xs"
+          className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
         />
         {searchQuery && (
           <button
@@ -77,7 +77,7 @@ export const ExploreTab: React.FC<ExploreTabProps> = ({
         })}
       </div>
 
-      {/* Explore Visual Grid (Instagram Staggered Hero Layout) */}
+      {/* Explore Visual Grid (Staggered Hero Grid Layout) */}
       {filteredPosts.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
           {filteredPosts.map((post, idx) => {
@@ -140,7 +140,7 @@ export const ExploreTab: React.FC<ExploreTabProps> = ({
         </div>
       ) : (
         <div className="text-center py-16 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-8">
-          <Sparkles size={32} className="mx-auto text-pink-500 mb-2" />
+          <Compass size={32} className="mx-auto text-emerald-500 mb-2" />
           <h3 className="font-semibold text-neutral-800 dark:text-neutral-200">
             No matching posts found
           </h3>

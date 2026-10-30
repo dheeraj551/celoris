@@ -11,7 +11,6 @@ import {
   Shield,
   CheckCircle2,
   Clock,
-  Sparkles,
 } from 'lucide-react';
 import { AccountSettings, ThemeMode, ReportItem } from '../types';
 import { soundManager } from '../utils/sound';
@@ -103,7 +102,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="flex items-center justify-between p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
               <div className="flex items-center gap-3">
                 {theme === 'dark' ? (
-                  <Moon size={20} className="text-pink-500" />
+                  <Moon size={20} className="text-emerald-500" />
                 ) : (
                   <Sun size={20} className="text-amber-500" />
                 )}
@@ -121,7 +120,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={onToggleTheme}
                 aria-label="Toggle theme mode"
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                  theme === 'dark' ? 'bg-pink-500' : 'bg-neutral-300'
+                  theme === 'dark' ? 'bg-emerald-500' : 'bg-neutral-300'
                 }`}
               >
                 <span
@@ -141,7 +140,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Lock size={20} className="text-purple-500" />
+                  <Lock size={20} className="text-emerald-500" />
                   <div>
                     <span className="font-semibold text-neutral-900 dark:text-neutral-100 block">
                       Private Account
@@ -156,7 +155,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onClick={handleTogglePrivate}
                   aria-label="Toggle private account"
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                    settings.isPrivate ? 'bg-purple-600' : 'bg-neutral-300 dark:bg-neutral-700'
+                    settings.isPrivate ? 'bg-emerald-600' : 'bg-neutral-300 dark:bg-neutral-700'
                   }`}
                 >
                   <span
@@ -168,7 +167,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               {settings.isPrivate && (
-                <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-[11px]">
+                <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-[11px]">
                   🔒 Your account is now private. Pending requests will appear in your Activity feed.
                 </div>
               )}
@@ -215,7 +214,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
                 <div className="flex items-center gap-3">
                   {settings.pushNotifications.sound ? (
-                    <Volume2 size={18} className="text-pink-500" />
+                    <Volume2 size={18} className="text-emerald-500" />
                   ) : (
                     <VolumeX size={18} className="text-neutral-400" />
                   )}
@@ -234,7 +233,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   aria-label="Toggle UI sounds"
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
                     settings.pushNotifications.sound
-                      ? 'bg-pink-500'
+                      ? 'bg-emerald-500'
                       : 'bg-neutral-300 dark:bg-neutral-700'
                   }`}
                 >
@@ -257,7 +256,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       type="checkbox"
                       checked={settings.pushNotifications[ch]}
                       onChange={() => handleTogglePushChannel(ch)}
-                      className="rounded text-pink-500"
+                      className="rounded text-emerald-500 accent-emerald-500"
                     />
                     <span className="capitalize">
                       {ch === 'directMessages' ? 'Direct Messages' : ch}

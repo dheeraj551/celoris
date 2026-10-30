@@ -15,6 +15,7 @@ export interface User {
   isFollowing?: boolean;
   hasRequestedFollow?: boolean;
   isOnline?: boolean;
+  role?: string;
 }
 
 export interface Comment {

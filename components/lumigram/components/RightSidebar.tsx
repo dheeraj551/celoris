@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import React from 'react';
 import { User } from '../types';
-import { Sparkles, CheckCircle2, ShieldCheck, Server } from 'lucide-react';
+import { CheckCircle2, TrendingUp, Users } from 'lucide-react';
 import { soundManager } from '../utils/sound';
 
 interface RightSidebarProps {
@@ -9,7 +9,7 @@ interface RightSidebarProps {
   suggestedUsers: User[];
   onToggleFollow: (user: User) => void;
   onSelectUser: (user: User) => void;
-  onOpenArch: () => void;
+  onOpenArch?: () => void;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -17,7 +17,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   suggestedUsers,
   onToggleFollow,
   onSelectUser,
-  onOpenArch,
 }) => {
   return (
     <aside className="hidden xl:block w-80 p-6 space-y-6 shrink-0">
@@ -30,12 +29,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           <img
             src={currentUser.avatar}
             alt={currentUser.name}
-            className="w-12 h-12 rounded-full object-cover ring-2 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-pink-500 transition-all"
+            className="w-12 h-12 rounded-full object-cover ring-2 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-emerald-500 transition-all"
           />
           <div>
             <div className="flex items-center gap-1 font-bold text-xs text-neutral-900 dark:text-neutral-100 group-hover:underline">
               {currentUser.username}
-              <CheckCircle2 size={13} className="text-sky-500 fill-sky-500 text-white" />
+              <CheckCircle2 size={13} className="text-emerald-500 fill-emerald-500 text-white" />
             </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-[150px]">
               {currentUser.name}
@@ -43,33 +42,33 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           </div>
         </button>
 
-        <span className="text-xs font-semibold text-pink-500 hover:text-pink-600 cursor-pointer">
+        <span className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 cursor-pointer">
           Switch
         </span>
       </div>
 
-      {/* Cloud Ingestion Live Badge */}
-      <div
-        onClick={onOpenArch}
-        className="p-3.5 rounded-2xl bg-gradient-to-tr from-pink-500/10 via-purple-500/10 to-indigo-500/10 border border-pink-500/20 hover:border-pink-500/40 transition-colors cursor-pointer space-y-1.5"
-      >
+      {/* Ad Studio Quick Snapshot */}
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
-            <Server size={14} className="text-pink-500" />
-            Distributed Media Ingest
+          <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+            <TrendingUp size={14} className="text-emerald-500" />
+            Ad Studio Credits
           </span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 font-bold">
+            ₹10,000 Live
+          </span>
         </div>
         <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-snug">
-          140k+ req/sec direct-to-storage pipeline active with sub-18ms edge latency.
+          Amplify your posts in Ad Studio to test audience targeting, real-time CTRs, and WhatsApp lead acquisition.
         </p>
       </div>
 
       {/* Suggestions for You */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
-            Suggested for you
+          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
+            <Users size={14} />
+            <span>Fellow Creators &amp; Mentors</span>
           </span>
           <button className="text-xs font-semibold text-neutral-900 dark:text-neutral-200 hover:underline cursor-pointer">
             See All
@@ -93,7 +92,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                     {user.username}
                   </div>
                   <p className="text-[10px] text-neutral-400 truncate">
-                    Suggested creator
+                    {user.role || user.name}
                   </p>
                 </div>
               </button>
@@ -106,7 +105,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                 className={`text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                   user.isFollowing
                     ? 'text-neutral-400 hover:text-neutral-600'
-                    : 'text-pink-500 hover:text-pink-600'
+                    : 'text-emerald-500 hover:text-emerald-600'
                 }`}
               >
                 {user.isFollowing ? 'Following' : 'Follow'}
@@ -116,19 +115,16 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         </div>
       </div>
 
-      {/* Meta Footer */}
-      <div className="text-[11px] text-neutral-400 dark:text-neutral-600 space-y-2 pt-4">
+      {/* Footer */}
+      <div className="text-[11px] text-neutral-400 dark:text-neutral-600 space-y-2 pt-4 border-t border-neutral-100 dark:border-neutral-800">
         <div className="flex flex-wrap gap-x-2 gap-y-1">
-          <a href="#" className="hover:underline">About</a>•
-          <a href="#" className="hover:underline">Help</a>•
-          <a href="#" className="hover:underline">Press</a>•
-          <a href="#" className="hover:underline">API</a>•
-          <a href="#" className="hover:underline">Privacy</a>•
-          <a href="#" className="hover:underline">Terms</a>
+          <a href="/about" className="hover:underline">About</a>•
+          <a href="/help" className="hover:underline">Help</a>•
+          <a href="/privacy" className="hover:underline">Privacy</a>•
+          <a href="/terms" className="hover:underline">Terms</a>
         </div>
-        <p>© 2026 LUMIGRAM • CLOUD SOCIAL MEDIA ENGINE</p>
+        <p className="font-mono text-[10px]">© 2026 CELORIS PULSE • A CELORIS SOCIAL CLOUD</p>
       </div>
     </aside>
   );
 };
-

@@ -56,7 +56,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-10">
           {/* Avatar with gradient ring */}
           <div className="relative shrink-0">
-            <div className="p-1 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shadow-md">
+            <div className="p-1 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-emerald-600 shadow-md">
               <img
                 src={user.avatar}
                 alt={user.name}
@@ -106,7 +106,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                           ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200'
                           : user.hasRequestedFollow
                           ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-                          : 'bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-95 shadow-xs'
+                          : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:opacity-95 shadow-xs'
                       }`}
                     >
                       {user.isFollowing
@@ -158,7 +158,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   href={user.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-pink-600 dark:text-pink-400 font-semibold hover:underline"
+                  className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
                 >
                   <ExternalLink size={12} />
                   {user.website.replace('https://', '')}
@@ -225,7 +225,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </p>
           <button
             onClick={handleFollowClick}
-            className="mt-2 px-5 py-2 rounded-xl text-xs font-semibold bg-pink-500 hover:bg-pink-600 text-white cursor-pointer"
+            className="mt-2 px-5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
           >
             {user.hasRequestedFollow ? 'Request Sent' : 'Request to Follow'}
           </button>

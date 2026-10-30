@@ -9,7 +9,6 @@ import {
   Check,
   X,
   Bell,
-  Sparkles,
 } from 'lucide-react';
 import { NotificationItem, User } from '../types';
 import { formatTimeAgo } from '../utils/socialLogic';
@@ -37,10 +36,10 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     <div className="w-full max-w-xl mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl overflow-hidden shadow-xs p-5">
       <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-4">
         <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-          <Bell size={20} className="text-pink-500" />
-          Activity & Notifications
+          <Bell size={20} className="text-emerald-500" />
+          Activity &amp; Notifications
         </h2>
-        <span className="text-xs px-2.5 py-1 rounded-full bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 font-semibold">
+        <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-semibold">
           Real-time Feed
         </span>
       </div>
@@ -89,7 +88,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                       soundManager.playSendSound();
                       onFollowToggle(req.actor);
                     }}
-                    className="px-3 py-1.5 rounded-full text-xs font-semibold bg-pink-500 hover:bg-pink-600 text-white cursor-pointer transition-colors"
+                    className="px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer transition-colors"
                   >
                     Confirm
                   </button>
@@ -136,7 +135,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                       <MessageCircle size={10} className="text-sky-500" />
                     )}
                     {notif.type === 'follow' && (
-                      <UserPlus size={10} className="text-purple-500" />
+                      <UserPlus size={10} className="text-emerald-500" />
                     )}
                     {notif.type === 'mention' && (
                       <AtSign size={10} className="text-emerald-500" />

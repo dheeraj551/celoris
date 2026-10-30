@@ -252,7 +252,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               {commentInput.trim() && (
                 <button
                   type="submit"
-                  className="text-xs font-semibold text-pink-500 hover:text-pink-600 cursor-pointer"
+                  className="text-xs font-bold text-emerald-500 hover:text-emerald-600 cursor-pointer"
                 >
                   Post
                 </button>

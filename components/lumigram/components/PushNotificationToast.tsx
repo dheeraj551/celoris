@@ -20,7 +20,7 @@ export const PushNotificationToast: React.FC<PushNotificationToastProps> = ({
     <div className="fixed top-4 left-1/2 z-50 w-full max-w-sm px-3 pointer-events-auto animate-slide-down-toast">
       <div
         onClick={onClick}
-        className="p-3.5 rounded-2xl bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 shadow-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-pink-500/50 transition-colors"
+        className="p-3.5 rounded-2xl bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 shadow-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-emerald-500/50 transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative shrink-0">
@@ -29,7 +29,7 @@ export const PushNotificationToast: React.FC<PushNotificationToastProps> = ({
               alt={notification.actor.username}
               className="w-10 h-10 rounded-full object-cover"
             />
-            <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-pink-500 text-white">
+            <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-emerald-500 text-white">
               {notification.type === 'like' && <Heart size={10} className="fill-white" />}
               {notification.type === 'message' && <MessageSquare size={10} />}
               {notification.type === 'follow' && <UserPlus size={10} />}
@@ -41,8 +41,8 @@ export const PushNotificationToast: React.FC<PushNotificationToastProps> = ({
               <span className="font-bold text-xs text-neutral-900 dark:text-neutral-100 truncate">
                 {notification.actor.username}
               </span>
-              <span className="text-[10px] text-pink-500 font-mono font-semibold uppercase">
-                Push Alert
+              <span className="text-[10px] text-emerald-500 font-mono font-semibold uppercase">
+                Pulse Alert
               </span>
             </div>
             <p className="text-xs text-neutral-600 dark:text-neutral-300 truncate">

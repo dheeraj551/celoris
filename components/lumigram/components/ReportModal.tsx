@@ -135,8 +135,8 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                   Report Received
                 </h4>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm mx-auto">
-                  Thank you for helping keep Lumigram safe. Our Trust & Safety team has prioritized
-                  case <span className="font-mono text-pink-600 dark:text-pink-400 font-bold">#{submittedTicket}</span>.
+                  Thank you for helping keep Celoris Pulse safe. Our Trust &amp; Safety team has prioritized
+                  case <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">#{submittedTicket}</span>.
                 </p>
               </div>
 
