@@ -49,6 +49,11 @@ export const PostCard: React.FC<PostCardProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const lastTapRef = useRef<number>(0);
 
+  const safeImages = Array.isArray(post.images) && post.images.length > 0
+    ? post.images
+    : ['/courses/digital-marketing-mastery-og.jpg'];
+  const safeComments = Array.isArray(post.comments) ? post.comments : [];
+
   const handleDoubleTap = () => {
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
@@ -182,8 +187,8 @@ export const PostCard: React.FC<PostCardProps> = ({
         onClick={handleDoubleTap}
       >
         <img
-          src={post.images[currentImageIndex]}
-          alt={post.caption}
+          src={safeImages[currentImageIndex] || safeImages[0]}
+          alt={post.caption || 'Post image'}
           className={`w-full h-full object-cover transition-transform duration-300 ${
             post.filter === 'clarendon'
               ? 'contrast-125 saturate-125'
@@ -209,7 +214,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         )}
 
         {/* Carousel Navigation Arrows */}
-        {post.images.length > 1 && (
+        {safeImages.length > 1 && (
           <>
             {currentImageIndex > 0 && (
               <button
@@ -223,7 +228,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 <ChevronLeft size={18} />
               </button>
             )}
-            {currentImageIndex < post.images.length - 1 && (
+            {currentImageIndex < safeImages.length - 1 && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -238,7 +243,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             {/* Pagination Dots */}
             <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-10 pointer-events-none">
-              {post.images.map((_, i) => (
+              {safeImages.map((_, i) => (
                 <div
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${
@@ -345,7 +350,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             {/* List top comments or all if expanded */}
             <div className="mt-1 space-y-1">
-              {(isExpanded ? post.comments : post.comments.slice(0, 2)).map((c) => (
+              {(isExpanded ? safeComments : safeComments.slice(0, 2)).map((c) => (
                 <div key={c.id} className="text-xs text-neutral-800 dark:text-neutral-300 flex items-start justify-between">
                   <div>
                     <span className="font-semibold mr-1.5">{c.user.username}</span>

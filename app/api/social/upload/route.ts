@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join, extname } from 'path';
+import { putR2Object } from '@/lib/r2-client';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -40,19 +41,33 @@ export async function POST(request: NextRequest) {
       .slice(0, 30);
     const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}_${safeBase}${ext}`;
 
-    // Target VPS storage directory (public/uploads/social)
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'social');
+    let storedToR2 = false;
 
+    // 1. Store to Cloudflare R2 (100% free permanent storage, 0 Supabase storage consumed)
     try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch {
-      // Directory exists
+      const r2Key = `social/${uniqueFileName}`;
+      await putR2Object(r2Key, buffer, file.type);
+      storedToR2 = true;
+    } catch (r2Err) {
+      console.warn('R2 upload failed or not configured, falling back to local VPS disk:', r2Err);
     }
 
-    const filePath = join(uploadDir, uniqueFileName);
-    await writeFile(filePath, buffer);
+    // 2. Also save to local / VPS disk if writable
+    try {
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'social');
+      await mkdir(uploadDir, { recursive: true });
+      const filePath = join(uploadDir, uniqueFileName);
+      await writeFile(filePath, buffer);
+    } catch (fsErr) {
+      // Local disk might be read-only in serverless lambda; R2 takes precedence
+      if (!storedToR2) {
+        console.error('Both R2 and local filesystem storage failed:', fsErr);
+        throw new Error('Failed to save file to permanent storage');
+      }
+    }
 
-    const publicUrl = `/uploads/social/${uniqueFileName}`;
+    // The media route permanently resolves either from local VPS or R2 signed CDN
+    const publicUrl = `/api/social/media/${uniqueFileName}`;
 
     return NextResponse.json({
       success: true,
@@ -62,9 +77,9 @@ export async function POST(request: NextRequest) {
       mimeType: file.type,
     });
   } catch (error: any) {
-    console.error('Error uploading file to VPS:', error);
+    console.error('Error uploading file to storage:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to upload to VPS storage' },
+      { error: error?.message || 'Failed to upload image' },
       { status: 500 }
     );
   }

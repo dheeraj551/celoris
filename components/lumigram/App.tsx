@@ -315,7 +315,7 @@ export default function App() {
         id: `notif_post_${Date.now()}`,
         type: 'mention',
         actor: currentUser,
-        text: 'Your post was successfully uploaded to 256 edge nodes!',
+        text: 'Your post is now live on Celoris Pulse!',
         createdAt: new Date().toISOString(),
         isRead: false,
       };

@@ -241,8 +241,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="group relative aspect-square rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 cursor-pointer shadow-xs"
               >
                 <img
-                  src={post.images[0]}
-                  alt={post.caption}
+                  src={post.images?.[0] || '/courses/digital-marketing-mastery-og.jpg'}
+                  alt={post.caption || 'Post image'}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -264,8 +264,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="group relative aspect-square rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 cursor-pointer shadow-xs"
               >
                 <img
-                  src={post.images[0]}
-                  alt={post.caption}
+                  src={post.images?.[0] || '/courses/digital-marketing-mastery-og.jpg'}
+                  alt={post.caption || 'Post image'}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-semibold text-xs">

@@ -5,11 +5,13 @@ import { createRouteClient } from '@/lib/supabase-server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function GET(request: NextRequest) {
   try {
     const admin = createSupabaseClientForServer();
 
-    // 1. Fetch real posts from Supabase
+    // 1. Fetch real posts from Supabase posts table
     const { data: realPosts, error: postsError } = await admin
       .from('posts')
       .select(`
@@ -29,76 +31,144 @@ export async function GET(request: NextRequest) {
         created_at
       `)
       .order('created_at', { ascending: false })
-      .limit(30);
+      .limit(50);
 
-    // 2. Fetch author profiles for these posts
-    let authorMap: Record<string, any> = {};
+    if (postsError) {
+      console.error('Error querying posts table:', postsError);
+    }
+
+    // 2. Fetch author profiles from public.users and public.profiles
+    const authorMap: Record<string, any> = {};
     if (realPosts && realPosts.length > 0) {
-      const userIds = Array.from(new Set(realPosts.map((p: any) => p.user_id).filter(Boolean)));
-      if (userIds.length > 0) {
-        const { data: authors } = await admin
-          .from('users')
-          .select('id, full_name, email, role, avatar_url, wallet_balance')
-          .in('id', userIds);
+      const validUserIds = Array.from(
+        new Set(realPosts.map((p: any) => p.user_id).filter((id: any) => typeof id === 'string' && UUID_REGEX.test(id)))
+      );
 
-        if (authors) {
-          authors.forEach((a: any) => {
-            authorMap[a.id] = a;
-          });
+      if (validUserIds.length > 0) {
+        try {
+          const { data: usersData } = await admin
+            .from('users')
+            .select('id, full_name, username, role, profile_pic_url, wallet_balance')
+            .in('id', validUserIds);
+
+          if (usersData) {
+            usersData.forEach((u: any) => {
+              authorMap[u.id] = {
+                id: u.id,
+                username: (u.username || 'student').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                name: u.full_name || u.username || 'Celoris Student',
+                avatar: u.profile_pic_url || '/courses/digital-marketing-mastery-og.jpg',
+                role: u.role || 'Creator & Student',
+                isVerified: u.role === 'admin' || u.role === 'instructor',
+              };
+            });
+          }
+        } catch (e) {
+          console.warn('Error reading users table for social authors:', e);
+        }
+
+        try {
+          const { data: profilesData } = await admin
+            .from('profiles')
+            .select('id, name, full_name, email, role, avatar_url')
+            .in('id', validUserIds);
+
+          if (profilesData) {
+            profilesData.forEach((p: any) => {
+              if (!authorMap[p.id]) {
+                const username = p.email ? p.email.split('@')[0] : (p.name || 'student');
+                authorMap[p.id] = {
+                  id: p.id,
+                  username: username.toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                  name: p.full_name || p.name || 'Celoris Student',
+                  avatar: p.avatar_url || '/courses/digital-marketing-mastery-og.jpg',
+                  role: p.role || 'Creator & Student',
+                  isVerified: p.role === 'admin' || p.role === 'instructor',
+                };
+              }
+            });
+          }
+        } catch (e) {
+          console.warn('Error reading profiles table for social authors:', e);
         }
       }
     }
 
     // 3. Fetch active student ad campaigns
-    const { data: activeCampaigns } = await admin
-      .from('pulse_campaigns')
-      .select('*')
-      .eq('status', 'Active')
-      .order('created_at', { ascending: false })
-      .limit(10);
+    let activeCampaigns: any[] = [];
+    try {
+      const { data: camps } = await admin
+        .from('pulse_campaigns')
+        .select('*')
+        .eq('status', 'Active')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (camps) activeCampaigns = camps;
+    } catch (e) {
+      console.warn('Error reading pulse_campaigns:', e);
+    }
+
+    // Map posts into Lumigram Post model
+    const mappedPosts = (realPosts || []).map((p: any) => {
+      const author = (p.user_id && authorMap[p.user_id]) ? authorMap[p.user_id] : {
+        id: p.user_id || 'student',
+        username: 'celoris_student',
+        name: 'Celoris Student',
+        avatar: '/courses/digital-marketing-mastery-og.jpg',
+        role: 'Creator & Student',
+        isVerified: false,
+      };
+
+      let images: string[] = [];
+      if (Array.isArray(p.image_urls) && p.image_urls.length > 0) {
+        images = p.image_urls;
+      } else if (p.media_url) {
+        images = [p.media_url];
+      }
+
+      const caption = p.content || '';
+      const extractedTags = caption
+        .split(/\s+/)
+        .filter((w: string) => w.startsWith('#'))
+        .map((w: string) => w.replace('#', '').toLowerCase());
+
+      return {
+        id: p.id,
+        userId: p.user_id || author.id,
+        caption,
+        images,
+        location: p.location || '',
+        filter: 'normal',
+        aspectRatio: 'square',
+        likesCount: p.likes_count || 0,
+        isLiked: false,
+        isSaved: false,
+        commentsCount: p.comments_count || 0,
+        comments: [],
+        tags: extractedTags.length ? extractedTags : ['celoris', 'social'],
+        isSponsored: !!p.is_sponsored,
+        hook: p.hook || undefined,
+        sponsorData: p.is_sponsored
+          ? {
+              buttonText: p.sponsor_cta || 'Send Message',
+              destination: p.sponsor_destination || '/learn/course/digital-marketing-mastery',
+              impressions: 1200,
+              clicks: 34,
+              cpc: '₹6.50',
+              ctr: '2.8%',
+              leads: 5,
+              dailyBudget: 500,
+            }
+          : undefined,
+        createdAt: p.created_at,
+        user: author,
+      };
+    });
 
     return NextResponse.json({
       success: true,
-      posts: (realPosts || []).map((p: any) => {
-        const author = authorMap[p.user_id] || {};
-        const images = Array.isArray(p.image_urls) && p.image_urls.length > 0
-          ? p.image_urls
-          : p.media_url ? [p.media_url] : [];
-
-        return {
-          id: p.id,
-          userId: p.user_id,
-          caption: p.content || '',
-          images,
-          location: p.location || '',
-          likesCount: p.likes_count || 0,
-          commentsCount: p.comments_count || 0,
-          isSponsored: !!p.is_sponsored,
-          hook: p.hook || undefined,
-          sponsorData: p.is_sponsored
-            ? {
-                buttonText: p.sponsor_cta || 'Send Message',
-                destination: p.sponsor_destination || '/learn/course/digital-marketing-mastery',
-                impressions: 1200,
-                clicks: 34,
-                cpc: '₹6.50',
-                ctr: '2.8%',
-                leads: 5,
-                dailyBudget: 500,
-              }
-            : undefined,
-          createdAt: p.created_at,
-          user: {
-            id: p.user_id,
-            username: (author.email ? author.email.split('@')[0] : 'student').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-            name: author.full_name || 'Celoris Student',
-            avatar: author.avatar_url || '/courses/digital-marketing-mastery-og.jpg',
-            role: author.role || 'Digital Marketing Student',
-            isVerified: author.role === 'admin' || author.role === 'instructor',
-          },
-        };
-      }),
-      campaigns: activeCampaigns || [],
+      posts: mappedPosts,
+      campaigns: activeCampaigns,
     });
   } catch (error: any) {
     console.error('Error fetching social feed posts:', error);
@@ -114,22 +184,23 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { content, imageUrls, location, hook, userId: explicitUserId } = body;
 
-    let userId = explicitUserId;
+    let userId: string | null = null;
+    let authorProfile: any = null;
+
+    // 1. Resolve user ID from session if possible
     try {
       const client = await createRouteClient();
       const { data: { user } } = await client.auth.getUser();
-      if (user?.id) {
+      if (user?.id && UUID_REGEX.test(user.id)) {
         userId = user.id;
       }
     } catch {
-      // Fallback to explicit
+      // Non-blocking
     }
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'You must be signed in with your Celoris account to post' },
-        { status: 401 }
-      );
+    // 2. Check explicit userId if passed and valid UUID
+    if (!userId && explicitUserId && UUID_REGEX.test(explicitUserId)) {
+      userId = explicitUserId;
     }
 
     if (!content && (!imageUrls || imageUrls.length === 0)) {
@@ -141,14 +212,49 @@ export async function POST(request: NextRequest) {
 
     const admin = createSupabaseClientForServer();
 
-    // Insert post into Supabase
+    // 3. Fetch author profile if userId is valid UUID
+    if (userId) {
+      try {
+        const { data: userRow } = await admin
+          .from('users')
+          .select('id, full_name, username, role, profile_pic_url')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (userRow) {
+          authorProfile = {
+            id: userRow.id,
+            username: (userRow.username || 'student').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+            name: userRow.full_name || userRow.username || 'Celoris Student',
+            avatar: userRow.profile_pic_url || '/courses/digital-marketing-mastery-og.jpg',
+            role: userRow.role || 'Creator & Student',
+            isVerified: userRow.role === 'admin' || userRow.role === 'instructor',
+          };
+        }
+      } catch (err) {
+        console.warn('Could not fetch author profile:', err);
+      }
+    }
+
+    const defaultAuthor = authorProfile || {
+      id: userId || 'student',
+      username: 'student',
+      name: 'Celoris Student',
+      avatar: '/courses/digital-marketing-mastery-og.jpg',
+      role: 'Creator & Student',
+      isVerified: false,
+    };
+
+    const firstImage = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
+
+    // 4. Insert post into Supabase posts table
     const { data: newPost, error: insertError } = await admin
       .from('posts')
       .insert({
-        user_id: userId,
+        user_id: userId, // UUID or null
         content: content || '',
         image_urls: imageUrls || [],
-        media_url: imageUrls && imageUrls[0] ? imageUrls[0] : null,
+        media_url: firstImage || '',
         media_type: 'image',
         location: location || null,
         hook: hook || null,
@@ -160,38 +266,38 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error('Error inserting post:', insertError);
+      console.error('Error inserting post in Supabase:', insertError);
       return NextResponse.json(
-        { error: 'Failed to create post: ' + insertError.message },
+        { error: 'Failed to create post in database: ' + insertError.message },
         { status: 500 }
       );
     }
 
-    // Get author info
-    const { data: author } = await admin
-      .from('users')
-      .select('id, full_name, email, role, avatar_url')
-      .eq('id', userId)
-      .single();
+    const extractedTags = (content || '')
+      .split(/\s+/)
+      .filter((w: string) => w.startsWith('#'))
+      .map((w: string) => w.replace('#', '').toLowerCase());
 
     return NextResponse.json({
       success: true,
       post: {
         id: newPost.id,
-        userId: newPost.user_id,
+        userId: newPost.user_id || defaultAuthor.id,
         caption: newPost.content,
-        images: newPost.image_urls || [],
+        images: Array.isArray(newPost.image_urls) && newPost.image_urls.length > 0
+          ? newPost.image_urls
+          : [newPost.media_url].filter(Boolean),
         location: newPost.location || '',
+        filter: 'normal',
+        aspectRatio: 'square',
         likesCount: 0,
+        isLiked: false,
+        isSaved: false,
         commentsCount: 0,
+        comments: [],
+        tags: extractedTags.length ? extractedTags : ['celoris', 'social'],
         createdAt: newPost.created_at,
-        user: {
-          id: userId,
-          username: (author?.email ? author.email.split('@')[0] : 'student').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-          name: author?.full_name || 'Celoris Student',
-          avatar: author?.avatar_url || '/courses/digital-marketing-mastery-og.jpg',
-          role: author?.role || 'Creator & Student',
-        },
+        user: defaultAuthor,
       },
     });
   } catch (error: any) {

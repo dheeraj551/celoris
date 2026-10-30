@@ -101,6 +101,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         const uploadData = await uploadRes.json();
         if (uploadRes.ok && uploadData.url) {
           finalImageUrl = uploadData.url;
+        } else {
+          console.warn('Upload API error:', uploadData?.error);
         }
       }
 
@@ -126,6 +128,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       const dbData = await dbRes.json();
       setUploadProgress(100);
 
+      if (!dbRes.ok || !dbData?.post) {
+        console.error('Post creation error:', dbData?.error);
+      }
+
       const createdPost: Post = dbData?.post || {
         id: `post_${Date.now()}`,
         userId: currentUser.id,
@@ -147,9 +153,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       soundManager.playSendSound();
       onPostCreated(createdPost);
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error sharing post to VPS/Supabase:', err);
-      // Fallback
       finishPublish(finalImageUrl);
     } finally {
       setIsUploading(false);
