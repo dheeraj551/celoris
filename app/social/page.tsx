@@ -6,68 +6,65 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Heart,
   MessageCircle,
-  Share2,
+  Send,
   Bookmark,
-  Sparkles,
+  MoreHorizontal,
+  PlusSquare,
+  Compass,
+  Film,
+  Home,
+  BarChart2,
+  Coins,
   Rocket,
-  Wallet,
-  TrendingUp,
-  BarChart3,
-  SlidersHorizontal,
   CheckCircle2,
   X,
-  Play,
-  Award,
-  Users,
-  Compass,
-  ArrowRight,
-  Send,
-  Zap,
-  Globe,
-  Plus,
-  Coins,
+  Volume2,
+  VolumeX,
   ChevronRight,
-  ShieldCheck,
-  Eye,
+  TrendingUp,
   Target,
+  Sparkles,
 } from "lucide-react"
 
-// Initial Seed Posts (Realistic Indian creator & student content)
+// Real Instagram-style data structure
 interface PostComment {
   id: string
-  author: string
+  username: string
   avatar: string
   text: string
   timeAgo: string
+  isLiked?: boolean
+  likesCount?: number
   isAI?: boolean
-  personaTag?: string
 }
 
-interface SocialPost {
+interface InstaPost {
   id: string
-  authorName: string
-  authorRole: string
-  authorAvatar: string
-  batchPill?: string
+  username: string
+  displayName: string
+  avatar: string
+  isVerified?: boolean
+  location?: string
   timeAgo: string
-  content: string
+  caption: string
   hook?: string
-  mediaUrl?: string
-  mediaType?: "image" | "video"
+  mediaUrl: string
+  mediaType: "image" | "video"
   isSponsored?: boolean
-  campaignData?: {
-    objective: string
-    dailyBudget: number
-    cpc: string
-    ctr: string
+  sponsorData?: {
+    buttonText: string
+    destination: string
     impressions: number
     clicks: number
+    cpc: string
+    ctr: string
     leads: number
+    dailyBudget: number
   }
-  likes: number
+  likesCount: number
   hasLiked?: boolean
+  hasSaved?: boolean
   comments: PostComment[]
-  shares: number
 }
 
 interface ActiveCampaign {
@@ -85,161 +82,154 @@ interface ActiveCampaign {
   leads: number
 }
 
-const INITIAL_POSTS: SocialPost[] = [
+// True-to-life Instagram Feed Posts
+const INSTA_SEED_POSTS: InstaPost[] = [
   {
-    id: "post-1",
-    authorName: "Dheeraj Kushwaha",
-    authorRole: "Lead Trainer · Performance Marketing",
-    authorAvatar: "/courses/digital-marketing-mastery-og.jpg",
-    batchPill: "Verified Trainer",
-    timeAgo: "25m ago",
-    content: "Notice how the top 1% of D2C ads in India don't start with product features? They start with an immediate friction point: 'Stop spending ₹15k on basic reels'. The moment you call out a hidden cost, your CTR shoots past 2.4%. Here is the live teardown for Batch #43 students 👇",
+    id: "insta-1",
+    username: "dheeraj_celoris",
+    displayName: "Dheeraj Kushwaha",
+    avatar: "/courses/digital-marketing-mastery-og.jpg",
+    isVerified: true,
+    location: "Celoris Studio · Noida",
+    timeAgo: "2h",
+    caption: "Stop spending ₹15,000/month on generic agency ads that deliver zero leads. 🛑\n\nWhen we tested this exact customer journey angle for our D2C packaging client, the CPC dropped straight from ₹18.40 to ₹6.40 in 48 hours. The secret? Calling out the hidden cost in the first 1.5 seconds instead of showing boring b-roll.\n\nBatch #43 students: make sure to inspect your audience fatigue metrics before launching tonight! 🚀",
     hook: "Stop spending ₹15,000 on basic reels",
     mediaUrl: "/courses/digital-marketing-mastery-og.jpg",
     mediaType: "image",
     isSponsored: true,
-    campaignData: {
-      objective: "WhatsApp Leads",
-      dailyBudget: 500,
+    sponsorData: {
+      buttonText: "Learn More",
+      destination: "/learn/course/digital-marketing-mastery",
+      impressions: 5410,
+      clicks: 148,
       cpc: "₹6.40",
-      ctr: "2.85%",
-      impressions: 4820,
-      clicks: 137,
-      leads: 18,
+      ctr: "2.73%",
+      leads: 19,
+      dailyBudget: 500,
     },
-    likes: 42,
+    likesCount: 142,
     hasLiked: false,
+    hasSaved: false,
     comments: [
       {
-        id: "c-1",
-        author: "Pooja Sharma (Jaipur)",
-        avatar: "P",
-        text: "Sir tried this hook in our local bakery ad, CPC literally dropped from ₹18 to ₹7.20 in just 2 days! 🚀",
-        timeAgo: "18m ago",
+        id: "ic-1",
+        username: "pooja_sharma.in",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        text: "Sir tried this exact hook format in our local cafe campaign, got 32 WhatsApp inquiries by evening! 🔥",
+        timeAgo: "1h",
+        likesCount: 12,
       },
       {
-        id: "c-2",
-        author: "Aman Verma (Delhi)",
-        avatar: "A",
-        text: "Will this framework work for B2B consulting services as well?",
-        timeAgo: "10m ago",
+        id: "ic-2",
+        username: "aman_growthguy",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+        text: "The hook formula is pure gold. Are we covering GA4 custom events in the Wednesday class?",
+        timeAgo: "45m",
+        likesCount: 4,
+      },
+      {
+        id: "ic-3",
+        username: "algorithm_insights_ai",
+        avatar: "🤖",
+        text: "⚡ High initial watch time detected. Meta auction algorithm prioritizing this creative angle.",
+        timeAgo: "30m",
+        isAI: true,
       },
     ],
-    shares: 14,
   },
   {
-    id: "post-2",
-    authorName: "Ananya Jairath",
-    authorRole: "Reels & Shorts Creator Lead",
-    authorAvatar: "/free-courses/social-media-reels.jpg",
-    batchPill: "Verified Trainer",
-    timeAgo: "1h ago",
-    content: "A quick reminder for Batch 05 students filming their 3-Reel portfolio: You don't need an iPhone or studio ring lights! Natural window light placed at 45 degrees + a ₹200 lapel collar mic gives cleaner audio than a ₹40k camera in an echoey room. Keep shooting!",
-    hook: "You don't need a ₹40,000 camera to go viral",
+    id: "insta-2",
+    username: "ananya_reels",
+    displayName: "Ananya Jairath",
+    avatar: "/free-courses/social-media-reels.jpg",
+    isVerified: true,
+    location: "Creator Hub · New Delhi",
+    timeAgo: "4h",
+    caption: "You DO NOT need an iPhone 16 Pro Max or a ₹50,000 Sony mirrorless camera to create high-retention Reels. 📱✨\n\nShot this entire clip on a 3-year-old Redmi phone by placing it directly facing a north-facing window at noon. Cost of lighting: ₹0.\n\nDrop your current smartphone model in the comments and I will tell you the best camera settings for 60fps export! 👇",
+    hook: "You don't need a ₹50,000 camera to go viral",
     mediaUrl: "/free-courses/social-media-reels.jpg",
     mediaType: "image",
     isSponsored: false,
-    likes: 58,
+    likesCount: 284,
     hasLiked: false,
+    hasSaved: true,
     comments: [
       {
-        id: "c-3",
-        author: "Rohan Patel (Ahmedabad)",
-        avatar: "R",
-        text: "Mam using the window light trick today for my fitness reel edit. Pacing is 1.4s per cut!",
-        timeAgo: "40m ago",
+        id: "ic-4",
+        username: "rohit_cuts",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+        text: "Using a Moto G84 ma'am! The CapCut motion blur setting you taught completely changed the b-roll smoothness 👏",
+        timeAgo: "3h",
+        likesCount: 8,
       },
     ],
-    shares: 19,
-  },
-  {
-    id: "post-3",
-    authorName: "Karan Singhania",
-    authorRole: "Student · Batch #43 Digital Marketing",
-    authorAvatar: "K",
-    batchPill: "Student Creator",
-    timeAgo: "2h ago",
-    content: "Ran my first virtual Meta Ad campaign in the Celoris Sandbox with ₹500 credits! Targeted college students in Delhi for an online guitar coaching gig. Here is the ad creative I made in Canva. Let me know what you guys think of the headline!",
-    hook: "Learn 3 Bollywood songs on Guitar in 7 Days (No Music Theory)",
-    isSponsored: false,
-    likes: 27,
-    hasLiked: false,
-    comments: [
-      {
-        id: "c-4",
-        author: "The Algorithm Bot",
-        avatar: "🤖",
-        text: "Solid direct hook: 7 Days timeframe creates urgency. Estimated CTR: 2.1%.",
-        timeAgo: "1h ago",
-        isAI: true,
-      },
-      {
-        id: "c-5",
-        author: "Neha Kapoor (Indore)",
-        avatar: "N",
-        text: "Headline is super catchy Karan! You should boost this post to see simulated CPC.",
-        timeAgo: "45m ago",
-      },
-    ],
-    shares: 6,
   },
 ]
 
-export default function CelorisSocialPage() {
-  const [activeTab, setActiveTab] = useState<"feed" | "ads">("feed")
+export default function InstagramStyleSocial() {
+  const [currentTab, setCurrentTab] = useState<"feed" | "ads" | "create">("feed")
   const [walletBalance, setWalletBalance] = useState<number>(10000)
-  const [posts, setPosts] = useState<SocialPost[]>(INITIAL_POSTS)
+  const [posts, setPosts] = useState<InstaPost[]>(INSTA_SEED_POSTS)
   const [campaigns, setCampaigns] = useState<ActiveCampaign[]>([
     {
       id: "camp-1",
-      postId: "post-1",
+      postId: "insta-1",
       postTitle: "Stop spending ₹15,000 on basic reels",
       objective: "WhatsApp Leads",
       dailyBudget: 500,
       spent: 500,
       status: "Active",
-      impressions: 4820,
-      clicks: 137,
+      impressions: 5410,
+      clicks: 148,
       cpc: "₹6.40",
-      ctr: "2.85%",
-      leads: 18,
+      ctr: "2.73%",
+      leads: 19,
     },
   ])
 
-  // New Post State
-  const [newPostContent, setNewPostContent] = useState("")
-  const [newPostHook, setNewPostHook] = useState("")
-  const [isPosting, setIsPosting] = useState(false)
+  // Story Tray Data
+  const stories = [
+    { username: "Your Story", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80", hasUnseen: false, isUser: true },
+    { username: "dheeraj", avatar: "/courses/digital-marketing-mastery-og.jpg", hasUnseen: true },
+    { username: "ananya", avatar: "/free-courses/social-media-reels.jpg", hasUnseen: true },
+    { username: "batch_43", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80", hasUnseen: true },
+    { username: "viral_ads", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80", hasUnseen: true },
+    { username: "pooja_jpr", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80", hasUnseen: false },
+  ]
+
+  // Post creation state
+  const [captionText, setCaptionText] = useState("")
+  const [hookText, setHookText] = useState("")
+  const [selectedImage, setSelectedImage] = useState("/courses/digital-marketing-mastery-og.jpg")
 
   // Quick Boost Modal State
-  const [boostingPost, setBoostingPost] = useState<SocialPost | null>(null)
+  const [boostingPost, setBoostingPost] = useState<InstaPost | null>(null)
   const [boostBudget, setBoostBudget] = useState(500)
-  const [boostObjective, setBoostObjective] = useState<"leads" | "traffic" | "brand">("leads")
+  const [boostObjective, setBoostObjective] = useState<"leads" | "traffic">("leads")
   const [selectedCities, setSelectedCities] = useState<string[]>(["Delhi NCR", "Mumbai", "Jaipur"])
   const [isSimulating, setIsSimulating] = useState(false)
-  const [boostSuccessNotice, setBoostSuccessNotice] = useState<string | null>(null)
 
-  // Active Comment Drawer State
-  const [openCommentsPostId, setOpenCommentsPostId] = useState<string | null>(null)
+  // Active Comment Drawer
+  const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null)
   const [commentInput, setCommentInput] = useState("")
 
-  // Load wallet from LocalStorage if available
+  // Load / Save wallet
   useEffect(() => {
     try {
-      const savedWallet = localStorage.getItem("celoris_social_wallet")
-      if (savedWallet) setWalletBalance(Number(savedWallet))
+      const saved = localStorage.getItem("celoris_social_wallet")
+      if (saved) setWalletBalance(Number(saved))
     } catch {}
   }, [])
 
-  const updateWallet = (newBal: number) => {
-    setWalletBalance(newBal)
+  const updateWallet = (val: number) => {
+    setWalletBalance(val)
     try {
-      localStorage.setItem("celoris_social_wallet", String(newBal))
+      localStorage.setItem("celoris_social_wallet", String(val))
     } catch {}
   }
 
-  // Handle Like
-  const toggleLike = (postId: string) => {
+  // Toggle Like with Instagram Heart Pop
+  const handleLike = (postId: string) => {
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id === postId) {
@@ -247,7 +237,7 @@ export default function CelorisSocialPage() {
           return {
             ...p,
             hasLiked: liked,
-            likes: liked ? p.likes + 1 : Math.max(0, p.likes - 1),
+            likesCount: liked ? p.likesCount + 1 : Math.max(0, p.likesCount - 1),
           }
         }
         return p
@@ -255,130 +245,122 @@ export default function CelorisSocialPage() {
     )
   }
 
-  // Handle Add Comment
+  const handleSave = (postId: string) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === postId ? { ...p, hasSaved: !p.hasSaved } : p))
+    )
+  }
+
+  // Submit comment
   const handleAddComment = (postId: string) => {
     if (!commentInput.trim()) return
-    const newComment: PostComment = {
-      id: `c-user-${Date.now()}`,
-      author: "You (Student)",
-      avatar: "Y",
+    const newC: PostComment = {
+      id: `ic-${Date.now()}`,
+      username: "you_student",
+      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
       text: commentInput.trim(),
-      timeAgo: "Just now",
+      timeAgo: "1s",
     }
     setPosts((prev) =>
-      prev.map((p) => {
-        if (p.id === postId) {
-          return {
-            ...p,
-            comments: [...p.comments, newComment],
-          }
-        }
-        return p
-      })
+      prev.map((p) =>
+        p.id === postId ? { ...p, comments: [...p.comments, newC] } : p
+      )
     )
     setCommentInput("")
   }
 
-  // Handle Create Post
-  const handleCreatePost = () => {
-    if (!newPostContent.trim()) return
-    setIsPosting(true)
-
-    const newPost: SocialPost = {
-      id: `post-${Date.now()}`,
-      authorName: "You (Student Creator)",
-      authorRole: "Student · Celoris Creator Studio",
-      authorAvatar: "Y",
-      batchPill: "Live Cohort",
+  // Publish New Instagram Post
+  const handlePublishPost = () => {
+    if (!captionText.trim()) return
+    const newPost: InstaPost = {
+      id: `insta-${Date.now()}`,
+      username: "you_student",
+      displayName: "You (Student Creator)",
+      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      isVerified: false,
+      location: "New Delhi, India",
       timeAgo: "Just now",
-      content: newPostContent.trim(),
-      hook: newPostHook.trim() || newPostContent.trim().slice(0, 45) + "...",
+      caption: captionText.trim(),
+      hook: hookText.trim(),
+      mediaUrl: selectedImage,
+      mediaType: "image",
       isSponsored: false,
-      likes: 1,
+      likesCount: 1,
       hasLiked: true,
+      hasSaved: false,
       comments: [
         {
-          id: `c-bot-${Date.now()}`,
-          author: "The Algorithm Bot",
+          id: `ic-bot-${Date.now()}`,
+          username: "celoris_bot",
           avatar: "🤖",
-          text: "Post published to community feed. Tap 'Boost Post' to run a simulated Meta ad with your ₹10,000 wallet credits!",
+          text: "🚀 Post is live on the creator network! Tap 'Boost post' below to run a simulated ad with your ₹10,000 credits.",
           timeAgo: "Just now",
           isAI: true,
         },
       ],
-      shares: 0,
     }
-
-    setTimeout(() => {
-      setPosts([newPost, ...posts])
-      setNewPostContent("")
-      setNewPostHook("")
-      setIsPosting(false)
-    }, 400)
+    setPosts([newPost, ...posts])
+    setCaptionText("")
+    setHookText("")
+    setCurrentTab("feed")
   }
 
-  // Handle Quick Boost Execution (Calls Gemini 3.8 Flash Engine)
+  // Launch Boost Ad
   const handleLaunchBoost = async () => {
     if (!boostingPost) return
     if (walletBalance < boostBudget) {
-      alert("Insufficient virtual wallet balance! Reset your wallet in the Ads Manager.")
+      alert("Insufficient virtual wallet balance! Reset your wallet in Ads Manager.")
       return
     }
-
     setIsSimulating(true)
-
     try {
       const res = await fetch("/api/social/simulate-ad", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          hook: boostingPost.hook || boostingPost.content.slice(0, 50),
-          caption: boostingPost.content,
+          hook: boostingPost.hook || boostingPost.caption.slice(0, 45),
+          caption: boostingPost.caption,
           objective: boostObjective,
           targetAudience: {
             cities: selectedCities,
             ageRange: "18-28",
-            niche: "Gen-Z & Career Upskilling",
+            niche: "Upskilling & Career",
           },
           budget: boostBudget,
         }),
       })
-
       const data = await res.json()
       const sim = data?.data
 
-      // Deduct Wallet
       const newBal = walletBalance - boostBudget
       updateWallet(newBal)
 
-      // Format AI simulated comments
       const aiComments: PostComment[] = (sim?.simulated_audience_feed || []).map(
         (persona: any, idx: number) => ({
-          id: `ai-sim-${Date.now()}-${idx}`,
-          author: persona.persona_name,
-          avatar: persona.avatar_initial || "P",
+          id: `ai-cm-${Date.now()}-${idx}`,
+          username: persona.persona_name.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 16),
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
           text: persona.comment_text,
-          timeAgo: `${idx + 1}m ago`,
+          timeAgo: `${idx + 1}m`,
           isAI: true,
-          personaTag: persona.sentiment,
         })
       )
 
-      // Update the boosted post in feed
       setPosts((prev) =>
         prev.map((p) => {
           if (p.id === boostingPost.id) {
             return {
               ...p,
               isSponsored: true,
-              campaignData: {
-                objective: boostObjective === "leads" ? "WhatsApp Leads" : "Website Traffic",
+              sponsorData: {
+                buttonText: boostObjective === "leads" ? "Send Message" : "Learn More",
+                destination: "/learn/course/digital-marketing-mastery",
+                impressions: sim?.estimated_impressions || 3600,
+                clicks: sim?.estimated_clicks || 84,
+                cpc: sim?.estimated_cpc || "₹6.80",
+                ctr: sim?.estimated_ctr || "2.35%",
+                leads: sim?.estimated_leads || 11,
                 dailyBudget: boostBudget,
-                cpc: sim?.estimated_cpc || "₹7.20",
-                ctr: sim?.estimated_ctr || "2.10%",
-                impressions: sim?.estimated_impressions || 3400,
-                clicks: sim?.estimated_clicks || 75,
-                leads: sim?.estimated_leads || 8,
               },
               comments: [...p.comments, ...aiComments],
             }
@@ -387,428 +369,351 @@ export default function CelorisSocialPage() {
         })
       )
 
-      // Add to Campaigns list
-      const newCamp: ActiveCampaign = {
+      const newCampaign: ActiveCampaign = {
         id: `camp-${Date.now()}`,
         postId: boostingPost.id,
-        postTitle: boostingPost.hook || boostingPost.content.slice(0, 35) + "...",
+        postTitle: boostingPost.hook || boostingPost.caption.slice(0, 35) + "...",
         objective: boostObjective === "leads" ? "WhatsApp Leads" : "Traffic",
         dailyBudget: boostBudget,
         spent: boostBudget,
         status: "Active",
-        impressions: sim?.estimated_impressions || 3400,
-        clicks: sim?.estimated_clicks || 75,
-        cpc: sim?.estimated_cpc || "₹7.20",
-        ctr: sim?.estimated_ctr || "2.10%",
-        leads: sim?.estimated_leads || 8,
+        impressions: sim?.estimated_impressions || 3600,
+        clicks: sim?.estimated_clicks || 84,
+        cpc: sim?.estimated_cpc || "₹6.80",
+        ctr: sim?.estimated_ctr || "2.35%",
+        leads: sim?.estimated_leads || 11,
       }
-      setCampaigns([newCamp, ...campaigns])
-
-      setBoostSuccessNotice(
-        `Campaign Launched! Spent ₹${boostBudget} from your virtual wallet. Simulated ${sim?.estimated_impressions || 3400} impressions & ${sim?.estimated_leads || 8} leads generated!`
-      )
+      setCampaigns([newCampaign, ...campaigns])
       setBoostingPost(null)
     } catch (err) {
-      console.error("Boost failed:", err)
-      alert("Failed to run ad simulation. Please try again.")
+      console.error(err)
+      alert("Simulation failed. Please try again.")
     } finally {
       setIsSimulating(false)
     }
   }
 
-  // Toggle city in target selector
   const toggleCity = (city: string) => {
     setSelectedCities((prev) =>
       prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
     )
   }
 
-  // Reset Wallet Credits
-  const handleResetWallet = () => {
-    updateWallet(10000)
-    alert("Virtual Ad Spend Wallet reset to ₹10,000 credits!")
-  }
-
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30">
-      {/* Top Floating App Bar */}
-      <header className="sticky top-0 z-40 bg-[#07090e]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 py-3">
-        <div className="max-w-xl mx-auto flex items-center justify-between gap-3">
-          {/* Logo & Live Status */}
-          <Link href="/social" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-slate-950 text-base shadow-sm group-hover:scale-105 transition-transform">
-              C
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="font-extrabold text-white text-sm tracking-tight">Celoris Social</span>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </span>
-              </div>
-              <span className="text-[10px] text-neutral-400 font-mono">Creator Sandbox · India</span>
-            </div>
+    <div className="min-h-screen bg-black text-[#f5f5f5] flex flex-col font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
+      {/* Top Instagram Navigation Header */}
+      <nav className="sticky top-0 z-40 bg-black/95 backdrop-blur-md border-b border-[#262626] px-4 py-2.5">
+        <div className="max-w-[470px] mx-auto flex items-center justify-between">
+          {/* Instagram Font Logo Replica */}
+          <Link href="/social" className="flex items-center gap-1.5">
+            <span className="font-serif italic font-bold text-2xl tracking-tight text-white select-none">
+              Instagram
+            </span>
+            <span className="text-[10px] font-mono text-emerald-400 font-bold bg-[#1a2e22] px-1.5 py-0.5 rounded-md border border-emerald-500/30">
+              SANDBOX
+            </span>
           </Link>
 
-          {/* Virtual Wallet Pill */}
-          <div className="flex items-center gap-2">
+          {/* Top Actions: Virtual Ad Spend Wallet & Ads Manager Pill */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setCurrentTab(currentTab === "ads" ? "feed" : "ads")}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                currentTab === "ads"
+                  ? "bg-white text-black font-bold"
+                  : "bg-[#1c1c1c] text-white hover:bg-[#282828] border border-[#333]"
+              }`}
+            >
+              <BarChart2 className="w-3.5 h-3.5 text-blue-400" />
+              <span>Ads Manager</span>
+            </button>
+
+            {/* Wallet Pill */}
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold shadow-xs cursor-pointer hover:bg-emerald-500/20 transition-all"
-              onClick={() => setActiveTab("ads")}
-              title="Your Virtual Ad Spend Wallet (Click to manage)"
+              onClick={() => setCurrentTab("ads")}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#14231b] border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold cursor-pointer hover:bg-[#1b3024] transition-colors"
+              title="Virtual Ad Budget: ₹10,000 for practice"
             >
-              <Coins className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <Coins className="w-3 h-3 text-emerald-400" />
               <span>₹{walletBalance.toLocaleString("en-IN")}</span>
-              <span className="text-[9px] uppercase tracking-wider text-emerald-400/80 hidden sm:inline">Credits</span>
             </div>
-
-            {/* Back to Home Link */}
-            <Link
-              href="/free-courses-with-certificate"
-              className="p-1.5 rounded-xl border border-white/10 bg-white/[0.03] text-neutral-400 hover:text-white transition-colors"
-              title="Free Courses Hub"
-            >
-              <Compass className="w-4 h-4" />
-            </Link>
           </div>
         </div>
+      </nav>
 
-        {/* Tab Switcher: Community Feed vs Ads Manager (Meta Studio) */}
-        <div className="max-w-xl mx-auto mt-2.5 flex items-center justify-center border-t border-white/[0.06] pt-2">
-          <div className="grid grid-cols-2 w-full p-0.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs font-mono font-semibold">
-            <button
-              onClick={() => setActiveTab("feed")}
-              className={`py-1.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${
-                activeTab === "feed"
-                  ? "bg-white/[0.1] text-white shadow-xs font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5" />
-              <span>Community Feed</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("ads")}
-              className={`py-1.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${
-                activeTab === "ads"
-                  ? "bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
-              }`}
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Meta Ads Manager</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Single-Column Stream */}
-      <main className="flex-1 max-w-xl w-full mx-auto px-3.5 py-4 pb-24">
-        {/* Success Alert Banner if ad launched */}
-        <AnimatePresence>
-          {boostSuccessNotice && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mb-4 p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-between text-xs text-emerald-300 font-mono shadow-md"
-            >
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-                <span>{boostSuccessNotice}</span>
-              </div>
-              <button
-                onClick={() => setBoostSuccessNotice(null)}
-                className="text-emerald-400 hover:text-white p-1"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {activeTab === "feed" ? (
+      {/* Main Screen Viewport */}
+      <div className="flex-1 max-w-[470px] w-full mx-auto pb-20">
+        {currentTab === "feed" ? (
           <div>
-            {/* Live Cohort Story Bubbles */}
-            <section className="mb-4 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
-              {[
-                { label: "Batch #43", title: "Digital Marketing", live: true, avatar: "D" },
-                { label: "Batch 05", title: "Reels Studio", live: true, avatar: "A" },
-                { label: "Viral Hooks", title: "Top 1%", live: false, avatar: "⚡" },
-                { label: "₹10k Ads Club", title: "Sandbox", live: false, avatar: "💰" },
-              ].map((story, i) => (
-                <div
-                  key={story.label}
-                  className="flex flex-col items-center gap-1 shrink-0 cursor-pointer group"
-                >
+            {/* Instagram Stories Tray */}
+            <div className="border-b border-[#262626] py-3.5 px-2 flex items-center gap-3 overflow-x-auto scrollbar-none">
+              {stories.map((st, i) => (
+                <div key={st.username} className="flex flex-col items-center gap-1 shrink-0 cursor-pointer">
                   <div
-                    className={`w-14 h-14 rounded-full p-0.5 flex items-center justify-center transition-transform group-hover:scale-105 ${
-                      story.live
-                        ? "bg-gradient-to-tr from-emerald-500 via-amber-400 to-teal-400 ring-2 ring-emerald-500/30"
-                        : "bg-white/10"
+                    className={`w-[66px] h-[66px] rounded-full p-[2px] flex items-center justify-center ${
+                      st.hasUnseen
+                        ? "bg-gradient-to-tr from-[#feda75] via-[#fa7e1e] to-[#d62976]"
+                        : "bg-[#262626]"
                     }`}
                   >
-                    <div className="w-full h-full rounded-full bg-[#0d121c] flex items-center justify-center font-bold text-sm text-white font-mono">
-                      {story.avatar}
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-mono font-medium text-neutral-300 truncate max-w-[64px]">
-                    {story.label}
-                  </span>
-                </div>
-              ))}
-            </section>
-
-            {/* Create Post Composer */}
-            <div className="mb-5 rounded-2xl border border-white/[0.08] bg-[#0c1018]/90 p-3.5 backdrop-blur-xl shadow-lg">
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-slate-950 font-black flex items-center justify-center text-sm font-mono shrink-0 shadow-xs">
-                  Y
-                </div>
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={newPostHook}
-                    onChange={(e) => setNewPostHook(e.target.value)}
-                    placeholder="🔥 Opening Hook (e.g. 'Stop spending ₹15k on basic reels')"
-                    className="w-full bg-transparent text-xs sm:text-sm font-semibold text-white placeholder:text-neutral-500 focus:outline-none mb-1.5"
-                  />
-                  <textarea
-                    value={newPostContent}
-                    onChange={(e) => setNewPostContent(e.target.value)}
-                    placeholder="Write your ad caption or reel script... share with your batch!"
-                    rows={2}
-                    className="w-full bg-transparent text-xs text-neutral-300 placeholder:text-neutral-600 focus:outline-none resize-none leading-relaxed"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span>Practice with ₹{walletBalance.toLocaleString("en-IN")} ad credits</span>
-                </div>
-
-                <button
-                  type="button"
-                  disabled={!newPostContent.trim() || isPosting}
-                  onClick={handleCreatePost}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs uppercase tracking-wider font-mono shadow-md disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>{isPosting ? "Publishing..." : "Post to Batch"}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Posts Stream */}
-            <div className="space-y-4">
-              {posts.map((post) => (
-                <article
-                  key={post.id}
-                  className="rounded-3xl border border-white/[0.08] bg-[#0c1018]/95 overflow-hidden shadow-xl backdrop-blur-xl hover:border-white/[0.14] transition-colors"
-                >
-                  {/* Post Header */}
-                  <div className="p-4 pb-3 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-2xl bg-[#141b29] border border-white/[0.08] overflow-hidden flex items-center justify-center font-bold text-emerald-400 font-mono text-base shrink-0">
-                        {post.authorAvatar.startsWith("/") ? (
-                          <img
-                            src={post.authorAvatar}
-                            alt={post.authorName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          post.authorAvatar
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <h4 className="font-bold text-white text-xs sm:text-sm tracking-tight leading-none">
-                            {post.authorName}
-                          </h4>
-                          {post.batchPill && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[9px] font-mono text-neutral-300">
-                              {post.batchPill}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-neutral-400 font-mono mt-0.5">
-                          {post.authorRole} · {post.timeAgo}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Sponsored Ad Badge Indicator */}
-                    {post.isSponsored && (
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-wider shrink-0 shadow-xs">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                        <span>Sponsored</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Post Body & Hook */}
-                  <div className="px-4 pb-3">
-                    {post.hook && (
-                      <div className="mb-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs font-semibold text-emerald-300 font-mono">
-                        🔥 Hook: &ldquo;{post.hook}&rdquo;
-                      </div>
-                    )}
-                    <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed whitespace-pre-line">
-                      {post.content}
-                    </p>
-                  </div>
-
-                  {/* Media Viewport */}
-                  {post.mediaUrl && (
-                    <div className="relative aspect-[16/9] w-full bg-black/60 overflow-hidden border-y border-white/[0.06]">
+                    <div className="w-full h-full rounded-full bg-black p-[2px] overflow-hidden relative">
                       <img
-                        src={post.mediaUrl}
-                        alt="Creative Preview"
-                        className="w-full h-full object-cover"
+                        src={st.avatar}
+                        alt={st.username}
+                        className="w-full h-full object-cover rounded-full"
                       />
-                      {post.isSponsored && post.campaignData && (
-                        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-2">
-                          <span className="px-2 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[10px] font-mono font-bold text-emerald-400 border border-emerald-500/30">
-                            CTR: {post.campaignData.ctr} · CPC: {post.campaignData.cpc}
-                          </span>
+                      {st.isUser && (
+                        <div className="absolute bottom-0 right-0 bg-[#0095f6] text-white rounded-full p-0.5 border border-black">
+                          <PlusSquare className="w-3 h-3" />
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
+                  <span className="text-[11px] text-[#a8a8a8] font-normal truncate max-w-[66px]">
+                    {st.username}
+                  </span>
+                </div>
+              ))}
+            </div>
 
-                  {/* Ad CTA Button if Sponsored */}
-                  {post.isSponsored && (
-                    <div className="p-3 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 border-b border-white/[0.06] flex items-center justify-between gap-3">
-                      <div>
-                        <span className="text-[10px] font-mono text-amber-300 block">
-                          Simulated Meta Ad Campaign
+            {/* Instagram Post Feed Stream */}
+            <div className="divide-y divide-[#262626]">
+              {posts.map((post) => (
+                <article key={post.id} className="pt-3 pb-4">
+                  {/* Post Header */}
+                  <div className="px-3.5 pb-2.5 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-[#feda75] via-[#fa7e1e] to-[#d62976] flex items-center justify-center">
+                        <img
+                          src={post.avatar}
+                          alt={post.username}
+                          className="w-full h-full rounded-full object-cover bg-black"
+                        />
+                      </div>
+                      <div className="leading-tight">
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-xs text-white hover:underline cursor-pointer">
+                            {post.username}
+                          </span>
+                          {post.isVerified && (
+                            <svg className="w-3 h-3 text-[#0095f6] fill-current" viewBox="0 0 24 24">
+                              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7l-4.1-4.1 1.4-1.4 2.7 2.7 6.4-6.4 1.4 1.4-7.8 7.8z" />
+                            </svg>
+                          )}
+                          <span className="text-[#a8a8a8] text-xs">• {post.timeAgo}</span>
+                        </div>
+                        {post.isSponsored ? (
+                          <span className="text-[11px] text-[#a8a8a8] font-normal block">
+                            Sponsored
+                          </span>
+                        ) : post.location ? (
+                          <span className="text-[10px] text-[#a8a8a8] block">{post.location}</span>
+                        ) : null}
+                      </div>
+                    </div>
+                    <button className="text-[#a8a8a8] hover:text-white p-1">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Post Media (4:5 / 1:1 Aspect Ratio like Instagram) */}
+                  <div className="relative aspect-square w-full bg-[#121212] overflow-hidden select-none">
+                    <img
+                      src={post.mediaUrl}
+                      alt="Post visual"
+                      onDoubleClick={() => handleLike(post.id)}
+                      className="w-full h-full object-cover"
+                    />
+
+                    {/* Sponsored Live Performance Pill (Overlay) */}
+                    {post.isSponsored && post.sponsorData && (
+                      <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>CTR {post.sponsorData.ctr} · CPC {post.sponsorData.cpc}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sponsored Bottom Action Bar (The Blue Instagram Banner) */}
+                  {post.isSponsored && post.sponsorData && (
+                    <div className="bg-[#121212] border-b border-[#262626] px-3.5 py-2 flex items-center justify-between">
+                      <div className="text-xs">
+                        <span className="text-white font-semibold block">
+                          {post.sponsorData.leads} Leads Generated
                         </span>
-                        <span className="text-xs font-bold text-white">
-                          {post.campaignData?.objective || "WhatsApp Leads"} · {post.campaignData?.leads || 12} Leads Generated
+                        <span className="text-[#a8a8a8] text-[11px]">
+                          Budget: ₹{post.sponsorData.dailyBudget}/day
                         </span>
                       </div>
                       <button
-                        type="button"
-                        onClick={() => alert(`Simulated Ad Click! In real Meta ads, this triggers a direct WhatsApp chat or lead form.`)}
-                        className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold font-mono tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer"
+                        onClick={() => alert(`Simulated Instagram Ad click! Destination: ${post.sponsorData?.destination}`)}
+                        className="bg-[#0095f6] hover:bg-[#1877f2] text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors"
                       >
-                        Apply / Chat →
+                        {post.sponsorData.buttonText} &gt;
                       </button>
                     </div>
                   )}
 
-                  {/* Action Bar */}
-                  <div className="px-4 py-2.5 flex items-center justify-between gap-2 text-xs font-mono">
-                    <div className="flex items-center gap-3">
-                      {/* Like Button */}
+                  {/* Instagram Action Row: Heart, Comment, Share, Save */}
+                  <div className="px-3.5 pt-3 pb-1 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {/* Heart Like */}
                       <button
-                        type="button"
-                        onClick={() => toggleLike(post.id)}
-                        className={`flex items-center gap-1.5 transition-all active:scale-125 ${
-                          post.hasLiked ? "text-rose-400 font-bold" : "text-neutral-400 hover:text-white"
-                        }`}
+                        onClick={() => handleLike(post.id)}
+                        className="transition-transform active:scale-125 focus:outline-none"
                       >
                         <Heart
-                          className={`w-4 h-4 ${post.hasLiked ? "fill-rose-400 text-rose-400" : ""}`}
+                          className={`w-6 h-6 transition-colors ${
+                            post.hasLiked
+                              ? "fill-[#ff3040] text-[#ff3040]"
+                              : "text-white hover:text-[#a8a8a8]"
+                          }`}
                         />
-                        <span>{post.likes}</span>
                       </button>
 
-                      {/* Comment Toggle */}
+                      {/* Comment */}
                       <button
-                        type="button"
                         onClick={() =>
-                          setOpenCommentsPostId(openCommentsPostId === post.id ? null : post.id)
+                          setActiveCommentPostId(
+                            activeCommentPostId === post.id ? null : post.id
+                          )
                         }
-                        className="flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors"
+                        className="text-white hover:text-[#a8a8a8] focus:outline-none"
                       >
-                        <MessageCircle className="w-4 h-4" />
-                        <span>{post.comments.length}</span>
+                        <MessageCircle className="w-6 h-6" />
                       </button>
 
                       {/* Share */}
                       <button
-                        type="button"
                         onClick={() => {
-                          const url = `${window.location.origin}/social`
-                          navigator.clipboard?.writeText(url)
-                          alert("Link copied! Share with your batch partner.")
+                          navigator.clipboard?.writeText(window.location.href)
+                          alert("Link copied! Share with your batch.")
                         }}
-                        className="flex items-center gap-1 text-neutral-400 hover:text-white transition-colors"
-                        title="Share post"
+                        className="text-white hover:text-[#a8a8a8] focus:outline-none"
                       >
-                        <Share2 className="w-3.5 h-3.5" />
-                        <span>{post.shares}</span>
+                        <Send className="w-6 h-6 -rotate-12" />
                       </button>
                     </div>
 
-                    {/* Boost Post Button (Option 2A Quick Boost) */}
-                    {!post.isSponsored && (
-                      <button
-                        type="button"
-                        onClick={() => setBoostingPost(post)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/40 hover:border-emerald-400 text-emerald-300 text-xs font-bold transition-all hover:scale-105 active:scale-95 shadow-xs"
-                      >
-                        <Rocket className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Boost Post</span>
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleSave(post.id)}
+                      className="text-white hover:text-[#a8a8a8] focus:outline-none"
+                    >
+                      <Bookmark
+                        className={`w-6 h-6 ${post.hasSaved ? "fill-white" : ""}`}
+                      />
+                    </button>
                   </div>
 
-                  {/* Expandable Comments Drawer */}
+                  {/* Likes Count */}
+                  <div className="px-3.5 pt-1">
+                    <span className="font-semibold text-xs text-white">
+                      {post.likesCount.toLocaleString("en-IN")} likes
+                    </span>
+                  </div>
+
+                  {/* Caption & Opening Hook */}
+                  <div className="px-3.5 pt-1 text-xs leading-relaxed">
+                    <span className="font-semibold text-white mr-1.5">{post.username}</span>
+                    <span className="text-[#f5f5f5] whitespace-pre-line">{post.caption}</span>
+                  </div>
+
+                  {/* View All Comments Link */}
+                  {post.comments.length > 0 && (
+                    <div className="px-3.5 pt-1.5">
+                      <button
+                        onClick={() =>
+                          setActiveCommentPostId(
+                            activeCommentPostId === post.id ? null : post.id
+                          )
+                        }
+                        className="text-[#a8a8a8] text-xs hover:text-[#c4c4c4]"
+                      >
+                        View all {post.comments.length} comments
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Top Comment Preview */}
+                  {post.comments[0] && (
+                    <div className="px-3.5 pt-1 text-xs">
+                      <span className="font-semibold text-white mr-1.5">
+                        {post.comments[0].username}
+                      </span>
+                      <span className="text-[#e0e0e0]">{post.comments[0].text}</span>
+                    </div>
+                  )}
+
+                  {/* Instagram "Boost Post" Button for Students */}
+                  {!post.isSponsored && (
+                    <div className="px-3.5 pt-3">
+                      <button
+                        onClick={() => setBoostingPost(post)}
+                        className="w-full py-2 rounded-lg bg-[#0095f6] hover:bg-[#1877f2] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                      >
+                        <Rocket className="w-3.5 h-3.5" />
+                        <span>Boost post (Practice with ₹10k Credits)</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Slide-out Comment Drawer */}
                   <AnimatePresence>
-                    {openCommentsPostId === post.id && (
+                    {activeCommentPostId === post.id && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="border-t border-white/[0.06] bg-black/40 p-4 space-y-3"
+                        className="mt-3 border-t border-[#262626] bg-[#0c0c0c] p-3.5 space-y-3"
                       >
-                        <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
-                          {post.comments.map((comment) => (
-                            <div key={comment.id} className="flex items-start gap-2.5 text-xs">
-                              <div className="w-6 h-6 rounded-lg bg-[#141b29] border border-white/10 flex items-center justify-center font-mono font-bold text-emerald-400 text-[10px] shrink-0">
-                                {comment.avatar}
+                        <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                          {post.comments.map((cm) => (
+                            <div key={cm.id} className="flex items-start gap-2.5 text-xs">
+                              <div className="w-6 h-6 rounded-full overflow-hidden bg-[#262626] shrink-0 mt-0.5">
+                                {cm.avatar.startsWith("http") || cm.avatar.startsWith("/") ? (
+                                  <img src={cm.avatar} alt={cm.username} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center font-bold text-[10px]">
+                                    {cm.avatar}
+                                  </div>
+                                )}
                               </div>
-                              <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-2 rounded-xl">
-                                <div className="flex items-center justify-between gap-1 mb-0.5">
-                                  <span className="font-bold text-white text-[11px]">
-                                    {comment.author}
+                              <div className="flex-1">
+                                <div className="leading-tight">
+                                  <span className="font-semibold text-white mr-1.5">
+                                    {cm.username}
                                   </span>
-                                  {comment.isAI && (
-                                    <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded-md">
+                                  {cm.isAI && (
+                                    <span className="text-[9px] font-mono text-emerald-400 bg-[#16271c] px-1 py-0.2 rounded border border-emerald-500/30">
                                       Simulated Audience
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-neutral-300 text-xs leading-relaxed">
-                                  {comment.text}
-                                </p>
+                                <p className="text-[#d4d4d4] mt-0.5">{cm.text}</p>
+                                <span className="text-[10px] text-[#737373] mt-1 block">
+                                  {cm.timeAgo} · Reply
+                                </span>
                               </div>
                             </div>
                           ))}
                         </div>
 
-                        {/* Add Comment Input */}
-                        <div className="pt-2 flex items-center gap-2">
+                        {/* Add Comment Row */}
+                        <div className="flex items-center gap-2 pt-2 border-t border-[#262626]">
                           <input
                             type="text"
                             value={commentInput}
                             onChange={(e) => setCommentInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleAddComment(post.id)}
-                            placeholder="Write a supportive reply or feedback..."
-                            className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500/40"
+                            placeholder="Add a comment as you_student..."
+                            className="flex-1 bg-transparent text-xs text-white placeholder-[#737373] focus:outline-none"
                           />
                           <button
-                            type="button"
                             onClick={() => handleAddComment(post.id)}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs font-mono hover:bg-emerald-400 transition-colors"
+                            disabled={!commentInput.trim()}
+                            className="text-[#0095f6] font-semibold text-xs disabled:opacity-40 hover:text-white"
                           >
-                            Reply
+                            Post
                           </button>
                         </div>
                       </motion.div>
@@ -818,267 +723,282 @@ export default function CelorisSocialPage() {
               ))}
             </div>
           </div>
-        ) : (
-          /* Dedicated Ads Manager (Option 2B) */
-          <div className="space-y-5">
-            {/* Wallet Overview & Telemetry Cards */}
-            <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/[0.08] via-[#0c1018] to-[#0c1018] p-5 sm:p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-                <div>
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 block">
-                    Meta Ad Practice Sandbox
-                  </span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    Virtual Ad Spend Wallet
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleResetWallet}
-                  className="px-3 py-1.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/[0.04] text-xs font-mono text-neutral-300 hover:text-white transition-all"
-                >
-                  Reset ₹10k Credits
-                </button>
-              </div>
-
-              {/* Balance Big Card */}
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/[0.08] flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <span className="text-xs font-mono text-neutral-400 block">Remaining Credits</span>
-                  <span className="text-3xl sm:text-4xl font-black text-emerald-400 font-mono tracking-tight">
-                    ₹{walletBalance.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-mono text-neutral-400 block">Active Campaigns</span>
-                  <span className="text-2xl font-black text-white font-mono">
-                    {campaigns.filter((c) => c.status === "Active").length} Live
-                  </span>
-                </div>
-              </div>
-
-              {/* 4 Metric KPI Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] font-mono text-neutral-400 block">Total Spent</span>
-                  <span className="text-base font-bold text-white font-mono">
-                    ₹{campaigns.reduce((acc, c) => acc + c.spent, 0).toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] font-mono text-neutral-400 block">Impressions</span>
-                  <span className="text-base font-bold text-white font-mono">
-                    {campaigns.reduce((acc, c) => acc + c.impressions, 0).toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] font-mono text-neutral-400 block">Average CTR</span>
-                  <span className="text-base font-bold text-emerald-400 font-mono">2.48%</span>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] font-mono text-neutral-400 block">Total Leads</span>
-                  <span className="text-base font-bold text-amber-300 font-mono">
-                    {campaigns.reduce((acc, c) => acc + c.leads, 0)}
-                  </span>
-                </div>
-              </div>
+        ) : currentTab === "create" ? (
+          /* Instagram "Create Post" Screen */
+          <div className="p-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#262626] mb-4">
+              <button
+                onClick={() => setCurrentTab("feed")}
+                className="text-xs font-semibold text-[#a8a8a8] hover:text-white"
+              >
+                Cancel
+              </button>
+              <h3 className="font-semibold text-sm text-white">New post</h3>
+              <button
+                onClick={handlePublishPost}
+                disabled={!captionText.trim()}
+                className="text-xs font-semibold text-[#0095f6] disabled:opacity-40 hover:text-white"
+              >
+                Share
+              </button>
             </div>
 
-            {/* Campaigns Table */}
-            <div className="rounded-3xl border border-white/[0.08] bg-[#0c1018]/90 overflow-hidden shadow-xl p-4 sm:p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-extrabold text-white text-base tracking-tight">
-                  Your Simulated Ad Campaigns
-                </h4>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("feed")}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 hover:underline"
-                >
-                  <span>Boost a Post from Feed</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+            <div className="space-y-4">
+              <div className="aspect-square w-full rounded-xl bg-[#141414] border border-[#262626] overflow-hidden relative">
+                <img src={selectedImage} alt="Selected" className="w-full h-full object-cover" />
+                <div className="absolute bottom-2.5 right-2.5 bg-black/80 px-2.5 py-1 rounded text-[11px] text-[#a8a8a8]">
+                  Tap to change image
+                </div>
               </div>
 
-              <div className="space-y-3">
-                {campaigns.map((camp) => (
-                  <div
-                    key={camp.id}
-                    className="p-3.5 rounded-2xl border border-white/[0.06] bg-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="font-bold text-white text-xs sm:text-sm">
-                          {camp.postTitle}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-full bg-white/[0.06] text-[9px] font-mono text-neutral-300">
-                          {camp.objective}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-400 flex-wrap">
-                        <span>Budget: ₹{camp.dailyBudget}/day</span>
-                        <span>•</span>
-                        <span>Impressions: {camp.impressions}</span>
-                        <span>•</span>
-                        <span className="text-emerald-400">CTR: {camp.ctr}</span>
-                        <span>•</span>
-                        <span>CPC: {camp.cpc}</span>
-                      </div>
-                    </div>
+              <div>
+                <label className="text-xs text-[#a8a8a8] block mb-1">
+                  1. Hook (First 2-3 seconds):
+                </label>
+                <input
+                  type="text"
+                  value={hookText}
+                  onChange={(e) => setHookText(e.target.value)}
+                  placeholder="e.g. Stop wasting ₹15,000 on agencies..."
+                  className="w-full bg-[#141414] border border-[#262626] rounded-lg px-3 py-2 text-xs text-white placeholder-[#737373] focus:outline-none focus:border-[#444]"
+                />
+              </div>
 
-                    <div className="flex items-center gap-2 self-end sm:self-center">
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] font-bold">
-                        {camp.leads} Leads
-                      </span>
-                    </div>
-                  </div>
-                ))}
+              <div>
+                <label className="text-xs text-[#a8a8a8] block mb-1">2. Write caption...</label>
+                <textarea
+                  rows={4}
+                  value={captionText}
+                  onChange={(e) => setCaptionText(e.target.value)}
+                  placeholder="Share details about your ad, offer, or student portfolio..."
+                  className="w-full bg-[#141414] border border-[#262626] rounded-lg p-3 text-xs text-white placeholder-[#737373] focus:outline-none focus:border-[#444]"
+                />
+              </div>
+
+              <div className="p-3 rounded-lg bg-[#14231b] border border-emerald-500/30 text-xs text-emerald-300">
+                💡 <span className="font-semibold">Student Tip:</span> Once you click Share, tap{" "}
+                <strong>&ldquo;Boost post&rdquo;</strong> to run a simulated Meta ad campaign using your ₹10,000 credits.
               </div>
             </div>
           </div>
-        )}
-      </main>
+        ) : (
+          /* Meta Ads Manager Dashboard View */
+          <div className="p-4 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
+              <div>
+                <h3 className="font-semibold text-base text-white">Meta Ads Manager</h3>
+                <span className="text-[11px] text-[#a8a8a8]">Celoris Sandbox Environment</span>
+              </div>
+              <button
+                onClick={() => {
+                  updateWallet(10000)
+                  alert("Wallet reset to ₹10,000 credits!")
+                }}
+                className="px-2.5 py-1 rounded-md bg-[#262626] text-xs font-semibold text-white hover:bg-[#333]"
+              >
+                Reset ₹10k
+              </button>
+            </div>
 
-      {/* Quick Boost Modal Bottom Sheet (Option 2A) */}
-      <AnimatePresence>
-        {boostingPost && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-white/[0.1] bg-[#0c1018] p-5 sm:p-6 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
-            >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold">
-                    🚀
-                  </div>
-                  <div>
-                    <h3 className="font-extrabold text-white text-base">Meta Ad Campaign Setup</h3>
-                    <span className="text-[10px] text-neutral-400 font-mono">
-                      Powered by Gemini 3.8 Ad Simulator
+            {/* Wallet Big Card */}
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#262626]">
+              <span className="text-xs text-[#a8a8a8] block">Available Ad Spend</span>
+              <span className="text-3xl font-bold font-mono text-emerald-400">
+                ₹{walletBalance.toLocaleString("en-IN")}
+              </span>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs pt-3 border-t border-[#262626]">
+                <div>
+                  <span className="text-[#a8a8a8] block text-[11px]">Total Spent</span>
+                  <span className="font-semibold text-white">
+                    ₹{campaigns.reduce((a, b) => a + b.spent, 0).toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[#a8a8a8] block text-[11px]">Leads Generated</span>
+                  <span className="font-semibold text-emerald-400">
+                    {campaigns.reduce((a, b) => a + b.leads, 0)} WhatsApp Inquiries
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Campaign List */}
+            <h4 className="text-xs font-semibold text-[#a8a8a8] uppercase tracking-wider pt-2">
+              Active Campaigns
+            </h4>
+            <div className="space-y-2.5">
+              {campaigns.map((c) => (
+                <div key={c.id} className="p-3.5 rounded-xl bg-[#141414] border border-[#262626]">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-semibold text-xs text-white truncate max-w-[280px]">
+                      {c.postTitle}
+                    </span>
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-mono px-2 py-0.5 rounded-full font-bold">
+                      {c.status}
                     </span>
                   </div>
+                  <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-[#a8a8a8] pt-1">
+                    <div>
+                      <span>Impressions</span>
+                      <strong className="block text-white">{c.impressions}</strong>
+                    </div>
+                    <div>
+                      <span>CTR / CPC</span>
+                      <strong className="block text-emerald-400">{c.ctr} ({c.cpc})</strong>
+                    </div>
+                    <div>
+                      <span>Leads</span>
+                      <strong className="block text-amber-300">{c.leads}</strong>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setBoostingPost(null)}
-                  className="p-1 rounded-full text-neutral-400 hover:text-white"
-                >
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Instagram Bottom App Dock */}
+      <footer className="fixed bottom-0 inset-x-0 z-40 bg-black border-t border-[#262626] py-2 px-6">
+        <div className="max-w-[470px] mx-auto flex items-center justify-between">
+          <button
+            onClick={() => setCurrentTab("feed")}
+            className={`p-1.5 focus:outline-none ${currentTab === "feed" ? "text-white" : "text-[#737373]"}`}
+          >
+            <Home className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setCurrentTab("ads")}
+            className={`p-1.5 focus:outline-none ${currentTab === "ads" ? "text-white" : "text-[#737373]"}`}
+          >
+            <BarChart2 className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setCurrentTab("create")}
+            className={`p-1.5 focus:outline-none ${currentTab === "create" ? "text-white" : "text-[#737373]"}`}
+          >
+            <PlusSquare className="w-6 h-6" />
+          </button>
+          <Link
+            href="/free-courses-with-certificate"
+            className="p-1.5 text-[#737373] hover:text-white"
+            title="Classrooms & Certificates"
+          >
+            <Compass className="w-6 h-6" />
+          </Link>
+          <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20 p-0.5">
+            <img
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
+              alt="Profile"
+              className="w-full h-full rounded-full object-cover"
+            />
+          </div>
+        </div>
+      </footer>
+
+      {/* Real Instagram "Boost Post" Slide-Up Sheet */}
+      <AnimatePresence>
+        {boostingPost && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, y: 120 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 120 }}
+              className="w-full max-w-[470px] bg-[#1a1a1a] rounded-t-2xl sm:rounded-2xl border border-[#333] p-5 shadow-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[#2e2e2e] mb-4">
+                <h3 className="font-semibold text-sm text-white">Boost Post on Meta</h3>
+                <button onClick={() => setBoostingPost(null)} className="text-[#a8a8a8] hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Preview of post being boosted */}
-              <div className="mb-4 p-3 rounded-2xl bg-black/40 border border-white/[0.06] text-xs">
-                <span className="text-[10px] font-mono text-neutral-400 block mb-1">
-                  Ad Creative &amp; Hook:
-                </span>
-                <p className="font-semibold text-white truncate">
-                  &ldquo;{boostingPost.hook || boostingPost.content}&rdquo;
-                </p>
-              </div>
-
-              {/* Objective Selector */}
-              <div className="mb-4">
-                <label className="text-xs font-mono text-neutral-300 block mb-2 font-semibold">
-                  1. Choose Campaign Objective
-                </label>
-                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                  <button
-                    type="button"
-                    onClick={() => setBoostObjective("leads")}
-                    className={`p-2.5 rounded-xl border text-left transition-all ${
-                      boostObjective === "leads"
-                        ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300 font-bold"
-                        : "border-white/[0.08] bg-white/[0.02] text-neutral-400"
-                    }`}
-                  >
-                    <span className="block text-white font-semibold">💬 WhatsApp Leads</span>
-                    <span className="text-[10px] text-neutral-400">Direct student chats</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBoostObjective("traffic")}
-                    className={`p-2.5 rounded-xl border text-left transition-all ${
-                      boostObjective === "traffic"
-                        ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300 font-bold"
-                        : "border-white/[0.08] bg-white/[0.02] text-neutral-400"
-                    }`}
-                  >
-                    <span className="block text-white font-semibold">🌐 Landing Page Traffic</span>
-                    <span className="text-[10px] text-neutral-400">Clicks to your portfolio</span>
-                  </button>
+              <div className="space-y-4">
+                {/* Goal Selector */}
+                <div>
+                  <span className="text-xs text-[#a8a8a8] block mb-2 font-medium">Select a goal</span>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setBoostObjective("leads")}
+                      className={`w-full p-3 rounded-xl border text-left flex items-center justify-between text-xs transition-colors ${
+                        boostObjective === "leads"
+                          ? "border-[#0095f6] bg-[#0095f6]/10 text-white font-semibold"
+                          : "border-[#333] bg-[#121212] text-[#a8a8a8]"
+                      }`}
+                    >
+                      <span>💬 More messages &amp; WhatsApp inquiries</span>
+                      {boostObjective === "leads" && <CheckCircle2 className="w-4 h-4 text-[#0095f6]" />}
+                    </button>
+                    <button
+                      onClick={() => setBoostObjective("traffic")}
+                      className={`w-full p-3 rounded-xl border text-left flex items-center justify-between text-xs transition-colors ${
+                        boostObjective === "traffic"
+                          ? "border-[#0095f6] bg-[#0095f6]/10 text-white font-semibold"
+                          : "border-[#333] bg-[#121212] text-[#a8a8a8]"
+                      }`}
+                    >
+                      <span>🌐 More profile &amp; landing page visits</span>
+                      {boostObjective === "traffic" && <CheckCircle2 className="w-4 h-4 text-[#0095f6]" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Target Audience: Cities */}
-              <div className="mb-4">
-                <label className="text-xs font-mono text-neutral-300 block mb-2 font-semibold">
-                  2. Target Indian Locations
-                </label>
-                <div className="flex flex-wrap gap-1.5 text-xs font-mono">
-                  {["Delhi NCR", "Mumbai", "Bengaluru", "Jaipur", "Lucknow", "Pune", "Indore"].map(
-                    (city) => {
-                      const isSelected = selectedCities.includes(city)
-                      return (
+                {/* City Targeting */}
+                <div>
+                  <span className="text-xs text-[#a8a8a8] block mb-2 font-medium">Target audience locations</span>
+                  <div className="flex flex-wrap gap-1.5 text-xs">
+                    {["Delhi NCR", "Mumbai", "Jaipur", "Bengaluru", "Lucknow", "Pune", "Indore"].map(
+                      (c) => (
                         <button
-                          key={city}
-                          type="button"
-                          onClick={() => toggleCity(city)}
+                          key={c}
+                          onClick={() => toggleCity(c)}
                           className={`px-3 py-1 rounded-full text-xs transition-all ${
-                            isSelected
-                              ? "bg-emerald-500 text-slate-950 font-bold"
-                              : "bg-white/[0.04] border border-white/[0.08] text-neutral-300 hover:border-white/20"
+                            selectedCities.includes(c)
+                              ? "bg-white text-black font-semibold"
+                              : "bg-[#262626] text-[#a8a8a8] hover:text-white"
                           }`}
                         >
-                          {city}
+                          {c}
                         </button>
                       )
-                    }
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Daily Budget Slider */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between text-xs font-mono mb-2">
-                  <span className="font-semibold text-neutral-300">3. Daily Ad Spend</span>
-                  <span className="font-bold text-emerald-400 text-sm">
-                    ₹{boostBudget.toLocaleString("en-IN")} Credits
+                {/* Budget Slider */}
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-2">
+                    <span className="text-[#a8a8a8]">Budget</span>
+                    <span className="font-bold text-white font-mono">₹{boostBudget} Credits</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={100}
+                    max={2000}
+                    step={100}
+                    value={boostBudget}
+                    onChange={(e) => setBoostBudget(Number(e.target.value))}
+                    className="w-full accent-[#0095f6] cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[11px] text-[#737373] mt-1">
+                    <span>₹100</span>
+                    <span>Est. Reach: {Math.floor(boostBudget * 8.2)} accounts</span>
+                    <span>₹2,000</span>
+                  </div>
+                </div>
+
+                {/* Launch Button */}
+                <button
+                  onClick={handleLaunchBoost}
+                  disabled={isSimulating}
+                  className="w-full py-3 rounded-xl bg-[#0095f6] hover:bg-[#1877f2] text-white font-semibold text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Rocket className="w-4 h-4" />
+                  <span>
+                    {isSimulating ? "Running Ad Simulation..." : `Boost post now (Spend ₹${boostBudget})`}
                   </span>
-                </div>
-                <input
-                  type="range"
-                  min={100}
-                  max={2000}
-                  step={100}
-                  value={boostBudget}
-                  onChange={(e) => setBoostBudget(Number(e.target.value))}
-                  className="w-full accent-emerald-500 cursor-pointer"
-                />
-                <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-neutral-400">
-                  <span>₹100 (Testing)</span>
-                  <span>Est. Reach: {Math.floor(boostBudget * 7.2)} Indian users</span>
-                  <span>₹2,000 (Scale)</span>
-                </div>
+                </button>
               </div>
-
-              {/* Launch CTA */}
-              <button
-                type="button"
-                disabled={isSimulating}
-                onClick={handleLaunchBoost}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-sm uppercase tracking-wider font-mono shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Rocket className="w-4 h-4" />
-                <span>
-                  {isSimulating ? "Running Gemini 3.8 Ad Simulator..." : `Launch Ad (Spend ₹${boostBudget})`}
-                </span>
-              </button>
             </motion.div>
           </div>
         )}
