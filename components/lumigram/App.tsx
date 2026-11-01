@@ -97,6 +97,29 @@ export default function App() {
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState<boolean>(false);
 
+  // Media & Content Protection: Disable right-click context menu and drag-to-copy
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') {
+        return;
+      }
+      e.preventDefault();
+    };
+
+    const handleDragStart = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener('contextmenu', handleContextMenu);
+    window.addEventListener('dragstart', handleDragStart);
+
+    return () => {
+      window.removeEventListener('contextmenu', handleContextMenu);
+      window.removeEventListener('dragstart', handleDragStart);
+    };
+  }, []);
+
   // Synchronize authenticated Celoris student profile & real wallet
   useEffect(() => {
     if (authUser) {
@@ -484,7 +507,7 @@ export default function App() {
   const suggestedUsers = Object.values(usersMap).filter((u) => u.id !== currentUser.id);
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row transition-colors">
+    <div className="min-h-screen bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row transition-colors select-none">
       {/* Floating Push Notification Toast */}
       <PushNotificationToast
         notification={activePushToast}

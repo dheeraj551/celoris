@@ -203,13 +203,16 @@ export const PostCard: React.FC<PostCardProps> = ({
             controls
             playsInline
             loop
+            onContextMenu={(e) => e.preventDefault()}
             className="w-full h-full object-cover"
           />
         ) : (
           <img
             src={currentMediaUrl}
             alt={post.caption || 'Post image'}
-            className={`w-full h-full object-cover transition-transform duration-300 ${
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+            className={`w-full h-full object-cover transition-transform duration-300 pointer-events-none select-none ${
               post.filter === 'clarendon'
                 ? 'contrast-125 saturate-125'
                 : post.filter === 'juno'

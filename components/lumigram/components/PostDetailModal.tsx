@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Heart,
@@ -41,6 +41,17 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   const [commentInput, setCommentInput] = useState('');
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentInput.trim()) return;
@@ -54,17 +65,28 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          aria-label="Close modal"
-          className="absolute top-3 right-3 z-30 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 cursor-pointer"
-        >
-          <X size={18} />
-        </button>
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onContextMenu={(e) => e.preventDefault()}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none"
+    >
+      {/* Floating Viewport Close Button */}
+      <button
+        onClick={onClose}
+        aria-label="Close modal"
+        className="fixed top-4 right-4 z-50 p-2.5 rounded-full bg-neutral-900/80 hover:bg-neutral-900 text-white border border-neutral-700/50 backdrop-blur-md shadow-lg transition-transform hover:scale-105 cursor-pointer"
+        title="Close (Esc)"
+      >
+        <X size={20} />
+      </button>
 
+      <div
+        onClick={(e) => e.stopPropagation()}
+        onContextMenu={(e) => e.preventDefault()}
+        className="relative w-full max-w-4xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+      >
         {/* Media Left Column */}
         <div className="relative md:w-3/5 bg-black flex items-center justify-center select-none overflow-hidden aspect-square md:aspect-auto">
           {(() => {
@@ -77,13 +99,16 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
                 autoPlay
                 playsInline
                 loop
+                onContextMenu={(e) => e.preventDefault()}
                 className="w-full h-full object-contain max-h-[80vh]"
               />
             ) : (
               <img
                 src={currentUrl || '/courses/digital-marketing-mastery-og.jpg'}
                 alt={post.caption || 'Media detail'}
-                className={`w-full h-full object-contain max-h-[80vh] ${
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+                className={`w-full h-full object-contain max-h-[80vh] pointer-events-none ${
                   post.filter === 'clarendon'
                     ? 'contrast-125 saturate-125'
                     : post.filter === 'juno'
@@ -159,13 +184,25 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={() => onOpenReport(post)}
-              className="text-neutral-400 hover:text-rose-500 p-1 cursor-pointer"
-              aria-label="Report post"
-            >
-              <Flag size={16} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onOpenReport(post)}
+                className="p-2 rounded-full text-neutral-400 hover:text-rose-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                aria-label="Report post"
+                title="Report post"
+              >
+                <Flag size={16} />
+              </button>
+
+              <button
+                onClick={onClose}
+                aria-label="Close modal"
+                className="p-2 rounded-full text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Comments and Caption Scroll Area */}
