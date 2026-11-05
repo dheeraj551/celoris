@@ -17,6 +17,10 @@ const ClassroomTable = dynamic(() => import('@/components/cafe/classroom3d/compo
 // 2D whiteboard classroom (category 'whiteboard') — same seats/queue, Agora
 // voice + screen share and room codes as the 3D classroom above.
 const WhiteboardRoom = dynamic(() => import('@/components/whiteboard-room/WhiteboardRoom'), { ssr: false });
+// Nov 2026: 3D office walk-through lobby (baked Blender loft). Loaded only
+// when a student switches to "3D Office" so the card list stays fast.
+const OfficeLobby = dynamic(() => import('@/components/classrooms-3d/OfficeLobby'), { ssr: false });
+const LOBBY_VIEW_KEY = 'celoris-classrooms-view';
 
 import { 
   Menu, 
@@ -65,6 +69,21 @@ export default function App() {
   // trainer_code) get the full trainer experience in ClassroomTable
   // (isHost=true: mic, podium, calling on students); 'student' does not.
   const [joinedRoomRole, setJoinedRoomRole] = useState<'host' | 'trainer' | 'student' | null>(null);
+  // 'list' = the classic card grid (default), '3d' = walk-through office.
+  const [lobbyView, setLobbyView] = useState<'list' | '3d'>('list');
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(LOBBY_VIEW_KEY);
+      if (saved === '3d' || saved === 'list') setLobbyView(saved);
+      if (new URLSearchParams(window.location.search).get('view') === '3d') setLobbyView('3d');
+    } catch {
+      // ignore (private mode etc.)
+    }
+  }, []);
+  const switchLobbyView = (v: 'list' | '3d') => {
+    setLobbyView(v);
+    try { window.localStorage.setItem(LOBBY_VIEW_KEY, v); } catch { /* ignore */ }
+  };
   const supabase = createClient();
   const { user } = useAuth();
 
@@ -462,14 +481,40 @@ export default function App() {
                         Interactive 3D Virtual Aula and Realtime Whiteboard sessions led by verified instructors.
                       </p>
                     </div>
+
+                    {/* List / 3D Office switch */}
+                    <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.08] self-start md:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => switchLobbyView('list')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${lobbyView === 'list' ? 'bg-emerald-500 text-black' : 'text-slate-300 hover:text-white'}`}
+                      >
+                        List
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => switchLobbyView('3d')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${lobbyView === '3d' ? 'bg-emerald-500 text-black' : 'text-slate-300 hover:text-white'}`}
+                      >
+                        3D Office <span className="ml-1 text-[9px] font-mono opacity-80">BETA</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <RoomsGrid
-                    rooms={allRooms}
-                    onJoinRoom={handleJoinRoom}
-                    currentUser={user}
-                    onDeleteRoom={handleDeleteRoom}
-                  />
+                  {lobbyView === '3d' ? (
+                    <OfficeLobby
+                      rooms={allRooms}
+                      onJoinRoom={handleJoinRoom}
+                      onShowList={() => switchLobbyView('list')}
+                    />
+                  ) : (
+                    <RoomsGrid
+                      rooms={allRooms}
+                      onJoinRoom={handleJoinRoom}
+                      currentUser={user}
+                      onDeleteRoom={handleDeleteRoom}
+                    />
+                  )}
 
                   {/* Safe secure reminder within lobby list */}
                   <div className="mt-8">
