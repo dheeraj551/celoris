@@ -29,7 +29,7 @@ export interface UpcomingClass {
 }
 
 const WHATSAPP = '919084718101';
-const JOIN_HREF = '/classrooms?tab=cafe';
+const JOIN_HREF = '/classrooms';
 
 const CountdownTimer = ({ target }: { target: string }) => {
     const [left, setLeft] = useState<number | null>(null);

@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('home');
+  const [activeTab, setActiveTab] = useState<string>('cafe');
   const [joinedRoomId, setJoinedRoomId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isOnlineListOpen, setIsOnlineListOpen] = useState<boolean>(false);
@@ -69,13 +69,21 @@ export default function App() {
   // trainer_code) get the full trainer experience in ClassroomTable
   // (isHost=true: mic, podium, calling on students); 'student' does not.
   const [joinedRoomRole, setJoinedRoomRole] = useState<'host' | 'trainer' | 'student' | null>(null);
-  // 'list' = the classic card grid (default), '3d' = walk-through office.
-  const [lobbyView, setLobbyView] = useState<'list' | '3d'>('list');
+  // Default to '3d' for desktop; mobile uses 'list' (fast & lightweight).
+  const [lobbyView, setLobbyView] = useState<'list' | '3d'>('3d');
   useEffect(() => {
     try {
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       const saved = window.localStorage.getItem(LOBBY_VIEW_KEY);
-      if (saved === '3d' || saved === 'list') setLobbyView(saved);
-      if (new URLSearchParams(window.location.search).get('view') === '3d') setLobbyView('3d');
+      if (saved === '3d' || saved === 'list') {
+        setLobbyView(saved);
+      } else if (isMobile) {
+        setLobbyView('list');
+      } else {
+        setLobbyView('3d');
+      }
+      const viewParam = new URLSearchParams(window.location.search).get('view');
+      if (viewParam === '3d' || viewParam === 'list') setLobbyView(viewParam);
     } catch {
       // ignore (private mode etc.)
     }

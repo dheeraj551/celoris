@@ -139,7 +139,7 @@ export function LaunchOfferCard({
   }, [clockEnds, clockDone, onChanged])
 
   const liveBar = batch?.isLive ? (
-    <Link href="/classrooms?tab=cafe" className="lo-livebar">
+    <Link href="/classrooms" className="lo-livebar">
       <span className="lo-live" style={{ background: "#fff" }} /> Class is live now — join the classroom
     </Link>
   ) : null
