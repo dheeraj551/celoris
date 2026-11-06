@@ -131,6 +131,8 @@ export default function App() {
       if (cancelled) return;
       if (error) {
         console.error('Error fetching public jobs:', error);
+        const fallbackPublic = INITIAL_JOBS.filter((j) => j.tier === 'public');
+        setJobs((prev) => [...prev.filter((j) => j.tier !== 'public'), ...fallbackPublic]);
         return;
       }
 
