@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=== [1/3] Setting Up Celoris Media Service on VPS ==="
+echo "=========================================================="
+echo "  [1/3] Setting Up Celoris Media Service on VPS"
+echo "=========================================================="
 
 SERVICE_FILE="/etc/systemd/system/celoris-media.service"
 PROJECT_DIR="/root/celoris"
@@ -32,49 +34,13 @@ systemctl restart celoris-media
 
 echo "[+] celoris-media service started on port 8085."
 
-echo "=== [2/3] Configuring Caddy for media.celoris.in ==="
+echo "=========================================================="
+echo "  [2/3] Configuring Caddy for media.celoris.in"
+echo "=========================================================="
 
-CADDYFILE="/opt/celoris-cloud/caddy/Caddyfile"
-if [ ! -f "$CADDYFILE" ]; then
-    for candidate in /root/Caddyfile /etc/caddy/Caddyfile; do
-        if [ -f "$candidate" ]; then
-            CADDYFILE="$candidate"
-            break
-        fi
-    done
-fi
-
-if [ -f "$CADDYFILE" ]; then
-# Remove any old media.celoris.in block and append clean dual-protocol block
-sed -i '/media\.celoris\.in {/,/}/d' "$CADDYFILE" 2>/dev/null || true
-
-cat << 'EOF' >> "$CADDYFILE"
-
-http://media.celoris.in, https://media.celoris.in {
-    reverse_proxy host.docker.internal:8085 {
-        header_up Host {host}
-        header_up X-Real-IP {remote}
-    }
-}
-EOF
-
-    # Reload Caddy
-    CADDY_CONTAINER=$(docker ps --format '{{.Names}}' | grep -i "caddy" | head -n1 || true)
-    if [ -n "$CADDY_CONTAINER" ]; then
-        echo "[+] Reloading Caddy container: $CADDY_CONTAINER..."
-        docker exec "$CADDY_CONTAINER" caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || docker restart "$CADDY_CONTAINER"
-    fi
-fi
-
-# Allow port 8085 in UFW if firewall is enabled
-ufw allow 8085/tcp comment "Celoris Media Server" 2>/dev/null || true
-
-echo "=== [3/3] Testing Media Endpoint ==="
-sleep 2
-TEST_LOCAL=$(curl -s -I -o /dev/null -w "%{http_code}" http://127.0.0.1:8085/reels/Db4eaYWBlXH.mp4 || echo "000")
-echo "[+] Local HTTP test: $TEST_LOCAL (200/206 = SUCCESS)"
+bash "$PROJECT_DIR/scripts/vps/fix-caddy.sh"
 
 echo "=========================================================="
-echo "  CELORIS MEDIA SERVER IS LIVE! 🚀"
-echo "  URL: https://media.celoris.in/reels/{video_id}.mp4"
+echo "  [3/3] Final Status Check"
 echo "=========================================================="
+systemctl status celoris-media --no-pager | head -n 10
