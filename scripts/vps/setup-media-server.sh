@@ -45,20 +45,18 @@ if [ ! -f "$CADDYFILE" ]; then
 fi
 
 if [ -f "$CADDYFILE" ]; then
-    if ! grep -q "media.celoris.in" "$CADDYFILE"; then
-        echo "[+] Adding media.celoris.in block to $CADDYFILE..."
-        cat << 'EOF' >> "$CADDYFILE"
+# Remove any old media.celoris.in block and append clean dual-protocol block
+sed -i '/media\.celoris\.in {/,/}/d' "$CADDYFILE" 2>/dev/null || true
 
-media.celoris.in {
+cat << 'EOF' >> "$CADDYFILE"
+
+http://media.celoris.in, https://media.celoris.in {
     reverse_proxy host.docker.internal:8085 {
         header_up Host {host}
         header_up X-Real-IP {remote}
     }
 }
 EOF
-    else
-        echo "[*] media.celoris.in already configured in $CADDYFILE"
-    fi
 
     # Reload Caddy
     CADDY_CONTAINER=$(docker ps --format '{{.Names}}' | grep -i "caddy" | head -n1 || true)
