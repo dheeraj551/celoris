@@ -95,10 +95,12 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
             return isVid ? (
               <video
                 src={currentUrl}
+                poster={post.thumbnail}
                 controls
                 autoPlay
                 playsInline
                 loop
+                preload="metadata"
                 onContextMenu={(e) => e.preventDefault()}
                 className="w-full h-full object-contain max-h-[80vh]"
               />

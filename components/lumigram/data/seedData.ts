@@ -1,4 +1,5 @@
 import { User, Post, UserStory, Conversation, NotificationItem, AccountSettings } from '../types';
+import { SCRAPED_VIRAL_REELS } from './scrapedReelsData';
 
 export const CURRENT_USER: User = {
   id: 'user_current',
@@ -118,6 +119,7 @@ export const SEED_USERS: Record<string, User> = {
 };
 
 export const SEED_POSTS: Post[] = [
+  ...SCRAPED_VIRAL_REELS.slice(0, 3),
   {
     id: 'post_dheeraj_1',
     userId: 'user_dheeraj',
@@ -194,6 +196,7 @@ export const SEED_POSTS: Post[] = [
       },
     ],
   },
+  ...SCRAPED_VIRAL_REELS.slice(3),
   {
     id: 'post_1',
     userId: 'user_sofia',

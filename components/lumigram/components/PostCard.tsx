@@ -200,9 +200,11 @@ export const PostCard: React.FC<PostCardProps> = ({
         {isVideo ? (
           <video
             src={currentMediaUrl}
+            poster={post.thumbnail}
             controls
             playsInline
             loop
+            preload="metadata"
             onContextMenu={(e) => e.preventDefault()}
             className="w-full h-full object-cover"
           />

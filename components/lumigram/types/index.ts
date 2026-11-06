@@ -37,6 +37,8 @@ export interface Post {
   location?: string;
   filter?: string;
   mediaType?: 'image' | 'video';
+  thumbnail?: string;
+  playCount?: number;
   aspectRatio?: 'square' | 'portrait' | 'landscape' | 'vertical' | '9:16';
   likesCount: number;
   isLiked?: boolean;
