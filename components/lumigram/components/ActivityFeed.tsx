@@ -161,8 +161,11 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
               {notif.targetPost ? (
                 <div className="shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
                   <img
-                    src={notif.targetPost.images[0]}
+                    src={notif.targetPost.thumbnail || notif.targetPost.images[0] || '/courses/digital-marketing-mastery-og.jpg'}
                     alt="Post thumbnail"
+                    onError={(e) => {
+                      e.currentTarget.src = '/courses/digital-marketing-mastery-og.jpg';
+                    }}
                     className="w-full h-full object-cover"
                   />
                 </div>

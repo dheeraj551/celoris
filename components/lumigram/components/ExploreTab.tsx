@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Search, Heart, MessageCircle, Compass, Tag, MapPin, X } from 'lucide-react';
+import { Search, Heart, MessageCircle, Compass, Tag, MapPin, X, Film } from 'lucide-react';
 import { Post, User } from '../types';
 import { filterExplorePosts, formatCount } from '../utils/socialLogic';
 
@@ -83,6 +83,8 @@ export const ExploreTab: React.FC<ExploreTabProps> = ({
           {filteredPosts.map((post, idx) => {
             // Give every 5th or 6th item a featured 2-span aspect or distinct feel
             const isFeatured = idx === 1 || idx === 6;
+            const isVideo = post.mediaType === 'video' || (post.images?.[0] && post.images[0].endsWith('.mp4'));
+            const mediaSrc = isVideo ? (post.thumbnail || post.images?.[0]) : (post.images?.[0] || '/courses/digital-marketing-mastery-og.jpg');
 
             return (
               <div
@@ -92,16 +94,37 @@ export const ExploreTab: React.FC<ExploreTabProps> = ({
                   isFeatured ? 'sm:col-span-2 sm:row-span-2 sm:aspect-auto' : ''
                 }`}
               >
-                <img
-                  src={post.images[0]}
-                  alt={post.caption}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
+                {isVideo && !post.thumbnail ? (
+                  <video
+                    src={post.images?.[0]}
+                    preload="metadata"
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
+                  />
+                ) : (
+                  <img
+                    src={mediaSrc}
+                    alt={post.caption || 'Explore media'}
+                    onError={(e) => {
+                      e.currentTarget.src = '/courses/digital-marketing-mastery-og.jpg';
+                    }}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                )}
+
+                {/* Video / Reel badge indicator */}
+                {isVideo && (
+                  <div className="absolute top-2.5 right-2.5 px-2 py-1 rounded-md bg-black/60 text-white text-[10px] font-semibold backdrop-blur-xs flex items-center gap-1 z-10">
+                    <Film size={12} className="text-white" />
+                    {post.playCount ? formatCount(post.playCount) : null}
+                  </div>
+                )}
 
                 {/* Multiple photos indicator */}
-                {post.images.length > 1 && (
-                  <div className="absolute top-2.5 right-2.5 px-2 py-1 rounded-md bg-black/60 text-white text-[10px] font-semibold backdrop-blur-xs">
+                {!isVideo && post.images.length > 1 && (
+                  <div className="absolute top-2.5 right-2.5 px-2 py-1 rounded-md bg-black/60 text-white text-[10px] font-semibold backdrop-blur-xs z-10">
                     {post.images.length} photos
                   </div>
                 )}

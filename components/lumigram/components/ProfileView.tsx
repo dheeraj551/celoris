@@ -44,11 +44,66 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
   // Filter posts created by this user
   const userPosts = posts.filter((p) => p.userId === user.id);
+  const userReels = userPosts.filter(
+    (p) => p.mediaType === 'video' || (p.images?.[0] && p.images[0].endsWith('.mp4'))
+  );
   const isPrivateLocked = user.isPrivate && !user.isFollowing && !isSelf;
 
   const handleFollowClick = () => {
     soundManager.playSendSound();
     onToggleFollow(user);
+  };
+
+  const renderPostTile = (post: Post, isReelAspect = false) => {
+    const isVideo = post.mediaType === 'video' || (post.images?.[0] && post.images[0].endsWith('.mp4'));
+    const mediaSrc = isVideo ? (post.thumbnail || post.images?.[0]) : (post.images?.[0] || '/courses/digital-marketing-mastery-og.jpg');
+
+    return (
+      <div
+        key={post.id}
+        onClick={() => onSelectPost(post)}
+        className={`group relative rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 cursor-pointer shadow-xs ${
+          isReelAspect ? 'aspect-[9/16]' : 'aspect-square'
+        }`}
+      >
+        {isVideo && !post.thumbnail ? (
+          <video
+            src={post.images?.[0]}
+            preload="metadata"
+            muted
+            playsInline
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+          />
+        ) : (
+          <img
+            src={mediaSrc}
+            alt={post.caption || 'Post media'}
+            onError={(e) => {
+              e.currentTarget.src = '/courses/digital-marketing-mastery-og.jpg';
+            }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        )}
+
+        {isVideo && (
+          <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/60 text-white backdrop-blur-xs flex items-center gap-1 text-[10px] font-medium z-10">
+            <Film size={11} className="text-white" />
+            {post.playCount ? formatCount(post.playCount) : null}
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-semibold text-xs z-20">
+          <span className="flex items-center gap-1">
+            <Heart size={16} className="fill-white" />
+            {formatCount(post.likesCount)}
+          </span>
+          <span className="flex items-center gap-1">
+            <MessageCircle size={16} className="fill-white" />
+            {post.commentsCount}
+          </span>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -242,22 +297,21 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         /* Saved Posts Tab */
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
           {savedPosts.length > 0 ? (
-            savedPosts.map((post) => (
-              <div
-                key={post.id}
-                onClick={() => onSelectPost(post)}
-                className="group relative aspect-square rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 cursor-pointer shadow-xs"
-              >
-                <img
-                  src={post.images?.[0] || '/courses/digital-marketing-mastery-og.jpg'}
-                  alt={post.caption || 'Post image'}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            ))
+            savedPosts.map((post) => renderPostTile(post))
           ) : (
             <div className="col-span-full py-12 text-center text-neutral-500 text-xs">
               No saved posts yet. Tap the bookmark icon on any post to save it here.
+            </div>
+          )}
+        </div>
+      ) : activeTab === 'reels' ? (
+        /* Reels Tab (Vertical 9:16 aspect ratio) */
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+          {userReels.length > 0 ? (
+            userReels.map((post) => renderPostTile(post, true))
+          ) : (
+            <div className="col-span-full py-12 text-center text-neutral-500 text-xs">
+              No reels shared yet.
             </div>
           )}
         </div>
@@ -265,29 +319,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         /* User's Posts Grid */
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
           {userPosts.length > 0 ? (
-            userPosts.map((post) => (
-              <div
-                key={post.id}
-                onClick={() => onSelectPost(post)}
-                className="group relative aspect-square rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 cursor-pointer shadow-xs"
-              >
-                <img
-                  src={post.images?.[0] || '/courses/digital-marketing-mastery-og.jpg'}
-                  alt={post.caption || 'Post image'}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-semibold text-xs">
-                  <span className="flex items-center gap-1">
-                    <Heart size={16} className="fill-white" />
-                    {formatCount(post.likesCount)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageCircle size={16} className="fill-white" />
-                    {post.commentsCount}
-                  </span>
-                </div>
-              </div>
-            ))
+            userPosts.map((post) => renderPostTile(post))
           ) : (
             <div className="col-span-full py-12 text-center text-neutral-500 text-xs">
               No posts shared yet.
