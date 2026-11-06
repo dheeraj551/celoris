@@ -1,9 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 
 // Dynamic import with SSR disabled to guarantee pure client-side audio, canvas & local storage experience
-const LumigramApp = dynamic(() => import("@/components/lumigram/App"), {
+const LumigramApp = nextDynamic(() => import("@/components/lumigram/App"), {
   ssr: false,
   loading: () => (
     <div className="min-h-screen bg-black flex items-center justify-center">

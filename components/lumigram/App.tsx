@@ -575,6 +575,7 @@ export default function App() {
                     }}
                     onSelectUser={handleSelectUser}
                     onBoostPost={(p) => setBoostingPost(p)}
+                    onOpenComments={(p) => setSelectedDetailPost(p)}
                   />
                 ))}
               </div>

@@ -29,6 +29,7 @@ interface PostCardProps {
   onOpenShareModal: (post: Post) => void;
   onSelectUser: (user: User) => void;
   onBoostPost?: (post: Post) => void;
+  onOpenComments?: (post: Post) => void;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({
@@ -41,6 +42,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   onOpenShareModal,
   onSelectUser,
   onBoostPost,
+  onOpenComments,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [commentInput, setCommentInput] = useState('');
@@ -322,7 +324,13 @@ export const PostCard: React.FC<PostCardProps> = ({
               />
             </button>
             <button
-              onClick={() => setIsExpanded(true)}
+              onClick={() => {
+                if (onOpenComments) {
+                  onOpenComments(post);
+                } else {
+                  setIsExpanded(true);
+                }
+              }}
               aria-label="View comments"
               className="text-neutral-800 dark:text-neutral-200 hover:text-neutral-500 transition-colors cursor-pointer"
             >
@@ -365,22 +373,35 @@ export const PostCard: React.FC<PostCardProps> = ({
         {/* Comments preview / toggle */}
         {post.commentsCount > 0 && (
           <div className="mt-2">
-            {!isExpanded && post.commentsCount > 2 ? (
+            {post.commentsCount > 0 ? (
               <button
-                onClick={() => setIsExpanded(true)}
-                className="text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:underline cursor-pointer"
+                onClick={() => {
+                  if (onOpenComments) {
+                    onOpenComments(post);
+                  } else {
+                    setIsExpanded(!isExpanded);
+                  }
+                }}
+                className="text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-emerald-500 hover:underline cursor-pointer flex items-center gap-1.5"
               >
-                View all {post.commentsCount} comments
+                <span>View all {formatCount(post.commentsCount)} comments</span>
+                {safeComments.length > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                    {safeComments.length} active
+                  </span>
+                )}
               </button>
             ) : null}
 
             {/* List top comments or all if expanded */}
-            <div className="mt-1 space-y-1">
+            <div className="mt-1.5 space-y-1.5">
               {(isExpanded ? safeComments : safeComments.slice(0, 2)).map((c) => (
                 <div key={c.id} className="text-xs text-neutral-800 dark:text-neutral-300 flex items-start justify-between">
-                  <div>
-                    <span className="font-semibold mr-1.5">{c.user.username}</span>
-                    <span>{c.text}</span>
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer" onClick={() => onSelectUser(c.user)}>
+                      {c.user.username}
+                    </span>
+                    <span className="text-neutral-700 dark:text-neutral-300">{c.text}</span>
                   </div>
                   <span className="text-[10px] text-neutral-400 ml-2 shrink-0">
                     {formatTimeAgo(c.createdAt)}
