@@ -87,6 +87,13 @@ class SoundEffects {
   }
 
   /**
+   * Play AI response pop notification sound
+   */
+  public playPopSound() {
+    this.playMessagePing();
+  }
+
+  /**
    * Subtle sent message swoop
    */
   public playSendSound() {

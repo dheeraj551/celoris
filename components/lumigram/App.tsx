@@ -31,6 +31,7 @@ import {
   addPostComment,
   toggleUserFollow,
 } from './utils/socialLogic';
+import { generateCreatorReply } from './utils/aiSocialEngine';
 import { soundManager } from './utils/sound';
 import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -67,6 +68,7 @@ export default function App() {
   const [notifications, setNotifications] = useState<NotificationItem[]>(SEED_NOTIFICATIONS);
   const [reportsHistory, setReportsHistory] = useState<ReportItem[]>([]);
   const [accountSettings, setAccountSettings] = useState<AccountSettings>(INITIAL_ACCOUNT_SETTINGS);
+  const [typingPostIds, setTypingPostIds] = useState<Record<string, boolean>>({});
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads'>('feed');
@@ -297,10 +299,14 @@ export default function App() {
 
   const handleAddComment = (postId: string, text: string) => {
     soundManager.playSendSound();
+
+    let targetPostForReply: Post | undefined;
+
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id === postId) {
           const { updatedPost } = addPostComment(p, currentUser, text);
+          targetPostForReply = updatedPost;
           if (selectedDetailPost && selectedDetailPost.id === postId) {
             setSelectedDetailPost(updatedPost);
           }
@@ -309,6 +315,52 @@ export default function App() {
         return p;
       })
     );
+
+    // Trigger AI Creator Auto-Response
+    if (targetPostForReply) {
+      const creatorUser = targetPostForReply.user;
+      setTypingPostIds((prev) => ({ ...prev, [postId]: true }));
+
+      setTimeout(() => {
+        setTypingPostIds((prev) => ({ ...prev, [postId]: false }));
+
+        if (!targetPostForReply) return;
+        const replyText = generateCreatorReply(targetPostForReply, text, currentUser);
+
+        setPosts((prevPosts) =>
+          prevPosts.map((p) => {
+            if (p.id === postId) {
+              const { updatedPost } = addPostComment(p, creatorUser, replyText);
+              if (selectedDetailPost && selectedDetailPost.id === postId) {
+                setSelectedDetailPost(updatedPost);
+              }
+              return updatedPost;
+            }
+            return p;
+          })
+        );
+
+        soundManager.playPopSound();
+
+        // Push In-App Notification and Toast
+        const replyNotification: NotificationItem = {
+          id: `ai_reply_${Date.now()}`,
+          type: 'comment',
+          actor: creatorUser,
+          targetPost: targetPostForReply,
+          text: `replied to your comment: "${replyText}"`,
+          createdAt: new Date().toISOString(),
+          isRead: false,
+        };
+
+        setActivePushToast(replyNotification);
+        setNotifications((prev) => [replyNotification, ...prev]);
+
+        setTimeout(() => {
+          setActivePushToast((curr) => (curr?.id === replyNotification.id ? null : curr));
+        }, 5000);
+      }, 1250);
+    }
   };
 
   const handleToggleFollow = (targetUser: User) => {
@@ -576,6 +628,7 @@ export default function App() {
                     onSelectUser={handleSelectUser}
                     onBoostPost={(p) => setBoostingPost(p)}
                     onOpenComments={(p) => setSelectedDetailPost(p)}
+                    isAiTyping={Boolean(typingPostIds[post.id])}
                   />
                 ))}
               </div>
@@ -802,6 +855,7 @@ export default function App() {
             setReportingPost(p);
           }}
           onSelectUser={handleSelectUser}
+          isAiTyping={Boolean(selectedDetailPost && typingPostIds[selectedDetailPost.id])}
         />
       )}
 

@@ -100,9 +100,9 @@ const generateCommentsForPost = (postId, caption, postDate) => {
   for (let i = 0; i < count; i++) {
     const user = shuffledUsers[i % shuffledUsers.length];
     const text = pool[i % pool.length];
-    // realistic time: spaced between postTime and now
-    const offsetMinutes = 5 + (i * 28) + Math.floor(Math.random() * 15);
-    const commentTime = new Date(Math.min(now - 1000 * 60 * 5, postTime + offsetMinutes * 60 * 1000)).toISOString();
+    // Dynamic recent times: e.g. 3m, 14m, 45m, 2h, 4h ago
+    const minutesAgo = [3, 14, 38, 75, 180, 360][i] || (15 * (i + 1));
+    const commentTime = new Date(now - minutesAgo * 60 * 1000).toISOString();
 
     comments.push({
       id: `c_${postId}_${i + 1}`,
@@ -145,8 +145,9 @@ const posts = dataset.map((item, idx) => {
 
   const likesCount = item.like_count || 12000;
   const commentsCount = item.comment_count || 320;
-  const timestamp = item.device_timestamp || item.taken_at || Math.floor(Date.now() / 1000);
-  const postCreatedAt = new Date(timestamp < 1e11 ? timestamp * 1000 : timestamp).toISOString();
+  // Recent creation time so reels look actively trending today/yesterday
+  const hoursAgo = 1 + (idx % 24);
+  const postCreatedAt = new Date(Date.now() - hoursAgo * 3600 * 1000).toISOString();
   const postId = 'reel_' + code;
 
   const generatedComments = generateCommentsForPost(postId, captionText, postCreatedAt);

@@ -19,7 +19,20 @@ export function formatCount(count: number): string {
 export function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
-  const diffInSeconds = Math.max(0, Math.floor((now.getTime() - date.getTime()) / 1000));
+  let diffInSeconds = Math.max(0, Math.floor((now.getTime() - date.getTime()) / 1000));
+
+  // If dateString is from older seed/scraped mock data (> 3 days),
+  // deterministically project it into a vibrant recent timeframe (3m to 6h)
+  // so the social feed always looks bustling and fresh for visitors.
+  if (diffInSeconds > 86400 * 3) {
+    let hash = 0;
+    for (let i = 0; i < dateString.length; i++) {
+      hash = (hash << 5) - hash + dateString.charCodeAt(i);
+      hash |= 0;
+    }
+    const simulatedMinutes = (Math.abs(hash) % 350) + 3; // 3m to 353m (~5.8h)
+    diffInSeconds = simulatedMinutes * 60;
+  }
 
   if (diffInSeconds < 60) return `${diffInSeconds}s`;
   const diffInMinutes = Math.floor(diffInSeconds / 60);

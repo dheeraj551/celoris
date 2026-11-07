@@ -14,10 +14,15 @@ import {
   Flag,
   Share2,
   TrendingUp,
+  Sparkles,
+  Cpu,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { Post, User } from '../types';
 import { formatTimeAgo, formatCount } from '../utils/socialLogic';
 import { soundManager } from '../utils/sound';
+import { getAiCommentSuggestions, getAiPostInsights } from '../utils/aiSocialEngine';
 
 interface PostCardProps {
   post: Post;
@@ -30,6 +35,7 @@ interface PostCardProps {
   onSelectUser: (user: User) => void;
   onBoostPost?: (post: Post) => void;
   onOpenComments?: (post: Post) => void;
+  isAiTyping?: boolean;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({
@@ -43,11 +49,14 @@ export const PostCard: React.FC<PostCardProps> = ({
   onSelectUser,
   onBoostPost,
   onOpenComments,
+  isAiTyping = false,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [commentInput, setCommentInput] = useState('');
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [showAiInsights, setShowAiInsights] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const lastTapRef = useRef<number>(0);
 
@@ -55,6 +64,8 @@ export const PostCard: React.FC<PostCardProps> = ({
     ? post.images
     : ['/courses/digital-marketing-mastery-og.jpg'];
   const safeComments = Array.isArray(post.comments) ? post.comments : [];
+  const aiSuggestions = getAiCommentSuggestions(post);
+  const insights = getAiPostInsights(post);
 
   const handleDoubleTap = () => {
     const now = Date.now();
@@ -345,17 +356,84 @@ export const PostCard: React.FC<PostCardProps> = ({
             </button>
           </div>
 
-          <button
-            onClick={handleSaveClick}
-            aria-label={post.isSaved ? 'Remove from saved' : 'Save post'}
-            className="text-neutral-800 dark:text-neutral-200 hover:text-neutral-500 transition-colors cursor-pointer"
-          >
-            <Bookmark
-              size={24}
-              className={post.isSaved ? 'text-neutral-900 dark:text-neutral-100 fill-current' : ''}
-            />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowAiInsights(!showAiInsights)}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                showAiInsights
+                  ? 'bg-emerald-500 text-white shadow-xs'
+                  : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'
+              }`}
+              title="Toggle AI Breakdown & Viral Retention Radar"
+            >
+              <Sparkles size={12} className={showAiInsights ? 'animate-spin-slow' : 'text-emerald-500 animate-pulse'} />
+              <span>AI Breakdown</span>
+            </button>
+
+            <button
+              onClick={handleSaveClick}
+              aria-label={post.isSaved ? 'Remove from saved' : 'Save post'}
+              className="text-neutral-800 dark:text-neutral-200 hover:text-neutral-500 transition-colors cursor-pointer"
+            >
+              <Bookmark
+                size={24}
+                className={post.isSaved ? 'text-neutral-900 dark:text-neutral-100 fill-current' : ''}
+              />
+            </button>
+          </div>
         </div>
+
+        {/* AI Reel Intelligence Radar Drawer */}
+        {showAiInsights && (
+          <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-emerald-950/60 border border-emerald-500/30 text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 shadow-xl">
+            <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+              <div className="flex items-center gap-2">
+                <Cpu size={14} className="text-emerald-400" />
+                <span className="text-xs font-bold text-emerald-300">Pulse AI Intelligence Radar</span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-semibold">
+                Viral Score: {insights.viralScore}/100
+              </span>
+            </div>
+
+            <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
+              <div className="p-2 rounded-xl bg-neutral-800/60 border border-neutral-700/50">
+                <span className="text-[10px] text-neutral-400 block">Hook Retention</span>
+                <span className="font-semibold text-emerald-400">{insights.hookRate}</span>
+              </div>
+              <div className="p-2 rounded-xl bg-neutral-800/60 border border-neutral-700/50">
+                <span className="text-[10px] text-neutral-400 block">Audio Radar</span>
+                <span className="font-semibold text-teal-300 truncate block">{insights.soundRadar}</span>
+              </div>
+            </div>
+
+            <div className="mt-2 text-[11px] text-neutral-300">
+              <span className="text-emerald-400 font-semibold mr-1">AI Tip:</span>
+              {insights.creatorTip}
+            </div>
+
+            {/* AI Recreate Prompt */}
+            <div className="mt-2.5 p-2.5 rounded-xl bg-black/50 border border-emerald-500/20 flex items-start justify-between gap-2">
+              <div className="flex-1">
+                <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider block">Recreate in AI Studio</span>
+                <p className="text-[11px] text-neutral-300 italic line-clamp-2 mt-0.5">"{insights.suggestedPrompt}"</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(insights.suggestedPrompt);
+                  setCopiedPrompt(true);
+                  setTimeout(() => setCopiedPrompt(false), 2000);
+                }}
+                className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                {copiedPrompt ? <Check size={11} /> : <Copy size={11} />}
+                <span>{copiedPrompt ? 'Copied!' : 'Copy'}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Likes Count */}
         <div className="mt-2.5">
@@ -395,20 +473,39 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             {/* List top comments or all if expanded */}
             <div className="mt-1.5 space-y-1.5">
-              {(isExpanded ? safeComments : safeComments.slice(0, 2)).map((c) => (
-                <div key={c.id} className="text-xs text-neutral-800 dark:text-neutral-300 flex items-start justify-between">
-                  <div className="flex items-start gap-1.5">
-                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer" onClick={() => onSelectUser(c.user)}>
+              {(isExpanded ? safeComments : safeComments.slice(0, 3)).map((c) => (
+                <div key={c.id} className="text-xs text-neutral-800 dark:text-neutral-300 flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-1.5 flex-1">
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer shrink-0" onClick={() => onSelectUser(c.user)}>
                       {c.user.username}
                     </span>
+                    {c.user.username === post.user.username && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
+                        Creator ✨
+                      </span>
+                    )}
                     <span className="text-neutral-700 dark:text-neutral-300">{c.text}</span>
                   </div>
-                  <span className="text-[10px] text-neutral-400 ml-2 shrink-0">
+                  <span className="text-[10px] text-neutral-400 shrink-0">
                     {formatTimeAgo(c.createdAt)}
                   </span>
                 </div>
               ))}
             </div>
+
+            {/* Creator is typing AI response indicator */}
+            {isAiTyping && (
+              <div className="mt-2 flex items-center gap-2 py-1.5 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs animate-pulse">
+                <img src={post.user.avatar} alt="" className="w-4 h-4 rounded-full object-cover ring-1 ring-emerald-500" />
+                <span className="font-semibold">{post.user.username}</span>
+                <span className="text-neutral-500 dark:text-neutral-400">is typing an AI response...</span>
+                <div className="flex gap-1 items-center ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -426,10 +523,31 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         )}
 
+        {/* Quick AI Suggestion Chips */}
+        <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/80">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
+              <Sparkles size={11} className="text-emerald-500 animate-pulse" /> Quick AI:
+            </span>
+            {aiSuggestions.map((suggestion, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  onAddComment(post.id, suggestion);
+                }}
+                className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-emerald-50 dark:bg-neutral-800/70 dark:hover:bg-emerald-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-emerald-500/50 text-neutral-700 dark:text-neutral-300 hover:text-emerald-600 dark:hover:text-emerald-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs hover:scale-102 active:scale-98"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Inline Add Comment */}
         <form
           onSubmit={handleCommentSubmit}
-          className="mt-3 pt-2.5 border-t border-neutral-100 dark:border-neutral-800/80 flex items-center gap-2"
+          className="mt-1.5 pt-1.5 flex items-center gap-2"
         >
           <Smile size={18} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
           <input
@@ -442,7 +560,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           {commentInput.trim() && (
             <button
               type="submit"
-              className="text-xs font-semibold text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+              className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 transition-colors cursor-pointer"
             >
               Post
             </button>

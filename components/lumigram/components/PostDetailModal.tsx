@@ -12,10 +12,12 @@ import {
   Smile,
   MapPin,
   Flag,
+  Sparkles,
 } from 'lucide-react';
 import { Post, User } from '../types';
 import { formatTimeAgo, formatCount } from '../utils/socialLogic';
 import { soundManager } from '../utils/sound';
+import { getAiCommentSuggestions } from '../utils/aiSocialEngine';
 
 interface PostDetailModalProps {
   post: Post;
@@ -26,6 +28,7 @@ interface PostDetailModalProps {
   onAddComment: (postId: string, text: string) => void;
   onOpenReport: (post: Post) => void;
   onSelectUser: (user: User) => void;
+  isAiTyping?: boolean;
 }
 
 export const PostDetailModal: React.FC<PostDetailModalProps> = ({
@@ -37,9 +40,11 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   onAddComment,
   onOpenReport,
   onSelectUser,
+  isAiTyping = false,
 }) => {
   const [commentInput, setCommentInput] = useState('');
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const aiSuggestions = getAiCommentSuggestions(post);
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -236,10 +241,17 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
                   className="w-7 h-7 rounded-full object-cover shrink-0"
                 />
                 <div className="flex-1 text-xs text-neutral-800 dark:text-neutral-200">
-                  <span className="font-semibold mr-1.5 text-neutral-900 dark:text-neutral-100">
-                    {comment.user.username}
-                  </span>
-                  <span>{comment.text}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                      {comment.user.username}
+                    </span>
+                    {comment.user.username === post.user.username && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                        Creator ✨
+                      </span>
+                    )}
+                  </div>
+                  <span className="block mt-0.5">{comment.text}</span>
                   <div className="flex items-center gap-3 text-[10px] text-neutral-400 mt-1">
                     <span>{formatTimeAgo(comment.createdAt)}</span>
                     <button className="hover:underline cursor-pointer">Reply</button>
@@ -247,6 +259,20 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
                 </div>
               </div>
             ))}
+
+            {/* Creator typing indicator */}
+            {isAiTyping && (
+              <div className="flex items-center gap-2 py-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs animate-pulse">
+                <img src={post.user.avatar} alt="" className="w-5 h-5 rounded-full object-cover ring-1 ring-emerald-500" />
+                <span className="font-semibold">{post.user.username}</span>
+                <span className="text-neutral-500 dark:text-neutral-400">is typing an AI response...</span>
+                <div className="flex gap-1 items-center ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Row */}
@@ -291,10 +317,27 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               {formatTimeAgo(post.createdAt)} AGO
             </span>
 
+            {/* Quick AI Suggestions */}
+            <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
+                <Sparkles size={11} className="text-emerald-500 animate-pulse" /> Quick AI:
+              </span>
+              {aiSuggestions.map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => onAddComment(post.id, suggestion)}
+                  className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-emerald-50 dark:bg-neutral-800/80 dark:hover:bg-emerald-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-emerald-500/50 text-neutral-700 dark:text-neutral-300 hover:text-emerald-600 dark:hover:text-emerald-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
             {/* Comment Form */}
             <form
               onSubmit={handleCommentSubmit}
-              className="mt-3 pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-2"
+              className="mt-1.5 pt-1.5 flex items-center gap-2"
             >
               <input
                 type="text"
