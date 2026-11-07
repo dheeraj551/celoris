@@ -69,6 +69,7 @@ export default function App() {
   const [reportsHistory, setReportsHistory] = useState<ReportItem[]>([]);
   const [accountSettings, setAccountSettings] = useState<AccountSettings>(INITIAL_ACCOUNT_SETTINGS);
   const [typingPostIds, setTypingPostIds] = useState<Record<string, boolean>>({});
+  const [isLiveAutomationActive, setIsLiveAutomationActive] = useState<boolean>(true);
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads'>('feed');
@@ -261,6 +262,91 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, [accountSettings.pushNotifications.enabled, posts, usersMap]);
+
+  // Autonomous Live AI Engagement Simulator
+  const triggerInstantAiEngagement = () => {
+    if (!posts || posts.length === 0) return;
+    const targetIdx = Math.floor(Math.random() * Math.min(4, posts.length));
+    const target = posts[targetIdx];
+    if (!target) return;
+
+    const aiMembers = [
+      { username: 'arjun_vfx', name: 'Arjun Verma', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150' },
+      { username: 'priya_edits', name: 'Priya Sharma', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' },
+      { username: 'kabir_shot', name: 'Kabir Mehta', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150' },
+      { username: 'tanya_vibes', name: 'Tanya Kapoor', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150' },
+      { username: 'rohit_cinematics', name: 'Rohit Joshi', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150' },
+    ];
+    const member = aiMembers[Math.floor(Math.random() * aiMembers.length)];
+
+    const sampleComments = [
+      'Cleanest visual pacing on the explore page right now 🔥',
+      'That audio sync hit so hard 🎧👏',
+      'Bro how did you pull off that transition?! Unreal ⚡',
+      'Replaying this on loop haha, too good 😂',
+      'Color grade is literally 10/10 🎨',
+      'Drop part 2 already please! 🚀',
+      'Stickman comedy never misses 💀🔥',
+    ];
+    const commentText = sampleComments[Math.floor(Math.random() * sampleComments.length)];
+
+    const actorUser: User = {
+      id: `u_ai_${Date.now()}`,
+      username: member.username,
+      name: member.name,
+      avatar: member.avatar,
+      bio: 'Celoris AI Community Creator',
+      followersCount: 14200,
+      followingCount: 310,
+      postsCount: 42,
+      isOnline: true,
+    };
+
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id === target.id) {
+          const { updatedPost } = addPostComment(p, actorUser, commentText);
+          const withLikes = {
+            ...updatedPost,
+            likesCount: updatedPost.likesCount + Math.floor(Math.random() * 4 + 1),
+          };
+          if (selectedDetailPost && selectedDetailPost.id === target.id) {
+            setSelectedDetailPost(withLikes);
+          }
+          return withLikes;
+        }
+        return p;
+      })
+    );
+
+    soundManager.playLikeSound();
+
+    const liveNotif: NotificationItem = {
+      id: `live_auto_${Date.now()}`,
+      type: 'comment',
+      actor: actorUser,
+      targetPost: target,
+      text: `commented: "${commentText}"`,
+      createdAt: new Date().toISOString(),
+      isRead: false,
+    };
+    setActivePushToast(liveNotif);
+    setNotifications((prev) => [liveNotif, ...prev]);
+
+    setTimeout(() => {
+      setActivePushToast((curr) => (curr?.id === liveNotif.id ? null : curr));
+    }, 4500);
+  };
+
+  useEffect(() => {
+    if (!isLiveAutomationActive) return;
+
+    const interval = setInterval(() => {
+      triggerInstantAiEngagement();
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [isLiveAutomationActive, posts]);
 
   // Handlers
   const handleToggleTheme = () => {
@@ -609,6 +695,45 @@ export default function App() {
                 onSelectStory={(idx) => setActiveStoryIndex(idx)}
                 onOpenCreateStory={() => setIsCreateOpen(true)}
               />
+
+              {/* Live AI Community Simulator Status Bar */}
+              <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-500/30 flex items-center justify-between text-xs backdrop-blur-md shadow-lg animate-in fade-in duration-300">
+                <div className="flex items-center gap-2.5">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isLiveAutomationActive ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isLiveAutomationActive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-white">Live AI Community Simulator</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 font-mono font-semibold">
+                        {isLiveAutomationActive ? 'ACTIVE 🟢' : 'PAUSED ⏸️'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-neutral-400">
+                      AI creators actively liking & commenting on reels every 8s
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={triggerInstantAiEngagement}
+                    className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer hover:scale-102"
+                  >
+                    <Zap size={12} />
+                    <span>Auto-Engage Now</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsLiveAutomationActive(!isLiveAutomationActive)}
+                    className="px-2 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium text-[11px] transition-colors cursor-pointer"
+                  >
+                    {isLiveAutomationActive ? 'Pause' : 'Resume'}
+                  </button>
+                </div>
+              </div>
 
               {/* Feed Stream */}
               <div className="space-y-6">

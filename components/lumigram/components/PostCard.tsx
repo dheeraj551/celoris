@@ -523,6 +523,24 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         )}
 
+        {/* 1-Tap AI Auto-Like & Comment Action */}
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => {
+              if (!post.isLiked) {
+                onToggleLike(post.id);
+              }
+              const randomChip = aiSuggestions[Math.floor(Math.random() * aiSuggestions.length)];
+              onAddComment(post.id, randomChip);
+            }}
+            className="w-full py-2 rounded-xl bg-neutral-900 dark:bg-neutral-800 hover:bg-neutral-800 dark:hover:bg-neutral-700 border border-emerald-500/40 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer hover:scale-[1.01]"
+          >
+            <Sparkles size={13} className="text-emerald-400 animate-spin-slow" />
+            <span>AI Auto-Like & Comment (1-Tap Simulation)</span>
+          </button>
+        </div>
+
         {/* Quick AI Suggestion Chips */}
         <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/80">
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
