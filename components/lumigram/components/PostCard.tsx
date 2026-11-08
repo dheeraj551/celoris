@@ -1,13 +1,8 @@
-"use client"
+"use client";
 import React, { useState, useRef } from 'react';
 import {
   Heart,
   MessageCircle,
-  Send,
-  Bookmark,
-  MoreHorizontal,
-  ChevronLeft,
-  ChevronRight,
   Smile,
   CheckCircle2,
   MapPin,
@@ -18,6 +13,8 @@ import {
   Cpu,
   Copy,
   Check,
+  MoreHorizontal,
+  Bookmark,
 } from 'lucide-react';
 import { Post, User } from '../types';
 import { formatTimeAgo, formatCount } from '../utils/socialLogic';
@@ -38,6 +35,8 @@ interface PostCardProps {
   isAiTyping?: boolean;
 }
 
+const AVAILABLE_EMOJIS = ['❤️', '🔥', '👏', '😈', '💡', '🎉', '🤝', '👀', '🚀', '💯', '🙌', '💥', '👑', '😭', '🚨', '😍', '🤩', '☕', '🍷', '🦄', '✨'];
+
 export const PostCard: React.FC<PostCardProps> = ({
   post,
   currentUser,
@@ -56,9 +55,65 @@ export const PostCard: React.FC<PostCardProps> = ({
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showAiInsights, setShowAiInsights] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const lastTapRef = useRef<number>(0);
+
+  // Multi-emoji reaction state
+  const [reactions, setReactions] = useState<{ [emoji: string]: number }>(() => {
+    if (post.reactions && Object.keys(post.reactions).length > 0) {
+      return post.reactions;
+    }
+    // Deterministic counts based on post ID
+    const hash = post.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    return {
+      '❤️': 120 + (hash % 45),
+      '🔥': 12 + (hash % 15),
+      '👏': 10 + (hash % 8),
+      '😈': 5 + (hash % 6),
+      '💡': 4 + (hash % 5),
+      '🎉': 7 + (hash % 4),
+      '🤝': 10 + (hash % 6),
+      '👀': 6 + (hash % 5),
+      '🚀': 7 + (hash % 6),
+      '💯': 4 + (hash % 4),
+      '🙌': 11 + (hash % 7),
+      '💥': 1 + (hash % 3),
+      '👑': 6 + (hash % 5),
+      '😭': 6 + (hash % 6),
+      '🚨': 4 + (hash % 4),
+      '😍': 4 + (hash % 4),
+      '🤩': 2 + (hash % 3),
+      '☕': 2,
+      '🍷': 1,
+      '🦄': 2,
+      '✨': 1,
+    };
+  });
+  const [userReactions, setUserReactions] = useState<Set<string>>(new Set());
+
+  const handleToggleReaction = (emoji: string) => {
+    soundManager.playLikeSound();
+    setUserReactions((prev) => {
+      const next = new Set(prev);
+      const hasReacted = next.has(emoji);
+      if (hasReacted) {
+        next.delete(emoji);
+        setReactions((curr) => ({
+          ...curr,
+          [emoji]: Math.max(0, (curr[emoji] || 1) - 1),
+        }));
+      } else {
+        next.add(emoji);
+        setReactions((curr) => ({
+          ...curr,
+          [emoji]: (curr[emoji] || 0) + 1,
+        }));
+      }
+      return next;
+    });
+  };
 
   const safeImages = Array.isArray(post.images) && post.images.length > 0
     ? post.images
@@ -86,10 +141,6 @@ export const PostCard: React.FC<PostCardProps> = ({
     onToggleLike(post.id);
   };
 
-  const handleSaveClick = () => {
-    onToggleSave(post.id);
-  };
-
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentInput.trim()) return;
@@ -100,10 +151,13 @@ export const PostCard: React.FC<PostCardProps> = ({
   const currentMediaUrl = safeImages[currentImageIndex] || safeImages[0];
   const isVideo = post.mediaType === 'video' || /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(currentMediaUrl || '');
 
+  // Extract or synthesize clean title for post
+  const postTitle = post.title || (post.caption.length > 30 ? post.caption.split('\n')[0].replace(/[#@].*/g, '').trim() : '');
+
   return (
-    <article className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl mb-6 shadow-xs overflow-hidden transition-colors">
-      {/* Header */}
-      <div className="p-3.5 flex items-center justify-between">
+    <article className="w-full bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl mb-5 shadow-2xs overflow-hidden transition-colors">
+      {/* Header matching Reference Screenshot */}
+      <div className="p-4 pb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => onSelectUser(post.user)}
@@ -112,42 +166,31 @@ export const PostCard: React.FC<PostCardProps> = ({
           >
             <img
               src={post.user.avatar}
-              alt={post.user.username}
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-emerald-500 transition-all"
+              alt={post.user.name || post.user.username}
+              className="w-10 h-10 rounded-full object-cover ring-1 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-blue-500 transition-all"
             />
           </button>
           <div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <button
                 onClick={() => onSelectUser(post.user)}
-                className="font-semibold text-sm text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer"
+                className="font-bold text-sm text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer"
               >
-                {post.user.username}
+                {post.user.name || post.user.username}
               </button>
               {post.user.isVerified && (
-                <CheckCircle2 size={14} className="text-emerald-500 fill-emerald-500 text-white" />
+                <CheckCircle2 size={14} className="text-blue-500 fill-blue-500 text-white" />
               )}
-              <span className="text-neutral-400 dark:text-neutral-500 text-xs">•</span>
               <span className="text-neutral-500 dark:text-neutral-400 text-xs font-normal">
-                {formatTimeAgo(post.createdAt)}
+                {post.user.bio || `Developer of ColibriPlus`} · {formatTimeAgo(post.createdAt)}
               </span>
             </div>
-            {post.isSponsored ? (
-              <p className="text-[11px] text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5 mt-0.5">
-                <span className="font-semibold text-neutral-800 dark:text-neutral-200">Sponsored</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                {post.sponsorData && (
-                  <span className="text-[10px] font-mono text-emerald-500 font-semibold">
-                    CTR {post.sponsorData.ctr} · CPC {post.sponsorData.cpc}
-                  </span>
-                )}
-              </p>
-            ) : post.location ? (
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1 mt-0.5">
-                <MapPin size={11} className="text-rose-500 shrink-0" />
+            {post.location && (
+              <p className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
+                <MapPin size={10} className="text-rose-500 shrink-0" />
                 <span className="truncate max-w-[200px]">{post.location}</span>
               </p>
-            ) : null}
+            )}
           </div>
         </div>
 
@@ -156,7 +199,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           <button
             onClick={() => setShowOptions(!showOptions)}
             aria-label="Post options"
-            className="p-1.5 rounded-full text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
           >
             <MoreHorizontal size={18} />
           </button>
@@ -197,16 +240,24 @@ export const PostCard: React.FC<PostCardProps> = ({
         </div>
       </div>
 
-      {/* Media Carousel / Single Image or Video with Double Tap */}
+      {/* Post Text & Title matching Reference Screenshot */}
+      <div className="px-4 pt-1 pb-3 text-sm text-neutral-900 dark:text-neutral-100 leading-relaxed">
+        {postTitle && postTitle.length < 50 && (
+          <h2 className="font-bold text-[15px] mb-1 text-neutral-900 dark:text-white">
+            {postTitle}
+          </h2>
+        )}
+        <p className="whitespace-pre-line text-[14px]">
+          {post.caption}
+        </p>
+      </div>
+
+      {/* Media Carousel / Single Video or Image */}
       <div
-        className={`relative w-full bg-neutral-100 dark:bg-neutral-950 flex items-center justify-center overflow-hidden select-none ${
+        className={`relative w-full bg-black flex items-center justify-center overflow-hidden select-none ${
           post.aspectRatio === 'vertical' || post.aspectRatio === '9:16'
-            ? 'aspect-[9/16] max-h-[620px]'
-            : post.aspectRatio === 'portrait'
-            ? 'aspect-[4/5]'
-            : post.aspectRatio === 'landscape'
-            ? 'aspect-[16/9]'
-            : 'aspect-square'
+            ? 'aspect-[9/16] max-h-[580px]'
+            : 'aspect-video max-h-[500px]'
         }`}
         onClick={handleDoubleTap}
       >
@@ -219,7 +270,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             loop
             preload="metadata"
             onContextMenu={(e) => e.preventDefault()}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         ) : (
           <img
@@ -227,17 +278,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             alt={post.caption || 'Post image'}
             draggable={false}
             onContextMenu={(e) => e.preventDefault()}
-            className={`w-full h-full object-cover transition-transform duration-300 pointer-events-none select-none ${
-              post.filter === 'clarendon'
-                ? 'contrast-125 saturate-125'
-                : post.filter === 'juno'
-                ? 'saturate-150 contrast-110 hue-rotate-15'
-                : post.filter === 'valencia'
-                ? 'sepia-25 brightness-105'
-                : post.filter === 'vintage'
-                ? 'grayscale contrast-125'
-                : ''
-            }`}
+            className="w-full h-full object-cover"
             loading="lazy"
           />
         )}
@@ -251,148 +292,145 @@ export const PostCard: React.FC<PostCardProps> = ({
             />
           </div>
         )}
-
-        {/* Carousel Navigation Arrows */}
-        {safeImages.length > 1 && (
-          <>
-            {currentImageIndex > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentImageIndex((prev) => prev - 1);
-                }}
-                aria-label="Previous image"
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors z-10"
-              >
-                <ChevronLeft size={18} />
-              </button>
-            )}
-            {currentImageIndex < safeImages.length - 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentImageIndex((prev) => prev + 1);
-                }}
-                aria-label="Next image"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors z-10"
-              >
-                <ChevronRight size={18} />
-              </button>
-            )}
-
-            {/* Pagination Dots */}
-            <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-10 pointer-events-none">
-              {safeImages.map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full transition-all ${
-                    i === currentImageIndex ? 'bg-white scale-125' : 'bg-white/50'
-                  }`}
-                />
-              ))}
-            </div>
-          </>
-        )}
       </div>
 
-      {/* Sponsored Campaign CTA Banner */}
-      {post.isSponsored && post.sponsorData && (
-        <div className="bg-neutral-100 dark:bg-neutral-800/80 border-b border-neutral-200 dark:border-neutral-800 px-4 py-2.5 flex items-center justify-between">
-          <div className="text-xs">
-            <span className="font-semibold text-neutral-900 dark:text-white block">
-              {post.sponsorData.leads} Leads Generated
-            </span>
-            <span className="text-neutral-500 text-[11px]">
-              Daily Budget: ₹{post.sponsorData.dailyBudget}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => alert(`Ad destination: ${post.sponsorData?.destination}`)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-1.5 rounded-xl transition-colors cursor-pointer"
-          >
-            {post.sponsorData.buttonText} &gt;
-          </button>
-        </div>
-      )}
-
-      {/* Action Buttons Bar */}
+      {/* MULTI-EMOJI REACTION TRAY matching Reference Screenshot */}
       <div className="p-3.5 pb-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center gap-1.5 max-h-24 overflow-y-auto no-scrollbar py-0.5">
+          {Object.entries(reactions).map(([emoji, count]) => {
+            const hasReacted = userReactions.has(emoji);
+            return (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => handleToggleReaction(emoji)}
+                className={`px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                  hasReacted
+                    ? 'bg-blue-100 text-blue-700 border border-blue-300 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 scale-105'
+                    : 'bg-neutral-100 hover:bg-neutral-200/70 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/80 text-neutral-700 dark:text-neutral-300 border border-transparent'
+                }`}
+                title={`React with ${emoji}`}
+              >
+                <span>{emoji}</span>
+                <span className="text-[11px] font-mono">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Action Row matching Reference Screenshot */}
+        <div className="mt-3 pt-2 border-t border-neutral-100 dark:border-neutral-800/80 flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {/* Like */}
             <button
               onClick={handleLikeClick}
-              aria-label={post.isLiked ? 'Unlike photo' : 'Like photo'}
-              className="group focus:outline-none cursor-pointer"
+              aria-label="Like"
+              className="flex items-center gap-1 text-neutral-700 dark:text-neutral-300 hover:text-rose-500 transition-colors cursor-pointer group"
             >
               <Heart
-                size={24}
-                className={`transition-all duration-200 group-hover:scale-115 ${
-                  post.isLiked
-                    ? 'text-rose-500 fill-rose-500 scale-105'
-                    : 'text-neutral-800 dark:text-neutral-200 hover:text-neutral-500'
-                }`}
+                size={20}
+                className={post.isLiked ? 'text-rose-500 fill-rose-500' : 'group-hover:scale-110 transition-transform'}
               />
+              <span className="text-xs font-semibold">{formatCount(post.likesCount)}</span>
             </button>
+
+            {/* Emoji Reaction Picker Toggle */}
+            <div className="relative">
+              <button
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                aria-label="Add reaction"
+                className="p-1 rounded-full text-neutral-700 dark:text-neutral-300 hover:text-amber-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                title="Add reaction"
+              >
+                <Smile size={20} />
+              </button>
+
+              {showEmojiPicker && (
+                <div className="absolute left-0 bottom-8 z-30 p-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-xl flex items-center gap-1.5 flex-wrap max-w-xs animate-in fade-in zoom-in-95 duration-100">
+                  {AVAILABLE_EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => {
+                        handleToggleReaction(emoji);
+                        setShowEmojiPicker(false);
+                      }}
+                      className="text-lg p-1 hover:scale-125 transition-transform cursor-pointer"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Comment */}
             <button
               onClick={() => {
                 if (onOpenComments) {
                   onOpenComments(post);
                 } else {
-                  setIsExpanded(true);
+                  setIsExpanded(!isExpanded);
                 }
               }}
-              aria-label="View comments"
-              className="text-neutral-800 dark:text-neutral-200 hover:text-neutral-500 transition-colors cursor-pointer"
+              aria-label="Comment"
+              className="p-1 text-neutral-700 dark:text-neutral-300 hover:text-blue-500 transition-colors cursor-pointer"
             >
-              <MessageCircle size={24} />
-            </button>
-            <button
-              onClick={() => onOpenShareModal(post)}
-              aria-label="Direct message share"
-              className="text-neutral-800 dark:text-neutral-200 hover:text-neutral-500 transition-colors cursor-pointer"
-            >
-              <Send size={24} />
+              <MessageCircle size={20} />
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Right Action: Show all comments button with avatar stack */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                if (onOpenComments) {
+                  onOpenComments(post);
+                } else {
+                  setIsExpanded(!isExpanded);
+                }
+              }}
+              className="flex items-center gap-2 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
+            >
+              {safeComments.length > 0 && (
+                <div className="flex -space-x-1.5 overflow-hidden">
+                  {safeComments.slice(0, 3).map((c, i) => (
+                    <img
+                      key={c.id || i}
+                      src={c.user.avatar}
+                      alt={c.user.username}
+                      className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-neutral-900 object-cover"
+                    />
+                  ))}
+                </div>
+              )}
+              <span>Show all comments ({post.commentsCount || safeComments.length})</span>
+            </button>
+
+            {/* AI Breakdown Pill */}
             <button
               type="button"
               onClick={() => setShowAiInsights(!showAiInsights)}
-              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                 showAiInsights
-                  ? 'bg-emerald-500 text-white shadow-xs'
-                  : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50'
               }`}
-              title="Toggle AI Breakdown & Viral Retention Radar"
             >
-              <Sparkles size={12} className={showAiInsights ? 'animate-spin-slow' : 'text-emerald-500 animate-pulse'} />
-              <span>AI Breakdown</span>
-            </button>
-
-            <button
-              onClick={handleSaveClick}
-              aria-label={post.isSaved ? 'Remove from saved' : 'Save post'}
-              className="text-neutral-800 dark:text-neutral-200 hover:text-neutral-500 transition-colors cursor-pointer"
-            >
-              <Bookmark
-                size={24}
-                className={post.isSaved ? 'text-neutral-900 dark:text-neutral-100 fill-current' : ''}
-              />
+              <Sparkles size={11} />
+              <span>AI Radar</span>
             </button>
           </div>
         </div>
 
-        {/* AI Reel Intelligence Radar Drawer */}
+        {/* AI Breakdown Drawer */}
         {showAiInsights && (
-          <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-emerald-950/60 border border-emerald-500/30 text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 shadow-xl">
-            <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+          <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-blue-950/60 border border-blue-500/30 text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 shadow-xl">
+            <div className="flex items-center justify-between pb-2 border-b border-blue-500/20">
               <div className="flex items-center gap-2">
-                <Cpu size={14} className="text-emerald-400" />
-                <span className="text-xs font-bold text-emerald-300">Pulse AI Intelligence Radar</span>
+                <Cpu size={14} className="text-blue-400" />
+                <span className="text-xs font-bold text-blue-300">Pulse AI Radar</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-semibold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-semibold">
                 Viral Score: {insights.viralScore}/100
               </span>
             </div>
@@ -400,7 +438,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
               <div className="p-2 rounded-xl bg-neutral-800/60 border border-neutral-700/50">
                 <span className="text-[10px] text-neutral-400 block">Hook Retention</span>
-                <span className="font-semibold text-emerald-400">{insights.hookRate}</span>
+                <span className="font-semibold text-blue-400">{insights.hookRate}</span>
               </div>
               <div className="p-2 rounded-xl bg-neutral-800/60 border border-neutral-700/50">
                 <span className="text-[10px] text-neutral-400 block">Audio Radar</span>
@@ -409,15 +447,14 @@ export const PostCard: React.FC<PostCardProps> = ({
             </div>
 
             <div className="mt-2 text-[11px] text-neutral-300">
-              <span className="text-emerald-400 font-semibold mr-1">AI Tip:</span>
+              <span className="text-blue-400 font-semibold mr-1">AI Tip:</span>
               {insights.creatorTip}
             </div>
 
-            {/* AI Recreate Prompt */}
-            <div className="mt-2.5 p-2.5 rounded-xl bg-black/50 border border-emerald-500/20 flex items-start justify-between gap-2">
+            <div className="mt-2.5 p-2 rounded-xl bg-black/50 border border-blue-500/20 flex items-start justify-between gap-2">
               <div className="flex-1">
-                <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider block">Recreate in AI Studio</span>
-                <p className="text-[11px] text-neutral-300 italic line-clamp-2 mt-0.5">"{insights.suggestedPrompt}"</p>
+                <span className="text-[10px] font-semibold text-blue-400 uppercase tracking-wider block">Recreate in AI Studio</span>
+                <p className="text-[11px] text-neutral-300 italic line-clamp-1 mt-0.5">"{insights.suggestedPrompt}"</p>
               </div>
               <button
                 type="button"
@@ -426,126 +463,58 @@ export const PostCard: React.FC<PostCardProps> = ({
                   setCopiedPrompt(true);
                   setTimeout(() => setCopiedPrompt(false), 2000);
                 }}
-                className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
+                className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
               >
                 {copiedPrompt ? <Check size={11} /> : <Copy size={11} />}
-                <span>{copiedPrompt ? 'Copied!' : 'Copy'}</span>
+                <span>{copiedPrompt ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* Likes Count */}
-        <div className="mt-2.5">
-          <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-            {formatCount(post.likesCount)} likes
-          </span>
-        </div>
-
-        {/* Caption */}
-        <div className="mt-1.5 text-sm text-neutral-900 dark:text-neutral-200 leading-snug">
-          <span className="font-semibold mr-2">{post.user.username}</span>
-          <span>{post.caption}</span>
-        </div>
-
-        {/* Comments preview / toggle */}
-        {post.commentsCount > 0 && (
-          <div className="mt-2">
-            {post.commentsCount > 0 ? (
-              <button
-                onClick={() => {
-                  if (onOpenComments) {
-                    onOpenComments(post);
-                  } else {
-                    setIsExpanded(!isExpanded);
-                  }
-                }}
-                className="text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-emerald-500 hover:underline cursor-pointer flex items-center gap-1.5"
-              >
-                <span>View all {formatCount(post.commentsCount)} comments</span>
-                {safeComments.length > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
-                    {safeComments.length} active
+        {/* Comments preview / expanded list */}
+        {safeComments.length > 0 && (
+          <div className="mt-2 space-y-1.5">
+            {(isExpanded ? safeComments : safeComments.slice(0, 2)).map((c) => (
+              <div key={c.id} className="text-xs text-neutral-800 dark:text-neutral-300 flex items-start justify-between gap-2">
+                <div className="flex items-start gap-1.5 flex-1">
+                  <span className="font-semibold text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer shrink-0" onClick={() => onSelectUser(c.user)}>
+                    {c.user.username}
                   </span>
-                )}
-              </button>
-            ) : null}
-
-            {/* List top comments or all if expanded */}
-            <div className="mt-1.5 space-y-1.5">
-              {(isExpanded ? safeComments : safeComments.slice(0, 3)).map((c) => (
-                <div key={c.id} className="text-xs text-neutral-800 dark:text-neutral-300 flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-1.5 flex-1">
-                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 hover:underline cursor-pointer shrink-0" onClick={() => onSelectUser(c.user)}>
-                      {c.user.username}
+                  {c.user.username === post.user.username && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30 shrink-0">
+                      Creator ✨
                     </span>
-                    {c.user.username === post.user.username && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
-                        Creator ✨
-                      </span>
-                    )}
-                    <span className="text-neutral-700 dark:text-neutral-300">{c.text}</span>
-                  </div>
-                  <span className="text-[10px] text-neutral-400 shrink-0">
-                    {formatTimeAgo(c.createdAt)}
-                  </span>
+                  )}
+                  <span className="text-neutral-700 dark:text-neutral-300">{c.text}</span>
                 </div>
-              ))}
-            </div>
-
-            {/* Creator is typing AI response indicator */}
-            {isAiTyping && (
-              <div className="mt-2 flex items-center gap-2 py-1.5 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs animate-pulse">
-                <img src={post.user.avatar} alt="" className="w-4 h-4 rounded-full object-cover ring-1 ring-emerald-500" />
-                <span className="font-semibold">{post.user.username}</span>
-                <span className="text-neutral-500 dark:text-neutral-400">is typing an AI response...</span>
-                <div className="flex gap-1 items-center ml-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
+                <span className="text-[10px] text-neutral-400 shrink-0">
+                  {formatTimeAgo(c.createdAt)}
+                </span>
               </div>
-            )}
+            ))}
           </div>
         )}
 
-        {/* Ad Studio Amplify Button */}
-        {onBoostPost && !post.isSponsored && (
-          <div className="mt-3">
-            <button
-              type="button"
-              onClick={() => onBoostPost(post)}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
-            >
-              <TrendingUp size={14} />
-              <span>Amplify in Ad Studio (₹10,000 Credits)</span>
-            </button>
+        {/* Creator is typing AI response indicator */}
+        {isAiTyping && (
+          <div className="mt-2 flex items-center gap-2 py-1.5 px-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs animate-pulse">
+            <img src={post.user.avatar} alt="" className="w-4 h-4 rounded-full object-cover ring-1 ring-blue-500" />
+            <span className="font-semibold">{post.user.username}</span>
+            <span className="text-neutral-500 dark:text-neutral-400">is typing an AI response...</span>
+            <div className="flex gap-1 items-center ml-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
           </div>
         )}
-
-        {/* 1-Tap AI Auto-Like & Comment Action */}
-        <div className="mt-2">
-          <button
-            type="button"
-            onClick={() => {
-              if (!post.isLiked) {
-                onToggleLike(post.id);
-              }
-              const randomChip = aiSuggestions[Math.floor(Math.random() * aiSuggestions.length)];
-              onAddComment(post.id, randomChip);
-            }}
-            className="w-full py-2 rounded-xl bg-neutral-900 dark:bg-neutral-800 hover:bg-neutral-800 dark:hover:bg-neutral-700 border border-emerald-500/40 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer hover:scale-[1.01]"
-          >
-            <Sparkles size={13} className="text-emerald-400 animate-spin-slow" />
-            <span>AI Auto-Like & Comment (1-Tap Simulation)</span>
-          </button>
-        </div>
 
         {/* Quick AI Suggestion Chips */}
         <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/80">
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
-              <Sparkles size={11} className="text-emerald-500 animate-pulse" /> Quick AI:
+            <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 shrink-0">
+              <Sparkles size={11} className="text-blue-500 animate-pulse" /> Quick AI:
             </span>
             {aiSuggestions.map((suggestion, idx) => (
               <button
@@ -554,7 +523,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 onClick={() => {
                   onAddComment(post.id, suggestion);
                 }}
-                className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-emerald-50 dark:bg-neutral-800/70 dark:hover:bg-emerald-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-emerald-500/50 text-neutral-700 dark:text-neutral-300 hover:text-emerald-600 dark:hover:text-emerald-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs hover:scale-102 active:scale-98"
+                className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-blue-50 dark:bg-neutral-800/70 dark:hover:bg-blue-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-blue-500/50 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs hover:scale-102 active:scale-98"
               >
                 {suggestion}
               </button>
@@ -578,7 +547,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           {commentInput.trim() && (
             <button
               type="submit"
-              className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 transition-colors cursor-pointer"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
             >
               Post
             </button>
@@ -588,4 +557,3 @@ export const PostCard: React.FC<PostCardProps> = ({
     </article>
   );
 };
-

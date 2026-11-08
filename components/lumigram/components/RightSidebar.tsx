@@ -1,8 +1,7 @@
 "use client";
 import React from 'react';
 import { User } from '../types';
-import { CheckCircle2, TrendingUp, Users } from 'lucide-react';
-import { soundManager } from '../utils/sound';
+import { CheckCircle2, TrendingUp } from 'lucide-react';
 
 interface RightSidebarProps {
   currentUser: User;
@@ -18,100 +17,46 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   suggestedUsers,
   onToggleFollow,
   onSelectUser,
-  onEditProfile,
 }) => {
   return (
-    <aside className="hidden xl:block w-80 p-6 space-y-6 shrink-0">
-      {/* Current User Quick Card */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => onSelectUser(currentUser)}
-          className="flex items-center gap-3 group text-left cursor-pointer"
-        >
-          <img
-            src={currentUser.avatar}
-            alt={currentUser.name}
-            className="w-12 h-12 rounded-full object-cover ring-2 ring-neutral-200 dark:ring-neutral-700 group-hover:ring-emerald-500 transition-all"
-          />
-          <div>
-            <div className="flex items-center gap-1 font-bold text-xs text-neutral-900 dark:text-neutral-100 group-hover:underline">
-              @{currentUser.username}
-              <CheckCircle2 size={13} className="text-emerald-500 fill-emerald-500 text-white" />
-            </div>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-[150px]">
-              {currentUser.name}
-            </p>
-          </div>
-        </button>
+    <aside className="hidden xl:block w-72 lg:w-80 p-5 space-y-5 shrink-0 select-none">
+      {/* "Who to follow" Card matching reference screenshot */}
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 shadow-2xs">
+        <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100 mb-3.5">
+          Who to follow
+        </h2>
 
-        <button
-          type="button"
-          onClick={onEditProfile}
-          className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 hover:underline cursor-pointer"
-        >
-          Edit
-        </button>
-      </div>
-
-      {/* Ad Studio Quick Snapshot */}
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
-            <TrendingUp size={14} className="text-emerald-500" />
-            Ad Studio Credits
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 font-bold">
-            ₹10,000 Live
-          </span>
-        </div>
-        <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-snug">
-          Amplify your posts in Ad Studio to test audience targeting, real-time CTRs, and WhatsApp lead acquisition.
-        </p>
-      </div>
-
-      {/* Suggestions for You */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-            <Users size={14} />
-            <span>Fellow Creators &amp; Mentors</span>
-          </span>
-          <button className="text-xs font-semibold text-neutral-900 dark:text-neutral-200 hover:underline cursor-pointer">
-            See All
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          {suggestedUsers.map((user) => (
+        <div className="space-y-3.5">
+          {suggestedUsers.slice(0, 5).map((user) => (
             <div key={user.id} className="flex items-center justify-between gap-3">
               <button
                 onClick={() => onSelectUser(user)}
-                className="flex items-center gap-2.5 min-w-0 text-left cursor-pointer"
+                className="flex items-center gap-2.5 min-w-0 text-left cursor-pointer group flex-1"
               >
                 <img
                   src={user.avatar}
-                  alt={user.username}
-                  className="w-9 h-9 rounded-full object-cover shrink-0"
+                  alt={user.name || user.username}
+                  className="w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-neutral-200 dark:ring-neutral-700"
                 />
-                <div className="min-w-0">
-                  <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 truncate hover:underline">
-                    {user.username}
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 truncate group-hover:underline flex items-center gap-1">
+                    <span>{user.name || user.username}</span>
+                    {user.isVerified && (
+                      <CheckCircle2 size={12} className="text-blue-500 fill-blue-500 text-white shrink-0" />
+                    )}
                   </div>
-                  <p className="text-[10px] text-neutral-400 truncate">
-                    {user.role || user.name}
+                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">
+                    @{user.role || user.username}
                   </p>
                 </div>
               </button>
 
               <button
-                onClick={() => {
-                  soundManager.playSendSound();
-                  onToggleFollow(user);
-                }}
-                className={`text-xs font-bold transition-colors cursor-pointer shrink-0 ${
+                onClick={() => onToggleFollow(user)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer shrink-0 ${
                   user.isFollowing
-                    ? 'text-neutral-400 hover:text-neutral-600'
-                    : 'text-emerald-500 hover:text-emerald-600'
+                    ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-rose-50 hover:text-rose-600 border border-neutral-200 dark:border-neutral-700'
+                    : 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200/60 dark:border-blue-900/50'
                 }`}
               >
                 {user.isFollowing ? 'Following' : 'Follow'}
@@ -119,17 +64,29 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           ))}
         </div>
+
+        <button
+          onClick={() => {}}
+          className="mt-4 text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer block"
+        >
+          See more suggestions
+        </button>
       </div>
 
-      {/* Footer */}
-      <div className="text-[11px] text-neutral-400 dark:text-neutral-600 space-y-2 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-        <div className="flex flex-wrap gap-x-2 gap-y-1">
-          <a href="/about" className="hover:underline">About</a>•
-          <a href="/help" className="hover:underline">Help</a>•
-          <a href="/privacy" className="hover:underline">Privacy</a>•
-          <a href="/terms" className="hover:underline">Terms</a>
+      {/* Ai Studio Credits Card */}
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 via-emerald-500/5 to-transparent border border-blue-500/20 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+            <TrendingUp size={14} className="text-blue-500" />
+            Ai Studio Boost
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">
+            ₹10,000 Live
+          </span>
         </div>
-        <p className="font-mono text-[10px]">© 2026 CELORIS PULSE • A CELORIS SOCIAL CLOUD</p>
+        <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-snug">
+          Amplify your creative projects and automated campaigns across Celoris Social Cloud.
+        </p>
       </div>
     </aside>
   );

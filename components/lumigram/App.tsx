@@ -33,7 +33,7 @@ import {
 } from './utils/socialLogic';
 import { generateCreatorReply } from './utils/aiSocialEngine';
 import { soundManager } from './utils/sound';
-import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap } from 'lucide-react';
+import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap, ChevronDown, Edit3 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 import { Navigation } from './components/Navigation';
@@ -57,7 +57,7 @@ export default function App() {
   const { user: authUser, profile, refreshProfile } = useAuth();
 
   // Theme state
-  const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [theme, setTheme] = useState<ThemeMode>('light');
 
   // Core domain state
   const [currentUser, setCurrentUser] = useState<User>(CURRENT_USER);
@@ -645,7 +645,7 @@ export default function App() {
   const suggestedUsers = Object.values(usersMap).filter((u) => u.id !== currentUser.id);
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row transition-colors select-none">
+    <div className={`min-h-screen bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row transition-colors select-none ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Floating Push Notification Toast */}
       <PushNotificationToast
         notification={activePushToast}
@@ -688,6 +688,16 @@ export default function App() {
           {/* TAB: HOME FEED */}
           {activeTab === 'feed' && (
             <div>
+              {/* Header Greeting matching Reference Screenshot */}
+              <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-neutral-200/80 dark:border-neutral-800">
+                <div className="flex items-center gap-1.5 cursor-pointer">
+                  <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                    Hello, {currentUser.name ? currentUser.name.split(' ')[0].toLowerCase() : currentUser.username} 👋
+                  </h1>
+                  <ChevronDown size={18} className="text-neutral-400" />
+                </div>
+              </div>
+
               {/* Stories Carousel */}
               <StoriesBar
                 stories={stories}
@@ -695,6 +705,20 @@ export default function App() {
                 onSelectStory={(idx) => setActiveStoryIndex(idx)}
                 onOpenCreateStory={() => setIsCreateOpen(true)}
               />
+
+              {/* Composer Prompt Box matching Reference Screenshot: "Hello, what's new? ✏️" */}
+              <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-3 mb-4 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(true)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-full bg-neutral-100/80 hover:bg-neutral-200/70 dark:bg-neutral-800 dark:hover:bg-neutral-700/80 text-neutral-600 dark:text-neutral-300 text-sm font-medium transition-colors cursor-pointer"
+                >
+                  <span className="text-[13px] text-neutral-600 dark:text-neutral-300">
+                    Hello, what&apos;s new?
+                  </span>
+                  <Edit3 size={15} className="text-neutral-500 dark:text-neutral-400" />
+                </button>
+              </div>
 
               {/* Live AI Community Simulator Status Bar */}
               <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-500/30 flex items-center justify-between text-xs backdrop-blur-md shadow-lg animate-in fade-in duration-300">

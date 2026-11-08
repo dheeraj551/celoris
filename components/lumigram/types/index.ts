@@ -33,6 +33,7 @@ export interface Post {
   userId: string;
   user: User;
   images: string[];
+  title?: string;
   caption: string;
   location?: string;
   filter?: string;
@@ -43,6 +44,8 @@ export interface Post {
   likesCount: number;
   isLiked?: boolean;
   isSaved?: boolean;
+  reactions?: Record<string, number>;
+  userReactions?: string[];
   commentsCount: number;
   comments: Comment[];
   createdAt: string;

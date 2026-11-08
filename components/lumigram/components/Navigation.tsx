@@ -1,17 +1,21 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Home,
-  Compass,
-  MessageSquare,
-  Heart,
-  PlusSquare,
+  Hash,
+  Bell,
+  Mail,
+  Sparkles,
+  Briefcase,
   User as UserIcon,
+  MoreHorizontal,
   Settings,
   Sun,
   Moon,
-  BarChart2,
-  Coins,
+  PlusSquare,
+  ShieldCheck,
+  HelpCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { User, ThemeMode } from '../types';
 
@@ -41,108 +45,70 @@ export const Navigation: React.FC<NavigationProps> = ({
   onOpenSettings,
   onToggleTheme,
 }) => {
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+
   return (
     <>
-      {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col justify-between w-64 lg:w-72 h-screen sticky top-0 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black p-5 z-40 transition-colors">
-        <div className="space-y-6">
-          {/* Brand Logo with Official Celoris Pulse Artwork */}
-          <button
-            onClick={() => onSelectTab('feed')}
-            className="flex items-center gap-3 px-2 py-2 text-left group cursor-pointer focus:outline-none"
-          >
-            <img
-              src="/images/celoris-pulse-logo.png"
-              alt="Celoris Pulse"
-              className="w-10 h-10 object-contain shrink-0 group-hover:scale-105 transition-transform"
-            />
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-xl tracking-tight text-neutral-900 dark:text-white leading-none">
-                  celoris
-                </span>
-                <span className="font-extrabold text-xl tracking-tight text-emerald-500 leading-none">
-                  PULSE
-                </span>
-              </div>
-              <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium tracking-wide">
-                a celoris social cloud
-              </span>
-            </div>
-          </button>
-
-          {/* Navigation Items */}
-          <nav className="space-y-1.5" aria-label="Main Navigation">
+      {/* DESKTOP SIDEBAR - Matches Reference Screenshot (ColibriPlus style) */}
+      <aside className="hidden md:flex flex-col justify-between w-60 lg:w-64 h-screen sticky top-0 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-4 py-5 z-40 transition-colors select-none">
+        <div className="space-y-4">
+          {/* Top Hummingbird / Minimalist Mark */}
+          <div className="px-2">
             <button
               onClick={() => onSelectTab('feed')}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'feed'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
-              }`}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors cursor-pointer group"
+              aria-label="Home Feed"
             >
-              <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px] text-emerald-500' : ''} />
-              <span>Home Feed</span>
+              {/* Minimalist Colibri / Bird Silhouette */}
+              <svg
+                viewBox="0 0 24 24"
+                className="w-7 h-7 text-neutral-900 dark:text-neutral-100 fill-current group-hover:scale-110 transition-transform"
+                aria-hidden="true"
+              >
+                <path d="M22.5 4.5c-2.4 1.4-4.8 2-7.1 1.7-1.6-.2-3.1-.9-4.3-2-1-.9-1.8-2-2.3-3.2-.2-.5-.8-.7-1.3-.4-.5.2-.7.8-.4 1.3 1 2.3 2.5 4.1 4.5 5.3-2.1.8-4.5 1.1-7 .9-1.9-.2-3.8-.7-5.5-1.6-.5-.3-1.1-.1-1.4.4-.3.5-.1 1.1.4 1.4 2.8 1.6 5.8 2.4 8.9 2.5-1.7 1.8-3.9 3.1-6.4 3.9-.5.2-.8.7-.6 1.2.2.5.7.8 1.2.6 3.1-1 5.8-2.6 7.9-4.8.4 1.5 1.2 2.9 2.3 4 1.8 1.8 4.1 2.8 6.6 2.9 1.1.1 2.3 0 3.4-.3 1.2-.4 2.3-1 3.2-1.8.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0-.8.7-1.7 1.2-2.7 1.5-1 .3-2 .3-3-.1-2.1-.2-4-1-5.5-2.5-.9-.9-1.5-2-1.8-3.2 2.1-.4 4.1-1.2 5.9-2.3 2.5-1.5 4.6-3.5 6.2-5.9.3-.5.2-1.1-.3-1.4-.5-.3-1.1-.2-1.4.3-1.4 2.1-3.3 3.9-5.5 5.2z" />
+              </svg>
             </button>
+          </div>
 
+          {/* Navigation Items */}
+          <nav className="space-y-1" aria-label="Main Navigation">
+            {/* 1. Home */}
             <button
-              onClick={() => onSelectTab('ads')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'ads'
-                  ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
+              onClick={() => onSelectTab('feed')}
+              className={`w-full flex items-center gap-4 px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
+                activeTab === 'feed'
+                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
               }`}
             >
-              <div className="flex items-center gap-4">
-                <BarChart2 size={22} className="text-emerald-500" />
-                <span>Ad Studio</span>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">
-                ₹{walletBalance.toLocaleString('en-IN')}
-              </span>
+              <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+              <span>Home</span>
             </button>
 
+            {/* 2. Explore */}
             <button
               onClick={() => onSelectTab('explore')}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
+              className={`w-full flex items-center gap-4 px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
                 activeTab === 'explore'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
+                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
               }`}
             >
-              <Compass size={22} className={activeTab === 'explore' ? 'stroke-[2.5px] text-emerald-500' : ''} />
-              <span>Explore &amp; Search</span>
+              <Hash size={22} className={activeTab === 'explore' ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+              <span>Explore</span>
             </button>
 
-            <button
-              onClick={() => onSelectTab('messages')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'messages'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <MessageSquare size={22} className={activeTab === 'messages' ? 'stroke-[2.5px] text-emerald-500' : ''} />
-                <span>Messages</span>
-              </div>
-              {unreadMessagesCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500 text-white shadow-xs">
-                  {unreadMessagesCount}
-                </span>
-              )}
-            </button>
-
+            {/* 3. Notifications */}
             <button
               onClick={() => onSelectTab('activity')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
                 activeTab === 'activity'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
+                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
               }`}
             >
               <div className="flex items-center gap-4">
-                <Heart size={22} className={activeTab === 'activity' ? 'stroke-[2.5px] text-rose-500' : ''} />
+                <Bell size={22} className={activeTab === 'activity' ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
                 <span>Notifications</span>
               </div>
               {unreadNotificationsCount > 0 && (
@@ -150,92 +116,156 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
             </button>
 
+            {/* 4. Messages */}
             <button
-              onClick={onOpenCreate}
-              className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white transition-all cursor-pointer"
-            >
-              <PlusSquare size={22} />
-              <span>Create Post</span>
-            </button>
-
-            <button
-              onClick={() => onSelectTab('profile')}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'profile'
-                  ? 'bg-neutral-100 dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/60 hover:text-neutral-900 dark:hover:text-white'
+              onClick={() => onSelectTab('messages')}
+              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
+                activeTab === 'messages'
+                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
               }`}
             >
-              <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
-                className="w-6 h-6 rounded-full object-cover ring-2 ring-neutral-300 dark:ring-neutral-700"
-              />
-              <span>Profile</span>
+              <div className="flex items-center gap-4">
+                <Mail size={22} className={activeTab === 'messages' ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+                <span>Messages</span>
+              </div>
+              {unreadMessagesCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-500 text-white">
+                  {unreadMessagesCount}
+                </span>
+              )}
             </button>
+
+            {/* 5. Ai Studio (replaces Marketplace as requested) */}
+            <button
+              onClick={() => onSelectTab('ads')}
+              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
+                activeTab === 'ads'
+                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <Sparkles size={22} className={activeTab === 'ads' ? 'stroke-[2.5px] text-emerald-500' : 'text-emerald-500 stroke-[2px]'} />
+                <span>Ai Studio</span>
+              </div>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                ₹{walletBalance.toLocaleString('en-IN')}
+              </span>
+            </button>
+
+            {/* 6. Jobs (Celoris Job Center) */}
+            <a
+              href="/jobs"
+              className="w-full flex items-center gap-4 px-3.5 py-3 rounded-full text-[15px] font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
+            >
+              <Briefcase size={22} className="stroke-[2px]" />
+              <span>Jobs</span>
+            </a>
+
+            {/* 7. My profile */}
+            <button
+              onClick={() => onSelectTab('profile')}
+              className={`w-full flex items-center gap-4 px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
+                activeTab === 'profile'
+                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
+              }`}
+            >
+              <UserIcon size={22} className={activeTab === 'profile' ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+              <span>My profile</span>
+            </button>
+
+            {/* 8. More */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMoreMenu(!showMoreMenu)}
+                className="w-full flex items-center gap-4 px-3.5 py-3 rounded-full text-[15px] font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
+              >
+                <MoreHorizontal size={22} className="stroke-[2px]" />
+                <span>More</span>
+              </button>
+
+              {showMoreMenu && (
+                <div className="absolute left-0 bottom-12 w-52 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onOpenSettings();
+                    }}
+                    className="w-full px-4 py-2.5 text-left text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <Settings size={16} />
+                    <span>Settings &amp; Privacy</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onToggleTheme();
+                    }}
+                    className="w-full px-4 py-2.5 text-left text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-between cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
+                      <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
+                    </div>
+                    <span className="text-[10px] text-neutral-400 font-mono">
+                      {theme === 'dark' ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
           </nav>
         </div>
 
-        {/* Bottom Actions */}
-        <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
-          {/* Dark / Light Mode Switch */}
-          <button
-            onClick={onToggleTheme}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
-              <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
-            </div>
-            <span className="text-[10px] text-neutral-400 font-mono">
-              {theme === 'dark' ? 'ON' : 'OFF'}
-            </span>
-          </button>
-
-          <button
-            onClick={onOpenSettings}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
-          >
-            <Settings size={18} />
-            <span>Settings</span>
-          </button>
+        {/* Footer Links matching Reference Screenshot */}
+        <div className="pt-4 text-[11px] text-neutral-400 dark:text-neutral-500 space-y-1.5 select-none leading-relaxed">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="hover:underline cursor-pointer">Business account</span>
+            <span>·</span>
+            <button onClick={onToggleTheme} className="hover:underline cursor-pointer">Theme</button>
+            <span>·</span>
+            <a href="/jobs" className="hover:underline">Jobs</a>
+            <span>·</span>
+            <a href="/contact" className="hover:underline">Help center</a>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <a href="/privacy" className="hover:underline">Privacy policy</a>
+            <span>·</span>
+            <span className="hover:underline cursor-pointer">Cookies policy</span>
+            <span>·</span>
+            <a href="/terms" className="hover:underline">Terms</a>
+            <span>·</span>
+            <span className="hover:underline cursor-pointer">Language</span>
+          </div>
+          <p className="pt-1 text-[10px] text-neutral-400">
+            ColibriPlus © 2026 · Celoris
+          </p>
         </div>
       </aside>
 
       {/* MOBILE TOP BAR */}
-      <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 py-2.5 flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 py-2.5 flex items-center justify-between">
         <button
           onClick={() => onSelectTab('feed')}
-          className="flex items-center gap-2.5 cursor-pointer text-left"
+          className="flex items-center gap-2 cursor-pointer text-left"
         >
-          <img
-            src="/images/celoris-pulse-logo.png"
-            alt="Celoris Pulse"
-            className="w-8 h-8 object-contain shrink-0"
-          />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1">
-              <span className="font-extrabold text-base tracking-tight text-neutral-900 dark:text-white leading-none">
-                celoris
-              </span>
-              <span className="font-extrabold text-base tracking-tight text-emerald-500 leading-none">
-                PULSE
-              </span>
-            </div>
-            <span className="text-[8.5px] text-neutral-400 font-medium leading-tight">
-              a celoris social cloud
-            </span>
-          </div>
+          <svg viewBox="0 0 24 24" className="w-6 h-6 text-neutral-900 dark:text-neutral-100 fill-current">
+            <path d="M22.5 4.5c-2.4 1.4-4.8 2-7.1 1.7-1.6-.2-3.1-.9-4.3-2-1-.9-1.8-2-2.3-3.2-.2-.5-.8-.7-1.3-.4-.5.2-.7.8-.4 1.3 1 2.3 2.5 4.1 4.5 5.3-2.1.8-4.5 1.1-7 .9-1.9-.2-3.8-.7-5.5-1.6-.5-.3-1.1-.1-1.4.4-.3.5-.1 1.1.4 1.4 2.8 1.6 5.8 2.4 8.9 2.5-1.7 1.8-3.9 3.1-6.4 3.9-.5.2-.8.7-.6 1.2.2.5.7.8 1.2.6 3.1-1 5.8-2.6 7.9-4.8.4 1.5 1.2 2.9 2.3 4 1.8 1.8 4.1 2.8 6.6 2.9 1.1.1 2.3 0 3.4-.3 1.2-.4 2.3-1 3.2-1.8.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0-.8.7-1.7 1.2-2.7 1.5-1 .3-2 .3-3-.1-2.1-.2-4-1-5.5-2.5-.9-.9-1.5-2-1.8-3.2 2.1-.4 4.1-1.2 5.9-2.3 2.5-1.5 4.6-3.5 6.2-5.9.3-.5.2-1.1-.3-1.4-.5-.3-1.1-.2-1.4.3-1.4 2.1-3.3 3.9-5.5 5.2z" />
+          </svg>
+          <span className="font-bold text-base text-neutral-900 dark:text-neutral-100">
+            Home
+          </span>
         </button>
 
         <div className="flex items-center gap-2">
-          {/* Ad Studio Wallet Quick Pill */}
           <button
             onClick={() => onSelectTab(activeTab === 'ads' ? 'feed' : 'ads')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-xs font-mono font-bold cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold cursor-pointer"
           >
-            <Coins size={13} className="text-emerald-500 animate-pulse" />
-            <span>₹{walletBalance.toLocaleString('en-IN')}</span>
+            <Sparkles size={13} className="text-emerald-500 animate-pulse" />
+            <span>Ai Studio</span>
           </button>
 
           <button
@@ -243,7 +273,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             aria-label="Direct messages"
             className="relative p-2 rounded-full text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
           >
-            <MessageSquare size={20} />
+            <Mail size={20} />
             {unreadMessagesCount > 0 && (
               <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
             )}
@@ -253,7 +283,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* MOBILE BOTTOM NAVIGATION BAR */}
       <nav
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 px-4 py-2 flex items-center justify-around"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 px-4 py-2 flex items-center justify-around"
         aria-label="Mobile Navigation"
       >
         <button
@@ -261,11 +291,11 @@ export const Navigation: React.FC<NavigationProps> = ({
           aria-label="Home Feed"
           className={`p-2.5 rounded-xl cursor-pointer ${
             activeTab === 'feed'
-              ? 'text-emerald-500 font-bold'
+              ? 'text-neutral-900 dark:text-neutral-100 font-bold'
               : 'text-neutral-500 dark:text-neutral-400'
           }`}
         >
-          <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px] text-emerald-500' : ''} />
+          <Home size={22} className={activeTab === 'feed' ? 'stroke-[2.5px]' : ''} />
         </button>
 
         <button
@@ -273,11 +303,11 @@ export const Navigation: React.FC<NavigationProps> = ({
           aria-label="Explore"
           className={`p-2.5 rounded-xl cursor-pointer ${
             activeTab === 'explore'
-              ? 'text-emerald-500 font-bold'
+              ? 'text-neutral-900 dark:text-neutral-100 font-bold'
               : 'text-neutral-500 dark:text-neutral-400'
           }`}
         >
-          <Compass size={22} className={activeTab === 'explore' ? 'stroke-[2.5px] text-emerald-500' : ''} />
+          <Hash size={22} className={activeTab === 'explore' ? 'stroke-[2.5px]' : ''} />
         </button>
 
         <button
@@ -289,15 +319,15 @@ export const Navigation: React.FC<NavigationProps> = ({
         </button>
 
         <button
-          onClick={() => onSelectTab('ads')}
-          aria-label="Ad Studio"
+          onClick={() => onSelectTab('activity')}
+          aria-label="Notifications"
           className={`p-2.5 rounded-xl cursor-pointer ${
-            activeTab === 'ads'
-              ? 'text-emerald-500 font-bold'
+            activeTab === 'activity'
+              ? 'text-neutral-900 dark:text-neutral-100 font-bold'
               : 'text-neutral-500 dark:text-neutral-400'
           }`}
         >
-          <BarChart2 size={22} className={activeTab === 'ads' ? 'stroke-[2.5px] text-emerald-500' : ''} />
+          <Bell size={22} className={activeTab === 'activity' ? 'stroke-[2.5px]' : ''} />
         </button>
 
         <button
@@ -305,14 +335,9 @@ export const Navigation: React.FC<NavigationProps> = ({
           aria-label="Profile"
           className="p-2 rounded-xl cursor-pointer"
         >
-          <img
-            src={currentUser.avatar}
-            alt={currentUser.name}
-            className={`w-6 h-6 rounded-full object-cover ring-2 ${
-              activeTab === 'profile'
-                ? 'ring-emerald-500'
-                : 'ring-transparent'
-            }`}
+          <UserIcon
+            size={22}
+            className={activeTab === 'profile' ? 'stroke-[2.5px] text-neutral-900 dark:text-neutral-100' : 'text-neutral-500'}
           />
         </button>
       </nav>
