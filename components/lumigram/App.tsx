@@ -31,7 +31,7 @@ import {
   addPostComment,
   toggleUserFollow,
 } from './utils/socialLogic';
-import { generateCreatorReply } from './utils/aiSocialEngine';
+import { generateCreatorReply, generateContextualComment } from './utils/aiSocialEngine';
 import { soundManager } from './utils/sound';
 import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap, ChevronDown, Edit3 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -279,16 +279,8 @@ export default function App() {
     ];
     const member = aiMembers[Math.floor(Math.random() * aiMembers.length)];
 
-    const sampleComments = [
-      'Cleanest visual pacing on the explore page right now 🔥',
-      'That audio sync hit so hard 🎧👏',
-      'Bro how did you pull off that transition?! Unreal ⚡',
-      'Replaying this on loop haha, too good 😂',
-      'Color grade is literally 10/10 🎨',
-      'Drop part 2 already please! 🚀',
-      'Stickman comedy never misses 💀🔥',
-    ];
-    const commentText = sampleComments[Math.floor(Math.random() * sampleComments.length)];
+    // Generate strict context-aware comment tailored to the post's media, caption, location, and tags
+    const commentText = generateContextualComment(target);
 
     const actorUser: User = {
       id: `u_ai_${Date.now()}`,
