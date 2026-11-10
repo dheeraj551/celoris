@@ -295,6 +295,32 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [accountSettings.pushNotifications.enabled, posts, usersMap]);
 
+  // Admin-approved real users for community simulation
+  const [simulationUsers, setSimulationUsers] = useState<Array<{
+    id: string;
+    username: string;
+    name: string;
+    avatar: string;
+    bio: string;
+    isVerified?: boolean;
+  }>>([]);
+
+  useEffect(() => {
+    if (!isProUser) return;
+    let active = true;
+    fetch('/api/social/simulation-users', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (active && Array.isArray(data?.users)) {
+          setSimulationUsers(data.users);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [isProUser]);
+
   // Autonomous Live AI Engagement Simulator
   const triggerInstantAiEngagement = () => {
     if (!posts || posts.length === 0) return;
@@ -302,24 +328,30 @@ export default function App() {
     const target = posts[targetIdx];
     if (!target) return;
 
-    const aiMembers = [
-      { username: 'arjun_vfx', name: 'Arjun Verma', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150' },
-      { username: 'priya_edits', name: 'Priya Sharma', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' },
-      { username: 'kabir_shot', name: 'Kabir Mehta', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150' },
-      { username: 'tanya_vibes', name: 'Tanya Kapoor', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150' },
-      { username: 'rohit_cinematics', name: 'Rohit Joshi', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150' },
+    const fallbackAiMembers = [
+      { id: 'u_ai_arjun', username: 'arjun_vfx', name: 'Arjun Verma', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
+      { id: 'u_ai_priya', username: 'priya_edits', name: 'Priya Sharma', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
+      { id: 'u_ai_kabir', username: 'kabir_shot', name: 'Kabir Mehta', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
+      { id: 'u_ai_tanya', username: 'tanya_vibes', name: 'Tanya Kapoor', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
+      { id: 'u_ai_rohit', username: 'rohit_cinematics', name: 'Rohit Joshi', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
     ];
-    const member = aiMembers[Math.floor(Math.random() * aiMembers.length)];
+
+    const optedInPool = simulationUsers.filter(
+      (u) => u.id !== authUser?.id && u.id !== currentUser.id
+    );
+    const activePool = optedInPool.length > 0 ? optedInPool : fallbackAiMembers;
+    const member = activePool[Math.floor(Math.random() * activePool.length)];
 
     // Generate strict context-aware comment tailored to the post's media, caption, location, and tags
     const commentText = generateContextualComment(target);
 
     const actorUser: User = {
-      id: `u_ai_${Date.now()}`,
+      id: member.id || `u_ai_${Date.now()}`,
       username: member.username,
       name: member.name,
       avatar: member.avatar,
-      bio: 'Celoris AI Community Creator',
+      bio: member.bio || 'Celoris Community Creator',
+      isVerified: Boolean(member.isVerified),
       followersCount: 14200,
       followingCount: 310,
       postsCount: 42,
@@ -370,7 +402,7 @@ export default function App() {
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [isProUser, isLiveAutomationActive, posts]);
+  }, [isProUser, isLiveAutomationActive, posts, simulationUsers]);
 
   // Handlers
   const handleToggleTheme = () => {
@@ -761,7 +793,9 @@ export default function App() {
                         </span>
                       </div>
                       <p className="text-[11px] text-neutral-400">
-                        AI creators actively liking &amp; commenting on reels every 8s
+                        {simulationUsers.length > 0
+                          ? `${simulationUsers.length} admin-approved community profiles active in simulation`
+                          : 'AI creators actively liking & commenting on reels every 8s'}
                       </p>
                     </div>
                   </div>

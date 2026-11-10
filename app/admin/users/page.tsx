@@ -28,7 +28,8 @@ import {
     Eye,
     EyeOff,
     Crown,
-    SlidersHorizontal
+    SlidersHorizontal,
+    Sparkles
 } from "lucide-react"
 
 import {
@@ -57,6 +58,7 @@ interface User {
     role?: string
     wallet_balance?: number
     is_social_blocked?: boolean
+    allow_ai_simulation?: boolean
 }
 
 export default function UserManagementPage() {
@@ -67,6 +69,7 @@ export default function UserManagementPage() {
 
     const [deletingId, setDeletingId] = useState<string | null>(null)
     const [blockingId, setBlockingId] = useState<string | null>(null)
+    const [togglingSimId, setTogglingSimId] = useState<string | null>(null)
     const [rechargeModalOpen, setRechargeModalOpen] = useState(false)
     const [rechargeAmount, setRechargeAmount] = useState("")
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -252,6 +255,38 @@ export default function UserManagementPage() {
         }
     }
 
+    const handleToggleAiSimulation = async (user: User) => {
+        setTogglingSimId(user.id)
+        try {
+            const newStatus = !user.allow_ai_simulation
+
+            const response = await fetch('/api/admin/toggle-ai-simulation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.id,
+                    allowAiSimulation: newStatus
+                })
+            })
+
+            if (!response.ok) {
+                const data = await response.json()
+                throw new Error(data.error || 'Failed to update AI simulation status')
+            }
+
+            setUsers(users.map(u =>
+                u.id === user.id
+                    ? { ...u, allow_ai_simulation: newStatus }
+                    : u
+            ))
+        } catch (error) {
+            console.error('Error toggling AI simulation:', error)
+            alert('Failed to update AI simulation status')
+        } finally {
+            setTogglingSimId(null)
+        }
+    }
+
     const openRechargeModal = (user: User) => {
         setSelectedUser(user)
         setRechargeAmount("")
@@ -409,7 +444,13 @@ export default function UserManagementPage() {
                 {/* Users Table */}
                 <Card className="bg-slate-800 border-slate-700">
                     <CardHeader>
-                        <CardTitle className="text-white">All Users ({users.length})</CardTitle>
+                        <CardTitle className="text-white flex items-center justify-between">
+                            <span>All Users ({users.length})</span>
+                            <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                {users.filter(u => u.allow_ai_simulation).length} active in AI simulation
+                            </span>
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="rounded-md border border-slate-700 overflow-hidden">
@@ -421,6 +462,7 @@ export default function UserManagementPage() {
                                         <TableHead className="text-slate-400">Role</TableHead>
                                         <TableHead className="text-slate-400">Plan</TableHead>
                                         <TableHead className="text-slate-400">Wallet</TableHead>
+                                        <TableHead className="text-slate-400">AI Sim</TableHead>
                                         <TableHead className="text-slate-400">Joined</TableHead>
                                         <TableHead className="text-slate-400 text-right">Actions</TableHead>
                                     </TableRow>
@@ -428,7 +470,7 @@ export default function UserManagementPage() {
                                 <TableBody>
                                     {filteredUsers.length === 0 ? (
                                         <TableRow className="border-slate-700">
-                                            <TableCell colSpan={7} className="text-center py-8 text-slate-500">
+                                            <TableCell colSpan={8} className="text-center py-8 text-slate-500">
                                                 No users found
                                             </TableCell>
                                         </TableRow>
@@ -437,6 +479,7 @@ export default function UserManagementPage() {
                                             const isOnline = onlineUsers.has(user.id)
                                             const isDeleting = deletingId === user.id
                                             const isBlocking = blockingId === user.id
+                                            const isTogglingSim = togglingSimId === user.id
                                             return (
                                                 <TableRow key={user.id} className="border-slate-700 hover:bg-slate-750">
                                                     <TableCell>
@@ -460,6 +503,11 @@ export default function UserManagementPage() {
                                                                 <div className="text-sm text-slate-400">@{user.username}</div>
                                                                 {user.is_social_blocked && (
                                                                     <div className="text-xs text-red-400 font-medium">Hidden from Social</div>
+                                                                )}
+                                                                {user.allow_ai_simulation && (
+                                                                    <div className="text-[11px] text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
+                                                                        <Sparkles className="w-3 h-3" /> In AI Simulation
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -516,6 +564,25 @@ export default function UserManagementPage() {
                                                         <span className="text-emerald-400 font-medium">
                                                             ₹{user.wallet_balance?.toFixed(2) || '0.00'}
                                                         </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <button
+                                                            type="button"
+                                                            role="switch"
+                                                            aria-checked={Boolean(user.allow_ai_simulation)}
+                                                            disabled={isTogglingSim}
+                                                            onClick={() => handleToggleAiSimulation(user)}
+                                                            title={user.allow_ai_simulation ? "Included in Pulse AI Simulation (Click to exclude)" : "Excluded from Pulse AI Simulation (Click to include)"}
+                                                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
+                                                                user.allow_ai_simulation ? 'bg-emerald-500' : 'bg-slate-600'
+                                                            }`}
+                                                        >
+                                                            <span
+                                                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                                                    user.allow_ai_simulation ? 'translate-x-5' : 'translate-x-0'
+                                                                }`}
+                                                            />
+                                                        </button>
                                                     </TableCell>
                                                     <TableCell>
                                                         <span className="text-slate-400">
