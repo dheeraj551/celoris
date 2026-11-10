@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   Home,
   Hash,
   Bell,
   Mail,
-  Sparkles,
+  BarChart2,
   Briefcase,
   User as UserIcon,
   MoreHorizontal,
@@ -13,9 +14,6 @@ import {
   Sun,
   Moon,
   PlusSquare,
-  ShieldCheck,
-  HelpCircle,
-  ExternalLink,
 } from 'lucide-react';
 import { User, ThemeMode } from '../types';
 
@@ -26,6 +24,7 @@ interface NavigationProps {
   currentUser: User;
   theme: ThemeMode;
   walletBalance?: number;
+  isProUser?: boolean;
   onSelectTab: (tab: 'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads') => void;
   onOpenCreate: () => void;
   onOpenArch?: () => void;
@@ -40,6 +39,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   currentUser,
   theme,
   walletBalance = 10000,
+  isProUser = false,
   onSelectTab,
   onOpenCreate,
   onOpenSettings,
@@ -136,32 +136,34 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
             </button>
 
-            {/* 5. Ai Studio (replaces Marketplace as requested) */}
-            <button
-              onClick={() => onSelectTab('ads')}
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
-                activeTab === 'ads'
-                  ? 'font-bold text-neutral-900 dark:text-neutral-100'
-                  : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <Sparkles size={22} className={activeTab === 'ads' ? 'stroke-[2.5px] text-emerald-500' : 'text-emerald-500 stroke-[2px]'} />
-                <span>Ai Studio</span>
-              </div>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
-                ₹{walletBalance.toLocaleString('en-IN')}
-              </span>
-            </button>
+            {/* 5. Ad Studio (Pro Users Only) */}
+            {isProUser && (
+              <button
+                onClick={() => onSelectTab('ads')}
+                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-full text-[15px] transition-colors cursor-pointer ${
+                  activeTab === 'ads'
+                    ? 'font-bold text-neutral-900 dark:text-neutral-100'
+                    : 'font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <BarChart2 size={22} className={activeTab === 'ads' ? 'stroke-[2.5px] text-emerald-500' : 'text-emerald-500 stroke-[2px]'} />
+                  <span>Ad Studio</span>
+                </div>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                  ₹{walletBalance.toLocaleString('en-IN')}
+                </span>
+              </button>
+            )}
 
             {/* 6. Jobs (Celoris Job Center) */}
-            <a
-              href="/jobs"
+            <Link
+              href="/job-center"
               className="w-full flex items-center gap-4 px-3.5 py-3 rounded-full text-[15px] font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
             >
               <Briefcase size={22} className="stroke-[2px]" />
               <span>Jobs</span>
-            </a>
+            </Link>
 
             {/* 7. My profile */}
             <button
@@ -226,21 +228,21 @@ export const Navigation: React.FC<NavigationProps> = ({
             <span>·</span>
             <button onClick={onToggleTheme} className="hover:underline cursor-pointer">Theme</button>
             <span>·</span>
-            <a href="/jobs" className="hover:underline">Jobs</a>
+            <Link href="/job-center" className="hover:underline">Jobs</Link>
             <span>·</span>
-            <a href="/contact" className="hover:underline">Help center</a>
+            <Link href="/contact" className="hover:underline">Help center</Link>
           </div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <a href="/privacy" className="hover:underline">Privacy policy</a>
+            <Link href="/privacy" className="hover:underline">Privacy policy</Link>
             <span>·</span>
             <span className="hover:underline cursor-pointer">Cookies policy</span>
             <span>·</span>
-            <a href="/terms" className="hover:underline">Terms</a>
+            <Link href="/terms" className="hover:underline">Terms</Link>
             <span>·</span>
             <span className="hover:underline cursor-pointer">Language</span>
           </div>
           <p className="pt-1 text-[10px] text-neutral-400">
-            ColibriPlus © 2026 · Celoris
+            Celoris Pulse © 2026
           </p>
         </div>
       </aside>
@@ -260,13 +262,15 @@ export const Navigation: React.FC<NavigationProps> = ({
         </button>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => onSelectTab(activeTab === 'ads' ? 'feed' : 'ads')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold cursor-pointer"
-          >
-            <Sparkles size={13} className="text-emerald-500 animate-pulse" />
-            <span>Ai Studio</span>
-          </button>
+          {isProUser && (
+            <button
+              onClick={() => onSelectTab(activeTab === 'ads' ? 'feed' : 'ads')}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold cursor-pointer"
+            >
+              <BarChart2 size={13} className="text-emerald-500" />
+              <span>Ad Studio</span>
+            </button>
+          )}
 
           <button
             onClick={() => onSelectTab('messages')}

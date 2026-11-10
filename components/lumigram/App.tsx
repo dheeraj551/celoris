@@ -56,6 +56,38 @@ export default function App() {
   // Celoris User Management & Wallet sync
   const { user: authUser, profile, refreshProfile } = useAuth();
 
+  // Pro plan detection (checks /api/account/plan + profile roles/subscriptions)
+  const [planTier, setPlanTier] = useState<'free' | 'basic' | 'pro' | 'max'>('free');
+  useEffect(() => {
+    let active = true;
+    fetch('/api/account/plan', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (active && data?.plan?.tier) {
+          setPlanTier(data.plan.tier);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [authUser?.id]);
+
+  const isProUser = Boolean(
+    planTier === 'pro' ||
+      planTier === 'max' ||
+      profile?.subscription_status === 'premium' ||
+      profile?.subscription_status === 'enterprise' ||
+      profile?.subscription_status === 'pro' ||
+      profile?.subscription_status === 'max' ||
+      profile?.is_pro === true ||
+      profile?.is_premium === true ||
+      profile?.plan === 'pro' ||
+      profile?.plan === 'max' ||
+      profile?.role === 'admin' ||
+      profile?.role === 'superadmin'
+  );
+
   // Theme state
   const [theme, setTheme] = useState<ThemeMode>('light');
 
@@ -331,14 +363,14 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!isLiveAutomationActive) return;
+    if (!isProUser || !isLiveAutomationActive) return;
 
     const interval = setInterval(() => {
       triggerInstantAiEngagement();
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [isLiveAutomationActive, posts]);
+  }, [isProUser, isLiveAutomationActive, posts]);
 
   // Handlers
   const handleToggleTheme = () => {
@@ -394,8 +426,8 @@ export default function App() {
       })
     );
 
-    // Trigger AI Creator Auto-Response
-    if (targetPostForReply) {
+    // Trigger AI Creator Auto-Response (Pro Users Only)
+    if (isProUser && targetPostForReply) {
       const creatorUser = targetPostForReply.user;
       setTypingPostIds((prev) => ({ ...prev, [postId]: true }));
 
@@ -656,6 +688,7 @@ export default function App() {
         currentUser={currentUser}
         theme={theme}
         walletBalance={walletBalance}
+        isProUser={isProUser}
         onSelectTab={(tab) => {
           if (tab === 'profile') {
             setSelectedProfileUser(currentUser);
@@ -712,44 +745,46 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Live AI Community Simulator Status Bar */}
-              <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-500/30 flex items-center justify-between text-xs backdrop-blur-md shadow-lg animate-in fade-in duration-300">
-                <div className="flex items-center gap-2.5">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isLiveAutomationActive ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isLiveAutomationActive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-white">Live AI Community Simulator</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 font-mono font-semibold">
-                        {isLiveAutomationActive ? 'ACTIVE 🟢' : 'PAUSED ⏸️'}
-                      </span>
+              {/* Live AI Community Simulator Status Bar (Pro Users Only) */}
+              {isProUser && (
+                <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-500/30 flex items-center justify-between text-xs backdrop-blur-md shadow-lg animate-in fade-in duration-300">
+                  <div className="flex items-center gap-2.5">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isLiveAutomationActive ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isLiveAutomationActive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-white">Live AI Community Simulator</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 font-mono font-semibold">
+                          {isLiveAutomationActive ? 'ACTIVE 🟢' : 'PAUSED ⏸️'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-neutral-400">
+                        AI creators actively liking &amp; commenting on reels every 8s
+                      </p>
                     </div>
-                    <p className="text-[11px] text-neutral-400">
-                      AI creators actively liking & commenting on reels every 8s
-                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={triggerInstantAiEngagement}
+                      className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer hover:scale-102"
+                    >
+                      <Zap size={12} />
+                      <span>Auto-Engage Now</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsLiveAutomationActive(!isLiveAutomationActive)}
+                      className="px-2 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium text-[11px] transition-colors cursor-pointer"
+                    >
+                      {isLiveAutomationActive ? 'Pause' : 'Resume'}
+                    </button>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={triggerInstantAiEngagement}
-                    className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer hover:scale-102"
-                  >
-                    <Zap size={12} />
-                    <span>Auto-Engage Now</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsLiveAutomationActive(!isLiveAutomationActive)}
-                    className="px-2 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium text-[11px] transition-colors cursor-pointer"
-                  >
-                    {isLiveAutomationActive ? 'Pause' : 'Resume'}
-                  </button>
-                </div>
-              </div>
+              )}
 
               {/* Feed Stream */}
               <div className="space-y-6">
@@ -767,17 +802,18 @@ export default function App() {
                       setActiveTab('messages');
                     }}
                     onSelectUser={handleSelectUser}
-                    onBoostPost={(p) => setBoostingPost(p)}
+                    onBoostPost={isProUser ? (p) => setBoostingPost(p) : undefined}
                     onOpenComments={(p) => setSelectedDetailPost(p)}
                     isAiTyping={Boolean(typingPostIds[post.id])}
+                    isProUser={isProUser}
                   />
                 ))}
               </div>
             </div>
           )}
 
-          {/* TAB: AD STUDIO */}
-          {activeTab === 'ads' && (
+          {/* TAB: AD STUDIO (Pro Users Only) */}
+          {activeTab === 'ads' && isProUser && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
                 <div>
@@ -952,11 +988,12 @@ export default function App() {
         </div>
       </main>
 
-      {/* Desktop Right Sidebar (Feed recommendations & Architecture preview) */}
+      {/* Desktop Right Sidebar (Feed recommendations & Ad Studio Boost for Pro) */}
       {activeTab === 'feed' && (
         <RightSidebar
           currentUser={currentUser}
           suggestedUsers={suggestedUsers}
+          isProUser={isProUser}
           onToggleFollow={handleToggleFollow}
           onSelectUser={handleSelectUser}
           onEditProfile={() => setIsEditProfileOpen(true)}
@@ -997,6 +1034,7 @@ export default function App() {
           }}
           onSelectUser={handleSelectUser}
           isAiTyping={Boolean(selectedDetailPost && typingPostIds[selectedDetailPost.id])}
+          isProUser={isProUser}
         />
       )}
 

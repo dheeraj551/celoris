@@ -29,6 +29,7 @@ interface PostDetailModalProps {
   onOpenReport: (post: Post) => void;
   onSelectUser: (user: User) => void;
   isAiTyping?: boolean;
+  isProUser?: boolean;
 }
 
 export const PostDetailModal: React.FC<PostDetailModalProps> = ({
@@ -41,6 +42,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   onOpenReport,
   onSelectUser,
   isAiTyping = false,
+  isProUser = false,
 }) => {
   const [commentInput, setCommentInput] = useState('');
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
@@ -260,8 +262,8 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               </div>
             ))}
 
-            {/* Creator typing indicator */}
-            {isAiTyping && (
+            {/* Creator typing indicator (Pro Users Only) */}
+            {isProUser && isAiTyping && (
               <div className="flex items-center gap-2 py-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs animate-pulse">
                 <img src={post.user.avatar} alt="" className="w-5 h-5 rounded-full object-cover ring-1 ring-emerald-500" />
                 <span className="font-semibold">{post.user.username}</span>
@@ -317,22 +319,24 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               {formatTimeAgo(post.createdAt)} AGO
             </span>
 
-            {/* Quick AI Suggestions */}
-            <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
-                <Sparkles size={11} className="text-emerald-500 animate-pulse" /> Quick AI:
-              </span>
-              {aiSuggestions.map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => onAddComment(post.id, suggestion)}
-                  className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-emerald-50 dark:bg-neutral-800/80 dark:hover:bg-emerald-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-emerald-500/50 text-neutral-700 dark:text-neutral-300 hover:text-emerald-600 dark:hover:text-emerald-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
+            {/* Quick AI Suggestions (Pro Users Only) */}
+            {isProUser && (
+              <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
+                  <Sparkles size={11} className="text-emerald-500 animate-pulse" /> Quick AI:
+                </span>
+                {aiSuggestions.map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => onAddComment(post.id, suggestion)}
+                    className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-emerald-50 dark:bg-neutral-800/80 dark:hover:bg-emerald-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-emerald-500/50 text-neutral-700 dark:text-neutral-300 hover:text-emerald-600 dark:hover:text-emerald-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Comment Form */}
             <form

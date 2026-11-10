@@ -6,6 +6,7 @@ import { CheckCircle2, TrendingUp } from 'lucide-react';
 interface RightSidebarProps {
   currentUser: User;
   suggestedUsers: User[];
+  isProUser?: boolean;
   onToggleFollow: (user: User) => void;
   onSelectUser: (user: User) => void;
   onOpenArch?: () => void;
@@ -15,6 +16,7 @@ interface RightSidebarProps {
 export const RightSidebar: React.FC<RightSidebarProps> = ({
   currentUser,
   suggestedUsers,
+  isProUser = false,
   onToggleFollow,
   onSelectUser,
 }) => {
@@ -73,21 +75,23 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         </button>
       </div>
 
-      {/* Ai Studio Credits Card */}
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 via-emerald-500/5 to-transparent border border-blue-500/20 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
-            <TrendingUp size={14} className="text-blue-500" />
-            Ai Studio Boost
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">
-            ₹10,000 Live
-          </span>
+      {/* Ad Studio Credits Card (Pro Users Only) */}
+      {isProUser && (
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 via-emerald-500/5 to-transparent border border-blue-500/20 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+              <TrendingUp size={14} className="text-blue-500" />
+              Ad Studio Boost
+            </span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">
+              ₹10,000 Live
+            </span>
+          </div>
+          <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-snug">
+            Amplify your creative projects and automated campaigns across Celoris Social Cloud.
+          </p>
         </div>
-        <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-snug">
-          Amplify your creative projects and automated campaigns across Celoris Social Cloud.
-        </p>
-      </div>
+      )}
     </aside>
   );
 };

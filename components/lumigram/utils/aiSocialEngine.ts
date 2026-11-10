@@ -13,29 +13,38 @@ export function generateContextualComment(post: Post): string {
   const currentMediaUrl = post.images?.[0] || '';
   const isVideo = post.mediaType === 'video' || /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(currentMediaUrl);
 
-  // 1. Bikes, motorcycles, riding, sportbike, superbike
+  // 1. Bikes, motorcycles, riding, sportbike, superbike (strict word boundaries)
   if (
-    text.includes('bike') ||
-    text.includes('motorcycle') ||
-    text.includes('ride') ||
-    text.includes('riding') ||
-    text.includes('superbike') ||
-    text.includes('yamaha') ||
-    text.includes('ducati') ||
-    text.includes('ninja') ||
-    text.includes('bmw') ||
-    text.includes('ktm')
+    /\b(bike|bikes|motorcycle|motorcycles|motorbiking|ride|riding|rider|superbike|ducati|yamaha|ninja|ktm|kawasaki)\b/i.test(
+      text
+    )
   ) {
     const bikeComments = [
       'Which bike model is this? Looks absolute beast! 🏍️🔥',
       'Tall rider on a sportbike is such a powerful aesthetic ⚡',
-      'Clean ride and the Saint Petersburg backdrop is magnificent 🏛️',
-      'The leather jacket fit with the bike is 10/10 🖤',
+      'Clean ride and awesome backdrop 🏛️',
+      'The riding gear fit with the bike is 10/10 🖤',
       'Stunning shot! Always love seeing fellow riders, ride safe 🙌',
-      'Athletic build + sportbike combo is unreal 👏',
       'That machine looks menacing! Ride safe out there 💨',
     ];
     return bikeComments[Math.floor(Math.random() * bikeComments.length)];
+  }
+
+  // 2. Fashion / Dress / Portrait / Glamour / Beauty
+  if (
+    !isVideo &&
+    /\b(love|dress|pink|fashion|outfit|ootd|style|portrait|luxembourg|paris|glam|aesthetic|look)\b/i.test(
+      text
+    )
+  ) {
+    const fashionComments = [
+      'That outfit color and silhouette looks stunning! 🌸✨',
+      'Golden hour lighting in this portrait is unreal 📸',
+      'Clean aesthetic and super elegant look 👏',
+      'The framing and background blur make this look editorial ✨',
+      'Such a timeless style! Looking gorgeous 🔥',
+    ];
+    return fashionComments[Math.floor(Math.random() * fashionComments.length)];
   }
 
   // 2. Stickman (STRICT: only if caption or tags explicitly contain "stickman")
@@ -137,13 +146,9 @@ export function getAiCommentSuggestions(post: Post): string[] {
   const currentMediaUrl = post.images?.[0] || '';
   const isVideo = post.mediaType === 'video' || /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(currentMediaUrl);
 
-  // Bike / Motorcycle / Riding
+  // Bike / Motorcycle / Riding (strict word boundaries)
   if (
-    text.includes('bike') ||
-    text.includes('motorcycle') ||
-    text.includes('ride') ||
-    text.includes('riding') ||
-    text.includes('superbike')
+    /\b(bike|bikes|motorcycle|motorcycles|ride|riding|rider|superbike)\b/i.test(text)
   ) {
     return [
       'Which bike model? 🏍️',

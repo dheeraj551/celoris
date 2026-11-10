@@ -33,6 +33,7 @@ interface PostCardProps {
   onBoostPost?: (post: Post) => void;
   onOpenComments?: (post: Post) => void;
   isAiTyping?: boolean;
+  isProUser?: boolean;
 }
 
 const AVAILABLE_EMOJIS = ['❤️', '🔥', '👏', '😈', '💡', '🎉', '🤝', '👀', '🚀', '💯', '🙌', '💥', '👑', '😭', '🚨', '😍', '🤩', '☕', '🍷', '🦄', '✨'];
@@ -49,6 +50,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   onBoostPost,
   onOpenComments,
   isAiTyping = false,
+  isProUser = false,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [commentInput, setCommentInput] = useState('');
@@ -252,46 +254,72 @@ export const PostCard: React.FC<PostCardProps> = ({
         </p>
       </div>
 
-      {/* Media Carousel / Single Video or Image */}
-      <div
-        className={`relative w-full bg-black flex items-center justify-center overflow-hidden select-none ${
-          post.aspectRatio === 'vertical' || post.aspectRatio === '9:16'
-            ? 'aspect-[9/16] max-h-[580px]'
-            : 'aspect-video max-h-[500px]'
-        }`}
-        onClick={handleDoubleTap}
-      >
-        {isVideo ? (
-          <video
-            src={currentMediaUrl}
-            poster={post.thumbnail}
-            controls
-            playsInline
-            loop
-            preload="metadata"
-            onContextMenu={(e) => e.preventDefault()}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <img
-            src={currentMediaUrl}
-            alt={post.caption || 'Post image'}
-            draggable={false}
-            onContextMenu={(e) => e.preventDefault()}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        )}
+      {/* Media Carousel / Single Video or Adaptive Uncropped Image Frame */}
+      <div className="px-4 pb-1">
+        <div
+          className="relative w-full rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-950 border border-neutral-200/70 dark:border-neutral-800/70 flex items-center justify-center select-none"
+          onClick={handleDoubleTap}
+        >
+          {isVideo ? (
+            <div
+              className={`w-full bg-black flex items-center justify-center ${
+                post.aspectRatio === 'vertical' || post.aspectRatio === '9:16'
+                  ? 'aspect-[9/16] max-h-[580px]'
+                  : 'aspect-video max-h-[520px]'
+              }`}
+            >
+              <video
+                src={currentMediaUrl}
+                poster={post.thumbnail}
+                controls
+                playsInline
+                loop
+                preload="metadata"
+                onContextMenu={(e) => e.preventDefault()}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ) : (
+            <div className="relative w-full flex items-center justify-center overflow-hidden bg-neutral-100/80 dark:bg-neutral-950">
+              {/* Soft ambient blur backdrop for editorial framing when photos vary in ratio */}
+              <img
+                src={currentMediaUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-35 dark:opacity-25 pointer-events-none"
+              />
+              {/* Full uncropped foreground image adapting naturally to uploaded photo proportions */}
+              <img
+                src={currentMediaUrl}
+                alt={post.caption || 'Post image'}
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+                className={`relative z-10 w-full h-auto max-h-[640px] object-contain mx-auto transition-transform duration-300 ${
+                  post.filter === 'clarendon'
+                    ? 'contrast-125 saturate-125'
+                    : post.filter === 'juno'
+                    ? 'saturate-150 contrast-110 hue-rotate-15'
+                    : post.filter === 'valencia'
+                    ? 'sepia-25 brightness-105'
+                    : post.filter === 'vintage'
+                    ? 'grayscale contrast-125'
+                    : ''
+                }`}
+                loading="lazy"
+              />
+            </div>
+          )}
 
-        {/* Double-tap Bursting Heart Animation */}
-        {showHeartAnimation && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 animate-heart-burst">
-            <Heart
-              size={100}
-              className="text-rose-500 fill-rose-500 drop-shadow-2xl"
-            />
-          </div>
-        )}
+          {/* Double-tap Bursting Heart Animation */}
+          {showHeartAnimation && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 animate-heart-burst">
+              <Heart
+                size={100}
+                className="text-rose-500 fill-rose-500 drop-shadow-2xl"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* MULTI-EMOJI REACTION TRAY matching Reference Screenshot */}
@@ -406,24 +434,26 @@ export const PostCard: React.FC<PostCardProps> = ({
               <span>Show all comments ({post.commentsCount || safeComments.length})</span>
             </button>
 
-            {/* AI Breakdown Pill */}
-            <button
-              type="button"
-              onClick={() => setShowAiInsights(!showAiInsights)}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                showAiInsights
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50'
-              }`}
-            >
-              <Sparkles size={11} />
-              <span>AI Radar</span>
-            </button>
+            {/* AI Breakdown Pill (Pro Users Only) */}
+            {isProUser && (
+              <button
+                type="button"
+                onClick={() => setShowAiInsights(!showAiInsights)}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                  showAiInsights
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50'
+                }`}
+              >
+                <Sparkles size={11} />
+                <span>AI Radar</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* AI Breakdown Drawer */}
-        {showAiInsights && (
+        {/* AI Breakdown Drawer (Pro Users Only) */}
+        {isProUser && showAiInsights && (
           <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-blue-950/60 border border-blue-500/30 text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 shadow-xl">
             <div className="flex items-center justify-between pb-2 border-b border-blue-500/20">
               <div className="flex items-center gap-2">
@@ -453,7 +483,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             <div className="mt-2.5 p-2 rounded-xl bg-black/50 border border-blue-500/20 flex items-start justify-between gap-2">
               <div className="flex-1">
-                <span className="text-[10px] font-semibold text-blue-400 uppercase tracking-wider block">Recreate in AI Studio</span>
+                <span className="text-[10px] font-semibold text-blue-400 uppercase tracking-wider block">Creative Prompt</span>
                 <p className="text-[11px] text-neutral-300 italic line-clamp-1 mt-0.5">"{insights.suggestedPrompt}"</p>
               </div>
               <button
@@ -496,8 +526,8 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         )}
 
-        {/* Creator is typing AI response indicator */}
-        {isAiTyping && (
+        {/* Creator is typing AI response indicator (Pro Users Only) */}
+        {isProUser && isAiTyping && (
           <div className="mt-2 flex items-center gap-2 py-1.5 px-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs animate-pulse">
             <img src={post.user.avatar} alt="" className="w-4 h-4 rounded-full object-cover ring-1 ring-blue-500" />
             <span className="font-semibold">{post.user.username}</span>
@@ -510,26 +540,28 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         )}
 
-        {/* Quick AI Suggestion Chips */}
-        <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/80">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 shrink-0">
-              <Sparkles size={11} className="text-blue-500 animate-pulse" /> Quick AI:
-            </span>
-            {aiSuggestions.map((suggestion, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => {
-                  onAddComment(post.id, suggestion);
-                }}
-                className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-blue-50 dark:bg-neutral-800/70 dark:hover:bg-blue-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-blue-500/50 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs hover:scale-102 active:scale-98"
-              >
-                {suggestion}
-              </button>
-            ))}
+        {/* Quick AI Suggestion Chips (Pro Users Only) */}
+        {isProUser && (
+          <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/80">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 shrink-0">
+                <Sparkles size={11} className="text-blue-500 animate-pulse" /> Quick AI:
+              </span>
+              {aiSuggestions.map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    onAddComment(post.id, suggestion);
+                  }}
+                  className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-blue-50 dark:bg-neutral-800/70 dark:hover:bg-blue-950/40 border border-neutral-200 dark:border-neutral-700/60 hover:border-blue-500/50 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 whitespace-nowrap transition-all cursor-pointer shadow-2xs hover:scale-102 active:scale-98"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Inline Add Comment */}
         <form

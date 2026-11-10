@@ -79,7 +79,24 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
-          setSelectedImage(reader.result);
+          const dataUrl = reader.result;
+          setSelectedImage(dataUrl);
+          if (!isVid) {
+            const img = new Image();
+            img.onload = () => {
+              const ratio = img.width / (img.height || 1);
+              if (ratio > 1.2) {
+                setAspectRatio('landscape');
+              } else if (ratio < 0.7) {
+                setAspectRatio('vertical');
+              } else if (ratio < 0.95) {
+                setAspectRatio('portrait');
+              } else {
+                setAspectRatio('square');
+              }
+            };
+            img.src = dataUrl;
+          }
           setStep(2);
         }
       };
