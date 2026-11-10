@@ -184,7 +184,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 <CheckCircle2 size={14} className="text-blue-500 fill-blue-500 text-white" />
               )}
               <span className="text-neutral-500 dark:text-neutral-400 text-xs font-normal">
-                {post.user.bio || `Developer of ColibriPlus`} · {formatTimeAgo(post.createdAt)}
+                {post.user.bio || `@${post.user.username}`} · {formatTimeAgo(post.createdAt)}
               </span>
             </div>
             {post.location && (
@@ -280,13 +280,13 @@ export const PostCard: React.FC<PostCardProps> = ({
               />
             </div>
           ) : (
-            <div className="relative w-full flex items-center justify-center overflow-hidden bg-neutral-100/80 dark:bg-neutral-950">
-              {/* Soft ambient blur backdrop for editorial framing when photos vary in ratio */}
+            <div className="relative w-full flex items-center justify-center overflow-hidden bg-neutral-50 dark:bg-neutral-950">
+              {/* Soft ambient blur backdrop for balanced framing */}
               <img
                 src={currentMediaUrl}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-35 dark:opacity-25 pointer-events-none"
+                className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-20 dark:opacity-20 pointer-events-none"
               />
               {/* Full uncropped foreground image adapting naturally to uploaded photo proportions */}
               <img
@@ -294,7 +294,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 alt={post.caption || 'Post image'}
                 draggable={false}
                 onContextMenu={(e) => e.preventDefault()}
-                className={`relative z-10 w-full h-auto max-h-[640px] object-contain mx-auto transition-transform duration-300 ${
+                className={`relative z-10 w-auto max-w-full h-auto max-h-[600px] object-contain mx-auto rounded-lg shadow-xs transition-transform duration-300 ${
                   post.filter === 'clarendon'
                     ? 'contrast-125 saturate-125'
                     : post.filter === 'juno'

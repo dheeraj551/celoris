@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   CURRENT_USER,
   SEED_USERS,
@@ -33,7 +33,7 @@ import {
 } from './utils/socialLogic';
 import { generateCreatorReply, generateContextualComment } from './utils/aiSocialEngine';
 import { soundManager } from './utils/sound';
-import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap, ChevronDown, Edit3 } from 'lucide-react';
+import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap, ChevronDown, Edit3, Image as ImageIcon, Smile, Hash, Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 import { Navigation } from './components/Navigation';
@@ -268,32 +268,60 @@ export default function App() {
     }
   }, [theme]);
 
-  // Periodic push notification simulation
+  // Fetch real community users (zero synthetic AI users) for Who to Follow & Stories
+  const [communityUsers, setCommunityUsers] = useState<User[]>([]);
+  const [feedSearchQuery, setFeedSearchQuery] = useState<string>('');
+
+  // Inline rich composer state
+  const [composerText, setComposerText] = useState('');
+  const [composerMediaUrl, setComposerMediaUrl] = useState<string | null>(null);
+  const [composerMediaFile, setComposerMediaFile] = useState<File | null>(null);
+  const [composerIsVideo, setComposerIsVideo] = useState(false);
+  const [composerAspectRatio, setComposerAspectRatio] = useState<'square' | 'portrait' | 'landscape' | 'vertical'>('square');
+  const [isPublishingInline, setIsPublishingInline] = useState(false);
+  const composerFileRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (accountSettings.pushNotifications.enabled) {
-        const sampleNotif: NotificationItem = {
-          id: `push_${Date.now()}`,
-          type: 'like',
-          actor: usersMap.sofia || SEED_USERS.sofia,
-          targetPost: posts[0],
-          text: 'liked your new architectural photo',
-          createdAt: new Date().toISOString(),
-          isRead: false,
-        };
-        soundManager.playMessagePing();
-        setActivePushToast(sampleNotif);
-        setNotifications((prev) => [sampleNotif, ...prev]);
+    let active = true;
+    fetch('/api/social/community-users', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!active || !Array.isArray(data?.users) || data.users.length === 0) return;
+        const realUsers: User[] = data.users;
+        setCommunityUsers(realUsers);
 
-        // Auto dismiss push banner after 6 seconds
-        setTimeout(() => {
-          setActivePushToast((curr) => (curr?.id === sampleNotif.id ? null : curr));
-        }, 6000);
-      }
-    }, 12000);
+        // Merge into usersMap
+        setUsersMap((prev) => {
+          const next = { ...prev };
+          for (const u of realUsers) {
+            next[u.id] = u;
+          }
+          return next;
+        });
 
-    return () => clearTimeout(timer);
-  }, [accountSettings.pushNotifications.enabled, posts, usersMap]);
+        // Build real community stories from active users (first 8 real creators with avatars)
+        const realStories: UserStory[] = realUsers.slice(0, 8).map((u, idx) => ({
+          userId: u.id,
+          user: u,
+          hasUnseen: idx < 4,
+          updatedAt: new Date(Date.now() - (idx + 1) * 25 * 60 * 1000).toISOString(),
+          slides: [
+            {
+              id: `story_real_${u.id}`,
+              mediaUrl: u.avatar,
+              type: 'image',
+              durationSeconds: 5,
+              caption: `${u.name} · ${u.bio || 'Sharing updates on Celoris'}`,
+            },
+          ],
+        }));
+        setStories(realStories);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Admin-approved real users for community simulation
   const [simulationUsers, setSimulationUsers] = useState<Array<{
@@ -321,40 +349,32 @@ export default function App() {
     };
   }, [isProUser]);
 
-  // Autonomous Live AI Engagement Simulator
+  // Autonomous Live Community Simulator (strictly uses ONLY admin-approved real users)
   const triggerInstantAiEngagement = () => {
     if (!posts || posts.length === 0) return;
-    const targetIdx = Math.floor(Math.random() * Math.min(4, posts.length));
-    const target = posts[targetIdx];
-    if (!target) return;
-
-    const fallbackAiMembers = [
-      { id: 'u_ai_arjun', username: 'arjun_vfx', name: 'Arjun Verma', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
-      { id: 'u_ai_priya', username: 'priya_edits', name: 'Priya Sharma', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
-      { id: 'u_ai_kabir', username: 'kabir_shot', name: 'Kabir Mehta', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
-      { id: 'u_ai_tanya', username: 'tanya_vibes', name: 'Tanya Kapoor', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
-      { id: 'u_ai_rohit', username: 'rohit_cinematics', name: 'Rohit Joshi', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', bio: 'Celoris AI Community Creator', isVerified: false },
-    ];
 
     const optedInPool = simulationUsers.filter(
       (u) => u.id !== authUser?.id && u.id !== currentUser.id
     );
-    const activePool = optedInPool.length > 0 ? optedInPool : fallbackAiMembers;
-    const member = activePool[Math.floor(Math.random() * activePool.length)];
+    if (optedInPool.length === 0) return; // No fallback dummy AI users
 
-    // Generate strict context-aware comment tailored to the post's media, caption, location, and tags
+    const targetIdx = Math.floor(Math.random() * Math.min(4, posts.length));
+    const target = posts[targetIdx];
+    if (!target) return;
+
+    const member = optedInPool[Math.floor(Math.random() * optedInPool.length)];
     const commentText = generateContextualComment(target);
 
     const actorUser: User = {
-      id: member.id || `u_ai_${Date.now()}`,
+      id: member.id,
       username: member.username,
       name: member.name,
       avatar: member.avatar,
       bio: member.bio || 'Celoris Community Creator',
       isVerified: Boolean(member.isVerified),
-      followersCount: 14200,
-      followingCount: 310,
-      postsCount: 42,
+      followersCount: 142,
+      followingCount: 45,
+      postsCount: 5,
       isOnline: true,
     };
 
@@ -364,7 +384,7 @@ export default function App() {
           const { updatedPost } = addPostComment(p, actorUser, commentText);
           const withLikes = {
             ...updatedPost,
-            likesCount: updatedPost.likesCount + Math.floor(Math.random() * 4 + 1),
+            likesCount: updatedPost.likesCount + Math.floor(Math.random() * 3 + 1),
           };
           if (selectedDetailPost && selectedDetailPost.id === target.id) {
             setSelectedDetailPost(withLikes);
@@ -375,7 +395,7 @@ export default function App() {
       })
     );
 
-    soundManager.playLikeSound();
+    soundManager.playNotificationSound();
 
     const liveNotif: NotificationItem = {
       id: `live_auto_${Date.now()}`,
@@ -392,6 +412,106 @@ export default function App() {
     setTimeout(() => {
       setActivePushToast((curr) => (curr?.id === liveNotif.id ? null : curr));
     }, 4500);
+  };
+
+  const handleInlineFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setComposerMediaFile(file);
+    const isVid = file.type.startsWith('video/') || /\.(mp4|mov|webm|m4v)$/i.test(file.name);
+    setComposerIsVideo(isVid);
+    if (isVid) {
+      setComposerAspectRatio('vertical');
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        const url = reader.result;
+        setComposerMediaUrl(url);
+        if (!isVid) {
+          const img = new Image();
+          img.onload = () => {
+            const ratio = img.width / (img.height || 1);
+            if (ratio > 1.2) setComposerAspectRatio('landscape');
+            else if (ratio < 0.7) setComposerAspectRatio('vertical');
+            else if (ratio < 0.95) setComposerAspectRatio('portrait');
+            else setComposerAspectRatio('square');
+          };
+          img.src = url;
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleInlinePublish = async () => {
+    if (!composerText.trim() && !composerMediaUrl) return;
+    setIsPublishingInline(true);
+    let finalMediaUrl = composerMediaUrl || '';
+    try {
+      if (composerMediaFile) {
+        const formData = new FormData();
+        formData.append('file', composerMediaFile);
+        const uploadRes = await fetch('/api/social/upload', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok && uploadData.url) {
+          finalMediaUrl = uploadData.url;
+        }
+      }
+
+      const tags = composerText
+        .split(/\s+/)
+        .filter((w) => w.startsWith('#'))
+        .map((w) => w.replace('#', '').toLowerCase());
+
+      let createdPostId = `post_${Date.now()}`;
+      try {
+        const postRes = await fetch('/api/social/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            caption: composerText.trim(),
+            media_url: finalMediaUrl || undefined,
+            media_type: composerIsVideo ? 'video' : 'image',
+            tags: tags.length ? tags : ['celoris'],
+            aspect_ratio: composerAspectRatio,
+            user_name: currentUser.name,
+            user_username: currentUser.username,
+            user_avatar: currentUser.avatar,
+          }),
+        });
+        const postData = await postRes.json();
+        if (postRes.ok && postData.post?.id) {
+          createdPostId = postData.post.id;
+        }
+      } catch {}
+
+      const newPost: Post = {
+        id: createdPostId,
+        userId: currentUser.id,
+        user: currentUser,
+        images: finalMediaUrl ? [finalMediaUrl] : [],
+        mediaType: composerIsVideo ? 'video' : 'image',
+        caption: composerText.trim(),
+        aspectRatio: composerAspectRatio,
+        likesCount: 0,
+        isLiked: false,
+        isSaved: false,
+        commentsCount: 0,
+        comments: [],
+        createdAt: new Date().toISOString(),
+        tags: tags.length ? tags : ['celoris'],
+      };
+
+      setPosts((prev) => [newPost, ...prev]);
+      setComposerText('');
+      setComposerMediaUrl(null);
+      setComposerMediaFile(null);
+      setComposerIsVideo(false);
+      soundManager.playSendSound();
+    } finally {
+      setIsPublishingInline(false);
+    }
   };
 
   useEffect(() => {
@@ -509,11 +629,14 @@ export default function App() {
     const { updatedTarget, updatedActor, action } = toggleUserFollow(targetUser, currentUser);
     setCurrentUser(updatedActor);
 
-    // Update usersMap
+    // Update usersMap and communityUsers
     setUsersMap((prev) => ({
       ...prev,
       [updatedTarget.id]: updatedTarget,
     }));
+    setCommunityUsers((prev) =>
+      prev.map((u) => (u.id === updatedTarget.id ? updatedTarget : u))
+    );
 
     // Update posts created by that user
     setPosts((prev) =>
@@ -698,10 +821,23 @@ export default function App() {
   const savedPosts = posts.filter((p) => p.isSaved);
   const unreadMessagesCount = conversations.reduce((acc, c) => acc + c.unreadCount, 0);
   const unreadNotificationsCount = notifications.filter((n) => !n.isRead).length;
-  const suggestedUsers = Object.values(usersMap).filter((u) => u.id !== currentUser.id);
+  const suggestedUsers = (communityUsers.length > 0 ? communityUsers : Object.values(usersMap)).filter(
+    (u) => u.id !== currentUser.id
+  );
+  const filteredFeedPosts = feedSearchQuery.trim()
+    ? posts.filter((p) => {
+        const q = feedSearchQuery.toLowerCase();
+        return (
+          (p.caption || '').toLowerCase().includes(q) ||
+          (p.user?.username || '').toLowerCase().includes(q) ||
+          (p.user?.name || '').toLowerCase().includes(q) ||
+          (p.tags || []).some((t) => t.toLowerCase().includes(q))
+        );
+      })
+    : posts;
 
   return (
-    <div className={`min-h-screen bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row transition-colors select-none ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`min-h-screen bg-[#f8fafc] dark:bg-black text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row transition-colors select-none ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Floating Push Notification Toast */}
       <PushNotificationToast
         notification={activePushToast}
@@ -734,7 +870,7 @@ export default function App() {
       />
 
       {/* Content Center Viewport */}
-      <main className="flex-1 flex justify-center px-3 sm:px-6 py-4 md:py-8 pb-20 md:pb-8 min-w-0">
+      <main className="flex-1 flex justify-center px-3 sm:px-6 py-4 md:py-6 pb-20 md:pb-8 min-w-0">
         <div
           className={`w-full ${
             activeTab === 'messages' || activeTab === 'explore' || activeTab === 'profile' || activeTab === 'ads'
@@ -746,13 +882,28 @@ export default function App() {
           {activeTab === 'feed' && (
             <div>
               {/* Header Greeting matching Reference Screenshot */}
-              <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-neutral-200/80 dark:border-neutral-800">
-                <div className="flex items-center gap-1.5 cursor-pointer">
-                  <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                    Hello, {currentUser.name ? currentUser.name.split(' ')[0].toLowerCase() : currentUser.username} 👋
-                  </h1>
-                  <ChevronDown size={18} className="text-neutral-400" />
+              <div className="flex items-center justify-between pb-3 mb-2">
+                <div>
+                  <div className="flex items-center gap-1.5 cursor-pointer">
+                    <h1 className="text-xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-100">
+                      Hello, {currentUser.name ? currentUser.name.split(' ')[0].toLowerCase() : currentUser.username} 👋
+                    </h1>
+                    <ChevronDown size={18} className="text-neutral-400" />
+                  </div>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                    Your creative network is active with {unreadNotificationsCount + posts.length} new updates
+                  </p>
                 </div>
+                {feedSearchQuery.trim() && (
+                  <button
+                    type="button"
+                    onClick={() => setFeedSearchQuery('')}
+                    className="text-xs font-semibold px-2.5 py-1 rounded-full bg-neutral-200/70 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Filter: {feedSearchQuery}</span>
+                    <X size={12} />
+                  </button>
+                )}
               </div>
 
               {/* Stories Carousel */}
@@ -763,48 +914,152 @@ export default function App() {
                 onOpenCreateStory={() => setIsCreateOpen(true)}
               />
 
-              {/* Composer Prompt Box matching Reference Screenshot: "Hello, what's new? ✏️" */}
-              <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-3 mb-4 shadow-2xs">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateOpen(true)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-full bg-neutral-100/80 hover:bg-neutral-200/70 dark:bg-neutral-800 dark:hover:bg-neutral-700/80 text-neutral-600 dark:text-neutral-300 text-sm font-medium transition-colors cursor-pointer"
-                >
-                  <span className="text-[13px] text-neutral-600 dark:text-neutral-300">
-                    Hello, what&apos;s new?
-                  </span>
-                  <Edit3 size={15} className="text-neutral-500 dark:text-neutral-400" />
-                </button>
+              {/* Rich Inline Composer Card matching Reference Screenshot */}
+              <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-4 mb-4 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-neutral-200 dark:ring-neutral-700"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="mb-1.5 flex items-center justify-between">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                        Everyone can reply
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreateOpen(true)}
+                        className="text-[11px] text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 flex items-center gap-1 cursor-pointer"
+                        title="Open full media & filter studio"
+                      >
+                        <Edit3 size={12} />
+                        <span>Studio Modal</span>
+                      </button>
+                    </div>
+
+                    <textarea
+                      value={composerText}
+                      onChange={(e) => setComposerText(e.target.value.slice(0, 280))}
+                      placeholder="What's happening in your studio? ✨"
+                      rows={composerText.length > 65 ? 3 : 2}
+                      className="w-full resize-none bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none leading-relaxed"
+                    />
+
+                    {/* Inline Media Preview */}
+                    {composerMediaUrl && (
+                      <div className="relative mt-2 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950">
+                        <div className="absolute top-2.5 left-2.5 z-10 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[10px] font-semibold">
+                          High-Res Preview
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setComposerMediaUrl(null);
+                            setComposerMediaFile(null);
+                            setComposerIsVideo(false);
+                          }}
+                          className="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-black/70 hover:bg-black text-white cursor-pointer"
+                          aria-label="Remove media"
+                        >
+                          <X size={14} />
+                        </button>
+                        {composerIsVideo ? (
+                          <video src={composerMediaUrl} controls className="w-full max-h-72 object-contain bg-black" />
+                        ) : (
+                          <img src={composerMediaUrl} alt="Upload preview" className="w-full h-auto max-h-80 object-contain mx-auto" />
+                        )}
+                      </div>
+                    )}
+
+                    {/* Composer Toolbar */}
+                    <div className="mt-3 pt-2.5 border-t border-neutral-100 dark:border-neutral-800/80 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          ref={composerFileRef}
+                          type="file"
+                          accept="image/*,video/*"
+                          className="hidden"
+                          onChange={handleInlineFilePick}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => composerFileRef.current?.click()}
+                          className="p-2 rounded-full text-neutral-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors cursor-pointer"
+                          title="Upload Photo or Video"
+                        >
+                          <ImageIcon size={18} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setComposerText((t) => (t + ' ✨').slice(0, 280))}
+                          className="p-2 rounded-full text-neutral-500 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-colors cursor-pointer"
+                          title="Add sparkle emoji"
+                        >
+                          <Smile size={18} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setComposerText((t) => (t + ' #Celoris').slice(0, 280))}
+                          className="p-2 rounded-full text-neutral-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors cursor-pointer"
+                          title="Add hashtag"
+                        >
+                          <Hash size={18} />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] font-mono text-neutral-400">
+                          {composerText.length} / 280
+                        </span>
+                        <button
+                          type="button"
+                          disabled={isPublishingInline || (!composerText.trim() && !composerMediaUrl)}
+                          onClick={handleInlinePublish}
+                          className="px-4 py-1.5 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          {isPublishingInline && <Loader2 size={12} className="animate-spin" />}
+                          <span>{isPublishingInline ? 'Publishing...' : 'Publish'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Live AI Community Simulator Status Bar (Pro Users Only) */}
+              {/* Live Community Simulator Status Bar (Pro Users Only) */}
               {isProUser && (
-                <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-500/30 flex items-center justify-between text-xs backdrop-blur-md shadow-lg animate-in fade-in duration-300">
-                  <div className="flex items-center gap-2.5">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isLiveAutomationActive ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isLiveAutomationActive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                    </span>
+                <div className="mb-4 p-3.5 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs shadow-md animate-in fade-in duration-300">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                      <Sparkles size={16} />
+                    </div>
                     <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-white">Live AI Community Simulator</span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-400 font-mono font-semibold">
-                          {isLiveAutomationActive ? 'ACTIVE 🟢' : 'PAUSED ⏸️'}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">Live Community Simulator</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold flex items-center gap-1 ${
+                          isLiveAutomationActive
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'bg-amber-500/20 text-amber-400'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isLiveAutomationActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                          {isLiveAutomationActive ? 'ACTIVE' : 'PAUSED'}
                         </span>
                       </div>
-                      <p className="text-[11px] text-neutral-400">
+                      <p className="text-[11px] text-neutral-400 mt-0.5">
                         {simulationUsers.length > 0
                           ? `${simulationUsers.length} admin-approved community profiles active in simulation`
-                          : 'AI creators actively liking & commenting on reels every 8s'}
+                          : 'Toggle users ON in Admin User Management to activate simulation'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       type="button"
+                      disabled={simulationUsers.length === 0}
                       onClick={triggerInstantAiEngagement}
-                      className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer hover:scale-102"
+                      className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-neutral-950 font-bold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer"
                     >
                       <Zap size={12} />
                       <span>Auto-Engage Now</span>
@@ -812,7 +1067,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setIsLiveAutomationActive(!isLiveAutomationActive)}
-                      className="px-2 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium text-[11px] transition-colors cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium text-[11px] transition-colors cursor-pointer"
                     >
                       {isLiveAutomationActive ? 'Pause' : 'Resume'}
                     </button>
@@ -821,8 +1076,8 @@ export default function App() {
               )}
 
               {/* Feed Stream */}
-              <div className="space-y-6">
-                {posts.map((post) => (
+              <div className="space-y-5">
+                {filteredFeedPosts.map((post) => (
                   <PostCard
                     key={post.id}
                     post={post}
@@ -1030,6 +1285,9 @@ export default function App() {
           isProUser={isProUser}
           onToggleFollow={handleToggleFollow}
           onSelectUser={handleSelectUser}
+          onSearch={(q) => setFeedSearchQuery(q)}
+          onOpenAdStudio={() => setActiveTab('ads')}
+          onOpenExplore={() => setActiveTab('explore')}
           onEditProfile={() => setIsEditProfileOpen(true)}
         />
       )}

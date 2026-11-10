@@ -43,72 +43,17 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({
 
   const activeConversation = conversations.find((c) => c.id === selectedConvId) || conversations[0];
 
-  // Dummy message history per conversation
+  // Initial message history
   const [messagesHistory, setMessagesHistory] = useState<Record<string, DirectMessage[]>>({
-    conv_sofia: [
+    conv_dheeraj: [
       {
-        id: 'msg_s1',
-        conversationId: 'conv_sofia',
-        senderId: 'user_sofia',
+        id: 'msg_d1',
+        conversationId: 'conv_dheeraj',
+        senderId: 'user_dheeraj',
         sender: activeConversation?.participant || currentUser,
-        text: 'Hey Maya! Loved your recent Tokyo night street series! 🏮',
-        createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-        reactions: [{ userId: 'user_current', emoji: '❤️' }],
-        isRead: true,
-      },
-      {
-        id: 'msg_s2',
-        conversationId: 'conv_sofia',
-        senderId: 'user_current',
-        sender: currentUser,
-        text: 'Thank you Sofia! The rain created such incredible mirror reflections on the asphalt.',
-        createdAt: new Date(Date.now() - 3600000 * 1.5).toISOString(),
-        reactions: [],
-        isRead: true,
-      },
-      {
-        id: 'msg_s3',
-        conversationId: 'conv_sofia',
-        senderId: 'user_sofia',
-        sender: activeConversation?.participant || currentUser,
-        text: 'Maya, I sent you the high-res RAW files from the museum shoot! Did they download okay?',
+        text: 'Welcome to Celoris Social Cloud! Feel free to share your latest creative drops or campaign ideas here.',
         createdAt: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
         reactions: [{ userId: 'user_current', emoji: '❤️' }],
-        isRead: true,
-      },
-    ],
-    conv_kenji: [
-      {
-        id: 'msg_k1',
-        conversationId: 'conv_kenji',
-        senderId: 'user_current',
-        sender: currentUser,
-        text: 'Are you doing another night photowalk in Shibuya next week?',
-        createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
-        reactions: [{ userId: 'user_kenji', emoji: '🔥' }],
-        isRead: true,
-      },
-      {
-        id: 'msg_k2',
-        conversationId: 'conv_kenji',
-        senderId: 'user_kenji',
-        sender: activeConversation?.participant || currentUser,
-        text: 'Yes! Tuesday around 8 PM. Bringing the 50mm f/1.2.',
-        createdAt: new Date(Date.now() - 1 * 3600 * 1000).toISOString(),
-        reactions: [],
-        isRead: true,
-      },
-    ],
-    conv_elena: [
-      {
-        id: 'msg_e1',
-        conversationId: 'conv_elena',
-        senderId: 'user_elena',
-        sender: activeConversation?.participant || currentUser,
-        text: 'Check out this ridge camp view!',
-        imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80',
-        createdAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
-        reactions: [{ userId: 'user_current', emoji: '😍' }],
         isRead: true,
       },
     ],
