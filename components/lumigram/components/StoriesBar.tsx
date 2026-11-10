@@ -70,6 +70,10 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
                   <img
                     src={story.user.avatar}
                     alt={story.user.username}
+                    onError={(e) => {
+                      const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(story.user.name || story.user.username)}&background=0f172a&color=fff`;
+                      if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+                    }}
                     className="w-13 h-13 rounded-full object-cover"
                   />
                 </div>

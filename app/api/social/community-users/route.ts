@@ -11,8 +11,10 @@ export async function GET() {
       .select('id, username, full_name, bio, profile_pic_url, verification_status, is_online, allow_ai_simulation, last_active')
       .neq('is_social_blocked', true)
       .not('username', 'is', null)
+      .not('profile_pic_url', 'is', null)
+      .neq('profile_pic_url', '')
       .order('last_active', { ascending: false, nullsFirst: false })
-      .limit(30)
+      .limit(40)
 
     if (error) {
       console.error('[community-users] query error:', error)
@@ -20,7 +22,7 @@ export async function GET() {
     }
 
     const users = (data || [])
-      .filter((u: any) => (u.username || '').trim().length > 1)
+      .filter((u: any) => (u.username || '').trim().length > 1 && (u.profile_pic_url || '').trim().length > 4)
       .map((u: any) => {
         let avatar = ''
         if (u.profile_pic_url) {

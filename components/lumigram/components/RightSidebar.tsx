@@ -104,6 +104,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   <img
                     src={user.avatar}
                     alt={user.name || user.username}
+                    onError={(e) => {
+                      const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=0f172a&color=fff`;
+                      if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+                    }}
                     className="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-neutral-200 dark:ring-neutral-700"
                   />
                   <div className="min-w-0 flex-1">

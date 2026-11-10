@@ -14,7 +14,6 @@ import {
   Sun,
   Moon,
   PlusSquare,
-  Gift,
   ArrowUpFromLine,
 } from 'lucide-react';
 import { User, ThemeMode } from '../types';
@@ -221,26 +220,8 @@ export const Navigation: React.FC<NavigationProps> = ({
           </nav>
         </div>
 
-        {/* Bottom Creator XP Card + Compact Footer matching Reference Screenshot */}
-        <div className="space-y-3">
-          <div className="p-2.5 rounded-2xl bg-neutral-900 dark:bg-neutral-900 border border-neutral-800 text-white flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0">
-                8
-              </div>
-              <div className="leading-tight">
-                <div className="text-xs font-bold text-white flex items-center gap-1">
-                  <span>2,190</span>
-                  <span className="text-[10px] font-mono text-emerald-400">XP</span>
-                </div>
-                <span className="text-[10px] text-neutral-400">Top 5% Creator</span>
-              </div>
-            </div>
-            <div className="w-7 h-7 rounded-xl bg-neutral-800 flex items-center justify-center text-amber-400">
-              <Gift size={14} />
-            </div>
-          </div>
-
+        {/* Compact Footer with spacing above global floating XP pill */}
+        <div className="pb-14">
           <div className="text-[11px] text-neutral-400 dark:text-neutral-500 space-y-1 select-none leading-relaxed px-1">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <span className="hover:underline cursor-pointer">Business</span>
