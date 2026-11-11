@@ -6,6 +6,13 @@ const VPS_SECRET = process.env.CELORIS_CLOUD_SECRET || 'celoris_cloud_secret_786
 
 export async function POST(req: NextRequest) {
   try {
+    if (process.env.ENABLE_WORDPRESS_CLOUD !== 'true') {
+      return NextResponse.json(
+        { error: 'Free WordPress Cloud hosting is temporarily suspended for maintenance.' },
+        { status: 503 }
+      );
+    }
+
     const supabase = await createRouteClient();
     let authUser = null;
     try {

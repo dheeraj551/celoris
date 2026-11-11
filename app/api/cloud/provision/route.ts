@@ -41,6 +41,13 @@ function generateSecurePassword(length = 16): string {
 
 export async function POST(req: NextRequest) {
   try {
+    if (process.env.ENABLE_WORDPRESS_CLOUD !== 'true') {
+      return NextResponse.json(
+        { error: 'Free WordPress Cloud hosting is temporarily suspended for maintenance. Please check back later.' },
+        { status: 503 }
+      );
+    }
+
     // Enforce mandatory user registration to prevent bot and spam abuse
     const supabase = await createRouteClient();
     let authUser = null;

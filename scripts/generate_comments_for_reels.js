@@ -134,7 +134,7 @@ const posts = dataset.map((item, idx) => {
   const user = item.user || {};
   const username = user.username || 'creator_' + code.toLowerCase();
   const name = user.full_name || username;
-  const avatar = 'https://media.celoris.in/reels/avatars/' + username + '.jpg';
+  const avatar = '/api/social/media/avatar_' + username + '.jpg';
 
   let captionText = '';
   if (typeof item.caption === 'object' && item.caption !== null) {
@@ -167,8 +167,8 @@ const posts = dataset.map((item, idx) => {
       postsCount: 32,
       isOnline: true,
     },
-    images: ['https://media.celoris.in/reels/' + code + '.mp4'],
-    thumbnail: 'https://media.celoris.in/reels/' + code + '_thumb.jpg',
+    images: ['/api/social/media/' + code + '.mp4'],
+    thumbnail: '/api/social/media/' + code + '_thumb.jpg',
     mediaType: 'video',
     aspectRatio: '9:16',
     caption: captionText.trim(),
@@ -183,7 +183,7 @@ const posts = dataset.map((item, idx) => {
 });
 
 const tsContent = 'import { Post } from "../types";\n\n' +
-  '// 39 Trending Viral Reels downloaded and hosted on VPS (https://media.celoris.in/reels/)\n' +
+  '// 39 Trending Viral Reels hosted on Cloudflare R2 (/api/social/media/)\n' +
   '// With automated realistic contextual comments & engagement\n' +
   'export const SCRAPED_VIRAL_REELS: Post[] = ' + JSON.stringify(posts, null, 2) + ';\n';
 

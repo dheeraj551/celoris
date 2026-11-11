@@ -28,15 +28,16 @@ export async function GET() {
       availableProviders: [
         {
           id: 'livekit',
-          name: 'LiveKit WebRTC (Self-Hosted Contabo VPS)',
+          name: 'LiveKit WebRTC (Self-Hosted)',
           url: livekitUrl,
           status: livekitHealthy ? 'online' : 'offline',
-          recommended: true,
+          recommended: false,
         },
         {
           id: 'agora',
           name: 'Agora RTC',
           status: 'configured',
+          recommended: true,
         },
         {
           id: 'tencent',

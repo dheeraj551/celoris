@@ -48,11 +48,11 @@ export async function GET(
     const r2Key = `social/${filename}`;
     const signedUrl = await createR2SignedReadUrl(r2Key, 86400);
 
-    // Redirect browser directly to signed CDN URL with cache headers
+    // Redirect browser directly to signed CDN URL with safe cache window (signed for 24h, cached 1h)
     return NextResponse.redirect(signedUrl, {
       status: 307,
       headers: {
-        'Cache-Control': 'public, max-age=86400',
+        'Cache-Control': 'public, max-age=3600',
       },
     });
   } catch (error: any) {

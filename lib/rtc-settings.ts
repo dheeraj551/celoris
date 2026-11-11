@@ -5,7 +5,7 @@
 
 export type RtcProvider = 'livekit' | 'agora' | 'tencent'
 
-let inMemoryProvider: RtcProvider = 'livekit'
+let inMemoryProvider: RtcProvider = 'agora'
 
 export function getActiveRtcProvider(): RtcProvider {
   const envPref = (process.env.CELORIS_RTC_PROVIDER || process.env.NEXT_PUBLIC_RTC_PROVIDER || '').trim().toLowerCase()

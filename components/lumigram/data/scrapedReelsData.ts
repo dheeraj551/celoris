@@ -1,6 +1,6 @@
 import { Post } from "../types";
 
-// 39 Trending Viral Reels downloaded and hosted on VPS (https://media.celoris.in/reels/)
+// 39 Trending Viral Reels hosted on Cloudflare R2 (/api/social/media/)
 // With automated realistic contextual comments & engagement
 export const SCRAPED_VIRAL_REELS: Post[] = [
   {
@@ -10,7 +10,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_pixelsticksstudio",
       "username": "pixelsticksstudio",
       "name": "Pixel Stick Studio",
-      "avatar": "https://media.celoris.in/reels/avatars/pixelsticksstudio.jpg",
+      "avatar": "/api/social/media/avatar_pixelsticksstudio.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 4102273,
@@ -19,9 +19,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Db4eaYWBlXH.mp4"
+      "/api/social/media/Db4eaYWBlXH.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Db4eaYWBlXH_thumb.jpg",
+    "thumbnail": "/api/social/media/Db4eaYWBlXH_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "1760vs 2026 #stickmancomedy #viralvideo #explorepage #relatable #trending",
@@ -147,7 +147,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_shivam__didel",
       "username": "shivam__didel",
       "name": "Shivam Didel",
-      "avatar": "https://media.celoris.in/reels/avatars/shivam__didel.jpg",
+      "avatar": "/api/social/media/avatar_shivam__didel.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1078816,
@@ -156,9 +156,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Ddj0KdESeBu.mp4"
+      "/api/social/media/Ddj0KdESeBu.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Ddj0KdESeBu_thumb.jpg",
+    "thumbnail": "/api/social/media/Ddj0KdESeBu_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "☠️Danger Ahead ❌\n#nagaur #stunt #jeep #trending #reels",
@@ -284,7 +284,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_noorullah.ai",
       "username": "noorullah.ai",
       "name": "Noor Ullah",
-      "avatar": "https://media.celoris.in/reels/avatars/noorullah.ai.jpg",
+      "avatar": "/api/social/media/avatar_noorullah.ai.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 944480,
@@ -293,9 +293,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeKutl3EkHp.mp4"
+      "/api/social/media/DeKutl3EkHp.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeKutl3EkHp_thumb.jpg",
+    "thumbnail": "/api/social/media/DeKutl3EkHp_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "ACP Saab Hath Hola Rakho Twadi Umar Hogyi Ay😞🙏\n.\n.\n#viral #trending #ai #crowd #celebrites",
@@ -401,7 +401,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_sukhmanikaurrai",
       "username": "sukhmanikaurrai",
       "name": "Sukh✨",
-      "avatar": "https://media.celoris.in/reels/avatars/sukhmanikaurrai.jpg",
+      "avatar": "/api/social/media/avatar_sukhmanikaurrai.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1267659,
@@ -410,9 +410,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DcgnvS9SRR-.mp4"
+      "/api/social/media/DcgnvS9SRR-.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DcgnvS9SRR-_thumb.jpg",
+    "thumbnail": "/api/social/media/DcgnvS9SRR-_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Kyun nhi maa sari duniya teri tarha?🥲 \n.\n.\n.\n.\n#dance #trending #viral #trendingsongs #explore",
@@ -538,7 +538,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_apna_bihar_tour7",
       "username": "apna_bihar_tour7",
       "name": "Satyam Kumar Sahni",
-      "avatar": "https://media.celoris.in/reels/avatars/apna_bihar_tour7.jpg",
+      "avatar": "/api/social/media/avatar_apna_bihar_tour7.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 5726975,
@@ -547,9 +547,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DaQAq0myTX5.mp4"
+      "/api/social/media/DaQAq0myTX5.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DaQAq0myTX5_thumb.jpg",
+    "thumbnail": "/api/social/media/DaQAq0myTX5_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "मानसून मौसम🌧️❤️🌈\n\n#mansoon #waither #trending #village",
@@ -654,7 +654,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_macy_st01",
       "username": "macy_st01",
       "name": "macy",
-      "avatar": "https://media.celoris.in/reels/avatars/macy_st01.jpg",
+      "avatar": "/api/social/media/avatar_macy_st01.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1323206,
@@ -663,9 +663,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeZ8WdCSzea.mp4"
+      "/api/social/media/DeZ8WdCSzea.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeZ8WdCSzea_thumb.jpg",
+    "thumbnail": "/api/social/media/DeZ8WdCSzea_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "POV: Your baby meets a golden statue… and decides it deserves a KISS! 😭💋😂\n\nI WAS NOT READY FOR THAT ENDING! 🥹❤️\n\n#ViralVideo #CuteBaby #FunnyMoments #Unexpected #Trending",
@@ -771,7 +771,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_gurjeet.singhpreet",
       "username": "gurjeet.singhpreet",
       "name": "Gurjeet",
-      "avatar": "https://media.celoris.in/reels/avatars/gurjeet.singhpreet.jpg",
+      "avatar": "/api/social/media/avatar_gurjeet.singhpreet.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1113447,
@@ -780,9 +780,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeoFWsgytsW.mp4"
+      "/api/social/media/DeoFWsgytsW.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeoFWsgytsW_thumb.jpg",
+    "thumbnail": "/api/social/media/DeoFWsgytsW_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "#fyp #trending",
@@ -925,7 +925,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_pandaboostories",
       "username": "pandaboostories",
       "name": "Pandaboo",
-      "avatar": "https://media.celoris.in/reels/avatars/pandaboostories.jpg",
+      "avatar": "/api/social/media/avatar_pandaboostories.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 3040099,
@@ -934,9 +934,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeVefw6ttKk.mp4"
+      "/api/social/media/DeVefw6ttKk.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeVefw6ttKk_thumb.jpg",
+    "thumbnail": "/api/social/media/DeVefw6ttKk_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "One boop for Mama, one for Dada… nobody sleeps when Boo’s awake! 🤭☀️ Tiny fingers, big morning plans. 🐼💛\n\n#PandaBooStories #instagood #love #viral #trending",
@@ -1082,7 +1082,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_ryder_smith11",
       "username": "ryder_smith11",
       "name": "Ryder",
-      "avatar": "https://media.celoris.in/reels/avatars/ryder_smith11.jpg",
+      "avatar": "/api/social/media/avatar_ryder_smith11.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1432885,
@@ -1091,9 +1091,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DedKgi2qCSB.mp4"
+      "/api/social/media/DedKgi2qCSB.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DedKgi2qCSB_thumb.jpg",
+    "thumbnail": "/api/social/media/DedKgi2qCSB_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "make sure to put commas 😭😂 #reels #funny #relatable #trending #viral",
@@ -1219,7 +1219,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_saroocute861",
       "username": "saroocute861",
       "name": "saroo",
-      "avatar": "https://media.celoris.in/reels/avatars/saroocute861.jpg",
+      "avatar": "/api/social/media/avatar_saroocute861.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 98118,
@@ -1228,9 +1228,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DdQ9xW9Ms97.mp4"
+      "/api/social/media/DdQ9xW9Ms97.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DdQ9xW9Ms97_thumb.jpg",
+    "thumbnail": "/api/social/media/DdQ9xW9Ms97_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "We Dropped iphone 18 pro max into LAVA!\nExperiment on iphone 18 pro max \n#volcano #icevslava #extremeexperiment #lava #trending shortsfeed magma\n\nhelicopterdrop sciencefacts viralshorts",
@@ -1336,7 +1336,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_maxtoon.0",
       "username": "maxtoon.0",
       "name": "MaxToon",
-      "avatar": "https://media.celoris.in/reels/avatars/maxtoon.0.jpg",
+      "avatar": "/api/social/media/avatar_maxtoon.0.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 831360,
@@ -1345,9 +1345,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeosagCtYZN.mp4"
+      "/api/social/media/DeosagCtYZN.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeosagCtYZN_thumb.jpg",
+    "thumbnail": "/api/social/media/DeosagCtYZN_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "كيف بتشتغل مقابس الكهرباء؟ 🤔 #trending #viral #reels #fyp #explore",
@@ -1473,7 +1473,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_arynnn.0x",
       "username": "arynnn.0x",
       "name": "Aryan Soni",
-      "avatar": "https://media.celoris.in/reels/avatars/arynnn.0x.jpg",
+      "avatar": "/api/social/media/avatar_arynnn.0x.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 645259,
@@ -1482,9 +1482,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DcoQmNUTlHH.mp4"
+      "/api/social/media/DcoQmNUTlHH.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DcoQmNUTlHH_thumb.jpg",
+    "thumbnail": "/api/social/media/DcoQmNUTlHH_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Anyone seen a phone stuck to the train recently?\n.\n#trending #viral #fashion #explorepage #fyp",
@@ -1610,7 +1610,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_bro.wn.sug.ar",
       "username": "bro.wn.sug.ar",
       "name": "Aishika Mehra",
-      "avatar": "https://media.celoris.in/reels/avatars/bro.wn.sug.ar.jpg",
+      "avatar": "/api/social/media/avatar_bro.wn.sug.ar.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 51794,
@@ -1619,9 +1619,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfUy-j7ovlH.mp4"
+      "/api/social/media/DfUy-j7ovlH.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfUy-j7ovlH_thumb.jpg",
+    "thumbnail": "/api/social/media/DfUy-j7ovlH_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Hey saved me🤗🤗\n.\n.\n.\n\n#fypppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp #explorepage #viral #explore #trending",
@@ -1747,7 +1747,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_yourfavgujjubaddie",
       "username": "yourfavgujjubaddie",
       "name": "Khushi Ramanandi💗🧿",
-      "avatar": "https://media.celoris.in/reels/avatars/yourfavgujjubaddie.jpg",
+      "avatar": "/api/social/media/avatar_yourfavgujjubaddie.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 35195,
@@ -1756,9 +1756,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfViSkHt0IU.mp4"
+      "/api/social/media/DfViSkHt0IU.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfViSkHt0IU_thumb.jpg",
+    "thumbnail": "/api/social/media/DfViSkHt0IU_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "My chotu sa dola😭🫰🏻\n\n#yourfavgujjubaddie #jaidwarkadhish #trending #bicepheart #bicep",
@@ -1864,7 +1864,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_jiya_rani902",
       "username": "jiya_rani902",
       "name": "jiya_rani902",
-      "avatar": "https://media.celoris.in/reels/avatars/jiya_rani902.jpg",
+      "avatar": "/api/social/media/avatar_jiya_rani902.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 49425,
@@ -1873,9 +1873,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfUbhHgyOWC.mp4"
+      "/api/social/media/DfUbhHgyOWC.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfUbhHgyOWC_thumb.jpg",
+    "thumbnail": "/api/social/media/DfUbhHgyOWC_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "##viral #reels #trending #trendingreels",
@@ -2020,7 +2020,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_aditirajputtt01",
       "username": "aditirajputtt01",
       "name": "KUMARI ADITI",
-      "avatar": "https://media.celoris.in/reels/avatars/aditirajputtt01.jpg",
+      "avatar": "/api/social/media/avatar_aditirajputtt01.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 26332,
@@ -2029,9 +2029,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfWpRMXTGYk.mp4"
+      "/api/social/media/DfWpRMXTGYk.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfWpRMXTGYk_thumb.jpg",
+    "thumbnail": "/api/social/media/DfWpRMXTGYk_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "I swear💋❤️‍🔥…………\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n#gymasethics #viral #trendingreels #trending #gym",
@@ -2157,7 +2157,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_satyalife.26",
       "username": "satyalife.26",
       "name": "Satya Lifestyle",
-      "avatar": "https://media.celoris.in/reels/avatars/satyalife.26.jpg",
+      "avatar": "/api/social/media/avatar_satyalife.26.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": false,
       "followersCount": 11063,
@@ -2166,9 +2166,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfWy2FnBhvG.mp4"
+      "/api/social/media/DfWy2FnBhvG.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfWy2FnBhvG_thumb.jpg",
+    "thumbnail": "/api/social/media/DfWy2FnBhvG_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Ye kya ho raha hai 😳 #trendingreels #reel #trending #love #reelsindia",
@@ -2294,7 +2294,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_new_aiworld_0007",
       "username": "new_aiworld_0007",
       "name": "Art's",
-      "avatar": "https://media.celoris.in/reels/avatars/new_aiworld_0007.jpg",
+      "avatar": "/api/social/media/avatar_new_aiworld_0007.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 40102,
@@ -2303,9 +2303,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfUd-dRv7B-.mp4"
+      "/api/social/media/DfUd-dRv7B-.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfUd-dRv7B-_thumb.jpg",
+    "thumbnail": "/api/social/media/DfUd-dRv7B-_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Tag your love 😘💗 \n.\n.\n.\n.\n.\n#viralreels #exploremore #fyp #aivideo #trending",
@@ -2431,7 +2431,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_itskomalsharma28",
       "username": "itskomalsharma28",
       "name": "it's 🪬 (Komal)🪬 Sharma....",
-      "avatar": "https://media.celoris.in/reels/avatars/itskomalsharma28.jpg",
+      "avatar": "/api/social/media/avatar_itskomalsharma28.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": false,
       "followersCount": 2013,
@@ -2440,9 +2440,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfUKkXTSKm2.mp4"
+      "/api/social/media/DfUKkXTSKm2.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfUKkXTSKm2_thumb.jpg",
+    "thumbnail": "/api/social/media/DfUKkXTSKm2_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Wait for end 😱😰#viral #reels #instagram #trending #love",
@@ -2547,7 +2547,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_rahul_paal_1",
       "username": "rahul_paal_1",
       "name": "Rahul Pal",
-      "avatar": "https://media.celoris.in/reels/avatars/rahul_paal_1.jpg",
+      "avatar": "/api/social/media/avatar_rahul_paal_1.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 917933,
@@ -2556,9 +2556,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfTQxCaoOVf.mp4"
+      "/api/social/media/DfTQxCaoOVf.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfTQxCaoOVf_thumb.jpg",
+    "thumbnail": "/api/social/media/DfTQxCaoOVf_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "#viral #explore #trending #viralreels #reels",
@@ -2704,7 +2704,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user__lalita_lp",
       "username": "_lalita_lp",
       "name": "Lalita",
-      "avatar": "https://media.celoris.in/reels/avatars/_lalita_lp.jpg",
+      "avatar": "/api/social/media/avatar__lalita_lp.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": false,
       "followersCount": 20131,
@@ -2713,9 +2713,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfWV8F3uFJi.mp4"
+      "/api/social/media/DfWV8F3uFJi.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfWV8F3uFJi_thumb.jpg",
+    "thumbnail": "/api/social/media/DfWV8F3uFJi_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "#trending #instagram #viral #reels #surat",
@@ -2861,7 +2861,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_rising_stars_18",
       "username": "rising_stars_18",
       "name": "Rising Star Fam",
-      "avatar": "https://media.celoris.in/reels/avatars/rising_stars_18.jpg",
+      "avatar": "/api/social/media/avatar_rising_stars_18.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 43050,
@@ -2870,9 +2870,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfX7tCrMU1e.mp4"
+      "/api/social/media/DfX7tCrMU1e.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfX7tCrMU1e_thumb.jpg",
+    "thumbnail": "/api/social/media/DfX7tCrMU1e_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Blooper 😂😂 take no 111472728 😳😂\nBts shoot karne vala kisko dikha ??😂😂\n#RisingStars #TeamRs \n#trending #shararat #villa",
@@ -2978,7 +2978,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_sweetymishra2419",
       "username": "sweetymishra2419",
       "name": "Sweety Mishra",
-      "avatar": "https://media.celoris.in/reels/avatars/sweetymishra2419.jpg",
+      "avatar": "/api/social/media/avatar_sweetymishra2419.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 110700,
@@ -2987,9 +2987,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfXAv9vTlEA.mp4"
+      "/api/social/media/DfXAv9vTlEA.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfXAv9vTlEA_thumb.jpg",
+    "thumbnail": "/api/social/media/DfXAv9vTlEA_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Mene kuch galat kiya ? .. ❤️😅… @sweetymishra2419 \n.\n.\n..\n#viral #share #trending #explore #fyp",
@@ -3135,7 +3135,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_trendzellastories",
       "username": "trendzellastories",
       "name": "TrendZella Stories",
-      "avatar": "https://media.celoris.in/reels/avatars/trendzellastories.jpg",
+      "avatar": "/api/social/media/avatar_trendzellastories.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 72449,
@@ -3144,9 +3144,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfU5TL4OCJf.mp4"
+      "/api/social/media/DfU5TL4OCJf.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfU5TL4OCJf_thumb.jpg",
+    "thumbnail": "/api/social/media/DfU5TL4OCJf_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "She Didn’t Just Walk Away… She Burned Every Bridge Back. 🔥\n\nلم تكتفِ بالرحيل… بل أحرقت طريق العودة. أحيانًا يكون أصعب قرار هو القرار الذي ينقذك. ❤️‍🩹\n\n#Reels #Viral #Explore #Trending #fyp",
@@ -3252,7 +3252,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_sukhmanikaurrai",
       "username": "sukhmanikaurrai",
       "name": "Sukh✨",
-      "avatar": "https://media.celoris.in/reels/avatars/sukhmanikaurrai.jpg",
+      "avatar": "/api/social/media/avatar_sukhmanikaurrai.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 890097,
@@ -3261,9 +3261,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Db_JsuXyxMM.mp4"
+      "/api/social/media/Db_JsuXyxMM.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Db_JsuXyxMM_thumb.jpg",
+    "thumbnail": "/api/social/media/Db_JsuXyxMM_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Maa❤️🥺 \n.\n.\n.\n.\n#dance #trending #maa #viralreels #explore",
@@ -3369,7 +3369,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_itzsandles",
       "username": "itzsandles",
       "name": "Nathan Sandars",
-      "avatar": "https://media.celoris.in/reels/avatars/itzsandles.jpg",
+      "avatar": "/api/social/media/avatar_itzsandles.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 833822,
@@ -3378,9 +3378,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DcWf0IPBXBX.mp4"
+      "/api/social/media/DcWf0IPBXBX.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DcWf0IPBXBX_thumb.jpg",
+    "thumbnail": "/api/social/media/DcWf0IPBXBX_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "They turned into princesses 🤣 👑 #explore #reels #viral #trending",
@@ -3505,7 +3505,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_littlechaos.family",
       "username": "littlechaos.family",
       "name": "Littlechaos.family",
-      "avatar": "https://media.celoris.in/reels/avatars/littlechaos.family.jpg",
+      "avatar": "/api/social/media/avatar_littlechaos.family.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 812022,
@@ -3514,9 +3514,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeHsYhjNmQs.mp4"
+      "/api/social/media/DeHsYhjNmQs.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeHsYhjNmQs_thumb.jpg",
+    "thumbnail": "/api/social/media/DeHsYhjNmQs_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "On the days I feel like I’m failing… she reminds me I’m her whole world 🥹❤️#funnybaby #animation #trending #mom #fyp",
@@ -3641,7 +3641,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_pratapgarh_selfdefense",
       "username": "pratapgarh_selfdefense",
       "name": "Pratapgarh Self defense",
-      "avatar": "https://media.celoris.in/reels/avatars/pratapgarh_selfdefense.jpg",
+      "avatar": "/api/social/media/avatar_pratapgarh_selfdefense.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 41834,
@@ -3650,9 +3650,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DecNeCASytl.mp4"
+      "/api/social/media/DecNeCASytl.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DecNeCASytl_thumb.jpg",
+    "thumbnail": "/api/social/media/DecNeCASytl_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Sirf 6 Seconds Dekhiye Kaise Ek Ladki Ne Khud Ko Bachaya\n.\n.\n.\n.\n #Shorts#SelfDefense #WomenSafety #Trending",
@@ -3796,7 +3796,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_allieschnacky",
       "username": "allieschnacky",
       "name": "allie schnacky 💓",
-      "avatar": "https://media.celoris.in/reels/avatars/allieschnacky.jpg",
+      "avatar": "/api/social/media/avatar_allieschnacky.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 322262,
@@ -3805,9 +3805,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Db6JPamxXPr.mp4"
+      "/api/social/media/Db6JPamxXPr.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Db6JPamxXPr_thumb.jpg",
+    "thumbnail": "/api/social/media/Db6JPamxXPr_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Throwback to where it all began 😂\n\n#funny #brother #humor #christian #trending",
@@ -3913,7 +3913,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user__the__exxplorer_",
       "username": "_the__exxplorer_",
       "name": "Aneesh K K",
-      "avatar": "https://media.celoris.in/reels/avatars/_the__exxplorer_.jpg",
+      "avatar": "/api/social/media/avatar__the__exxplorer_.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 3584629,
@@ -3922,9 +3922,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeTDJxlSTnp.mp4"
+      "/api/social/media/DeTDJxlSTnp.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeTDJxlSTnp_thumb.jpg",
+    "thumbnail": "/api/social/media/DeTDJxlSTnp_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Dhanushkodi📍\nPampan bridge\nArichil Munai \nRameswaram\nTamilnadu\n.\n@djiglobal @djiindia.official \n.\n.\n#reelsvideo #reelkarofeelkaro #trendingreels #trending #explorepage",
@@ -4070,7 +4070,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_pulikkaatil",
       "username": "pulikkaatil",
       "name": "പുലിക്കാട്ടിൽ",
-      "avatar": "https://media.celoris.in/reels/avatars/pulikkaatil.jpg",
+      "avatar": "/api/social/media/avatar_pulikkaatil.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 592628,
@@ -4079,9 +4079,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Den5hxdsJwO.mp4"
+      "/api/social/media/Den5hxdsJwO.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Den5hxdsJwO_thumb.jpg",
+    "thumbnail": "/api/social/media/Den5hxdsJwO_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "💃\n\n#college #viral #trending #fyp #instadaily",
@@ -4207,7 +4207,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_naleef_editz",
       "username": "naleef_editz",
       "name": "mohamed Naleef",
-      "avatar": "https://media.celoris.in/reels/avatars/naleef_editz.jpg",
+      "avatar": "/api/social/media/avatar_naleef_editz.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 281114,
@@ -4216,9 +4216,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DfAXIBnsVt0.mp4"
+      "/api/social/media/DfAXIBnsVt0.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DfAXIBnsVt0_thumb.jpg",
+    "thumbnail": "/api/social/media/DfAXIBnsVt0_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Comment \"jailer2\" for the prompt\n\nMoorthi Anna payalunga 😅🔥\n\n#jailer2 #rajanikanth #jailer #trending #explorepage",
@@ -4344,7 +4344,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_abdulkorim200501",
       "username": "abdulkorim200501",
       "name": "Abdul Korim",
-      "avatar": "https://media.celoris.in/reels/avatars/abdulkorim200501.jpg",
+      "avatar": "/api/social/media/avatar_abdulkorim200501.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 193412,
@@ -4353,9 +4353,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/De7CcRpqPAp.mp4"
+      "/api/social/media/De7CcRpqPAp.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/De7CcRpqPAp_thumb.jpg",
+    "thumbnail": "/api/social/media/De7CcRpqPAp_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "#fyp #comedy #viral #trending #funny",
@@ -4461,7 +4461,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user__adriana_christian455",
       "username": "_adriana_christian455",
       "name": "Sukil",
-      "avatar": "https://media.celoris.in/reels/avatars/_adriana_christian455.jpg",
+      "avatar": "/api/social/media/avatar__adriana_christian455.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 705768,
@@ -4470,9 +4470,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Ddqnl38xEb3.mp4"
+      "/api/social/media/Ddqnl38xEb3.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Ddqnl38xEb3_thumb.jpg",
+    "thumbnail": "/api/social/media/Ddqnl38xEb3_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "H2O???🤯#keyboard #viral #zornher #zh980  #foryoulage #fyp #typ #foryou #customkeyboard #cool #mechanicalkeyboard #trending #game #fypシ #zornher #asmr #fypシ゚viral #foryoupage #trend",
@@ -4629,7 +4629,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_chiku.life1",
       "username": "chiku.life1",
       "name": "Chiku",
-      "avatar": "https://media.celoris.in/reels/avatars/chiku.life1.jpg",
+      "avatar": "/api/social/media/avatar_chiku.life1.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 239663,
@@ -4638,9 +4638,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DcGXRB9OobJ.mp4"
+      "/api/social/media/DcGXRB9OobJ.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DcGXRB9OobJ_thumb.jpg",
+    "thumbnail": "/api/social/media/DcGXRB9OobJ_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Mere Papa Ka Ghar Hai 😄\n\n#viral \n#baby \n#reel \n#trending \n#fyp",
@@ -4786,7 +4786,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_tauseen2ramucomdian",
       "username": "tauseen2ramucomdian",
       "name": "Ramu Tauseen",
-      "avatar": "https://media.celoris.in/reels/avatars/tauseen2ramucomdian.jpg",
+      "avatar": "/api/social/media/avatar_tauseen2ramucomdian.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 306803,
@@ -4795,9 +4795,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/De1hk0JSahG.mp4"
+      "/api/social/media/De1hk0JSahG.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/De1hk0JSahG_thumb.jpg",
+    "thumbnail": "/api/social/media/De1hk0JSahG_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Don’t try this at home 😂😂🙏#viral #comedyreels #trending #explore #funnyvideos \n.\n.\n.\nDisclaimer: Yeh video sirf manoranjan (entertainment) aur comedy ke uddeshya se banayi gayi hai. Is video mein dikhaye gaye stunto ya harkaton ko real life mein bilkul na dohraein, yeh khatarnak ho sakta hai. Kisi bhi vyakti ya ghatna ka uddeshya kisi ki bhavnaon ko thes pahunchana nahi hai",
@@ -4902,7 +4902,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_its_ruhi2307",
       "username": "its_ruhi2307",
       "name": "DEEPANSHI",
-      "avatar": "https://media.celoris.in/reels/avatars/its_ruhi2307.jpg",
+      "avatar": "/api/social/media/avatar_its_ruhi2307.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1080085,
@@ -4911,9 +4911,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/De1lapSTZf_.mp4"
+      "/api/social/media/De1lapSTZf_.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/De1lapSTZf__thumb.jpg",
+    "thumbnail": "/api/social/media/De1lapSTZf__thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Baal Baal bach gai 🥲\n\n#reels #trending #viral #foryou #love",
@@ -5059,7 +5059,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_anshul_yadav19",
       "username": "anshul_yadav19",
       "name": "Anshul Yadav",
-      "avatar": "https://media.celoris.in/reels/avatars/anshul_yadav19.jpg",
+      "avatar": "/api/social/media/avatar_anshul_yadav19.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 1395808,
@@ -5068,9 +5068,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/DeQ1UwaSAOQ.mp4"
+      "/api/social/media/DeQ1UwaSAOQ.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/DeQ1UwaSAOQ_thumb.jpg",
+    "thumbnail": "/api/social/media/DeQ1UwaSAOQ_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "chai wali ki didi ne pakad liya ❤️🥰 #anshulyadav #viralvideos #trending #explorepage #couplegoals \n\nChai wali se pya @anshul_yadav19",
@@ -5176,7 +5176,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "id": "user_cadel_and_mia1",
       "username": "cadel_and_mia1",
       "name": "CADEL & MIA",
-      "avatar": "https://media.celoris.in/reels/avatars/cadel_and_mia1.jpg",
+      "avatar": "/api/social/media/avatar_cadel_and_mia1.jpg",
       "bio": "Digital Creator · Featured on Celoris Pulse",
       "isVerified": true,
       "followersCount": 526706,
@@ -5185,9 +5185,9 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
       "isOnline": true
     },
     "images": [
-      "https://media.celoris.in/reels/Dd7SEdnTpj-.mp4"
+      "/api/social/media/Dd7SEdnTpj-.mp4"
     ],
-    "thumbnail": "https://media.celoris.in/reels/Dd7SEdnTpj-_thumb.jpg",
+    "thumbnail": "/api/social/media/Dd7SEdnTpj-_thumb.jpg",
     "mediaType": "video",
     "aspectRatio": "9:16",
     "caption": "Never taking my glasses off again 🕷️💀....\n#funny #couplegoals #trending #viralreels #couple",

@@ -57,6 +57,11 @@ export default function App() {
       {/* Top Navigation */}
       <Navbar onClaimClick={() => handleOpenClaimModal()} />
 
+      {/* Infrastructure Upgrade Suspension Notice */}
+      <div className="bg-amber-500/10 border-b border-amber-500/25 px-4 py-2.5 text-center text-xs text-amber-300 font-medium">
+        Free WordPress Cloud provisioning is temporarily suspended during server upgrades. Existing sites are paused until the new node is active.
+      </div>
+
       {/* Main Landing Page Flow */}
       <main className="flex-1">
         {/* Section 1: Hero & Interactive Subdomain Claimer */}
