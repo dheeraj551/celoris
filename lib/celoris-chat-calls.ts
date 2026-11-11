@@ -61,9 +61,9 @@ const AGORA_APP_CERTIFICATE = (process.env.AGORA_APP_CERTIFICATE || '').trim()
 const TENCENT_READY = !!(process.env.TENCENT_TRTC_SDK_APP_ID || '').trim() && !!(process.env.TENCENT_TRTC_SECRET_KEY || '').trim()
 const AGORA_READY = !!AGORA_APP_ID && !!AGORA_APP_CERTIFICATE
 
-const LIVEKIT_URL = (process.env.LIVEKIT_URL || process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://livekit.celoris.in').trim()
-const LIVEKIT_API_KEY = (process.env.LIVEKIT_API_KEY || 'celoris_livekit_key').trim()
-const LIVEKIT_API_SECRET = (process.env.LIVEKIT_API_SECRET || '2ad5f6c4ef74a31a8293c83524d5cd907703c814b954717a').trim()
+const LIVEKIT_URL = (process.env.LIVEKIT_URL || process.env.NEXT_PUBLIC_LIVEKIT_URL || '').trim()
+const LIVEKIT_API_KEY = (process.env.LIVEKIT_API_KEY || '').trim()
+const LIVEKIT_API_SECRET = (process.env.LIVEKIT_API_SECRET || '').trim()
 const LIVEKIT_READY = !!LIVEKIT_URL && !!LIVEKIT_API_KEY && !!LIVEKIT_API_SECRET
 
 export function providerReady(p: CallProvider) {
@@ -72,18 +72,18 @@ export function providerReady(p: CallProvider) {
 }
 
 function nextProvider(p: CallProvider): CallProvider {
-  if (p === 'tencent') return LIVEKIT_READY ? 'livekit' : 'agora'
+  if (p === 'tencent') return AGORA_READY ? 'agora' : 'livekit'
   if (p === 'livekit') return AGORA_READY ? 'agora' : 'tencent'
-  return LIVEKIT_READY ? 'livekit' : 'tencent'
+  return TENCENT_READY ? 'tencent' : 'livekit'
 }
 
 /** The provider a new call starts on: the preferred one if it's configured, else the fallback. */
 export function startingProvider(): CallProvider | null {
-  const preferred: CallProvider = ((process.env.CELORIS_CHAT_CALL_PROVIDER || '').trim().toLowerCase() as CallProvider) || 'livekit'
+  const preferred: CallProvider = ((process.env.CELORIS_CHAT_CALL_PROVIDER || '').trim().toLowerCase() as CallProvider) || 'agora'
   if (providerReady(preferred)) return preferred
-  if (providerReady('livekit')) return 'livekit'
-  if (providerReady('tencent')) return 'tencent'
   if (providerReady('agora')) return 'agora'
+  if (providerReady('tencent')) return 'tencent'
+  if (providerReady('livekit')) return 'livekit'
   return null
 }
 
