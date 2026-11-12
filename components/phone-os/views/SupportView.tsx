@@ -38,7 +38,6 @@ const GREETING: ChatMessage = {
 };
 
 const INTENT_OPTIONS: { key: Exclude<Intent, null>; label: string; seed: string }[] = [
-  { key: 'wordpress', label: "⚡ Free WordPress", seed: "Tell me about the Free WordPress Hosting on Celoris Cloud." },
   { key: 'image_editor', label: "🎨 Free Image Editor", seed: "How does the Free Online Image Editor work?" },
   { key: 'student', label: "🎓 I'm a student", seed: "I'm a student looking to learn something new." },
   { key: 'teacher', label: "🧑‍🏫 I'm a teacher", seed: "I'm a teacher and want to know about teaching on Celoris." },

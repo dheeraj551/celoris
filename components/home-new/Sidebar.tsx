@@ -42,7 +42,6 @@ const MENU_GROUPS = [
             { name: "Video Studio", icon: Video, href: "/video-studio" },
             { name: "PolyVault", icon: Box, href: "/polyvault" },
             { name: "PhotoLite", icon: ImageIcon, href: "/photolite" },
-            { name: "Celoris Cloud", icon: Cloud, href: "/cloud" },
         ]
     },
     {

@@ -10,7 +10,6 @@ const footerSections = [
   {
     title: "Platform & Tools",
     links: [
-      { name: "Free WordPress Cloud", href: "/cloud", badge: "New" },
       { name: "FiveM Server Hosting", href: "/fivem-servers", badge: "Gaming" },
       { name: "Open PSD Online", href: "/open-psd-online", badge: "Free" },
       { name: "Free Image Editor", href: "/free-image-editor" },
@@ -49,7 +48,6 @@ const footerSections = [
     links: [
       { name: "Privacy Policy", href: "/privacy" },
       { name: "Terms of Service", href: "/terms" },
-      { name: "Acceptable Use Policy", href: "/cloud/acceptable-use" },
       { name: "Refund & Cancellation", href: "/refund-policy" },
       { name: "Cookie Policy", href: "/cookies" },
     ],
@@ -193,7 +191,6 @@ export default function Footer() {
               {[
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "Terms of Service", href: "/terms" },
-                { label: "Acceptable Use", href: "/cloud/acceptable-use" },
                 { label: "Refund Policy", href: "/refund-policy" },
                 { label: "Cookie Policy", href: "/cookies" },
               ].map((item) => (
@@ -206,9 +203,6 @@ export default function Footer() {
                 </Link>
               ))}
             </div>
-            <p className="text-[11px] text-neutral-400">
-              Free WordPress Cloud instances are hosted in Asia-South1 (Mumbai) with 99.9% uptime SLA.
-            </p>
           </div>
 
         </div>

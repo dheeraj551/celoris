@@ -89,25 +89,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
 
                 {/* Center: Desktop Navigation Links & Dropdowns */}
                 <nav className="hidden lg:flex items-center gap-1.5">
-                    {/* Celoris Cloud Nav Pill */}
-                    <Link
-                        href="/cloud"
-                        className={cn(
-                            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 group relative",
-                            pathname.startsWith('/cloud')
-                                ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                                : "text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                        )}
-                        title="Celoris Cloud — High Speed Hosting"
-                    >
-                        <img
-                            src="/images/celoris-cloud-logo.png"
-                            alt="Celoris Cloud"
-                            className="w-4 h-4 rounded-md object-contain shadow-[0_0_8px_rgba(16,185,129,0.5)] group-hover:scale-110 transition-transform shrink-0"
-                        />
-                        <span>Cloud</span>
-                    </Link>
-
                     {/* Creative Studios Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -487,18 +468,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
-                                        <Link href="/cloud" className="flex items-center gap-2.5">
-                                            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                                                <Cloud className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <span className="text-xs font-semibold text-neutral-200 group-hover:text-white block">Celoris Cloud</span>
-                                                <span className="text-[10px] text-neutral-400 block -mt-0.5 font-normal">Free NVMe WordPress</span>
-                                            </div>
-                                        </Link>
-                                    </DropdownMenuItem>
-
-                                    <DropdownMenuItem asChild className="rounded-xl p-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer transition-colors">
                                         <Link href="/job-center" className="flex items-center gap-2.5">
                                             <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
                                                 <Briefcase className="w-3.5 h-3.5" />
@@ -750,18 +719,6 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         >
                                             <Briefcase className="w-4 h-4 text-amber-400" />
                                             <span className="text-sm font-medium">Job Center</span>
-                                        </Link>
-                                        <Link
-                                            href="/cloud"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-3 p-2.5 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:text-white transition-colors"
-                                        >
-                                            <img
-                                                src="/images/celoris-cloud-logo.png"
-                                                alt="Celoris Cloud"
-                                                className="w-5 h-5 rounded-md object-contain shadow-sm shrink-0"
-                                            />
-                                            <span className="text-sm font-semibold">Celoris Cloud</span>
                                         </Link>
                                         <Link
                                             href="/pricing"
