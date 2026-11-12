@@ -115,6 +115,20 @@ const DOCK_ITEMS: DockItem[] = [
         borderHover: "hover:border-purple-500/40",
         iconColor: "text-purple-400",
     },
+    {
+        id: "creator-hub",
+        label: "Creator Hub",
+        shortLabel: "Creator Hub",
+        icon: Sparkles,
+        href: "/social",
+        badge: "Live",
+        hotkey: "6",
+        color: "from-emerald-400 to-teal-500",
+        glowRgba: "rgba(16, 185, 129, 0.45)",
+        bgHover: "hover:bg-emerald-500/10",
+        borderHover: "hover:border-emerald-500/40",
+        iconColor: "text-emerald-400",
+    },
 ];
 
 interface PaletteCommand {
@@ -207,6 +221,19 @@ const PALETTE_COMMANDS: PaletteCommand[] = [
         glowRgba: "rgba(245, 158, 11, 0.45)",
         iconColor: "text-amber-400",
         badgeStyle: "bg-amber-500/15 text-amber-300 border-amber-400/30",
+    },
+    {
+        category: "Community & Media",
+        title: "Creator Hub",
+        description: "Reels, creator feed, Ad Studio, and community networking",
+        href: "/social",
+        icon: Sparkles,
+        badge: "Live",
+        shortcut: "6",
+        color: "from-emerald-400 to-teal-500",
+        glowRgba: "rgba(16, 185, 129, 0.45)",
+        iconColor: "text-emerald-400",
+        badgeStyle: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
     },
     {
         category: "Career & Learning",

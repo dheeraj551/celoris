@@ -89,6 +89,21 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
 
                 {/* Center: Desktop Navigation Links & Dropdowns */}
                 <nav className="hidden lg:flex items-center gap-1.5">
+                    {/* Creator Hub Nav Pill */}
+                    <Link
+                        href="/social"
+                        className={cn(
+                            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 group relative",
+                            pathname.startsWith('/social')
+                                ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                                : "text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                        )}
+                        title="Creator Hub — Community, Reels & Creators"
+                    >
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
+                        <span>Creator Hub</span>
+                    </Link>
+
                     {/* Creative Studios Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -719,6 +734,14 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                         >
                                             <Briefcase className="w-4 h-4 text-amber-400" />
                                             <span className="text-sm font-medium">Job Center</span>
+                                        </Link>
+                                        <Link
+                                            href="/social"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:text-white transition-colors"
+                                        >
+                                            <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                                            <span className="text-sm font-semibold">Creator Hub</span>
                                         </Link>
                                         <Link
                                             href="/pricing"
