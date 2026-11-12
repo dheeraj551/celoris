@@ -61,9 +61,9 @@ export const Navigation: React.FC<NavigationProps> = ({
               aria-label="Celoris Creator Hub Home"
             >
               <img
-                src="/images/creator-hub-logo.jpg"
+                src="/images/creator-hub-logo.png"
                 alt="Celoris Creator Hub"
-                className="h-10 w-auto rounded-xl object-contain bg-black px-2.5 py-1 shadow-xs group-hover:scale-[1.03] transition-transform"
+                className="h-10 w-auto object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.28)] dark:drop-shadow-none group-hover:scale-[1.03] transition-transform"
               />
             </button>
           </div>
@@ -251,9 +251,9 @@ export const Navigation: React.FC<NavigationProps> = ({
           aria-label="Celoris Creator Hub Home"
         >
           <img
-            src="/images/creator-hub-logo.jpg"
+            src="/images/creator-hub-logo.png"
             alt="Celoris Creator Hub"
-            className="h-8 w-auto rounded-lg object-contain bg-black px-2 py-0.5"
+            className="h-8 w-auto object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.28)] dark:drop-shadow-none"
           />
         </button>
 

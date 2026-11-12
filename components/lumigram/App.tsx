@@ -106,6 +106,7 @@ export default function App() {
   // Active navigation tab
   const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'messages' | 'activity' | 'profile' | 'ads'>('feed');
   const [selectedProfileUser, setSelectedProfileUser] = useState<User>(CURRENT_USER);
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 
   // Ad Studio Campaign state
   const [walletBalance, setWalletBalance] = useState<number>(10000);
@@ -941,7 +942,7 @@ export default function App() {
                     <textarea
                       value={composerText}
                       onChange={(e) => setComposerText(e.target.value.slice(0, 280))}
-                      placeholder="What's happening in your studio? ✨"
+                      placeholder="What's happening in your studio?"
                       rows={composerText.length > 65 ? 3 : 2}
                       className="w-full resize-none bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none leading-relaxed"
                     />
@@ -990,14 +991,50 @@ export default function App() {
                         >
                           <ImageIcon size={18} />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setComposerText((t) => (t + ' ✨').slice(0, 280))}
-                          className="p-2 rounded-full text-neutral-500 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-colors cursor-pointer"
-                          title="Add sparkle emoji"
-                        >
-                          <Smile size={18} />
-                        </button>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setShowEmojiPicker((v) => !v)}
+                            className={`p-2 rounded-full transition-colors cursor-pointer ${
+                              showEmojiPicker
+                                ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/30'
+                                : 'text-neutral-500 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30'
+                            }`}
+                            title="Add emoji"
+                          >
+                            <Smile size={18} />
+                          </button>
+                          {showEmojiPicker && (
+                            <div className="absolute left-0 top-full mt-2 z-50 w-72 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl p-3 space-y-2.5">
+                              {[
+                                { label: 'Smileys', emojis: ['😀', '😂', '🥹', '😍', '🤩', '😎', '🥳', '🤯', '🙌', '👏', '🤝', '🫶'] },
+                                { label: 'Creator & Studio', emojis: ['🎬', '📸', '🎥', '🎨', '🎧', '🎤', '💻', '🚀', '⚡', '🔥', '💯', '🏆'] },
+                                { label: 'Vibes & Delhi/NCR', emojis: ['❤️', '🧡', '💚', '🎉', '🌟', '☕', '🇮🇳', '📍', '✨', '👀', '💬', '✅'] },
+                              ].map((group) => (
+                                <div key={group.label}>
+                                  <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">
+                                    {group.label}
+                                  </p>
+                                  <div className="grid grid-cols-6 gap-1">
+                                    {group.emojis.map((emoji) => (
+                                      <button
+                                        key={emoji}
+                                        type="button"
+                                        onClick={() => {
+                                          setComposerText((t) => (t + emoji).slice(0, 280));
+                                          setShowEmojiPicker(false);
+                                        }}
+                                        className="h-8 w-8 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-lg transition-transform hover:scale-110 cursor-pointer"
+                                      >
+                                        {emoji}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         <button
                           type="button"
                           onClick={() => setComposerText((t) => (t + ' #Celoris').slice(0, 280))}

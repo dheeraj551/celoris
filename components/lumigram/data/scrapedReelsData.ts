@@ -1,8 +1,4552 @@
 import { Post } from "../types";
 
-// 39 Trending Viral Reels hosted on Cloudflare R2 (/api/social/media/)
+// 78 Trending Viral Reels hosted on Cloudflare R2 (/api/social/media/)
 // With automated realistic contextual comments & engagement
 export const SCRAPED_VIRAL_REELS: Post[] = [
+  {
+    "id": "reel_DdvzmDUsVK-",
+    "userId": "user_uncut.delhi",
+    "user": {
+      "id": "user_uncut.delhi",
+      "username": "uncut.delhi",
+      "name": "Delhi | New Delhi",
+      "avatar": "/api/social/media/avatar_uncut.delhi.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 32962,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DdvzmDUsVK-.mp4"
+    ],
+    "thumbnail": "/api/social/media/DdvzmDUsVK-_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi waalo, notice kiya? Hawa mein halki-halki thandak feel hone lagi hai 😍🧣❄️\n\nDelhi, Delhi NCR, Delhi Winter, Delhi Weather, Delhi Cold, Delhi Vibes, Delhi Winters, Delhi Updates, Delhi News, Delhi Life, Delhi Diaries, Delhi Wale, Delhiites, Delhi Temperature, Winter in Delhi, Delhi Winter Vibes, Delhi Weather Update, Cold Weather Delhi, Delhi Ki Sardi, Dilli Ki Sardi, Dilli Wale, Dilli Vibes, Dilli Weather, Dilli Winters, Delhi Trending, Delhi Viral, Viral Delhi, Delhi Reels, Delhi Instagram, Delhi Lifestyle, Delhi City, New Delhi, Delhi India, NCR Weather, Winter Season, Winter Vibes, Cold Vibes, Sweater Weather, Hoodie Season,",
+    "likesCount": 73251,
+    "commentsCount": 459,
+    "createdAt": "2026-11-12T10:27:03.722Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DdvzmDUsVK-_1",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12648,
+          "followingCount": 283,
+          "postsCount": 54,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T10:41:03.722Z",
+        "likesCount": 272,
+        "isLiked": false,
+        "postId": "reel_DdvzmDUsVK-"
+      },
+      {
+        "id": "c_reel_DdvzmDUsVK-_2",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 13291,
+          "followingCount": 496,
+          "postsCount": 23,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T10:55:03.722Z",
+        "likesCount": 216,
+        "isLiked": false,
+        "postId": "reel_DdvzmDUsVK-"
+      },
+      {
+        "id": "c_reel_DdvzmDUsVK-_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 1332,
+          "followingCount": 315,
+          "postsCount": 57,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T11:09:03.722Z",
+        "likesCount": 196,
+        "isLiked": false,
+        "postId": "reel_DdvzmDUsVK-"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfZU6ngB0pN",
+    "userId": "user_rove_lover",
+    "user": {
+      "id": "user_rove_lover",
+      "username": "rove_lover",
+      "name": "Aaren🦋",
+      "avatar": "/api/social/media/avatar_rove_lover.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 58936,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfZU6ngB0pN.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfZU6ngB0pN_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi❤️ \n\n#delhi #delhidiaries #trending #explore #reels",
+    "likesCount": 130970,
+    "commentsCount": 324,
+    "createdAt": "2026-11-12T09:27:08.769Z",
+    "tags": [
+      "delhi",
+      "delhidiaries",
+      "trending",
+      "explore",
+      "reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfZU6ngB0pN_1",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18762,
+          "followingCount": 486,
+          "postsCount": 55,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T09:41:08.769Z",
+        "likesCount": 358,
+        "isLiked": false,
+        "postId": "reel_DfZU6ngB0pN"
+      },
+      {
+        "id": "c_reel_DfZU6ngB0pN_2",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 7170,
+          "followingCount": 323,
+          "postsCount": 39,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T09:55:08.769Z",
+        "likesCount": 62,
+        "isLiked": false,
+        "postId": "reel_DfZU6ngB0pN"
+      },
+      {
+        "id": "c_reel_DfZU6ngB0pN_3",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5498,
+          "followingCount": 257,
+          "postsCount": 14,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T10:09:08.769Z",
+        "likesCount": 297,
+        "isLiked": false,
+        "postId": "reel_DfZU6ngB0pN"
+      }
+    ]
+  },
+  {
+    "id": "reel_DYh8saJBrdc",
+    "userId": "user_sukoonhaidelhi",
+    "user": {
+      "id": "user_sukoonhaidelhi",
+      "username": "sukoonhaidelhi",
+      "name": "Delhi",
+      "avatar": "/api/social/media/avatar_sukoonhaidelhi.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": false,
+      "followersCount": 1800,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DYh8saJBrdc.mp4"
+    ],
+    "thumbnail": "/api/social/media/DYh8saJBrdc_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi❤️\n\n[Delhi, Delhi NCR, Delhites, Delhiwale, Dilwalo Ki Delhi, Delhi Nights, Delhi Night Life, Delhi After Dark, Explore Delhi, Delhi Explorer, Delhi Diaries, Delhi Vibes, Delhi Streets, Delhi City Lights, Beautiful Delhi, New Delhi, India Gate Nights, Hauz Khas Nights, CP Delhi, Connaught Place, Delhi Love, Delhi Couples, Delhi Romance, Delhi Lifestyle, Viral Delhi, Trending Delhi, Delhi Reels, NCR Life, Urban Delhi, Incredible Delhi]\n\n#delhi #nightlife #delhinightlife #reel #love",
+    "likesCount": 2370,
+    "commentsCount": 16,
+    "createdAt": "2026-11-12T08:27:12.440Z",
+    "tags": [
+      "delhi",
+      "nightlife",
+      "delhinightlife",
+      "reel",
+      "love"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DYh8saJBrdc_1",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 6606,
+          "followingCount": 325,
+          "postsCount": 24,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T08:41:12.440Z",
+        "likesCount": 393,
+        "isLiked": false,
+        "postId": "reel_DYh8saJBrdc"
+      },
+      {
+        "id": "c_reel_DYh8saJBrdc_2",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9816,
+          "followingCount": 204,
+          "postsCount": 34,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T08:55:12.440Z",
+        "likesCount": 483,
+        "isLiked": false,
+        "postId": "reel_DYh8saJBrdc"
+      },
+      {
+        "id": "c_reel_DYh8saJBrdc_3",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5603,
+          "followingCount": 217,
+          "postsCount": 57,
+          "isOnline": false
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T09:09:12.440Z",
+        "likesCount": 354,
+        "isLiked": false,
+        "postId": "reel_DYh8saJBrdc"
+      },
+      {
+        "id": "c_reel_DYh8saJBrdc_4",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 16846,
+          "followingCount": 242,
+          "postsCount": 33,
+          "isOnline": false
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T09:23:12.440Z",
+        "likesCount": 378,
+        "isLiked": false,
+        "postId": "reel_DYh8saJBrdc"
+      }
+    ]
+  },
+  {
+    "id": "reel_DdsuhilsYJK",
+    "userId": "user_anokhi_delhi",
+    "user": {
+      "id": "user_anokhi_delhi",
+      "username": "anokhi_delhi",
+      "name": "DELHI",
+      "avatar": "/api/social/media/avatar_anokhi_delhi.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 125937,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DdsuhilsYJK.mp4"
+    ],
+    "thumbnail": "/api/social/media/DdsuhilsYJK_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi Metro🙏🏻\n\n[Delhi, Delhi NCR, Delhi Lovers, Dilli Wale, Delhi Viral, Delhi Reels, Delhi Funny Reels, Delhi Life, NCR, India Viral, Indian Reels, Viral Reels, Trending Reels, Funny Moments, Relatable Reels, Explore Page, Explore Reels, Desi Moments, Indian Public, Anokhi Delhi]\n\n#delhi #explorepage #delhimetro #trendingnow #reels",
+    "likesCount": 279860,
+    "commentsCount": 1490,
+    "createdAt": "2026-11-12T07:27:15.877Z",
+    "tags": [
+      "delhi",
+      "explorepage",
+      "delhimetro",
+      "trendingnow",
+      "reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DdsuhilsYJK_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 7365,
+          "followingCount": 372,
+          "postsCount": 28,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T07:41:15.877Z",
+        "likesCount": 396,
+        "isLiked": false,
+        "postId": "reel_DdsuhilsYJK"
+      },
+      {
+        "id": "c_reel_DdsuhilsYJK_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 16281,
+          "followingCount": 348,
+          "postsCount": 26,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T07:55:15.877Z",
+        "likesCount": 190,
+        "isLiked": false,
+        "postId": "reel_DdsuhilsYJK"
+      },
+      {
+        "id": "c_reel_DdsuhilsYJK_3",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 6122,
+          "followingCount": 392,
+          "postsCount": 12,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T08:09:15.877Z",
+        "likesCount": 476,
+        "isLiked": false,
+        "postId": "reel_DdsuhilsYJK"
+      },
+      {
+        "id": "c_reel_DdsuhilsYJK_4",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 11239,
+          "followingCount": 203,
+          "postsCount": 58,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T08:23:15.877Z",
+        "likesCount": 305,
+        "isLiked": false,
+        "postId": "reel_DdsuhilsYJK"
+      }
+    ]
+  },
+  {
+    "id": "reel_DecINaosyqw",
+    "userId": "user___.charviiiii.__",
+    "user": {
+      "id": "user___.charviiiii.__",
+      "username": "__.charviiiii.__",
+      "name": "Charvi Sharma",
+      "avatar": "/api/social/media/avatar___.charviiiii.__.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 5400,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DecINaosyqw.mp4"
+    ],
+    "thumbnail": "/api/social/media/DecINaosyqw_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi university \n.\n.\n.\n.\n.\n#fyp #trending #viral #feed #fypage",
+    "likesCount": 12000,
+    "commentsCount": 138,
+    "createdAt": "2026-11-12T06:27:20.432Z",
+    "tags": [
+      "fyp",
+      "trending",
+      "viral",
+      "feed",
+      "fypage"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DecINaosyqw_1",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18139,
+          "followingCount": 403,
+          "postsCount": 46,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T06:41:20.432Z",
+        "likesCount": 23,
+        "isLiked": false,
+        "postId": "reel_DecINaosyqw"
+      },
+      {
+        "id": "c_reel_DecINaosyqw_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 16783,
+          "followingCount": 527,
+          "postsCount": 35,
+          "isOnline": false
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T06:55:20.432Z",
+        "likesCount": 125,
+        "isLiked": false,
+        "postId": "reel_DecINaosyqw"
+      },
+      {
+        "id": "c_reel_DecINaosyqw_3",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 1837,
+          "followingCount": 467,
+          "postsCount": 48,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T07:09:20.432Z",
+        "likesCount": 386,
+        "isLiked": false,
+        "postId": "reel_DecINaosyqw"
+      },
+      {
+        "id": "c_reel_DecINaosyqw_4",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 16253,
+          "followingCount": 322,
+          "postsCount": 39,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T07:23:20.432Z",
+        "likesCount": 81,
+        "isLiked": false,
+        "postId": "reel_DecINaosyqw"
+      },
+      {
+        "id": "c_reel_DecINaosyqw_5",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12728,
+          "followingCount": 312,
+          "postsCount": 30,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T07:37:20.432Z",
+        "likesCount": 413,
+        "isLiked": false,
+        "postId": "reel_DecINaosyqw"
+      }
+    ]
+  },
+  {
+    "id": "reel_DdyxXVetfSh",
+    "userId": "user_aapkabhai_foody",
+    "user": {
+      "id": "user_aapkabhai_foody",
+      "username": "aapkabhai_foody",
+      "name": "Rajan",
+      "avatar": "/api/social/media/avatar_aapkabhai_foody.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 179195,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DdyxXVetfSh.mp4"
+    ],
+    "thumbnail": "/api/social/media/DdyxXVetfSh_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "एक प्लेट मंचूरियन 500 रुपए का 😱 साइकिल को बना दी चलती फिरती दुकान 🫡\n.\n.\n.\n📍Bihar \n.\n.\n.\nFollow @aapkabhai_foody\n. \n.\n.\n#manchurian #chainese #chillipotato #momos streetfood reels kadhipakoda sevbhaji help hardworking poor trending challenge purisabji indianstreetfood reelsfeed reelsvideo foody aapkabhaifoody eatingshow eating eatingasmr streetfoodindia foodie morningbreakfast lunch dinner gharjesakhana humanity delhi clothes art",
+    "likesCount": 398213,
+    "commentsCount": 2520,
+    "createdAt": "2026-11-12T05:27:43.814Z",
+    "tags": [
+      "manchurian",
+      "chainese",
+      "chillipotato",
+      "momos"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DdyxXVetfSh_1",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9337,
+          "followingCount": 175,
+          "postsCount": 50,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T05:41:43.814Z",
+        "likesCount": 213,
+        "isLiked": false,
+        "postId": "reel_DdyxXVetfSh"
+      },
+      {
+        "id": "c_reel_DdyxXVetfSh_2",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 1569,
+          "followingCount": 452,
+          "postsCount": 24,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T05:55:43.814Z",
+        "likesCount": 408,
+        "isLiked": false,
+        "postId": "reel_DdyxXVetfSh"
+      },
+      {
+        "id": "c_reel_DdyxXVetfSh_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 4236,
+          "followingCount": 355,
+          "postsCount": 20,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T06:09:43.814Z",
+        "likesCount": 357,
+        "isLiked": false,
+        "postId": "reel_DdyxXVetfSh"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfhLPGGzCqp",
+    "userId": "user_thamjaa_kishmishh",
+    "user": {
+      "id": "user_thamjaa_kishmishh",
+      "username": "thamjaa_kishmishh",
+      "name": "kishmishh🧚🏻‍♀️",
+      "avatar": "/api/social/media/avatar_thamjaa_kishmishh.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": false,
+      "followersCount": 5801,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfhLPGGzCqp.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfhLPGGzCqp_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi ke rakshak😂🫡\n\n#explorepage #instagram #trending #fyp #fun",
+    "likesCount": 12892,
+    "commentsCount": 495,
+    "createdAt": "2026-11-12T04:27:49.983Z",
+    "tags": [
+      "explorepage",
+      "instagram",
+      "trending",
+      "fyp",
+      "fun"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfhLPGGzCqp_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 11171,
+          "followingCount": 245,
+          "postsCount": 49,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T04:41:49.983Z",
+        "likesCount": 400,
+        "isLiked": false,
+        "postId": "reel_DfhLPGGzCqp"
+      },
+      {
+        "id": "c_reel_DfhLPGGzCqp_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 9209,
+          "followingCount": 364,
+          "postsCount": 18,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T04:55:49.983Z",
+        "likesCount": 45,
+        "isLiked": false,
+        "postId": "reel_DfhLPGGzCqp"
+      },
+      {
+        "id": "c_reel_DfhLPGGzCqp_3",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12787,
+          "followingCount": 456,
+          "postsCount": 51,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T05:09:49.983Z",
+        "likesCount": 483,
+        "isLiked": false,
+        "postId": "reel_DfhLPGGzCqp"
+      },
+      {
+        "id": "c_reel_DfhLPGGzCqp_4",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14985,
+          "followingCount": 497,
+          "postsCount": 31,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T05:23:49.983Z",
+        "likesCount": 403,
+        "isLiked": false,
+        "postId": "reel_DfhLPGGzCqp"
+      }
+    ]
+  },
+  {
+    "id": "reel_DcIGWbFMz9V",
+    "userId": "user_indiamarketzone",
+    "user": {
+      "id": "user_indiamarketzone",
+      "username": "indiamarketzone",
+      "name": "PARSURAM",
+      "avatar": "/api/social/media/avatar_indiamarketzone.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": false,
+      "followersCount": 5841,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DcIGWbFMz9V.mp4"
+    ],
+    "thumbnail": "/api/social/media/DcIGWbFMz9V_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi market 😱 #love #reels #trending #viral #indiamarketzone",
+    "likesCount": 12981,
+    "commentsCount": 63,
+    "createdAt": "2026-11-12T03:27:54.524Z",
+    "tags": [
+      "love",
+      "reels",
+      "trending",
+      "viral",
+      "indiamarketzone"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DcIGWbFMz9V_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5859,
+          "followingCount": 326,
+          "postsCount": 46,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T03:41:54.524Z",
+        "likesCount": 425,
+        "isLiked": false,
+        "postId": "reel_DcIGWbFMz9V"
+      },
+      {
+        "id": "c_reel_DcIGWbFMz9V_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 10278,
+          "followingCount": 224,
+          "postsCount": 47,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T03:55:54.524Z",
+        "likesCount": 404,
+        "isLiked": false,
+        "postId": "reel_DcIGWbFMz9V"
+      },
+      {
+        "id": "c_reel_DcIGWbFMz9V_3",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14589,
+          "followingCount": 328,
+          "postsCount": 29,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T04:09:54.524Z",
+        "likesCount": 201,
+        "isLiked": false,
+        "postId": "reel_DcIGWbFMz9V"
+      },
+      {
+        "id": "c_reel_DcIGWbFMz9V_4",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5207,
+          "followingCount": 174,
+          "postsCount": 32,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T04:23:54.524Z",
+        "likesCount": 418,
+        "isLiked": false,
+        "postId": "reel_DcIGWbFMz9V"
+      },
+      {
+        "id": "c_reel_DcIGWbFMz9V_5",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9315,
+          "followingCount": 206,
+          "postsCount": 55,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T04:37:54.524Z",
+        "likesCount": 513,
+        "isLiked": false,
+        "postId": "reel_DcIGWbFMz9V"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dd4R_rziapE",
+    "userId": "user_dilliaalaa",
+    "user": {
+      "id": "user_dilliaalaa",
+      "username": "dilliaalaa",
+      "name": "Jaspreet Singh (दिल्ली आला)",
+      "avatar": "/api/social/media/avatar_dilliaalaa.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 689554,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dd4R_rziapE.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dd4R_rziapE_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Warrior wala suit pehna karo lohe wala! ⚔️\n.\n.\n.\n.\n.\n[ Women, Girls, Protest, Safety, Delhi, News, Explore ]\n#womensafety #protest #delhi #explore #trending",
+    "likesCount": 1532344,
+    "commentsCount": 17769,
+    "createdAt": "2026-11-12T02:28:01.809Z",
+    "tags": [
+      "womensafety",
+      "protest",
+      "delhi",
+      "explore",
+      "trending"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dd4R_rziapE_1",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 7428,
+          "followingCount": 404,
+          "postsCount": 16,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T02:42:01.809Z",
+        "likesCount": 497,
+        "isLiked": false,
+        "postId": "reel_Dd4R_rziapE"
+      },
+      {
+        "id": "c_reel_Dd4R_rziapE_2",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17520,
+          "followingCount": 156,
+          "postsCount": 47,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T02:56:01.809Z",
+        "likesCount": 190,
+        "isLiked": false,
+        "postId": "reel_Dd4R_rziapE"
+      },
+      {
+        "id": "c_reel_Dd4R_rziapE_3",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5073,
+          "followingCount": 506,
+          "postsCount": 12,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T03:10:01.809Z",
+        "likesCount": 372,
+        "isLiked": false,
+        "postId": "reel_Dd4R_rziapE"
+      },
+      {
+        "id": "c_reel_Dd4R_rziapE_4",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 2803,
+          "followingCount": 218,
+          "postsCount": 42,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T03:24:01.809Z",
+        "likesCount": 111,
+        "isLiked": false,
+        "postId": "reel_Dd4R_rziapE"
+      }
+    ]
+  },
+  {
+    "id": "reel_DcOwhbnhkz7",
+    "userId": "user_faraaahh94",
+    "user": {
+      "id": "user_faraaahh94",
+      "username": "faraaahh94",
+      "name": "farha",
+      "avatar": "/api/social/media/avatar_faraaahh94.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 180193,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DcOwhbnhkz7.mp4"
+    ],
+    "thumbnail": "/api/social/media/DcOwhbnhkz7_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi metro 🚉 mai ladke ne kiya kar diya😱😱#trending #viralreels",
+    "likesCount": 400431,
+    "commentsCount": 3865,
+    "createdAt": "2026-11-12T01:28:08.158Z",
+    "tags": [
+      "trending",
+      "viralreels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DcOwhbnhkz7_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 11490,
+          "followingCount": 267,
+          "postsCount": 24,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T01:42:08.158Z",
+        "likesCount": 158,
+        "isLiked": false,
+        "postId": "reel_DcOwhbnhkz7"
+      },
+      {
+        "id": "c_reel_DcOwhbnhkz7_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 17288,
+          "followingCount": 168,
+          "postsCount": 31,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T01:56:08.158Z",
+        "likesCount": 238,
+        "isLiked": false,
+        "postId": "reel_DcOwhbnhkz7"
+      },
+      {
+        "id": "c_reel_DcOwhbnhkz7_3",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 16875,
+          "followingCount": 165,
+          "postsCount": 55,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T02:10:08.158Z",
+        "likesCount": 431,
+        "isLiked": false,
+        "postId": "reel_DcOwhbnhkz7"
+      },
+      {
+        "id": "c_reel_DcOwhbnhkz7_4",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 5822,
+          "followingCount": 476,
+          "postsCount": 39,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T02:24:08.158Z",
+        "likesCount": 268,
+        "isLiked": false,
+        "postId": "reel_DcOwhbnhkz7"
+      },
+      {
+        "id": "c_reel_DcOwhbnhkz7_5",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9355,
+          "followingCount": 408,
+          "postsCount": 48,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T02:38:08.158Z",
+        "likesCount": 273,
+        "isLiked": false,
+        "postId": "reel_DcOwhbnhkz7"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfY50v4RhvX",
+    "userId": "user_ll.priyanshu_all_500ng5",
+    "user": {
+      "id": "user_ll.priyanshu_all_500ng5",
+      "username": "ll.priyanshu_all_500ng5",
+      "name": "🔱 Priyanshu (गड़रिया) 🔱",
+      "avatar": "/api/social/media/avatar_ll.priyanshu_all_500ng5.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 190264,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfY50v4RhvX.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfY50v4RhvX_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "दिल्ली आनंद विहार जंक्शन 🏢🥰......\n\n.\n\n.\n\n.\n\n.\n\n.\n# viral#trending#Delhi city#Travellers#explorepage",
+    "likesCount": 422809,
+    "commentsCount": 1032,
+    "createdAt": "2026-11-12T00:28:13.791Z",
+    "tags": [
+      "trending",
+      "Delhi",
+      "Travellers",
+      "explorepage"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfY50v4RhvX_1",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 4373,
+          "followingCount": 253,
+          "postsCount": 38,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T00:42:13.791Z",
+        "likesCount": 119,
+        "isLiked": false,
+        "postId": "reel_DfY50v4RhvX"
+      },
+      {
+        "id": "c_reel_DfY50v4RhvX_2",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12362,
+          "followingCount": 382,
+          "postsCount": 13,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T00:56:13.791Z",
+        "likesCount": 33,
+        "isLiked": false,
+        "postId": "reel_DfY50v4RhvX"
+      },
+      {
+        "id": "c_reel_DfY50v4RhvX_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 17668,
+          "followingCount": 434,
+          "postsCount": 14,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T01:10:13.791Z",
+        "likesCount": 500,
+        "isLiked": false,
+        "postId": "reel_DfY50v4RhvX"
+      },
+      {
+        "id": "c_reel_DfY50v4RhvX_4",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 6495,
+          "followingCount": 292,
+          "postsCount": 49,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T01:24:13.791Z",
+        "likesCount": 219,
+        "isLiked": false,
+        "postId": "reel_DfY50v4RhvX"
+      },
+      {
+        "id": "c_reel_DfY50v4RhvX_5",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17105,
+          "followingCount": 416,
+          "postsCount": 25,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T01:38:13.791Z",
+        "likesCount": 373,
+        "isLiked": false,
+        "postId": "reel_DfY50v4RhvX"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dd8Z7zxMnIi",
+    "userId": "user_realafindia",
+    "user": {
+      "id": "user_realafindia",
+      "username": "realafindia",
+      "name": "Santosh | RealAFIndia",
+      "avatar": "/api/social/media/avatar_realafindia.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 55318,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dd8Z7zxMnIi.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dd8Z7zxMnIi_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Delhi road ka test bjp minister hathoda marke kr rahe h🤡\n\n#delhiroad #bjp #hathoda #roadscam #trending",
+    "likesCount": 122930,
+    "commentsCount": 1990,
+    "createdAt": "2026-11-11T23:28:21.153Z",
+    "tags": [
+      "delhiroad",
+      "bjp",
+      "hathoda",
+      "roadscam",
+      "trending"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dd8Z7zxMnIi_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9220,
+          "followingCount": 171,
+          "postsCount": 15,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T23:42:21.153Z",
+        "likesCount": 217,
+        "isLiked": false,
+        "postId": "reel_Dd8Z7zxMnIi"
+      },
+      {
+        "id": "c_reel_Dd8Z7zxMnIi_2",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 3435,
+          "followingCount": 159,
+          "postsCount": 32,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T23:56:21.153Z",
+        "likesCount": 381,
+        "isLiked": false,
+        "postId": "reel_Dd8Z7zxMnIi"
+      },
+      {
+        "id": "c_reel_Dd8Z7zxMnIi_3",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9046,
+          "followingCount": 287,
+          "postsCount": 19,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T00:10:21.153Z",
+        "likesCount": 359,
+        "isLiked": false,
+        "postId": "reel_Dd8Z7zxMnIi"
+      },
+      {
+        "id": "c_reel_Dd8Z7zxMnIi_4",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 14907,
+          "followingCount": 253,
+          "postsCount": 56,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T00:24:21.153Z",
+        "likesCount": 499,
+        "isLiked": false,
+        "postId": "reel_Dd8Z7zxMnIi"
+      },
+      {
+        "id": "c_reel_Dd8Z7zxMnIi_5",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18922,
+          "followingCount": 201,
+          "postsCount": 56,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T00:38:21.153Z",
+        "likesCount": 132,
+        "isLiked": false,
+        "postId": "reel_Dd8Z7zxMnIi"
+      }
+    ]
+  },
+  {
+    "id": "reel_DeD6ICVyaqC",
+    "userId": "user_whyology03",
+    "user": {
+      "id": "user_whyology03",
+      "username": "whyology03",
+      "name": "Bharat Kirad",
+      "avatar": "/api/social/media/avatar_whyology03.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 3625,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DeD6ICVyaqC.mp4"
+    ],
+    "thumbnail": "/api/social/media/DeD6ICVyaqC_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Women Safety Delhi #whyology #facts #LSR #trending #reality",
+    "likesCount": 8056,
+    "commentsCount": 41,
+    "createdAt": "2026-11-11T22:28:27.432Z",
+    "tags": [
+      "whyology",
+      "facts",
+      "LSR",
+      "trending",
+      "reality"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DeD6ICVyaqC_1",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18324,
+          "followingCount": 215,
+          "postsCount": 20,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T22:42:27.432Z",
+        "likesCount": 115,
+        "isLiked": false,
+        "postId": "reel_DeD6ICVyaqC"
+      },
+      {
+        "id": "c_reel_DeD6ICVyaqC_2",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 6229,
+          "followingCount": 307,
+          "postsCount": 42,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T22:56:27.432Z",
+        "likesCount": 264,
+        "isLiked": false,
+        "postId": "reel_DeD6ICVyaqC"
+      },
+      {
+        "id": "c_reel_DeD6ICVyaqC_3",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 6193,
+          "followingCount": 337,
+          "postsCount": 52,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T23:10:27.432Z",
+        "likesCount": 324,
+        "isLiked": false,
+        "postId": "reel_DeD6ICVyaqC"
+      },
+      {
+        "id": "c_reel_DeD6ICVyaqC_4",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 18191,
+          "followingCount": 372,
+          "postsCount": 14,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T23:24:27.432Z",
+        "likesCount": 252,
+        "isLiked": false,
+        "postId": "reel_DeD6ICVyaqC"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfWVcA_t2tX",
+    "userId": "user_asthasingh_162",
+    "user": {
+      "id": "user_asthasingh_162",
+      "username": "asthasingh_162",
+      "name": "Astha",
+      "avatar": "/api/social/media/avatar_asthasingh_162.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 14666,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfWVcA_t2tX.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfWVcA_t2tX_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Don’t ask me 👀\n\n[ Delhi , ncr , single , explore, trending , viral , talks , ranting , couple , relationship]",
+    "likesCount": 32593,
+    "commentsCount": 6017,
+    "createdAt": "2026-11-11T21:28:30.769Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfWVcA_t2tX_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 16164,
+          "followingCount": 469,
+          "postsCount": 29,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T21:42:30.769Z",
+        "likesCount": 160,
+        "isLiked": false,
+        "postId": "reel_DfWVcA_t2tX"
+      },
+      {
+        "id": "c_reel_DfWVcA_t2tX_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 13101,
+          "followingCount": 310,
+          "postsCount": 55,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T21:56:30.769Z",
+        "likesCount": 190,
+        "isLiked": false,
+        "postId": "reel_DfWVcA_t2tX"
+      },
+      {
+        "id": "c_reel_DfWVcA_t2tX_3",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 9580,
+          "followingCount": 246,
+          "postsCount": 52,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T22:10:30.769Z",
+        "likesCount": 403,
+        "isLiked": false,
+        "postId": "reel_DfWVcA_t2tX"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfmhV4XNJqw",
+    "userId": "user_swaniyaa",
+    "user": {
+      "id": "user_swaniyaa",
+      "username": "swaniyaa",
+      "name": "Swaniya Lamba",
+      "avatar": "/api/social/media/avatar_swaniyaa.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 53272,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfmhV4XNJqw.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfmhV4XNJqw_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "AQI KA FULL FORM PUCHO ISSE\n\nNeeshu azad\nVoice of neeshu\nNishu azad\nAqi\nDelhi\nDiwali\nComedy\n\n#viral #reels #instagram #trending #love",
+    "likesCount": 118383,
+    "commentsCount": 5282,
+    "createdAt": "2026-11-11T20:28:34.702Z",
+    "tags": [
+      "viral",
+      "reels",
+      "instagram",
+      "trending",
+      "love"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfmhV4XNJqw_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5753,
+          "followingCount": 324,
+          "postsCount": 22,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T20:42:34.702Z",
+        "likesCount": 163,
+        "isLiked": false,
+        "postId": "reel_DfmhV4XNJqw"
+      },
+      {
+        "id": "c_reel_DfmhV4XNJqw_2",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 1881,
+          "followingCount": 443,
+          "postsCount": 31,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T20:56:34.702Z",
+        "likesCount": 234,
+        "isLiked": false,
+        "postId": "reel_DfmhV4XNJqw"
+      },
+      {
+        "id": "c_reel_DfmhV4XNJqw_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 17712,
+          "followingCount": 234,
+          "postsCount": 50,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T21:10:34.702Z",
+        "likesCount": 509,
+        "isLiked": false,
+        "postId": "reel_DfmhV4XNJqw"
+      },
+      {
+        "id": "c_reel_DfmhV4XNJqw_4",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 16473,
+          "followingCount": 460,
+          "postsCount": 30,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T21:24:34.702Z",
+        "likesCount": 231,
+        "isLiked": false,
+        "postId": "reel_DfmhV4XNJqw"
+      },
+      {
+        "id": "c_reel_DfmhV4XNJqw_5",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8541,
+          "followingCount": 263,
+          "postsCount": 13,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T21:38:34.702Z",
+        "likesCount": 334,
+        "isLiked": false,
+        "postId": "reel_DfmhV4XNJqw"
+      }
+    ]
+  },
+  {
+    "id": "reel_De84p4NzmeO",
+    "userId": "user_lovegillkalakaar",
+    "user": {
+      "id": "user_lovegillkalakaar",
+      "username": "lovegillkalakaar",
+      "name": "Lovepreet Kaur",
+      "avatar": "/api/social/media/avatar_lovegillkalakaar.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 1480315,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/De84p4NzmeO.mp4"
+    ],
+    "thumbnail": "/api/social/media/De84p4NzmeO_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "How is it always so easy to blame everything on a woman in the house? She treated every single person like family. She never spoke ill of anyone, remained pure-hearted, and gave nothing but love. To see her targeted like this is absolutely devastating.\nWhat hurts the most is realizing that even in today’s world, it is still so effortless to attack a woman’s character and throw such toxic words at her. But the most shocking and painful part? Seeing another woman do this to a woman.\nYou don’t deserve this cruelty. Stay strong, love. We see your pure heart, even if they choose to stay blind to it. 🥺❤️\n\nOutfit by @avbyavneetkaur\nJewellery by @orionjewels__\n\n#lovegill #lovegillkalakar #lovekelovelies #lovegillbiggboss20",
+    "likesCount": 3289590,
+    "commentsCount": 61527,
+    "createdAt": "2026-11-11T19:28:39.733Z",
+    "tags": [
+      "lovegill",
+      "lovegillkalakar",
+      "lovekelovelies",
+      "lovegillbiggboss20"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_De84p4NzmeO_1",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5009,
+          "followingCount": 521,
+          "postsCount": 55,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T19:42:39.733Z",
+        "likesCount": 448,
+        "isLiked": false,
+        "postId": "reel_De84p4NzmeO"
+      },
+      {
+        "id": "c_reel_De84p4NzmeO_2",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 12768,
+          "followingCount": 439,
+          "postsCount": 33,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T19:56:39.733Z",
+        "likesCount": 113,
+        "isLiked": false,
+        "postId": "reel_De84p4NzmeO"
+      },
+      {
+        "id": "c_reel_De84p4NzmeO_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 1510,
+          "followingCount": 301,
+          "postsCount": 16,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T20:10:39.733Z",
+        "likesCount": 49,
+        "isLiked": false,
+        "postId": "reel_De84p4NzmeO"
+      },
+      {
+        "id": "c_reel_De84p4NzmeO_4",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12970,
+          "followingCount": 177,
+          "postsCount": 48,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T20:24:39.733Z",
+        "likesCount": 459,
+        "isLiked": false,
+        "postId": "reel_De84p4NzmeO"
+      },
+      {
+        "id": "c_reel_De84p4NzmeO_5",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 15349,
+          "followingCount": 346,
+          "postsCount": 19,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T20:38:39.733Z",
+        "likesCount": 294,
+        "isLiked": false,
+        "postId": "reel_De84p4NzmeO"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dfcqdy7JMza",
+    "userId": "user_ifwdeepakhq",
+    "user": {
+      "id": "user_ifwdeepakhq",
+      "username": "ifwdeepakhq",
+      "name": "Deepak Kumar",
+      "avatar": "/api/social/media/avatar_ifwdeepakhq.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 192453,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dfcqdy7JMza.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dfcqdy7JMza_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Happy wali Diwali 🪔 \n\n#patakha #diwali",
+    "likesCount": 427675,
+    "commentsCount": 1073,
+    "createdAt": "2026-11-11T18:28:43.647Z",
+    "tags": [
+      "patakha",
+      "diwali"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dfcqdy7JMza_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 9880,
+          "followingCount": 500,
+          "postsCount": 21,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T18:42:43.647Z",
+        "likesCount": 114,
+        "isLiked": false,
+        "postId": "reel_Dfcqdy7JMza"
+      },
+      {
+        "id": "c_reel_Dfcqdy7JMza_2",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18082,
+          "followingCount": 512,
+          "postsCount": 51,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T18:56:43.647Z",
+        "likesCount": 83,
+        "isLiked": false,
+        "postId": "reel_Dfcqdy7JMza"
+      },
+      {
+        "id": "c_reel_Dfcqdy7JMza_3",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14709,
+          "followingCount": 369,
+          "postsCount": 46,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T19:10:43.647Z",
+        "likesCount": 124,
+        "isLiked": false,
+        "postId": "reel_Dfcqdy7JMza"
+      },
+      {
+        "id": "c_reel_Dfcqdy7JMza_4",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5189,
+          "followingCount": 277,
+          "postsCount": 23,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T19:24:43.647Z",
+        "likesCount": 86,
+        "isLiked": false,
+        "postId": "reel_Dfcqdy7JMza"
+      },
+      {
+        "id": "c_reel_Dfcqdy7JMza_5",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 2651,
+          "followingCount": 375,
+          "postsCount": 48,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T19:38:43.647Z",
+        "likesCount": 91,
+        "isLiked": false,
+        "postId": "reel_Dfcqdy7JMza"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfXx3TeSGKQ",
+    "userId": "user_arishfakhan138",
+    "user": {
+      "id": "user_arishfakhan138",
+      "username": "arishfakhan138",
+      "name": "Sayyed Arishfa Khan",
+      "avatar": "/api/social/media/avatar_arishfakhan138.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 1301528,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfXx3TeSGKQ.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfXx3TeSGKQ_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Everyone broke the cassettes, but when it was Arishfa’s turn, she showed her big heart and humanity. ❤️ Without hesitation, she decided to give her cassette to Amrapali, following the values her mother taught her. Her mother has raised her with such beautiful values. It takes a truly big heart to do something like this! 🥹❤️\n\n#ArishfaKhan #BiggBoss20 #BB20 #sad",
+    "likesCount": 2892286,
+    "commentsCount": 19228,
+    "createdAt": "2026-11-11T17:28:49.723Z",
+    "tags": [
+      "ArishfaKhan",
+      "BiggBoss20",
+      "BB20",
+      "sad"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfXx3TeSGKQ_1",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17957,
+          "followingCount": 353,
+          "postsCount": 54,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T17:42:49.723Z",
+        "likesCount": 350,
+        "isLiked": false,
+        "postId": "reel_DfXx3TeSGKQ"
+      },
+      {
+        "id": "c_reel_DfXx3TeSGKQ_2",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12482,
+          "followingCount": 258,
+          "postsCount": 28,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T17:56:49.723Z",
+        "likesCount": 371,
+        "isLiked": false,
+        "postId": "reel_DfXx3TeSGKQ"
+      },
+      {
+        "id": "c_reel_DfXx3TeSGKQ_3",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12358,
+          "followingCount": 472,
+          "postsCount": 51,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T18:10:49.723Z",
+        "likesCount": 495,
+        "isLiked": false,
+        "postId": "reel_DfXx3TeSGKQ"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfcIY7qy1z9",
+    "userId": "user_aimohitbhai",
+    "user": {
+      "id": "user_aimohitbhai",
+      "username": "aimohitbhai",
+      "name": "AIMohitBhai",
+      "avatar": "/api/social/media/avatar_aimohitbhai.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 312480,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfcIY7qy1z9.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfcIY7qy1z9_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "India gate drone show abhi tak ka india ka sabse best drone show dekha diwali pr ek sath itne sare drone se sky main bhagwan bana diye. Happy choti diwali \n.\n.\n.\n#happydiwali #aivideo #hanumanji #ramayana #indiagatedroneshow",
+    "likesCount": 694401,
+    "commentsCount": 4196,
+    "createdAt": "2026-11-11T16:28:52.871Z",
+    "tags": [
+      "happydiwali",
+      "aivideo",
+      "hanumanji",
+      "ramayana",
+      "indiagatedroneshow"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfcIY7qy1z9_1",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 7517,
+          "followingCount": 446,
+          "postsCount": 21,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T16:42:52.871Z",
+        "likesCount": 400,
+        "isLiked": false,
+        "postId": "reel_DfcIY7qy1z9"
+      },
+      {
+        "id": "c_reel_DfcIY7qy1z9_2",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 5326,
+          "followingCount": 502,
+          "postsCount": 44,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T16:56:52.871Z",
+        "likesCount": 282,
+        "isLiked": false,
+        "postId": "reel_DfcIY7qy1z9"
+      },
+      {
+        "id": "c_reel_DfcIY7qy1z9_3",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12396,
+          "followingCount": 171,
+          "postsCount": 54,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T17:10:52.871Z",
+        "likesCount": 477,
+        "isLiked": false,
+        "postId": "reel_DfcIY7qy1z9"
+      },
+      {
+        "id": "c_reel_DfcIY7qy1z9_4",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 6205,
+          "followingCount": 322,
+          "postsCount": 57,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T17:24:52.871Z",
+        "likesCount": 418,
+        "isLiked": false,
+        "postId": "reel_DfcIY7qy1z9"
+      },
+      {
+        "id": "c_reel_DfcIY7qy1z9_5",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 7788,
+          "followingCount": 332,
+          "postsCount": 21,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T17:38:52.871Z",
+        "likesCount": 352,
+        "isLiked": false,
+        "postId": "reel_DfcIY7qy1z9"
+      }
+    ]
+  },
+  {
+    "id": "reel_DerpNfjtwVc",
+    "userId": "user_sameeksha.sarkar",
+    "user": {
+      "id": "user_sameeksha.sarkar",
+      "username": "sameeksha.sarkar",
+      "name": "Sameekssha S Sarkar",
+      "avatar": "/api/social/media/avatar_sameeksha.sarkar.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 849778,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DerpNfjtwVc.mp4"
+    ],
+    "thumbnail": "/api/social/media/DerpNfjtwVc_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "THIS IS YOUR SONG?! \nSuch a fun moment ⭐️ Thank you for so much love on Udi Udi, go stream now, link in bio ❤️\n\n#singer #Udiudi\n#viralmusic #sarkar arkar #explorepage \n\nI-POPSTAR, IPOPSTAR, I-POPSTAR Season 2, Netflix India, Indian Reality Shows, Indian Reality TV, Music Reality Show, Singing Reality Show, Music Competition, Indian Music, Indian Artists, Emerging Artists, Original Music, New Music, Regional Music India, Indian Pop Music, Indian Idol, Sa Re Ga Ma Pa, OTT India, Netflix Shows, Indian Entertainment, Music Talent, Regional Artists, Bhojpuri Music, Rajasthani Music, Neha Kakkar, KING, Aditya Rikhari, Sarkar, Sameeksha Sarkar, Udi Udi, Indi artist, Viral songs, billori, udi udi, sawari si surat",
+    "likesCount": 1888397,
+    "commentsCount": 2392,
+    "createdAt": "2026-11-11T15:28:56.784Z",
+    "tags": [
+      "singer",
+      "Udiudi",
+      "viralmusic",
+      "sarkar",
+      "explorepage"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DerpNfjtwVc_1",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 2413,
+          "followingCount": 330,
+          "postsCount": 47,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T15:42:56.784Z",
+        "likesCount": 14,
+        "isLiked": false,
+        "postId": "reel_DerpNfjtwVc"
+      },
+      {
+        "id": "c_reel_DerpNfjtwVc_2",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 12182,
+          "followingCount": 383,
+          "postsCount": 45,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T15:56:56.784Z",
+        "likesCount": 87,
+        "isLiked": false,
+        "postId": "reel_DerpNfjtwVc"
+      },
+      {
+        "id": "c_reel_DerpNfjtwVc_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 17975,
+          "followingCount": 495,
+          "postsCount": 54,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T16:10:56.784Z",
+        "likesCount": 226,
+        "isLiked": false,
+        "postId": "reel_DerpNfjtwVc"
+      },
+      {
+        "id": "c_reel_DerpNfjtwVc_4",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17488,
+          "followingCount": 428,
+          "postsCount": 44,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T16:24:56.784Z",
+        "likesCount": 106,
+        "isLiked": false,
+        "postId": "reel_DerpNfjtwVc"
+      },
+      {
+        "id": "c_reel_DerpNfjtwVc_5",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 2488,
+          "followingCount": 443,
+          "postsCount": 40,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T16:38:56.784Z",
+        "likesCount": 77,
+        "isLiked": false,
+        "postId": "reel_DerpNfjtwVc"
+      }
+    ]
+  },
+  {
+    "id": "reel_DauJBKAwz4P",
+    "userId": "user_rafayeasmin16",
+    "user": {
+      "id": "user_rafayeasmin16",
+      "username": "rafayeasmin16",
+      "name": "Rafa Yeasmin",
+      "avatar": "/api/social/media/avatar_rafayeasmin16.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 5607127,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DauJBKAwz4P.mp4"
+    ],
+    "thumbnail": "/api/social/media/DauJBKAwz4P_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "My version of “Senorita” at SaReGaMaPa 🎵❤️\n\n#SaReGaMaPaLilChamps #Saregamapa #ZeeTV #LilChampRafaYeasmin #RafaYeasmin",
+    "likesCount": 12460283,
+    "commentsCount": 102849,
+    "createdAt": "2026-11-11T14:29:03.646Z",
+    "tags": [
+      "SaReGaMaPaLilChamps",
+      "Saregamapa",
+      "ZeeTV",
+      "LilChampRafaYeasmin",
+      "RafaYeasmin"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DauJBKAwz4P_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 4065,
+          "followingCount": 282,
+          "postsCount": 38,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T14:43:03.646Z",
+        "likesCount": 137,
+        "isLiked": false,
+        "postId": "reel_DauJBKAwz4P"
+      },
+      {
+        "id": "c_reel_DauJBKAwz4P_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 17528,
+          "followingCount": 394,
+          "postsCount": 61,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T14:57:03.646Z",
+        "likesCount": 488,
+        "isLiked": false,
+        "postId": "reel_DauJBKAwz4P"
+      },
+      {
+        "id": "c_reel_DauJBKAwz4P_3",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 11836,
+          "followingCount": 524,
+          "postsCount": 26,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T15:11:03.646Z",
+        "likesCount": 394,
+        "isLiked": false,
+        "postId": "reel_DauJBKAwz4P"
+      },
+      {
+        "id": "c_reel_DauJBKAwz4P_4",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8503,
+          "followingCount": 259,
+          "postsCount": 53,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T15:25:03.646Z",
+        "likesCount": 346,
+        "isLiked": false,
+        "postId": "reel_DauJBKAwz4P"
+      }
+    ]
+  },
+  {
+    "id": "reel_DeTR9CGuK09",
+    "userId": "user_bhoomi.dagar18",
+    "user": {
+      "id": "user_bhoomi.dagar18",
+      "username": "bhoomi.dagar18",
+      "name": "Bhoomi 🌸",
+      "avatar": "/api/social/media/avatar_bhoomi.dagar18.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 2729516,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DeTR9CGuK09.mp4"
+    ],
+    "thumbnail": "/api/social/media/DeTR9CGuK09_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "#sidhu #justiceforsidhumoosewala",
+    "likesCount": 6065592,
+    "commentsCount": 33777,
+    "createdAt": "2026-11-11T13:29:07.383Z",
+    "tags": [
+      "sidhu",
+      "justiceforsidhumoosewala"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DeTR9CGuK09_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 15318,
+          "followingCount": 518,
+          "postsCount": 16,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T13:43:07.383Z",
+        "likesCount": 369,
+        "isLiked": false,
+        "postId": "reel_DeTR9CGuK09"
+      },
+      {
+        "id": "c_reel_DeTR9CGuK09_2",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14557,
+          "followingCount": 163,
+          "postsCount": 26,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T13:57:07.383Z",
+        "likesCount": 251,
+        "isLiked": false,
+        "postId": "reel_DeTR9CGuK09"
+      },
+      {
+        "id": "c_reel_DeTR9CGuK09_3",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5875,
+          "followingCount": 366,
+          "postsCount": 16,
+          "isOnline": false
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T14:11:07.383Z",
+        "likesCount": 259,
+        "isLiked": false,
+        "postId": "reel_DeTR9CGuK09"
+      }
+    ]
+  },
+  {
+    "id": "reel_DdyG21axOlo",
+    "userId": "user_orry",
+    "user": {
+      "id": "user_orry",
+      "username": "orry",
+      "name": "Orhan Awatramani",
+      "avatar": "/api/social/media/avatar_orry.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 512229,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DdyG21axOlo.mp4"
+    ],
+    "thumbnail": "/api/social/media/DdyG21axOlo_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "@aliaabhatt is over eating again 🙄",
+    "likesCount": 1138287,
+    "commentsCount": 1640,
+    "createdAt": "2026-11-11T12:29:10.416Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DdyG21axOlo_1",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 11946,
+          "followingCount": 227,
+          "postsCount": 22,
+          "isOnline": false
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T12:43:10.416Z",
+        "likesCount": 211,
+        "isLiked": false,
+        "postId": "reel_DdyG21axOlo"
+      },
+      {
+        "id": "c_reel_DdyG21axOlo_2",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8030,
+          "followingCount": 494,
+          "postsCount": 48,
+          "isOnline": false
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T12:57:10.416Z",
+        "likesCount": 29,
+        "isLiked": false,
+        "postId": "reel_DdyG21axOlo"
+      },
+      {
+        "id": "c_reel_DdyG21axOlo_3",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 3515,
+          "followingCount": 225,
+          "postsCount": 28,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T13:11:10.416Z",
+        "likesCount": 314,
+        "isLiked": false,
+        "postId": "reel_DdyG21axOlo"
+      },
+      {
+        "id": "c_reel_DdyG21axOlo_4",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 4696,
+          "followingCount": 184,
+          "postsCount": 20,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T13:25:10.416Z",
+        "likesCount": 386,
+        "isLiked": false,
+        "postId": "reel_DdyG21axOlo"
+      }
+    ]
+  },
+  {
+    "id": "reel_DcgUAEWi7h3",
+    "userId": "user_the9teen__",
+    "user": {
+      "id": "user_the9teen__",
+      "username": "the9teen__",
+      "name": "The Nineteen",
+      "avatar": "/api/social/media/avatar_the9teen__.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 1171114,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DcgUAEWi7h3.mp4"
+    ],
+    "thumbnail": "/api/social/media/DcgUAEWi7h3_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Underrated song 🫶🏻",
+    "likesCount": 2602476,
+    "commentsCount": 6971,
+    "createdAt": "2026-11-11T11:29:14.233Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DcgUAEWi7h3_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8822,
+          "followingCount": 527,
+          "postsCount": 54,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T11:43:14.233Z",
+        "likesCount": 381,
+        "isLiked": false,
+        "postId": "reel_DcgUAEWi7h3"
+      },
+      {
+        "id": "c_reel_DcgUAEWi7h3_2",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 1547,
+          "followingCount": 176,
+          "postsCount": 46,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T11:57:14.233Z",
+        "likesCount": 65,
+        "isLiked": false,
+        "postId": "reel_DcgUAEWi7h3"
+      },
+      {
+        "id": "c_reel_DcgUAEWi7h3_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 1885,
+          "followingCount": 425,
+          "postsCount": 17,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T12:11:14.233Z",
+        "likesCount": 337,
+        "isLiked": false,
+        "postId": "reel_DcgUAEWi7h3"
+      }
+    ]
+  },
+  {
+    "id": "reel_DeOUnpPskbv",
+    "userId": "user_omidrajabi.official",
+    "user": {
+      "id": "user_omidrajabi.official",
+      "username": "omidrajabi.official",
+      "name": "امید رجبی  |  omid rajabi",
+      "avatar": "/api/social/media/avatar_omidrajabi.official.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 975026,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DeOUnpPskbv.mp4"
+    ],
+    "thumbnail": "/api/social/media/DeOUnpPskbv_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "⁨\tبا دیدن این عروسک ، هرچی تو ذهنت میاد بنویس 🥹\n\n‪@omidrajabi.official‬⁩",
+    "likesCount": 2166726,
+    "commentsCount": 41314,
+    "createdAt": "2026-11-12T10:29:19.872Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DeOUnpPskbv_1",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18984,
+          "followingCount": 181,
+          "postsCount": 22,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T10:43:19.872Z",
+        "likesCount": 344,
+        "isLiked": false,
+        "postId": "reel_DeOUnpPskbv"
+      },
+      {
+        "id": "c_reel_DeOUnpPskbv_2",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17532,
+          "followingCount": 413,
+          "postsCount": 25,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T10:57:19.872Z",
+        "likesCount": 484,
+        "isLiked": false,
+        "postId": "reel_DeOUnpPskbv"
+      },
+      {
+        "id": "c_reel_DeOUnpPskbv_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 5612,
+          "followingCount": 538,
+          "postsCount": 40,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T11:11:19.872Z",
+        "likesCount": 427,
+        "isLiked": false,
+        "postId": "reel_DeOUnpPskbv"
+      },
+      {
+        "id": "c_reel_DeOUnpPskbv_4",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 3462,
+          "followingCount": 476,
+          "postsCount": 46,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T11:25:19.872Z",
+        "likesCount": 498,
+        "isLiked": false,
+        "postId": "reel_DeOUnpPskbv"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dfl4OfWRv8I",
+    "userId": "user_prime_video767",
+    "user": {
+      "id": "user_prime_video767",
+      "username": "prime_video767",
+      "name": "Prime video",
+      "avatar": "/api/social/media/avatar_prime_video767.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 315583,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dfl4OfWRv8I.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dfl4OfWRv8I_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "#riteishdeshmukh Ne Kiya Jise #propose Usane Abtak Nahi Diya Jawab #funny #tkss #kapilsharmacomedy",
+    "likesCount": 701297,
+    "commentsCount": 684,
+    "createdAt": "2026-11-12T09:29:24.934Z",
+    "tags": [
+      "riteishdeshmukh",
+      "propose",
+      "funny",
+      "tkss",
+      "kapilsharmacomedy"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dfl4OfWRv8I_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 12042,
+          "followingCount": 287,
+          "postsCount": 24,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T09:43:24.934Z",
+        "likesCount": 501,
+        "isLiked": false,
+        "postId": "reel_Dfl4OfWRv8I"
+      },
+      {
+        "id": "c_reel_Dfl4OfWRv8I_2",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5021,
+          "followingCount": 261,
+          "postsCount": 45,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T09:57:24.934Z",
+        "likesCount": 134,
+        "isLiked": false,
+        "postId": "reel_Dfl4OfWRv8I"
+      },
+      {
+        "id": "c_reel_Dfl4OfWRv8I_3",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 4556,
+          "followingCount": 311,
+          "postsCount": 17,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T10:11:24.934Z",
+        "likesCount": 462,
+        "isLiked": false,
+        "postId": "reel_Dfl4OfWRv8I"
+      },
+      {
+        "id": "c_reel_Dfl4OfWRv8I_4",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5999,
+          "followingCount": 533,
+          "postsCount": 15,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T10:25:24.934Z",
+        "likesCount": 300,
+        "isLiked": false,
+        "postId": "reel_Dfl4OfWRv8I"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dfl1kPQzmw0",
+    "userId": "user____shradhaaaa___",
+    "user": {
+      "id": "user____shradhaaaa___",
+      "username": "___shradhaaaa___",
+      "name": "Shraddha",
+      "avatar": "/api/social/media/avatar____shradhaaaa___.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 257790,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dfl1kPQzmw0.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dfl1kPQzmw0_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Dad’s reaction stole the show😭❤️🤌🏻\n@official_mitta_ror \n@sorabbedi @niharikatiwari001 \n🧠: @umeshnegi3 \n\n#trending #explore #sheesha #diwali #fyp",
+    "likesCount": 572868,
+    "commentsCount": 2052,
+    "createdAt": "2026-11-12T08:29:28.821Z",
+    "tags": [
+      "trending",
+      "explore",
+      "sheesha",
+      "diwali",
+      "fyp"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dfl1kPQzmw0_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 3420,
+          "followingCount": 177,
+          "postsCount": 41,
+          "isOnline": false
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-12T08:43:28.821Z",
+        "likesCount": 350,
+        "isLiked": false,
+        "postId": "reel_Dfl1kPQzmw0"
+      },
+      {
+        "id": "c_reel_Dfl1kPQzmw0_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 6042,
+          "followingCount": 349,
+          "postsCount": 28,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T08:57:28.821Z",
+        "likesCount": 238,
+        "isLiked": false,
+        "postId": "reel_Dfl1kPQzmw0"
+      },
+      {
+        "id": "c_reel_Dfl1kPQzmw0_3",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5162,
+          "followingCount": 217,
+          "postsCount": 46,
+          "isOnline": false
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T09:11:28.821Z",
+        "likesCount": 86,
+        "isLiked": false,
+        "postId": "reel_Dfl1kPQzmw0"
+      },
+      {
+        "id": "c_reel_Dfl1kPQzmw0_4",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 3971,
+          "followingCount": 173,
+          "postsCount": 60,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T09:25:28.821Z",
+        "likesCount": 378,
+        "isLiked": false,
+        "postId": "reel_Dfl1kPQzmw0"
+      },
+      {
+        "id": "c_reel_Dfl1kPQzmw0_5",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 16921,
+          "followingCount": 180,
+          "postsCount": 61,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T09:39:28.821Z",
+        "likesCount": 506,
+        "isLiked": false,
+        "postId": "reel_Dfl1kPQzmw0"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfPes0aMBtZ",
+    "userId": "user_tejasswiprakash",
+    "user": {
+      "id": "user_tejasswiprakash",
+      "username": "tejasswiprakash",
+      "name": "Tejasswi Prakash",
+      "avatar": "/api/social/media/avatar_tejasswiprakash.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 205833,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfPes0aMBtZ.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfPes0aMBtZ_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Now there is no way my engagement is going down 🫣",
+    "likesCount": 457407,
+    "commentsCount": 1248,
+    "createdAt": "2026-11-12T07:29:33.643Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfPes0aMBtZ_1",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 16135,
+          "followingCount": 527,
+          "postsCount": 45,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T07:43:33.643Z",
+        "likesCount": 203,
+        "isLiked": false,
+        "postId": "reel_DfPes0aMBtZ"
+      },
+      {
+        "id": "c_reel_DfPes0aMBtZ_2",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 13454,
+          "followingCount": 385,
+          "postsCount": 25,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T07:57:33.643Z",
+        "likesCount": 98,
+        "isLiked": false,
+        "postId": "reel_DfPes0aMBtZ"
+      },
+      {
+        "id": "c_reel_DfPes0aMBtZ_3",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8511,
+          "followingCount": 529,
+          "postsCount": 18,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T08:11:33.643Z",
+        "likesCount": 423,
+        "isLiked": false,
+        "postId": "reel_DfPes0aMBtZ"
+      },
+      {
+        "id": "c_reel_DfPes0aMBtZ_4",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 7873,
+          "followingCount": 160,
+          "postsCount": 35,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T08:25:33.643Z",
+        "likesCount": 53,
+        "isLiked": false,
+        "postId": "reel_DfPes0aMBtZ"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfbzHM5hmjn",
+    "userId": "user_arishfakhan138",
+    "user": {
+      "id": "user_arishfakhan138",
+      "username": "arishfakhan138",
+      "name": "Sayyed Arishfa Khan",
+      "avatar": "/api/social/media/avatar_arishfakhan138.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 1201498,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfbzHM5hmjn.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfbzHM5hmjn_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Arishfa masti-masti mein aisi next-level punchlines maar deti hai! 😂🔥 Jodha bai, seriously, our girl is a natural entertainer! ❤️🤣\n\n#ArishfaKhan #BiggBoss20 #BB20 #fun",
+    "likesCount": 2669996,
+    "commentsCount": 6762,
+    "createdAt": "2026-11-12T06:29:37.658Z",
+    "tags": [
+      "ArishfaKhan",
+      "BiggBoss20",
+      "BB20",
+      "fun"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfbzHM5hmjn_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 2886,
+          "followingCount": 364,
+          "postsCount": 52,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T06:43:37.658Z",
+        "likesCount": 287,
+        "isLiked": false,
+        "postId": "reel_DfbzHM5hmjn"
+      },
+      {
+        "id": "c_reel_DfbzHM5hmjn_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 11243,
+          "followingCount": 514,
+          "postsCount": 50,
+          "isOnline": false
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T06:57:37.658Z",
+        "likesCount": 197,
+        "isLiked": false,
+        "postId": "reel_DfbzHM5hmjn"
+      },
+      {
+        "id": "c_reel_DfbzHM5hmjn_3",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8344,
+          "followingCount": 167,
+          "postsCount": 33,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T07:11:37.658Z",
+        "likesCount": 294,
+        "isLiked": false,
+        "postId": "reel_DfbzHM5hmjn"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dd_Mwz3RLfA",
+    "userId": "user_palakmuchhal3",
+    "user": {
+      "id": "user_palakmuchhal3",
+      "username": "palakmuchhal3",
+      "name": "Palak Muchhal",
+      "avatar": "/api/social/media/avatar_palakmuchhal3.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 815139,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dd_Mwz3RLfA.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dd_Mwz3RLfA_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Hum kya karein ❤️\n#ZeeCineAwards",
+    "likesCount": 1811421,
+    "commentsCount": 8244,
+    "createdAt": "2026-11-12T05:29:43.665Z",
+    "tags": [
+      "ZeeCineAwards"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dd_Mwz3RLfA_1",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 3582,
+          "followingCount": 177,
+          "postsCount": 38,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T05:43:43.665Z",
+        "likesCount": 165,
+        "isLiked": false,
+        "postId": "reel_Dd_Mwz3RLfA"
+      },
+      {
+        "id": "c_reel_Dd_Mwz3RLfA_2",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17958,
+          "followingCount": 408,
+          "postsCount": 44,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T05:57:43.665Z",
+        "likesCount": 222,
+        "isLiked": false,
+        "postId": "reel_Dd_Mwz3RLfA"
+      },
+      {
+        "id": "c_reel_Dd_Mwz3RLfA_3",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 10836,
+          "followingCount": 510,
+          "postsCount": 48,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T06:11:43.665Z",
+        "likesCount": 286,
+        "isLiked": false,
+        "postId": "reel_Dd_Mwz3RLfA"
+      },
+      {
+        "id": "c_reel_Dd_Mwz3RLfA_4",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 12304,
+          "followingCount": 414,
+          "postsCount": 18,
+          "isOnline": false
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T06:25:43.665Z",
+        "likesCount": 105,
+        "isLiked": false,
+        "postId": "reel_Dd_Mwz3RLfA"
+      },
+      {
+        "id": "c_reel_Dd_Mwz3RLfA_5",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8376,
+          "followingCount": 403,
+          "postsCount": 51,
+          "isOnline": false
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T06:39:43.665Z",
+        "likesCount": 199,
+        "isLiked": false,
+        "postId": "reel_Dd_Mwz3RLfA"
+      }
+    ]
+  },
+  {
+    "id": "reel_DeM8sg0tS6D",
+    "userId": "user_konerchayanika",
+    "user": {
+      "id": "user_konerchayanika",
+      "username": "konerchayanika",
+      "name": "Chayanika Koner",
+      "avatar": "/api/social/media/avatar_konerchayanika.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 559509,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DeM8sg0tS6D.mp4"
+    ],
+    "thumbnail": "/api/social/media/DeM8sg0tS6D_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "ওয়াও ❤️ ❤️👌👍🌿\n\n #Amazing #video #viral #everyone #follower #friends",
+    "likesCount": 1243354,
+    "commentsCount": 1571,
+    "createdAt": "2026-11-12T04:29:47.391Z",
+    "tags": [
+      "Amazing",
+      "video",
+      "viral",
+      "everyone",
+      "follower",
+      "friends"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DeM8sg0tS6D_1",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14303,
+          "followingCount": 254,
+          "postsCount": 35,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T04:43:47.391Z",
+        "likesCount": 111,
+        "isLiked": false,
+        "postId": "reel_DeM8sg0tS6D"
+      },
+      {
+        "id": "c_reel_DeM8sg0tS6D_2",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 15473,
+          "followingCount": 495,
+          "postsCount": 19,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T04:57:47.391Z",
+        "likesCount": 27,
+        "isLiked": false,
+        "postId": "reel_DeM8sg0tS6D"
+      },
+      {
+        "id": "c_reel_DeM8sg0tS6D_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 15814,
+          "followingCount": 218,
+          "postsCount": 36,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T05:11:47.391Z",
+        "likesCount": 257,
+        "isLiked": false,
+        "postId": "reel_DeM8sg0tS6D"
+      },
+      {
+        "id": "c_reel_DeM8sg0tS6D_4",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 15687,
+          "followingCount": 161,
+          "postsCount": 52,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T05:25:47.391Z",
+        "likesCount": 398,
+        "isLiked": false,
+        "postId": "reel_DeM8sg0tS6D"
+      }
+    ]
+  },
+  {
+    "id": "reel_DcwiWP2vcZW",
+    "userId": "user_fallontonight",
+    "user": {
+      "id": "user_fallontonight",
+      "username": "fallontonight",
+      "name": "The Tonight Show",
+      "avatar": "/api/social/media/avatar_fallontonight.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 652985,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DcwiWP2vcZW.mp4"
+    ],
+    "thumbnail": "/api/social/media/DcwiWP2vcZW_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "@bts.bighitofficial’s @mnijungkook tries New York pizza for the first time 🍕 #JungKookOnFallon #FallonFlashback",
+    "likesCount": 1451079,
+    "commentsCount": 5077,
+    "createdAt": "2026-11-12T03:29:51.862Z",
+    "tags": [
+      "JungKookOnFallon",
+      "FallonFlashback"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DcwiWP2vcZW_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 10927,
+          "followingCount": 223,
+          "postsCount": 26,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T03:43:51.862Z",
+        "likesCount": 349,
+        "isLiked": false,
+        "postId": "reel_DcwiWP2vcZW"
+      },
+      {
+        "id": "c_reel_DcwiWP2vcZW_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 13654,
+          "followingCount": 451,
+          "postsCount": 28,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T03:57:51.862Z",
+        "likesCount": 257,
+        "isLiked": false,
+        "postId": "reel_DcwiWP2vcZW"
+      },
+      {
+        "id": "c_reel_DcwiWP2vcZW_3",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 2250,
+          "followingCount": 220,
+          "postsCount": 34,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T04:11:51.862Z",
+        "likesCount": 92,
+        "isLiked": false,
+        "postId": "reel_DcwiWP2vcZW"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfPMjDYpRas",
+    "userId": "user_rizzmaster.updatesss",
+    "user": {
+      "id": "user_rizzmaster.updatesss",
+      "username": "rizzmaster.updatesss",
+      "name": "Rizz Master",
+      "avatar": "/api/social/media/avatar_rizzmaster.updatesss.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": false,
+      "followersCount": 19655,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfPMjDYpRas.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfPMjDYpRas_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "The game of rizz never gets boring! 😎🔥\n\n📺 New episode drops daily!\n💥 Watch Rizz Master only on @tadkaonjiohotstar \n\n@elvish_yadav @isha__malviya @rajatsoodpomedy \n\nRizz Master, Takda, dating show, flirting skills, rizz game, reality show, entertaining moments, viral clips, elvish yadav, isha malviya, rajat sood\n\n#elvisharmy #elvishyadav #ishamalviya #memes #reality",
+    "likesCount": 43679,
+    "commentsCount": 55,
+    "createdAt": "2026-11-12T02:29:58.468Z",
+    "tags": [
+      "elvisharmy",
+      "elvishyadav",
+      "ishamalviya",
+      "memes",
+      "reality"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfPMjDYpRas_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 7010,
+          "followingCount": 399,
+          "postsCount": 13,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T02:43:58.468Z",
+        "likesCount": 429,
+        "isLiked": false,
+        "postId": "reel_DfPMjDYpRas"
+      },
+      {
+        "id": "c_reel_DfPMjDYpRas_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 7350,
+          "followingCount": 406,
+          "postsCount": 22,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T02:57:58.468Z",
+        "likesCount": 408,
+        "isLiked": false,
+        "postId": "reel_DfPMjDYpRas"
+      },
+      {
+        "id": "c_reel_DfPMjDYpRas_3",
+        "user": {
+          "id": "u_c5",
+          "username": "vikram.singh.07",
+          "name": "Vikram Singh",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 11789,
+          "followingCount": 208,
+          "postsCount": 48,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T03:11:58.468Z",
+        "likesCount": 382,
+        "isLiked": false,
+        "postId": "reel_DfPMjDYpRas"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dd05y_Bx2st",
+    "userId": "user_kanakmmathur",
+    "user": {
+      "id": "user_kanakmmathur",
+      "username": "kanakmmathur",
+      "name": "Kanak Mathur",
+      "avatar": "/api/social/media/avatar_kanakmmathur.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 158385,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dd05y_Bx2st.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dd05y_Bx2st_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "♥️Awesome Dress @tinybabyindia 😎Always Showstopr walk for @nomaan4422 sir 🤴🏻#kanakmathur #kidsmodel #nomankhan #riifam #viral ♥️",
+    "likesCount": 351968,
+    "commentsCount": 2200,
+    "createdAt": "2026-11-12T01:30:04.072Z",
+    "tags": [
+      "kanakmathur",
+      "kidsmodel",
+      "nomankhan",
+      "riifam",
+      "viral"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dd05y_Bx2st_1",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14751,
+          "followingCount": 255,
+          "postsCount": 19,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T01:44:04.072Z",
+        "likesCount": 252,
+        "isLiked": false,
+        "postId": "reel_Dd05y_Bx2st"
+      },
+      {
+        "id": "c_reel_Dd05y_Bx2st_2",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 4695,
+          "followingCount": 392,
+          "postsCount": 44,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T01:58:04.072Z",
+        "likesCount": 44,
+        "isLiked": false,
+        "postId": "reel_Dd05y_Bx2st"
+      },
+      {
+        "id": "c_reel_Dd05y_Bx2st_3",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 11023,
+          "followingCount": 441,
+          "postsCount": 46,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T02:12:04.072Z",
+        "likesCount": 298,
+        "isLiked": false,
+        "postId": "reel_Dd05y_Bx2st"
+      },
+      {
+        "id": "c_reel_Dd05y_Bx2st_4",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 3663,
+          "followingCount": 320,
+          "postsCount": 26,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T02:26:04.072Z",
+        "likesCount": 274,
+        "isLiked": false,
+        "postId": "reel_Dd05y_Bx2st"
+      }
+    ]
+  },
+  {
+    "id": "reel_DfD1Kq6yxr4",
+    "userId": "user_ttrendbaaz",
+    "user": {
+      "id": "user_ttrendbaaz",
+      "username": "ttrendbaaz",
+      "name": "ttrendbaaz",
+      "avatar": "/api/social/media/avatar_ttrendbaaz.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 49288,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DfD1Kq6yxr4.mp4"
+    ],
+    "thumbnail": "/api/social/media/DfD1Kq6yxr4_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Itne Me Toh Car Aajaaye!\"-Sunanda Sharma Wears A ₹3.5 Lakh Jacket To A Podcast! 😳🔥\n\n@theshubhankarmishra\n\nThe Official Instagram page of The 50 Reality Show Premieres on Feb 1st only on #JioHotstar and #colorstv",
+    "likesCount": 109531,
+    "commentsCount": 429,
+    "createdAt": "2026-11-12T00:30:09.220Z",
+    "tags": [
+      "JioHotstar",
+      "colorstv"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DfD1Kq6yxr4_1",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 4982,
+          "followingCount": 288,
+          "postsCount": 18,
+          "isOnline": true
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-12T00:44:09.220Z",
+        "likesCount": 117,
+        "isLiked": false,
+        "postId": "reel_DfD1Kq6yxr4"
+      },
+      {
+        "id": "c_reel_DfD1Kq6yxr4_2",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 14361,
+          "followingCount": 426,
+          "postsCount": 27,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T00:58:09.220Z",
+        "likesCount": 303,
+        "isLiked": false,
+        "postId": "reel_DfD1Kq6yxr4"
+      },
+      {
+        "id": "c_reel_DfD1Kq6yxr4_3",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12565,
+          "followingCount": 333,
+          "postsCount": 38,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-12T01:12:09.220Z",
+        "likesCount": 177,
+        "isLiked": false,
+        "postId": "reel_DfD1Kq6yxr4"
+      },
+      {
+        "id": "c_reel_DfD1Kq6yxr4_4",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 12661,
+          "followingCount": 178,
+          "postsCount": 36,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-12T01:26:09.220Z",
+        "likesCount": 394,
+        "isLiked": false,
+        "postId": "reel_DfD1Kq6yxr4"
+      },
+      {
+        "id": "c_reel_DfD1Kq6yxr4_5",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 18745,
+          "followingCount": 472,
+          "postsCount": 36,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-12T01:40:09.220Z",
+        "likesCount": 141,
+        "isLiked": false,
+        "postId": "reel_DfD1Kq6yxr4"
+      }
+    ]
+  },
+  {
+    "id": "reel_Dfg7tfCx0BT",
+    "userId": "user_aditijainn",
+    "user": {
+      "id": "user_aditijainn",
+      "username": "aditijainn",
+      "name": "★Aditi★",
+      "avatar": "/api/social/media/avatar_aditijainn.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": false,
+      "followersCount": 6966,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/Dfg7tfCx0BT.mp4"
+    ],
+    "thumbnail": "/api/social/media/Dfg7tfCx0BT_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "I genuinely didn’t want to put this out here, but when people think it’s okay to gang up on my younger sister simply because she’s younger, stay silent and expect us to tolerate it, I think it’s important to show what actually happened.\n\nI was simply coming downstairs around 10:45 PM to go out, wish a friend happy birthday when the crackers just wouldn’t stop. We politely requested them to stop, but instead, we were met with comments, arguments and crackers being burst close to us. My sister was even cornered and ganged up on when I wasn’t around.\n\nAnd then we were blamed for making their children cry?\n\nLet’s get one thing straight. We didn’t make those children cry. When we arrived, the children themselves were standing in a corner, trying to get away from the loud bombs and crackers. Any child would be frightened by that kind of noise. Look closely at the video. The adults are bursting crackers, not the children. Maybe it’s time we stopped calling this entertainment.\n\nEven when the police arrived, they wanted to hear the child’s side of the story, but the father wouldn’t let the child speak. Watch the video and decide for yourself.\n\nAnd this isn’t just about one building, one family, one hour or one night.\n\nMumbai is already witnessing fires. People are losing lives, properties are being damaged, and we’re already dealing with water shortages. How much more do we need to see before we start taking responsibility?\n\nDiwali is not synonymous with bursting firecrackers. Please don’t confuse culture with noise and pollution. Celebrating Diwali through rangoli, Lakshmi Puja, lighting diyas, sharing sweets and spending time with family is beautiful. We don’t need to put people’s safety, animals, children’s well-being and the environment at risk to prove we’re celebrating a festival.\n\nCelebrate, absolutely. But don’t force your celebration onto everyone else.\n\nAnd most importantly, respect is not optional. Especially when it comes to someone’s safety and dignity.\n\nThis was never about stopping someone from celebrating Diwali. It was about asking for basic consideration and not being bullied for it.\n\n#fire #diwali #firecrackers",
+    "likesCount": 15481,
+    "commentsCount": 298,
+    "createdAt": "2026-11-11T23:30:15.427Z",
+    "tags": [
+      "fire",
+      "diwali",
+      "firecrackers"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_Dfg7tfCx0BT_1",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8415,
+          "followingCount": 426,
+          "postsCount": 46,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T23:44:15.427Z",
+        "likesCount": 231,
+        "isLiked": false,
+        "postId": "reel_Dfg7tfCx0BT"
+      },
+      {
+        "id": "c_reel_Dfg7tfCx0BT_2",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 15495,
+          "followingCount": 329,
+          "postsCount": 34,
+          "isOnline": false
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T23:58:15.427Z",
+        "likesCount": 119,
+        "isLiked": false,
+        "postId": "reel_Dfg7tfCx0BT"
+      },
+      {
+        "id": "c_reel_Dfg7tfCx0BT_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 12040,
+          "followingCount": 299,
+          "postsCount": 42,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-12T00:12:15.427Z",
+        "likesCount": 269,
+        "isLiked": false,
+        "postId": "reel_Dfg7tfCx0BT"
+      }
+    ]
+  },
+  {
+    "id": "reel_De8wHMRRMTD",
+    "userId": "user_jadejaluck",
+    "user": {
+      "id": "user_jadejaluck",
+      "username": "jadejaluck",
+      "name": "Lucky Jadeja | Photographer",
+      "avatar": "/api/social/media/avatar_jadejaluck.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 210696,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/De8wHMRRMTD.mp4"
+    ],
+    "thumbnail": "/api/social/media/De8wHMRRMTD_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "What a night! ✨\nStill not over the energy, music, and vibe from the incredible Jaipur  show of Jasmine Sandlas. 🎤❤️\n @jasminesandlas \nSome nights turn into memories, and this was definitely one of them. Singing every song, feeling every beat, and living the moment to the fullest. Jaipur , you were amazing! 🔥\n\n#JasmineSandlas #jaipurshow #LiveConcert #ConcertVibes #MusicNight",
+    "likesCount": 468215,
+    "commentsCount": 1215,
+    "createdAt": "2026-11-11T22:30:22.558Z",
+    "tags": [
+      "JasmineSandlas",
+      "jaipurshow",
+      "LiveConcert",
+      "ConcertVibes",
+      "MusicNight"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_De8wHMRRMTD_1",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 5649,
+          "followingCount": 453,
+          "postsCount": 60,
+          "isOnline": true
+        },
+        "text": "The framing and color grading on this is pure gold! 🔥",
+        "createdAt": "2026-11-11T22:44:22.558Z",
+        "likesCount": 252,
+        "isLiked": false,
+        "postId": "reel_De8wHMRRMTD"
+      },
+      {
+        "id": "c_reel_De8wHMRRMTD_2",
+        "user": {
+          "id": "u_c7",
+          "username": "kabir_visuals",
+          "name": "Kabir Mehta",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 13405,
+          "followingCount": 184,
+          "postsCount": 41,
+          "isOnline": false
+        },
+        "text": "Pure energy and storytelling ✨",
+        "createdAt": "2026-11-11T22:58:22.558Z",
+        "likesCount": 424,
+        "isLiked": false,
+        "postId": "reel_De8wHMRRMTD"
+      },
+      {
+        "id": "c_reel_De8wHMRRMTD_3",
+        "user": {
+          "id": "u_c2",
+          "username": "priya_edits",
+          "name": "Priya Nair",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 10903,
+          "followingCount": 515,
+          "postsCount": 37,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T23:12:22.558Z",
+        "likesCount": 62,
+        "isLiked": false,
+        "postId": "reel_De8wHMRRMTD"
+      }
+    ]
+  },
+  {
+    "id": "reel_De40rR_zkya",
+    "userId": "user_rohit._.shetty",
+    "user": {
+      "id": "user_rohit._.shetty",
+      "username": "rohit._.shetty",
+      "name": "LALTESH",
+      "avatar": "/api/social/media/avatar_rohit._.shetty.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": true,
+      "followersCount": 495999,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/De40rR_zkya.mp4"
+    ],
+    "thumbnail": "/api/social/media/De40rR_zkya_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "#あらゆる追いかけっこを繰り広げる",
+    "likesCount": 1102222,
+    "commentsCount": 1532,
+    "createdAt": "2026-11-11T21:30:27.815Z",
+    "tags": [
+      "Trending",
+      "DelhiNCR",
+      "Reels"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_De40rR_zkya_1",
+        "user": {
+          "id": "u_c4",
+          "username": "sneha_creates",
+          "name": "Sneha Patel",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 10261,
+          "followingCount": 292,
+          "postsCount": 58,
+          "isOnline": true
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T21:44:27.815Z",
+        "likesCount": 116,
+        "isLiked": false,
+        "postId": "reel_De40rR_zkya"
+      },
+      {
+        "id": "c_reel_De40rR_zkya_2",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 17908,
+          "followingCount": 542,
+          "postsCount": 30,
+          "isOnline": false
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T21:58:27.815Z",
+        "likesCount": 138,
+        "isLiked": false,
+        "postId": "reel_De40rR_zkya"
+      },
+      {
+        "id": "c_reel_De40rR_zkya_3",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 18982,
+          "followingCount": 311,
+          "postsCount": 48,
+          "isOnline": false
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T22:12:27.815Z",
+        "likesCount": 314,
+        "isLiked": false,
+        "postId": "reel_De40rR_zkya"
+      },
+      {
+        "id": "c_reel_De40rR_zkya_4",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 8064,
+          "followingCount": 368,
+          "postsCount": 50,
+          "isOnline": true
+        },
+        "text": "Algorithm finally blessed my feed today 🚀",
+        "createdAt": "2026-11-11T22:26:27.815Z",
+        "likesCount": 380,
+        "isLiked": false,
+        "postId": "reel_De40rR_zkya"
+      }
+    ]
+  },
+  {
+    "id": "reel_DeRBHZDS2Ev",
+    "userId": "user_aishwaryaaryaa",
+    "user": {
+      "id": "user_aishwaryaaryaa",
+      "username": "aishwaryaaryaa",
+      "name": "Aishwarya Arya || Content Creator",
+      "avatar": "/api/social/media/avatar_aishwaryaaryaa.jpg",
+      "bio": "Digital Creator · Featured on Celoris Creator Hub",
+      "isVerified": false,
+      "followersCount": 22315,
+      "followingCount": 160,
+      "postsCount": 32,
+      "isOnline": true
+    },
+    "images": [
+      "/api/social/media/DeRBHZDS2Ev.mp4"
+    ],
+    "thumbnail": "/api/social/media/DeRBHZDS2Ev_thumb.jpg",
+    "mediaType": "video",
+    "aspectRatio": "9:16",
+    "caption": "Behen bolke ye sab kr rahe h 🙃\n\n#biggboss #qazitouqeer #relatable #lovegill #footmassage",
+    "likesCount": 49590,
+    "commentsCount": 1241,
+    "createdAt": "2026-11-11T20:30:32.446Z",
+    "tags": [
+      "biggboss",
+      "qazitouqeer",
+      "relatable",
+      "lovegill",
+      "footmassage"
+    ],
+    "isLiked": false,
+    "isSaved": false,
+    "comments": [
+      {
+        "id": "c_reel_DeRBHZDS2Ev_1",
+        "user": {
+          "id": "u_c3",
+          "username": "arjun_cinematics",
+          "name": "Arjun Verma",
+          "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 8538,
+          "followingCount": 244,
+          "postsCount": 20,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T20:44:32.446Z",
+        "likesCount": 298,
+        "isLiked": false,
+        "postId": "reel_DeRBHZDS2Ev"
+      },
+      {
+        "id": "c_reel_DeRBHZDS2Ev_2",
+        "user": {
+          "id": "u_c1",
+          "username": "rohit_vfx",
+          "name": "Rohit Sharma",
+          "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 10712,
+          "followingCount": 391,
+          "postsCount": 18,
+          "isOnline": false
+        },
+        "text": "How did you shoot this? Looks so crisp! 📸",
+        "createdAt": "2026-11-11T20:58:32.446Z",
+        "likesCount": 282,
+        "isLiked": false,
+        "postId": "reel_DeRBHZDS2Ev"
+      },
+      {
+        "id": "c_reel_DeRBHZDS2Ev_3",
+        "user": {
+          "id": "u_c8",
+          "username": "tanvi_art",
+          "name": "Tanvi Kapoor",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": false,
+          "followersCount": 6030,
+          "followingCount": 423,
+          "postsCount": 19,
+          "isOnline": true
+        },
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-11T21:12:32.446Z",
+        "likesCount": 263,
+        "isLiked": false,
+        "postId": "reel_DeRBHZDS2Ev"
+      },
+      {
+        "id": "c_reel_DeRBHZDS2Ev_4",
+        "user": {
+          "id": "u_c6",
+          "username": "ananya_reels",
+          "name": "Ananya Roy",
+          "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+          "bio": "Creative Member · Celoris Creator Hub",
+          "isVerified": true,
+          "followersCount": 14115,
+          "followingCount": 301,
+          "postsCount": 42,
+          "isOnline": true
+        },
+        "text": "Delhi NCR vibes hit different! 🙌",
+        "createdAt": "2026-11-11T21:26:32.446Z",
+        "likesCount": 276,
+        "isLiked": false,
+        "postId": "reel_DeRBHZDS2Ev"
+      }
+    ]
+  },
   {
     "id": "reel_Db4eaYWBlXH",
     "userId": "user_pixelsticksstudio",
