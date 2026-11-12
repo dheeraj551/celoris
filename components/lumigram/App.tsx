@@ -519,7 +519,7 @@ export default function App() {
 
     const interval = setInterval(() => {
       triggerInstantAiEngagement();
-    }, 8000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [isProUser, isLiveAutomationActive, posts, simulationUsers]);
