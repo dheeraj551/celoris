@@ -176,7 +176,7 @@ export default function Footer() {
               </span>
             </div>
             <div className="font-mono text-[11px] text-neutral-400 space-y-0.5">
-              <p>LLPIN: <span className="text-neutral-300">AAP-3965</span> · GSTIN: <span className="text-neutral-300">09AAOFC5435B1ZJ</span></p>
+              <p>LLPIN: <span className="text-neutral-300">AAP-3965</span> · GSTIN: <span className="text-neutral-300">09AAOFC5435B1ZJ</span> · D-U-N-S®: <span className="text-neutral-300">877413522</span></p>
               <p>Incorporated: <span className="text-neutral-300">23rd May 2019</span> under Limited Liability Partnership Act, 2008</p>
               <p>Registered with Ministry of Corporate Affairs (MCA), Government of India</p>
             </div>

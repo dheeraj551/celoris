@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { id: 'cdance', icon: Sparkles, label: 'C-Dance', isPro: true },
+  { id: 'cdance', icon: Sparkles, label: 'Seedance', isPro: true },
   { id: 'upload', icon: Upload, label: 'Media' },
   { id: 'captions', icon: Subtitles, label: 'Captions' },
   { id: 'templates', icon: LayoutTemplate, label: 'Presets' },
@@ -37,7 +37,7 @@ export default function Sidebar({ activeTab, setActiveTab }: { activeTab: string
                 key={item.id}
                 type="button"
                 onClick={() => setActiveTab(item.id)}
-                title="C-Dance 2.5 Generative AI Video Studio"
+                title="Seedance 2.5 Generative AI Video Studio"
                 className={`w-full py-2.5 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition-all relative group mb-1 ${
                   isActive 
                     ? 'bg-[#ccff00]/15 text-[#ccff00] border border-[#ccff00]/40 shadow-[0_0_15px_rgba(204,255,0,0.2)]' 

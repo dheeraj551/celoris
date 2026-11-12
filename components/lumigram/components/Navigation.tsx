@@ -53,19 +53,18 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* DESKTOP SIDEBAR - Rich Reference Design */}
       <aside className="hidden md:flex flex-col justify-between w-60 lg:w-64 h-screen sticky top-0 border-r border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-4 py-5 z-40 transition-colors select-none">
         <div className="space-y-5">
-          {/* Brand Logo: celoris. */}
-          <div className="px-2">
+          {/* Brand Logo: Celoris Creator Hub */}
+          <div className="px-1">
             <button
               onClick={() => onSelectTab('feed')}
-              className="flex items-center gap-2.5 group cursor-pointer focus:outline-none"
-              aria-label="Celoris Home"
+              className="flex items-center group cursor-pointer focus:outline-none"
+              aria-label="Celoris Creator Hub Home"
             >
-              <div className="w-9 h-9 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                <ArrowUpFromLine size={18} strokeWidth={2.4} />
-              </div>
-              <span className="font-extrabold text-xl tracking-tight text-neutral-900 dark:text-white leading-none">
-                celoris<span className="text-emerald-500">.</span>
-              </span>
+              <img
+                src="/images/creator-hub-logo.jpg"
+                alt="Celoris Creator Hub"
+                className="h-10 w-auto rounded-xl object-contain bg-black px-2.5 py-1 shadow-xs group-hover:scale-[1.03] transition-transform"
+              />
             </button>
           </div>
 
@@ -248,14 +247,14 @@ export const Navigation: React.FC<NavigationProps> = ({
       <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 py-2.5 flex items-center justify-between">
         <button
           onClick={() => onSelectTab('feed')}
-          className="flex items-center gap-2 cursor-pointer text-left"
+          className="flex items-center cursor-pointer text-left"
+          aria-label="Celoris Creator Hub Home"
         >
-          <div className="w-7 h-7 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center">
-            <ArrowUpFromLine size={14} strokeWidth={2.4} />
-          </div>
-          <span className="font-extrabold text-base text-neutral-900 dark:text-white">
-            celoris<span className="text-emerald-500">.</span>
-          </span>
+          <img
+            src="/images/creator-hub-logo.jpg"
+            alt="Celoris Creator Hub"
+            className="h-8 w-auto rounded-lg object-contain bg-black px-2 py-0.5"
+          />
         </button>
 
         <div className="flex items-center gap-2">

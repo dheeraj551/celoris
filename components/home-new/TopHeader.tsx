@@ -100,7 +100,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                         )}
                         title="Creator Hub — Community, Reels & Creators"
                     >
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                         <span>Creator Hub</span>
                     </Link>
 
@@ -740,7 +740,7 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className="flex items-center gap-3 p-2.5 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 hover:text-white transition-colors"
                                         >
-                                            <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                                             <span className="text-sm font-semibold">Creator Hub</span>
                                         </Link>
                                         <Link

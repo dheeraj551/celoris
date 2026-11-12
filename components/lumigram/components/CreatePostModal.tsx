@@ -22,22 +22,42 @@ interface CreatePostModalProps {
   onPostCreated: (newPost: Post) => void;
 }
 
-const SAMPLE_PRESETS = [
+const VIDEO_STUDIO_TEMPLATES = [
   {
-    title: 'Tokyo Neon Alley',
-    url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=85',
+    title: 'Ame Kaze Green Tea',
+    badge: 'PRODUCT',
+    url: '/templates/vio/ame-kaze-green-tea.mp4',
+    thumbnailUrl: '/templates/vio/ame-kaze-green-tea.jpg',
   },
   {
-    title: 'Nordic Coast Sunset',
-    url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85',
+    title: 'Leather Wallet Spec Ad',
+    badge: 'ADS',
+    url: '/templates/vio/wallet-lightweight-poster.mp4',
+    thumbnailUrl: '/templates/vio/wallet-lightweight-poster.jpg',
   },
   {
-    title: 'Alpine Peak Dawn',
-    url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85',
+    title: 'Aurum Watch Exploded',
+    badge: 'MOTION',
+    url: '/templates/vio/watch-exploded-view.mp4',
+    thumbnailUrl: '/templates/vio/watch-exploded-view.jpg',
   },
   {
-    title: 'Modern Architecture',
-    url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85',
+    title: 'Campus Walk UGC',
+    badge: 'UGC',
+    url: '/templates/vio/campus-walk-ugc.mp4',
+    thumbnailUrl: '/templates/vio/campus-walk-ugc.jpg',
+  },
+  {
+    title: 'Podcast Creator UGC',
+    badge: 'UGC',
+    url: '/templates/vio/podcast-creator-ugc.mp4',
+    thumbnailUrl: '/templates/vio/podcast-creator-ugc.jpg',
+  },
+  {
+    title: 'Splash Sparkling Soda',
+    badge: 'ADS',
+    url: '/vid/marketing-studio-slider-poster-Ads.mp4',
+    thumbnailUrl: '/templates/template-splash.jpg',
   },
 ];
 
@@ -55,11 +75,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   onPostCreated,
 }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [selectedImage, setSelectedImage] = useState<string>(SAMPLE_PRESETS[0].url);
+  const [selectedImage, setSelectedImage] = useState<string>(VIDEO_STUDIO_TEMPLATES[0].url);
   const [selectedRawFile, setSelectedRawFile] = useState<File | null>(null);
-  const [isVideo, setIsVideo] = useState<boolean>(false);
+  const [isVideo, setIsVideo] = useState<boolean>(true);
   const [selectedFilter, setSelectedFilter] = useState<string>('normal');
-  const [aspectRatio, setAspectRatio] = useState<'square' | 'portrait' | 'landscape' | 'vertical'>('square');
+  const [aspectRatio, setAspectRatio] = useState<'square' | 'portrait' | 'landscape' | 'vertical'>('vertical');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -306,28 +326,34 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 />
               </div>
 
-              {/* Instant Studio Presets */}
+              {/* Video Studio Templates */}
               <div>
                 <h5 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3 flex items-center gap-1.5">
                   <ImageIcon size={14} className="text-emerald-500" />
-                  Or choose a sample photo
+                  Or choose a Video Studio template
                 </h5>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {SAMPLE_PRESETS.map((preset) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {VIDEO_STUDIO_TEMPLATES.map((preset) => (
                     <div
                       key={preset.title}
                       onClick={() => {
                         setSelectedImage(preset.url);
+                        setSelectedRawFile(null);
+                        setIsVideo(true);
+                        setAspectRatio('vertical');
                         setStep(2);
                       }}
-                      className="group relative aspect-square rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all"
+                      className="group relative aspect-[9/12] rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all bg-neutral-950"
                     >
                       <img
-                        src={preset.url}
+                        src={preset.thumbnailUrl}
                         alt={preset.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent text-[11px] font-medium text-white truncate">
+                      <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-emerald-500/90 text-[9px] font-bold tracking-wider text-black">
+                        {preset.badge}
+                      </span>
+                      <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/40 to-transparent text-[11px] font-medium text-white truncate">
                         {preset.title}
                       </div>
                     </div>

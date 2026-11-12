@@ -162,7 +162,7 @@ export default function Header({
           <span className="hidden md:inline text-[9px] font-mono text-slate-500">Saved</span>
         </div>
 
-        {/* View Switcher: Editor vs C-Dance 2.5 Pro */}
+        {/* View Switcher: Editor vs Seedance 2.5 Pro */}
         <div className="hidden sm:flex items-center bg-[#131620] border border-white/10 rounded-xl p-0.5 ml-1 shadow-inner">
           <button
             type="button"
@@ -185,7 +185,7 @@ export default function Header({
             }`}
           >
             <Sparkles className={`w-3.5 h-3.5 ${viewMode === 'cdance' ? 'text-black fill-black' : 'text-[#ccff00]'}`} />
-            <span>C-Dance 2.5</span>
+            <span>Seedance 2.5</span>
             <span className={`text-[8.5px] px-1 py-0.2 rounded font-mono font-bold ${
               viewMode === 'cdance' ? 'bg-black text-[#ccff00]' : 'bg-[#ccff00] text-black'
             }`}>

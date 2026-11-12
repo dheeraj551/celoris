@@ -302,6 +302,10 @@ export default function AboutClient({ initialTestimonials }: { initialTestimonia
                       <p className="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">Incorporated</p>
                       <p className="text-xs font-bold text-white uppercase italic">23rd May 2019</p>
                     </div>
+                    <div className="space-y-1">
+                      <p className="text-[8px] text-emerald-500 font-black uppercase tracking-[0.2em]">D&amp;B D-U-N-S® Number</p>
+                      <p className="text-xs font-bold text-white uppercase italic">877413522</p>
+                    </div>
                     <div className="sm:col-span-2 space-y-1 pt-4 border-t border-white/5">
                       <p className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em]">Registered Under</p>
                       <p className="text-[10px] font-bold text-slate-300 uppercase italic leading-tight">
