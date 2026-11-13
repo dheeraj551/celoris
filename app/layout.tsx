@@ -11,6 +11,7 @@ import { MotionProvider } from "@/components/providers/MotionProvider"
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider"
 import { SupportBotGate } from "@/components/SupportBotGate"
 import { XpGate } from "@/components/xp/XpGate"
+import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 
 const outfit = Outfit({ subsets: ["latin"], display: "swap" })
 
@@ -97,9 +98,16 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/favicon.svg",
+    apple: "/icons/apple-touch-icon.png",
     shortcut: "/favicon.svg",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Celoris",
   },
   manifest: "/site.webmanifest",
 }
@@ -200,6 +208,7 @@ export default function RootLayout({
           <Toaster />
           <AnalyticsProvider />
           <SupportBotGate />
+          <InstallPrompt />
         </ReCaptchaProvider>
       </body>
     </html>
