@@ -45,10 +45,17 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
         }),
       });
 
-      // 2. Persist to localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('celoris_pulse_username', cleanUsername);
-        localStorage.setItem('celoris_pulse_name', cleanName || cleanUsername);
+      // 2. Persist to localStorage (scoped to current user ID to prevent cross-account leaks)
+      if (typeof window !== 'undefined' && currentUser?.id) {
+        try {
+          localStorage.setItem(`celoris_pulse_username_${currentUser.id}`, cleanUsername);
+          localStorage.setItem(`celoris_pulse_name_${currentUser.id}`, cleanName || cleanUsername);
+          // Purge legacy unscoped keys
+          localStorage.removeItem('celoris_pulse_username');
+          localStorage.removeItem('celoris_pulse_name');
+        } catch {
+          // Non-blocking
+        }
       }
 
       // 3. Update React state

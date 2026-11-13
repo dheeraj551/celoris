@@ -159,28 +159,43 @@ export default function App() {
   // Synchronize authenticated Celoris student profile & real wallet
   useEffect(() => {
     if (authUser) {
+      // Purge legacy un-scoped localStorage keys that leaked names across logins on shared browsers
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.removeItem('celoris_pulse_name');
+          localStorage.removeItem('celoris_pulse_username');
+        } catch {
+          // Non-blocking
+        }
+      }
+
       const metadataName = (authUser?.user_metadata?.full_name || authUser?.user_metadata?.name || '').trim();
       const isGenericRole = ['tutor', 'user', 'student', 'admin', 'instructor'].includes((profile?.name || '').trim().toLowerCase());
 
-      const savedCustomName = typeof window !== 'undefined' ? localStorage.getItem('celoris_pulse_name') : null;
-      const savedCustomUsername = typeof window !== 'undefined' ? localStorage.getItem('celoris_pulse_username') : null;
+      const userScopedCustomName = typeof window !== 'undefined' && authUser?.id
+        ? localStorage.getItem(`celoris_pulse_name_${authUser.id}`)
+        : null;
+      const userScopedCustomUsername = typeof window !== 'undefined' && authUser?.id
+        ? localStorage.getItem(`celoris_pulse_username_${authUser.id}`)
+        : null;
 
-      const realName = savedCustomName
-        || (profile?.full_name && profile.full_name.trim())
+      const realName = (profile?.full_name && profile.full_name.trim())
         || (!isGenericRole && profile?.name && profile.name.trim())
         || metadataName
-        || 'Ananya Jairath';
+        || userScopedCustomName
+        || (authUser?.email ? authUser.email.split('@')[0] : 'Creator');
 
-      let realUsername = savedCustomUsername;
+      let realUsername = (profile?.username && profile.username.trim().length > 2 && profile.username !== 'any')
+        ? profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '')
+        : userScopedCustomUsername;
+
       if (!realUsername) {
-        if (profile?.username && profile.username.trim().length > 2 && profile.username !== 'any') {
-          realUsername = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '');
-        } else if (metadataName) {
+        if (metadataName) {
           realUsername = metadataName.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-        } else if (realName && !isGenericRole) {
+        } else if (realName && !isGenericRole && realName !== 'Creator') {
           realUsername = realName.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
         } else {
-          realUsername = (profile?.email || authUser.email || 'student').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+          realUsername = (profile?.email || authUser.email || 'creator').split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
         }
       }
 
@@ -188,7 +203,7 @@ export default function App() {
       const realUser: User = {
         id: authUser.id,
         name: realName,
-        username: realUsername || 'ananya_jairath',
+        username: realUsername || 'creator',
         avatar: realAvatar,
         bio: profile?.bio || 'Performance Marketing Student @ Celoris',
         website: profile?.website || 'https://celorisdesigns.com',

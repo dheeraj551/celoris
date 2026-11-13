@@ -197,6 +197,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signOut = async () => {
+        try {
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('celoris_pulse_name')
+                localStorage.removeItem('celoris_pulse_username')
+                if (user?.id) {
+                    localStorage.removeItem(`celoris_pulse_name_${user.id}`)
+                    localStorage.removeItem(`celoris_pulse_username_${user.id}`)
+                }
+                localStorage.removeItem('celoris_social_wallet')
+            }
+        } catch {
+            // Ignore storage errors on signOut
+        }
         await supabase.auth.signOut()
         setUser(null)
         setSession(null)
