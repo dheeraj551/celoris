@@ -100,46 +100,46 @@ export function InstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 sm:w-[360px] z-40 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <div className="bg-neutral-950/95 dark:bg-neutral-900/95 backdrop-blur-md text-white border border-emerald-500/30 rounded-2xl p-3.5 shadow-2xl flex items-center gap-3">
+    <div className="fixed bottom-[60px] right-4 sm:right-6 z-[60] w-[295px] sm:w-[305px] max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-bottom-3 duration-300">
+      <div className="bg-white/95 dark:bg-neutral-900/95 backdrop-blur-2xl text-slate-900 dark:text-white border border-slate-200/90 dark:border-emerald-500/30 rounded-2xl px-3 py-2.5 shadow-[0_15px_35px_rgba(0,0,0,0.18)] flex items-center gap-2.5">
         <img
           src="/icons/icon-192x192.png"
           alt="Celoris App"
-          className="w-11 h-11 rounded-xl shrink-0 bg-white p-0.5 shadow-sm"
+          className="w-9 h-9 rounded-xl shrink-0 bg-white border border-slate-100 p-0.5 shadow-sm"
         />
 
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-sm leading-tight text-white">
+          <div className="font-bold text-xs leading-tight text-slate-900 dark:text-white truncate">
             Get the Celoris App
           </div>
           {deferredPrompt ? (
-            <p className="text-[11px] text-neutral-300 mt-0.5 leading-snug">
-              Learn, Certify & Social — instant access on your home screen.
+            <p className="text-[10px] text-slate-500 dark:text-neutral-300 mt-0.5 leading-snug truncate">
+              Learn, Jobs &amp; Social on home screen
             </p>
           ) : (
-            <p className="text-[11px] text-neutral-300 mt-0.5 leading-snug flex items-center flex-wrap gap-1">
-              Tap <Share size={12} className="inline text-emerald-400" /> then{" "}
-              <span className="font-semibold text-white">&quot;Add to Home Screen&quot;</span>
+            <p className="text-[10px] text-slate-500 dark:text-neutral-300 mt-0.5 leading-snug flex items-center flex-wrap gap-1">
+              Tap <Share size={11} className="inline text-emerald-600" /> then{" "}
+              <span className="font-semibold text-slate-800 dark:text-white">&quot;Add to Home Screen&quot;</span>
             </p>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {deferredPrompt && (
             <button
               onClick={handleInstallClick}
-              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-sm"
             >
-              <Download size={13} />
+              <Download size={12} />
               Install
             </button>
           )}
           <button
             onClick={handleDismiss}
             aria-label="Dismiss install prompt"
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
           >
-            <X size={15} />
+            <X size={14} />
           </button>
         </div>
       </div>

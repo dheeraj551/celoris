@@ -36,15 +36,12 @@ function CelorisChatIcon({ className }: { className?: string }) {
 const PHONE_FULL_HEIGHT = 505;
 const PHONE_PEEK = 50;
 
-const TEASER_SEEN_KEY = 'celoris-phone-teaser-seen';
-
 export function CelorisPhoneOS() {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<PhoneView>('support');
   const [isMobile, setIsMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState('10:00');
   const [currentDate, setCurrentDate] = useState('FRI, SEP 25');
-  const [teaserVisible, setTeaserVisible] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [phoneHeight, setPhoneHeight] = useState(PHONE_FULL_HEIGHT);
 
@@ -73,7 +70,6 @@ export function CelorisPhoneOS() {
       const targetView = e?.detail?.view || 'support';
       setView(targetView);
       setOpen(true);
-      setTeaserVisible(false);
     };
     window.addEventListener('celoris:open-phone', handleOpenPhone);
     return () => window.removeEventListener('celoris:open-phone', handleOpenPhone);
@@ -110,28 +106,6 @@ export function CelorisPhoneOS() {
     };
   }, [open]);
 
-  // Teaser timeout
-  useEffect(() => {
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem(TEASER_SEEN_KEY) === '1';
-    } catch {
-      // best-effort
-    }
-    if (seen) return;
-
-    const timer = setTimeout(() => {
-      setTeaserVisible(true);
-      try {
-        sessionStorage.setItem(TEASER_SEEN_KEY, '1');
-      } catch {
-        // best-effort
-      }
-    }, 4500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   const handleHomeBarClick = () => {
     if (view !== 'home') {
       setView('home');
@@ -143,7 +117,6 @@ export function CelorisPhoneOS() {
   const openApp = (appView: PhoneView) => {
     setView(appView);
     setOpen(true);
-    setTeaserVisible(false);
     setHasUnread(false);
   };
 
@@ -283,52 +256,7 @@ export function CelorisPhoneOS() {
 
   return (
     <>
-      {/* 1. Proactive Notification Teaser (When Closed) */}
-      <AnimatePresence>
-        {teaserVisible && !open && (
-          <motion.div
-            key="teaser"
-            initial={{ opacity: 0, y: 12, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 350, damping: 25 }}
-            className="fixed bottom-[56px] right-4 sm:right-6 z-[60] w-[285px] max-w-[85vw] flex items-center gap-2.5 rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-2xl shadow-[0_15px_35px_rgba(0,0,0,0.15)] pl-3 pr-2 py-2 select-none"
-          >
-            <button
-              onClick={() => {
-                setTeaserVisible(false);
-                setOpen(true);
-              }}
-              className="flex items-center gap-2.5 flex-1 min-w-0 text-left cursor-pointer"
-            >
-              <div className="relative h-8 w-8 shrink-0">
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-[0_2px_8px_rgba(16,185,129,0.35)]">
-                  <Smartphone className="h-4 w-4 text-white" />
-                </div>
-                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-rose-500 border border-white" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <p className="text-xs font-bold text-slate-900 truncate">Celoris Phone OS</p>
-                  <span className="text-[8.5px] text-emerald-600 font-mono font-semibold shrink-0">online</span>
-                </div>
-                <p className="text-[9.5px] text-slate-500 truncate">
-                  Support, Chat, Jobs &amp; Classrooms
-                </p>
-              </div>
-            </button>
-            <button
-              onClick={() => setTeaserVisible(false)}
-              aria-label="Dismiss"
-              className="shrink-0 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 2. MOBILE PRESENTATION (< 768px): Full-Screen Native Bottom Sheet */}
+      {/* 1. MOBILE PRESENTATION (< 768px): Full-Screen Native Bottom Sheet */}
       {isMobile ? (
         <AnimatePresence>
           {open ? (
@@ -380,7 +308,6 @@ export function CelorisPhoneOS() {
             <button
               onClick={() => {
                 setOpen(true);
-                setTeaserVisible(false);
               }}
               className="fixed bottom-4 right-4 z-40 flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/95 backdrop-blur-xl border border-slate-200 text-slate-900 shadow-xl cursor-pointer active:scale-95 transition-all"
             >
@@ -414,7 +341,6 @@ export function CelorisPhoneOS() {
             onClick={() => {
               if (!open) {
                 setOpen(true);
-                setTeaserVisible(false);
               }
             }}
             className={`pt-2 pl-5 pr-4 pb-1.5 flex items-center justify-between z-30 bg-white/95 backdrop-blur-sm text-slate-800 text-[10px] font-mono select-none transition-colors ${
