@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'digital-media-video-production-trends-2026',
+      title: "The 2026 Post-Production Economy: Compensation Benchmarks, Timeline AI Integration & Motion Literacy",
+      slug: 'digital-media-video-production-trends-2026',
+      excerpt: "Data-backed 2026 report on video editor vs. motion graphics salaries (+51.8% premium), freelance retainer math, the collapse of Sora vs. Veo 3.1/Kling 3.0, 91% AI production cost reduction, and kinetic typography retention benchmarks.",
+      featured_image_url: "/blog-video-editor-india-2026.png",
+      author_name: 'Celoris Video & Economic Research Lab',
+      category: 'Post-Production • 2026 Report',
+      reading_time: 16,
+      published_at: '2026-11-13T16:00:00Z',
+    },
+    {
       id: 'free-portfolio-hosting-students-india-2026',
       title: "Student Portfolio & Full-Stack Hosting Architecture in India (2026 Guide) — Zero Credit Card & Sub-15ms Edge",
       slug: 'free-portfolio-hosting-students-india-2026',
