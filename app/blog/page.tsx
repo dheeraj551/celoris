@@ -26,6 +26,17 @@ export default async function BlogPage({
 
   const STATIC_POSTS: BlogPost[] = [
     {
+      id: 'enterprise-ai-agent-orchestration-secure-rag-aws-2026',
+      title: "Architecting Enterprise AI Agent Orchestration and Secure RAG on AWS: Sub-20s Latency, 90%+ Accuracy & Zero-Trust Guardrails",
+      slug: 'enterprise-ai-agent-orchestration-secure-rag-aws-2026',
+      excerpt: "Production engineering deep-dive on AWS serverless AI agent orchestration, Hybrid RAG with Reciprocal Rank Fusion (k=60) + Cross-Encoder reranking, prefill/decode latency budgeting, tool-loop Bedrock Guardrails, and zero-trust KMS encryption.",
+      featured_image_url: "/agentic-ai-systems-cover.png",
+      author_name: 'Celoris AI Architecture & Cloud Lab',
+      category: 'AI Architecture • AWS 2026',
+      reading_time: 18,
+      published_at: '2026-11-14T18:15:00Z',
+    },
+    {
       id: 'digital-media-video-production-trends-2026',
       title: "The 2026 Post-Production Economy: Compensation Benchmarks, Timeline AI Integration & Motion Literacy",
       slug: 'digital-media-video-production-trends-2026',
