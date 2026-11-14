@@ -9,7 +9,7 @@ import {
   Flag,
   Share2,
   TrendingUp,
-  Sparkles,
+  BarChart2,
   Cpu,
   Copy,
   Check,
@@ -445,20 +445,20 @@ export const PostCard: React.FC<PostCardProps> = ({
                     : 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50'
                 }`}
               >
-                <Sparkles size={11} />
-                <span>AI Radar</span>
+                <BarChart2 size={11} />
+                <span>Insights</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* AI Breakdown Drawer (Pro Users Only) */}
+        {/* Breakdown Drawer (Pro Users Only) */}
         {isProUser && showAiInsights && (
           <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-blue-950/60 border border-blue-500/30 text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 shadow-xl">
             <div className="flex items-center justify-between pb-2 border-b border-blue-500/20">
               <div className="flex items-center gap-2">
-                <Cpu size={14} className="text-blue-400" />
-                <span className="text-xs font-bold text-blue-300">Pulse AI Radar</span>
+                <BarChart2 size={14} className="text-blue-400" />
+                <span className="text-xs font-bold text-blue-300">Post Insights</span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-semibold">
                 Viral Score: {insights.viralScore}/100
@@ -477,7 +477,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             </div>
 
             <div className="mt-2 text-[11px] text-neutral-300">
-              <span className="text-blue-400 font-semibold mr-1">AI Tip:</span>
+              <span className="text-blue-400 font-semibold mr-1">Tip:</span>
               {insights.creatorTip}
             </div>
 
@@ -540,12 +540,12 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         )}
 
-        {/* Quick AI Suggestion Chips (Pro Users Only) */}
+        {/* Quick Suggestion Chips (Pro Users Only) */}
         {isProUser && (
           <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/80">
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 shrink-0">
-                <Sparkles size={11} className="text-blue-500 animate-pulse" /> Quick AI:
+              <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-semibold shrink-0">
+                Quick reply:
               </span>
               {aiSuggestions.map((suggestion, idx) => (
                 <button

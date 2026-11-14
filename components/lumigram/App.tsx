@@ -33,7 +33,7 @@ import {
 } from './utils/socialLogic';
 import { generateCreatorReply, generateContextualComment } from './utils/aiSocialEngine';
 import { soundManager } from './utils/sound';
-import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap, ChevronDown, Edit3, Image as ImageIcon, Smile, Hash, Loader2, Sparkles } from 'lucide-react';
+import { Rocket, CheckCircle2, X, BarChart2, Coins, TrendingUp, Zap, ChevronDown, Edit3, Image as ImageIcon, Smile, Hash, Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 import { Navigation } from './components/Navigation';
@@ -1084,7 +1084,7 @@ export default function App() {
                 <div className="mb-4 p-3.5 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs shadow-md animate-in fade-in duration-300">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                      <Sparkles size={16} />
+                      <Zap size={16} />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">

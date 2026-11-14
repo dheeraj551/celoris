@@ -12,7 +12,6 @@ import {
   Smile,
   MapPin,
   Flag,
-  Sparkles,
 } from 'lucide-react';
 import { Post, User } from '../types';
 import { formatTimeAgo, formatCount } from '../utils/socialLogic';
@@ -319,11 +318,11 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               {formatTimeAgo(post.createdAt)} AGO
             </span>
 
-            {/* Quick AI Suggestions (Pro Users Only) */}
+            {/* Quick Reply Suggestions (Pro Users Only) */}
             {isProUser && (
               <div className="mt-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
-                  <Sparkles size={11} className="text-emerald-500 animate-pulse" /> Quick AI:
+                <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-semibold shrink-0">
+                  Quick reply:
                 </span>
                 {aiSuggestions.map((suggestion, idx) => (
                   <button

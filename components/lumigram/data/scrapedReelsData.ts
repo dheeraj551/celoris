@@ -50,8 +50,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T10:41:03.722Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T21:40:00.000Z",
         "likesCount": 272,
         "isLiked": false,
         "postId": "reel_DdvzmDUsVK-"
@@ -70,8 +70,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 23,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T10:55:03.722Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-14T17:10:00.000Z",
         "likesCount": 216,
         "isLiked": false,
         "postId": "reel_DdvzmDUsVK-"
@@ -90,8 +90,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 57,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T11:09:03.722Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T09:10:00.000Z",
         "likesCount": 196,
         "isLiked": false,
         "postId": "reel_DdvzmDUsVK-"
@@ -147,8 +147,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T09:41:08.769Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-14T21:23:00.000Z",
         "likesCount": 358,
         "isLiked": false,
         "postId": "reel_DfZU6ngB0pN"
@@ -167,8 +167,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 39,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T09:55:08.769Z",
+        "text": "Cleanest reel on my feed today 👏",
+        "createdAt": "2026-11-14T16:53:00.000Z",
         "likesCount": 62,
         "isLiked": false,
         "postId": "reel_DfZU6ngB0pN"
@@ -187,8 +187,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 14,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T10:09:08.769Z",
+        "text": "This deserves way more views!",
+        "createdAt": "2026-11-14T08:53:00.000Z",
         "likesCount": 297,
         "isLiked": false,
         "postId": "reel_DfZU6ngB0pN"
@@ -244,8 +244,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T08:41:12.440Z",
+        "text": "Drop the LUT or grading workflow if you can!",
+        "createdAt": "2026-11-14T21:06:00.000Z",
         "likesCount": 393,
         "isLiked": false,
         "postId": "reel_DYh8saJBrdc"
@@ -264,8 +264,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T08:55:12.440Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-14T16:36:00.000Z",
         "likesCount": 483,
         "isLiked": false,
         "postId": "reel_DYh8saJBrdc"
@@ -284,8 +284,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 57,
           "isOnline": false
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T09:09:12.440Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-14T08:36:00.000Z",
         "likesCount": 354,
         "isLiked": false,
         "postId": "reel_DYh8saJBrdc"
@@ -304,8 +304,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": false
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T09:23:12.440Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-13T16:36:00.000Z",
         "likesCount": 378,
         "isLiked": false,
         "postId": "reel_DYh8saJBrdc"
@@ -361,8 +361,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T07:41:15.877Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-14T20:49:00.000Z",
         "likesCount": 396,
         "isLiked": false,
         "postId": "reel_DdsuhilsYJK"
@@ -381,8 +381,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T07:55:15.877Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-14T16:19:00.000Z",
         "likesCount": 190,
         "isLiked": false,
         "postId": "reel_DdsuhilsYJK"
@@ -401,8 +401,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 12,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T08:09:15.877Z",
+        "text": "This deserves way more views!",
+        "createdAt": "2026-11-14T08:19:00.000Z",
         "likesCount": 476,
         "isLiked": false,
         "postId": "reel_DdsuhilsYJK"
@@ -421,8 +421,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 58,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T08:23:15.877Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-13T16:19:00.000Z",
         "likesCount": 305,
         "isLiked": false,
         "postId": "reel_DdsuhilsYJK"
@@ -478,8 +478,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T06:41:20.432Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-14T20:32:00.000Z",
         "likesCount": 23,
         "isLiked": false,
         "postId": "reel_DecINaosyqw"
@@ -498,8 +498,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T06:55:20.432Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T16:02:00.000Z",
         "likesCount": 125,
         "isLiked": false,
         "postId": "reel_DecINaosyqw"
@@ -518,8 +518,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T07:09:20.432Z",
+        "text": "Saved this for my next shoot inspo 🙌",
+        "createdAt": "2026-11-14T08:02:00.000Z",
         "likesCount": 386,
         "isLiked": false,
         "postId": "reel_DecINaosyqw"
@@ -538,8 +538,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 39,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T07:23:20.432Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-13T16:02:00.000Z",
         "likesCount": 81,
         "isLiked": false,
         "postId": "reel_DecINaosyqw"
@@ -558,8 +558,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 30,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T07:37:20.432Z",
+        "text": "Drop the LUT or grading workflow if you can!",
+        "createdAt": "2026-11-12T15:22:00.000Z",
         "likesCount": 413,
         "isLiked": false,
         "postId": "reel_DecINaosyqw"
@@ -614,8 +614,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T05:41:43.814Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T20:15:00.000Z",
         "likesCount": 213,
         "isLiked": false,
         "postId": "reel_DdyxXVetfSh"
@@ -634,8 +634,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T05:55:43.814Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-14T15:45:00.000Z",
         "likesCount": 408,
         "isLiked": false,
         "postId": "reel_DdyxXVetfSh"
@@ -654,8 +654,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T06:09:43.814Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T07:45:00.000Z",
         "likesCount": 357,
         "isLiked": false,
         "postId": "reel_DdyxXVetfSh"
@@ -711,8 +711,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T04:41:49.983Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T21:28:00.000Z",
         "likesCount": 400,
         "isLiked": false,
         "postId": "reel_DfhLPGGzCqp"
@@ -731,8 +731,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T04:55:49.983Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-14T16:58:00.000Z",
         "likesCount": 45,
         "isLiked": false,
         "postId": "reel_DfhLPGGzCqp"
@@ -751,8 +751,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T05:09:49.983Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-14T08:58:00.000Z",
         "likesCount": 483,
         "isLiked": false,
         "postId": "reel_DfhLPGGzCqp"
@@ -771,8 +771,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T05:23:49.983Z",
+        "text": "Cleanest reel on my feed today 👏",
+        "createdAt": "2026-11-13T16:58:00.000Z",
         "likesCount": 403,
         "isLiked": false,
         "postId": "reel_DfhLPGGzCqp"
@@ -828,8 +828,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T03:41:54.524Z",
+        "text": "This deserves way more views!",
+        "createdAt": "2026-11-14T21:11:00.000Z",
         "likesCount": 425,
         "isLiked": false,
         "postId": "reel_DcIGWbFMz9V"
@@ -848,8 +848,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 47,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T03:55:54.524Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T16:41:00.000Z",
         "likesCount": 404,
         "isLiked": false,
         "postId": "reel_DcIGWbFMz9V"
@@ -868,8 +868,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 29,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T04:09:54.524Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-14T08:41:00.000Z",
         "likesCount": 201,
         "isLiked": false,
         "postId": "reel_DcIGWbFMz9V"
@@ -888,8 +888,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 32,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T04:23:54.524Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-13T16:41:00.000Z",
         "likesCount": 418,
         "isLiked": false,
         "postId": "reel_DcIGWbFMz9V"
@@ -908,8 +908,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T04:37:54.524Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-12T16:01:00.000Z",
         "likesCount": 513,
         "isLiked": false,
         "postId": "reel_DcIGWbFMz9V"
@@ -965,8 +965,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T02:42:01.809Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T20:54:00.000Z",
         "likesCount": 497,
         "isLiked": false,
         "postId": "reel_Dd4R_rziapE"
@@ -985,8 +985,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 47,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T02:56:01.809Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T16:24:00.000Z",
         "likesCount": 190,
         "isLiked": false,
         "postId": "reel_Dd4R_rziapE"
@@ -1005,8 +1005,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 12,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T03:10:01.809Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T08:24:00.000Z",
         "likesCount": 372,
         "isLiked": false,
         "postId": "reel_Dd4R_rziapE"
@@ -1025,8 +1025,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 42,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T03:24:01.809Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T16:24:00.000Z",
         "likesCount": 111,
         "isLiked": false,
         "postId": "reel_Dd4R_rziapE"
@@ -1079,8 +1079,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T01:42:08.158Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T20:37:00.000Z",
         "likesCount": 158,
         "isLiked": false,
         "postId": "reel_DcOwhbnhkz7"
@@ -1099,8 +1099,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T01:56:08.158Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T16:07:00.000Z",
         "likesCount": 238,
         "isLiked": false,
         "postId": "reel_DcOwhbnhkz7"
@@ -1119,8 +1119,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T02:10:08.158Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T08:07:00.000Z",
         "likesCount": 431,
         "isLiked": false,
         "postId": "reel_DcOwhbnhkz7"
@@ -1139,8 +1139,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 39,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T02:24:08.158Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-13T16:07:00.000Z",
         "likesCount": 268,
         "isLiked": false,
         "postId": "reel_DcOwhbnhkz7"
@@ -1159,8 +1159,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T02:38:08.158Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-12T15:27:00.000Z",
         "likesCount": 273,
         "isLiked": false,
         "postId": "reel_DcOwhbnhkz7"
@@ -1215,8 +1215,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T00:42:13.791Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-14T20:20:00.000Z",
         "likesCount": 119,
         "isLiked": false,
         "postId": "reel_DfY50v4RhvX"
@@ -1235,8 +1235,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 13,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T00:56:13.791Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T15:50:00.000Z",
         "likesCount": 33,
         "isLiked": false,
         "postId": "reel_DfY50v4RhvX"
@@ -1255,8 +1255,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 14,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T01:10:13.791Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-14T07:50:00.000Z",
         "likesCount": 500,
         "isLiked": false,
         "postId": "reel_DfY50v4RhvX"
@@ -1275,8 +1275,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T01:24:13.791Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-13T15:50:00.000Z",
         "likesCount": 219,
         "isLiked": false,
         "postId": "reel_DfY50v4RhvX"
@@ -1295,8 +1295,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 25,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T01:38:13.791Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-12T15:10:00.000Z",
         "likesCount": 373,
         "isLiked": false,
         "postId": "reel_DfY50v4RhvX"
@@ -1352,8 +1352,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 15,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T23:42:21.153Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T21:33:00.000Z",
         "likesCount": 217,
         "isLiked": false,
         "postId": "reel_Dd8Z7zxMnIi"
@@ -1372,8 +1372,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 32,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T23:56:21.153Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T17:03:00.000Z",
         "likesCount": 381,
         "isLiked": false,
         "postId": "reel_Dd8Z7zxMnIi"
@@ -1392,8 +1392,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T00:10:21.153Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T09:03:00.000Z",
         "likesCount": 359,
         "isLiked": false,
         "postId": "reel_Dd8Z7zxMnIi"
@@ -1412,8 +1412,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T00:24:21.153Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-13T17:03:00.000Z",
         "likesCount": 499,
         "isLiked": false,
         "postId": "reel_Dd8Z7zxMnIi"
@@ -1432,8 +1432,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T00:38:21.153Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-12T16:23:00.000Z",
         "likesCount": 132,
         "isLiked": false,
         "postId": "reel_Dd8Z7zxMnIi"
@@ -1489,8 +1489,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T22:42:27.432Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T21:16:00.000Z",
         "likesCount": 115,
         "isLiked": false,
         "postId": "reel_DeD6ICVyaqC"
@@ -1509,8 +1509,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 42,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T22:56:27.432Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T16:46:00.000Z",
         "likesCount": 264,
         "isLiked": false,
         "postId": "reel_DeD6ICVyaqC"
@@ -1529,8 +1529,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T23:10:27.432Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T08:46:00.000Z",
         "likesCount": 324,
         "isLiked": false,
         "postId": "reel_DeD6ICVyaqC"
@@ -1549,8 +1549,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 14,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T23:24:27.432Z",
+        "text": "Saved this for my next shoot inspo 🙌",
+        "createdAt": "2026-11-13T16:46:00.000Z",
         "likesCount": 252,
         "isLiked": false,
         "postId": "reel_DeD6ICVyaqC"
@@ -1604,8 +1604,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 29,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T21:42:30.769Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T20:59:00.000Z",
         "likesCount": 160,
         "isLiked": false,
         "postId": "reel_DfWVcA_t2tX"
@@ -1624,8 +1624,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T21:56:30.769Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T16:29:00.000Z",
         "likesCount": 190,
         "isLiked": false,
         "postId": "reel_DfWVcA_t2tX"
@@ -1644,8 +1644,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T22:10:30.769Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-14T08:29:00.000Z",
         "likesCount": 403,
         "isLiked": false,
         "postId": "reel_DfWVcA_t2tX"
@@ -1701,8 +1701,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T20:42:34.702Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T20:42:00.000Z",
         "likesCount": 163,
         "isLiked": false,
         "postId": "reel_DfmhV4XNJqw"
@@ -1721,8 +1721,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T20:56:34.702Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T16:12:00.000Z",
         "likesCount": 234,
         "isLiked": false,
         "postId": "reel_DfmhV4XNJqw"
@@ -1741,8 +1741,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T21:10:34.702Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T08:12:00.000Z",
         "likesCount": 509,
         "isLiked": false,
         "postId": "reel_DfmhV4XNJqw"
@@ -1761,8 +1761,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 30,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T21:24:34.702Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-13T16:12:00.000Z",
         "likesCount": 231,
         "isLiked": false,
         "postId": "reel_DfmhV4XNJqw"
@@ -1781,8 +1781,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 13,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T21:38:34.702Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-12T15:32:00.000Z",
         "likesCount": 334,
         "isLiked": false,
         "postId": "reel_DfmhV4XNJqw"
@@ -1837,8 +1837,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T19:42:39.733Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-14T20:25:00.000Z",
         "likesCount": 448,
         "isLiked": false,
         "postId": "reel_De84p4NzmeO"
@@ -1857,8 +1857,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T19:56:39.733Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T15:55:00.000Z",
         "likesCount": 113,
         "isLiked": false,
         "postId": "reel_De84p4NzmeO"
@@ -1877,8 +1877,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T20:10:39.733Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-14T07:55:00.000Z",
         "likesCount": 49,
         "isLiked": false,
         "postId": "reel_De84p4NzmeO"
@@ -1897,8 +1897,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T20:24:39.733Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-13T15:55:00.000Z",
         "likesCount": 459,
         "isLiked": false,
         "postId": "reel_De84p4NzmeO"
@@ -1917,8 +1917,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T20:38:39.733Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-12T15:15:00.000Z",
         "likesCount": 294,
         "isLiked": false,
         "postId": "reel_De84p4NzmeO"
@@ -1971,8 +1971,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T18:42:43.647Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T21:38:00.000Z",
         "likesCount": 114,
         "isLiked": false,
         "postId": "reel_Dfcqdy7JMza"
@@ -1991,8 +1991,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T18:56:43.647Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T17:08:00.000Z",
         "likesCount": 83,
         "isLiked": false,
         "postId": "reel_Dfcqdy7JMza"
@@ -2011,8 +2011,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T19:10:43.647Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T09:08:00.000Z",
         "likesCount": 124,
         "isLiked": false,
         "postId": "reel_Dfcqdy7JMza"
@@ -2031,8 +2031,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 23,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T19:24:43.647Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-13T17:08:00.000Z",
         "likesCount": 86,
         "isLiked": false,
         "postId": "reel_Dfcqdy7JMza"
@@ -2051,8 +2051,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T19:38:43.647Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-12T16:28:00.000Z",
         "likesCount": 91,
         "isLiked": false,
         "postId": "reel_Dfcqdy7JMza"
@@ -2107,8 +2107,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T17:42:49.723Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T21:21:00.000Z",
         "likesCount": 350,
         "isLiked": false,
         "postId": "reel_DfXx3TeSGKQ"
@@ -2127,8 +2127,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T17:56:49.723Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T16:51:00.000Z",
         "likesCount": 371,
         "isLiked": false,
         "postId": "reel_DfXx3TeSGKQ"
@@ -2147,8 +2147,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T18:10:49.723Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T08:51:00.000Z",
         "likesCount": 495,
         "isLiked": false,
         "postId": "reel_DfXx3TeSGKQ"
@@ -2204,8 +2204,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T16:42:52.871Z",
+        "text": "Saved this for my next shoot inspo 🙌",
+        "createdAt": "2026-11-14T21:04:00.000Z",
         "likesCount": 400,
         "isLiked": false,
         "postId": "reel_DfcIY7qy1z9"
@@ -2224,8 +2224,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 44,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T16:56:52.871Z",
+        "text": "Cleanest reel on my feed today 👏",
+        "createdAt": "2026-11-14T16:34:00.000Z",
         "likesCount": 282,
         "isLiked": false,
         "postId": "reel_DfcIY7qy1z9"
@@ -2244,8 +2244,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T17:10:52.871Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-14T08:34:00.000Z",
         "likesCount": 477,
         "isLiked": false,
         "postId": "reel_DfcIY7qy1z9"
@@ -2264,8 +2264,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 57,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T17:24:52.871Z",
+        "text": "Great job keeping the subject centered throughout",
+        "createdAt": "2026-11-13T16:34:00.000Z",
         "likesCount": 418,
         "isLiked": false,
         "postId": "reel_DfcIY7qy1z9"
@@ -2284,8 +2284,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T17:38:52.871Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-12T15:54:00.000Z",
         "likesCount": 352,
         "isLiked": false,
         "postId": "reel_DfcIY7qy1z9"
@@ -2341,8 +2341,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 47,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T15:42:56.784Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T20:47:00.000Z",
         "likesCount": 14,
         "isLiked": false,
         "postId": "reel_DerpNfjtwVc"
@@ -2361,8 +2361,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 45,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T15:56:56.784Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T16:17:00.000Z",
         "likesCount": 87,
         "isLiked": false,
         "postId": "reel_DerpNfjtwVc"
@@ -2381,8 +2381,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T16:10:56.784Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-14T08:17:00.000Z",
         "likesCount": 226,
         "isLiked": false,
         "postId": "reel_DerpNfjtwVc"
@@ -2401,8 +2401,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 44,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T16:24:56.784Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-13T16:17:00.000Z",
         "likesCount": 106,
         "isLiked": false,
         "postId": "reel_DerpNfjtwVc"
@@ -2421,8 +2421,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T16:38:56.784Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-12T15:37:00.000Z",
         "likesCount": 77,
         "isLiked": false,
         "postId": "reel_DerpNfjtwVc"
@@ -2478,8 +2478,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T14:43:03.646Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T20:30:00.000Z",
         "likesCount": 137,
         "isLiked": false,
         "postId": "reel_DauJBKAwz4P"
@@ -2498,8 +2498,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 61,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T14:57:03.646Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-14T16:00:00.000Z",
         "likesCount": 488,
         "isLiked": false,
         "postId": "reel_DauJBKAwz4P"
@@ -2518,8 +2518,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T15:11:03.646Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T08:00:00.000Z",
         "likesCount": 394,
         "isLiked": false,
         "postId": "reel_DauJBKAwz4P"
@@ -2538,8 +2538,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 53,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T15:25:03.646Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-13T16:00:00.000Z",
         "likesCount": 346,
         "isLiked": false,
         "postId": "reel_DauJBKAwz4P"
@@ -2592,8 +2592,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T13:43:07.383Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T20:13:00.000Z",
         "likesCount": 369,
         "isLiked": false,
         "postId": "reel_DeTR9CGuK09"
@@ -2612,8 +2612,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T13:57:07.383Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T15:43:00.000Z",
         "likesCount": 251,
         "isLiked": false,
         "postId": "reel_DeTR9CGuK09"
@@ -2632,8 +2632,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": false
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T14:11:07.383Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-14T07:43:00.000Z",
         "likesCount": 259,
         "isLiked": false,
         "postId": "reel_DeTR9CGuK09"
@@ -2687,8 +2687,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": false
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T12:43:10.416Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-14T21:26:00.000Z",
         "likesCount": 211,
         "isLiked": false,
         "postId": "reel_DdyG21axOlo"
@@ -2707,8 +2707,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T12:57:10.416Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-14T16:56:00.000Z",
         "likesCount": 29,
         "isLiked": false,
         "postId": "reel_DdyG21axOlo"
@@ -2727,8 +2727,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T13:11:10.416Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T08:56:00.000Z",
         "likesCount": 314,
         "isLiked": false,
         "postId": "reel_DdyG21axOlo"
@@ -2747,8 +2747,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T13:25:10.416Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-13T16:56:00.000Z",
         "likesCount": 386,
         "isLiked": false,
         "postId": "reel_DdyG21axOlo"
@@ -2802,8 +2802,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T11:43:14.233Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T21:09:00.000Z",
         "likesCount": 381,
         "isLiked": false,
         "postId": "reel_DcgUAEWi7h3"
@@ -2822,8 +2822,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T11:57:14.233Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-14T16:39:00.000Z",
         "likesCount": 65,
         "isLiked": false,
         "postId": "reel_DcgUAEWi7h3"
@@ -2842,8 +2842,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 17,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T12:11:14.233Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-14T08:39:00.000Z",
         "likesCount": 337,
         "isLiked": false,
         "postId": "reel_DcgUAEWi7h3"
@@ -2897,8 +2897,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T10:43:19.872Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-14T20:52:00.000Z",
         "likesCount": 344,
         "isLiked": false,
         "postId": "reel_DeOUnpPskbv"
@@ -2917,8 +2917,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 25,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T10:57:19.872Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T16:22:00.000Z",
         "likesCount": 484,
         "isLiked": false,
         "postId": "reel_DeOUnpPskbv"
@@ -2937,8 +2937,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T11:11:19.872Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T08:22:00.000Z",
         "likesCount": 427,
         "isLiked": false,
         "postId": "reel_DeOUnpPskbv"
@@ -2957,8 +2957,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T11:25:19.872Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-13T16:22:00.000Z",
         "likesCount": 498,
         "isLiked": false,
         "postId": "reel_DeOUnpPskbv"
@@ -3014,8 +3014,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T09:43:24.934Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T20:35:00.000Z",
         "likesCount": 501,
         "isLiked": false,
         "postId": "reel_Dfl4OfWRv8I"
@@ -3034,8 +3034,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 45,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T09:57:24.934Z",
+        "text": "Drop the LUT or grading workflow if you can!",
+        "createdAt": "2026-11-14T16:05:00.000Z",
         "likesCount": 134,
         "isLiked": false,
         "postId": "reel_Dfl4OfWRv8I"
@@ -3054,8 +3054,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 17,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T10:11:24.934Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-14T08:05:00.000Z",
         "likesCount": 462,
         "isLiked": false,
         "postId": "reel_Dfl4OfWRv8I"
@@ -3074,8 +3074,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 15,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T10:25:24.934Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-13T16:05:00.000Z",
         "likesCount": 300,
         "isLiked": false,
         "postId": "reel_Dfl4OfWRv8I"
@@ -3131,8 +3131,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": false
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-12T08:43:28.821Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T20:18:00.000Z",
         "likesCount": 350,
         "isLiked": false,
         "postId": "reel_Dfl1kPQzmw0"
@@ -3151,8 +3151,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T08:57:28.821Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T15:48:00.000Z",
         "likesCount": 238,
         "isLiked": false,
         "postId": "reel_Dfl1kPQzmw0"
@@ -3171,8 +3171,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": false
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T09:11:28.821Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T07:48:00.000Z",
         "likesCount": 86,
         "isLiked": false,
         "postId": "reel_Dfl1kPQzmw0"
@@ -3191,8 +3191,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T09:25:28.821Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-13T15:48:00.000Z",
         "likesCount": 378,
         "isLiked": false,
         "postId": "reel_Dfl1kPQzmw0"
@@ -3211,8 +3211,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 61,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T09:39:28.821Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-12T15:08:00.000Z",
         "likesCount": 506,
         "isLiked": false,
         "postId": "reel_Dfl1kPQzmw0"
@@ -3266,8 +3266,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 45,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T07:43:33.643Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-14T21:31:00.000Z",
         "likesCount": 203,
         "isLiked": false,
         "postId": "reel_DfPes0aMBtZ"
@@ -3286,8 +3286,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 25,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T07:57:33.643Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-14T17:01:00.000Z",
         "likesCount": 98,
         "isLiked": false,
         "postId": "reel_DfPes0aMBtZ"
@@ -3306,8 +3306,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T08:11:33.643Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-14T09:01:00.000Z",
         "likesCount": 423,
         "isLiked": false,
         "postId": "reel_DfPes0aMBtZ"
@@ -3326,8 +3326,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T08:25:33.643Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-13T17:01:00.000Z",
         "likesCount": 53,
         "isLiked": false,
         "postId": "reel_DfPes0aMBtZ"
@@ -3382,8 +3382,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T06:43:37.658Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T21:14:00.000Z",
         "likesCount": 287,
         "isLiked": false,
         "postId": "reel_DfbzHM5hmjn"
@@ -3402,8 +3402,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": false
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T06:57:37.658Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T16:44:00.000Z",
         "likesCount": 197,
         "isLiked": false,
         "postId": "reel_DfbzHM5hmjn"
@@ -3422,8 +3422,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T07:11:37.658Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-14T08:44:00.000Z",
         "likesCount": 294,
         "isLiked": false,
         "postId": "reel_DfbzHM5hmjn"
@@ -3475,8 +3475,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T05:43:43.665Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T20:57:00.000Z",
         "likesCount": 165,
         "isLiked": false,
         "postId": "reel_Dd_Mwz3RLfA"
@@ -3495,8 +3495,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 44,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T05:57:43.665Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-14T16:27:00.000Z",
         "likesCount": 222,
         "isLiked": false,
         "postId": "reel_Dd_Mwz3RLfA"
@@ -3515,8 +3515,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T06:11:43.665Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T08:27:00.000Z",
         "likesCount": 286,
         "isLiked": false,
         "postId": "reel_Dd_Mwz3RLfA"
@@ -3535,8 +3535,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": false
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T06:25:43.665Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-13T16:27:00.000Z",
         "likesCount": 105,
         "isLiked": false,
         "postId": "reel_Dd_Mwz3RLfA"
@@ -3555,8 +3555,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": false
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T06:39:43.665Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-12T15:47:00.000Z",
         "likesCount": 199,
         "isLiked": false,
         "postId": "reel_Dd_Mwz3RLfA"
@@ -3613,8 +3613,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T04:43:47.391Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-14T20:40:00.000Z",
         "likesCount": 111,
         "isLiked": false,
         "postId": "reel_DeM8sg0tS6D"
@@ -3633,8 +3633,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T04:57:47.391Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T16:10:00.000Z",
         "likesCount": 27,
         "isLiked": false,
         "postId": "reel_DeM8sg0tS6D"
@@ -3653,8 +3653,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T05:11:47.391Z",
+        "text": "Drop the LUT or grading workflow if you can!",
+        "createdAt": "2026-11-14T08:10:00.000Z",
         "likesCount": 257,
         "isLiked": false,
         "postId": "reel_DeM8sg0tS6D"
@@ -3673,8 +3673,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T05:25:47.391Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T16:10:00.000Z",
         "likesCount": 398,
         "isLiked": false,
         "postId": "reel_DeM8sg0tS6D"
@@ -3727,8 +3727,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T03:43:51.862Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-14T20:23:00.000Z",
         "likesCount": 349,
         "isLiked": false,
         "postId": "reel_DcwiWP2vcZW"
@@ -3747,8 +3747,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T03:57:51.862Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-14T15:53:00.000Z",
         "likesCount": 257,
         "isLiked": false,
         "postId": "reel_DcwiWP2vcZW"
@@ -3767,8 +3767,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T04:11:51.862Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-14T07:53:00.000Z",
         "likesCount": 92,
         "isLiked": false,
         "postId": "reel_DcwiWP2vcZW"
@@ -3825,7 +3825,7 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "isOnline": false
         },
         "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T02:43:58.468Z",
+        "createdAt": "2026-11-14T21:36:00.000Z",
         "likesCount": 429,
         "isLiked": false,
         "postId": "reel_DfPMjDYpRas"
@@ -3844,8 +3844,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T02:57:58.468Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T17:06:00.000Z",
         "likesCount": 408,
         "isLiked": false,
         "postId": "reel_DfPMjDYpRas"
@@ -3864,8 +3864,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T03:11:58.468Z",
+        "text": "Cleanest reel on my feed today 👏",
+        "createdAt": "2026-11-14T09:06:00.000Z",
         "likesCount": 382,
         "isLiked": false,
         "postId": "reel_DfPMjDYpRas"
@@ -3921,8 +3921,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T01:44:04.072Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T21:19:00.000Z",
         "likesCount": 252,
         "isLiked": false,
         "postId": "reel_Dd05y_Bx2st"
@@ -3941,8 +3941,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 44,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T01:58:04.072Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-14T16:49:00.000Z",
         "likesCount": 44,
         "isLiked": false,
         "postId": "reel_Dd05y_Bx2st"
@@ -3961,8 +3961,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T02:12:04.072Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T08:49:00.000Z",
         "likesCount": 298,
         "isLiked": false,
         "postId": "reel_Dd05y_Bx2st"
@@ -3981,8 +3981,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T02:26:04.072Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-13T16:49:00.000Z",
         "likesCount": 274,
         "isLiked": false,
         "postId": "reel_Dd05y_Bx2st"
@@ -4035,8 +4035,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": true
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-12T00:44:09.220Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T21:02:00.000Z",
         "likesCount": 117,
         "isLiked": false,
         "postId": "reel_DfD1Kq6yxr4"
@@ -4055,8 +4055,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 27,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T00:58:09.220Z",
+        "text": "Cleanest reel on my feed today 👏",
+        "createdAt": "2026-11-14T16:32:00.000Z",
         "likesCount": 303,
         "isLiked": false,
         "postId": "reel_DfD1Kq6yxr4"
@@ -4075,8 +4075,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-12T01:12:09.220Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-14T08:32:00.000Z",
         "likesCount": 177,
         "isLiked": false,
         "postId": "reel_DfD1Kq6yxr4"
@@ -4095,8 +4095,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-12T01:26:09.220Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-13T16:32:00.000Z",
         "likesCount": 394,
         "isLiked": false,
         "postId": "reel_DfD1Kq6yxr4"
@@ -4115,8 +4115,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-12T01:40:09.220Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-12T15:52:00.000Z",
         "likesCount": 141,
         "isLiked": false,
         "postId": "reel_DfD1Kq6yxr4"
@@ -4170,8 +4170,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T23:44:15.427Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-14T20:45:00.000Z",
         "likesCount": 231,
         "isLiked": false,
         "postId": "reel_Dfg7tfCx0BT"
@@ -4190,8 +4190,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": false
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T23:58:15.427Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T16:15:00.000Z",
         "likesCount": 119,
         "isLiked": false,
         "postId": "reel_Dfg7tfCx0BT"
@@ -4210,8 +4210,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 42,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-12T00:12:15.427Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-14T08:15:00.000Z",
         "likesCount": 269,
         "isLiked": false,
         "postId": "reel_Dfg7tfCx0BT"
@@ -4267,8 +4267,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": true
         },
-        "text": "The framing and color grading on this is pure gold! 🔥",
-        "createdAt": "2026-11-11T22:44:22.558Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-14T20:28:00.000Z",
         "likesCount": 252,
         "isLiked": false,
         "postId": "reel_De8wHMRRMTD"
@@ -4287,8 +4287,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": false
         },
-        "text": "Pure energy and storytelling ✨",
-        "createdAt": "2026-11-11T22:58:22.558Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T15:58:00.000Z",
         "likesCount": 424,
         "isLiked": false,
         "postId": "reel_De8wHMRRMTD"
@@ -4307,8 +4307,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 37,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T23:12:22.558Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T07:58:00.000Z",
         "likesCount": 62,
         "isLiked": false,
         "postId": "reel_De8wHMRRMTD"
@@ -4362,8 +4362,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 58,
           "isOnline": true
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T21:44:27.815Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-14T20:11:00.000Z",
         "likesCount": 116,
         "isLiked": false,
         "postId": "reel_De40rR_zkya"
@@ -4382,8 +4382,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 30,
           "isOnline": false
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T21:58:27.815Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-14T15:41:00.000Z",
         "likesCount": 138,
         "isLiked": false,
         "postId": "reel_De40rR_zkya"
@@ -4402,8 +4402,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T22:12:27.815Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T07:41:00.000Z",
         "likesCount": 314,
         "isLiked": false,
         "postId": "reel_De40rR_zkya"
@@ -4422,8 +4422,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Algorithm finally blessed my feed today 🚀",
-        "createdAt": "2026-11-11T22:26:27.815Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-13T15:41:00.000Z",
         "likesCount": 380,
         "isLiked": false,
         "postId": "reel_De40rR_zkya"
@@ -4479,8 +4479,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T20:44:32.446Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-14T21:24:00.000Z",
         "likesCount": 298,
         "isLiked": false,
         "postId": "reel_DeRBHZDS2Ev"
@@ -4499,8 +4499,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": false
         },
-        "text": "How did you shoot this? Looks so crisp! 📸",
-        "createdAt": "2026-11-11T20:58:32.446Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T16:54:00.000Z",
         "likesCount": 282,
         "isLiked": false,
         "postId": "reel_DeRBHZDS2Ev"
@@ -4519,8 +4519,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": true
         },
-        "text": "Watched this twice already, super clean edit 💯",
-        "createdAt": "2026-11-11T21:12:32.446Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T08:54:00.000Z",
         "likesCount": 263,
         "isLiked": false,
         "postId": "reel_DeRBHZDS2Ev"
@@ -4539,8 +4539,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 42,
           "isOnline": true
         },
-        "text": "Delhi NCR vibes hit different! 🙌",
-        "createdAt": "2026-11-11T21:26:32.446Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-13T16:54:00.000Z",
         "likesCount": 276,
         "isLiked": false,
         "postId": "reel_DeRBHZDS2Ev"
@@ -4597,8 +4597,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 23,
           "isOnline": true
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.089Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T21:07:00.000Z",
         "likesCount": 715,
         "isLiked": false
       },
@@ -4617,8 +4617,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 47,
           "isOnline": true
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.089Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-14T16:37:00.000Z",
         "likesCount": 446,
         "isLiked": false
       },
@@ -4637,8 +4637,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 32,
           "isOnline": true
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.089Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T08:37:00.000Z",
         "likesCount": 364,
         "isLiked": false
       },
@@ -4657,8 +4657,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.089Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-13T16:37:00.000Z",
         "likesCount": 23,
         "isLiked": false
       },
@@ -4677,8 +4677,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Showed this to my roommate, we cannot stop laughing 💀",
-        "createdAt": "2026-11-07T04:31:48.089Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-12T15:57:00.000Z",
         "likesCount": 390,
         "isLiked": false
       }
@@ -4734,8 +4734,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": false
         },
-        "text": "Bhai background music kaunsa hai? Pure goosebumps 🔥",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T20:50:00.000Z",
         "likesCount": 347,
         "isLiked": false
       },
@@ -4754,8 +4754,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": false
         },
-        "text": "Next level control bro, but safety first always! ⚠️",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T16:20:00.000Z",
         "likesCount": 565,
         "isLiked": false
       },
@@ -4774,8 +4774,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": false
         },
-        "text": "This stunt looks so unreal in slow-mo! 💯",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-14T08:20:00.000Z",
         "likesCount": 210,
         "isLiked": false
       },
@@ -4794,8 +4794,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 30,
           "isOnline": false
         },
-        "text": "Bhai Nagaur ka swag hi alag hai 💪",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-13T16:20:00.000Z",
         "likesCount": 182,
         "isLiked": false
       },
@@ -4814,8 +4814,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": false
         },
-        "text": "Smooth transitions and insane grading! Which camera?",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-12T15:40:00.000Z",
         "likesCount": 621,
         "isLiked": false
       }
@@ -4871,8 +4871,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T20:33:00.000Z",
         "likesCount": 91,
         "isLiked": false
       },
@@ -4891,8 +4891,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T16:03:00.000Z",
         "likesCount": 75,
         "isLiked": false
       },
@@ -4911,8 +4911,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-14T08:03:00.000Z",
         "likesCount": 50,
         "isLiked": false
       },
@@ -4931,8 +4931,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T16:03:00.000Z",
         "likesCount": 224,
         "isLiked": false
       }
@@ -4988,8 +4988,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": false
         },
-        "text": "Grace and expressions are 10/10! 😍✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T20:16:00.000Z",
         "likesCount": 745,
         "isLiked": false
       },
@@ -5008,8 +5008,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "The hook step is literally on loop in my mind 🎶",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T15:46:00.000Z",
         "likesCount": 428,
         "isLiked": false
       },
@@ -5028,8 +5028,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": false
         },
-        "text": "So clean and effortless! Loved the choreography ❤️",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T07:46:00.000Z",
         "likesCount": 169,
         "isLiked": false
       },
@@ -5048,8 +5048,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 29,
           "isOnline": false
         },
-        "text": "Trending audio pe full justice kiya hai! 🙌",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Saved this for my next shoot inspo 🙌",
+        "createdAt": "2026-11-13T15:46:00.000Z",
         "likesCount": 669,
         "isLiked": false
       },
@@ -5068,8 +5068,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "Watching this for the 5th time, energy is contagious 🔥",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-12T15:06:00.000Z",
         "likesCount": 324,
         "isLiked": false
       }
@@ -5124,8 +5124,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "This deserves way more views!",
+        "createdAt": "2026-11-14T21:29:00.000Z",
         "likesCount": 191,
         "isLiked": false
       },
@@ -5144,8 +5144,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 46,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-14T16:59:00.000Z",
         "likesCount": 522,
         "isLiked": false
       },
@@ -5164,8 +5164,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-14T08:59:00.000Z",
         "likesCount": 70,
         "isLiked": false
       },
@@ -5184,8 +5184,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-13T16:59:00.000Z",
         "likesCount": 70,
         "isLiked": false
       }
@@ -5241,8 +5241,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-14T21:12:00.000Z",
         "likesCount": 641,
         "isLiked": false
       },
@@ -5261,8 +5261,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T16:42:00.000Z",
         "likesCount": 535,
         "isLiked": false
       },
@@ -5281,8 +5281,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-14T08:42:00.000Z",
         "likesCount": 218,
         "isLiked": false
       },
@@ -5301,8 +5301,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 42,
           "isOnline": false
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-13T16:42:00.000Z",
         "likesCount": 440,
         "isLiked": false
       }
@@ -5355,8 +5355,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 39,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T20:55:00.000Z",
         "likesCount": 595,
         "isLiked": false
       },
@@ -5375,8 +5375,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T16:25:00.000Z",
         "likesCount": 386,
         "isLiked": false
       },
@@ -5395,8 +5395,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-14T08:25:00.000Z",
         "likesCount": 403,
         "isLiked": false
       },
@@ -5415,8 +5415,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-13T16:25:00.000Z",
         "likesCount": 671,
         "isLiked": false
       },
@@ -5435,8 +5435,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-12T15:45:00.000Z",
         "likesCount": 446,
         "isLiked": false
       },
@@ -5455,8 +5455,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 13,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.091Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-11T13:05:00.000Z",
         "likesCount": 430,
         "isLiked": false
       }
@@ -5512,8 +5512,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-14T20:38:00.000Z",
         "likesCount": 222,
         "isLiked": false
       },
@@ -5532,8 +5532,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-14T16:08:00.000Z",
         "likesCount": 66,
         "isLiked": false
       },
@@ -5552,8 +5552,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-14T08:08:00.000Z",
         "likesCount": 100,
         "isLiked": false
       },
@@ -5572,8 +5572,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-13T16:08:00.000Z",
         "likesCount": 157,
         "isLiked": false
       },
@@ -5592,8 +5592,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 58,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-12T15:28:00.000Z",
         "likesCount": 621,
         "isLiked": false
       },
@@ -5612,8 +5612,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.091Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-11T12:48:00.000Z",
         "likesCount": 694,
         "isLiked": false
       }
@@ -5669,8 +5669,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 12,
           "isOnline": true
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-14T20:21:00.000Z",
         "likesCount": 760,
         "isLiked": false
       },
@@ -5689,8 +5689,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": false
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T15:51:00.000Z",
         "likesCount": 521,
         "isLiked": false
       },
@@ -5709,8 +5709,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Cleanest reel on my feed today 👏",
+        "createdAt": "2026-11-14T07:51:00.000Z",
         "likesCount": 847,
         "isLiked": false
       },
@@ -5729,8 +5729,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 13,
           "isOnline": true
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-13T15:51:00.000Z",
         "likesCount": 857,
         "isLiked": false
       },
@@ -5749,8 +5749,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": true
         },
-        "text": "Showed this to my roommate, we cannot stop laughing 💀",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-12T15:11:00.000Z",
         "likesCount": 365,
         "isLiked": false
       }
@@ -5806,8 +5806,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 29,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T21:34:00.000Z",
         "likesCount": 783,
         "isLiked": false
       },
@@ -5826,8 +5826,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T17:04:00.000Z",
         "likesCount": 614,
         "isLiked": false
       },
@@ -5846,8 +5846,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 15,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T09:04:00.000Z",
         "likesCount": 394,
         "isLiked": false
       },
@@ -5866,8 +5866,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-13T17:04:00.000Z",
         "likesCount": 625,
         "isLiked": false
       }
@@ -5923,8 +5923,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 47,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T21:17:00.000Z",
         "likesCount": 537,
         "isLiked": false
       },
@@ -5943,8 +5943,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 42,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-14T16:47:00.000Z",
         "likesCount": 393,
         "isLiked": false
       },
@@ -5963,8 +5963,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T08:47:00.000Z",
         "likesCount": 525,
         "isLiked": false
       },
@@ -5983,8 +5983,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 61,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-13T16:47:00.000Z",
         "likesCount": 349,
         "isLiked": false
       },
@@ -6003,8 +6003,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-12T16:07:00.000Z",
         "likesCount": 537,
         "isLiked": false
       }
@@ -6060,8 +6060,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 53,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-14T21:00:00.000Z",
         "likesCount": 161,
         "isLiked": false
       },
@@ -6080,8 +6080,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T16:30:00.000Z",
         "likesCount": 443,
         "isLiked": false
       },
@@ -6100,8 +6100,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 37,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Drop the LUT or grading workflow if you can!",
+        "createdAt": "2026-11-14T08:30:00.000Z",
         "likesCount": 746,
         "isLiked": false
       },
@@ -6120,8 +6120,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 61,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T16:30:00.000Z",
         "likesCount": 686,
         "isLiked": false
       },
@@ -6140,8 +6140,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 39,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-12T15:50:00.000Z",
         "likesCount": 510,
         "isLiked": false
       }
@@ -6197,8 +6197,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T20:43:00.000Z",
         "likesCount": 381,
         "isLiked": false
       },
@@ -6217,8 +6217,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 12,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T16:13:00.000Z",
         "likesCount": 434,
         "isLiked": false
       },
@@ -6237,8 +6237,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T08:13:00.000Z",
         "likesCount": 109,
         "isLiked": false
       },
@@ -6257,8 +6257,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-13T16:13:00.000Z",
         "likesCount": 188,
         "isLiked": false
       },
@@ -6277,8 +6277,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-12T15:33:00.000Z",
         "likesCount": 846,
         "isLiked": false
       }
@@ -6334,8 +6334,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-14T20:26:00.000Z",
         "likesCount": 16,
         "isLiked": false
       },
@@ -6354,8 +6354,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-14T15:56:00.000Z",
         "likesCount": 197,
         "isLiked": false
       },
@@ -6374,8 +6374,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-14T07:56:00.000Z",
         "likesCount": 124,
         "isLiked": false
       },
@@ -6394,8 +6394,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-13T15:56:00.000Z",
         "likesCount": 93,
         "isLiked": false
       }
@@ -6450,8 +6450,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T21:39:00.000Z",
         "likesCount": 149,
         "isLiked": false
       },
@@ -6470,8 +6470,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T17:09:00.000Z",
         "likesCount": 177,
         "isLiked": false
       },
@@ -6490,8 +6490,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-14T09:09:00.000Z",
         "likesCount": 861,
         "isLiked": false
       },
@@ -6510,8 +6510,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-13T17:09:00.000Z",
         "likesCount": 191,
         "isLiked": false
       },
@@ -6530,8 +6530,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-12T16:29:00.000Z",
         "likesCount": 508,
         "isLiked": false
       },
@@ -6550,8 +6550,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 58,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.091Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-11T13:49:00.000Z",
         "likesCount": 317,
         "isLiked": false
       }
@@ -6607,8 +6607,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T21:22:00.000Z",
         "likesCount": 499,
         "isLiked": false
       },
@@ -6627,8 +6627,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-14T16:52:00.000Z",
         "likesCount": 57,
         "isLiked": false
       },
@@ -6647,8 +6647,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 14,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T08:52:00.000Z",
         "likesCount": 403,
         "isLiked": false
       },
@@ -6667,8 +6667,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "That opening 2-second hook immediately grabbed me",
+        "createdAt": "2026-11-13T16:52:00.000Z",
         "likesCount": 374,
         "isLiked": false
       },
@@ -6687,8 +6687,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-12T16:12:00.000Z",
         "likesCount": 849,
         "isLiked": false
       }
@@ -6744,8 +6744,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 53,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Tight editing, zero wasted frames!",
+        "createdAt": "2026-11-14T21:05:00.000Z",
         "likesCount": 605,
         "isLiked": false
       },
@@ -6764,8 +6764,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "The pacing on this cut is next level 🔥",
+        "createdAt": "2026-11-14T16:35:00.000Z",
         "likesCount": 753,
         "isLiked": false
       },
@@ -6784,8 +6784,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Watched this twice already, super clean edit 💯",
+        "createdAt": "2026-11-14T08:35:00.000Z",
         "likesCount": 545,
         "isLiked": false
       },
@@ -6804,8 +6804,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-13T16:35:00.000Z",
         "likesCount": 758,
         "isLiked": false
       },
@@ -6824,8 +6824,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-12T15:55:00.000Z",
         "likesCount": 527,
         "isLiked": false
       }
@@ -6881,8 +6881,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 47,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T20:48:00.000Z",
         "likesCount": 770,
         "isLiked": false
       },
@@ -6901,8 +6901,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T16:18:00.000Z",
         "likesCount": 534,
         "isLiked": false
       },
@@ -6921,8 +6921,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-14T08:18:00.000Z",
         "likesCount": 232,
         "isLiked": false
       },
@@ -6941,8 +6941,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 29,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T16:18:00.000Z",
         "likesCount": 300,
         "isLiked": false
       },
@@ -6961,8 +6961,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-12T15:38:00.000Z",
         "likesCount": 807,
         "isLiked": false
       }
@@ -7017,8 +7017,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 15,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T20:31:00.000Z",
         "likesCount": 377,
         "isLiked": false
       },
@@ -7037,8 +7037,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T16:01:00.000Z",
         "likesCount": 791,
         "isLiked": false
       },
@@ -7057,8 +7057,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T08:01:00.000Z",
         "likesCount": 443,
         "isLiked": false
       },
@@ -7077,8 +7077,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-13T16:01:00.000Z",
         "likesCount": 704,
         "isLiked": false
       }
@@ -7134,8 +7134,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T20:14:00.000Z",
         "likesCount": 668,
         "isLiked": false
       },
@@ -7154,8 +7154,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 45,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T15:44:00.000Z",
         "likesCount": 522,
         "isLiked": false
       },
@@ -7174,8 +7174,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 17,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T07:44:00.000Z",
         "likesCount": 785,
         "isLiked": false
       },
@@ -7194,8 +7194,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-13T15:44:00.000Z",
         "likesCount": 119,
         "isLiked": false
       },
@@ -7214,8 +7214,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 17,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-12T15:04:00.000Z",
         "likesCount": 632,
         "isLiked": false
       },
@@ -7234,8 +7234,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 59,
           "isOnline": false
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.091Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-11T12:24:00.000Z",
         "likesCount": 184,
         "isLiked": false
       }
@@ -7291,8 +7291,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T21:27:00.000Z",
         "likesCount": 471,
         "isLiked": false
       },
@@ -7311,8 +7311,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-14T16:57:00.000Z",
         "likesCount": 391,
         "isLiked": false
       },
@@ -7331,8 +7331,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T08:57:00.000Z",
         "likesCount": 728,
         "isLiked": false
       },
@@ -7351,8 +7351,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 14,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-13T16:57:00.000Z",
         "likesCount": 433,
         "isLiked": false
       },
@@ -7371,8 +7371,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-12T16:17:00.000Z",
         "likesCount": 95,
         "isLiked": false
       },
@@ -7391,8 +7391,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.091Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-11T13:37:00.000Z",
         "likesCount": 369,
         "isLiked": false
       }
@@ -7448,8 +7448,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T21:10:00.000Z",
         "likesCount": 623,
         "isLiked": false
       },
@@ -7468,8 +7468,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Great job keeping the subject centered throughout",
+        "createdAt": "2026-11-14T16:40:00.000Z",
         "likesCount": 398,
         "isLiked": false
       },
@@ -7488,8 +7488,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 32,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T08:40:00.000Z",
         "likesCount": 90,
         "isLiked": false
       },
@@ -7508,8 +7508,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "How do you stabilize handheld shots like that?",
+        "createdAt": "2026-11-13T16:40:00.000Z",
         "likesCount": 541,
         "isLiked": false
       }
@@ -7565,8 +7565,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T20:53:00.000Z",
         "likesCount": 720,
         "isLiked": false
       },
@@ -7585,8 +7585,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T16:23:00.000Z",
         "likesCount": 336,
         "isLiked": false
       },
@@ -7605,8 +7605,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 19,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T08:23:00.000Z",
         "likesCount": 743,
         "isLiked": false
       },
@@ -7625,8 +7625,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-13T16:23:00.000Z",
         "likesCount": 497,
         "isLiked": false
       },
@@ -7645,8 +7645,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.091Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-12T15:43:00.000Z",
         "likesCount": 381,
         "isLiked": false
       },
@@ -7665,8 +7665,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.091Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-11T13:03:00.000Z",
         "likesCount": 300,
         "isLiked": false
       }
@@ -7722,8 +7722,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.091Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T20:36:00.000Z",
         "likesCount": 605,
         "isLiked": false
       },
@@ -7742,8 +7742,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 48,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.091Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-14T16:06:00.000Z",
         "likesCount": 492,
         "isLiked": false
       },
@@ -7762,8 +7762,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.091Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T08:06:00.000Z",
         "likesCount": 382,
         "isLiked": false
       },
@@ -7782,8 +7782,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.091Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-13T16:06:00.000Z",
         "likesCount": 420,
         "isLiked": false
       }
@@ -7839,8 +7839,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "Grace and expressions are 10/10! 😍✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T20:19:00.000Z",
         "likesCount": 692,
         "isLiked": false
       },
@@ -7859,8 +7859,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "The hook step is literally on loop in my mind 🎶",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T15:49:00.000Z",
         "likesCount": 462,
         "isLiked": false
       },
@@ -7879,8 +7879,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 38,
           "isOnline": false
         },
-        "text": "So clean and effortless! Loved the choreography ❤️",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T07:49:00.000Z",
         "likesCount": 477,
         "isLiked": false
       },
@@ -7899,8 +7899,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": false
         },
-        "text": "Trending audio pe full justice kiya hai! 🙌",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T15:49:00.000Z",
         "likesCount": 26,
         "isLiked": false
       }
@@ -7955,8 +7955,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T21:32:00.000Z",
         "likesCount": 176,
         "isLiked": false
       },
@@ -7975,8 +7975,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T17:02:00.000Z",
         "likesCount": 407,
         "isLiked": false
       },
@@ -7995,8 +7995,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T09:02:00.000Z",
         "likesCount": 837,
         "isLiked": false
       },
@@ -8015,8 +8015,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-13T17:02:00.000Z",
         "likesCount": 356,
         "isLiked": false
       },
@@ -8035,8 +8035,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 24,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-12T16:22:00.000Z",
         "likesCount": 420,
         "isLiked": false
       }
@@ -8091,8 +8091,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": true
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "This vibe is unmatched right now ⚡",
+        "createdAt": "2026-11-14T21:15:00.000Z",
         "likesCount": 168,
         "isLiked": false
       },
@@ -8111,8 +8111,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": true
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T16:45:00.000Z",
         "likesCount": 725,
         "isLiked": false
       },
@@ -8131,8 +8131,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": true
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-14T08:45:00.000Z",
         "likesCount": 137,
         "isLiked": false
       },
@@ -8151,8 +8151,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": false
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-13T16:45:00.000Z",
         "likesCount": 405,
         "isLiked": false
       },
@@ -8171,8 +8171,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "Showed this to my roommate, we cannot stop laughing 💀",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-12T16:05:00.000Z",
         "likesCount": 843,
         "isLiked": false
       }
@@ -8226,8 +8226,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-14T20:58:00.000Z",
         "likesCount": 853,
         "isLiked": false
       },
@@ -8246,8 +8246,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 32,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Love the motion blur on that whip pan!",
+        "createdAt": "2026-11-14T16:28:00.000Z",
         "likesCount": 558,
         "isLiked": false
       },
@@ -8266,8 +8266,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T08:28:00.000Z",
         "likesCount": 280,
         "isLiked": false
       },
@@ -8286,8 +8286,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 25,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-13T16:28:00.000Z",
         "likesCount": 91,
         "isLiked": false
       },
@@ -8306,8 +8306,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 59,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-12T15:48:00.000Z",
         "likesCount": 142,
         "isLiked": false
       },
@@ -8326,8 +8326,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": false
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.092Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-11T13:08:00.000Z",
         "likesCount": 132,
         "isLiked": false
       }
@@ -8383,8 +8383,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 57,
           "isOnline": false
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T20:41:00.000Z",
         "likesCount": 252,
         "isLiked": false
       },
@@ -8403,8 +8403,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": false
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-14T16:11:00.000Z",
         "likesCount": 479,
         "isLiked": false
       },
@@ -8423,8 +8423,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": false
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-14T08:11:00.000Z",
         "likesCount": 185,
         "isLiked": false
       },
@@ -8443,8 +8443,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 27,
           "isOnline": true
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-13T16:11:00.000Z",
         "likesCount": 260,
         "isLiked": false
       }
@@ -8500,8 +8500,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T20:24:00.000Z",
         "likesCount": 505,
         "isLiked": false
       },
@@ -8520,8 +8520,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T15:54:00.000Z",
         "likesCount": 41,
         "isLiked": false
       },
@@ -8540,8 +8540,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": false
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-14T07:54:00.000Z",
         "likesCount": 859,
         "isLiked": false
       },
@@ -8560,8 +8560,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-13T15:54:00.000Z",
         "likesCount": 196,
         "isLiked": false
       },
@@ -8580,8 +8580,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-12T15:14:00.000Z",
         "likesCount": 25,
         "isLiked": false
       },
@@ -8600,8 +8600,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 13,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.092Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-11T12:34:00.000Z",
         "likesCount": 792,
         "isLiked": false
       }
@@ -8657,8 +8657,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 58,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T21:37:00.000Z",
         "likesCount": 711,
         "isLiked": false
       },
@@ -8677,8 +8677,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 18,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "One of the best shots you have posted this month",
+        "createdAt": "2026-11-14T17:07:00.000Z",
         "likesCount": 160,
         "isLiked": false
       },
@@ -8697,8 +8697,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T09:07:00.000Z",
         "likesCount": 151,
         "isLiked": false
       },
@@ -8717,8 +8717,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 54,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Which lens did you shoot this on? Looks super sharp 📸",
+        "createdAt": "2026-11-13T17:07:00.000Z",
         "likesCount": 263,
         "isLiked": false
       },
@@ -8737,8 +8737,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 56,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-12T16:27:00.000Z",
         "likesCount": 511,
         "isLiked": false
       }
@@ -8794,8 +8794,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 29,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-14T21:20:00.000Z",
         "likesCount": 606,
         "isLiked": false
       },
@@ -8814,8 +8814,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 45,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T16:50:00.000Z",
         "likesCount": 698,
         "isLiked": false
       },
@@ -8834,8 +8834,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Drop the LUT or grading workflow if you can!",
+        "createdAt": "2026-11-14T08:50:00.000Z",
         "likesCount": 286,
         "isLiked": false
       },
@@ -8854,8 +8854,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "The detail retention even after compression is crazy",
+        "createdAt": "2026-11-13T16:50:00.000Z",
         "likesCount": 174,
         "isLiked": false
       },
@@ -8874,8 +8874,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 49,
           "isOnline": true
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "Love how effortless you make this look!",
+        "createdAt": "2026-11-12T16:10:00.000Z",
         "likesCount": 197,
         "isLiked": false
       }
@@ -8931,8 +8931,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 40,
           "isOnline": false
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T21:03:00.000Z",
         "likesCount": 324,
         "isLiked": false
       },
@@ -8951,8 +8951,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": true
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-14T16:33:00.000Z",
         "likesCount": 606,
         "isLiked": false
       },
@@ -8971,8 +8971,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": false
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T08:33:00.000Z",
         "likesCount": 538,
         "isLiked": false
       },
@@ -8991,8 +8991,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 51,
           "isOnline": true
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Audio sync on the beat drop hit so well 🎧",
+        "createdAt": "2026-11-13T16:33:00.000Z",
         "likesCount": 675,
         "isLiked": false
       }
@@ -9059,8 +9059,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-14T20:46:00.000Z",
         "likesCount": 493,
         "isLiked": false
       },
@@ -9079,8 +9079,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Instant bookmark—great composition",
+        "createdAt": "2026-11-14T16:16:00.000Z",
         "likesCount": 275,
         "isLiked": false
       },
@@ -9099,8 +9099,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 34,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Camera movement here is buttery smooth 🎥",
+        "createdAt": "2026-11-14T08:16:00.000Z",
         "likesCount": 69,
         "isLiked": false
       },
@@ -9119,8 +9119,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 36,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Great job keeping the subject centered throughout",
+        "createdAt": "2026-11-13T16:16:00.000Z",
         "likesCount": 354,
         "isLiked": false
       },
@@ -9139,8 +9139,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 28,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-12T15:36:00.000Z",
         "likesCount": 614,
         "isLiked": false
       },
@@ -9159,8 +9159,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 23,
           "isOnline": false
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.092Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-11T12:56:00.000Z",
         "likesCount": 216,
         "isLiked": false
       }
@@ -9216,8 +9216,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": false
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T20:29:00.000Z",
         "likesCount": 383,
         "isLiked": false
       },
@@ -9236,8 +9236,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 60,
           "isOnline": false
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "How long did the post-production take on this?",
+        "createdAt": "2026-11-14T15:59:00.000Z",
         "likesCount": 629,
         "isLiked": false
       },
@@ -9256,8 +9256,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "The subtle sound design makes all the difference 🔊",
+        "createdAt": "2026-11-14T07:59:00.000Z",
         "likesCount": 805,
         "isLiked": false
       },
@@ -9276,8 +9276,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 59,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-13T15:59:00.000Z",
         "likesCount": 262,
         "isLiked": false
       },
@@ -9296,8 +9296,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 50,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "What mic setup did you use for the ambient audio?",
+        "createdAt": "2026-11-12T15:19:00.000Z",
         "likesCount": 846,
         "isLiked": false
       },
@@ -9316,8 +9316,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 14,
           "isOnline": true
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.092Z",
+        "text": "Really love the texture and grain on this grade",
+        "createdAt": "2026-11-11T12:39:00.000Z",
         "likesCount": 69,
         "isLiked": false
       }
@@ -9372,8 +9372,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": false
         },
-        "text": "Bhai background music kaunsa hai? Pure goosebumps 🔥",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T20:12:00.000Z",
         "likesCount": 396,
         "isLiked": false
       },
@@ -9392,8 +9392,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 31,
           "isOnline": false
         },
-        "text": "Next level control bro, but safety first always! ⚠️",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-14T15:42:00.000Z",
         "likesCount": 413,
         "isLiked": false
       },
@@ -9412,8 +9412,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 21,
           "isOnline": true
         },
-        "text": "This stunt looks so unreal in slow-mo! 💯",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T07:42:00.000Z",
         "likesCount": 20,
         "isLiked": false
       },
@@ -9432,8 +9432,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 52,
           "isOnline": false
         },
-        "text": "Bhai Nagaur ka swag hi alag hai 💪",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Great job keeping the subject centered throughout",
+        "createdAt": "2026-11-13T15:42:00.000Z",
         "likesCount": 282,
         "isLiked": false
       }
@@ -9489,8 +9489,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 26,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "The mood in this sequence is cinematic",
+        "createdAt": "2026-11-14T21:25:00.000Z",
         "likesCount": 220,
         "isLiked": false
       },
@@ -9509,8 +9509,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 44,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-14T16:55:00.000Z",
         "likesCount": 285,
         "isLiked": false
       },
@@ -9529,8 +9529,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 59,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Color grading is spot on—love the warm tones",
+        "createdAt": "2026-11-14T08:55:00.000Z",
         "likesCount": 619,
         "isLiked": false
       },
@@ -9549,8 +9549,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 33,
           "isOnline": false
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Need a breakdown of your lighting setup for this!",
+        "createdAt": "2026-11-13T16:55:00.000Z",
         "likesCount": 38,
         "isLiked": false
       },
@@ -9569,8 +9569,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 20,
           "isOnline": false
         },
-        "text": "Saved to my favorites collection immediately! 📌",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "The framing and depth of field here are unreal",
+        "createdAt": "2026-11-12T16:15:00.000Z",
         "likesCount": 232,
         "isLiked": false
       },
@@ -9589,8 +9589,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": false
         },
-        "text": "Keep going king/queen, consistency is paying off! 🌟",
-        "createdAt": "2026-11-07T01:31:48.092Z",
+        "text": "The natural lighting in this shot works so well",
+        "createdAt": "2026-11-11T13:35:00.000Z",
         "likesCount": 353,
         "isLiked": false
       }
@@ -9646,8 +9646,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 16,
           "isOnline": true
         },
-        "text": "The algorithm finally brought me to the good side of Pulse! ✨",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-14T21:08:00.000Z",
         "likesCount": 509,
         "isLiked": false
       },
@@ -9666,8 +9666,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 32,
           "isOnline": true
         },
-        "text": "Deserves 10 Million likes easily, so well made! 💯",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Love the contrast between the highlights and shadows",
+        "createdAt": "2026-11-14T16:38:00.000Z",
         "likesCount": 310,
         "isLiked": false
       },
@@ -9686,8 +9686,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 41,
           "isOnline": true
         },
-        "text": "Bro dropped a masterpiece casually on our feed 🔥",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "Really strong visual rhythm from start to finish",
+        "createdAt": "2026-11-14T08:38:00.000Z",
         "likesCount": 115,
         "isLiked": false
       },
@@ -9706,8 +9706,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 37,
           "isOnline": true
         },
-        "text": "Can we talk about how good the lighting is here?!",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Everything from the typography to the cut feels pro",
+        "createdAt": "2026-11-13T16:38:00.000Z",
         "likesCount": 593,
         "isLiked": false
       }
@@ -9763,8 +9763,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 61,
           "isOnline": false
         },
-        "text": "Relatable max bro 😂💀",
-        "createdAt": "2026-11-07T07:28:48.092Z",
+        "text": "Super inspiring work—keep these coming!",
+        "createdAt": "2026-11-14T20:51:00.000Z",
         "likesCount": 628,
         "isLiked": false
       },
@@ -9783,8 +9783,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 35,
           "isOnline": true
         },
-        "text": "Why is this literally me every single morning 😭",
-        "createdAt": "2026-11-07T07:17:48.092Z",
+        "text": "Watching on repeat—great pacing",
+        "createdAt": "2026-11-14T16:21:00.000Z",
         "likesCount": 352,
         "isLiked": false
       },
@@ -9803,8 +9803,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 22,
           "isOnline": false
         },
-        "text": "Last 3 seconds completely killed me hahaha 🤣",
-        "createdAt": "2026-11-07T06:53:48.092Z",
+        "text": "That transition at the 0:04 mark was seamless",
+        "createdAt": "2026-11-14T08:21:00.000Z",
         "likesCount": 168,
         "isLiked": false
       },
@@ -9823,8 +9823,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 55,
           "isOnline": true
         },
-        "text": "Bro woke up and chose pure entertainment 👏",
-        "createdAt": "2026-11-07T06:16:48.092Z",
+        "text": "Pure energy and visual storytelling",
+        "createdAt": "2026-11-13T16:21:00.000Z",
         "likesCount": 856,
         "isLiked": false
       },
@@ -9843,8 +9843,8 @@ export const SCRAPED_VIRAL_REELS: Post[] = [
           "postsCount": 17,
           "isOnline": true
         },
-        "text": "Showed this to my roommate, we cannot stop laughing 💀",
-        "createdAt": "2026-11-07T04:31:48.092Z",
+        "text": "What frame rate did you export this in? So smooth",
+        "createdAt": "2026-11-12T15:41:00.000Z",
         "likesCount": 781,
         "isLiked": false
       }
