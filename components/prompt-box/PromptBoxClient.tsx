@@ -14,8 +14,6 @@ import {
   ArrowUpRight,
   Film,
   Box,
-  Palette,
-  Bot,
   Layers,
   Terminal,
   Share2,
@@ -23,37 +21,35 @@ import {
   Play,
   Zap,
   Command,
+  Clapperboard,
+  BadgeCheck,
 } from 'lucide-react';
 import { PROMPT_ITEMS, PromptCategory, PromptItem } from './promptData';
 
 const CATEGORIES: PromptCategory[] = [
   'All',
   'Video & Reels',
-  '3D & WebGL',
-  'UI/UX & Design',
-  'AI Automation',
+  'Commercials & Ads',
+  '3D & Animation',
 ];
 
 const TICKER_ITEMS = [
-  'VEO 3.1 CINEMATIC 9:16',
-  'KLING 3.0 MOTION CONTROL',
-  'GEMINI 4 CARBON 3D WEBGL',
-  'FIGMA AUTO-LAYOUT TOKENS',
-  'AWS BEDROCK GUARDRAILS',
-  'RUNWAY GEN-4 DIRECTOR MODE',
-  'PREMIERE PRO 26.0 AI',
+  'ALL 9 PROMPTS TESTED ON SEEDANCE',
+  '9:16 VERTICAL REELS & SHORTS',
+  'MULTI-SCENE CINEMATIC PROMPTS',
+  '1-CLICK COPY & DEPLOY',
+  'COMMERCIAL STORYBOARDS & 3D',
+  'ZERO-FLUFF PRODUCTION WORKFLOWS',
 ];
 
 function getCategoryIcon(category: Exclude<PromptCategory, 'All'>) {
   switch (category) {
     case 'Video & Reels':
       return <Film className="w-3.5 h-3.5" />;
-    case '3D & WebGL':
+    case 'Commercials & Ads':
+      return <Clapperboard className="w-3.5 h-3.5" />;
+    case '3D & Animation':
       return <Box className="w-3.5 h-3.5" />;
-    case 'UI/UX & Design':
-      return <Palette className="w-3.5 h-3.5" />;
-    case 'AI Automation':
-      return <Bot className="w-3.5 h-3.5" />;
   }
 }
 
@@ -168,8 +164,8 @@ export default function PromptBoxClient() {
             className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.22em] mb-6 backdrop-blur-xl"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <Terminal className="w-3.5 h-3.5" />
-            Celoris Prompt Box · Live Vault
+            <BadgeCheck className="w-3.5 h-3.5" />
+            Celoris Prompt Box · All Prompts Tested on Seedance
           </motion.div>
 
           <motion.h1
@@ -190,7 +186,7 @@ export default function PromptBoxClient() {
             transition={{ delay: 0.25, duration: 0.6 }}
             className="text-xs sm:text-sm md:text-base text-slate-400 max-w-2xl mx-auto mb-9 font-medium leading-relaxed"
           >
-            Every cinematic Reel, 3D WebGL micro-world, and AI pipeline from our LinkedIn &amp; Instagram videos—engineered with scene rules, camera specs, and 1-click copy.
+            Every video clip and prompt below is <strong className="text-emerald-400 font-bold">verified and tested on Seedance</strong>—engineered with multi-scene directions, camera specs, and 1-click copy.
           </motion.p>
 
           {/* Glassmorphic Command Search Dock (Matching CommandDock) */}
