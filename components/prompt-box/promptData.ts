@@ -1,6 +1,8 @@
 export type PromptCategory =
   | 'All'
   | 'Video & Reels'
+  | 'Long-Form Video'
+  | 'Image Prompts'
   | 'Commercials & Ads'
   | '3D & Animation';
 
@@ -11,7 +13,7 @@ export interface PromptItem {
   modelTag: string;
   aspectRatio?: string;
   previewImage: string;
-  videoUrl: string;
+  videoUrl?: string;
   shortSummary: string;
   promptText: string;
   proTip: string;
