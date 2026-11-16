@@ -28,7 +28,7 @@ export const PROMPT_ITEMS: PromptItem[] = [
     modelTag: 'Tested on Seedance',
     aspectRatio: '9:16 Vertical',
     previewImage: '/videoediting.png',
-    videoUrl: '/clips/clip01.mp4',
+    videoUrl: '/api/social/media/promptbox_clip01.mp4',
     shortSummary:
       'Hyper-realistic 19s sci-fi short: a woman beneath N Seoul Tower activates a massive rocket launch tracked from street level to an airplane window.',
     featured: true,
@@ -72,7 +72,7 @@ Maintain the same woman's facial features, hairstyle, and clothing. Keep the roc
     modelTag: 'Tested on Seedance',
     aspectRatio: '15s Commercial',
     previewImage: '/content-creation-cover.png',
-    videoUrl: '/clips/clip02.mp4',
+    videoUrl: '/api/social/media/promptbox_clip02.mp4',
     shortSummary:
       'Agency-grade 2×5 luxury chocolate commercial storyboard across 10 macro scenes—from cocoa dust reveal to molten chocolate silk pour.',
     proTip:
@@ -104,7 +104,7 @@ Presentation style: Professional Hollywood commercial storyboard, advertising ag
     modelTag: 'Tested on Seedance',
     aspectRatio: '9:16 · 15s',
     previewImage: '/blender-course-cover.png',
-    videoUrl: '/clips/clip03.mp4',
+    videoUrl: '/api/social/media/promptbox_clip03.mp4',
     shortSummary:
       'Heartwarming 15-second 3D animated comedy in a sunlit kitchen where a mischievous toddler spills an entire bag of flour.',
     proTip:
@@ -120,7 +120,7 @@ Presentation style: Professional Hollywood commercial storyboard, advertising ag
     modelTag: 'Tested on Seedance',
     aspectRatio: '35mm Anamorphic',
     previewImage: '/photolite-studio-preview.png',
-    videoUrl: '/clips/clip04.mp4',
+    videoUrl: '/api/social/media/promptbox_clip04.mp4',
     shortSummary:
       'Ray-traced glass macro perfume commercial set on a sun-drenched Mediterranean coastal cliff with slow-motion mist & olive groves.',
     proTip:
@@ -136,7 +136,7 @@ Presentation style: Professional Hollywood commercial storyboard, advertising ag
     modelTag: 'Tested on Seedance',
     aspectRatio: '9:16 · 30s',
     previewImage: '/blog-video-editor-india-2026.png',
-    videoUrl: '/clips/clip05.mp4',
+    videoUrl: '/api/social/media/promptbox_clip05.mp4',
     shortSummary:
       '30-second ultra-photorealistic drone journey along the River Thames transitioning from bright daylight through golden hour to night.',
     proTip:
@@ -182,7 +182,7 @@ NEGATIVE PROMPT: NO fantasy city, NO distorted landmarks, NO warped Tower Bridge
     modelTag: 'Tested on Seedance',
     aspectRatio: '9:16 · 30s Loop',
     previewImage: '/photolite-studio-preview.png',
-    videoUrl: '/clips/clip06.mp4',
+    videoUrl: '/api/social/media/promptbox_clip06.mp4',
     shortSummary:
       'Surreal 30s Victorian Gothic digital collage with continuous physical paper-tear, moth swarm, and balloon-pop transitions.',
     proTip:
@@ -213,7 +213,7 @@ AUDIO: Eerie vintage Halloween waltz with synchronized dry Foley (paper rips, wi
     modelTag: 'Tested on Seedance',
     aspectRatio: '15s Action',
     previewImage: '/web-dev-bootcamp-feature.png',
-    videoUrl: '/clips/clip07.mp4',
+    videoUrl: '/api/social/media/promptbox_clip07.mp4',
     shortSummary:
       'High-energy 15s LEGO minifigure sci-fi shootout in a dark brick parking garage synced frame-for-frame to a hip-hop beat.',
     proTip:
@@ -245,7 +245,7 @@ STYLE: Stud details visible on all surfaces, plastic sheen, hard edge shadows, U
     modelTag: 'Tested on Seedance',
     aspectRatio: '9:16 · 17s',
     previewImage: '/videoediting.png',
-    videoUrl: '/clips/clip08.mp4',
+    videoUrl: '/api/social/media/promptbox_clip08.mp4',
     shortSummary:
       'Ultra-realistic 17-second food commercial: washing greens, precision knife chopping, blue-flame wok searing, and plated macro finish.',
     proTip:
@@ -267,7 +267,7 @@ STYLE: Ultra-photorealistic live-action food commercial, authentic Asian home co
     modelTag: 'Tested on Seedance',
     aspectRatio: 'One-Take Shot',
     previewImage: '/agentic-ai-systems-cover.png',
-    videoUrl: '/clips/clip09.mp4',
+    videoUrl: '/api/social/media/promptbox_clip09.mp4',
     shortSummary:
       'Continuous single-take crane pan over downtown Cairo minarets at dawn dropping into a high-speed Noir street crash zoom.',
     proTip:
