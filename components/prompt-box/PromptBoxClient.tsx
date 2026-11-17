@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { PROMPT_ITEMS, PromptCategory, PromptItem } from './promptData';
 
-const CATEGORIES: PromptCategory[] = [
+const ALL_CATEGORIES: PromptCategory[] = [
   'All',
   'Video & Reels',
   'Commercials & Ads',
@@ -33,6 +33,41 @@ const CATEGORIES: PromptCategory[] = [
   'Long-Form Video',
   'Image Prompts',
 ];
+
+function SmartCardVideo({ src }: { src: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.play().catch(() => {});
+        } else {
+          el.pause();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      preload="metadata"
+      loop
+      muted
+      playsInline
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+    />
+  );
+}
 
 function getCategoryIcon(category: Exclude<PromptCategory, 'All'>) {
   switch (category) {
@@ -67,6 +102,14 @@ export default function PromptBoxClient() {
       if (found) setActivePrompt(found);
     }
   }, [searchParams]);
+
+  const visibleCategories = useMemo(
+    () =>
+      ALL_CATEGORIES.filter(
+        (cat) => cat === 'All' || PROMPT_ITEMS.some((item) => item.category === cat)
+      ),
+    []
+  );
 
   const filteredPrompts = useMemo(() => {
     return PROMPT_ITEMS.filter((item) => {
@@ -166,7 +209,7 @@ export default function PromptBoxClient() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
           {/* Left Segmented Pill Tabs */}
           <div className="flex items-center gap-1.5 p-1 rounded-full bg-white/[0.06] border border-white/10 overflow-x-auto no-scrollbar max-w-full">
-            {CATEGORIES.map((category) => {
+            {visibleCategories.map((category) => {
               const active = selectedCategory === category;
               return (
                 <button
@@ -284,15 +327,7 @@ export default function PromptBoxClient() {
                   >
                     {/* Full-Bleed Video / Image */}
                     {item.videoUrl ? (
-                      <video
-                        src={item.videoUrl}
-                        poster={item.previewImage}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
+                      <SmartCardVideo src={item.videoUrl} />
                     ) : (
                       <Image
                         src={item.previewImage}
@@ -347,22 +382,13 @@ export default function PromptBoxClient() {
                         </div>
                       </div>
 
-                      {/* Mini Preview Thumbnail Badge (Bottom-Right Corner like Reference) */}
-                      <div className="relative w-9 h-12 rounded-lg overflow-hidden border border-white/30 shadow-lg shrink-0 bg-neutral-900">
-                        <Image
-                          src={item.previewImage}
-                          alt={item.title}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                          {item.videoUrl ? (
-                            <Play className="w-3 h-3 text-white fill-white opacity-90" />
-                          ) : (
-                            <ImageIcon className="w-3 h-3 text-white opacity-90" />
-                          )}
-                        </div>
+                      {/* Clean Frosted Media Type Badge (Bottom-Right Corner) */}
+                      <div className="w-8 h-8 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0 shadow-lg group-hover:bg-[#d9ff00] group-hover:border-[#d9ff00] group-hover:text-black text-white transition-colors">
+                        {item.videoUrl ? (
+                          <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                        ) : (
+                          <ImageIcon className="w-3.5 h-3.5" />
+                        )}
                       </div>
                     </div>
                   </motion.article>

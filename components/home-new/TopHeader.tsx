@@ -171,6 +171,21 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                             </DropdownMenuItem>
 
                             <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
+                                <Link href="/prompt-box" className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                        <Lightbulb className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">Prompt Box</span>
+                                            <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">Seedance</span>
+                                        </div>
+                                        <p className="text-[10px] text-neutral-400 truncate">Copy-paste AI video &amp; image prompts</p>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild className="rounded-xl p-2.5 hover:bg-white/[0.06] cursor-pointer focus:bg-white/[0.06] transition-colors">
                                 <Link href="/photolite" className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
                                         <ImageIcon className="w-4 h-4" />
@@ -632,6 +647,19 @@ export function TopHeader({ headerContent }: { headerContent?: React.ReactNode }
                                             <div className="flex-1">
                                                 <span className="text-sm font-bold text-white block">Video Studio</span>
                                                 <span className="text-[10px] text-neutral-400">4K AI Editor</span>
+                                            </div>
+                                        </Link>
+                                        <Link
+                                            href="/prompt-box"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-colors"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                                <Lightbulb className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <span className="text-sm font-bold text-white block">Prompt Box</span>
+                                                <span className="text-[10px] text-neutral-400">Seedance-Tested Prompts</span>
                                             </div>
                                         </Link>
                                         <Link
