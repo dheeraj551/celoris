@@ -232,9 +232,13 @@ export default function PromptBoxClient() {
               </button>
             )}
 
-            <div className="px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-xs font-semibold text-emerald-400 flex items-center gap-1.5 whitespace-nowrap">
-              <BadgeCheck className="w-3.5 h-3.5" />
-              Tested on Seedance
+            <div className="px-3.5 py-1.5 rounded-full bg-black border border-white/15 flex items-center gap-2 shrink-0 shadow-sm">
+              <span className="text-[10px] font-medium text-neutral-400">Tested on</span>
+              <img
+                src="/seedance-25-logo.png"
+                alt="Seedance 2.5"
+                className="h-3.5 w-auto object-contain"
+              />
             </div>
           </div>
         </div>
