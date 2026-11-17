@@ -294,6 +294,7 @@ export default function PromptBoxClient() {
                         src={item.previewImage}
                         alt={item.title}
                         fill
+                        unoptimized
                         className="object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     )}
@@ -348,10 +349,15 @@ export default function PromptBoxClient() {
                           src={item.previewImage}
                           alt={item.title}
                           fill
+                          unoptimized
                           className="object-cover"
                         />
                         <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                          <Play className="w-3 h-3 text-white fill-white opacity-90" />
+                          {item.videoUrl ? (
+                            <Play className="w-3 h-3 text-white fill-white opacity-90" />
+                          ) : (
+                            <ImageIcon className="w-3 h-3 text-white opacity-90" />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -399,6 +405,7 @@ export default function PromptBoxClient() {
                       src={activePrompt.previewImage}
                       alt={activePrompt.title}
                       fill
+                      unoptimized
                       className="object-contain"
                     />
                   )}
