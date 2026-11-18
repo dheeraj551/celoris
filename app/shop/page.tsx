@@ -15,7 +15,6 @@ const serif = Cormorant_Garamond({
 })
 const sans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
   variable: '--font-drape-sans',
   display: 'swap',
 })
