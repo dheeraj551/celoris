@@ -25,6 +25,21 @@ export const metadata: Metadata = {
     url: 'https://celorisdesigns.com/prompt-box',
     siteName: 'Celoris',
     type: 'website',
+    images: [
+      {
+        url: 'https://celorisdesigns.com/prompt-box-og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Prompt Box — AI Prompt Studio by Celoris',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Celoris Prompt Box — AI Prompt Studio',
+    description:
+      'Copy-paste Seedance-tested video and 8K image prompts with real output previews.',
+    images: ['https://celorisdesigns.com/prompt-box-og.png'],
   },
 };
 
