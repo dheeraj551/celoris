@@ -68,6 +68,22 @@ CONSISTENCY RULES:
 Maintain the same woman's facial features, hairstyle, and clothing. Keep the rocket design consistent across every scene. Ensure realistic rocket movement, continuous smoke trails, believable lighting, and seamless transitions. No cartoon effects, no distorted buildings, no extra limbs, no unwanted text, no logos, and no watermarks.`,
   },
   {
+    id: 'gothic-coquette-studio-flash-editorial',
+    title: 'Gothic Coquette Studio Flash Beauty Editorial',
+    category: 'Video & Reels',
+    modelTag: 'Tested on Seedance',
+    aspectRatio: '35mm · 9:16',
+    previewImage: '/api/social/media/promptbox_img01.jpg',
+    videoUrl: '/api/social/media/promptbox_clip10.mp4',
+    shortSummary:
+      'Dreamy 35mm fashion editorial portrait with neon blue/lavender lighting, subtle pearl choker gesture, and a sharp studio flash freeze.',
+    proTip:
+      'Tested on Seedance. Adding explicit camera physics ("static 35mm lens, shallow depth of field, harsh white flash overexposing highlights") creates authentic editorial fashion motion.',
+    relatedLinkLabel: 'Open PhotoLite AI Studio',
+    relatedLinkHref: '/photolite',
+    promptText: `A young East Asian woman in an elegant black gothic coquette dress with layered black tulle skirt and sheer polka-dot opera gloves stands against a blue and lavender gradient studio background, soft neon blue and purple light washing over her porcelain skin. She shifts her weight subtly, tilts her chin down slightly, raises one gloved hand to gently touch her pearl choker, then lifts her gaze directly into the camera with a calm melancholic expression — lips softly closed, lashes still — holding the perfect pose as the studio flash fires with a harsh white burst of light that briefly overexposes her highlights, freezing her in a dreamy cinematic beauty editorial moment. Camera is static, 35mm lens, shallow depth of field, soft focus edges.`,
+  },
+  {
     id: 'kitkat-luxury-storyboard',
     title: 'KitKat "The Art of the Snap" 10-Frame Commercial Board',
     category: 'Commercials & Ads',
