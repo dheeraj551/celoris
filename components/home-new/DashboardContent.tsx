@@ -23,6 +23,7 @@ import TestimonialsDisplay from "@/components/TestimonialsDisplay";
 
 import { VideoStudioFeature } from './VideoStudioFeature';
 import { PhotoLiteFeature } from './PhotoLiteFeature';
+import { PromptBoxFeature } from './PromptBoxFeature';
 import { PolyVaultFeature } from './PolyVaultFeature';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { CommandDock } from './CommandDock';
@@ -736,6 +737,9 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
 
             {/* Feature Sections */}
             <div className="w-full flex flex-col gap-12 items-center mb-24">
+                <div className="w-full">
+                    <PromptBoxFeature />
+                </div>
                 <div className="w-full">
                     <VideoStudioFeature />
                 </div>
