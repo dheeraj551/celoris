@@ -12,7 +12,7 @@ const CelorisPhoneOS = dynamic(
 
 // The phone companion is for visitors browsing the public site — homepage,
 // courses, pricing, etc. Hide it on studio workspaces, admin panels, and dedicated interactive pages (teach & job-center) which have their own mobile app showcase.
-const HIDDEN_PREFIXES = ["/dashboard", "/celo-ai", "/admin", "/video-studio", "/image-studio", "/chat", "/shop", "/teach", "/job-center"];
+const HIDDEN_PREFIXES = ["/dashboard", "/celo-ai", "/admin", "/video-studio", "/image-studio", "/chat", "/teach", "/job-center"];
 
 export function SupportBotGate() {
   const pathname = usePathname();
