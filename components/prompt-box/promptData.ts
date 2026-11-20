@@ -84,6 +84,22 @@ Maintain the same woman's facial features, hairstyle, and clothing. Keep the roc
     promptText: `A young East Asian woman in an elegant black gothic coquette dress with layered black tulle skirt and sheer polka-dot opera gloves stands against a blue and lavender gradient studio background, soft neon blue and purple light washing over her porcelain skin. She shifts her weight subtly, tilts her chin down slightly, raises one gloved hand to gently touch her pearl choker, then lifts her gaze directly into the camera with a calm melancholic expression — lips softly closed, lashes still — holding the perfect pose as the studio flash fires with a harsh white burst of light that briefly overexposes her highlights, freezing her in a dreamy cinematic beauty editorial moment. Camera is static, 35mm lens, shallow depth of field, soft focus edges.`,
   },
   {
+    id: 'ya-hala-coffee-slow-motion-freeze-ad',
+    title: 'Ya Hala Coffee Mid-Air Slow-Motion Freeze Commercial',
+    category: 'Commercials & Ads',
+    modelTag: 'Tested on Seedance',
+    aspectRatio: '9:16 Commercial',
+    previewImage: '/api/social/media/promptbox_img04.jpg',
+    videoUrl: '/api/social/media/promptbox_clip11.mp4',
+    shortSummary:
+      'High-octane golden-hour NYC sidewalk commercial: iced coffee, flyer, and phone freeze mid-air in slow-motion liquid splashes.',
+    proTip:
+      'Tested on Seedance. Swap "YA HALA COFFEE - FALL MENU" and the caller ID ("BOSS") for any café, beverage, or D2C product brand.',
+    relatedLinkLabel: 'Apply: Creative Video Editor',
+    relatedLinkHref: '/job-center',
+    promptText: `A stylish young woman walking confidently down a busy New York city sidewalk during golden hour, wearing a dark fitted t-shirt, relaxed dark jeans, and sneakers, talking on her smartphone and holding an iced coffee and a cafe menu, with a golden retriever dog walking on a leash beside her; suddenly, she trips and drops her phone, iced coffee cup, and a "YA HALA COFFEE - FALL MENU" flyer mid-stride, causing the items to suspend mid-air in slow motion with magical liquid splashes and floating autumn leaves, transitioning to a macro close-up of the branded coffee cup and a smartphone displaying an incoming call from "BOSS" before everything drops back to the pavement in a dynamic, high-octane commercial cinematic style.`,
+  },
+  {
     id: 'kitkat-luxury-storyboard',
     title: 'KitKat "The Art of the Snap" 10-Frame Commercial Board',
     category: 'Commercials & Ads',
