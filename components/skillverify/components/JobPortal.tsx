@@ -1,19 +1,20 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
+import { motion, AnimatePresence } from 'framer-motion';
+import {
   ShieldCheck,
   Lock,
   CheckCircle2,
-  IndianRupee,
   MapPin,
-  Briefcase, 
-  Layers, 
+  Briefcase,
   Award,
-  ChevronRight,
-  TrendingUp,
+  ArrowUpRight,
   AlertCircle,
   PlusCircle,
-  Filter,
-  ChevronDown
+  Search,
+  X,
+  Clock,
+  SlidersHorizontal,
+  Zap,
 } from 'lucide-react';
 import { JobListing, JobTier, UserProfile } from '../types';
 import { AnimatedTooltip } from './AnimatedTooltip';
@@ -37,24 +38,39 @@ export const JobPortal: React.FC<JobPortalProps> = ({
   onSelectJob,
   onLaunchExamForBadge,
 }) => {
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('All');
   const [selectedWorkMode, setSelectedWorkMode] = useState<string>('All');
-  const [minSalary, setMinSalary] = useState<number>(0);
   const [unlockedOnly, setUnlockedOnly] = useState<boolean>(false);
   const [postProjectOpen, setPostProjectOpen] = useState<boolean>(false);
 
-  // /job-center?post=1 (linked from the public Job Center page) opens the
-  // Post a Project form straight away.
+  // /job-center?post=1 opens the Post a Project modal directly
   useEffect(() => {
     try {
-      if (new URLSearchParams(window.location.search).get('post') === '1') setPostProjectOpen(true);
+      if (new URLSearchParams(window.location.search).get('post') === '1') {
+        setPostProjectOpen(true);
+      }
     } catch {}
   }, []);
 
-  const industries = ['All', 'AI / Machine Learning', 'Cloud & Infrastructure', 'FinTech', 'Cybersecurity', 'HealthTech', 'SaaS / Web Platforms', 'Creative & Marketing'];
+  // Dynamically derive industries from real jobs in the active tier
+  const industries = useMemo(() => {
+    const tierJobs = jobs.filter((j) => j.tier === selectedTier);
+    const unique = Array.from(
+      new Set(tierJobs.map((j) => j.industry).filter(Boolean))
+    );
+    return ['All', ...unique];
+  }, [jobs, selectedTier]);
+
+  // Reset industry filter if it doesn't exist when switching tiers
+  useEffect(() => {
+    if (selectedIndustry !== 'All' && !industries.includes(selectedIndustry)) {
+      setSelectedIndustry('All');
+    }
+  }, [industries, selectedIndustry]);
+
   const workModes = ['All', 'Remote', 'Hybrid', 'On-site'];
 
-  // Match calculation for a job based on user skills
   const calculateMatchScore = (job: JobListing) => {
     if (!job.requiredSkills || job.requiredSkills.length === 0) return 85;
     const matching = job.requiredSkills.filter((req) =>
@@ -64,28 +80,18 @@ export const JobPortal: React.FC<JobPortalProps> = ({
     return Math.max(35, score);
   };
 
-  // Filtered jobs list
   const filteredJobs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
     return jobs.filter((job) => {
-      // Tier match
       if (job.tier !== selectedTier) return false;
+      if (selectedIndustry !== 'All' && job.industry !== selectedIndustry) return false;
+      if (selectedWorkMode !== 'All' && job.workMode !== selectedWorkMode) return false;
 
-      // Industry match
-      if (selectedIndustry !== 'All' && job.industry !== selectedIndustry) {
-        return false;
+      if (q) {
+        const hay = `${job.title} ${job.company} ${job.industry} ${job.description} ${(job.requiredSkills || []).join(' ')}`.toLowerCase();
+        if (!hay.includes(q)) return false;
       }
 
-      // Work mode match
-      if (selectedWorkMode !== 'All' && job.workMode !== selectedWorkMode) {
-        return false;
-      }
-
-      // Min Salary match
-      if (job.minSalaryNum < minSalary) {
-        return false;
-      }
-
-      // Unlocked Only filter for Certified tier
       if (unlockedOnly && job.tier === 'certified') {
         const hasLevel = user.level >= job.minLevelRequired;
         const hasBadges = job.requiredBadges.every((rb) =>
@@ -96,56 +102,66 @@ export const JobPortal: React.FC<JobPortalProps> = ({
 
       return true;
     });
-  }, [jobs, selectedTier, selectedIndustry, selectedWorkMode, minSalary, unlockedOnly, user]);
+  }, [jobs, selectedTier, selectedIndustry, selectedWorkMode, searchQuery, unlockedOnly, user]);
 
   const publicCount = jobs.filter((j) => j.tier === 'public').length;
   const certifiedCount = jobs.filter((j) => j.tier === 'certified').length;
 
   return (
-    <div className="space-y-6 select-none">
-      
-      {/* ------------------------------------------------------------- */}
-      {/* PORTAL SELECTOR TABS & BANNER */}
-      {/* ------------------------------------------------------------- */}
-      <div className="p-5 sm:p-7 rounded-2xl bg-[#0d1017]/95 backdrop-blur-2xl border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.6)] space-y-5">
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Job Center Marketplace
+    <div className="space-y-8 select-none pb-12">
+      {/* ===================================================================== */}
+      {/* EDITORIAL STUDIO HERO & DUAL-TIER SWITCHER                            */}
+      {/* ===================================================================== */}
+      <section className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] bg-[#0a0c12]/90 backdrop-blur-2xl p-6 sm:p-9 shadow-[0_24px_70px_rgba(0,0,0,0.65)]">
+        {/* Subtle Ambient Glow */}
+        <div className="pointer-events-none absolute -top-24 right-10 w-80 h-80 rounded-full bg-emerald-500/12 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-24 left-10 w-72 h-72 rounded-full bg-[#d9ff00]/8 blur-[100px]" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Celoris Talent Network
+            </div>
+
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-[1.08]">
+                Get Certified.{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d9ff00] via-emerald-300 to-teal-400">
+                  Get Hired Faster.
+                </span>
               </h1>
               <AnimatedTooltip
                 id="tooltip-portal-desc"
                 title="Dual-Tier Architecture"
-                content="Switch between open public jobs or anti-cheat verified certified roles (₹150k - ₹340k+). Verified roles offer higher salaries and skip initial technical screens!"
-                badge="Platform Innovation"
+                content="Switch between open public roles or anti-cheat verified certified roles. Verified badge holders skip initial screening and get direct hiring manager access."
+                badge="How It Works"
                 showPulse
               />
             </div>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Personalized alerts & opportunities matched with your validated skill achievements.
+
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-xl">
+              Verified freelance, retainer, and full-time creative &amp; engineering roles—matched directly to your passed skill assessments.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 shrink-0">
-            {/* Post a Project: opens form modal */}
+          {/* Right Controls: Post a Project + Animated Dual-Tier Switcher */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={() => {
                 soundFx.playClick();
                 setPostProjectOpen(true);
               }}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition-all shadow-xs"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/15 bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-bold transition-all cursor-pointer"
             >
-              <PlusCircle className="w-4 h-4" />
+              <PlusCircle className="w-4 h-4 text-[#d9ff00]" />
               <span>Post a Project</span>
             </button>
 
-            {/* DUAL PORTAL SWITCHER BUTTONS */}
-            <div 
+            <div
               id="tour-portal-toggle"
-              className="flex items-center p-1 bg-[#131620] rounded-xl border border-white/10 shrink-0 shadow-inner"
+              className="flex items-center p-1 bg-black/70 rounded-full border border-white/10 shadow-inner"
             >
               <button
                 id="tab-public-jobs"
@@ -154,16 +170,29 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                   soundFx.playClick();
                   onSelectTier('public');
                 }}
-                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-                  selectedTier === 'public'
-                    ? 'bg-white/15 text-white shadow-xs font-bold'
-                    : 'text-slate-400 hover:text-white'
+                className={`relative px-4 py-2 rounded-full text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer ${
+                  selectedTier === 'public' ? 'text-black' : 'text-neutral-400 hover:text-white'
                 }`}
               >
-                <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Public Jobs</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
-                  {publicCount}
+                {selectedTier === 'public' && (
+                  <motion.span
+                    layoutId="jobPortalTierPill"
+                    transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                    className="absolute inset-0 rounded-full bg-white shadow-sm"
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5" />
+                  <span>Public Jobs</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                      selectedTier === 'public'
+                        ? 'bg-black/10 text-black'
+                        : 'bg-white/10 text-neutral-300'
+                    }`}
+                  >
+                    {publicCount}
+                  </span>
                 </span>
               </button>
 
@@ -174,18 +203,29 @@ export const JobPortal: React.FC<JobPortalProps> = ({
                   soundFx.playClick();
                   onSelectTier('certified');
                 }}
-                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-                  selectedTier === 'certified'
-                    ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-extrabold shadow-[0_0_15px_rgba(52,211,153,0.35)]'
-                    : 'text-slate-400 hover:text-white'
+                className={`relative px-4 py-2 rounded-full text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer ${
+                  selectedTier === 'certified' ? 'text-black' : 'text-neutral-400 hover:text-white'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Certified Roles</span>
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                  selectedTier === 'certified' ? 'bg-black text-[#10b981]' : 'bg-emerald-500/20 text-emerald-400'
-                }`}>
-                  {certifiedCount} • ₹150k+
+                {selectedTier === 'certified' && (
+                  <motion.span
+                    layoutId="jobPortalTierPill"
+                    transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                    className="absolute inset-0 rounded-full bg-[#d9ff00] shadow-[0_0_20px_rgba(217,255,0,0.3)]"
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Certified Roles</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                      selectedTier === 'certified'
+                        ? 'bg-black/15 text-black'
+                        : 'bg-emerald-500/20 text-emerald-400'
+                    }`}
+                  >
+                    {certifiedCount}
+                  </span>
                 </span>
               </button>
             </div>
@@ -194,276 +234,331 @@ export const JobPortal: React.FC<JobPortalProps> = ({
 
         <PostProjectModal open={postProjectOpen} onClose={() => setPostProjectOpen(false)} />
 
-        {/* Certified Tier Explanation Callout */}
-        {selectedTier === 'certified' && (
-          <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-[#0e1620] to-[#0d1017] border border-emerald-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-300">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400">
-                <Award className="w-4.5 h-4.5" />
+        {/* Certified Portal Strip */}
+        <AnimatePresence>
+          {selectedTier === 'certified' && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="relative z-10 mt-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/50 via-black/40 to-black/60 border border-emerald-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#d9ff00]/15 border border-[#d9ff00]/30 flex items-center justify-center shrink-0 text-[#d9ff00]">
+                  <Award className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="font-bold text-white block text-xs sm:text-sm">
+                    Certified High-Priority Portal
+                  </span>
+                  <span className="text-[11px] text-neutral-400">
+                    Clear a quick 10-minute skill exam to earn your verified badge and apply directly to clients.
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="font-bold text-white block text-xs sm:text-sm">Certified High-End Portal (₹150k - ₹340k+)</span>
-                <span className="text-[11px] text-slate-400">
-                  Direct recruiter access & fast-track hiring for candidates holding anti-cheat verified badges.
+              <div className="flex items-center gap-2.5 shrink-0">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold font-mono">
+                  {user.verifiedBadges.length} Active {user.verifiedBadges.length === 1 ? 'Badge' : 'Badges'}
                 </span>
+                <label className="flex items-center gap-1.5 cursor-pointer font-semibold text-neutral-300 text-xs bg-white/[0.05] hover:bg-white/[0.08] px-3 py-1.5 rounded-full border border-white/10 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={unlockedOnly}
+                    onChange={(e) => setUnlockedOnly(e.target.checked)}
+                    className="rounded border-white/20 accent-[#d9ff00] w-3.5 h-3.5"
+                  />
+                  <span>Unlocked Only</span>
+                </label>
               </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 text-[11px]">
-              <span className="text-slate-400 font-medium">Your Badges:</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold font-mono shadow-xs">
-                {user.verifiedBadges.length} Active
-              </span>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
 
-        {/* ------------------------------------------------------------- */}
-        {/* FILTER BAR WITH DROPDOWNS & UNLOCKED TOGGLE */}
-        {/* ------------------------------------------------------------- */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/[0.08]">
-          
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mr-1">
-              <Filter className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="hidden sm:inline">Filter:</span>
-            </div>
-
-            {/* Industry Filter Dropdown */}
-            <div className="relative">
-              <select
-                value={selectedIndustry}
-                onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="appearance-none bg-[#131620] hover:bg-[#181c28] border border-white/10 rounded-xl px-3 py-1.5 pr-7 text-xs text-slate-200 font-medium focus:outline-none focus:border-emerald-400 transition-colors cursor-pointer"
+      {/* ===================================================================== */}
+      {/* MODERN GLASS SEARCH + HORIZONTAL PILL FILTERS                         */}
+      {/* ===================================================================== */}
+      <div className="space-y-3.5">
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          {/* Command Search Input */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search roles, skills (Premiere Pro, Figma, AI, PHP), or companies..."
+              className="w-full pl-11 pr-9 py-2.5 rounded-full bg-white/[0.04] border border-white/10 focus:border-emerald-400/60 text-xs sm:text-sm text-white placeholder:text-neutral-500 focus:outline-none backdrop-blur-xl transition-colors"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white cursor-pointer"
               >
-                {industries.map(ind => (
-                  <option key={ind} value={ind} className="bg-[#12141c] text-white">
-                    {ind === 'All' ? 'All Industries' : ind}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            {/* Work Mode Filter Dropdown */}
-            <div className="relative">
-              <select
-                value={selectedWorkMode}
-                onChange={(e) => setSelectedWorkMode(e.target.value)}
-                className="appearance-none bg-[#131620] hover:bg-[#181c28] border border-white/10 rounded-xl px-3 py-1.5 pr-7 text-xs text-slate-200 font-medium focus:outline-none focus:border-emerald-400 transition-colors cursor-pointer"
-              >
-                {workModes.map(mode => (
-                  <option key={mode} value={mode} className="bg-[#12141c] text-white">
-                    {mode === 'All' ? 'All Work Modes' : mode}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-slate-400 text-xs font-mono">
-              {filteredJobs.length} {filteredJobs.length === 1 ? 'role' : 'roles'} available
-            </span>
-
-            {selectedTier === 'certified' && (
-              <label className="flex items-center gap-1.5 cursor-pointer font-semibold text-slate-300 text-xs bg-[#131620] px-3 py-1.5 rounded-xl border border-white/10">
-                <input
-                  type="checkbox"
-                  checked={unlockedOnly}
-                  onChange={(e) => setUnlockedOnly(e.target.checked)}
-                  className="rounded border-white/20 text-emerald-400 accent-emerald-400 w-3.5 h-3.5"
-                />
-                <span>Unlocked for Me</span>
-              </label>
+                <X className="w-3.5 h-3.5" />
+              </button>
             )}
           </div>
 
+          {/* Work Mode Pills */}
+          <div className="flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/10 self-start md:self-auto">
+            {workModes.map((mode) => {
+              const active = selectedWorkMode === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setSelectedWorkMode(mode)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
+                    active
+                      ? 'bg-white text-black font-bold shadow-xs'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  {mode}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
+        {/* Industry Pills + Count */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 max-w-full">
+            <span className="inline-flex items-center gap-1 text-[11px] text-neutral-500 font-semibold mr-1 shrink-0">
+              <SlidersHorizontal className="w-3 h-3" />
+              Category:
+            </span>
+            {industries.map((ind) => {
+              const active = selectedIndustry === ind;
+              return (
+                <button
+                  key={ind}
+                  type="button"
+                  onClick={() => setSelectedIndustry(ind)}
+                  className={`px-3 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap border transition-all cursor-pointer ${
+                    active
+                      ? 'bg-emerald-500/15 border-emerald-400/50 text-emerald-300'
+                      : 'bg-white/[0.03] border-white/10 text-neutral-400 hover:text-white hover:border-white/20'
+                  }`}
+                >
+                  {ind === 'All' ? 'All Categories' : ind}
+                </button>
+              );
+            })}
+          </div>
+
+          <span className="text-[11px] font-mono text-neutral-500 shrink-0">
+            Showing <strong className="text-white">{filteredJobs.length}</strong>{' '}
+            {filteredJobs.length === 1 ? 'role' : 'roles'}
+          </span>
+        </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* JOB LISTINGS GRID */}
-      {/* ------------------------------------------------------------- */}
+      {/* ===================================================================== */}
+      {/* MODERN EDITORIAL JOB CARDS GRID                                       */}
+      {/* ===================================================================== */}
       {filteredJobs.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl bg-[#0d1017]/90 backdrop-blur-xl border border-white/[0.08] space-y-3 shadow-xl">
-          <AlertCircle className="w-10 h-10 text-slate-500 mx-auto" />
-          <h3 className="text-base font-bold text-white">
-            No matching job listings found
-          </h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Try adjusting your search filters, clearing industry selection, or taking certification exams to unlock roles.
+        <div className="p-14 text-center rounded-3xl bg-white/[0.02] border border-white/[0.08] space-y-3">
+          <AlertCircle className="w-10 h-10 text-neutral-500 mx-auto" />
+          <h3 className="text-base font-bold text-white">No matching roles found</h3>
+          <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+            Try clearing your search or category filter, or switch between Public Jobs and Certified Roles.
           </p>
           <button
             type="button"
             onClick={() => {
+              setSearchQuery('');
               setSelectedIndustry('All');
               setSelectedWorkMode('All');
               setUnlockedOnly(false);
             }}
-            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition-colors"
+            className="px-4 py-2 rounded-full bg-white text-black text-xs font-bold cursor-pointer"
           >
             Reset Filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredJobs.map((job) => {
-            const matchScore = calculateMatchScore(job);
-            const isApplied = user.appliedJobIds.includes(job.id);
-            const userHasLevel = user.level >= job.minLevelRequired;
-            const missingBadges = job.requiredBadges.filter(
-              (b) => !user.verifiedBadges.some((ub) => ub.badgeTitle.toLowerCase() === b.toLowerCase())
-            );
-            const isUnlocked = job.tier === 'public' || (userHasLevel && missingBadges.length === 0);
+        <motion.div layout className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <AnimatePresence mode="popLayout">
+            {filteredJobs.map((job, idx) => {
+              const matchScore = calculateMatchScore(job);
+              const isApplied = user.appliedJobIds.includes(job.id);
+              const userHasLevel = user.level >= job.minLevelRequired;
+              const missingBadges = job.requiredBadges.filter(
+                (b) => !user.verifiedBadges.some((ub) => ub.badgeTitle.toLowerCase() === b.toLowerCase())
+              );
+              const isUnlocked = job.tier === 'public' || (userHasLevel && missingBadges.length === 0);
+              const showSeparateWorkMode =
+                job.workMode &&
+                job.location &&
+                job.workMode.toLowerCase() !== job.location.toLowerCase();
 
-            return (
-              <div
-                key={job.id}
-                onClick={() => {
-                  soundFx.playClick();
-                  onSelectJob(job);
-                }}
-                className={`group relative p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-4 shadow-xl ${
-                  job.tier === 'certified'
-                    ? isUnlocked
-                      ? 'bg-[#0d1017]/95 hover:bg-[#121622] border-emerald-500/30 hover:border-emerald-500 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'
-                      : 'bg-[#0b0d14]/80 border-white/[0.08] hover:border-white/20 opacity-85 hover:opacity-100'
-                    : 'bg-[#0d1017]/95 hover:bg-[#121622] border-white/[0.08] hover:border-emerald-500/40 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                {/* Card Top: Logo, Title, Badges */}
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-2xl shadow-inner shrink-0 group-hover:scale-105 transition-transform">
-                        {job.logo}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
-                            {job.title}
-                          </h3>
-                          {job.featured && (
-                            <span className="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[10px] font-bold flex items-center gap-1 shrink-0 animate-pulse">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                              Urgent
-                            </span>
-                          )}
+              return (
+                <motion.article
+                  layout
+                  key={job.id}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.25, delay: Math.min(idx * 0.03, 0.25) }}
+                  whileHover={{ y: -4 }}
+                  onClick={() => {
+                    soundFx.playClick();
+                    onSelectJob(job);
+                  }}
+                  className={`group relative rounded-3xl p-6 border transition-all duration-300 cursor-pointer flex flex-col justify-between gap-5 overflow-hidden ${
+                    job.tier === 'certified'
+                      ? isUnlocked
+                        ? 'bg-[#0b0e14]/95 border-emerald-500/30 hover:border-emerald-400/70 shadow-[0_14px_40px_rgba(0,0,0,0.45)]'
+                        : 'bg-[#0a0c11]/90 border-white/[0.09] hover:border-white/25 shadow-[0_14px_40px_rgba(0,0,0,0.45)]'
+                      : 'bg-[#0b0e14]/95 border-white/[0.09] hover:border-emerald-400/50 shadow-[0_14px_40px_rgba(0,0,0,0.45)]'
+                  }`}
+                >
+                  {/* Subtle Top Hover Highlight Line */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  <div className="space-y-4">
+                    {/* Top Meta Row: Icon + Company + Match/Time */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 group-hover:border-white/20 transition-all">
+                          {job.logo}
                         </div>
-                        <p className="text-xs text-slate-400">
-                          {job.company} • <span className="font-semibold text-slate-300">{job.industry}</span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-semibold text-neutral-300 truncate">
+                              {job.company}
+                            </span>
+                            {job.featured && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#d9ff00]/15 text-[#d9ff00] border border-[#d9ff00]/30 text-[9.5px] font-black uppercase tracking-wider shrink-0">
+                                <Zap className="w-2.5 h-2.5 fill-current" />
+                                Featured
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-[11px] text-neutral-500 mt-0.5">
+                            <span>{job.industry}</span>
+                            <span>•</span>
+                            <span className="inline-flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {job.postedAgo}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10.5px] font-bold shrink-0">
+                        {matchScore}% Match
+                      </div>
+                    </div>
+
+                    {/* Role Title & Concise Excerpt */}
+                    <div className="space-y-1.5">
+                      <h3 className="text-base sm:text-lg font-extrabold text-white leading-snug group-hover:text-emerald-300 transition-colors">
+                        {job.title}
+                      </h3>
+                      {job.description && (
+                        <p className="text-xs text-neutral-400 leading-relaxed line-clamp-2">
+                          {job.description}
                         </p>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Match Score Badge */}
-                    <div className="flex flex-col items-end shrink-0">
-                      <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 text-[11px] font-bold">
-                        <span>{matchScore}% Match</span>
-                      </div>
-                      <span className="text-[10px] text-slate-500 mt-0.5 font-mono">{job.postedAgo}</span>
-                    </div>
-                  </div>
-
-                  {/* Compensation & Meta */}
-                  <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-400">
-                    <span className="font-extrabold text-emerald-400 flex items-center font-mono">
-                      <IndianRupee className="w-3.5 h-3.5" />
-                      {job.salaryRange}
-                    </span>
-                    <span className="text-slate-600">•</span>
-                    <span className="flex items-center gap-1 text-slate-300">
-                      <MapPin className="w-3 h-3 text-slate-500" />
-                      {job.location}
-                    </span>
-                    <span className="text-slate-600">•</span>
-                    <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-[10.5px] font-medium text-slate-300">
-                      {job.workMode}
-                    </span>
-                  </div>
-
-                  {/* Skills tags */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {job.requiredSkills.slice(0, 4).map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2 py-0.5 rounded-lg bg-white/[0.04] border border-white/5 text-slate-300 text-[10px] font-medium"
-                      >
-                        {skill}
+                    {/* Compensation & Location Strip */}
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className="px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-bold font-mono text-[11.5px]">
+                        {job.salaryRange}
                       </span>
-                    ))}
-                    {job.requiredSkills.length > 4 && (
-                      <span className="px-1.5 py-0.5 rounded text-[10px] text-slate-500">
-                        +{job.requiredSkills.length - 4} more
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/[0.04] border border-white/10 text-neutral-300 text-[11px] font-medium">
+                        <MapPin className="w-3 h-3 text-neutral-400" />
+                        {job.location}
                       </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Card Bottom: Verification Status & Call to Action */}
-                <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between gap-2">
-                  
-                  {job.tier === 'certified' ? (
-                    isUnlocked ? (
-                      <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
-                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                        <span>Verified Unlocked (Level {job.minLevelRequired}+)</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1.5 text-xs text-amber-400 font-semibold">
-                        <Lock className="w-3.5 h-3.5" />
-                        <span className="truncate max-w-[180px]">
-                          Req: {job.requiredBadges[0] || `Level ${job.minLevelRequired}`}
+                      {showSeparateWorkMode && (
+                        <span className="px-2.5 py-1 rounded-xl bg-white/[0.04] border border-white/10 text-neutral-300 text-[11px] font-medium">
+                          {job.workMode}
                         </span>
-                      </div>
-                    )
-                  ) : (
-                    <span className="text-[11px] text-slate-400 font-mono">
-                      Open Public Role
-                    </span>
-                  )}
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    {isApplied ? (
-                      <span className="px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs font-semibold flex items-center gap-1 border border-emerald-500/25">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Applied
-                      </span>
-                    ) : job.tier === 'certified' && !isUnlocked ? (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (missingBadges.length > 0) {
-                            onLaunchExamForBadge(missingBadges[0]);
-                          }
-                        }}
-                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1"
-                      >
-                        <Award className="w-3 h-3" />
-                        <span>Unlock Exam</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-extrabold text-xs transition-all flex items-center gap-1 shadow-sm active:scale-98"
-                      >
-                        <span>Apply</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                    {/* Clean Skill Pills (Max 3 + counter) */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {job.requiredSkills.slice(0, 3).map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.07] text-neutral-300 text-[11px] font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                      {job.requiredSkills.length > 3 && (
+                        <span className="px-2 py-1 text-[11px] text-neutral-500 font-medium">
+                          +{job.requiredSkills.length - 3} more
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                </div>
+                  {/* Card Footer: Verification Badge + Action CTA */}
+                  <div className="pt-4 border-t border-white/[0.07] flex items-center justify-between gap-3">
+                    {job.tier === 'certified' ? (
+                      isUnlocked ? (
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold min-w-0">
+                          <ShieldCheck className="w-4 h-4 shrink-0" />
+                          <span className="truncate">Verified Unlocked</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-xs text-amber-300/90 font-medium min-w-0">
+                          <Lock className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">
+                            Exam: {job.requiredBadges[0] || `Level ${job.minLevelRequired}`}
+                          </span>
+                        </div>
+                      )
+                    ) : (
+                      <span className="text-[11px] text-neutral-400 font-medium">
+                        Open Public Role
+                      </span>
+                    )}
 
-              </div>
-            );
-          })}
-        </div>
+                    <div className="shrink-0">
+                      {isApplied ? (
+                        <span className="px-3.5 py-2 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-bold inline-flex items-center gap-1.5 border border-emerald-500/30">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Applied
+                        </span>
+                      ) : job.tier === 'certified' && !isUnlocked ? (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (missingBadges.length > 0) {
+                              onLaunchExamForBadge(missingBadges[0]);
+                            }
+                          }}
+                          className="px-4 py-2 rounded-full bg-[#d9ff00] hover:bg-[#c8eb00] text-black text-xs font-black transition-all inline-flex items-center gap-1.5 shadow-[0_0_20px_rgba(217,255,0,0.2)] cursor-pointer"
+                        >
+                          <Award className="w-3.5 h-3.5" />
+                          <span>Unlock Exam</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="px-4 py-2 rounded-full bg-white hover:bg-[#d9ff00] text-black font-black text-xs transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <span>Apply Now</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
       )}
-
     </div>
   );
 };
