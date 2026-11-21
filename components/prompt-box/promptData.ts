@@ -100,6 +100,22 @@ Maintain the same woman's facial features, hairstyle, and clothing. Keep the roc
     promptText: `A stylish young woman walking confidently down a busy New York city sidewalk during golden hour, wearing a dark fitted t-shirt, relaxed dark jeans, and sneakers, talking on her smartphone and holding an iced coffee and a cafe menu, with a golden retriever dog walking on a leash beside her; suddenly, she trips and drops her phone, iced coffee cup, and a "YA HALA COFFEE - FALL MENU" flyer mid-stride, causing the items to suspend mid-air in slow motion with magical liquid splashes and floating autumn leaves, transitioning to a macro close-up of the branded coffee cup and a smartphone displaying an incoming call from "BOSS" before everything drops back to the pavement in a dynamic, high-octane commercial cinematic style.`,
   },
   {
+    id: 'wall-street-bullet-time-frozen-slip',
+    title: 'Wall Street 360° Bullet-Time Frozen Coffee Splash',
+    category: 'Video & Reels',
+    modelTag: 'Tested on Seedance',
+    aspectRatio: '360° Bullet-Time',
+    previewImage: '/videoediting.png',
+    videoUrl: '/api/social/media/promptbox_clip12.mp4',
+    shortSummary:
+      'Matrix-style 360° low-angle bullet-time orbit around a Wall Street businessman slipping on ice with coffee & droplets completely frozen mid-air.',
+    proTip:
+      'Tested on Seedance. Stating "only the camera moves while everything else remains perfectly still" locks in crisp bullet-time suspension.',
+    relatedLinkLabel: 'Explore Video Studio',
+    relatedLinkHref: '/video-studio',
+    promptText: `Bullet time effect. A businessman in white shirt and black tie slipping and falling backwards on an icy wet street in Wall Street, New York. Coffee cup standing on ground, liquid exploding outward frozen in mid-air. Ice chunks, water droplets, and coffee splash all completely suspended time is frozen. Tall buildings on both sides creating a canyon effect. The camera smoothly orbits 360 degrees around the falling man at low ground level angle, only the camera moves while everything else remains perfectly still. Cinematic, overcast dramatic lighting, wide angle lens distortion.`,
+  },
+  {
     id: 'kitkat-luxury-storyboard',
     title: 'KitKat "The Art of the Snap" 10-Frame Commercial Board',
     category: 'Commercials & Ads',
