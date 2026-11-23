@@ -116,6 +116,34 @@ Maintain the same woman's facial features, hairstyle, and clothing. Keep the roc
     promptText: `Bullet time effect. A businessman in white shirt and black tie slipping and falling backwards on an icy wet street in Wall Street, New York. Coffee cup standing on ground, liquid exploding outward frozen in mid-air. Ice chunks, water droplets, and coffee splash all completely suspended time is frozen. Tall buildings on both sides creating a canyon effect. The camera smoothly orbits 360 degrees around the falling man at low ground level angle, only the camera moves while everything else remains perfectly still. Cinematic, overcast dramatic lighting, wide angle lens distortion.`,
   },
   {
+    id: 'downtown-dusk-flying-whale-one-take',
+    title: 'Downtown Dusk Giant Humpback Whale Overhead (30s One-Take)',
+    category: 'Video & Reels',
+    modelTag: 'Tested on Seedance',
+    aspectRatio: '9:16 · 30s POV',
+    previewImage: '/videoediting.png',
+    videoUrl: '/api/social/media/promptbox_clip13.mp4',
+    shortSummary:
+      'Handheld shot-on-iPhone 30s one-take: wet neon downtown street at dusk as a massive photoreal humpback whale glides silently between skyscrapers.',
+    proTip:
+      'Tested on Seedance. Specifying natural phone-camera imperfections ("slight delay tilting up, mild auto-exposure shifts, puddle ripples") sells the viral found-footage realism.',
+    relatedLinkLabel: 'Explore Video Studio',
+    relatedLinkHref: '/video-studio',
+    promptText: `A single continuous 30-second one-take filmed on a smartphone, vertical 9:16, handheld with slight natural shake. A busy downtown street at dusk after light rain, wet asphalt reflecting neon signs and car headlights. The camera operator is a pedestrian standing on the sidewalk, filming casually.
+
+0-6s: The camera pans across the street. People walk past, a delivery rider waits at a red light. Ambient city sound, distant sirens. Then a few people stop and look up. The camera tilts up with a slight delay, as a real person's would.
+
+6-14s: A huge humpback whale glides slowly out from behind the glass towers, floating about 40 meters above the street. Photoreal skin texture, barnacles, water droplets falling off its fins and onto the road. Its shadow passes over cars and crowds. People gasp, raise phones, and one person grabs a friend's arm.
+
+14-24s: The whale drifts overhead and lets out a deep, low call that vibrates through the street. Windows reflect its body, puddles ripple from the sound, and a flag and trees sway in the air it pushes. The camera shakes slightly and refocuses.
+
+24-30s: It continues down the avenue, tail sweeping gently, and fades into low clouds between the buildings. The shot ends with the crowd still looking up and the camera lowering.
+
+Realism: natural phone-camera behavior, mild auto-exposure shifts, slight lens flare from the neon, real-world scale and weight, no cartoon glow, no text or logos on screen. Ordinary, unposed pedestrians with natural reactions.
+Audio: @Audio1 or synchronized ambient city sound, crowd murmurs, wind, and a deep whale call. No music, no narration.
+Style: photorealistic, shot-on-iPhone look, natural color, light grain, realistic motion blur, sharp 4K.`,
+  },
+  {
     id: 'kitkat-luxury-storyboard',
     title: 'KitKat "The Art of the Snap" 10-Frame Commercial Board',
     category: 'Commercials & Ads',
