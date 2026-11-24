@@ -144,6 +144,40 @@ Audio: @Audio1 or synchronized ambient city sound, crowd murmurs, wind, and a de
 Style: photorealistic, shot-on-iPhone look, natural color, light grain, realistic motion blur, sharp 4K.`,
   },
   {
+    id: 'door-portal-fantasy-world-transition',
+    title: 'Door Portal Into a Fantasy World (Video + Image Reference)',
+    category: 'Video & Reels',
+    modelTag: 'Tested on Seedance',
+    aspectRatio: '9:16 · VFX Portal',
+    previewImage: '/videoediting.png',
+    videoUrl: '/api/social/media/promptbox_clip14.mp4',
+    shortSummary:
+      'Seamless reality-to-fantasy door portal transition preserving real room geometry, sharp door-frame occlusion, natural breeze, and directional sunlight spill.',
+    proTip:
+      'Tested on Seedance. Upload your real door-opening clip + any fantasy landscape image—this prompt enforces strict door-frame occlusion so the world never bleeds onto your walls.',
+    relatedLinkLabel: 'Explore Video Studio',
+    relatedLinkHref: '/video-studio',
+    promptText: `Use the uploaded video of a door opening as the primary reference for the action and the character, and use the uploaded image of a fantasy world as the reference for the environment on the other side of the door.
+
+Retain everything from the original video that occurs before the door opens—including the character’s identity, facial features, hairstyle, clothing, and body proportions; the structure of the room, the door frame, and the walls; as well as the camera position, composition, lighting, and the specific motion of opening the door. Do not alter, replace, or redesign the character or the real-world environment as they appear in the original footage.
+
+When the door is closed, the scene must be identical to the original video. The character should move naturally toward the door and open it, following the actions shown in the original footage. The fantasy world should only begin to emerge from behind the door once a gap actually appears. Do not reveal the fantasy environment prematurely, and ensure the real-world room does not undergo any sudden, overall transformation.
+
+Once the door is open, replace the space behind it with the fantasy world from the reference image. Preserve the key landscape features, architecture, vegetation, sky, color palette, lighting, and spatial depth from the reference image, ensuring it appears as a tangible environment existing on the other side of the door, rather than a flat image pasted onto it.
+
+The door frame, the door itself, and the real-world room must remain stable. The fantasy world should appear only within the confines of the door frame and must not spill over onto the walls, the character, or the rest of the real-world space. The edges of the door frame must remain sharp, with accurate occlusion and perspective that align with the camera angle of the original video.
+
+As the door opens fully, a gentle breeze should blow from the fantasy world into the room, causing the character’s hair and clothing to sway slightly and naturally. Soft sunlight should stream in from beyond the door, casting light, shadows, and warm-toned reflections onto the character, the door frame, and the floor—all consistent with the direction of the light source. These lighting changes must be gradual and natural, avoiding any sudden flickering or excessive, unnatural glow.
+
+As the character passes through the doorway, they must retain their original appearance, clothing, and body proportions—no distortion, duplication, or change in identity is permitted. The character’s footsteps, center of gravity, and speed of movement must adhere to the laws of physical reality. Ensure that the occlusion between the character and the door frame is handled accurately, making it appear as though the character is truly stepping from the real-world room into the fantasy world. After passing through the doorway, the character continues moving forward, naturally running through or exploring the fantasy environment. The camera must maintain the same motion style as the original video; abrupt perspective shifts, orbiting the character, or transitioning to a drone-style shot are not permitted. The spatial transition between the real world and the fantasy world must be seamless, stable, and convincing.
+
+The fantasy environment may feature subtle, natural movement—such as swaying leaves, rippling grass, slowly drifting clouds, faint mist in the distance, or sunlight filtering through trees—but must exclude intense storms, explosions, magical flashes, or any elements unrelated to the reference image.
+
+The overall aesthetic should be realistic, dreamlike, and cinematic, as if the character has genuinely opened a door into another world.
+
+The following are strictly prohibited: changes to the character’s face or clothing, physical distortions, the appearance of additional characters or extra limbs, floating objects, warped door frames, melting walls, flickering environments, a "flattened" look (loss of depth), incorrect perspective, abrupt transitions, camera jitter, the premature appearance of the fantasy world, scenery from the fantasy world spilling outside the door frame, excessive glow, text, subtitles, logos, or watermarks.`,
+  },
+  {
     id: 'kitkat-luxury-storyboard',
     title: 'KitKat "The Art of the Snap" 10-Frame Commercial Board',
     category: 'Commercials & Ads',
