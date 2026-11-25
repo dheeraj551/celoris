@@ -168,8 +168,26 @@ export default async function HomePage() {
     { category: 'apps' as const, label: 'Motion Swap Studio', meta: 'AI motion transfer & object swap', href: '/motion-swap' },
   ]
 
+  const homeWebPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://celorisdesigns.com/#webpage",
+    "url": "https://celorisdesigns.com",
+    "name": "Celoris — India's Creative Studio & Academy | AI Video, Photo & Courses",
+    "description": "Celoris is India's all-in-one AI creative studio, certified academy, and remote job center for students, creators, and freelancers since 2019. Start free (₹0 forever tier; Pro from ₹499/mo).",
+    "datePublished": "2019-05-23",
+    "dateModified": "2026-11-25",
+    "inLanguage": "en-IN",
+    "isPartOf": { "@id": "https://celorisdesigns.com/#website" },
+    "about": { "@id": "https://celorisdesigns.com/#organization" },
+  }
+
   return (
     <DashboardShell showVideoBackground>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeWebPageSchema) }}
+      />
       <TickerStrip items={tickerItems} />
       <DashboardContent
         courses={filteredCourses}

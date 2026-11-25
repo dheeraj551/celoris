@@ -167,7 +167,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                         >
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
                             <span className="text-xs font-mono font-medium tracking-wider text-neutral-300 uppercase">
-                                Free Creative Studio for Students
+                                Free Creative Studio for Students · Updated Nov 25, 2026
                             </span>
                         </motion.div>
 
@@ -235,7 +235,7 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                             transition={{ duration: 0.6, delay: 0.2 }}
                             className="text-neutral-300 text-base sm:text-lg leading-relaxed max-w-xl mb-7 font-normal"
                         >
-                            India's free creative studio since 2019. Free video editor, PhotoLite, 3D asset vault, online classes and daily freelance gigs. No credit card needed.
+                            Celoris is India&apos;s all-in-one AI creative studio, certified academy, and remote job center for students, creators, and freelancers since 2019. Start free (₹0 forever tier; Pro plans from ₹499/mo) with our 4K video editor, PhotoLite image studio, 3D asset vault, live classes, and daily freelance gigs—no credit card required.
                         </motion.p>
 
                         {/* Primary CTAs */}
@@ -809,10 +809,70 @@ export function DashboardContent({ courses, initialTestimonials = [] }: Dashboar
                       className="mb-4"
                       initialTestimonials={initialTestimonials}
                     />
+                    <div className="text-center mt-6">
+                      <Link
+                        href="/reviews"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-bold uppercase tracking-wider text-emerald-300 transition-colors"
+                      >
+                        Read All Verified Reviews <ArrowUpRight size={14} />
+                      </Link>
+                    </div>
                   </div>
                 </section>
               </SpotlightCard>
             </div>
+
+            {/* Semantic HTML Comparison Table (Machine & Reader Friendly) */}
+            <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 mb-20">
+              <div className="rounded-3xl bg-white/[0.03] border border-white/10 p-6 sm:p-8 backdrop-blur-xl">
+                <div className="mb-6">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Celoris Platform Features &amp; Pricing Overview (Updated Nov 2026)
+                  </h2>
+                  <p className="text-sm text-neutral-400 mt-1">
+                    Celoris provides free-to-start browser creative tools, live cohort courses, and certified remote freelance roles for creators, students, and developers across India.
+                  </p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-neutral-400">
+                        <th className="py-3 pr-4 font-semibold">Celoris Module</th>
+                        <th className="py-3 px-4 font-semibold">What It Does</th>
+                        <th className="py-3 px-4 font-semibold">Starting Price</th>
+                        <th className="py-3 pl-4 font-semibold">Best For</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/[0.06] text-neutral-200">
+                      <tr>
+                        <td className="py-3.5 pr-4 font-semibold text-white">Video Studio &amp; Prompt Box</td>
+                        <td className="py-3.5 px-4 text-neutral-300">Browser 4K timeline editor + tested Seedance AI video prompts</td>
+                        <td className="py-3.5 px-4 text-emerald-400 font-semibold">₹0 Free to Start</td>
+                        <td className="py-3.5 pl-4 text-neutral-300">Reels, Shorts &amp; commercial creators</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 pr-4 font-semibold text-white">PhotoLite &amp; PolyVault 3D</td>
+                        <td className="py-3.5 px-4 text-neutral-300">Photoshop-style PSD image editor &amp; 3D asset marketplace</td>
+                        <td className="py-3.5 px-4 text-emerald-400 font-semibold">₹0 Free (No Credit Card)</td>
+                        <td className="py-3.5 pl-4 text-neutral-300">Designers, students &amp; 3D artists</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 pr-4 font-semibold text-white">Celoris Academy &amp; Live Classes</td>
+                        <td className="py-3.5 px-4 text-neutral-300">Trainer-led AI, Reels, Excel &amp; Full-Stack certified courses</td>
+                        <td className="py-3.5 px-4 text-emerald-400 font-semibold">Free courses + Paid cohorts</td>
+                        <td className="py-3.5 pl-4 text-neutral-300">Students &amp; working professionals in India</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 pr-4 font-semibold text-white">Certified Job Center</td>
+                        <td className="py-3.5 px-4 text-neutral-300">10-minute skill exams unlocking direct remote freelance &amp; agency roles</td>
+                        <td className="py-3.5 px-4 text-emerald-400 font-semibold">₹0 Free Exams &amp; Apply</td>
+                        <td className="py-3.5 pl-4 text-neutral-300">Video editors, AI creators &amp; web developers</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
 
             <style jsx global>{`
                 .no-scrollbar::-webkit-scrollbar {

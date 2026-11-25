@@ -157,7 +157,9 @@ const websiteSchema = {
   "@id": "https://celorisdesigns.com/#website",
   "name": "Celoris",
   "url": "https://celorisdesigns.com",
-  "description": "Video editing. Image design. 20 AI models. Free classes. Daily freelance gigs. All in one place. All free to start. Built for India. 🇮🇳",
+  "datePublished": "2019-05-23",
+  "dateModified": "2026-11-25",
+  "description": "Celoris is India's all-in-one AI creative studio, certified academy, and remote job center for students, creators, and freelancers since 2019. Free to start (₹0 tier; Pro from ₹499/mo).",
   "publisher": { "@id": "https://celorisdesigns.com/#organization" },
   "potentialAction": {
     "@type": "SearchAction",

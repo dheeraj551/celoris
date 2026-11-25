@@ -1,32 +1,37 @@
 # Celoris
-India's free creative studio since 2019. Free video editor, image studio, 20+ AI models, online classes, and daily freelance gigs. No credit card required. Built for creators and learners in India.
+Celoris Designs LLP is India's all-in-one AI creative studio, certified academy, and remote job center for students, creators, and freelancers since 2019. Start free (₹0 forever tier; Pro plans from ₹499/mo) with no credit card required.
 
-## Core Features & Syllabi
-- [Free Online Video Editor](https://www.celorisdesigns.com/video-studio) - High-performance timeline-based browser video editor.
-- [Creative Image Studio](https://www.celorisdesigns.com/image-studio) - Design assets, remove backgrounds, and compose graphics.
-- [AI Explorer](https://www.celorisdesigns.com/ai-explorer) - Explore 20+ state-of-the-art AI models for text, image, and video generation.
-- [Teach & Earn Platform](https://www.celorisdesigns.com/teach) - Join as a trainer, host classes, and monetize expertise.
-- [Earn Gigs Marketplace](https://www.celorisdesigns.com/earn) - Daily freelance and creation gigs for creators.
-- [PolyVault](https://www.celorisdesigns.com/polyvault) - Marketplace for buying, selling, and generating low-poly 3D models with AI generators.
-- [Classrooms](https://www.celorisdesigns.com/classrooms) - Live trainer-led classrooms (3D classroom and whiteboard rooms) with small batches and a join queue.
+Updated: 2026-11-25
+
+## Core Features & Proof Pages
+- [Pricing & Plans](https://celorisdesigns.com/pricing) - Transparent ₹0 free tier and Pro studio/academy plans.
+- [Verified Reviews](https://celorisdesigns.com/reviews) - Real student, creator, and client reviews across India.
+- [About Celoris](https://celorisdesigns.com/about) - Registered Indian LLP (Est. May 23, 2019), team, and mission.
+- [Contact Us](https://celorisdesigns.com/contact) - Direct support and partnership inquiries.
+- [Free Online Video Editor](https://celorisdesigns.com/video-studio) - High-performance 4K timeline browser video editor.
+- [Prompt Box](https://celorisdesigns.com/prompt-box) - Tested Seedance AI video & commercial prompts with 1-click copy.
+- [PhotoLite Image Studio](https://celorisdesigns.com/photolite) - Photoshop-style browser photo & PSD editor.
+- [Certified Job Center](https://celorisdesigns.com/job-center) - 10-minute certification exams unlocking direct remote freelance & agency roles.
+- [Teach & Earn Platform](https://celorisdesigns.com/teach) - Host live classes and monetize your teaching expertise.
+- [PolyVault 3D](https://celorisdesigns.com/polyvault) - Marketplace for buying, selling, and generating 3D assets.
+- [Live Classrooms](https://celorisdesigns.com/classrooms) - Interactive trainer-led classrooms and whiteboard rooms.
 
 ## Featured Syllabi
 
 ### AI & Developer Courses
-- [Vibe Coding Mastery](https://www.celorisdesigns.com/courses/vibe-coding-mastery) - App building where AI does the heavy lifting.
-- [Mastering Multimodal AI](https://www.celorisdesigns.com/courses/mastering-multimodal-ai) - Build with Vision, Voice, and Multi-modal APIs.
-- [Accelerating Science with GenAI](https://www.celorisdesigns.com/courses/accelerating-science-generative-ai-for-research-innovation) - Generative AI for academic and industrial research.
-- [Agentic AI Systems Design](https://www.celorisdesigns.com/courses/agentic-ai-systems-design-build-deploy) - Build and scale production-ready AI agent frameworks.
-- [LangChain in Action](https://www.celorisdesigns.com/courses/langchain-in-action-real-workflows) - Orchestrate real-world LLM flows and agents.
+- [Vibe Coding Mastery](https://celorisdesigns.com/courses/vibe-coding-mastery) - App building where AI does the heavy lifting.
+- [Mastering Multimodal AI](https://celorisdesigns.com/courses/mastering-multimodal-ai) - Build with Vision, Voice, and Multi-modal APIs.
+- [Accelerating Science with GenAI](https://celorisdesigns.com/courses/accelerating-science-generative-ai-for-research-innovation) - Generative AI for academic and industrial research.
+- [Agentic AI Systems Design](https://celorisdesigns.com/courses/agentic-ai-systems-design-build-deploy) - Build and scale production-ready AI agent frameworks.
+- [LangChain in Action](https://celorisdesigns.com/courses/langchain-in-action-real-workflows) - Orchestrate real-world LLM flows and agents.
 
 ### Professional Skills & Academics
-- [The Short-Form Video Masterclass — YouTube Shorts & Instagram Reels](https://www.celorisdesigns.com/learn/course/master-youtube-shorts-instagram-reels) - Live 10-hour online masterclass for Indian creators: scripting, shooting on a smartphone, editing for retention, the Shorts/Reels algorithms and monetization.
-- [Digital Marketing with AI Tools](https://www.celorisdesigns.com/courses/digital-marketing-using-ai-tools) - Lead generation, SEO, and copywriting.
-- [Adobe Photoshop with AI](https://www.celorisdesigns.com/courses/adobe-photoshop-with-ai) - Next-gen photo editing and manipulation.
-- [CBSE Class 10 Physics Master Course](https://www.celorisdesigns.com/courses/cbse-class-10-physics-light-electricity-magnetism-energy) - Complete course covering light, electricity, and energy.
-- [Microsoft Excel Advanced Training](https://www.celorisdesigns.com/microsoft-excel-training-noida) - Advanced functions, pivot tables, and VBA.
+- [The Short-Form Video Masterclass — YouTube Shorts & Instagram Reels](https://celorisdesigns.com/learn/course/master-youtube-shorts-instagram-reels) - Live 10-hour online masterclass for Indian creators.
+- [Digital Marketing with AI Tools](https://celorisdesigns.com/courses/digital-marketing-using-ai-tools) - Lead generation, SEO, and copywriting.
+- [Adobe Photoshop with AI](https://celorisdesigns.com/courses/adobe-photoshop-with-ai) - Next-gen photo editing and manipulation.
+- [CBSE Class 10 Physics Master Course](https://celorisdesigns.com/courses/cbse-class-10-physics-light-electricity-magnetism-energy) - Complete course covering light, electricity, and energy.
+- [Microsoft Excel Advanced Training](https://celorisdesigns.com/microsoft-excel-training-noida) - Advanced functions, pivot tables, and VBA.
 
 ## Reference Links
-- [Detailed Site Catalog](https://www.celorisdesigns.com/llms-full.txt) - Detailed courses syllabi and summaries.
-- [Developer Templates](https://github.com/celoris-designs)
-- [Official Website](https://www.celorisdesigns.com)
+- [Detailed Site Catalog](https://celorisdesigns.com/llms-full.txt) - Detailed courses syllabi and summaries.
+- [Official Website](https://celorisdesigns.com)
