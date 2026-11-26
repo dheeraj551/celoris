@@ -43,7 +43,7 @@ export default function AdminPlansPage() {
       const map = {} as Record<PlanTier, TierRow>
       for (const t of data.tiers as TierRow[]) map[t.tier] = t
       setSaved(map)
-      setDraft(JSON.parse(JSON.stringify(map)))
+      setDraft(structuredClone(map))
       setError(null)
     } catch (e: any) {
       setError(e.message)
@@ -120,7 +120,7 @@ export default function AdminPlansPage() {
           <div className="flex items-center gap-2">
             {dirtyTiers.length > 0 && (
               <button
-                onClick={() => saved && setDraft(JSON.parse(JSON.stringify(saved)))}
+                onClick={() => saved && setDraft(structuredClone(saved))}
                 className="h-10 px-3 rounded-md text-slate-300 hover:bg-slate-800 text-sm inline-flex items-center gap-1.5"
               >
                 <RotateCcw className="w-4 h-4" /> Undo changes

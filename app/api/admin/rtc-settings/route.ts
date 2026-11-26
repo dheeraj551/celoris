@@ -12,10 +12,7 @@ export async function GET() {
     let livekitHealthy = false
     try {
       const pingUrl = livekitUrl.replace('wss://', 'https://').replace('ws://', 'http://')
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 3000)
-      const res = await fetch(pingUrl, { signal: controller.signal })
-      clearTimeout(timeoutId)
+      const res = await fetch(pingUrl, { signal: AbortSignal.timeout(3000) })
       livekitHealthy = res.status === 200
     } catch {
       livekitHealthy = false

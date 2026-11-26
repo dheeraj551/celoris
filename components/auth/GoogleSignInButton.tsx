@@ -175,7 +175,7 @@ export function GoogleSignInButton({
 
         const holder = holderRef.current
         if (holder) {
-          holder.innerHTML = ""
+          holder.replaceChildren()
           const box = holder.parentElement?.getBoundingClientRect().width || 320
           const width = Math.min(400, Math.max(200, Math.floor(box)))
           window.google.accounts.id.renderButton(holder, {

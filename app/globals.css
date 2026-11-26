@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@1,800;1,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -62,6 +61,12 @@
    ("OTS parsing error: invalid sfntVersion") — removed. */
 
 @layer base {
+  html {
+    color-scheme: dark;
+    scrollbar-color: rgba(255, 255, 255, 0.18) #080808;
+    scrollbar-width: thin;
+  }
+
   * {
     @apply border-border;
   }
@@ -69,15 +74,36 @@
   body {
     @apply bg-background text-foreground;
     background-color: #080808;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-outfit), 'Outfit', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Premium Typography */
+  /* Premium Typography (Modern Web Guidance: text-wrap balance & pretty) */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
+    text-wrap: balance;
   }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Respect user motion preferences globally */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Defer rendering of off-screen heavy sections (Modern Web Guidance: content-visibility) */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 @layer components {

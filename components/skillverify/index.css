@@ -18,7 +18,12 @@ h1, h2, h3, .font-display {
   font-family: var(--font-sans);
 }
 
-/* Celoris Dark & Emerald Custom Scrollbar */
+/* Celoris Dark & Emerald Standard + Fallback Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) #090b10;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import { Outfit } from "next/font/google"
+import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
@@ -13,7 +13,9 @@ import { SupportBotGate } from "@/components/SupportBotGate"
 import { XpGate } from "@/components/xp/XpGate"
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 
-const outfit = Outfit({ subsets: ["latin"], display: "swap" })
+const outfit = Outfit({ subsets: ["latin"], display: "swap", variable: "--font-outfit" })
+const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap", variable: "--font-plus-jakarta" })
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], display: "swap", variable: "--font-jetbrains-mono" })
 
 export const metadata: Metadata = {
   title: {
@@ -168,14 +170,37 @@ const websiteSchema = {
   }
 }
 
+const speculationRules = {
+  prefetch: [
+    {
+      where: {
+        and: [
+          { href_matches: "/*" },
+          { not: { href_matches: "/api/*" } },
+          { not: { href_matches: "/admin/*" } },
+          { not: { href_matches: "/*logout*" } },
+        ],
+      },
+      eagerness: "moderate",
+    },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className={outfit.className}>
+        {/* Instant Navigation Prefetch via Modern Speculation Rules API */}
+        <script
+          type="speculationrules"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(speculationRules)
+          }}
+        />
         {/* Global Structured Data (JSON-LD) */}
         <script
           type="application/ld+json"
