@@ -275,6 +275,28 @@ export default function CapCutProViralReelsPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Course Hero Banner Image */}
+              <div className="relative group pt-2">
+                <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-emerald-500/35 to-yellow-400/25 blur-sm opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
+                <div className="relative aspect-video overflow-hidden rounded-3xl bg-zinc-950 border border-white/15 shadow-2xl">
+                  <img
+                    src="/capcut.jpg"
+                    alt="CapCut Pro Desktop & Mobile 1-on-1 Video Editing Training"
+                    fetchPriority="high"
+                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
+                    <span className="px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-xs font-semibold text-white">
+                      Live 1-on-1 Screen-Share · Laptop/PC &amp; Mobile
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-yellow-400 text-zinc-950 text-xs font-extrabold">
+                      14-Day Practical Bootcamp
+                    </span>
+                  </div>
+                </div>
+              </div>
             </header>
 
             {/* Transparent Fee Plans Grid */}
