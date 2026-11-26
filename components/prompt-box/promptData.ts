@@ -389,6 +389,43 @@ STYLE: Ultra-photorealistic live-action food commercial, authentic Asian home co
     promptText: `Crane camera starts from the roof of a tall building in downtown Cairo, a quick panoramic movement (Pan) from right to left, we see the minarets appearing with the first light, then the camera quickly descends (Crash Zoom) to the busy street, a quick tracking shot of a transport vehicle running between an old tram and donkeys loaded with vegetables, all this in one long take (One Take) at a pace that rivals Noir films.`,
   },
   {
+    id: 'giant-blooming-rose-couture-editorial',
+    title: 'Inside a Giant Blooming Rose — Surreal Couture Editorial',
+    category: 'Image Prompts',
+    modelTag: 'Image Prompt · 8K',
+    aspectRatio: '3:4 Editorial',
+    previewImage: '/api/social/media/promptbox_img10.jpg',
+    shortSummary:
+      'Ultra-wide 24mm forced-perspective luxury fashion campaign shot from inside a giant blooming pink rose with translucent silk organza couture and morning sunlight.',
+    proTip:
+      'Keep the 24mm ultra-wide lens + "camera physically positioned inside the flower" cue—swap the rose color (blush pink → crimson velvet or ivory peony) for instant fragrance or beauty campaigns.',
+    relatedLinkLabel: 'Open PhotoLite AI Studio',
+    relatedLinkHref: '/photolite',
+    promptText: `Ultra-photorealistic high-fashion editorial photograph in a dreamy romantic pink floral aesthetic, vertical 3:4 composition. A glamorous young woman is leaning gracefully toward the camera from the center of an enormous blooming pink flower, looking directly into the lens with a soft confident and slightly mysterious expression. She has long voluminous dark-brown hair styled in loose glossy waves, delicate natural freckles, realistic warm ivory skin with visible pores, expressive hazel-green eyes, defined eyebrows, elegant cheekbones and glossy rose-pink lips. Her makeup is sophisticated and feminine with soft rosy eyeshadow, defined eyelashes, subtle glowing highlighter and glossy pink lips.
+
+She wears an extravagant haute couture dress in soft blush pink, constructed from layers of translucent silk organza, delicate lace and flowing tulle. The bodice is fitted and elegant, while the enormous skirt blends visually with the petals of the flower, creating the illusion that the woman is emerging from the center of a giant blooming rose. Tiny crystal embellishments and pearl details are scattered throughout the fabric and sparkle subtly in the sunlight.
+
+The camera is positioned INSIDE the enormous flower, extremely close to the center of the petals, looking upward toward the woman. Huge soft pink petals surround the entire edge of the frame, some petals appearing enormous and heavily blurred because they are only centimeters from the lens. The petals create a natural circular frame around her face and body. The extreme perspective makes the foreground petals appear gigantic while the woman remains proportionally realistic in the center.
+
+One of her hands reaches gently toward the camera between the petals, creating dramatic forced perspective. Her hand is slightly oversized because of its proximity to the lens, with elegant almond-shaped glossy pastel-pink nails, delicate pearl rings and tiny crystal bracelets. Her fingers are anatomically correct, naturally positioned and realistically detailed.
+
+The giant flower is surrounded by a magical pastel garden filled with additional oversized roses, peonies, tiny white daisies and delicate green leaves. Soft pink petals float through the air. Small transparent water droplets cling to the flower petals and sparkle in the sunlight.
+
+Background: dreamy pastel-blue summer sky with soft white clouds visible between the enormous flower petals, creating a beautiful contrast with the pink floral environment. Gentle atmospheric haze gives the scene an ethereal fairytale feeling.
+
+Color palette: blush pink, dusty rose, pastel pink, ivory white, pearl, soft green and pale sky blue.
+
+Lighting: warm natural morning sunlight filtering through the petals, creating translucent glowing edges around the flower, soft highlights on the woman's hair and skin, delicate shadows across the petals and subtle sparkling reflections on the crystals. Soft cinematic bloom and dreamy atmospheric light.
+
+Photography style: luxury floral fashion campaign, high-end editorial photography, surreal commercial photography, romantic dreamcore aesthetic, whimsical feminine fashion magazine, fairytale couture, hyper-realistic textures, realistic skin pores, individual hair strands, detailed flower petals, physically accurate fabric and crystal reflections.
+
+Use a professional full-frame camera, 24mm ultra-wide-angle lens, extreme close perspective, camera physically positioned inside the flower, dramatic forced perspective, shallow depth of field, crisp focus on the woman's face and foreground hand, heavily blurred petals around the edges, subtle optical distortion, cinematic pastel color grading and fine film grain.
+
+The image should feel like a real luxury fashion photograph captured from an impossible camera position inside a gigantic blooming flower, with believable natural materials, realistic lighting and photographic imperfections rather than an illustration.
+
+No text, no logos, no watermark, no brand lettering, no extra fingers, no missing fingers, no fused fingers, no malformed hands, no duplicated flowers, no distorted face, no plastic skin, no CGI, no cartoon, no 3D render. Aspect ratio 3:4.`,
+  },
+  {
     id: 'xiaomi-17-pro-forced-perspective-ad',
     title: 'Xiaomi 17 Pro Forced-Perspective Tech Fashion Ad',
     category: 'Image Prompts',
