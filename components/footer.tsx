@@ -10,6 +10,7 @@ const footerSections = [
   {
     title: "Platform & Tools",
     links: [
+      { name: "Celoris Play", href: "/play", badge: "Gaming" },
       { name: "FiveM Server Hosting", href: "/fivem-servers", badge: "Gaming" },
       { name: "Open PSD Online", href: "/open-psd-online", badge: "Free" },
       { name: "Free Image Editor", href: "/free-image-editor" },
